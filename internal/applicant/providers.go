@@ -62,6 +62,7 @@ type applicantProviderOptions struct {
 	DnsPropagationWait      int32
 	DnsPropagationTimeout   int32
 	DnsTTL                  int32
+	Profiles                string
 	DisableFollowCNAME      bool
 	ARIReplaceAcct          string
 	ARIReplaceCert          string

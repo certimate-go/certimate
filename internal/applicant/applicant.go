@@ -68,6 +68,7 @@ func NewWithWorkflowNode(config ApplicantWithWorkflowNodeConfig) (Applicant, err
 		DnsPropagationWait:      nodeCfg.DnsPropagationWait,
 		DnsPropagationTimeout:   nodeCfg.DnsPropagationTimeout,
 		DnsTTL:                  nodeCfg.DnsTTL,
+		Profiles:                nodeCfg.Profiles,
 		DisableFollowCNAME:      nodeCfg.DisableFollowCNAME,
 	}
 
@@ -235,6 +236,7 @@ func applyUseLego(legoProvider challenge.Provider, options *applicantProviderOpt
 	certRequest := certificate.ObtainRequest{
 		Domains: options.Domains,
 		Bundle:  true,
+		Profile: options.Profiles,
 	}
 	if options.ARIReplaceAcct == user.Registration.URI {
 		certRequest.ReplacesCertID = options.ARIReplaceCert

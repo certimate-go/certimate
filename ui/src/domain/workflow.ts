@@ -154,6 +154,7 @@ export type WorkflowNodeConfigForApply = {
   nameservers?: string;
   dnsPropagationTimeout?: number;
   dnsTTL?: number;
+  profiles?: string;
   disableFollowCNAME?: boolean;
   disableARI?: boolean;
   skipBeforeExpiryDays: number;
