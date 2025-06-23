@@ -97,7 +97,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ucdn.GetUcdnDomainConfig': %w", err)
 	} else if len(getUcdnDomainConfigResp.DomainList) == 0 {
-		return nil, errors.New("no domain found")
+		return nil, fmt.Errorf("domain %s not found", d.config.DomainId)
 	}
 
 	// 更新 HTTPS 加速配置

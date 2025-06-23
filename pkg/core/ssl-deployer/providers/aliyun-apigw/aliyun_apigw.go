@@ -15,6 +15,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/aliyun-cas"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 	xtypes "github.com/certimate-go/certimate/pkg/utils/types"
 )
 
@@ -63,7 +64,15 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
 
-	sslmgr, err := createSSLManager(config.AccessKeyId, config.AccessKeySecret, config.ResourceGroupId, config.Region)
+	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
+		AccessKeyId:     config.AccessKeyId,
+		AccessKeySecret: config.AccessKeySecret,
+		ResourceGroupId: config.ResourceGroupId,
+		Region: ifelse.
+			If[string](config.Region == "" || strings.HasPrefix(config.Region, "cn-")).
+			Then("cn-hangzhou").
+			Else("ap-southeast-1"),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
 	}
@@ -225,7 +234,14 @@ func (d *SSLDeployerProvider) deployToCloudNative(ctx context.Context, certPEM s
 
 func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
 	// 接入点一览 https://api.aliyun.com/product/APIG
-	cloudNativeAPIGEndpoint := strings.ReplaceAll(fmt.Sprintf("apig.%s.aliyuncs.com", region), "..", ".")
+	var cloudNativeAPIGEndpoint string
+	switch region {
+	case "":
+		cloudNativeAPIGEndpoint = "apig.cn-hangzhou.aliyuncs.com"
+	default:
+		cloudNativeAPIGEndpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
+	}
+
 	cloudNativeAPIGConfig := &aliopen.Config{
 		AccessKeyId:     tea.String(accessKeyId),
 		AccessKeySecret: tea.String(accessKeySecret),
@@ -237,7 +253,14 @@ func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients
 	}
 
 	// 接入点一览 https://api.aliyun.com/product/CloudAPI
-	traditionalAPIGEndpoint := strings.ReplaceAll(fmt.Sprintf("apigateway.%s.aliyuncs.com", region), "..", ".")
+	var traditionalAPIGEndpoint string
+	switch region {
+	case "":
+		traditionalAPIGEndpoint = "apigateway.cn-hangzhou.aliyuncs.com"
+	default:
+		traditionalAPIGEndpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
+	}
+
 	traditionalAPIGConfig := &aliopen.Config{
 		AccessKeyId:     tea.String(accessKeyId),
 		AccessKeySecret: tea.String(accessKeySecret),
@@ -252,26 +275,4 @@ func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients
 		CloudNativeAPIGateway: cloudNativeAPIGClient,
 		TraditionalAPIGateway: traditionalAPIGClient,
 	}, nil
-}
-
-func createSSLManager(accessKeyId, accessKeySecret, resourceGroupId, region string) (core.SSLManager, error) {
-	casRegion := region
-	if casRegion != "" {
-		// 阿里云 CAS 服务接入点是独立于 APIGateway 服务的
-		// 国内版固定接入点：华东一杭州
-		// 国际版固定接入点：亚太东南一新加坡
-		if !strings.HasPrefix(casRegion, "cn-") {
-			casRegion = "ap-southeast-1"
-		} else {
-			casRegion = "cn-hangzhou"
-		}
-	}
-
-	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
-		AccessKeyId:     accessKeyId,
-		AccessKeySecret: accessKeySecret,
-		ResourceGroupId: resourceGroupId,
-		Region:          casRegion,
-	})
-	return sslmgr, err
 }

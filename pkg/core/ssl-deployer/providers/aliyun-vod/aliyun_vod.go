@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -86,7 +85,14 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 
 func createSDKClient(accessKeyId, accessKeySecret, region string) (*alivod.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/vod
-	endpoint := strings.ReplaceAll(fmt.Sprintf("vod.%s.aliyuncs.com", region), "..", ".")
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "vod.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("vod.%s.aliyuncs.com", region)
+	}
+
 	config := &aliopen.Config{
 		AccessKeyId:     tea.String(accessKeyId),
 		AccessKeySecret: tea.String(accessKeySecret),

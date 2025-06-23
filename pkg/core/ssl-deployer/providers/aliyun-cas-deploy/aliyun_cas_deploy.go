@@ -51,7 +51,12 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
 
-	sslmgr, err := createSSLManager(config.AccessKeyId, config.AccessKeySecret, config.ResourceGroupId, config.Region)
+	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
+		AccessKeyId:     config.AccessKeyId,
+		AccessKeySecret: config.AccessKeySecret,
+		ResourceGroupId: config.ResourceGroupId,
+		Region:          config.Region,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
 	}
@@ -176,26 +181,4 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*alicas.Clien
 	}
 
 	return client, nil
-}
-
-func createSSLManager(accessKeyId, accessKeySecret, resourceGroupId, region string) (core.SSLManager, error) {
-	casRegion := region
-	if casRegion != "" {
-		// 阿里云 CAS 服务接入点是独立于其他服务的
-		// 国内版固定接入点：华东一杭州
-		// 国际版固定接入点：亚太东南一新加坡
-		if !strings.HasPrefix(casRegion, "cn-") {
-			casRegion = "ap-southeast-1"
-		} else {
-			casRegion = "cn-hangzhou"
-		}
-	}
-
-	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
-		AccessKeyId:     accessKeyId,
-		AccessKeySecret: accessKeySecret,
-		ResourceGroupId: resourceGroupId,
-		Region:          casRegion,
-	})
-	return sslmgr, err
 }

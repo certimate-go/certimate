@@ -13,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/aliyun-cas"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 	xslices "github.com/certimate-go/certimate/pkg/utils/slices"
 	xtypes "github.com/certimate-go/certimate/pkg/utils/types"
 )
@@ -53,7 +54,15 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
 
-	sslmgr, err := createSSLManager(config.AccessKeyId, config.AccessKeySecret, config.ResourceGroupId, config.Region)
+	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
+		AccessKeyId:     config.AccessKeyId,
+		AccessKeySecret: config.AccessKeySecret,
+		ResourceGroupId: config.ResourceGroupId,
+		Region: ifelse.
+			If[string](config.Region == "" || strings.HasPrefix(config.Region, "cn-")).
+			Then("cn-hangzhou").
+			Else("ap-southeast-1"),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
 	}
@@ -176,7 +185,14 @@ func (d *SSLDeployerProvider) deployToWAF3(ctx context.Context, certPEM string, 
 
 func createSDKClient(accessKeyId, accessKeySecret, region string) (*aliwaf.Client, error) {
 	// 接入点一览：https://api.aliyun.com/product/waf-openapi
-	endpoint := strings.ReplaceAll(fmt.Sprintf("wafopenapi.%s.aliyuncs.com", region), "..", ".")
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "wafopenapi.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("wafopenapi.%s.aliyuncs.com", region)
+	}
+
 	config := &aliopen.Config{
 		AccessKeyId:     tea.String(accessKeyId),
 		AccessKeySecret: tea.String(accessKeySecret),
@@ -189,28 +205,6 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*aliwaf.Clien
 	}
 
 	return client, nil
-}
-
-func createSSLManager(accessKeyId, accessKeySecret, resourceGroupId, region string) (core.SSLManager, error) {
-	casRegion := region
-	if casRegion != "" {
-		// 阿里云 CAS 服务接入点是独立于 WAF 服务的
-		// 国内版固定接入点：华东一杭州
-		// 国际版固定接入点：亚太东南一新加坡
-		if !strings.HasPrefix(casRegion, "cn-") {
-			casRegion = "ap-southeast-1"
-		} else {
-			casRegion = "cn-hangzhou"
-		}
-	}
-
-	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
-		AccessKeyId:     accessKeyId,
-		AccessKeySecret: accessKeySecret,
-		ResourceGroupId: resourceGroupId,
-		Region:          casRegion,
-	})
-	return sslmgr, err
 }
 
 func assign(source *aliwaf.ModifyDomainRequest, target *aliwaf.DescribeDomainDetailResponseBody) *aliwaf.ModifyDomainRequest {

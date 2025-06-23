@@ -54,7 +54,12 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
 
-	sslmgr, err := createSSLManager(config.AccessKeyId, config.AccessKeySecret, config.ResourceGroupId)
+	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
+		AccessKeyId:     config.AccessKeyId,
+		AccessKeySecret: config.AccessKeySecret,
+		ResourceGroupId: config.ResourceGroupId,
+		Region:          "cn-hangzhou",
+	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
 	}
@@ -312,14 +317,4 @@ func createSDKClient(accessKeyId, accessKeySecret string) (*aliga.Client, error)
 	}
 
 	return client, nil
-}
-
-func createSSLManager(accessKeyId, accessKeySecret, resourceGroupId string) (core.SSLManager, error) {
-	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
-		AccessKeyId:     accessKeyId,
-		AccessKeySecret: accessKeySecret,
-		ResourceGroupId: resourceGroupId,
-		Region:          "cn-hangzhou",
-	})
-	return sslmgr, err
 }

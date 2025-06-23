@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -184,8 +183,17 @@ func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients
 		return nil, err
 	}
 
-	// 接入点一览 https://api.aliyun.com/product/FC-Open
-	fc3Endpoint := strings.ReplaceAll(fmt.Sprintf("fcv3.%s.aliyuncs.com", region), "..", ".")
+	// 接入点一览 https://api.aliyun.com/product/FC
+	var fc3Endpoint string
+	switch region {
+	case "":
+		fc3Endpoint = "fcv3.cn-hangzhou.aliyuncs.com"
+	case "me-central-1", "cn-hangzhou-finance", "cn-shanghai-finance-1", "cn-heyuan-acdr-1":
+		fc3Endpoint = fmt.Sprintf("%s.fc.aliyuncs.com", region)
+	default:
+		fc3Endpoint = fmt.Sprintf("fcv3.%s.aliyuncs.com", region)
+	}
+
 	fc3Config := &aliopen.Config{
 		AccessKeyId:     tea.String(accessKeyId),
 		AccessKeySecret: tea.String(accessKeySecret),

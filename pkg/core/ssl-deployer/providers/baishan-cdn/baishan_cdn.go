@@ -102,7 +102,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'baishan.GetDomainConfig': %w", err)
 		} else if len(getDomainConfigResp.Data) == 0 {
-			return nil, errors.New("domain config not found")
+			return nil, fmt.Errorf("domain %s not found", d.config.Domain)
 		}
 
 		// 设置域名配置

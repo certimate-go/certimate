@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/aliyun-slb"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 )
 
 type SSLDeployerProviderConfig struct {
@@ -55,7 +57,15 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
 
-	sslmgr, err := createSSLManager(config.AccessKeyId, config.AccessKeySecret, config.ResourceGroupId, config.Region)
+	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
+		AccessKeyId:     config.AccessKeyId,
+		AccessKeySecret: config.AccessKeySecret,
+		ResourceGroupId: config.ResourceGroupId,
+		Region: ifelse.
+			If[string](config.Region == "" || strings.HasPrefix(config.Region, "cn-")).
+			Then("cn-hangzhou").
+			Else("ap-southeast-1"),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
 	}
@@ -306,14 +316,4 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*alislb.Clien
 	}
 
 	return client, nil
-}
-
-func createSSLManager(accessKeyId, accessKeySecret, resourceGroupId, region string) (core.SSLManager, error) {
-	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
-		AccessKeyId:     accessKeyId,
-		AccessKeySecret: accessKeySecret,
-		ResourceGroupId: resourceGroupId,
-		Region:          region,
-	})
-	return sslmgr, err
 }
