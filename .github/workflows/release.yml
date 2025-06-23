@@ -19,8 +19,9 @@ jobs:
         with:
           node-version: 20.11.0
 
-      - name: Build WebUI
+      - name: Build UI
         run: |
+          echo "VITE_APP_VERSION=${GITHUB_REF#refs/tags/}" > ./ui/.env
           npm --prefix=./ui ci
           npm --prefix=./ui run build
 
