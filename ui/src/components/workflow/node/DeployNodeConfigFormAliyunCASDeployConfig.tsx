@@ -69,6 +69,10 @@ const DeployNodeConfigFormAliyunCASDeployConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item>
+        <Alert type="info" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aliyun_cas_deploy.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name="region"
         label={t("workflow_node.deploy.form.aliyun_cas_deploy_region.label")}
@@ -104,10 +108,6 @@ const DeployNodeConfigFormAliyunCASDeployConfig = ({
           placeholderInModal={t("workflow_node.deploy.form.aliyun_cas_deploy_contact_ids.multiple_input_modal.placeholder")}
           splitOptions={{ trim: true, removeEmpty: true }}
         />
-      </Form.Item>
-
-      <Form.Item>
-        <Alert type="info" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aliyun_cas_deploy.guide") }}></span>} />
       </Form.Item>
     </Form>
   );

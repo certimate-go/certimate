@@ -65,6 +65,10 @@ const DeployNodeConfigFormTencentCloudSSLDeployConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item>
+        <Alert type="info" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssl_deploy.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name="endpoint"
         label={t("workflow_node.deploy.form.tencentcloud_ssl_deploy_endpoint.label")}
@@ -108,10 +112,6 @@ const DeployNodeConfigFormTencentCloudSSLDeployConfig = ({
           placeholderInModal={t("workflow_node.deploy.form.tencentcloud_ssl_deploy_resource_ids.multiple_input_modal.placeholder")}
           splitOptions={{ trim: true, removeEmpty: true }}
         />
-      </Form.Item>
-
-      <Form.Item>
-        <Alert type="info" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssl_deploy.guide") }}></span>} />
       </Form.Item>
     </Form>
   );

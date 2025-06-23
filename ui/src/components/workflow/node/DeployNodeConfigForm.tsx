@@ -87,6 +87,7 @@ import DeployNodeConfigFormTencentCloudGAAPConfig from "./DeployNodeConfigFormTe
 import DeployNodeConfigFormTencentCloudSCFConfig from "./DeployNodeConfigFormTencentCloudSCFConfig";
 import DeployNodeConfigFormTencentCloudSSLConfig from "./DeployNodeConfigFormTencentCloudSSLConfig";
 import DeployNodeConfigFormTencentCloudSSLDeployConfig from "./DeployNodeConfigFormTencentCloudSSLDeployConfig";
+import DeployNodeConfigFormTencentCloudSSLUpdateConfig from "./DeployNodeConfigFormTencentCloudSSLUpdateConfig";
 import DeployNodeConfigFormTencentCloudVODConfig from "./DeployNodeConfigFormTencentCloudVODConfig";
 import DeployNodeConfigFormTencentCloudWAFConfig from "./DeployNodeConfigFormTencentCloudWAFConfig";
 import DeployNodeConfigFormUCloudUCDNConfig from "./DeployNodeConfigFormUCloudUCDNConfig.tsx";
@@ -347,6 +348,8 @@ const DeployNodeConfigForm = forwardRef<DeployNodeConfigFormInstance, DeployNode
           return <DeployNodeConfigFormTencentCloudSSLConfig {...nestedFormProps} />;
         case DEPLOYMENT_PROVIDERS.TENCENTCLOUD_SSL_DEPLOY:
           return <DeployNodeConfigFormTencentCloudSSLDeployConfig {...nestedFormProps} />;
+        case DEPLOYMENT_PROVIDERS.TENCENTCLOUD_SSL_UPDATE:
+          return <DeployNodeConfigFormTencentCloudSSLUpdateConfig {...nestedFormProps} />;
         case DEPLOYMENT_PROVIDERS.TENCENTCLOUD_VOD:
           return <DeployNodeConfigFormTencentCloudVODConfig {...nestedFormProps} />;
         case DEPLOYMENT_PROVIDERS.TENCENTCLOUD_WAF:

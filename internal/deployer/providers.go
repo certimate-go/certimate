@@ -84,6 +84,7 @@ import (
 	pTencentCloudSCF "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/tencentcloud-scf"
 	pTencentCloudSSL "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/tencentcloud-ssl"
 	pTencentCloudSSLDeploy "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/tencentcloud-ssl-deploy"
+	pTencentCloudSSLUpdate "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/tencentcloud-ssl-update"
 	pTencentCloudVOD "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/tencentcloud-vod"
 	pTencentCloudWAF "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/tencentcloud-waf"
 	pUCloudUCDN "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/ucloud-ucdn"
@@ -1118,7 +1119,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 			return deployer, err
 		}
 
-	case domain.DeploymentProviderTypeTencentCloudCDN, domain.DeploymentProviderTypeTencentCloudCLB, domain.DeploymentProviderTypeTencentCloudCOS, domain.DeploymentProviderTypeTencentCloudCSS, domain.DeploymentProviderTypeTencentCloudECDN, domain.DeploymentProviderTypeTencentCloudEO, domain.DeploymentProviderTypeTencentCloudGAAP, domain.DeploymentProviderTypeTencentCloudSCF, domain.DeploymentProviderTypeTencentCloudSSL, domain.DeploymentProviderTypeTencentCloudSSLDeploy, domain.DeploymentProviderTypeTencentCloudVOD, domain.DeploymentProviderTypeTencentCloudWAF:
+	case domain.DeploymentProviderTypeTencentCloudCDN, domain.DeploymentProviderTypeTencentCloudCLB, domain.DeploymentProviderTypeTencentCloudCOS, domain.DeploymentProviderTypeTencentCloudCSS, domain.DeploymentProviderTypeTencentCloudECDN, domain.DeploymentProviderTypeTencentCloudEO, domain.DeploymentProviderTypeTencentCloudGAAP, domain.DeploymentProviderTypeTencentCloudSCF, domain.DeploymentProviderTypeTencentCloudSSL, domain.DeploymentProviderTypeTencentCloudSSLDeploy, domain.DeploymentProviderTypeTencentCloudSSLUpdate, domain.DeploymentProviderTypeTencentCloudVOD, domain.DeploymentProviderTypeTencentCloudWAF:
 		{
 			access := domain.AccessConfigForTencentCloud{}
 			if err := xmaps.Populate(options.ProviderAccessConfig, &access); err != nil {
@@ -1223,6 +1224,18 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 					Region:       xmaps.GetString(options.ProviderServiceConfig, "region"),
 					ResourceType: xmaps.GetString(options.ProviderServiceConfig, "resourceType"),
 					ResourceIds:  xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "resourceIds"), ";"), func(s string) bool { return s != "" }),
+				})
+				return deployer, err
+
+			case domain.DeploymentProviderTypeTencentCloudSSLUpdate:
+				deployer, err := pTencentCloudSSLUpdate.NewSSLDeployerProvider(&pTencentCloudSSLUpdate.SSLDeployerProviderConfig{
+					SecretId:        access.SecretId,
+					SecretKey:       access.SecretKey,
+					Endpoint:        xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
+					CertificiateId:  xmaps.GetString(options.ProviderServiceConfig, "certificiateId"),
+					IsReplaced:      xmaps.GetBool(options.ProviderServiceConfig, "isReplaced"),
+					ResourceRegions: xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "resourceRegions"), ";"), func(s string) bool { return s != "" }),
+					ResourceTypes:   xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "resourceTypes"), ";"), func(s string) bool { return s != "" }),
 				})
 				return deployer, err
 
