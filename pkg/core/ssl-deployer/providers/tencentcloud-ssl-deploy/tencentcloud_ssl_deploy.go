@@ -20,6 +20,8 @@ type SSLDeployerProviderConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 腾讯云地域。
 	Region string `json:"region"`
 	// 腾讯云云资源类型。
@@ -42,7 +44,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Region)
+	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -50,6 +52,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		Endpoint:  config.Endpoint,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
@@ -150,10 +153,15 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	return &core.SSLDeployResult{}, nil
 }
 
-func createSDKClient(secretId, secretKey, region string) (*tcssl.Client, error) {
+func createSDKClient(secretId, secretKey, endpoint, region string) (*tcssl.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
-	client, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcssl.NewClient(credential, region, cpf)
 	if err != nil {
 		return nil, err
 	}

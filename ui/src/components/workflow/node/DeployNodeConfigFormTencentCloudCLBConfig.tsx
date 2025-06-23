@@ -7,8 +7,9 @@ import Show from "@/components/Show";
 import { validDomainName } from "@/utils/validators";
 
 type DeployNodeConfigFormTencentCloudCLBConfigFieldValues = Nullish<{
-  resourceType: string;
+  endpoint?: string;
   region: string;
+  resourceType: string;
   loadbalancerId?: string;
   listenerId?: string;
   domain?: string;
@@ -43,6 +44,7 @@ const DeployNodeConfigFormTencentCloudCLBConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
+    endpoint: z.string().nullish(),
     resourceType: z.union(
       [z.literal(RESOURCE_TYPE_VIA_SSLDEPLOY), z.literal(RESOURCE_TYPE_LOADBALANCER), z.literal(RESOURCE_TYPE_LISTENER), z.literal(RESOURCE_TYPE_RULEDOMAIN)],
       { message: t("workflow_node.deploy.form.tencentcloud_clb_resource_type.placeholder") }
@@ -84,6 +86,24 @@ const DeployNodeConfigFormTencentCloudCLBConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="endpoint"
+        label={t("workflow_node.deploy.form.tencentcloud_clb_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_clb_endpoint.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_clb_endpoint.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
+        name="region"
+        label={t("workflow_node.deploy.form.tencentcloud_clb_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_clb_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_clb_region.placeholder")} />
+      </Form.Item>
+
       <Form.Item name="resourceType" label={t("workflow_node.deploy.form.tencentcloud_clb_resource_type.label")} rules={[formRule]}>
         <Select placeholder={t("workflow_node.deploy.form.tencentcloud_clb_resource_type.placeholder")}>
           <Select.Option key={RESOURCE_TYPE_VIA_SSLDEPLOY} value={RESOURCE_TYPE_VIA_SSLDEPLOY}>
@@ -99,15 +119,6 @@ const DeployNodeConfigFormTencentCloudCLBConfig = ({
             {t("workflow_node.deploy.form.tencentcloud_clb_resource_type.option.ruledomain.label")}
           </Select.Option>
         </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="region"
-        label={t("workflow_node.deploy.form.tencentcloud_clb_region.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_clb_region.tooltip") }}></span>}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_clb_region.placeholder")} />
       </Form.Item>
 
       <Form.Item

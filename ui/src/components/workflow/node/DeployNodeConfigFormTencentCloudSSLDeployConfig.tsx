@@ -6,6 +6,7 @@ import { z } from "zod";
 import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
 
 type DeployNodeConfigFormTencentCloudSSLDeployConfigFieldValues = Nullish<{
+  endpoint?: string;
   region: string;
   resourceType: string;
   resourceIds: string;
@@ -35,6 +36,7 @@ const DeployNodeConfigFormTencentCloudSSLDeployConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
+    endpoint: z.string().nullish(),
     region: z
       .string({ message: t("workflow_node.deploy.form.tencentcloud_ssl_deploy_region.placeholder") })
       .nonempty(t("workflow_node.deploy.form.tencentcloud_ssl_deploy_region.placeholder")),
@@ -63,6 +65,15 @@ const DeployNodeConfigFormTencentCloudSSLDeployConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="endpoint"
+        label={t("workflow_node.deploy.form.tencentcloud_ssl_deploy_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssl_deploy_endpoint.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_ssl_deploy_endpoint.placeholder")} />
+      </Form.Item>
+
       <Form.Item
         name="region"
         label={t("workflow_node.deploy.form.tencentcloud_ssl_deploy_region.label")}

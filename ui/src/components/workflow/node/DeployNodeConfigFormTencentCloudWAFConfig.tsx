@@ -6,6 +6,7 @@ import { z } from "zod";
 import { validDomainName } from "@/utils/validators";
 
 type DeployNodeConfigFormTencentCloudWAFConfigFieldValues = Nullish<{
+  endpoint?: string;
   region: string;
   domain: string;
   domainId: string;
@@ -34,6 +35,7 @@ const DeployNodeConfigFormTencentCloudWAFConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
+    endpoint: z.string().nullish(),
     region: z
       .string({ message: t("workflow_node.deploy.form.tencentcloud_waf_region.placeholder") })
       .nonempty(t("workflow_node.deploy.form.tencentcloud_waf_region.placeholder")),
@@ -62,6 +64,15 @@ const DeployNodeConfigFormTencentCloudWAFConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="endpoint"
+        label={t("workflow_node.deploy.form.tencentcloud_waf_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_waf_endpoint.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_waf_endpoint.placeholder")} />
+      </Form.Item>
+
       <Form.Item
         name="region"
         label={t("workflow_node.deploy.form.tencentcloud_waf_region.label")}

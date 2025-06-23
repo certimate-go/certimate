@@ -6,6 +6,7 @@ import { z } from "zod";
 import Show from "@/components/Show";
 
 type DeployNodeConfigFormTencentCloudGAAPConfigFieldValues = Nullish<{
+  endpoint?: string;
   resourceType: string;
   proxyId?: string;
   listenerId?: string;
@@ -38,6 +39,7 @@ const DeployNodeConfigFormTencentCloudGAAPConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
+    endpoint: z.string().nullish(),
     resourceType: z.literal(RESOURCE_TYPE_LISTENER, { message: t("workflow_node.deploy.form.tencentcloud_gaap_resource_type.placeholder") }),
     proxyId: z.string().nullish(),
     listenerId: z
@@ -65,6 +67,15 @@ const DeployNodeConfigFormTencentCloudGAAPConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="endpoint"
+        label={t("workflow_node.deploy.form.tencentcloud_gaap_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_gaap_endpoint.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_gaap_endpoint.placeholder")} />
+      </Form.Item>
+
       <Form.Item name="resourceType" label={t("workflow_node.deploy.form.tencentcloud_gaap_resource_type.label")} rules={[formRule]}>
         <Select placeholder={t("workflow_node.deploy.form.tencentcloud_gaap_resource_type.placeholder")}>
           <Select.Option key={RESOURCE_TYPE_LISTENER} value={RESOURCE_TYPE_LISTENER}>

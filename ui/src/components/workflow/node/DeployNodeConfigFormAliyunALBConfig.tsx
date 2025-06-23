@@ -7,8 +7,8 @@ import Show from "@/components/Show";
 import { validDomainName } from "@/utils/validators";
 
 type DeployNodeConfigFormAliyunALBConfigFieldValues = Nullish<{
-  resourceType: string;
   region: string;
+  resourceType: string;
   loadbalancerId?: string;
   listenerId?: string;
   domain?: string;
@@ -41,12 +41,12 @@ const DeployNodeConfigFormAliyunALBConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    resourceType: z.union([z.literal(RESOURCE_TYPE_LOADBALANCER), z.literal(RESOURCE_TYPE_LISTENER)], {
-      message: t("workflow_node.deploy.form.aliyun_alb_resource_type.placeholder"),
-    }),
     region: z
       .string({ message: t("workflow_node.deploy.form.aliyun_alb_region.placeholder") })
       .nonempty(t("workflow_node.deploy.form.aliyun_alb_region.placeholder")),
+    resourceType: z.union([z.literal(RESOURCE_TYPE_LOADBALANCER), z.literal(RESOURCE_TYPE_LISTENER)], {
+      message: t("workflow_node.deploy.form.aliyun_alb_resource_type.placeholder"),
+    }),
     loadbalancerId: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 64 }))
@@ -82,6 +82,15 @@ const DeployNodeConfigFormAliyunALBConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="region"
+        label={t("workflow_node.deploy.form.aliyun_alb_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aliyun_alb_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.aliyun_alb_region.placeholder")} />
+      </Form.Item>
+
       <Form.Item name="resourceType" label={t("workflow_node.deploy.form.aliyun_alb_resource_type.label")} rules={[formRule]}>
         <Select placeholder={t("workflow_node.deploy.form.aliyun_alb_resource_type.placeholder")}>
           <Select.Option key={RESOURCE_TYPE_LOADBALANCER} value={RESOURCE_TYPE_LOADBALANCER}>
@@ -91,15 +100,6 @@ const DeployNodeConfigFormAliyunALBConfig = ({
             {t("workflow_node.deploy.form.aliyun_alb_resource_type.option.listener.label")}
           </Select.Option>
         </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="region"
-        label={t("workflow_node.deploy.form.aliyun_alb_region.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aliyun_alb_region.tooltip") }}></span>}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.aliyun_alb_region.placeholder")} />
       </Form.Item>
 
       <Show when={fieldResourceType === RESOURCE_TYPE_LOADBALANCER}>

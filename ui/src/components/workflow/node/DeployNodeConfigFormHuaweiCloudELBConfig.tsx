@@ -6,8 +6,8 @@ import { z } from "zod";
 import Show from "@/components/Show";
 
 type DeployNodeConfigFormHuaweiCloudELBConfigFieldValues = Nullish<{
-  resourceType: string;
   region: string;
+  resourceType: string;
   certificateId?: string;
   loadbalancerId?: string;
   listenerId?: string;
@@ -41,12 +41,12 @@ const DeployNodeConfigFormHuaweiCloudELBConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    resourceType: z.union([z.literal(RESOURCE_TYPE_CERTIFICATE), z.literal(RESOURCE_TYPE_LOADBALANCER), z.literal(RESOURCE_TYPE_LISTENER)], {
-      message: t("workflow_node.deploy.form.huaweicloud_elb_resource_type.placeholder"),
-    }),
     region: z
       .string({ message: t("workflow_node.deploy.form.huaweicloud_elb_region.placeholder") })
       .nonempty(t("workflow_node.deploy.form.huaweicloud_elb_region.placeholder")),
+    resourceType: z.union([z.literal(RESOURCE_TYPE_CERTIFICATE), z.literal(RESOURCE_TYPE_LOADBALANCER), z.literal(RESOURCE_TYPE_LISTENER)], {
+      message: t("workflow_node.deploy.form.huaweicloud_elb_resource_type.placeholder"),
+    }),
     certificateId: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 64 }))
@@ -83,6 +83,15 @@ const DeployNodeConfigFormHuaweiCloudELBConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="region"
+        label={t("workflow_node.deploy.form.huaweicloud_elb_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_region.placeholder")} />
+      </Form.Item>
+
       <Form.Item name="resourceType" label={t("workflow_node.deploy.form.huaweicloud_elb_resource_type.label")} rules={[formRule]}>
         <Select placeholder={t("workflow_node.deploy.form.huaweicloud_elb_resource_type.placeholder")}>
           <Select.Option key={RESOURCE_TYPE_CERTIFICATE} value={RESOURCE_TYPE_CERTIFICATE}>
@@ -95,15 +104,6 @@ const DeployNodeConfigFormHuaweiCloudELBConfig = ({
             {t("workflow_node.deploy.form.huaweicloud_elb_resource_type.option.listener.label")}
           </Select.Option>
         </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="region"
-        label={t("workflow_node.deploy.form.huaweicloud_elb_region.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_region.tooltip") }}></span>}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_region.placeholder")} />
       </Form.Item>
 
       <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>

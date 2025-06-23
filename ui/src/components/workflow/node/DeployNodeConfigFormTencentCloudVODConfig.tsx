@@ -6,6 +6,7 @@ import { z } from "zod";
 import { validDomainName } from "@/utils/validators";
 
 type DeployNodeConfigFormTencentCloudVODConfigFieldValues = Nullish<{
+  endpoint?: string;
   subAppId?: string | number;
   domain: string;
 }>;
@@ -32,6 +33,7 @@ const DeployNodeConfigFormTencentCloudVODConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
+    endpoint: z.string().nullish(),
     subAppId: z
       .union([z.string(), z.number()])
       .nullish()
@@ -58,6 +60,15 @@ const DeployNodeConfigFormTencentCloudVODConfig = ({
       name={formName}
       onValuesChange={handleFormChange}
     >
+      <Form.Item
+        name="endpoint"
+        label={t("workflow_node.deploy.form.tencentcloud_vod_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_vod_endpoint.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_vod_endpoint.placeholder")} />
+      </Form.Item>
+
       <Form.Item
         name="subAppId"
         label={t("workflow_node.deploy.form.tencentcloud_vod_sub_app_id.label")}

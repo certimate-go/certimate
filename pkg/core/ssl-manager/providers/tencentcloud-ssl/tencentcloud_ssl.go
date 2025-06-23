@@ -17,6 +17,8 @@ type SSLManagerProviderConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 }
 
 type SSLManagerProvider struct {
@@ -32,7 +34,7 @@ func NewSSLManagerProvider(config *SSLManagerProviderConfig) (*SSLManagerProvide
 		return nil, errors.New("the configuration of the ssl manager provider is nil")
 	}
 
-	client, err := createSDKClient(config.SecretId, config.SecretKey)
+	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -70,9 +72,15 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 	}, nil
 }
 
-func createSDKClient(secretId, secretKey string) (*tcssl.Client, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tcssl.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
-	client, err := tcssl.NewClient(credential, "", profile.NewClientProfile())
+
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcssl.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}

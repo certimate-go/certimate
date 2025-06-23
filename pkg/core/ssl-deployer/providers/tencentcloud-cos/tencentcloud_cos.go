@@ -31,18 +31,22 @@ type SSLDeployerProviderConfig struct {
 type SSLDeployerProvider struct {
 	config     *SSLDeployerProviderConfig
 	logger     *slog.Logger
-	sdkClient  *tcssl.Client
+	sdkClient  *wSDKClients
 	sslManager core.SSLManager
 }
 
 var _ core.SSLDeployer = (*SSLDeployerProvider)(nil)
+
+type wSDKClients struct {
+	SSL *tcssl.Client
+}
 
 func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProvider, error) {
 	if config == nil {
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Region)
+	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -58,7 +62,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	return &SSLDeployerProvider{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClient:  client,
+		sdkClient:  clients,
 		sslManager: sslmgr,
 	}, nil
 }
@@ -96,7 +100,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	deployCertificateInstanceReq.ResourceType = common.StringPtr("cos")
 	deployCertificateInstanceReq.Status = common.Int64Ptr(1)
 	deployCertificateInstanceReq.InstanceIdList = common.StringPtrs([]string{fmt.Sprintf("%s#%s#%s", d.config.Region, d.config.Bucket, d.config.Domain)})
-	deployCertificateInstanceResp, err := d.sdkClient.DeployCertificateInstance(deployCertificateInstanceReq)
+	deployCertificateInstanceResp, err := d.sdkClient.SSL.DeployCertificateInstance(deployCertificateInstanceReq)
 	d.logger.Debug("sdk request 'ssl.DeployCertificateInstance'", slog.Any("request", deployCertificateInstanceReq), slog.Any("response", deployCertificateInstanceResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ssl.DeployCertificateInstance': %w", err)
@@ -113,7 +117,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 
 		describeHostDeployRecordDetailReq := tcssl.NewDescribeHostDeployRecordDetailRequest()
 		describeHostDeployRecordDetailReq.DeployRecordId = common.StringPtr(fmt.Sprintf("%d", *deployCertificateInstanceResp.Response.DeployRecordId))
-		describeHostDeployRecordDetailResp, err := d.sdkClient.DescribeHostDeployRecordDetail(describeHostDeployRecordDetailReq)
+		describeHostDeployRecordDetailResp, err := d.sdkClient.SSL.DescribeHostDeployRecordDetail(describeHostDeployRecordDetailReq)
 		d.logger.Debug("sdk request 'ssl.DescribeHostDeployRecordDetail'", slog.Any("request", describeHostDeployRecordDetailReq), slog.Any("response", describeHostDeployRecordDetailResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'ssl.DescribeHostDeployRecordDetail': %w", err)
@@ -148,12 +152,14 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	return &core.SSLDeployResult{}, nil
 }
 
-func createSDKClient(secretId, secretKey, region string) (*tcssl.Client, error) {
+func createSDKClients(secretId, secretKey, region string) (*wSDKClients, error) {
 	credential := common.NewCredential(secretId, secretKey)
 	client, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
 	if err != nil {
 		return nil, err
 	}
 
-	return client, nil
+	return &wSDKClients{
+		SSL: client,
+	}, nil
 }

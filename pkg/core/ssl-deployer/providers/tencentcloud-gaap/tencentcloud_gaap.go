@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/tencentcloud-ssl"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 	xtypes "github.com/certimate-go/certimate/pkg/utils/types"
 )
 
@@ -20,6 +22,8 @@ type SSLDeployerProviderConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 部署资源类型。
 	ResourceType ResourceType `json:"resourceType"`
 	// 通道 ID。
@@ -44,7 +48,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
 	}
 
-	client, err := createSDKClients(config.SecretId, config.SecretKey)
+	client, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -52,6 +56,10 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		Endpoint: ifelse.
+			If[string](strings.HasSuffix(strings.TrimSpace(config.Endpoint), "intl.tencentcloudapi.com")).
+			Then("ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
+			Else(""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
@@ -123,7 +131,7 @@ func (d *SSLDeployerProvider) modifyHttpsListenerCertificate(ctx context.Context
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'gaap.DescribeHTTPSListeners': %w", err)
 	} else if len(describeHTTPSListenersResp.Response.ListenerSet) == 0 {
-		return errors.New("listener not found")
+		return fmt.Errorf("listener %s not found", cloudListenerId)
 	}
 
 	// 修改 HTTPS 监听器配置
@@ -141,10 +149,15 @@ func (d *SSLDeployerProvider) modifyHttpsListenerCertificate(ctx context.Context
 	return nil
 }
 
-func createSDKClients(secretId, secretKey string) (*tcgaap.Client, error) {
+func createSDKClients(secretId, secretKey, endpoint string) (*tcgaap.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
-	client, err := tcgaap.NewClient(credential, "", profile.NewClientProfile())
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcgaap.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}

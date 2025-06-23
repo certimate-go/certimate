@@ -1130,6 +1130,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudCDN.NewSSLDeployerProvider(&pTencentCloudCDN.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
 				})
 				return deployer, err
@@ -1138,6 +1139,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudCLB.NewSSLDeployerProvider(&pTencentCloudCLB.SSLDeployerProviderConfig{
 					SecretId:       access.SecretId,
 					SecretKey:      access.SecretKey,
+					Endpoint:       xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Region:         xmaps.GetString(options.ProviderServiceConfig, "region"),
 					ResourceType:   pTencentCloudCLB.ResourceType(xmaps.GetString(options.ProviderServiceConfig, "resourceType")),
 					LoadbalancerId: xmaps.GetString(options.ProviderServiceConfig, "loadbalancerId"),
@@ -1160,6 +1162,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudCSS.NewSSLDeployerProvider(&pTencentCloudCSS.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
 				})
 				return deployer, err
@@ -1168,6 +1171,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudECDN.NewSSLDeployerProvider(&pTencentCloudECDN.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
 				})
 				return deployer, err
@@ -1176,6 +1180,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudEO.NewSSLDeployerProvider(&pTencentCloudEO.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					ZoneId:    xmaps.GetString(options.ProviderServiceConfig, "zoneId"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
 				})
@@ -1185,6 +1190,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudGAAP.NewSSLDeployerProvider(&pTencentCloudGAAP.SSLDeployerProviderConfig{
 					SecretId:     access.SecretId,
 					SecretKey:    access.SecretKey,
+					Endpoint:     xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					ResourceType: pTencentCloudGAAP.ResourceType(xmaps.GetString(options.ProviderServiceConfig, "resourceType")),
 					ProxyId:      xmaps.GetString(options.ProviderServiceConfig, "proxyId"),
 					ListenerId:   xmaps.GetString(options.ProviderServiceConfig, "listenerId"),
@@ -1195,6 +1201,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudSCF.NewSSLDeployerProvider(&pTencentCloudSCF.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Region:    xmaps.GetString(options.ProviderServiceConfig, "region"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
 				})
@@ -1204,6 +1211,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudSSL.NewSSLDeployerProvider(&pTencentCloudSSL.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 				})
 				return deployer, err
 
@@ -1211,6 +1219,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudSSLDeploy.NewSSLDeployerProvider(&pTencentCloudSSLDeploy.SSLDeployerProviderConfig{
 					SecretId:     access.SecretId,
 					SecretKey:    access.SecretKey,
+					Endpoint:     xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Region:       xmaps.GetString(options.ProviderServiceConfig, "region"),
 					ResourceType: xmaps.GetString(options.ProviderServiceConfig, "resourceType"),
 					ResourceIds:  xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "resourceIds"), ";"), func(s string) bool { return s != "" }),
@@ -1221,6 +1230,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudVOD.NewSSLDeployerProvider(&pTencentCloudVOD.SSLDeployerProviderConfig{
 					SecretId:  access.SecretId,
 					SecretKey: access.SecretKey,
+					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					SubAppId:  xmaps.GetInt64(options.ProviderServiceConfig, "subAppId"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
 				})
@@ -1230,6 +1240,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				deployer, err := pTencentCloudWAF.NewSSLDeployerProvider(&pTencentCloudWAF.SSLDeployerProviderConfig{
 					SecretId:   access.SecretId,
 					SecretKey:  access.SecretKey,
+					Endpoint:   xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					Domain:     xmaps.GetString(options.ProviderServiceConfig, "domain"),
 					DomainId:   xmaps.GetString(options.ProviderServiceConfig, "domainId"),
 					InstanceId: xmaps.GetString(options.ProviderServiceConfig, "instanceId"),

@@ -5,14 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
 	tcteo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/tencentcloud-ssl"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 )
 
 type SSLDeployerProviderConfig struct {
@@ -20,6 +21,8 @@ type SSLDeployerProviderConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 站点 ID。
 	ZoneId string `json:"zoneId"`
 	// 加速域名（支持泛域名）。
@@ -29,23 +32,18 @@ type SSLDeployerProviderConfig struct {
 type SSLDeployerProvider struct {
 	config     *SSLDeployerProviderConfig
 	logger     *slog.Logger
-	sdkClients *wSDKClients
+	sdkClient  *tcteo.Client
 	sslManager core.SSLManager
 }
 
 var _ core.SSLDeployer = (*SSLDeployerProvider)(nil)
-
-type wSDKClients struct {
-	SSL *tcssl.Client
-	TEO *tcteo.Client
-}
 
 func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProvider, error) {
 	if config == nil {
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey)
+	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -53,6 +51,10 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		Endpoint: ifelse.
+			If[string](strings.HasSuffix(strings.TrimSpace(config.Endpoint), "intl.tencentcloudapi.com")).
+			Then("ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
+			Else(""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
@@ -61,7 +63,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	return &SSLDeployerProvider{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClient:  client,
 		sslManager: sslmgr,
 	}, nil
 }
@@ -99,7 +101,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	modifyHostsCertificateReq.Mode = common.StringPtr("sslcert")
 	modifyHostsCertificateReq.Hosts = common.StringPtrs([]string{d.config.Domain})
 	modifyHostsCertificateReq.ServerCertInfo = []*tcteo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
-	modifyHostsCertificateResp, err := d.sdkClients.TEO.ModifyHostsCertificate(modifyHostsCertificateReq)
+	modifyHostsCertificateResp, err := d.sdkClient.ModifyHostsCertificate(modifyHostsCertificateReq)
 	d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'", slog.Any("request", modifyHostsCertificateReq), slog.Any("response", modifyHostsCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'teo.ModifyHostsCertificate': %w", err)
@@ -108,21 +110,18 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	return &core.SSLDeployResult{}, nil
 }
 
-func createSDKClients(secretId, secretKey string) (*wSDKClients, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tcteo.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
-	sslClient, err := tcssl.NewClient(credential, "", profile.NewClientProfile())
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcteo.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}
 
-	teoClient, err := tcteo.NewClient(credential, "", profile.NewClientProfile())
-	if err != nil {
-		return nil, err
-	}
-
-	return &wSDKClients{
-		SSL: sslClient,
-		TEO: teoClient,
-	}, nil
+	return client, nil
 }

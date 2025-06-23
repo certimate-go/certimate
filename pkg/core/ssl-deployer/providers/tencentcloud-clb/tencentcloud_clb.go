@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	tcclb "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/tencentcloud-ssl"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 )
 
 type SSLDeployerProviderConfig struct {
@@ -23,6 +25,8 @@ type SSLDeployerProviderConfig struct {
 	SecretKey string `json:"secretKey"`
 	// 腾讯云地域。
 	Region string `json:"region"`
+	// 腾讯云接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 部署资源类型。
 	ResourceType ResourceType `json:"resourceType"`
 	// 负载均衡器 ID。
@@ -55,7 +59,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Region)
+	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -63,6 +67,10 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		Endpoint: ifelse.
+			If[string](strings.HasSuffix(strings.TrimSpace(config.Endpoint), "intl.tencentcloudapi.com")).
+			Then("ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
+			Else(""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
@@ -306,7 +314,7 @@ func (d *SSLDeployerProvider) modifyListenerCertificate(ctx context.Context, clo
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.DescribeListeners': %w", err)
 	} else if len(describeListenersResp.Response.Listeners) == 0 {
-		return errors.New("listener not found")
+		return fmt.Errorf("listener %s not found", cloudListenerId)
 	}
 
 	// 修改监听器属性
@@ -330,16 +338,28 @@ func (d *SSLDeployerProvider) modifyListenerCertificate(ctx context.Context, clo
 	return nil
 }
 
-func createSDKClients(secretId, secretKey, region string) (*wSDKClients, error) {
+func createSDKClients(secretId, secretKey, endpoint, region string) (*wSDKClients, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
+	sslCpf := profile.NewClientProfile()
+	if endpoint != "" {
+		if strings.HasSuffix(endpoint, "intl.tencentcloudapi.com") {
+			sslCpf.HttpProfile.Endpoint = "ssl.intl.tencentcloudapi.com"
+		}
+	}
+
 	// 注意虽然官方文档中地域无需指定，但实际需要部署到 CLB 时必传
-	sslClient, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
+	sslClient, err := tcssl.NewClient(credential, region, sslCpf)
 	if err != nil {
 		return nil, err
 	}
 
-	clbClient, err := tcclb.NewClient(credential, region, profile.NewClientProfile())
+	clbCpf := profile.NewClientProfile()
+	if endpoint != "" {
+		clbCpf.HttpProfile.Endpoint = endpoint
+	}
+
+	clbClient, err := tcclb.NewClient(credential, region, clbCpf)
 	if err != nil {
 		return nil, err
 	}

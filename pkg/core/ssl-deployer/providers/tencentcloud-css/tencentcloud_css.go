@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/tencentcloud-ssl"
+	"github.com/certimate-go/certimate/pkg/utils/ifelse"
 )
 
 type SSLDeployerProviderConfig struct {
@@ -19,6 +21,8 @@ type SSLDeployerProviderConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 直播播放域名（不支持泛域名）。
 	Domain string `json:"domain"`
 }
@@ -37,7 +41,7 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.SecretId, config.SecretKey)
+	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create sdk client: %w", err)
 	}
@@ -45,6 +49,10 @@ func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProv
 	sslmgr, err := sslmgrsp.NewSSLManagerProvider(&sslmgrsp.SSLManagerProviderConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		Endpoint: ifelse.
+			If[string](strings.HasSuffix(strings.TrimSpace(config.Endpoint), "intl.tencentcloudapi.com")).
+			Then("ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
+			Else(""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create ssl manager: %w", err)
@@ -100,10 +108,15 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	return &core.SSLDeployResult{}, nil
 }
 
-func createSDKClient(secretId, secretKey string) (*tclive.Client, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tclive.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
-	client, err := tclive.NewClient(credential, "", profile.NewClientProfile())
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tclive.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}
