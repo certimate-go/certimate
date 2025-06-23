@@ -130,6 +130,7 @@
   "provider.ratpanel.site": "耗子面板 - 网站",
   "provider.safeline": "雷池",
   "provider.slackbot": "Slack 机器人",
+  "provider.spaceship": "Spaceship",
   "provider.ssh": "远程主机（SSH）",
   "provider.sslcom": "SSL.com",
   "provider.telegrambot": "Telegram 机器人",

@@ -68,6 +68,7 @@ import AccessFormRainYunConfig from "./AccessFormRainYunConfig";
 import AccessFormRatPanelConfig from "./AccessFormRatPanelConfig";
 import AccessFormSafeLineConfig from "./AccessFormSafeLineConfig";
 import AccessFormSlackBotConfig from "./AccessFormSlackBotConfig";
+import AccessFormSpaceshipConfig from "./AccessFormSpaceshipConfig";
 import AccessFormSSHConfig from "./AccessFormSSHConfig";
 import AccessFormSSLComConfig from "./AccessFormSSLComConfig";
 import AccessFormTelegramBotConfig from "./AccessFormTelegramBotConfig";
@@ -301,6 +302,8 @@ const AccessForm = forwardRef<AccessFormInstance, AccessFormProps>(({ className,
         return <AccessFormSafeLineConfig {...nestedFormProps} />;
       case ACCESS_PROVIDERS.SLACKBOT:
         return <AccessFormSlackBotConfig {...nestedFormProps} />;
+      case ACCESS_PROVIDERS.SPACESHIP:
+        return <AccessFormSpaceshipConfig {...nestedFormProps} />;
       case ACCESS_PROVIDERS.SSH:
         return <AccessFormSSHConfig {...nestedFormProps} />;
       case ACCESS_PROVIDERS.TELEGRAMBOT:

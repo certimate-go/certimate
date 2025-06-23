@@ -62,6 +62,7 @@ export interface AccessModel extends BaseModel {
       | AccessConfigForRatPanel
       | AccessConfigForSafeLine
       | AccessConfigForSlackBot
+      | AccessConfigForSpaceship
       | AccessConfigForSSH
       | AccessConfigForSSLCom
       | AccessConfigForTelegramBot
@@ -387,6 +388,11 @@ export type AccessConfigForSafeLine = {
 export type AccessConfigForSlackBot = {
   botToken: string;
   defaultChannelId?: string;
+};
+
+export type AccessConfigForSpaceship = {
+  apiKey: string;
+  apiSecret: string;
 };
 
 export type AccessConfigForSSH = {

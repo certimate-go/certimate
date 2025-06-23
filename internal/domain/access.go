@@ -324,6 +324,11 @@ type AccessConfigForSlackBot struct {
 	DefaultChannelId string `json:"defaultChannelId,omitempty"`
 }
 
+type AccessConfigForSpaceship struct {
+	ApiKey    string `json:"apiKey"`
+	ApiSecret string `json:"apiSecret"`
+}
+
 type AccessConfigForSSH struct {
 	Host          string `json:"host"`
 	Port          int32  `json:"port"`

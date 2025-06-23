@@ -74,6 +74,7 @@ const (
 	AccessProviderTypeRatPanel            = AccessProviderType("ratpanel")
 	AccessProviderTypeSafeLine            = AccessProviderType("safeline")
 	AccessProviderTypeSlackBot            = AccessProviderType("slackbot")
+	AccessProviderTypeSpaceship           = AccessProviderType("spaceship")
 	AccessProviderTypeSSH                 = AccessProviderType("ssh")
 	AccessProviderTypeSSLCOM              = AccessProviderType("sslcom")
 	AccessProviderTypeTelegramBot         = AccessProviderType("telegrambot")
@@ -159,6 +160,7 @@ const (
 	ACMEDns01ProviderTypePorkbun           = ACMEDns01ProviderType(AccessProviderTypePorkbun)
 	ACMEDns01ProviderTypePowerDNS          = ACMEDns01ProviderType(AccessProviderTypePowerDNS)
 	ACMEDns01ProviderTypeRainYun           = ACMEDns01ProviderType(AccessProviderTypeRainYun)
+	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)
 	ACMEDns01ProviderTypeTencentCloud      = ACMEDns01ProviderType(AccessProviderTypeTencentCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeTencentCloudDNS]
 	ACMEDns01ProviderTypeTencentCloudDNS   = ACMEDns01ProviderType(AccessProviderTypeTencentCloud + "-dns")
 	ACMEDns01ProviderTypeTencentCloudEO    = ACMEDns01ProviderType(AccessProviderTypeTencentCloud + "-eo")

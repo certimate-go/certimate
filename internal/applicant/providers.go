@@ -38,6 +38,7 @@ import (
 	pPorkbun "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/porkbun"
 	pPowerDNS "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/powerdns"
 	pRainYun "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/rainyun"
+	pSpaceship "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/spaceship"
 	pTencentCloud "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/tencentcloud"
 	pTencentCloudEO "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/tencentcloud-eo"
 	pUCloudUDNR "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/ucloud-udnr"
@@ -576,6 +577,22 @@ func createApplicantProvider(options *applicantProviderOptions) (challenge.Provi
 
 			applicant, err := pRainYun.NewChallengeProvider(&pRainYun.ChallengeProviderConfig{
 				ApiKey:                access.ApiKey,
+				DnsPropagationTimeout: options.DnsPropagationTimeout,
+				DnsTTL:                options.DnsTTL,
+			})
+			return applicant, err
+		}
+
+	case domain.ACMEDns01ProviderTypeSpaceship:
+		{
+			access := domain.AccessConfigForSpaceship{}
+			if err := xmaps.Populate(options.ProviderAccessConfig, &access); err != nil {
+				return nil, fmt.Errorf("failed to populate provider access config: %w", err)
+			}
+
+			applicant, err := pSpaceship.NewChallengeProvider(&pSpaceship.ChallengeProviderConfig{
+				ApiKey:                access.ApiKey,
+				ApiSecret:             access.ApiSecret,
 				DnsPropagationTimeout: options.DnsPropagationTimeout,
 				DnsTTL:                options.DnsTTL,
 			})

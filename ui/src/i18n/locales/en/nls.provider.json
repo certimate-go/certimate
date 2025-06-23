@@ -130,6 +130,7 @@
   "provider.ratpanel.site": "RatPanel - Website",
   "provider.safeline": "SafeLine",
   "provider.slackbot": "Slack Bot",
+  "provider.spaceship": "Spaceship",
   "provider.ssh": "Remote host (SSH)",
   "provider.sslcom": "SSL.com",
   "provider.telegrambot": "Telegram Bot",
