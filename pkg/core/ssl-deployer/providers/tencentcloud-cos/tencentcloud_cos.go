@@ -94,7 +94,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 证书部署到 COS 实例
-	// REF: https://cloud.tencent.com/document/product/400/91667
+	// REF: https://cloud.tencent.com/document/api/400/91667
 	deployCertificateInstanceReq := tcssl.NewDeployCertificateInstanceRequest()
 	deployCertificateInstanceReq.CertificateId = common.StringPtr(upres.CertId)
 	deployCertificateInstanceReq.ResourceType = common.StringPtr("cos")

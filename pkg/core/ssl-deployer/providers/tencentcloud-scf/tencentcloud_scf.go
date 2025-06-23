@@ -84,7 +84,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 查看云函数自定义域名详情
-	// REF: https://cloud.tencent.com/document/product/583/111924
+	// REF: https://cloud.tencent.com/document/api/583/111924
 	getCustomDomainReq := tcscf.NewGetCustomDomainRequest()
 	getCustomDomainReq.Domain = common.StringPtr(d.config.Domain)
 	getCustomDomainResp, err := d.sdkClient.GetCustomDomain(getCustomDomainReq)
@@ -102,7 +102,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 更新云函数自定义域名
-	// REF: https://cloud.tencent.com/document/product/583/111922
+	// REF: https://cloud.tencent.com/document/api/583/111922
 	updateCustomDomainReq := tcscf.NewUpdateCustomDomainRequest()
 	updateCustomDomainReq.Domain = common.StringPtr(d.config.Domain)
 	updateCustomDomainReq.CertConfig = &tcscf.CertConf{

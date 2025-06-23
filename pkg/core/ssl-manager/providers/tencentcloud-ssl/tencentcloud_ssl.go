@@ -56,7 +56,7 @@ func (m *SSLManagerProvider) SetLogger(logger *slog.Logger) {
 
 func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkeyPEM string) (*core.SSLManageUploadResult, error) {
 	// 上传新证书
-	// REF: https://cloud.tencent.com/document/product/400/41665
+	// REF: https://cloud.tencent.com/document/api/400/41665
 	uploadCertificateReq := tcssl.NewUploadCertificateRequest()
 	uploadCertificateReq.CertificatePublicKey = common.StringPtr(certPEM)
 	uploadCertificateReq.CertificatePrivateKey = common.StringPtr(privkeyPEM)

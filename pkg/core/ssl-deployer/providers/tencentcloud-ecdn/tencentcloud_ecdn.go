@@ -137,7 +137,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 
 func (d *SSLDeployerProvider) getDomainsByCertId(cloudCertId string) ([]string, error) {
 	// 获取证书中的可用域名
-	// REF: https://cloud.tencent.com/document/product/228/42491
+	// REF: https://cloud.tencent.com/document/api/228/42491
 	describeCertDomainsReq := tccdn.NewDescribeCertDomainsRequest()
 	describeCertDomainsReq.CertId = common.StringPtr(cloudCertId)
 	describeCertDomainsReq.Product = common.StringPtr("ecdn")
@@ -159,7 +159,7 @@ func (d *SSLDeployerProvider) getDomainsByCertId(cloudCertId string) ([]string, 
 
 func (d *SSLDeployerProvider) updateDomainHttpsServerCert(ctx context.Context, domain string, cloudCertId string) error {
 	// 查询域名详细配置
-	// REF: https://cloud.tencent.com/document/product/228/41117
+	// REF: https://cloud.tencent.com/document/api/228/41117
 	describeDomainsConfigReq := tccdn.NewDescribeDomainsConfigRequest()
 	describeDomainsConfigReq.Filters = []*tccdn.DomainFilter{
 		{
@@ -184,7 +184,7 @@ func (d *SSLDeployerProvider) updateDomainHttpsServerCert(ctx context.Context, d
 	}
 
 	// 更新加速域名配置
-	// REF: https://cloud.tencent.com/document/product/228/41116
+	// REF: https://cloud.tencent.com/document/api/228/41116
 	updateDomainConfigReq := tccdn.NewUpdateDomainConfigRequest()
 	updateDomainConfigReq.Domain = common.StringPtr(domain)
 	updateDomainConfigReq.Https = domainConfig.Https

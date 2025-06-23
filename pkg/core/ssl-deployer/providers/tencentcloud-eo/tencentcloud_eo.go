@@ -95,7 +95,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 配置域名证书
-	// REF: https://cloud.tencent.com/document/product/1552/80764
+	// REF: https://cloud.tencent.com/document/api/1552/80764
 	modifyHostsCertificateReq := tcteo.NewModifyHostsCertificateRequest()
 	modifyHostsCertificateReq.ZoneId = common.StringPtr(d.config.ZoneId)
 	modifyHostsCertificateReq.Mode = common.StringPtr("sslcert")

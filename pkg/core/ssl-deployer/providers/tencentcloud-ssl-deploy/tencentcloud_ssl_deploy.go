@@ -24,10 +24,10 @@ type SSLDeployerProviderConfig struct {
 	Endpoint string `json:"endpoint,omitempty"`
 	// 腾讯云地域。
 	Region string `json:"region"`
-	// 腾讯云云资源类型。
+	// 云资源类型。
 	ResourceType string `json:"resourceType"`
-	// 腾讯云云资源 ID 数组。
-	ResourceIds []string `json:"resourceIds"`
+	// 云资源 ID 数组。
+	ResourceIds []string `json:"resourceIds,omitempty"`
 }
 
 type SSLDeployerProvider struct {
@@ -93,7 +93,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 证书部署到云资源实例列表
-	// REF: https://cloud.tencent.com/document/product/400/91667
+	// REF: https://cloud.tencent.com/document/api/400/91667
 	deployCertificateInstanceReq := tcssl.NewDeployCertificateInstanceRequest()
 	deployCertificateInstanceReq.CertificateId = common.StringPtr(upres.CertId)
 	deployCertificateInstanceReq.ResourceType = common.StringPtr(d.config.ResourceType)

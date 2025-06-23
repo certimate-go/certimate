@@ -121,7 +121,7 @@ func (d *SSLDeployerProvider) deployToListener(ctx context.Context, cloudCertId 
 
 func (d *SSLDeployerProvider) modifyHttpsListenerCertificate(ctx context.Context, cloudListenerId, cloudCertId string) error {
 	// 查询 HTTPS 监听器信息
-	// REF: https://cloud.tencent.com/document/product/608/37001
+	// REF: https://cloud.tencent.com/document/api/608/37001
 	describeHTTPSListenersReq := tcgaap.NewDescribeHTTPSListenersRequest()
 	describeHTTPSListenersReq.ListenerId = common.StringPtr(cloudListenerId)
 	describeHTTPSListenersReq.Offset = common.Uint64Ptr(0)
@@ -135,7 +135,7 @@ func (d *SSLDeployerProvider) modifyHttpsListenerCertificate(ctx context.Context
 	}
 
 	// 修改 HTTPS 监听器配置
-	// REF: https://cloud.tencent.com/document/product/608/36996
+	// REF: https://cloud.tencent.com/document/api/608/36996
 	modifyHTTPSListenerAttributeReq := tcgaap.NewModifyHTTPSListenerAttributeRequest()
 	modifyHTTPSListenerAttributeReq.ProxyId = xtypes.ToPtrOrZeroNil(d.config.ProxyId)
 	modifyHTTPSListenerAttributeReq.ListenerId = common.StringPtr(cloudListenerId)

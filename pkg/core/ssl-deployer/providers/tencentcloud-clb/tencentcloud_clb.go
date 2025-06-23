@@ -23,10 +23,10 @@ type SSLDeployerProviderConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
-	// 腾讯云地域。
-	Region string `json:"region"`
 	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
+	// 腾讯云地域。
+	Region string `json:"region"`
 	// 部署资源类型。
 	ResourceType ResourceType `json:"resourceType"`
 	// 负载均衡器 ID。
@@ -141,7 +141,7 @@ func (d *SSLDeployerProvider) deployViaSslService(ctx context.Context, cloudCert
 	}
 
 	// 证书部署到 CLB 实例
-	// REF: https://cloud.tencent.com/document/product/400/91667
+	// REF: https://cloud.tencent.com/document/api/400/91667
 	deployCertificateInstanceReq := tcssl.NewDeployCertificateInstanceRequest()
 	deployCertificateInstanceReq.CertificateId = common.StringPtr(cloudCertId)
 	deployCertificateInstanceReq.ResourceType = common.StringPtr("clb")
@@ -318,7 +318,7 @@ func (d *SSLDeployerProvider) modifyListenerCertificate(ctx context.Context, clo
 	}
 
 	// 修改监听器属性
-	// REF: https://cloud.tencent.com/document/product/214/30681
+	// REF: https://cloud.tencent.com/document/api/214/30681
 	modifyListenerReq := tcclb.NewModifyListenerRequest()
 	modifyListenerReq.LoadBalancerId = common.StringPtr(cloudLoadbalancerId)
 	modifyListenerReq.ListenerId = common.StringPtr(cloudListenerId)

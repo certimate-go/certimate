@@ -90,7 +90,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 绑定证书对应的播放域名
-	// REF: https://cloud.tencent.com/document/product/267/78655
+	// REF: https://cloud.tencent.com/document/api/267/78655
 	modifyLiveDomainCertBindingsReq := tclive.NewModifyLiveDomainCertBindingsRequest()
 	modifyLiveDomainCertBindingsReq.DomainInfos = []*tclive.LiveCertDomainInfo{
 		{
