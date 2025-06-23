@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { validDomainName } from "@/utils/validators";
@@ -34,9 +34,7 @@ const DeployNodeConfigFormAliyunGAConfig = ({ form: formInst, formName, disabled
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    resourceType: z.union([z.literal(RESOURCE_TYPE_ACCELERATOR), z.literal(RESOURCE_TYPE_LISTENER)], {
-      message: t("workflow_node.deploy.form.aliyun_ga_resource_type.placeholder"),
-    }),
+    resourceType: z.literal([RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_LISTENER], t("workflow_node.deploy.form.aliyun_ga_resource_type.placeholder")),
     acceleratorId: z.string().max(64, t("common.errmsg.string_max", { max: 64 })),
     listenerId: z
       .string()

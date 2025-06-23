@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { useAntdForm } from "@/hooks";
 import { authWithPassword, getAuthStore, save as saveAdmin } from "@/repository/admin";
@@ -18,10 +18,10 @@ const SettingsPassword = () => {
   const [notificationApi, NotificationContextHolder] = notification.useNotification();
 
   const formSchema = z.object({
-    oldPassword: z.string({ message: t("settings.password.form.old_password.placeholder") }).min(10, t("settings.password.form.password.errmsg.invalid")),
-    newPassword: z.string({ message: t("settings.password.form.new_password.placeholder") }).min(10, t("settings.password.form.password.errmsg.invalid")),
+    oldPassword: z.string(t("settings.password.form.old_password.placeholder")).min(10, t("settings.password.form.password.errmsg.invalid")),
+    newPassword: z.string(t("settings.password.form.new_password.placeholder")).min(10, t("settings.password.form.password.errmsg.invalid")),
     confirmPassword: z
-      .string({ message: t("settings.password.form.confirm_password.placeholder") })
+      .string(t("settings.password.form.confirm_password.placeholder"))
       .min(10, t("settings.password.form.password.errmsg.invalid"))
       .refine((v) => v === formInst.getFieldValue("newPassword"), t("settings.password.form.password.errmsg.not_matched")),
   });

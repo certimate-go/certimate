@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormProxmoxVEConfigFieldValues = Nullish<{
   nodeName: string;
@@ -32,9 +32,7 @@ const DeployNodeConfigFormProxmoxVEConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    nodeName: z
-      .string({ message: t("workflow_node.deploy.form.proxmoxve_node_name.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.proxmoxve_node_name.placeholder")),
+    nodeName: z.string(t("workflow_node.deploy.form.proxmoxve_node_name.placeholder")).nonempty(t("workflow_node.deploy.form.proxmoxve_node_name.placeholder")),
     autoRestart: z.boolean().nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);

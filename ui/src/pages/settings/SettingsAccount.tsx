@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { useAntdForm } from "@/hooks";
 import { getAuthStore, save as saveAdmin } from "@/repository/admin";
@@ -18,7 +18,7 @@ const SettingsAccount = () => {
   const [notificationApi, NotificationContextHolder] = notification.useNotification();
 
   const formSchema = z.object({
-    username: z.string({ message: t("settings.account.form.email.placeholder") }).email({ message: t("common.errmsg.email_invalid") }),
+    username: z.email(t("common.errmsg.email_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {

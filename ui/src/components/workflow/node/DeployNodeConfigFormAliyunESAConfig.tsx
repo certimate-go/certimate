@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormAliyunESAConfigFieldValues = Nullish<{
   region: string;
@@ -30,10 +30,8 @@ const DeployNodeConfigFormAliyunESAConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    region: z
-      .string({ message: t("workflow_node.deploy.form.aliyun_esa_region.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.aliyun_esa_region.placeholder")),
-    siteId: z.union([z.string(), z.number()]).refine((v) => {
+    region: z.string(t("workflow_node.deploy.form.aliyun_esa_region.placeholder")).nonempty(t("workflow_node.deploy.form.aliyun_esa_region.placeholder")),
+    siteId: z.union([z.string(), z.number().int()]).refine((v) => {
       return /^\d+$/.test(v + "") && +v > 0;
     }, t("workflow_node.deploy.form.aliyun_esa_site_id.placeholder")),
   });

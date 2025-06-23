@@ -10,7 +10,7 @@ import {
 import { useControllableValue } from "ahooks";
 import { AutoComplete, Button, Divider, Flex, Form, type FormInstance, Input, InputNumber, Select, Switch, Tooltip, Typography } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import AccessEditModal from "@/components/access/AccessEditModal";
 import AccessSelect from "@/components/access/AccessSelect";
@@ -60,22 +60,20 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
     const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
 
     const formSchema = z.object({
-      domains: z.string({ message: t("workflow_node.apply.form.domains.placeholder") }).refine((v) => {
+      domains: z.string(t("workflow_node.apply.form.domains.placeholder")).refine((v) => {
         if (!v) return false;
         return String(v)
           .split(MULTIPLE_INPUT_SEPARATOR)
           .every((e) => validDomainName(e, { allowWildcard: true }));
       }, t("common.errmsg.domain_invalid")),
-      contactEmail: z.string({ message: t("workflow_node.apply.form.contact_email.placeholder") }).email(t("common.errmsg.email_invalid")),
+      contactEmail: z.email(t("common.errmsg.email_invalid")),
       challengeType: z.string().nullish(),
-      provider: z.string({ message: t("workflow_node.apply.form.provider.placeholder") }).nonempty(t("workflow_node.apply.form.provider.placeholder")),
-      providerAccessId: z
-        .string({ message: t("workflow_node.apply.form.provider_access.placeholder") })
-        .min(1, t("workflow_node.apply.form.provider_access.placeholder")),
+      provider: z.string(t("workflow_node.apply.form.provider.placeholder")).nonempty(t("workflow_node.apply.form.provider.placeholder")),
+      providerAccessId: z.string(t("workflow_node.apply.form.provider_access.placeholder")).min(1, t("workflow_node.apply.form.provider_access.placeholder")),
       providerConfig: z.any().nullish(),
-      caProvider: z.string({ message: t("workflow_node.apply.form.ca_provider.placeholder") }).nullish(),
+      caProvider: z.string(t("workflow_node.apply.form.ca_provider.placeholder")).nullish(),
       caProviderAccessId: z
-        .string({ message: t("workflow_node.apply.form.ca_provider_access.placeholder") })
+        .string(t("workflow_node.apply.form.ca_provider_access.placeholder"))
         .nullish()
         .refine((v) => {
           if (!fieldCAProvider) return true;
@@ -84,14 +82,13 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
           return !!provider?.builtin || !!v;
         }, t("workflow_node.apply.form.ca_provider_access.placeholder")),
       caProviderConfig: z.any().nullish(),
-      keyAlgorithm: z
-        .string({ message: t("workflow_node.apply.form.key_algorithm.placeholder") })
-        .nonempty(t("workflow_node.apply.form.key_algorithm.placeholder")),
+      keyAlgorithm: z.string(t("workflow_node.apply.form.key_algorithm.placeholder")).nonempty(t("workflow_node.apply.form.key_algorithm.placeholder")),
       nameservers: z
         .string()
         .nullish()
         .refine((v) => {
           if (!v) return true;
+
           return String(v)
             .split(MULTIPLE_INPUT_SEPARATOR)
             .every((e) => validIPv4Address(e) || validIPv6Address(e) || validDomainName(e));

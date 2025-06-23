@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
 
@@ -39,11 +39,9 @@ const DeployNodeConfigFormWangsuCDNProConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    resourceType: z.union([z.literal(ENVIRONMENT_PRODUCTION), z.literal(ENVIRONMENT_STAGING)], {
-      message: t("workflow_node.deploy.form.wangsu_cdnpro_environment.placeholder"),
-    }),
+    resourceType: z.literal([ENVIRONMENT_PRODUCTION, ENVIRONMENT_STAGING], t("workflow_node.deploy.form.wangsu_cdnpro_environment.placeholder")),
     domain: z
-      .string({ message: t("workflow_node.deploy.form.wangsu_cdnpro_domain.placeholder") })
+      .string(t("workflow_node.deploy.form.wangsu_cdnpro_domain.placeholder"))
       .refine((v) => validDomainName(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
     certificateId: z.string().nullish(),
     webhookId: z.string().nullish(),

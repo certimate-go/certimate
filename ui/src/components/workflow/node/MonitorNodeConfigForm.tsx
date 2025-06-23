@@ -2,7 +2,7 @@ import { forwardRef, memo, useImperativeHandle } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Form, type FormInstance, Input, InputNumber } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type WorkflowNodeConfigForMonitor, defaultNodeConfigForMonitor } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";

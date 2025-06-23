@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import AccessProviderPicker from "@/components/provider/AccessProviderPicker";
 import AccessProviderSelect from "@/components/provider/AccessProviderSelect";
@@ -108,7 +108,7 @@ const AccessForm = forwardRef<AccessFormInstance, AccessFormProps>(({ className,
 
   const formSchema = z.object({
     name: z
-      .string({ message: t("access.form.name.placeholder") })
+      .string(t("access.form.name.placeholder"))
       .min(1, t("access.form.name.placeholder"))
       .max(64, t("common.errmsg.string_max", { max: 64 })),
     provider: z.nativeEnum(ACCESS_PROVIDERS, {

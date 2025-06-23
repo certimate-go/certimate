@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, Form, type FormInstance, Input, Radio } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import dayjs from "dayjs";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { WORKFLOW_TRIGGERS, type WorkflowNodeConfigForStart, type WorkflowTriggerType, defaultNodeConfigForStart } from "@/domain/workflow";
@@ -34,24 +34,16 @@ const StartNodeConfigForm = forwardRef<StartNodeConfigFormInstance, StartNodeCon
   ({ className, style, disabled, initialValues, onValuesChange }, ref) => {
     const { t } = useTranslation();
 
-    const formSchema = z
-      .object({
-        trigger: z.string({ message: t("workflow_node.start.form.trigger.placeholder") }).min(1, t("workflow_node.start.form.trigger.placeholder")),
-        triggerCron: z.string().nullish(),
-      })
-      .superRefine((data, ctx) => {
-        if (data.trigger !== WORKFLOW_TRIGGERS.AUTO) {
-          return;
-        }
-
-        if (!validCronExpression(data.triggerCron!)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t("workflow_node.start.form.trigger_cron.errmsg.invalid"),
-            path: ["triggerCron"],
-          });
-        }
-      });
+    const formSchema = z.object({
+      trigger: z.string(t("workflow_node.start.form.trigger.placeholder")).min(1, t("workflow_node.start.form.trigger.placeholder")),
+      triggerCron: z
+        .string()
+        .nullish()
+        .refine((v) => {
+          if (fieldTrigger !== WORKFLOW_TRIGGERS.AUTO) return true;
+          return validCronExpression(v!);
+        }, t("workflow_node.start.form.trigger_cron.errmsg.invalid")),
+    });
     const formRule = createSchemaFieldRule(formSchema);
     const { form: formInst, formProps } = useAntdForm({
       name: "workflowNodeStartConfigForm",

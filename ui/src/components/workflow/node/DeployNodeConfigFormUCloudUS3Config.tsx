@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
 
@@ -33,15 +33,9 @@ const DeployNodeConfigFormUCloudUS3Config = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    region: z
-      .string({ message: t("workflow_node.deploy.form.ucloud_us3_region.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.ucloud_us3_region.placeholder")),
-    bucket: z
-      .string({ message: t("workflow_node.deploy.form.ucloud_us3_bucket.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.ucloud_us3_bucket.placeholder")),
-    domain: z
-      .string({ message: t("workflow_node.deploy.form.ucloud_us3_domain.placeholder") })
-      .refine((v) => validDomainName(v), t("common.errmsg.domain_invalid")),
+    region: z.string(t("workflow_node.deploy.form.ucloud_us3_region.placeholder")).nonempty(t("workflow_node.deploy.form.ucloud_us3_region.placeholder")),
+    bucket: z.string(t("workflow_node.deploy.form.ucloud_us3_bucket.placeholder")).nonempty(t("workflow_node.deploy.form.ucloud_us3_bucket.placeholder")),
+    domain: z.string(t("workflow_node.deploy.form.ucloud_us3_domain.placeholder")).refine((v) => validDomainName(v), t("common.errmsg.domain_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
 

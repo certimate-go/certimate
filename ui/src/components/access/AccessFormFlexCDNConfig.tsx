@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Radio, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForFlexCDN } from "@/domain/access";
 
@@ -28,10 +28,8 @@ const AccessFormFlexCDNConfig = ({ form: formInst, formName, disabled, initialVa
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
-    role: z.union([z.literal("user"), z.literal("admin")], {
-      message: t("access.form.flexcdn_api_role.placeholder"),
-    }),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
+    role: z.literal(["user", "admin"], t("access.form.flexcdn_api_role.placeholder")),
     accessKeyId: z.string().nonempty(t("access.form.flexcdn_access_key_id.placeholder")),
     accessKey: z.string().nonempty(t("access.form.flexcdn_access_key.placeholder")),
     allowInsecureConnections: z.boolean().nullish(),

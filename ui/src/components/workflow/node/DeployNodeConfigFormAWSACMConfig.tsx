@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormAWSACMConfigFieldValues = Nullish<{
   region: string;
@@ -24,9 +24,7 @@ const DeployNodeConfigFormAWSACMConfig = ({ form: formInst, formName, disabled, 
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    region: z
-      .string({ message: t("workflow_node.deploy.form.aws_acm_region.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.aws_acm_region.placeholder")),
+    region: z.string(t("workflow_node.deploy.form.aws_acm_region.placeholder")).nonempty(t("workflow_node.deploy.form.aws_acm_region.placeholder")),
     certificateArn: z.string().nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);

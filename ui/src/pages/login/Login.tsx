@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Form, Input, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { useAntdForm } from "@/hooks";
 import { authWithPassword } from "@/repository/admin";
@@ -16,7 +16,7 @@ const Login = () => {
   const [notificationApi, NotificationContextHolder] = notification.useNotification();
 
   const formSchema = z.object({
-    username: z.string().email(t("login.username.errmsg.invalid")),
+    username: z.email(t("login.username.errmsg.invalid")),
     password: z.string().min(10, t("login.password.errmsg.invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);

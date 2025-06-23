@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormEdgioApplicationsConfigFieldValues = Nullish<{
   environmentId: string;
@@ -30,7 +30,7 @@ const DeployNodeConfigFormEdgioApplicationsConfig = ({
 
   const formSchema = z.object({
     environmentId: z
-      .string({ message: t("workflow_node.deploy.form.edgio_applications_environment_id.placeholder") })
+      .string(t("workflow_node.deploy.form.edgio_applications_environment_id.placeholder"))
       .min(1, t("workflow_node.deploy.form.edgio_applications_environment_id.placeholder"))
       .max(64, t("common.errmsg.string_max", { max: 64 })),
   });

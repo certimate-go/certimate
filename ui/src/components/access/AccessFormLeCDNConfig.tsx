@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Radio, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForLeCDN } from "@/domain/access";
 
@@ -29,10 +29,8 @@ const AccessFormLeCDNConfig = ({ form: formInst, formName, disabled, initialValu
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
-    role: z.union([z.literal("client"), z.literal("master")], {
-      message: t("access.form.lecdn_api_role.placeholder"),
-    }),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
+    role: z.literal(["client", "master"], t("access.form.lecdn_api_role.placeholder")),
     username: z.string().nonempty(t("access.form.lecdn_username.placeholder")),
     password: z.string().nonempty(t("access.form.lecdn_password.placeholder")),
     allowInsecureConnections: z.boolean().nullish(),

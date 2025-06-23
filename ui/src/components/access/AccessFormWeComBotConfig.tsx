@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForWeComBot } from "@/domain/access";
 
@@ -25,7 +25,7 @@ const AccessFormWeComBotConfig = ({ form: formInst, formName, disabled, initialV
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    webhookUrl: z.string().url(t("common.errmsg.url_invalid")),
+    webhookUrl: z.url(t("common.errmsg.url_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
 

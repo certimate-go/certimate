@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { validDomainName } from "@/utils/validators";
@@ -41,11 +41,12 @@ const DeployNodeConfigFormHuaweiCloudWAFConfig = ({
 
   const formSchema = z.object({
     region: z
-      .string({ message: t("workflow_node.deploy.form.huaweicloud_waf_region.placeholder") })
+      .string(t("workflow_node.deploy.form.huaweicloud_waf_region.placeholder"))
       .nonempty(t("workflow_node.deploy.form.huaweicloud_waf_region.placeholder")),
-    resourceType: z.union([z.literal(RESOURCE_TYPE_CERTIFICATE), z.literal(RESOURCE_TYPE_CLOUDSERVER), z.literal(RESOURCE_TYPE_PREMIUMHOST)], {
-      message: t("workflow_node.deploy.form.huaweicloud_waf_resource_type.placeholder"),
-    }),
+    resourceType: z.literal(
+      [RESOURCE_TYPE_CERTIFICATE, RESOURCE_TYPE_CLOUDSERVER, RESOURCE_TYPE_PREMIUMHOST],
+      t("workflow_node.deploy.form.huaweicloud_waf_resource_type.placeholder")
+    ),
     certificateId: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 64 }))

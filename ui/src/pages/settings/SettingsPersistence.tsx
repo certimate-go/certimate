@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Form, InputNumber, Skeleton, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { produce } from "immer";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { type PersistenceSettingsContent, SETTINGS_NAMES, type SettingsModel } from "@/domain/settings";
@@ -34,10 +34,10 @@ const SettingsPersistence = () => {
 
   const formSchema = z.object({
     workflowRunsMaxDaysRetention: z
-      .number({ message: t("settings.persistence.form.workflow_runs_max_days.placeholder") })
+      .number(t("settings.persistence.form.workflow_runs_max_days.placeholder"))
       .gte(0, t("settings.persistence.form.workflow_runs_max_days.placeholder")),
     expiredCertificatesMaxDaysRetention: z
-      .number({ message: t("settings.persistence.form.expired_certificates_max_days.placeholder") })
+      .number(t("settings.persistence.form.expired_certificates_max_days.placeholder"))
       .gte(0, t("settings.persistence.form.expired_certificates_max_days.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

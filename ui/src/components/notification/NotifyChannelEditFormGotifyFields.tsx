@@ -1,20 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormGotifyFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    url: z.string({ message: t("settings.notification.channel.form.gotify_url.placeholder") }).url({ message: t("common.errmsg.url_invalid") }),
-    token: z.string({ message: t("settings.notification.channel.form.gotify_token.placeholder") }),
-    priority: z.preprocess(
-      (val) => Number(val),
-      z
-        .number({ message: t("settings.notification.channel.form.gotify_priority.placeholder") })
-        .gte(0, { message: t("settings.notification.channel.form.gotify_priority.error.gte0") })
-    ),
+    url: z.url(t("common.errmsg.url_invalid")),
+    token: z.string(t("settings.notification.channel.form.gotify_token.placeholder")),
+    priority: z.preprocess((val) => Number(val), z.number().gte(0, t("settings.notification.channel.form.gotify_priority.error.gte0"))),
   });
   const formRule = createSchemaFieldRule(formSchema);
 

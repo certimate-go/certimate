@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { PlusOutlined as PlusOutlinedIcon, RightOutlined as RightOutlinedIcon } from "@ant-design/icons";
 import { Button, Divider, Flex, Form, type FormInstance, Input, Select, Switch, Typography } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import AccessEditModal from "@/components/access/AccessEditModal";
 import AccessSelect from "@/components/access/AccessSelect";
@@ -61,17 +61,17 @@ const NotifyNodeConfigForm = forwardRef<NotifyNodeConfigFormInstance, NotifyNode
 
     const formSchema = z.object({
       subject: z
-        .string({ message: t("workflow_node.notify.form.subject.placeholder") })
+        .string(t("workflow_node.notify.form.subject.placeholder"))
         .min(1, t("workflow_node.notify.form.subject.placeholder"))
         .max(1000, t("common.errmsg.string_max", { max: 1000 })),
       message: z
-        .string({ message: t("workflow_node.notify.form.message.placeholder") })
+        .string(t("workflow_node.notify.form.message.placeholder"))
         .min(1, t("workflow_node.notify.form.message.placeholder"))
         .max(1000, t("common.errmsg.string_max", { max: 1000 })),
       channel: z.string().nullish(),
-      provider: z.string({ message: t("workflow_node.notify.form.provider.placeholder") }).nonempty(t("workflow_node.notify.form.provider.placeholder")),
+      provider: z.string(t("workflow_node.notify.form.provider.placeholder")).nonempty(t("workflow_node.notify.form.provider.placeholder")),
       providerAccessId: z
-        .string({ message: t("workflow_node.notify.form.provider_access.placeholder") })
+        .string(t("workflow_node.notify.form.provider_access.placeholder"))
         .nonempty(t("workflow_node.notify.form.provider_access.placeholder")),
       providerConfig: z.any().nullish(),
       skipOnAllPrevSkipped: z.boolean().nullish(),

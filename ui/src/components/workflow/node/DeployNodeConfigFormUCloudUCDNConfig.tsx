@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormUCloudUCDNConfigFieldValues = Nullish<{
   domainId: string;
@@ -30,7 +30,7 @@ const DeployNodeConfigFormUCloudUCDNConfig = ({
 
   const formSchema = z.object({
     domainId: z
-      .string({ message: t("workflow_node.deploy.form.ucloud_ucdn_domain_id.placeholder") })
+      .string(t("workflow_node.deploy.form.ucloud_ucdn_domain_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.ucloud_ucdn_domain_id.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
 
@@ -35,10 +35,10 @@ const DeployNodeConfigFormTencentCloudEOConfig = ({
   const formSchema = z.object({
     endpoint: z.string().nullish(),
     zoneId: z
-      .string({ message: t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder") })
+      .string(t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder")),
     domain: z
-      .string({ message: t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder") })
+      .string(t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder"))
       .refine((v) => validDomainName(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);

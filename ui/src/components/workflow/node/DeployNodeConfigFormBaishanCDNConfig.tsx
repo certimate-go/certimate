@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
 
@@ -33,7 +33,7 @@ const DeployNodeConfigFormBaishanCDNConfig = ({
 
   const formSchema = z.object({
     domain: z
-      .string({ message: t("workflow_node.deploy.form.baishan_cdn_domain.placeholder") })
+      .string(t("workflow_node.deploy.form.baishan_cdn_domain.placeholder"))
       .refine((v) => validDomainName(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
     certificateId: z
       .union([z.string(), z.number().int()])

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { validDomainName } from "@/utils/validators";
@@ -39,12 +39,8 @@ const DeployNodeConfigFormAliyunAPIGWConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serviceType: z.union([z.literal(SERVICE_TYPE_CLOUDNATIVE), z.literal(SERVICE_TYPE_TRADITIONAL)], {
-      message: t("workflow_node.deploy.form.aliyun_apigw_service_type.placeholder"),
-    }),
-    region: z
-      .string({ message: t("workflow_node.deploy.form.aliyun_apigw_region.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.aliyun_apigw_region.placeholder")),
+    serviceType: z.literal([SERVICE_TYPE_CLOUDNATIVE, SERVICE_TYPE_TRADITIONAL], t("workflow_node.deploy.form.aliyun_apigw_service_type.placeholder")),
+    region: z.string(t("workflow_node.deploy.form.aliyun_apigw_region.placeholder")).nonempty(t("workflow_node.deploy.form.aliyun_apigw_region.placeholder")),
     gatewayId: z
       .string()
       .nullish()

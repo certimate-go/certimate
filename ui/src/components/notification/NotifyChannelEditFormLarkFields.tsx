@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormLarkFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    webhookUrl: z.string({ message: t("settings.notification.channel.form.lark_webhook_url.placeholder") }).url(t("common.errmsg.url_invalid")),
+    webhookUrl: z.url(t("common.errmsg.url_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
 

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type ApplyNodeConfigFormAWSRoute53ConfigFieldValues = Nullish<{
   region: string;
@@ -33,11 +33,9 @@ const ApplyNodeConfigFormAWSRoute53Config = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    region: z
-      .string({ message: t("workflow_node.apply.form.aws_route53_region.placeholder") })
-      .nonempty(t("workflow_node.apply.form.aws_route53_region.placeholder")),
+    region: z.string(t("workflow_node.apply.form.aws_route53_region.placeholder")).nonempty(t("workflow_node.apply.form.aws_route53_region.placeholder")),
     hostedZoneId: z
-      .string({ message: t("workflow_node.apply.form.aws_route53_hosted_zone_id.placeholder") })
+      .string(t("workflow_node.apply.form.aws_route53_hosted_zone_id.placeholder"))
       .nonempty(t("workflow_node.apply.form.aws_route53_hosted_zone_id.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

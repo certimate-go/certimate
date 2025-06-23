@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+﻿import { z } from "zod/v4";
 
 import { validCronExpression as _validCronExpression } from "./cron";
 
@@ -13,7 +13,7 @@ export const validDomainName = (value: string, { allowWildcard = false }: { allo
 
 export const validEmailAddress = (value: string) => {
   try {
-    z.string().email().parse(value);
+    z.email().parse(value);
     return true;
   } catch (_) {
     return false;
@@ -22,7 +22,7 @@ export const validEmailAddress = (value: string) => {
 
 export const validIPv4Address = (value: string) => {
   try {
-    z.string().ip({ version: "v4" }).parse(value);
+    z.ipv4().parse(value);
     return true;
   } catch (_) {
     return false;
@@ -31,7 +31,7 @@ export const validIPv4Address = (value: string) => {
 
 export const validIPv6Address = (value: string) => {
   try {
-    z.string().ip({ version: "v6" }).parse(value);
+    z.ipv6().parse(value);
     return true;
   } catch (_) {
     return false;

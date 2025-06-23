@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { DownOutlined as DownOutlinedIcon } from "@ant-design/icons";
 import { Alert, Button, Dropdown, Form, type FormInstance, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import CodeInput from "@/components/CodeInput";
 import Show from "@/components/Show";
@@ -49,10 +49,8 @@ const AccessFormWebhookConfig = ({ form: formInst, formName, disabled, initialVa
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    url: z.string().url(t("common.errmsg.url_invalid")),
-    method: z.union([z.literal("GET"), z.literal("POST"), z.literal("PUT"), z.literal("PATCH"), z.literal("DELETE")], {
-      message: t("access.form.webhook_method.placeholder"),
-    }),
+    url: z.url(t("common.errmsg.url_invalid")),
+    method: z.literal(["GET", "POST", "PUT", "PATCH", "DELETE"], t("access.form.webhook_method.placeholder")),
     headers: z
       .string()
       .nullish()

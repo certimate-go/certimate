@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormGcoreCDNConfigFieldValues = Nullish<{
   resourceId: string | number;
@@ -26,7 +26,7 @@ const DeployNodeConfigFormGcoreCDNConfig = ({ form: formInst, formName, disabled
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    resourceId: z.union([z.string(), z.number()]).refine((v) => {
+    resourceId: z.union([z.string(), z.number().int()]).refine((v) => {
       return /^\d+$/.test(v + "") && +v > 0;
     }, t("workflow_node.deploy.form.gcore_cdn_resource_id.placeholder")),
     certificateId: z

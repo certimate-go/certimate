@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 
@@ -33,9 +33,7 @@ const DeployNodeConfigFormLeCDNConfig = ({ form: formInst, formName, disabled, i
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    resourceType: z.literal(RESOURCE_TYPE_CERTIFICATE, {
-      message: t("workflow_node.deploy.form.lecdn_resource_type.placeholder"),
-    }),
+    resourceType: z.literal(RESOURCE_TYPE_CERTIFICATE, t("workflow_node.deploy.form.lecdn_resource_type.placeholder")),
     certificateId: z
       .union([z.string(), z.number().int()])
       .nullish()

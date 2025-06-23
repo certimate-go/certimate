@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormPushPlusFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    token: z.string({ message: t("settings.notification.channel.form.pushplus_token.placeholder") }),
+    token: z.string(t("settings.notification.channel.form.pushplus_token.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);
 

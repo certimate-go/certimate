@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormAzureKeyVaultConfigFieldValues = Nullish<{
   keyvaultName: string;
@@ -31,7 +31,7 @@ const DeployNodeConfigFormAzureKeyVaultConfig = ({
 
   const formSchema = z.object({
     keyvaultName: z
-      .string({ message: t("workflow_node.deploy.form.azure_keyvault_name.placeholder") })
+      .string(t("workflow_node.deploy.form.azure_keyvault_name.placeholder"))
       .nonempty(t("workflow_node.deploy.form.azure_keyvault_name.placeholder")),
     certificateName: z
       .string()

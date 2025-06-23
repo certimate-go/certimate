@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForMattermost } from "@/domain/access";
 
@@ -27,7 +27,7 @@ const AccessFormMattermostConfig = ({ form: formInst, formName, disabled, initia
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
     username: z.string().nonempty(t("access.form.mattermost_username.placeholder")),
     password: z.string().nonempty(t("access.form.mattermost_password.placeholder")),
     defaultChannelId: z.string().nullish(),

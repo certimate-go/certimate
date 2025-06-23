@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Alert, Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
 
@@ -36,16 +36,16 @@ const DeployNodeConfigFormAliyunCASDeployConfig = ({
 
   const formSchema = z.object({
     region: z
-      .string({ message: t("workflow_node.deploy.form.aliyun_cas_deploy_region.placeholder") })
+      .string(t("workflow_node.deploy.form.aliyun_cas_deploy_region.placeholder"))
       .nonempty(t("workflow_node.deploy.form.aliyun_cas_deploy_region.placeholder")),
-    resourceIds: z.string({ message: t("workflow_node.deploy.form.aliyun_cas_deploy_resource_ids.placeholder") }).refine((v) => {
+    resourceIds: z.string(t("workflow_node.deploy.form.aliyun_cas_deploy_resource_ids.placeholder")).refine((v) => {
       if (!v) return false;
       return String(v)
         .split(MULTIPLE_INPUT_SEPARATOR)
         .every((e) => /^[1-9]\d*$/.test(e));
     }, t("workflow_node.deploy.form.aliyun_cas_deploy_resource_ids.errmsg.invalid")),
     contactIds: z
-      .string({ message: t("workflow_node.deploy.form.aliyun_cas_deploy_contact_ids.placeholder") })
+      .string(t("workflow_node.deploy.form.aliyun_cas_deploy_contact_ids.placeholder"))
       .nullish()
       .refine((v) => {
         if (!v) return true;

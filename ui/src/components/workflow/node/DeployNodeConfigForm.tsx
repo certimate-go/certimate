@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { PlusOutlined as PlusOutlinedIcon, QuestionCircleOutlined as QuestionCircleOutlinedIcon } from "@ant-design/icons";
 import { Button, Divider, Flex, Form, type FormInstance, Select, Switch, Tooltip, Typography, theme } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import AccessEditModal from "@/components/access/AccessEditModal";
 import AccessSelect from "@/components/access/AccessSelect";
@@ -137,12 +137,10 @@ const DeployNodeConfigForm = forwardRef<DeployNodeConfigFormInstance, DeployNode
     const { getWorkflowOuptutBeforeId } = useWorkflowStore(useZustandShallowSelector(["updateNode", "getWorkflowOuptutBeforeId"]));
 
     const formSchema = z.object({
-      certificate: z
-        .string({ message: t("workflow_node.deploy.form.certificate.placeholder") })
-        .nonempty(t("workflow_node.deploy.form.certificate.placeholder")),
-      provider: z.string({ message: t("workflow_node.deploy.form.provider.placeholder") }).nonempty(t("workflow_node.deploy.form.provider.placeholder")),
+      certificate: z.string(t("workflow_node.deploy.form.certificate.placeholder")).nonempty(t("workflow_node.deploy.form.certificate.placeholder")),
+      provider: z.string(t("workflow_node.deploy.form.provider.placeholder")).nonempty(t("workflow_node.deploy.form.provider.placeholder")),
       providerAccessId: z
-        .string({ message: t("workflow_node.deploy.form.provider_access.placeholder") })
+        .string(t("workflow_node.deploy.form.provider_access.placeholder"))
         .nullish()
         .refine((v) => {
           if (!fieldProvider) return true;

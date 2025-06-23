@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { DownOutlined as DownOutlinedIcon } from "@ant-design/icons";
 import { Button, Dropdown, Form, type FormInstance, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import CodeInput from "@/components/CodeInput";
 import Show from "@/components/Show";
@@ -192,9 +192,7 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    format: z.union([z.literal(FORMAT_PEM), z.literal(FORMAT_PFX), z.literal(FORMAT_JKS)], {
-      message: t("workflow_node.deploy.form.ssh_format.placeholder"),
-    }),
+    format: z.literal([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS], t("workflow_node.deploy.form.ssh_format.placeholder")),
     certPath: z
       .string()
       .min(1, t("workflow_node.deploy.form.ssh_cert_path.tooltip"))
@@ -203,7 +201,7 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
       .string()
       .max(256, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_PEM || !!v?.trim(), { message: t("workflow_node.deploy.form.ssh_key_path.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_PEM || !!v?.trim(), t("workflow_node.deploy.form.ssh_key_path.tooltip")),
     certPathForServerOnly: z
       .string()
       .max(256, t("common.errmsg.string_max", { max: 256 }))
@@ -216,22 +214,22 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_PFX || !!v?.trim(), { message: t("workflow_node.deploy.form.ssh_pfx_password.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_PFX || !!v?.trim(), t("workflow_node.deploy.form.ssh_pfx_password.tooltip")),
     jksAlias: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), { message: t("workflow_node.deploy.form.ssh_jks_alias.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), t("workflow_node.deploy.form.ssh_jks_alias.tooltip")),
     jksKeypass: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), { message: t("workflow_node.deploy.form.ssh_jks_keypass.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), t("workflow_node.deploy.form.ssh_jks_keypass.tooltip")),
     jksStorepass: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), { message: t("workflow_node.deploy.form.ssh_jks_storepass.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), t("workflow_node.deploy.form.ssh_jks_storepass.tooltip")),
     preCommand: z
       .string()
       .max(20480, t("common.errmsg.string_max", { max: 20480 }))

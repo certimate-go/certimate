@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 
@@ -40,7 +40,7 @@ const DeployNodeConfigFormTencentCloudGAAPConfig = ({
 
   const formSchema = z.object({
     endpoint: z.string().nullish(),
-    resourceType: z.literal(RESOURCE_TYPE_LISTENER, { message: t("workflow_node.deploy.form.tencentcloud_gaap_resource_type.placeholder") }),
+    resourceType: z.literal(RESOURCE_TYPE_LISTENER, t("workflow_node.deploy.form.tencentcloud_gaap_resource_type.placeholder")),
     proxyId: z.string().nullish(),
     listenerId: z
       .string()

@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Collapse, Form, type FormInstance, Input, InputNumber, Select, Space } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import TextFileInput from "@/components/TextFileInput";
@@ -44,9 +44,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
         .int(t("access.form.ssh_port.placeholder"))
         .refine((v) => validPortNumber(v), t("common.errmsg.port_invalid"))
     ),
-    authMethod: z.union([z.literal(AUTH_METHOD_NONE), z.literal(AUTH_METHOD_PASSWORD), z.literal(AUTH_METHOD_KEY)], {
-      message: t("access.form.ssh_auth_method.placeholder"),
-    }),
+    authMethod: z.literal([AUTH_METHOD_NONE, AUTH_METHOD_PASSWORD, AUTH_METHOD_KEY], t("access.form.ssh_auth_method.placeholder")),
     username: z
       .string()
       .min(1, t("access.form.ssh_username.placeholder"))
@@ -55,12 +53,18 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
       .string()
       .max(64, t("common.errmsg.string_max", { max: 64 }))
       .nullish()
-      .refine((v) => fieldAuthMethod !== AUTH_METHOD_PASSWORD || !!v?.trim(), t("access.form.ssh_password.placeholder")),
+      .refine((v) => {
+        if (fieldAuthMethod !== AUTH_METHOD_PASSWORD) return true;
+        return !!v?.trim();
+      }, t("access.form.ssh_password.placeholder")),
     key: z
       .string()
       .max(20480, t("common.errmsg.string_max", { max: 20480 }))
       .nullish()
-      .refine((v) => fieldAuthMethod !== AUTH_METHOD_KEY || !!v?.trim(), t("access.form.ssh_key.placeholder")),
+      .refine((v) => {
+        if (fieldAuthMethod !== AUTH_METHOD_KEY) return true;
+        return !!v?.trim();
+      }, t("access.form.ssh_key.placeholder")),
     keyPassphrase: z
       .string()
       .max(20480, t("common.errmsg.string_max", { max: 20480 }))
@@ -77,9 +81,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
               .int(t("access.form.ssh_port.placeholder"))
               .refine((v) => validPortNumber(v), t("common.errmsg.port_invalid"))
           ),
-          authMethod: z.union([z.literal(AUTH_METHOD_NONE), z.literal(AUTH_METHOD_PASSWORD), z.literal(AUTH_METHOD_KEY)], {
-            message: t("access.form.ssh_auth_method.placeholder"),
-          }),
+          authMethod: z.literal([AUTH_METHOD_NONE, AUTH_METHOD_PASSWORD, AUTH_METHOD_KEY], t("access.form.ssh_auth_method.placeholder")),
           username: z
             .string()
             .min(1, t("access.form.ssh_username.placeholder"))
@@ -97,7 +99,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
             .max(20480, t("common.errmsg.string_max", { max: 20480 }))
             .nullish(),
         }),
-        { message: t("access.form.ssh_jump_servers.errmsg.invalid") }
+        { error: t("access.form.ssh_jump_servers.errmsg.invalid") }
       )
       .nullish(),
   });

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type DeployNodeConfigFormKubernetesSecretConfigFieldValues = Nullish<{
   namespace: string;
@@ -39,23 +39,23 @@ const DeployNodeConfigFormKubernetesSecretConfig = ({
 
   const formSchema = z.object({
     namespace: z
-      .string({ message: t("workflow_node.deploy.form.k8s_namespace.placeholder") })
+      .string(t("workflow_node.deploy.form.k8s_namespace.placeholder"))
       .nonempty(t("workflow_node.deploy.form.k8s_namespace.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     secretName: z
-      .string({ message: t("workflow_node.deploy.form.k8s_secret_name.placeholder") })
+      .string(t("workflow_node.deploy.form.k8s_secret_name.placeholder"))
       .nonempty(t("workflow_node.deploy.form.k8s_secret_name.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     secretType: z
-      .string({ message: t("workflow_node.deploy.form.k8s_secret_type.placeholder") })
+      .string(t("workflow_node.deploy.form.k8s_secret_type.placeholder"))
       .nonempty(t("workflow_node.deploy.form.k8s_secret_type.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     secretDataKeyForCrt: z
-      .string({ message: t("workflow_node.deploy.form.k8s_secret_data_key_for_crt.placeholder") })
+      .string(t("workflow_node.deploy.form.k8s_secret_data_key_for_crt.placeholder"))
       .nonempty(t("workflow_node.deploy.form.k8s_secret_data_key_for_crt.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     secretDataKeyForKey: z
-      .string({ message: t("workflow_node.deploy.form.k8s_secret_data_key_for_key.placeholder") })
+      .string(t("workflow_node.deploy.form.k8s_secret_data_key_for_key.placeholder"))
       .nonempty(t("workflow_node.deploy.form.k8s_secret_data_key_for_key.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
   });

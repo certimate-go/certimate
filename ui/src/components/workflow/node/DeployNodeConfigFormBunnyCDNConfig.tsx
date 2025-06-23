@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { validDomainName } from "@/utils/validators";
 
 type DeployNodeConfigFormBunnyCDNConfigFieldValues = Nullish<{
@@ -29,7 +29,7 @@ const DeployNodeConfigFormBunnyCDNConfig = ({ form: formInst, formName, disabled
       return /^\d+$/.test(v + "") && +v! > 0;
     }, t("workflow_node.deploy.form.bunny_cdn_pull_zone_id.placeholder")),
     hostname: z
-      .string({ message: t("workflow_node.deploy.form.bunny_cdn_hostname.placeholder") })
+      .string(t("workflow_node.deploy.form.bunny_cdn_hostname.placeholder"))
       .nonempty(t("workflow_node.deploy.form.bunny_cdn_hostname.placeholder"))
       .refine((v) => {
         return validDomainName(v!, { allowWildcard: true });

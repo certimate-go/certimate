@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { DownOutlined as DownOutlinedIcon } from "@ant-design/icons";
 import { Alert, Button, Dropdown, Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import CodeInput from "@/components/CodeInput";
 import Show from "@/components/Show";
@@ -160,9 +160,7 @@ const DeployNodeConfigFormLocalConfig = ({ form: formInst, formName, disabled, i
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    format: z.union([z.literal(FORMAT_PEM), z.literal(FORMAT_PFX), z.literal(FORMAT_JKS)], {
-      message: t("workflow_node.deploy.form.local_format.placeholder"),
-    }),
+    format: z.literal([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS], t("workflow_node.deploy.form.local_format.placeholder")),
     certPath: z
       .string()
       .min(1, t("workflow_node.deploy.form.local_cert_path.tooltip"))
@@ -179,30 +177,28 @@ const DeployNodeConfigFormLocalConfig = ({ form: formInst, formName, disabled, i
       .string()
       .max(256, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_PEM || !!v?.trim(), { message: t("workflow_node.deploy.form.local_key_path.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_PEM || !!v?.trim(), t("workflow_node.deploy.form.local_key_path.tooltip")),
     pfxPassword: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_PFX || !!v?.trim(), { message: t("workflow_node.deploy.form.local_pfx_password.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_PFX || !!v?.trim(), t("workflow_node.deploy.form.local_pfx_password.tooltip")),
     jksAlias: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), { message: t("workflow_node.deploy.form.local_jks_alias.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), t("workflow_node.deploy.form.local_jks_alias.tooltip")),
     jksKeypass: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), { message: t("workflow_node.deploy.form.local_jks_keypass.tooltip") }),
+      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), t("workflow_node.deploy.form.local_jks_keypass.tooltip")),
     jksStorepass: z
       .string()
       .max(64, t("common.errmsg.string_max", { max: 256 }))
       .nullish()
-      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), { message: t("workflow_node.deploy.form.local_jks_storepass.tooltip") }),
-    shellEnv: z.union([z.literal(SHELLENV_SH), z.literal(SHELLENV_CMD), z.literal(SHELLENV_POWERSHELL)], {
-      message: t("workflow_node.deploy.form.local_shell_env.placeholder"),
-    }),
+      .refine((v) => fieldFormat !== FORMAT_JKS || !!v?.trim(), t("workflow_node.deploy.form.local_jks_storepass.tooltip")),
+    shellEnv: z.literal([SHELLENV_SH, SHELLENV_CMD, SHELLENV_POWERSHELL], t("workflow_node.deploy.form.local_shell_env.placeholder")),
     preCommand: z
       .string()
       .max(20480, t("common.errmsg.string_max", { max: 20480 }))

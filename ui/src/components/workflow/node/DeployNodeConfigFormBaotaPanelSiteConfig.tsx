@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
 import Show from "@/components/Show";
@@ -43,9 +43,7 @@ const DeployNodeConfigFormBaotaPanelSiteConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    siteType: z.union([z.literal(SITE_TYPE_PHP), z.literal(SITE_TYPE_OTHER)], {
-      message: t("workflow_node.deploy.form.baotapanel_site_type.placeholder"),
-    }),
+    siteType: z.literal([SITE_TYPE_PHP, SITE_TYPE_OTHER], t("workflow_node.deploy.form.baotapanel_site_type.placeholder")),
     siteName: z
       .string()
       .nullish()

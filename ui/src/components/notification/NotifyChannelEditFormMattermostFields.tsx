@@ -1,21 +1,21 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormMattermostFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string({ message: t("settings.notification.channel.form.mattermost_server_url.placeholder") }).url(t("common.errmsg.url_invalid")),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
     channelId: z
-      .string({ message: t("settings.notification.channel.form.mattermost_channel_id.placeholder") })
+      .string(t("settings.notification.channel.form.mattermost_channel_id.placeholder"))
       .nonempty(t("settings.notification.channel.form.mattermost_channel_id.placeholder")),
     username: z
-      .string({ message: t("settings.notification.channel.form.mattermost_username.placeholder") })
+      .string(t("settings.notification.channel.form.mattermost_username.placeholder"))
       .nonempty(t("settings.notification.channel.form.mattermost_username.placeholder")),
     password: z
-      .string({ message: t("settings.notification.channel.form.mattermost_password.placeholder") })
+      .string(t("settings.notification.channel.form.mattermost_password.placeholder"))
       .nonempty(t("settings.notification.channel.form.mattermost_password.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

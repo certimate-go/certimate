@@ -1,18 +1,18 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormTelegramFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
     apiToken: z
-      .string({ message: t("settings.notification.channel.form.telegram_api_token.placeholder") })
+      .string(t("settings.notification.channel.form.telegram_api_token.placeholder"))
       .min(1, t("settings.notification.channel.form.telegram_api_token.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     chatId: z
-      .string({ message: t("settings.notification.channel.form.telegram_chat_id.placeholder") })
+      .string(t("settings.notification.channel.form.telegram_chat_id.placeholder"))
       .min(1, t("settings.notification.channel.form.telegram_chat_id.placeholder"))
       .max(64, t("common.errmsg.string_max", { max: 64 })),
   });

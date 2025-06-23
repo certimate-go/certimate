@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
 
@@ -36,14 +36,10 @@ const DeployNodeConfigFormAliyunWAFConfig = ({
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    region: z
-      .string({ message: t("workflow_node.deploy.form.aliyun_waf_region.placeholder") })
-      .nonempty(t("workflow_node.deploy.form.aliyun_waf_region.placeholder")),
-    serviceVersion: z.literal("3.0", {
-      message: t("workflow_node.deploy.form.aliyun_waf_service_version.placeholder"),
-    }),
+    region: z.string(t("workflow_node.deploy.form.aliyun_waf_region.placeholder")).nonempty(t("workflow_node.deploy.form.aliyun_waf_region.placeholder")),
+    serviceVersion: z.literal("3.0", t("workflow_node.deploy.form.aliyun_waf_service_version.placeholder")),
     instanceId: z
-      .string({ message: t("workflow_node.deploy.form.aliyun_waf_instance_id.placeholder") })
+      .string(t("workflow_node.deploy.form.aliyun_waf_instance_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.aliyun_waf_instance_id.placeholder"))
       .max(64, t("common.errmsg.string_max", { max: 64 })),
     domain: z

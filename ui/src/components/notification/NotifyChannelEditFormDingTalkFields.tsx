@@ -1,17 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormDingTalkFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
     accessToken: z
-      .string({ message: t("settings.notification.channel.form.dingtalk_access_token.placeholder") })
+      .string(t("settings.notification.channel.form.dingtalk_access_token.placeholder"))
       .nonempty(t("settings.notification.channel.form.dingtalk_access_token.placeholder")),
     secret: z
-      .string({ message: t("settings.notification.channel.form.dingtalk_secret.placeholder") })
+      .string(t("settings.notification.channel.form.dingtalk_secret.placeholder"))
       .nonempty(t("settings.notification.channel.form.dingtalk_secret.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

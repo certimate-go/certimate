@@ -2,7 +2,7 @@ import { forwardRef, memo, useImperativeHandle } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validateCertificate, validatePrivateKey } from "@/api/certificates";
 import TextFileInput from "@/components/TextFileInput";
@@ -37,11 +37,11 @@ const UploadNodeConfigForm = forwardRef<UploadNodeConfigFormInstance, UploadNode
     const formSchema = z.object({
       domains: z.string().nullish(),
       certificate: z
-        .string({ message: t("workflow_node.upload.form.certificate.placeholder") })
+        .string(t("workflow_node.upload.form.certificate.placeholder"))
         .min(1, t("workflow_node.upload.form.certificate.placeholder"))
         .max(20480, t("common.errmsg.string_max", { max: 20480 })),
       privateKey: z
-        .string({ message: t("workflow_node.upload.form.private_key.placeholder") })
+        .string(t("workflow_node.upload.form.private_key.placeholder"))
         .min(1, t("workflow_node.upload.form.private_key.placeholder"))
         .max(20480, t("common.errmsg.string_max", { max: 20480 })),
     });

@@ -4,7 +4,7 @@ import { useRequest } from "ahooks";
 import { Button, Form, Input, Skeleton, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { ClientResponseError } from "pocketbase";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { type NotifyTemplatesSettingsContent, SETTINGS_NAMES, defaultNotifyTemplate } from "@/domain/settings";

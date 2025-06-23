@@ -4,7 +4,7 @@ import { CheckCard } from "@ant-design/pro-components";
 import { Alert, Button, Form, Input, Skeleton, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { produce } from "immer";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import Show from "@/components/Show";
 import { type CAProviderType, CA_PROVIDERS } from "@/domain/provider";
@@ -155,11 +155,11 @@ const SSLProviderEditFormGoogleTrustServicesConfig = () => {
 
   const formSchema = z.object({
     eabKid: z
-      .string({ message: t("settings.sslprovider.form.googletrustservices_eab_kid.placeholder") })
+      .string(t("settings.sslprovider.form.googletrustservices_eab_kid.placeholder"))
       .min(1, t("settings.sslprovider.form.googletrustservices_eab_kid.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     eabHmacKey: z
-      .string({ message: t("settings.sslprovider.form.googletrustservices_eab_hmac_key.placeholder") })
+      .string(t("settings.sslprovider.form.googletrustservices_eab_hmac_key.placeholder"))
       .min(1, t("settings.sslprovider.form.googletrustservices_eab_hmac_key.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
   });
@@ -225,11 +225,11 @@ const SSLProviderEditFormSSLComConfig = () => {
 
   const formSchema = z.object({
     eabKid: z
-      .string({ message: t("settings.sslprovider.form.sslcom_eab_kid.placeholder") })
+      .string(t("settings.sslprovider.form.sslcom_eab_kid.placeholder"))
       .min(1, t("settings.sslprovider.form.sslcom_eab_kid.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     eabHmacKey: z
-      .string({ message: t("settings.sslprovider.form.sslcom_eab_hmac_key.placeholder") })
+      .string(t("settings.sslprovider.form.sslcom_eab_hmac_key.placeholder"))
       .min(1, t("settings.sslprovider.form.sslcom_eab_hmac_key.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
   });
@@ -295,11 +295,11 @@ const SSLProviderEditFormZeroSSLConfig = () => {
 
   const formSchema = z.object({
     eabKid: z
-      .string({ message: t("settings.sslprovider.form.zerossl_eab_kid.placeholder") })
+      .string(t("settings.sslprovider.form.zerossl_eab_kid.placeholder"))
       .min(1, t("settings.sslprovider.form.zerossl_eab_kid.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     eabHmacKey: z
-      .string({ message: t("settings.sslprovider.form.zerossl_eab_hmac_key.placeholder") })
+      .string(t("settings.sslprovider.form.zerossl_eab_hmac_key.placeholder"))
       .min(1, t("settings.sslprovider.form.zerossl_eab_hmac_key.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
   });

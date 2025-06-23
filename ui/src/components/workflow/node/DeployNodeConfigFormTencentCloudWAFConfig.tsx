@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
 
@@ -37,16 +37,14 @@ const DeployNodeConfigFormTencentCloudWAFConfig = ({
   const formSchema = z.object({
     endpoint: z.string().nullish(),
     region: z
-      .string({ message: t("workflow_node.deploy.form.tencentcloud_waf_region.placeholder") })
+      .string(t("workflow_node.deploy.form.tencentcloud_waf_region.placeholder"))
       .nonempty(t("workflow_node.deploy.form.tencentcloud_waf_region.placeholder")),
-    domain: z
-      .string({ message: t("workflow_node.deploy.form.tencentcloud_waf_domain.placeholder") })
-      .refine((v) => validDomainName(v), t("common.errmsg.domain_invalid")),
+    domain: z.string(t("workflow_node.deploy.form.tencentcloud_waf_domain.placeholder")).refine((v) => validDomainName(v), t("common.errmsg.domain_invalid")),
     domainId: z
-      .string({ message: t("workflow_node.deploy.form.tencentcloud_waf_domain_id.placeholder") })
+      .string(t("workflow_node.deploy.form.tencentcloud_waf_domain_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.tencentcloud_waf_domain_id.placeholder")),
     instanceId: z
-      .string({ message: t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder") })
+      .string(t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input, InputNumber, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { validPortNumber } from "@/utils/validators";
 
@@ -10,27 +10,24 @@ const NotifyChannelEditFormEmailFields = () => {
 
   const formSchema = z.object({
     smtpHost: z
-      .string({ message: t("settings.notification.channel.form.email_smtp_host.placeholder") })
+      .string(t("settings.notification.channel.form.email_smtp_host.placeholder"))
       .min(1, t("settings.notification.channel.form.email_smtp_host.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     smtpPort: z.preprocess(
       (v) => Number(v),
-      z
-        .number({ message: t("settings.notification.channel.form.email_smtp_port.placeholder") })
-        .int(t("settings.notification.channel.form.email_smtp_port.placeholder"))
-        .refine((v) => validPortNumber(v), t("common.errmsg.port_invalid"))
+      z.number().refine((v) => validPortNumber(v), t("common.errmsg.port_invalid"))
     ),
     smtpTLS: z.boolean().nullish(),
     username: z
-      .string({ message: t("settings.notification.channel.form.email_username.placeholder") })
+      .string(t("settings.notification.channel.form.email_username.placeholder"))
       .min(1, t("settings.notification.channel.form.email_username.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
     password: z
-      .string({ message: t("settings.notification.channel.form.email_password.placeholder") })
+      .string(t("settings.notification.channel.form.email_password.placeholder"))
       .min(1, t("settings.notification.channel.form.email_password.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 })),
-    senderAddress: z.string({ message: t("settings.notification.channel.form.email_sender_address.placeholder") }).email(t("common.errmsg.email_invalid")),
-    receiverAddress: z.string({ message: t("settings.notification.channel.form.email_receiver_address.placeholder") }).email(t("common.errmsg.email_invalid")),
+    senderAddress: z.email(t("common.errmsg.email_invalid")),
+    receiverAddress: z.email(t("common.errmsg.email_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const formInst = Form.useFormInstance<z.infer<typeof formSchema>>();

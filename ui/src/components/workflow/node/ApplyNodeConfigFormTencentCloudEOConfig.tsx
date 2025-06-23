@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 type ApplyNodeConfigFormTencentCloudEOConfigFieldValues = Nullish<{
   zoneId: string;
@@ -30,7 +30,7 @@ const ApplyNodeConfigFormTencentCloudEOConfig = ({
 
   const formSchema = z.object({
     zoneId: z
-      .string({ message: t("workflow_node.apply.form.tencentcloud_eo_zone_id.placeholder") })
+      .string(t("workflow_node.apply.form.tencentcloud_eo_zone_id.placeholder"))
       .nonempty(t("workflow_node.apply.form.tencentcloud_eo_zone_id.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

@@ -1,17 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const NotifyChannelEditFormPushoverFields = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
     token: z
-      .string({ message: t("settings.notification.channel.form.pushover_token.placeholder") })
+      .string(t("settings.notification.channel.form.pushover_token.placeholder"))
       .nonempty(t("settings.notification.channel.form.pushover_token.placeholder")),
     user: z
-      .string({ message: t("settings.notification.channel.form.pushover_user.placeholder") })
+      .string(t("settings.notification.channel.form.pushover_user.placeholder"))
       .nonempty(t("settings.notification.channel.form.pushover_user.placeholder")),
   });
   const formRule = createSchemaFieldRule(formSchema);

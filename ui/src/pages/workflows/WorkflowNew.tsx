@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@ant-design/pro-components";
 import { Card, Col, Form, Input, type InputRef, Row, Spin, Typography, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import ModalForm from "@/components/ModalForm";
 import { type WorkflowModel, initWorkflow } from "@/domain/workflow";
@@ -35,11 +35,11 @@ const WorkflowNew = () => {
 
   const formSchema = z.object({
     name: z
-      .string({ message: t("workflow.new.modal.form.name.placeholder") })
+      .string(t("workflow.new.modal.form.name.placeholder"))
       .min(1, t("workflow.new.modal.form.name.placeholder"))
       .max(64, t("common.errmsg.string_max", { max: 64 })),
     description: z
-      .string({ message: t("workflow.new.modal.form.description.placeholder") })
+      .string(t("workflow.new.modal.form.description.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 }))
       .nullish(),
   });

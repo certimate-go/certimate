@@ -14,7 +14,7 @@ import { PageHeader } from "@ant-design/pro-components";
 import { Alert, Button, Card, Dropdown, Form, Input, Modal, Space, Tabs, Typography, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { isEqual } from "radash";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { startRun as startWorkflowRun } from "@/api/workflows";
 import ModalForm from "@/components/ModalForm";
@@ -333,11 +333,11 @@ const WorkflowBaseInfoModal = ({ trigger }: { trigger?: React.ReactNode }) => {
 
   const formSchema = z.object({
     name: z
-      .string({ message: t("workflow.detail.baseinfo.form.name.placeholder") })
+      .string(t("workflow.detail.baseinfo.form.name.placeholder"))
       .min(1, t("workflow.detail.baseinfo.form.name.placeholder"))
       .max(64, t("common.errmsg.string_max", { max: 64 })),
     description: z
-      .string({ message: t("workflow.detail.baseinfo.form.description.placeholder") })
+      .string(t("workflow.detail.baseinfo.form.description.placeholder"))
       .max(256, t("common.errmsg.string_max", { max: 256 }))
       .nullish(),
   });

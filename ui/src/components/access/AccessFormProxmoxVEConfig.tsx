@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForProxmoxVE } from "@/domain/access";
 
@@ -26,7 +26,7 @@ const AccessFormProxmoxVEConfig = ({ form: formInst, formName, disabled, initial
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
     apiToken: z.string().nonempty(t("access.form.proxmoxve_api_token.placeholder")),
     apiTokenSecret: z.string().nullish(),
     allowInsecureConnections: z.boolean().nullish(),

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForRatPanel } from "@/domain/access";
 
@@ -27,7 +27,7 @@ const AccessFormRatPanelConfig = ({ form: formInst, formName, disabled, initialV
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
     accessTokenId: z.preprocess((v) => Number(v), z.number().positive(t("access.form.ratpanel_access_token_id.placeholder"))),
     accessToken: z.string().nonempty(t("access.form.ratpanel_access_token.placeholder")),
     allowInsecureConnections: z.boolean().nullish(),

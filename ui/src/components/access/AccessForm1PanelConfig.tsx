@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigFor1Panel } from "@/domain/access";
 
@@ -27,7 +27,7 @@ const AccessForm1PanelConfig = ({ form: formInst, formName, disabled, initialVal
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
     apiVersion: z.string().nonempty(t("access.form.1panel_api_version.placeholder")),
     apiKey: z
       .string()

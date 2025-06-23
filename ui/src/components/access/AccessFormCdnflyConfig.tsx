@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { type AccessConfigForCdnfly } from "@/domain/access";
 
@@ -27,7 +27,7 @@ const AccessFormCdnflyConfig = ({ form: formInst, formName, disabled, initialVal
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    serverUrl: z.string().url(t("common.errmsg.url_invalid")),
+    serverUrl: z.url(t("common.errmsg.url_invalid")),
     apiKey: z
       .string()
       .min(1, t("access.form.cdnfly_api_key.placeholder"))
