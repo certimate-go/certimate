@@ -1011,7 +1011,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 			}
 
 			switch options.Provider {
-			case domain.DeploymentProviderTypeTencentCloudCDN:
+			case domain.DeploymentProviderTypeRainYunRCDN:
 				deployer, err := pRainYunRCDN.NewSSLDeployerProvider(&pRainYunRCDN.SSLDeployerProviderConfig{
 					ApiKey:     access.ApiKey,
 					InstanceId: xmaps.GetInt32(options.ProviderServiceConfig, "instanceId"),
