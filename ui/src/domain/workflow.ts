@@ -544,6 +544,41 @@ export const cloneNode = (sourceNode: WorkflowNode, { withCopySuffix, nodeIdMap 
               }
             }
             break;
+
+          case WorkflowNodeType.Condition:
+            {
+              const stack = [] as Expr[];
+
+              const expr = (draft.config as WorkflowNodeConfigForCondition).expression;
+              if (expr) {
+                stack.push(expr);
+
+                while (stack.length > 0) {
+                  const n = stack.pop()!;
+
+                  if ("left" in n) {
+                    stack.push(n.left);
+
+                    if ("selector" in n.left) {
+                      const prevNodeId = n.left.selector.id;
+                      if (nodeIdMap.has(prevNodeId)) {
+                        n.left.selector.id = nodeIdMap.get(prevNodeId)!;
+                      }
+                    }
+                  }
+
+                  if ("right" in n) {
+                    stack.push(n.right);
+                  }
+                }
+
+                draft.config = {
+                  ...draft.config,
+                  expression: expr,
+                } as WorkflowNodeConfigForCondition;
+              }
+            }
+            break;
         }
       }
 
