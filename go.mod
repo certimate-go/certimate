@@ -49,13 +49,13 @@ require (
 	github.com/pocketbase/pocketbase v0.28.4
 	github.com/povsister/scp v0.0.0-20250504051308-e467f71ea63c
 	github.com/qiniu/go-sdk/v7 v7.25.4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.0.1187
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.0.1193
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb v1.0.1188
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1192
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1193
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap v1.0.1163
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live v1.0.1192
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live v1.0.1193
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf v1.0.1172
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.0.1189
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.0.1193
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.0.1191
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.0.1183
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.0.1182

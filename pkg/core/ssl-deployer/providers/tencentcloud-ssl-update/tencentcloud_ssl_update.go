@@ -189,7 +189,7 @@ func (d *SSLDeployerProvider) executeUpdateCertificateInstance(ctx context.Conte
 func (d *SSLDeployerProvider) executeUploadUpdateCertificateInstance(ctx context.Context, certPEM string, privkeyPEM string) error {
 	// 更新证书内容并更新关联的云资源
 	// REF: https://cloud.tencent.com/document/product/400/119791
-	// var deployRecordId string
+	var deployRecordId int64
 	for {
 		select {
 		case <-ctx.Done():
@@ -212,56 +212,58 @@ func (d *SSLDeployerProvider) executeUploadUpdateCertificateInstance(ctx context
 		if uploadUpdateCertificateInstanceResp.Response.DeployStatus == nil {
 			return errors.New("unexpected deployment job status")
 		} else if *uploadUpdateCertificateInstanceResp.Response.DeployStatus == 1 {
-			// deployRecordId = fmt.Sprintf("%d", *uploadUpdateCertificateInstanceResp.Response.DeployRecordId)
+			deployRecordId = int64(*uploadUpdateCertificateInstanceResp.Response.DeployRecordId)
 			break
 		}
 
 		time.Sleep(time.Second * 5)
 	}
 
-	// // 循环查询证书云资源更新记录详情，等待任务状态变更
-	// for {
-	// 	select {
-	// 	case <-ctx.Done():
-	// 		return ctx.Err()
-	// 	default:
-	// 	}
+	// 循环查询证书云资源更新记录详情，等待任务状态变更
+	// REF: https://cloud.tencent.com/document/product/400/120056
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
 
-	// 	describeHostUploadUpdateRecordDetailReq := tcssl.NewDescribeHostUploadUpdateRecordDetailRequest()
-	// 	describeHostUploadUpdateRecordDetailReq.DeployRecordId = common.StringPtr(deployRecordId)
-	// 	describeHostUploadUpdateRecordDetailResp, err := d.sdkClient.DescribeHostUpdateRecord(describeHostUploadUpdateRecordDetailReq)
-	// 	d.logger.Debug("sdk request 'ssl.DescribeHostUploadUpdateRecordDetail'", slog.Any("request", describeHostUploadUpdateRecordDetailReq), slog.Any("response", describeHostUploadUpdateRecordDetailResp))
-	// 	if err != nil {
-	// 		return fmt.Errorf("failed to execute sdk request 'ssl.DescribeHostUploadUpdateRecordDetail': %w", err)
-	// 	}
+		describeHostUploadUpdateRecordDetailReq := tcssl.NewDescribeHostUploadUpdateRecordDetailRequest()
+		describeHostUploadUpdateRecordDetailReq.DeployRecordId = common.Int64Ptr(deployRecordId)
+		describeHostUploadUpdateRecordDetailReq.Limit = common.Int64Ptr(200)
+		describeHostUploadUpdateRecordDetailResp, err := d.sdkClient.DescribeHostUploadUpdateRecordDetail(describeHostUploadUpdateRecordDetailReq)
+		d.logger.Debug("sdk request 'ssl.DescribeHostUploadUpdateRecordDetail'", slog.Any("request", describeHostUploadUpdateRecordDetailReq), slog.Any("response", describeHostUploadUpdateRecordDetailResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ssl.DescribeHostUploadUpdateRecordDetail': %w", err)
+		}
 
-	// 	var runningCount, succeededCount, failedCount, totalCount int64
-	// 	if describeHostUploadUpdateRecordDetailResp.Response.TotalCount == nil {
-	// 		return errors.New("unexpected deployment job status")
-	// 	} else {
-	// 		for _, record := range describeHostUploadUpdateRecordDetailResp.Response.DeployRecordDetail {
-	// 			if record.RunningTotalCount != nil {
-	// 				runningCount = *record.RunningTotalCount
-	// 			}
-	// 			if record.SuccessTotalCount != nil {
-	// 				succeededCount = *record.SuccessTotalCount
-	// 			}
-	// 			if record.FailedTotalCount != nil {
-	// 				failedCount = *record.FailedTotalCount
-	// 			}
-	// 			if record.TotalCount != nil {
-	// 				totalCount = *record.TotalCount
-	// 			}
-	// 		}
+		var runningCount, succeededCount, failedCount, totalCount int64
+		if describeHostUploadUpdateRecordDetailResp.Response.DeployRecordDetail == nil {
+			return errors.New("unexpected deployment job status")
+		} else {
+			for _, record := range describeHostUploadUpdateRecordDetailResp.Response.DeployRecordDetail {
+				if record.RunningTotalCount != nil {
+					runningCount = *record.RunningTotalCount
+				}
+				if record.SuccessTotalCount != nil {
+					succeededCount = *record.SuccessTotalCount
+				}
+				if record.FailedTotalCount != nil {
+					failedCount = *record.FailedTotalCount
+				}
+				if record.TotalCount != nil {
+					totalCount = *record.TotalCount
+				}
+			}
 
-	// 		if succeededCount+failedCount == totalCount {
-	// 			break
-	// 		}
-	// 	}
+			if succeededCount+failedCount == totalCount {
+				break
+			}
+		}
 
-	// 	d.logger.Info(fmt.Sprintf("waiting for deployment job completion (running: %d, succeeded: %d, failed: %d, total: %d) ...", runningCount, succeededCount, failedCount, totalCount))
-	// 	time.Sleep(time.Second * 5)
-	// }
+		d.logger.Info(fmt.Sprintf("waiting for deployment job completion (running: %d, succeeded: %d, failed: %d, total: %d) ...", runningCount, succeededCount, failedCount, totalCount))
+		time.Sleep(time.Second * 5)
+	}
 
 	return nil
 }
