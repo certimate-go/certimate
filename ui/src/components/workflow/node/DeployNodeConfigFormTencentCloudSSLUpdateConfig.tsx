@@ -24,7 +24,9 @@ export type DeployNodeConfigFormTencentCloudSSLUpdateConfigProps = {
 const MULTIPLE_INPUT_SEPARATOR = ";";
 
 const initFormModel = (): DeployNodeConfigFormTencentCloudSSLUpdateConfigFieldValues => {
-  return {};
+  return {
+    isReplaced: true,
+  };
 };
 
 const DeployNodeConfigFormTencentCloudSSLUpdateConfig = ({
