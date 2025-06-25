@@ -185,7 +185,10 @@ jobs:
 
             tmpdir=$(mktemp -d)
             cp "$bin" "${tmpdir}/${entrypoint}"
-            cp ../LICENSE ../README.md ../CHANGELOG.md "$tmpdir"
+            cp ../LICENSE "$tmpdir/LICENSE"
+            cp ../README.md "$tmpdir/README_zhCN.md"
+            cp ../README_EN.md "$tmpdir/README_enUS.md"
+            cp ../CHANGELOG.md "$tmpdir/CHANGELOG.md"
 
             if [[ "$bin" == *".exe" ]]; then
               zip -j "${bin%.exe}.zip" "$tmpdir"/*
