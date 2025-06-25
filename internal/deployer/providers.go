@@ -63,6 +63,7 @@ import (
 	pJDCloudLive "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/jdcloud-live"
 	pJDCloudVOD "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/jdcloud-vod"
 	pK8sSecret "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/k8s-secret"
+	pKong "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/kong"
 	pLeCDN "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/lecdn"
 	pLocal "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/local"
 	pNetlifySite "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/netlify-site"
@@ -920,6 +921,24 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 				JksAlias:                 xmaps.GetString(options.ProviderServiceConfig, "jksAlias"),
 				JksKeypass:               xmaps.GetString(options.ProviderServiceConfig, "jksKeypass"),
 				JksStorepass:             xmaps.GetString(options.ProviderServiceConfig, "jksStorepass"),
+			})
+			return deployer, err
+		}
+
+	case domain.DeploymentProviderTypeKong:
+		{
+			access := domain.AccessConfigForKong{}
+			if err := xmaps.Populate(options.ProviderAccessConfig, &access); err != nil {
+				return nil, fmt.Errorf("failed to populate provider access config: %w", err)
+			}
+
+			deployer, err := pKong.NewSSLDeployerProvider(&pKong.SSLDeployerProviderConfig{
+				ServerUrl:                access.ServerUrl,
+				ApiToken:                 access.ApiToken,
+				AllowInsecureConnections: access.AllowInsecureConnections,
+				ResourceType:             pKong.ResourceType(xmaps.GetString(options.ProviderServiceConfig, "resourceType")),
+				Workspace:                xmaps.GetString(options.ProviderServiceConfig, "workspace"),
+				CertificateId:            xmaps.GetString(options.ProviderServiceConfig, "certificateId"),
 			})
 			return deployer, err
 		}

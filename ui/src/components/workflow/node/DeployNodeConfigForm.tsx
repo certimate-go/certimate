@@ -65,6 +65,7 @@ import DeployNodeConfigFormJDCloudALBConfig from "./DeployNodeConfigFormJDCloudA
 import DeployNodeConfigFormJDCloudCDNConfig from "./DeployNodeConfigFormJDCloudCDNConfig";
 import DeployNodeConfigFormJDCloudLiveConfig from "./DeployNodeConfigFormJDCloudLiveConfig";
 import DeployNodeConfigFormJDCloudVODConfig from "./DeployNodeConfigFormJDCloudVODConfig";
+import DeployNodeConfigFormKongConfig from "./DeployNodeConfigFormKongConfig";
 import DeployNodeConfigFormKubernetesSecretConfig from "./DeployNodeConfigFormKubernetesSecretConfig";
 import DeployNodeConfigFormLeCDNConfig from "./DeployNodeConfigFormLeCDNConfig";
 import DeployNodeConfigFormLocalConfig from "./DeployNodeConfigFormLocalConfig";
@@ -304,6 +305,8 @@ const DeployNodeConfigForm = forwardRef<DeployNodeConfigFormInstance, DeployNode
           return <DeployNodeConfigFormJDCloudLiveConfig {...nestedFormProps} />;
         case DEPLOYMENT_PROVIDERS.JDCLOUD_VOD:
           return <DeployNodeConfigFormJDCloudVODConfig {...nestedFormProps} />;
+        case DEPLOYMENT_PROVIDERS.KONG:
+          return <DeployNodeConfigFormKongConfig {...nestedFormProps} />;
         case DEPLOYMENT_PROVIDERS.KUBERNETES_SECRET:
           return <DeployNodeConfigFormKubernetesSecretConfig {...nestedFormProps} />;
         case DEPLOYMENT_PROVIDERS.LECDN:

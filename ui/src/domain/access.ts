@@ -45,6 +45,7 @@ export interface AccessModel extends BaseModel {
       | AccessConfigForHetzner
       | AccessConfigForHuaweiCloud
       | AccessConfigForJDCloud
+      | AccessConfigForKong
       | AccessConfigForKubernetes
       | AccessConfigForLarkBot
       | AccessConfigForLeCDN
@@ -291,6 +292,12 @@ export type AccessConfigForHuaweiCloud = {
 export type AccessConfigForJDCloud = {
   accessKeyId: string;
   accessKeySecret: string;
+};
+
+export type AccessConfigForKong = {
+  serverUrl: string;
+  apiToken: string;
+  allowInsecureConnections?: boolean;
 };
 
 export type AccessConfigForKubernetes = {

@@ -44,6 +44,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   HETZNER: "hetzner",
   HUAWEICLOUD: "huaweicloud",
   JDCLOUD: "jdcloud",
+  KONG: "kong",
   KUBERNETES: "k8s",
   LARKBOT: "larkbot",
   LECDN: "lecdn",
@@ -146,6 +147,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
     [ACCESS_PROVIDERS.CACHEFLY, "provider.cachefly", "/imgs/providers/cachefly.png", [ACCESS_USAGES.HOSTING]],
     [ACCESS_PROVIDERS.EDGIO, "provider.edgio", "/imgs/providers/edgio.svg", [ACCESS_USAGES.HOSTING]],
     [ACCESS_PROVIDERS.APISIX, "provider.apisix", "/imgs/providers/apisix.svg", [ACCESS_USAGES.HOSTING]],
+    [ACCESS_PROVIDERS.KONG, "provider.kong", "/imgs/providers/kong.png", [ACCESS_USAGES.HOSTING]],
     [ACCESS_PROVIDERS.PROXMOXVE, "provider.proxmoxve", "/imgs/providers/proxmoxve.svg", [ACCESS_USAGES.HOSTING]],
 
     [ACCESS_PROVIDERS.CLOUDFLARE, "provider.cloudflare", "/imgs/providers/cloudflare.svg", [ACCESS_USAGES.DNS]],
@@ -436,6 +438,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   JDCLOUD_CDN: `${ACCESS_PROVIDERS.JDCLOUD}-cdn`,
   JDCLOUD_LIVE: `${ACCESS_PROVIDERS.JDCLOUD}-live`,
   JDCLOUD_VOD: `${ACCESS_PROVIDERS.JDCLOUD}-vod`,
+  KONG: `${ACCESS_PROVIDERS.KONG}`,
   KUBERNETES_SECRET: `${ACCESS_PROVIDERS.KUBERNETES}-secret`,
   LECDN: `${ACCESS_PROVIDERS.LECDN}`,
   LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
@@ -613,6 +616,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
     [DEPLOYMENT_PROVIDERS.BAOTAWAF_CONSOLE, "provider.baotawaf.console", DEPLOYMENT_CATEGORIES.OTHER],
     [DEPLOYMENT_PROVIDERS.SAFELINE, "provider.safeline", DEPLOYMENT_CATEGORIES.FIREWALL],
     [DEPLOYMENT_PROVIDERS.APISIX, "provider.apisix", DEPLOYMENT_CATEGORIES.APIGATEWAY],
+    [DEPLOYMENT_PROVIDERS.KONG, "provider.kong", DEPLOYMENT_CATEGORIES.APIGATEWAY],
     [DEPLOYMENT_PROVIDERS.PROXMOXVE, "provider.proxmoxve", DEPLOYMENT_CATEGORIES.NAS],
   ].map(([type, name, category, builtin]) => [
     type,

@@ -101,6 +101,7 @@
   "provider.jdcloud.dns": "京东云 - 云解析 DNS",
   "provider.jdcloud.live": "京东云 - 视频直播",
   "provider.jdcloud.vod": "京东云 - 视频点播",
+  "provider.kong": "Kong",
   "provider.kubernetes": "Kubernetes",
   "provider.kubernetes.secret": "Kubernetes - Secret",
   "provider.larkbot": "飞书群机器人",

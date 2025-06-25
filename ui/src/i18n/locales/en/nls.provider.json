@@ -101,6 +101,7 @@
   "provider.jdcloud.dns": "JD Cloud - DNS",
   "provider.jdcloud.live": "JD Cloud - Live Video",
   "provider.jdcloud.vod": "JD Cloud - VOD (Video on Demand)",
+  "provider.kong": "Kong",
   "provider.kubernetes": "Kubernetes",
   "provider.kubernetes.secret": "Kubernetes - Secret",
   "provider.larkbot": "Lark Bot",

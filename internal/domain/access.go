@@ -227,6 +227,12 @@ type AccessConfigForJDCloud struct {
 	AccessKeySecret string `json:"accessKeySecret"`
 }
 
+type AccessConfigForKong struct {
+	ServerUrl                string `json:"serverUrl"`
+	ApiToken                 string `json:"apiToken"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForKubernetes struct {
 	KubeConfig string `json:"kubeConfig,omitempty"`
 }
