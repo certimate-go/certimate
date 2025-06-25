@@ -70,11 +70,11 @@ type WorkflowNodeConfigForApply struct {
 	ChallengeType         string         `json:"challengeType"`                   // TODO: 验证方式。目前仅支持 dns-01
 	Provider              string         `json:"provider"`                        // DNS 提供商
 	ProviderAccessId      string         `json:"providerAccessId"`                // DNS 提供商授权记录 ID
-	ProviderConfig        map[string]any `json:"providerConfig"`                  // DNS 提供商额外配置
+	ProviderConfig        map[string]any `json:"providerConfig,omitempty"`        // DNS 提供商额外配置
 	CAProvider            string         `json:"caProvider,omitempty"`            // CA 提供商（零值时使用全局配置）
 	CAProviderAccessId    string         `json:"caProviderAccessId,omitempty"`    // CA 提供商授权记录 ID
 	CAProviderConfig      map[string]any `json:"caProviderConfig,omitempty"`      // CA 提供商额外配置
-	KeyAlgorithm          string         `json:"keyAlgorithm"`                    // 证书算法
+	KeyAlgorithm          string         `json:"keyAlgorithm,omitempty"`          // 证书算法
 	ACMEProfile           string         `json:"acmeProfile,omitempty"`           // ACME Profiles Extension
 	Nameservers           string         `json:"nameservers,omitempty"`           // DNS 服务器列表，以半角分号分隔
 	DnsPropagationWait    int32          `json:"dnsPropagationWait,omitempty"`    // DNS 传播等待时间，等同于 lego 的 `--dns-propagation-wait` 参数
@@ -124,6 +124,7 @@ func (n *WorkflowNode) GetConfigForApply() WorkflowNodeConfigForApply {
 	return WorkflowNodeConfigForApply{
 		Domains:               xmaps.GetString(n.Config, "domains"),
 		ContactEmail:          xmaps.GetString(n.Config, "contactEmail"),
+		ChallengeType:         xmaps.GetString(n.Config, "challengeType"),
 		Provider:              xmaps.GetString(n.Config, "provider"),
 		ProviderAccessId:      xmaps.GetString(n.Config, "providerAccessId"),
 		ProviderConfig:        xmaps.GetKVMapAny(n.Config, "providerConfig"),

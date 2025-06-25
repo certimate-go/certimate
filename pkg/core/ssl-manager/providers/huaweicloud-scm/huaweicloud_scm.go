@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
@@ -95,6 +96,17 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 
 		if listCertificatesResp.Certificates != nil {
 			for _, certDetail := range *listCertificatesResp.Certificates {
+				// 先对比证书通用名称
+				if !strings.EqualFold(certX509.Subject.CommonName, certDetail.Domain) {
+					continue
+				}
+
+				// 再对比证书有效期
+				if certX509.NotAfter.Local().Format(time.DateTime) != strings.TrimSuffix(certDetail.ExpireTime, ".0") {
+					continue
+				}
+
+				// 最后对比证书内容
 				exportCertificateReq := &hcscmmodel.ExportCertificateRequest{
 					CertificateId: certDetail.Id,
 				}
@@ -105,27 +117,27 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 						continue
 					}
 					return nil, fmt.Errorf("failed to execute sdk request 'scm.ExportCertificate': %w", err)
-				}
-
-				var isSameCert bool
-				if *exportCertificateResp.Certificate == certPEM {
-					isSameCert = true
 				} else {
-					oldCertX509, err := xcert.ParseCertificateFromPEM(*exportCertificateResp.Certificate)
-					if err != nil {
-						continue
+					var isSameCert bool
+					if *exportCertificateResp.Certificate == certPEM {
+						isSameCert = true
+					} else {
+						oldCertX509, err := xcert.ParseCertificateFromPEM(*exportCertificateResp.Certificate)
+						if err != nil {
+							continue
+						}
+
+						isSameCert = xcert.EqualCertificate(certX509, oldCertX509)
 					}
 
-					isSameCert = xcert.EqualCertificate(certX509, oldCertX509)
-				}
-
-				// 如果已存在相同证书，直接返回
-				if isSameCert {
-					m.logger.Info("ssl certificate already exists")
-					return &core.SSLManageUploadResult{
-						CertId:   certDetail.Id,
-						CertName: certDetail.Name,
-					}, nil
+					// 如果已存在相同证书，直接返回
+					if isSameCert {
+						m.logger.Info("ssl certificate already exists")
+						return &core.SSLManageUploadResult{
+							CertId:   certDetail.Id,
+							CertName: certDetail.Name,
+						}, nil
+					}
 				}
 			}
 		}
