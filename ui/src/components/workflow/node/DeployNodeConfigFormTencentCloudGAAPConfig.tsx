@@ -73,7 +73,7 @@ const DeployNodeConfigFormTencentCloudGAAPConfig = ({
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_gaap_endpoint.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_gaap_endpoint.placeholder")} />
+        <Input allowClear placeholder={t("workflow_node.deploy.form.tencentcloud_gaap_endpoint.placeholder")} />
       </Form.Item>
 
       <Form.Item name="resourceType" label={t("workflow_node.deploy.form.tencentcloud_gaap_resource_type.label")} rules={[formRule]}>

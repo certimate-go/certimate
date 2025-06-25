@@ -60,7 +60,7 @@ const DeployNodeConfigFormTencentCloudSCFConfig = ({
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_scf_endpoint.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_scf_endpoint.placeholder")} />
+        <Input allowClear placeholder={t("workflow_node.deploy.form.tencentcloud_scf_endpoint.placeholder")} />
       </Form.Item>
 
       <Form.Item

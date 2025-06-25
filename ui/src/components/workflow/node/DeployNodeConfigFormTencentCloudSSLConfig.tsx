@@ -52,7 +52,7 @@ const DeployNodeConfigFormTencentCloudSSLConfig = ({
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssl_endpoint.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_ssl_endpoint.placeholder")} />
+        <Input allowClear placeholder={t("workflow_node.deploy.form.tencentcloud_ssl_endpoint.placeholder")} />
       </Form.Item>
     </Form>
   );

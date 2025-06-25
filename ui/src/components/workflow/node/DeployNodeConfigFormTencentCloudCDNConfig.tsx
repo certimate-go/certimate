@@ -58,7 +58,7 @@ const DeployNodeConfigFormTencentCloudCDNConfig = ({
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_cdn_endpoint.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_cdn_endpoint.placeholder")} />
+        <Input allowClear placeholder={t("workflow_node.deploy.form.tencentcloud_cdn_endpoint.placeholder")} />
       </Form.Item>
 
       <Form.Item
