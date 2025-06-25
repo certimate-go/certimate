@@ -151,10 +151,10 @@ export type WorkflowNodeConfigForApply = {
   caProviderAccessId?: string;
   caProviderConfig?: Record<string, unknown>;
   keyAlgorithm: string;
+  acmeProfile?: string;
   nameservers?: string;
   dnsPropagationTimeout?: number;
   dnsTTL?: number;
-  profiles?: string;
   disableFollowCNAME?: boolean;
   disableARI?: boolean;
   skipBeforeExpiryDays: number;
