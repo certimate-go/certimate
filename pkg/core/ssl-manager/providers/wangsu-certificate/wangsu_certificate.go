@@ -71,16 +71,16 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 	}
 
 	if listCertificatesResp.Certificates != nil {
-		for _, certificate := range listCertificatesResp.Certificates {
+		for _, certRecord := range listCertificatesResp.Certificates {
 			// 对比证书序列号
-			if !strings.EqualFold(certX509.SerialNumber.Text(16), certificate.Serial) {
+			if !strings.EqualFold(certX509.SerialNumber.Text(16), certRecord.Serial) {
 				continue
 			}
 
 			// 再对比证书有效期
 			cstzone := time.FixedZone("CST", 8*60*60)
-			oldCertNotBefore, _ := time.ParseInLocation(time.DateTime, certificate.ValidityFrom, cstzone)
-			oldCertNotAfter, _ := time.ParseInLocation(time.DateTime, certificate.ValidityTo, cstzone)
+			oldCertNotBefore, _ := time.ParseInLocation(time.DateTime, certRecord.ValidityFrom, cstzone)
+			oldCertNotAfter, _ := time.ParseInLocation(time.DateTime, certRecord.ValidityTo, cstzone)
 			if !certX509.NotBefore.Equal(oldCertNotBefore) || !certX509.NotAfter.Equal(oldCertNotAfter) {
 				continue
 			}
@@ -88,8 +88,8 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 			// 如果以上信息都一致，则视为已存在相同证书，直接返回
 			m.logger.Info("ssl certificate already exists")
 			return &core.SSLManageUploadResult{
-				CertId:   certificate.CertificateId,
-				CertName: certificate.Name,
+				CertId:   certRecord.CertificateId,
+				CertName: certRecord.Name,
 			}, nil
 		}
 	}

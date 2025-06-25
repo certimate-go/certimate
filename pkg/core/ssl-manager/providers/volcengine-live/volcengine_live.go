@@ -70,11 +70,11 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 		return nil, fmt.Errorf("failed to execute sdk request 'live.ListCertV2': %w", err)
 	}
 	if listCertResp.Result.CertList != nil {
-		for _, certDetail := range listCertResp.Result.CertList {
+		for _, certInfo := range listCertResp.Result.CertList {
 			// 查询证书详细信息
 			// REF: https://www.volcengine.com/docs/6469/1186278#%E6%9F%A5%E7%9C%8B%E8%AF%81%E4%B9%A6%E8%AF%A6%E6%83%85
 			describeCertDetailSecretReq := &velive.DescribeCertDetailSecretV2Body{
-				ChainID: ve.String(certDetail.ChainID),
+				ChainID: ve.String(certInfo.ChainID),
 			}
 			describeCertDetailSecretResp, err := m.sdkClient.DescribeCertDetailSecretV2(ctx, describeCertDetailSecretReq)
 			m.logger.Debug("sdk request 'live.DescribeCertDetailSecretV2'", slog.Any("request", describeCertDetailSecretReq), slog.Any("response", describeCertDetailSecretResp))
@@ -99,8 +99,8 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 			if isSameCert {
 				m.logger.Info("ssl certificate already exists")
 				return &core.SSLManageUploadResult{
-					CertId:   certDetail.ChainID,
-					CertName: certDetail.CertName,
+					CertId:   certInfo.ChainID,
+					CertName: certInfo.CertName,
 				}, nil
 			}
 		}

@@ -297,21 +297,20 @@ func (d *SSLDeployerProvider) modifyListenerCertificate(ctx context.Context, clo
 				return fmt.Errorf("failed to execute sdk request 'elb.ShowCertificate': %w", err)
 			}
 
-			for _, certificate := range *listOldCertificateResp.Certificates {
-				oldCertificate := certificate
-				newCertificate := showNewCertificateResp.Certificate
+			for _, oldCertInfo := range *listOldCertificateResp.Certificates {
+				newCertInfo := showNewCertificateResp.Certificate
 
-				if oldCertificate.SubjectAlternativeNames != nil && newCertificate.SubjectAlternativeNames != nil {
-					if slices.Equal(*oldCertificate.SubjectAlternativeNames, *newCertificate.SubjectAlternativeNames) {
+				if oldCertInfo.SubjectAlternativeNames != nil && newCertInfo.SubjectAlternativeNames != nil {
+					if slices.Equal(*oldCertInfo.SubjectAlternativeNames, *newCertInfo.SubjectAlternativeNames) {
 						continue
 					}
 				} else {
-					if oldCertificate.Domain == newCertificate.Domain {
+					if oldCertInfo.Domain == newCertInfo.Domain {
 						continue
 					}
 				}
 
-				sniCertIds = append(sniCertIds, certificate.Id)
+				sniCertIds = append(sniCertIds, oldCertInfo.Id)
 			}
 
 			updateListenerReq.Body.Listener.SniContainerRefs = &sniCertIds

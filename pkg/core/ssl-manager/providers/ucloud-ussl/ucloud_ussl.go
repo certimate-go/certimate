@@ -143,24 +143,24 @@ func (m *SSLManagerProvider) findCertIfExists(ctx context.Context, certPEM strin
 		}
 
 		if getCertificateListResp.CertificateList != nil {
-			for _, certInfo := range getCertificateListResp.CertificateList {
+			for _, certItem := range getCertificateListResp.CertificateList {
 				// 优刻得未提供可唯一标识证书的字段，只能通过多个字段尝试对比来判断是否为同一证书
 				// 先分别对比证书的多域名、品牌、有效期，再对比签名算法
 
-				if len(certX509.DNSNames) == 0 || certInfo.Domains != strings.Join(certX509.DNSNames, ",") {
+				if len(certX509.DNSNames) == 0 || certItem.Domains != strings.Join(certX509.DNSNames, ",") {
 					continue
 				}
 
-				if len(certX509.Issuer.Organization) == 0 || certInfo.Brand != certX509.Issuer.Organization[0] {
+				if len(certX509.Issuer.Organization) == 0 || certItem.Brand != certX509.Issuer.Organization[0] {
 					continue
 				}
 
-				if int64(certInfo.NotBefore) != certX509.NotBefore.UnixMilli() || int64(certInfo.NotAfter) != certX509.NotAfter.UnixMilli() {
+				if int64(certItem.NotBefore) != certX509.NotBefore.UnixMilli() || int64(certItem.NotAfter) != certX509.NotAfter.UnixMilli() {
 					continue
 				}
 
 				getCertificateDetailInfoReq := m.sdkClient.NewGetCertificateDetailInfoRequest()
-				getCertificateDetailInfoReq.CertificateID = ucloud.Int(certInfo.CertificateID)
+				getCertificateDetailInfoReq.CertificateID = ucloud.Int(certItem.CertificateID)
 				if m.config.ProjectId != "" {
 					getCertificateDetailInfoReq.ProjectId = ucloud.String(m.config.ProjectId)
 				}
@@ -212,10 +212,10 @@ func (m *SSLManagerProvider) findCertIfExists(ctx context.Context, certPEM strin
 				}
 
 				return &core.SSLManageUploadResult{
-					CertId:   fmt.Sprintf("%d", certInfo.CertificateID),
-					CertName: certInfo.Name,
+					CertId:   fmt.Sprintf("%d", certItem.CertificateID),
+					CertName: certItem.Name,
 					ExtendedData: map[string]any{
-						"resourceId": certInfo.CertificateSN,
+						"resourceId": certItem.CertificateSN,
 					},
 				}, nil
 			}

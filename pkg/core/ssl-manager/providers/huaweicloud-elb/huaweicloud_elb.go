@@ -95,12 +95,12 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 		}
 
 		if listCertificatesResp.Certificates != nil {
-			for _, certDetail := range *listCertificatesResp.Certificates {
+			for _, certInfo := range *listCertificatesResp.Certificates {
 				var isSameCert bool
-				if certDetail.Certificate == certPEM {
+				if certInfo.Certificate == certPEM {
 					isSameCert = true
 				} else {
-					oldCertX509, err := xcert.ParseCertificateFromPEM(certDetail.Certificate)
+					oldCertX509, err := xcert.ParseCertificateFromPEM(certInfo.Certificate)
 					if err != nil {
 						continue
 					}
@@ -112,8 +112,8 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 				if isSameCert {
 					m.logger.Info("ssl certificate already exists")
 					return &core.SSLManageUploadResult{
-						CertId:   certDetail.Id,
-						CertName: certDetail.Name,
+						CertId:   certInfo.Id,
+						CertName: certInfo.Name,
 					}, nil
 				}
 			}

@@ -114,19 +114,19 @@ func (m *SSLManagerProvider) findCertIfExists(ctx context.Context, certPEM strin
 		}
 
 		if sslCenterListResp.Data != nil && sslCenterListResp.Data.Records != nil {
-			for _, sslItem := range sslCenterListResp.Data.Records {
+			for _, sslRecord := range sslCenterListResp.Data.Records {
 				// 先对比证书的多域名
-				if sslItem.Domain != strings.Join(certX509.DNSNames, ", ") {
+				if sslRecord.Domain != strings.Join(certX509.DNSNames, ", ") {
 					continue
 				}
 
 				// 再对比证书的有效期
-				if sslItem.StartDate != certX509.NotBefore.Unix() || sslItem.ExpireDate != certX509.NotAfter.Unix() {
+				if sslRecord.StartDate != certX509.NotBefore.Unix() || sslRecord.ExpireDate != certX509.NotAfter.Unix() {
 					continue
 				}
 
 				// 最后对比证书内容
-				sslCenterGetResp, err := m.sdkClient.SslCenterGet(sslItem.ID)
+				sslCenterGetResp, err := m.sdkClient.SslCenterGet(sslRecord.ID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to execute sdk request 'sslcenter.Get': %w", err)
 				}
@@ -148,7 +148,7 @@ func (m *SSLManagerProvider) findCertIfExists(ctx context.Context, certPEM strin
 				// 如果已存在相同证书，直接返回
 				if isSameCert {
 					return &core.SSLManageUploadResult{
-						CertId: fmt.Sprintf("%d", sslItem.ID),
+						CertId: fmt.Sprintf("%d", sslRecord.ID),
 					}, nil
 				}
 			}
