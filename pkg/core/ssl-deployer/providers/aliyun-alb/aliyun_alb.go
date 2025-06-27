@@ -109,12 +109,12 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	// 根据部署资源类型决定部署方式
 	switch d.config.ResourceType {
 	case RESOURCE_TYPE_LOADBALANCER:
-		if err := d.deployToLoadbalancer(ctx, upres.CertId); err != nil {
+		if err := d.deployToLoadbalancer(ctx, upres.ExtendedData["certIdentifier"].(string)); err != nil {
 			return nil, err
 		}
 
 	case RESOURCE_TYPE_LISTENER:
-		if err := d.deployToListener(ctx, upres.CertId); err != nil {
+		if err := d.deployToListener(ctx, upres.ExtendedData["certIdentifier"].(string)); err != nil {
 			return nil, err
 		}
 
@@ -338,13 +338,13 @@ func (d *SSLDeployerProvider) updateListenerCertificate(ctx context.Context, clo
 					continue
 				}
 
-				// 监听证书 ID 格式：${证书 ID}-${地域}
-				certificateId := strings.Split(tea.StringValue(listenerCertificate.CertificateId), "-")[0]
-				if certificateId == cloudCertId {
+				if tea.StringValue(listenerCertificate.CertificateId) == cloudCertId {
 					certificateIsAlreadyAssociated = true
 					break
 				}
 
+				// 监听证书 ID 格式：${证书 ID}-${地域}
+				certificateId := strings.Split(tea.StringValue(listenerCertificate.CertificateId), "-")[0]
 				certificateIdAsInt64, err := strconv.ParseInt(certificateId, 10, 64)
 				if err != nil {
 					errs = append(errs, err)
