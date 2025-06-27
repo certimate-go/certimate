@@ -94,10 +94,20 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 
 		if listUserCertificateOrderResp.Body.CertificateOrderList != nil {
 			for _, certOrder := range listUserCertificateOrderResp.Body.CertificateOrderList {
-				if !strings.EqualFold(certX509.SerialNumber.Text(16), *certOrder.SerialNo) {
+				// 先对比证书通用名称
+				if !strings.EqualFold(certX509.Subject.CommonName, tea.StringValue(certOrder.CommonName)) {
 					continue
 				}
 
+				// 再对比证书序列号
+				// 注意阿里云 CAS 会在序列号前补零，需去除后再比较
+				oldCertSN := strings.TrimLeft(tea.StringValue(certOrder.SerialNo), "0")
+				newCertSN := strings.TrimLeft(certX509.SerialNumber.Text(16), "0")
+				if !strings.EqualFold(newCertSN, oldCertSN) {
+					continue
+				}
+
+				// 最后对比证书内容
 				getUserCertificateDetailReq := &alicas.GetUserCertificateDetailRequest{
 					CertId: certOrder.CertificateId,
 				}

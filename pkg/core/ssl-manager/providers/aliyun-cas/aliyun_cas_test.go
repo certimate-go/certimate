@@ -1,4 +1,4 @@
-package baiducloudcert_test
+package aliyuncas_test
 
 import (
 	"context"
@@ -9,33 +9,36 @@ import (
 	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/baiducloud-cert"
+	provider "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/aliyun-cas"
 )
 
 var (
 	fInputCertPath   string
 	fInputKeyPath    string
 	fAccessKeyId     string
-	fSecretAccessKey string
+	fAccessKeySecret string
+	fRegion          string
 )
 
 func init() {
-	argsPrefix := "CERTIMATE_SSLMANAGER_BAIDUCLOUDCERT_"
+	argsPrefix := "CERTIMATE_SSLMANAGER_ALIYUNCAS_"
 
 	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
 	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fSecretAccessKey, argsPrefix+"SECRETACCESSKEY", "", "")
+	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
+	flag.StringVar(&fRegion, argsPrefix+"REGION", "", "")
 }
 
 /*
 Shell command to run this test:
 
-	go test -v ./baiducloud_cert_test.go -args \
-	--CERTIMATE_SSLMANAGER_BAIDUCLOUDCERT_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--CERTIMATE_SSLMANAGER_BAIDUCLOUDCERT_INPUTKEYPATH="/path/to/your-input-key.pem" \
-	--CERTIMATE_SSLMANAGER_BAIDUCLOUDCERT_ACCESSKEYID="your-access-key-id" \
-	--CERTIMATE_SSLMANAGER_BAIDUCLOUDCERT_SECRETACCESSKEY="your-access-key-secret"
+	go test -v ./aliyun_cas_test.go -args \
+	--CERTIMATE_SSLMANAGER_ALIYUNCAS_INPUTCERTPATH="/path/to/your-input-cert.pem" \
+	--CERTIMATE_SSLMANAGER_ALIYUNCAS_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--CERTIMATE_SSLMANAGER_ALIYUNCAS_ACCESSKEYID="your-access-key-id" \
+	--CERTIMATE_SSLMANAGER_ALIYUNCAS_ACCESSKEYSECRET="your-access-key-secret" \
+	--CERTIMATE_SSLMANAGER_ALIYUNCAS_REGION="cn-hangzhou"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -46,12 +49,14 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
 			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
 			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("SECRETACCESSKEY: %v", fSecretAccessKey),
+			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
+			fmt.Sprintf("REGION: %v", fRegion),
 		}, "\n"))
 
 		sslmanager, err := provider.NewSSLManagerProvider(&provider.SSLManagerProviderConfig{
 			AccessKeyId:     fAccessKeyId,
-			SecretAccessKey: fSecretAccessKey,
+			AccessKeySecret: fAccessKeySecret,
+			Region:          fRegion,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
