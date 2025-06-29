@@ -24,7 +24,7 @@ type SSLDeployerProviderConfig struct {
 	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
 	// 原证书 ID。
-	CertificiateId string `json:"certificateId"`
+	CertificateId string `json:"certificateId"`
 	// 是否替换原有证书（即保持原证书 ID 不变）。
 	IsReplaced bool `json:"isReplaced,omitempty"`
 	// 云资源类型数组。
@@ -80,7 +80,7 @@ func (d *SSLDeployerProvider) SetLogger(logger *slog.Logger) {
 }
 
 func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privkeyPEM string) (*core.SSLDeployResult, error) {
-	if d.config.CertificiateId == "" {
+	if d.config.CertificateId == "" {
 		return nil, errors.New("config `certificateId` is required")
 	}
 	if len(d.config.ResourceTypes) == 0 {
@@ -120,7 +120,7 @@ func (d *SSLDeployerProvider) executeUpdateCertificateInstance(ctx context.Conte
 		}
 
 		updateCertificateInstanceReq := tcssl.NewUpdateCertificateInstanceRequest()
-		updateCertificateInstanceReq.OldCertificateId = common.StringPtr(d.config.CertificiateId)
+		updateCertificateInstanceReq.OldCertificateId = common.StringPtr(d.config.CertificateId)
 		updateCertificateInstanceReq.CertificateId = common.StringPtr(upres.CertId)
 		updateCertificateInstanceReq.ResourceTypes = common.StringPtrs(d.config.ResourceTypes)
 		updateCertificateInstanceReq.ResourceTypesRegions = wrapResourceTypeRegions(d.config.ResourceTypes, d.config.ResourceRegions)
@@ -198,7 +198,7 @@ func (d *SSLDeployerProvider) executeUploadUpdateCertificateInstance(ctx context
 		}
 
 		uploadUpdateCertificateInstanceReq := tcssl.NewUploadUpdateCertificateInstanceRequest()
-		uploadUpdateCertificateInstanceReq.OldCertificateId = common.StringPtr(d.config.CertificiateId)
+		uploadUpdateCertificateInstanceReq.OldCertificateId = common.StringPtr(d.config.CertificateId)
 		uploadUpdateCertificateInstanceReq.CertificatePublicKey = common.StringPtr(certPEM)
 		uploadUpdateCertificateInstanceReq.CertificatePrivateKey = common.StringPtr(privkeyPEM)
 		uploadUpdateCertificateInstanceReq.ResourceTypes = common.StringPtrs(d.config.ResourceTypes)

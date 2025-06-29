@@ -1251,7 +1251,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 					SecretId:        access.SecretId,
 					SecretKey:       access.SecretKey,
 					Endpoint:        xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
-					CertificiateId:  xmaps.GetString(options.ProviderServiceConfig, "certificiateId"),
+					CertificateId:   xmaps.GetString(options.ProviderServiceConfig, "certificateId"),
 					IsReplaced:      xmaps.GetBool(options.ProviderServiceConfig, "isReplaced"),
 					ResourceTypes:   xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "resourceTypes"), ";"), func(s string) bool { return s != "" }),
 					ResourceRegions: xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "resourceRegions"), ";"), func(s string) bool { return s != "" }),
