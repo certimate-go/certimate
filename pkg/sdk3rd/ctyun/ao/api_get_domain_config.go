@@ -14,15 +14,15 @@ type GetDomainConfigResponse struct {
 	apiResponseBase
 
 	ReturnObj *struct {
-		Domain      string                  `json:"domain"`
-		ProductCode string                  `json:"product_code"`
-		Status      int32                   `json:"status"`
-		AreaScope   int32                   `json:"area_scope"`
-		Cname       string                  `json:"cname"`
-		Origin      []*DomainOriginConfig   `json:"origin,omitempty"`
-		HttpsStatus string                  `json:"https_status"`
-		HttpsBasic  *DomainHttpsBasicConfig `json:"https_basic,omitempty"`
-		CertName    string                  `json:"cert_name"`
+		Domain      string                          `json:"domain"`
+		ProductCode string                          `json:"product_code"`
+		Status      int32                           `json:"status"`
+		AreaScope   int32                           `json:"area_scope"`
+		Cname       string                          `json:"cname"`
+		Origin      []*DomainOriginConfigWithWeight `json:"origin,omitempty"`
+		HttpsStatus string                          `json:"https_status"`
+		HttpsBasic  *DomainHttpsBasicConfig         `json:"https_basic,omitempty"`
+		CertName    string                          `json:"cert_name"`
 	} `json:"returnObj,omitempty"`
 }
 

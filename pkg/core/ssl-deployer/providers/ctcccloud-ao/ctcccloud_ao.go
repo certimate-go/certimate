@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strconv"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/ctcccloud-ao"
 	ctyunao "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/ao"
+	xslices "github.com/certimate-go/certimate/pkg/utils/slices"
 	xtypes "github.com/certimate-go/certimate/pkg/utils/types"
 )
 
@@ -80,7 +82,8 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	// 域名基础及加速配置查询
 	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=113&api=13412&data=174&isNormal=1&vid=167
 	getDomainConfigReq := &ctyunao.GetDomainConfigRequest{
-		Domain: xtypes.ToPtr(d.config.Domain),
+		Domain:      xtypes.ToPtr(d.config.Domain),
+		ProductCode: xtypes.ToPtr("020"),
 	}
 	getDomainConfigResp, err := d.sdkClient.GetDomainConfig(getDomainConfigReq)
 	d.logger.Debug("sdk request 'cdn.GetDomainConfig'", slog.Any("request", getDomainConfigReq), slog.Any("response", getDomainConfigResp))
@@ -93,7 +96,17 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	modifyDomainConfigReq := &ctyunao.ModifyDomainConfigRequest{
 		Domain:      xtypes.ToPtr(d.config.Domain),
 		ProductCode: xtypes.ToPtr(getDomainConfigResp.ReturnObj.ProductCode),
-		Origin:      getDomainConfigResp.ReturnObj.Origin,
+		Origin: xslices.Map(getDomainConfigResp.ReturnObj.Origin, func(item *ctyunao.DomainOriginConfigWithWeight) *ctyunao.DomainOriginConfig {
+			weight := item.Weight
+			if weight == 0 {
+				weight = 1
+			}
+			return &ctyunao.DomainOriginConfig{
+				Origin: item.Origin,
+				Role:   item.Role,
+				Weight: strconv.Itoa(int(weight)),
+			}
+		}),
 		HttpsStatus: xtypes.ToPtr("on"),
 		CertName:    xtypes.ToPtr(upres.CertName),
 	}

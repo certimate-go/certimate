@@ -92,6 +92,12 @@ type CertDetail struct {
 type DomainOriginConfig struct {
 	Origin string `json:"origin"`
 	Role   string `json:"role"`
+	Weight string `json:"weight"`
+}
+
+type DomainOriginConfigWithWeight struct {
+	Origin string `json:"origin"`
+	Role   string `json:"role"`
 	Weight int32  `json:"weight"`
 }
 
