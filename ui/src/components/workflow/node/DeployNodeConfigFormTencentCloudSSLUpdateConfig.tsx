@@ -24,9 +24,7 @@ export type DeployNodeConfigFormTencentCloudSSLUpdateConfigProps = {
 const MULTIPLE_INPUT_SEPARATOR = ";";
 
 const initFormModel = (): DeployNodeConfigFormTencentCloudSSLUpdateConfigFieldValues => {
-  return {
-    isReplaced: true,
-  };
+  return {};
 };
 
 const DeployNodeConfigFormTencentCloudSSLUpdateConfig = ({
@@ -125,7 +123,12 @@ const DeployNodeConfigFormTencentCloudSSLUpdateConfig = ({
         />
       </Form.Item>
 
-      <Form.Item name="isReplaced" label={t("workflow_node.deploy.form.tencentcloud_ssl_update_is_replaced.label")} rules={[formRule]}>
+      <Form.Item
+        name="isReplaced"
+        label={t("workflow_node.deploy.form.tencentcloud_ssl_update_is_replaced.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssl_update_is_replaced.tooltip") }}></span>}
+      >
         <Switch />
       </Form.Item>
     </Form>
