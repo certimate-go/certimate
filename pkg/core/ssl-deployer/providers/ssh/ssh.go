@@ -419,7 +419,7 @@ func writeFileWithSFTP(sshCli *ssh.Client, path string, data []byte) error {
 	}
 	defer sftpCli.Close()
 
-	if err := sftpCli.MkdirAll(filepath.Dir(path)); err != nil {
+	if err := sftpCli.MkdirAll(filepath.ToSlash(filepath.Dir(path))); err != nil {
 		return fmt.Errorf("failed to create remote directory: %w", err)
 	}
 
