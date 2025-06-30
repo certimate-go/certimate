@@ -288,7 +288,7 @@
   "access.form.k8s_kubeconfig.tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a><br><br>Leave it blank to use the Pod's ServiceAccount.",
   "access.form.kong_server_url.label": "Kong admin API server URL",
   "access.form.kong_server_url.placeholder": "Please enter Kong admin API server URL",
-  "access.form.kong_api_token.label": "Kong admin API token",
+  "access.form.kong_api_token.label": "Kong admin API token (Optional)",
   "access.form.kong_api_token.placeholder": "Please enter Kong admin API token",
   "access.form.kong_api_token.tooltip": "For more information, see <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>",
   "access.form.larkbot_webhook_url.label": "Lark bot Webhook URL",
