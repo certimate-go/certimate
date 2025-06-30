@@ -24,9 +24,7 @@ export type DeployNodeConfigFormTencentCloudSSLUpdateConfigProps = {
 const MULTIPLE_INPUT_SEPARATOR = ";";
 
 const initFormModel = (): DeployNodeConfigFormTencentCloudSSLUpdateConfigFieldValues => {
-  return {
-    isReplaced: true,
-  };
+  return {};
 };
 
 const DeployNodeConfigFormTencentCloudSSLUpdateConfig = ({
@@ -49,12 +47,15 @@ const DeployNodeConfigFormTencentCloudSSLUpdateConfig = ({
         .split(MULTIPLE_INPUT_SEPARATOR)
         .every((e) => !!e.trim());
     }, t("workflow_node.deploy.form.tencentcloud_ssl_update_resource_types.placeholder")),
-    resourceRegions: z.string(t("workflow_node.deploy.form.tencentcloud_ssl_update_resource_regions.placeholder")).refine((v) => {
-      if (!v) return false;
-      return String(v)
-        .split(MULTIPLE_INPUT_SEPARATOR)
-        .every((e) => !!e.trim());
-    }, t("workflow_node.deploy.form.tencentcloud_ssl_update_resource_regions.placeholder")),
+    resourceRegions: z
+      .string(t("workflow_node.deploy.form.tencentcloud_ssl_update_resource_regions.placeholder"))
+      .nullish()
+      .refine((v) => {
+        if (!v) return true;
+        return String(v)
+          .split(MULTIPLE_INPUT_SEPARATOR)
+          .every((e) => !!e.trim());
+      }, t("workflow_node.deploy.form.tencentcloud_ssl_update_resource_regions.placeholder")),
     isReplaced: z.boolean().nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);
@@ -122,7 +123,12 @@ const DeployNodeConfigFormTencentCloudSSLUpdateConfig = ({
         />
       </Form.Item>
 
-      <Form.Item name="isReplaced" label={t("workflow_node.deploy.form.tencentcloud_ssl_update_is_replaced.label")} rules={[formRule]}>
+      <Form.Item
+        name="isReplaced"
+        label={t("workflow_node.deploy.form.tencentcloud_ssl_update_is_replaced.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssl_update_is_replaced.tooltip") }}></span>}
+      >
         <Switch />
       </Form.Item>
     </Form>

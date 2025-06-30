@@ -229,7 +229,7 @@ type AccessConfigForJDCloud struct {
 
 type AccessConfigForKong struct {
 	ServerUrl                string `json:"serverUrl"`
-	ApiToken                 string `json:"apiToken"`
+	ApiToken                 string `json:"apiToken,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
