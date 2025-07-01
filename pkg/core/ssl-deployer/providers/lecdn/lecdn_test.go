@@ -42,7 +42,7 @@ Shell command to run this test:
 	--CERTIMATE_SSLDEPLOYER_LECDN_SERVERURL="http://127.0.0.1:5090" \
 	--CERTIMATE_SSLDEPLOYER_LECDN_USERNAME="your-username" \
 	--CERTIMATE_SSLDEPLOYER_LECDN_PASSWORD="your-password" \
-	--CERTIMATE_SSLDEPLOYER_LECDN_CERTIFICATEID="your-cerficiate-id"
+	--CERTIMATE_SSLDEPLOYER_LECDN_CERTIFICATEID="your-certificate-id"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()

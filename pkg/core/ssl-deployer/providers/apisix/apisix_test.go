@@ -37,7 +37,7 @@ Shell command to run this test:
 	--CERTIMATE_SSLDEPLOYER_APISIX_INPUTKEYPATH="/path/to/your-input-key.pem" \
 	--CERTIMATE_SSLDEPLOYER_APISIX_SERVERURL="http://127.0.0.1:9080" \
 	--CERTIMATE_SSLDEPLOYER_APISIX_APIKEY="your-api-key" \
-	--CERTIMATE_SSLDEPLOYER_APISIX_CERTIFICATEID="your-cerficiate-id"
+	--CERTIMATE_SSLDEPLOYER_APISIX_CERTIFICATEID="your-certificate-id"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()

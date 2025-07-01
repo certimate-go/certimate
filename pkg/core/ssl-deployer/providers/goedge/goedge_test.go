@@ -40,7 +40,7 @@ Shell command to run this test:
 	--CERTIMATE_SSLDEPLOYER_GOEDGE_SERVERURL="http://127.0.0.1:7788" \
 	--CERTIMATE_SSLDEPLOYER_GOEDGE_ACCESSKEYID="your-access-key-id" \
 	--CERTIMATE_SSLDEPLOYER_GOEDGE_ACCESSKEY="your-access-key" \
-	--CERTIMATE_SSLDEPLOYER_GOEDGE_CERTIFICATEID="your-cerficiate-id"
+	--CERTIMATE_SSLDEPLOYER_GOEDGE_CERTIFICATEID="your-certificate-id"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()

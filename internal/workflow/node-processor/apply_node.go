@@ -37,7 +37,7 @@ func NewApplyNode(node *domain.WorkflowNode) *applyNode {
 
 func (n *applyNode) Process(ctx context.Context) error {
 	nodeCfg := n.node.GetConfigForApply()
-	n.logger.Info("ready to obtain certificiate ...", slog.Any("config", nodeCfg))
+	n.logger.Info("ready to obtain certificate ...", slog.Any("config", nodeCfg))
 
 	// 查询上次执行结果
 	lastOutput, err := n.outputRepo.GetByNodeId(ctx, n.node.Id)
@@ -67,7 +67,7 @@ func (n *applyNode) Process(ctx context.Context) error {
 	// 申请证书
 	applyResult, err := applicant.Apply(ctx)
 	if err != nil {
-		n.logger.Warn("failed to obtain certificiate")
+		n.logger.Warn("failed to obtain certificate")
 		return err
 	}
 

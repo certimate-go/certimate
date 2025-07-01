@@ -37,7 +37,7 @@ Shell command to run this test:
 	--CERTIMATE_SSLDEPLOYER_SAFELINE_INPUTKEYPATH="/path/to/your-input-key.pem" \
 	--CERTIMATE_SSLDEPLOYER_SAFELINE_SERVERURL="http://127.0.0.1:9443" \
 	--CERTIMATE_SSLDEPLOYER_SAFELINE_APITOKEN="your-api-token" \
-	--CERTIMATE_SSLDEPLOYER_SAFELINE_CERTIFICATEID="your-cerficiate-id"
+	--CERTIMATE_SSLDEPLOYER_SAFELINE_CERTIFICATEID="your-certificate-id"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()

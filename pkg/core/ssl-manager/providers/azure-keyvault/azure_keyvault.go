@@ -141,7 +141,7 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 	// 生成新证书名（需符合 Azure 命名规则）
 	certName := fmt.Sprintf("certimate-%d", time.Now().UnixMilli())
 
-	// Azure Key Vault 不支持导入带有 Certificiate Chain 的 PEM 证书。
+	// Azure Key Vault 不支持导入带有 Certificate Chain 的 PEM 证书。
 	// Issue Link: https://github.com/Azure/azure-cli/issues/19017
 	// 暂时的解决方法是，将 PEM 证书转换成 PFX 格式，然后再导入。
 	certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, "")
