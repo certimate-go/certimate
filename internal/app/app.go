@@ -9,15 +9,21 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 )
 
-var instance core.App
-
-var intanceOnce sync.Once
+var (
+	instance    core.App
+	intanceOnce sync.Once
+)
 
 func GetApp() core.App {
 	intanceOnce.Do(func() {
-		instance = pocketbase.NewWithConfig(pocketbase.Config{
+		pb := pocketbase.NewWithConfig(pocketbase.Config{
 			HideStartBanner: true,
 		})
+
+		pb.RootCmd.Flags().MarkHidden("encryptionEnv")
+		pb.RootCmd.Flags().MarkHidden("queryTimeout")
+
+		instance = pb
 	})
 
 	return instance

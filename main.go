@@ -64,7 +64,6 @@ func main() {
 
 	app.OnTerminate().BindFunc(func(e *core.TerminateEvent) error {
 		routes.Unregister()
-		slog.Info("[CERTIMATE] Exit!")
 		return e.Next()
 	})
 
