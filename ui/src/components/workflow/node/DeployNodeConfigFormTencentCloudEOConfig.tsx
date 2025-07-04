@@ -4,11 +4,12 @@ import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod/v4";
 
 import { validDomainName } from "@/utils/validators";
+import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
 
 type DeployNodeConfigFormTencentCloudEOConfigFieldValues = Nullish<{
   endpoint?: string;
   zoneId: string;
-  domain: string;
+  domains: string;
 }>;
 
 export type DeployNodeConfigFormTencentCloudEOConfigProps = {
@@ -22,6 +23,8 @@ export type DeployNodeConfigFormTencentCloudEOConfigProps = {
 const initFormModel = (): DeployNodeConfigFormTencentCloudEOConfigFieldValues => {
   return {};
 };
+
+const MULTIPLE_INPUT_SEPARATOR = ";";
 
 const DeployNodeConfigFormTencentCloudEOConfig = ({
   form: formInst,
@@ -37,9 +40,14 @@ const DeployNodeConfigFormTencentCloudEOConfig = ({
     zoneId: z
       .string(t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder")),
-    domain: z
+    domains: z
       .string(t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder"))
-      .refine((v) => validDomainName(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
+      .refine((v) => {
+        if (!v) return false;
+        return String(v)
+          .split(MULTIPLE_INPUT_SEPARATOR)
+          .every((e) => validDomainName(e, { allowWildcard: true }));
+      }, t("common.errmsg.domain_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
 
@@ -75,12 +83,17 @@ const DeployNodeConfigFormTencentCloudEOConfig = ({
       </Form.Item>
 
       <Form.Item
-        name="domain"
+        name="domains"
         label={t("workflow_node.deploy.form.tencentcloud_eo_domain.label")}
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eo_domain.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder")} />
+        <MultipleSplitValueInput
+          modalTitle={t("workflow_node.deploy.form.tencentcloud_eo_domain.label")}
+          placeholder={t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder")}
+          placeholderInModal={t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder")}
+          splitOptions={{ trim: true, removeEmpty: true }}
+        />
       </Form.Item>
     </Form>
   );

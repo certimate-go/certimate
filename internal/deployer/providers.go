@@ -1203,6 +1203,7 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 					Endpoint:  xmaps.GetString(options.ProviderServiceConfig, "endpoint"),
 					ZoneId:    xmaps.GetString(options.ProviderServiceConfig, "zoneId"),
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
+					Domains:   xslices.Filter(strings.Split(xmaps.GetString(options.ProviderServiceConfig, "domains"), ";"), func(s string) bool { return s != "" }),
 				})
 				return deployer, err
 
