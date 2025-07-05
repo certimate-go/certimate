@@ -75,6 +75,7 @@ type WorkflowNodeConfigForApply struct {
 	CAProviderAccessId    string         `json:"caProviderAccessId,omitempty"`    // CA 提供商授权记录 ID
 	CAProviderConfig      map[string]any `json:"caProviderConfig,omitempty"`      // CA 提供商额外配置
 	KeyAlgorithm          string         `json:"keyAlgorithm,omitempty"`          // 证书算法
+	LifeTime              string         `json:"lifeTime,omitempty"`              // 证书有效期
 	ACMEProfile           string         `json:"acmeProfile,omitempty"`           // ACME Profiles Extension
 	Nameservers           string         `json:"nameservers,omitempty"`           // DNS 服务器列表，以半角分号分隔
 	DnsPropagationWait    int32          `json:"dnsPropagationWait,omitempty"`    // DNS 传播等待时间，等同于 lego 的 `--dns-propagation-wait` 参数
@@ -132,6 +133,7 @@ func (n *WorkflowNode) GetConfigForApply() WorkflowNodeConfigForApply {
 		CAProviderAccessId:    xmaps.GetString(n.Config, "caProviderAccessId"),
 		CAProviderConfig:      xmaps.GetKVMapAny(n.Config, "caProviderConfig"),
 		KeyAlgorithm:          xmaps.GetOrDefaultString(n.Config, "keyAlgorithm", string(CertificateKeyAlgorithmTypeRSA2048)),
+		LifeTime:              xmaps.GetString(n.Config, "lifeTime"),
 		ACMEProfile:           xmaps.GetString(n.Config, "acmeProfile"),
 		Nameservers:           xmaps.GetString(n.Config, "nameservers"),
 		DnsPropagationWait:    xmaps.GetInt32(n.Config, "dnsPropagationWait"),
