@@ -22,7 +22,7 @@ func NewClient(apiToken string) (*Client, error) {
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", "certimate").
-		SetHeader("Token", apiToken)
+		SetQueryParam("token", apiToken)
 
 	return &Client{client}, nil
 }
