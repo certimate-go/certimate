@@ -103,8 +103,11 @@ func (c *Client) doRequestWithResult(req *resty.Request, res apiResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
 		} else {
-			if tdata := res.GetData(); tdata == nil {
-				return resp, fmt.Errorf("sdkerr: empty data")
+			tresp := &apiResponseBase{}
+			if err := json.Unmarshal(resp.Body(), &tresp); err != nil {
+				return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
+			} else if tdata := tresp.GetData(); tdata == nil {
+				return resp, fmt.Errorf("sdkerr: received empty data")
 			} else if terrcode := tdata.GetErrorCode(); terrcode != 0 {
 				return resp, fmt.Errorf("sdkerr: code='%d', message='%s'", terrcode, tdata.GetMessage())
 			}
