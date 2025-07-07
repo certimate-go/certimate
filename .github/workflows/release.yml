@@ -189,6 +189,8 @@ jobs:
             cp ../README.md "$tmpdir/README_zhCN.md"
             cp ../README_EN.md "$tmpdir/README_enUS.md"
             cp ../CHANGELOG.md "$tmpdir/CHANGELOG.md"
+            sed -i 's/README_EN\.md/README_enUS.md/g' "$tmpdir/README_zhCN.md"
+            sed -i 's/README\.md/README_zhCN.md/g' "$tmpdir/README_enUS.md"
 
             if [[ "$bin" == *".exe" ]]; then
               zip -j "${bin%.exe}.zip" "$tmpdir"/*
