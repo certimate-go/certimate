@@ -2,6 +2,7 @@ package cert
 
 import (
 	"crypto/x509"
+	"encoding/pem"
 )
 
 // 比较两个 x509.Certificate 对象，判断它们是否是同一张证书。
@@ -23,4 +24,19 @@ func EqualCertificate(a, b *x509.Certificate) bool {
 		a.SerialNumber.String() == b.SerialNumber.String() &&
 		a.Issuer.SerialNumber == b.Issuer.SerialNumber &&
 		a.Subject.SerialNumber == b.Subject.SerialNumber
+}
+
+func decodePEM(data []byte) []*pem.Block {
+	blocks := make([]*pem.Block, 0)
+	for {
+		block, rest := pem.Decode(data)
+		if block == nil {
+			break
+		}
+
+		blocks = append(blocks, block)
+		data = rest
+	}
+
+	return blocks
 }
