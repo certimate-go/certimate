@@ -270,12 +270,12 @@ func init() {
 				Id        string           `json:"id"`
 				Type      string           `json:"type"`
 				Name      string           `json:"name"`
-				Config    map[string]any   `json:"config"`
-				Inputs    []map[string]any `json:"inputs"`
-				Outputs   []map[string]any `json:"outputs"`
+				Config    map[string]any   `json:"config,omitempty"`
+				Inputs    []map[string]any `json:"inputs,omitempty"`
+				Outputs   []map[string]any `json:"outputs,omitempty"`
 				Next      *dWorkflowNode   `json:"next,omitempty"`
-				Branches  []dWorkflowNode  `json:"branches,omitempty"`
-				Validated bool             `json:"validated"`
+				Branches  []*dWorkflowNode `json:"branches,omitempty"`
+				Validated bool             `json:"validated,omitempty"`
 			}
 
 			for _, workflowRun := range workflowRuns {

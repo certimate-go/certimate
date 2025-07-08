@@ -25,9 +25,7 @@ type SSLDeployerProviderConfig struct {
 	Endpoint string `json:"endpoint,omitempty"`
 	// 站点 ID。
 	ZoneId string `json:"zoneId"`
-	// 兼容旧配置：单域名
-	Domain string `json:"domain,omitempty"`
-	// 加速域名（支持泛域名）。
+	// 加速域名列表（支持泛域名）。
 	Domains []string `json:"domains"`
 }
 
@@ -43,11 +41,6 @@ var _ core.SSLDeployer = (*SSLDeployerProvider)(nil)
 func NewSSLDeployerProvider(config *SSLDeployerProviderConfig) (*SSLDeployerProvider, error) {
 	if config == nil {
 		return nil, errors.New("the configuration of the ssl deployer provider is nil")
-	}
-
-	// 兼容旧配置：如果 Domains 为空且 Domain 不为空，则自动转换
-	if len(config.Domains) == 0 && strings.TrimSpace(config.Domain) != "" {
-		config.Domains = []string{strings.TrimSpace(config.Domain)}
 	}
 
 	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)

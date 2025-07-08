@@ -41,7 +41,7 @@ const DeployNodeConfigFormTencentCloudEOConfig = ({
       .string(t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder"))
       .nonempty(t("workflow_node.deploy.form.tencentcloud_eo_zone_id.placeholder")),
     domains: z
-      .string(t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder"))
+      .string(t("workflow_node.deploy.form.tencentcloud_eo_domains.placeholder"))
       .refine((v) => {
         if (!v) return false;
         return String(v)
@@ -84,14 +84,14 @@ const DeployNodeConfigFormTencentCloudEOConfig = ({
 
       <Form.Item
         name="domains"
-        label={t("workflow_node.deploy.form.tencentcloud_eo_domain.label")}
+        label={t("workflow_node.deploy.form.tencentcloud_eo_domains.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eo_domain.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eo_domains.tooltip") }}></span>}
       >
         <MultipleSplitValueInput
-          modalTitle={t("workflow_node.deploy.form.tencentcloud_eo_domain.label")}
-          placeholder={t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder")}
-          placeholderInModal={t("workflow_node.deploy.form.tencentcloud_eo_domain.placeholder")}
+          modalTitle={t("workflow_node.deploy.form.tencentcloud_eo_domains.multiple_input_modal.title")}
+          placeholder={t("workflow_node.deploy.form.tencentcloud_eo_domains.placeholder")}
+          placeholderInModal={t("workflow_node.deploy.form.tencentcloud_eo_domains.multiple_input_modal.placeholder")}
           splitOptions={{ trim: true, removeEmpty: true }}
         />
       </Form.Item>
