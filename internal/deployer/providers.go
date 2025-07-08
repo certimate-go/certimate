@@ -69,6 +69,7 @@ import (
 	pNetlifySite "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/netlify-site"
 	pProxmoxVE "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/proxmoxve"
 	pQiniuCDN "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/qiniu-cdn"
+	pQiniuKodo "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/qiniu-kodo"
 	pQiniuPili "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/qiniu-pili"
 	pRainYunRCDN "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/rainyun-rcdn"
 	pRatPanelConsole "github.com/certimate-go/certimate/pkg/core/ssl-deployer/providers/ratpanel-console"
@@ -1001,8 +1002,16 @@ func createSSLDeployerProvider(options *deployerProviderOptions) (core.SSLDeploy
 			}
 
 			switch options.Provider {
-			case domain.DeploymentProviderTypeQiniuCDN, domain.DeploymentProviderTypeQiniuKodo:
+			case domain.DeploymentProviderTypeQiniuCDN:
 				deployer, err := pQiniuCDN.NewSSLDeployerProvider(&pQiniuCDN.SSLDeployerProviderConfig{
+					AccessKey: access.AccessKey,
+					SecretKey: access.SecretKey,
+					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
+				})
+				return deployer, err
+
+			case domain.DeploymentProviderTypeQiniuKodo:
+				deployer, err := pQiniuKodo.NewSSLDeployerProvider(&pQiniuKodo.SSLDeployerProviderConfig{
 					AccessKey: access.AccessKey,
 					SecretKey: access.SecretKey,
 					Domain:    xmaps.GetString(options.ProviderServiceConfig, "domain"),
