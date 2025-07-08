@@ -113,6 +113,10 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
         (v) => (v == null || v === "" ? undefined : Number(v)),
         z.number().int(t("workflow_node.apply.form.dns_ttl.placeholder")).gte(1, t("workflow_node.apply.form.dns_ttl.placeholder")).nullish()
       ),
+      lifeTime: z.string().nullish().refine((v) => {
+        if (!v) return true;
+        return /^[+-]?(\d+[ns|us|ms|s|m|h|d|w])+$/.test(v);
+      }, t("workflow_node.apply.form.life_time.placeholder")),
       acmeProfile: z.string().nullish(),
       disableFollowCNAME: z.boolean().nullish(),
       disableARI: z.boolean().nullish(),
@@ -453,6 +457,19 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
                 value: e,
               }))}
               placeholder={t("workflow_node.apply.form.key_algorithm.placeholder")}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="lifeTime"
+            label={t("workflow_node.apply.form.life_time.label")}
+            rules={[formRule]}
+            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.life_time.tooltip") }}></span>}
+          >
+            <Input
+              type="string"
+              allowClear
+              placeholder={t("workflow_node.apply.form.life_time.placeholder")}
             />
           </Form.Item>
 
