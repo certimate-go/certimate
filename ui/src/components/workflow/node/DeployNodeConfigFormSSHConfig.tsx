@@ -152,9 +152,11 @@ chmod 755 "$fnCertPath"
 chmod 755 "$fnKeyPath"
 
 # 更新数据库
+NEW_EFFECT_DATE=$(openssl x509 -startdate -noout -in "$fnCertPath" | sed "s/^.*=\\(.*\\)$/\\1/")
+NEW_EFFECT_TIMESTAMP=$(date -d "$NEW_EFFECT_DATE" +%s%3N)
 NEW_EXPIRY_DATE=$(openssl x509 -enddate -noout -in "$fnCertPath" | sed "s/^.*=\\(.*\\)$/\\1/")
 NEW_EXPIRY_TIMESTAMP=$(date -d "$NEW_EXPIRY_DATE" +%s%3N)
-psql -U postgres -d trim_connect -c "UPDATE cert SET valid_to=$NEW_EXPIRY_TIMESTAMP WHERE domain='$domain'"
+psql -U postgres -d trim_connect -c "UPDATE cert SET valid_from=$NEW_EFFECT_TIMESTAMP, valid_to=$NEW_EXPIRY_TIMESTAMP WHERE domain='$domain'"
 
 # 重启服务
 systemctl restart webdav.service
