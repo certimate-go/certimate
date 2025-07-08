@@ -17,7 +17,6 @@ var (
 	fSecretId      string
 	fSecretKey     string
 	fZoneId        string
-	fDomain        string
 	fDomains       string
 )
 
@@ -29,7 +28,6 @@ func init() {
 	flag.StringVar(&fSecretId, argsPrefix+"SECRETID", "", "")
 	flag.StringVar(&fSecretKey, argsPrefix+"SECRETKEY", "", "")
 	flag.StringVar(&fZoneId, argsPrefix+"ZONEID", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
 	flag.StringVar(&fDomains, argsPrefix+"DOMAINS", "", "")
 }
 
@@ -42,8 +40,7 @@ Shell command to run this test:
 	--CERTIMATE_SSLDEPLOYER_TENCENTCLOUDEO_SECRETID="your-secret-id" \
 	--CERTIMATE_SSLDEPLOYER_TENCENTCLOUDEO_SECRETKEY="your-secret-key" \
 	--CERTIMATE_SSLDEPLOYER_TENCENTCLOUDEO_ZONEID="your-zone-id" \
-	--CERTIMATE_SSLDEPLOYER_TENCENTCLOUDEO_DOMAIN="example.com" \
-	--CERTIMATE_SSLDEPLOYER_TENCENTCLOUDEO_DOMAINS="example.com;www.example.com"
+	--CERTIMATE_SSLDEPLOYER_TENCENTCLOUDEO_DOMAINS="example.com"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -56,26 +53,14 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("SECRETID: %v", fSecretId),
 			fmt.Sprintf("SECRETKEY: %v", fSecretKey),
 			fmt.Sprintf("ZONEID: %v", fZoneId),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
 			fmt.Sprintf("DOMAINS: %v", fDomains),
 		}, "\n"))
-
-		var domainsArr []string
-		if fDomains != "" {
-			for _, d := range strings.Split(fDomains, ";") {
-				d = strings.TrimSpace(d)
-				if d != "" {
-					domainsArr = append(domainsArr, d)
-				}
-			}
-		}
 
 		deployer, err := provider.NewSSLDeployerProvider(&provider.SSLDeployerProviderConfig{
 			SecretId:  fSecretId,
 			SecretKey: fSecretKey,
 			ZoneId:    fZoneId,
-			Domain:    fDomain,
-			Domains:   domainsArr,
+			Domains:   strings.Split(fDomains, ";"),
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
