@@ -94,12 +94,59 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
+	// 若存在泛域名，则拉取Zone下所有域名进行校验
+	var updateDomainSet map[string]struct{}
+	var domainsInZone []string
+	for _, domain := range d.config.Domains {
+		if !strings.HasPrefix(domain, "*") {
+			updateDomainSet[domain] = struct{}{}
+			continue
+		}
+		// 获取Zone下所有域名
+		if domainsInZone == nil {
+			describeAccelerationDomainsReq := tcteo.NewDescribeAccelerationDomainsRequest()
+			describeAccelerationDomainsReq.ZoneId = common.StringPtr(d.config.ZoneId)
+			describeAccelerationDomainsResp, err := d.sdkClient.DescribeAccelerationDomains(describeAccelerationDomainsReq)
+			d.logger.Debug("sdk request 'teo.DescribeAccelerationDomains'", slog.Any("request", describeAccelerationDomainsReq), slog.Any("response", describeAccelerationDomainsResp))
+			if err != nil {
+				return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeAccelerationDomains': %w", err)
+			}
+			if describeAccelerationDomainsResp == nil || describeAccelerationDomainsResp.Response == nil || describeAccelerationDomainsResp.Response.TotalCount == nil {
+				return nil, errors.New("unexpected deployment job status")
+			}
+			domainsInZone = make([]string, 0, *describeAccelerationDomainsResp.Response.TotalCount)
+			for _, accelerationDomain := range describeAccelerationDomainsResp.Response.AccelerationDomains {
+				if accelerationDomain == nil || accelerationDomain.DomainName == nil {
+					continue
+				}
+				domainsInZone = append(domainsInZone, *accelerationDomain.DomainName)
+			}
+		}
+		// 遍历Zone下所有域名，若域名匹配泛域名，则添加到更新域名列表中
+		for _, zoneDomain := range domainsInZone {
+			if !strings.HasSuffix(zoneDomain, domain[1:]) { // 匹配泛域名
+				continue
+			}
+			domainPrefix, _ := strings.CutSuffix(zoneDomain, domain[1:])
+			if strings.Contains(domainPrefix, ".") { // 如果域名前缀包含点，说明是多级域名，则不匹配
+				continue
+			}
+			updateDomainSet[zoneDomain] = struct{}{}
+		}
+	}
+
+	// 将updateDomainSet转换为slice
+	var updateDomains []string
+	for domain := range updateDomainSet {
+		updateDomains = append(updateDomains, domain)
+	}
+
 	// 配置域名证书
 	// REF: https://cloud.tencent.com/document/api/1552/80764
 	modifyHostsCertificateReq := tcteo.NewModifyHostsCertificateRequest()
 	modifyHostsCertificateReq.ZoneId = common.StringPtr(d.config.ZoneId)
 	modifyHostsCertificateReq.Mode = common.StringPtr("sslcert")
-	modifyHostsCertificateReq.Hosts = common.StringPtrs(d.config.Domains)
+	modifyHostsCertificateReq.Hosts = common.StringPtrs(updateDomains)
 	modifyHostsCertificateReq.ServerCertInfo = []*tcteo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
 	modifyHostsCertificateResp, err := d.sdkClient.ModifyHostsCertificate(modifyHostsCertificateReq)
 	d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'", slog.Any("request", modifyHostsCertificateReq), slog.Any("response", modifyHostsCertificateResp))
