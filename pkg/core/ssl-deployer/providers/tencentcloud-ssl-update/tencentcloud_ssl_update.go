@@ -130,7 +130,7 @@ func (d *SSLDeployerProvider) executeUpdateCertificateInstance(ctx context.Conte
 			return fmt.Errorf("failed to execute sdk request 'ssl.UpdateCertificateInstance': %w", err)
 		}
 
-		if updateCertificateInstanceResp.Response.DeployStatus == nil {
+		if updateCertificateInstanceResp.Response.DeployStatus == nil || updateCertificateInstanceResp.Response.DeployRecordId == nil {
 			return errors.New("unexpected deployment job status")
 		} else if *updateCertificateInstanceResp.Response.DeployRecordId > 0 {
 			deployRecordId = fmt.Sprintf("%d", *updateCertificateInstanceResp.Response.DeployRecordId)
