@@ -132,7 +132,7 @@ func (d *SSLDeployerProvider) executeUpdateCertificateInstance(ctx context.Conte
 
 		if updateCertificateInstanceResp.Response.DeployStatus == nil {
 			return errors.New("unexpected deployment job status")
-		} else if *updateCertificateInstanceResp.Response.DeployStatus == 1 {
+		} else if *updateCertificateInstanceResp.Response.DeployRecordId > 0 {
 			deployRecordId = fmt.Sprintf("%d", *updateCertificateInstanceResp.Response.DeployRecordId)
 			break
 		}
@@ -175,6 +175,9 @@ func (d *SSLDeployerProvider) executeUpdateCertificateInstance(ctx context.Conte
 			}
 
 			if succeededCount+failedCount == totalCount {
+				if failedCount > 0 {
+					return fmt.Errorf("deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+				}
 				break
 			}
 		}
