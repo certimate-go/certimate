@@ -94,36 +94,51 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// 若存在泛域名，则拉取Zone下所有域名进行校验
-	var updateDomainSet map[string]struct{}
-	var domainsInZone []string
-	for _, domain := range d.config.Domains {
-		if !strings.HasPrefix(domain, "*") {
-			updateDomainSet[domain] = struct{}{}
+	// 拉取Zone下所有域名，并判断是否已部署最新证书
+	domainsInZone := make(map[string]bool)
+	describeAccelerationDomainsReq := tcteo.NewDescribeAccelerationDomainsRequest()
+	describeAccelerationDomainsReq.ZoneId = common.StringPtr(d.config.ZoneId)
+	describeAccelerationDomainsResp, err := d.sdkClient.DescribeAccelerationDomains(describeAccelerationDomainsReq)
+	d.logger.Debug("sdk request 'teo.DescribeAccelerationDomains'", slog.Any("request", describeAccelerationDomainsReq), slog.Any("response", describeAccelerationDomainsResp))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeAccelerationDomains': %w", err)
+	}
+	if describeAccelerationDomainsResp == nil || describeAccelerationDomainsResp.Response == nil || describeAccelerationDomainsResp.Response.TotalCount == nil {
+		return nil, errors.New("unexpected deployment job status")
+	}
+	for _, accelerationDomain := range describeAccelerationDomainsResp.Response.AccelerationDomains {
+		if accelerationDomain == nil || accelerationDomain.DomainName == nil {
 			continue
 		}
-		// 获取Zone下所有域名
-		if domainsInZone == nil {
-			describeAccelerationDomainsReq := tcteo.NewDescribeAccelerationDomainsRequest()
-			describeAccelerationDomainsReq.ZoneId = common.StringPtr(d.config.ZoneId)
-			describeAccelerationDomainsResp, err := d.sdkClient.DescribeAccelerationDomains(describeAccelerationDomainsReq)
-			d.logger.Debug("sdk request 'teo.DescribeAccelerationDomains'", slog.Any("request", describeAccelerationDomainsReq), slog.Any("response", describeAccelerationDomainsResp))
-			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeAccelerationDomains': %w", err)
-			}
-			if describeAccelerationDomainsResp == nil || describeAccelerationDomainsResp.Response == nil || describeAccelerationDomainsResp.Response.TotalCount == nil {
-				return nil, errors.New("unexpected deployment job status")
-			}
-			domainsInZone = make([]string, 0, *describeAccelerationDomainsResp.Response.TotalCount)
-			for _, accelerationDomain := range describeAccelerationDomainsResp.Response.AccelerationDomains {
-				if accelerationDomain == nil || accelerationDomain.DomainName == nil {
-					continue
+		var deployed bool
+		if accelerationDomain.Certificate != nil && *accelerationDomain.Certificate.Mode == "sslcert" {
+			for _, cert := range accelerationDomain.Certificate.List {
+				if cert != nil && *cert.CertId == upres.CertId {
+					deployed = true
+					break
 				}
-				domainsInZone = append(domainsInZone, *accelerationDomain.DomainName)
 			}
 		}
+		domainsInZone[*accelerationDomain.DomainName] = deployed
+	}
+
+	updateDomainSet := make(map[string]struct{})
+	for _, domain := range d.config.Domains {
+		if !strings.HasPrefix(domain, "*") { // 非泛域名
+			deployStatus, ok := domainsInZone[domain]
+			if !ok {
+				return nil, fmt.Errorf("cannot find domain %s in edgeone zone", domain)
+			}
+			if !deployStatus {
+				updateDomainSet[domain] = struct{}{}
+			}
+			continue
+		}
 		// 遍历Zone下所有域名，若域名匹配泛域名，则添加到更新域名列表中
-		for _, zoneDomain := range domainsInZone {
+		for zoneDomain, deployStatus := range domainsInZone {
+			if deployStatus { // 域名已部署最新证书，不进行更新
+				continue
+			}
 			if !strings.HasSuffix(zoneDomain, domain[1:]) { // 匹配泛域名
 				continue
 			}
