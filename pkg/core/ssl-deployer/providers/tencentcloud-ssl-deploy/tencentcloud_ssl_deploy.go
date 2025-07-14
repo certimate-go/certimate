@@ -142,6 +142,9 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 			}
 
 			if succeededCount+failedCount == totalCount {
+				if failedCount > 0 {
+					return nil, fmt.Errorf("deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+				}
 				break
 			}
 		}

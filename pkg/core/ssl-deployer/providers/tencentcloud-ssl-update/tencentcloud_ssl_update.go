@@ -260,6 +260,9 @@ func (d *SSLDeployerProvider) executeUploadUpdateCertificateInstance(ctx context
 			}
 
 			if succeededCount+failedCount == totalCount {
+				if failedCount > 0 {
+					return fmt.Errorf("deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+				}
 				break
 			}
 		}
