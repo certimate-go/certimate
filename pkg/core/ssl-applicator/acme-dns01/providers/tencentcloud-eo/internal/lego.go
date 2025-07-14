@@ -152,14 +152,31 @@ func (d *DNSProvider) findDNSRecord(effectiveFQDN, value string) (*teo.DnsRecord
 }
 
 func (d *DNSProvider) addDNSRecord(effectiveFQDN, value string) error {
-	request := teo.NewCreateDnsRecordRequest()
-	request.ZoneId = common.StringPtr(d.config.ZoneID)
-	request.Name = common.StringPtr(effectiveFQDN)
-	request.Type = common.StringPtr("TXT")
-	request.Content = common.StringPtr(value)
-	request.TTL = common.Int64Ptr(int64(d.config.TTL))
-	_, err := d.client.CreateDnsRecord(request)
-	return err
+	record, err := d.findDNSRecord(effectiveFQDN, value)
+	if err != nil {
+		return err
+	}
+
+	if record == nil {
+		request := teo.NewCreateDnsRecordRequest()
+		request.ZoneId = common.StringPtr(d.config.ZoneID)
+		request.Name = common.StringPtr(effectiveFQDN)
+		request.Type = common.StringPtr("TXT")
+		request.Content = common.StringPtr(value)
+		request.TTL = common.Int64Ptr(int64(d.config.TTL))
+		_, err := d.client.CreateDnsRecord(request)
+		return err
+	} else {
+		if *record.Status == "disable" {
+			request := teo.NewModifyDnsRecordsStatusRequest()
+			request.ZoneId = common.StringPtr(d.config.ZoneID)
+			request.RecordsToEnable = []*string{record.RecordId}
+			if _, err = d.client.ModifyDnsRecordsStatus(request); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 }
 
 func (d *DNSProvider) removeDNSRecord(effectiveFQDN, value string) error {
