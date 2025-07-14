@@ -453,7 +453,7 @@
   "workflow_node.deploy.form.huaweicloud_cdn_region.placeholder": "请输入华为云 CDN 服务区域（例如：cn-north-1）",
   "workflow_node.deploy.form.huaweicloud_cdn_region.tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>",
   "workflow_node.deploy.form.huaweicloud_cdn_domain.label": "华为云 CDN 加速域名",
-  "workflow_node.deploy.form.huaweicloud_cdn_domain.placeholder": "请输入华为云 CDN 加速域名",
+  "workflow_node.deploy.form.huaweicloud_cdn_domain.placeholder": "请输入华为云 CDN 加速域名（支持泛域名）",
   "workflow_node.deploy.form.huaweicloud_cdn_domain.tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/cdn\" target=\"_blank\">https://console.huaweicloud.com/cdn</a>",
   "workflow_node.deploy.form.huaweicloud_elb_region.label": "华为云 ELB 服务区域",
   "workflow_node.deploy.form.huaweicloud_elb_region.placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",

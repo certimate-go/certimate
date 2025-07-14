@@ -35,7 +35,9 @@ const DeployNodeConfigFormHuaweiCloudCDNConfig = ({
     region: z
       .string(t("workflow_node.deploy.form.huaweicloud_cdn_region.placeholder"))
       .nonempty(t("workflow_node.deploy.form.huaweicloud_cdn_region.placeholder")),
-    domain: z.string(t("workflow_node.deploy.form.huaweicloud_cdn_domain.placeholder")).refine((v) => validDomainName(v), t("common.errmsg.domain_invalid")),
+    domain: z
+      .string(t("workflow_node.deploy.form.huaweicloud_cdn_domain.placeholder"))
+      .refine((v) => validDomainName(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
 
