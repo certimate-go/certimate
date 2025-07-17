@@ -128,7 +128,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 		return fmt.Errorf("alicloud-esa: could not find site for zone %q: %w", siteName, err)
 	}
 
-	if err := d.removeDNSRecord(siteId, dns01.UnFqdn(info.EffectiveFQDN)); err != nil {
+	if err := d.removeDNSRecord(siteId, dns01.UnFqdn(info.EffectiveFQDN), info.Value); err != nil {
 		return fmt.Errorf("alicloud-esa: %w", err)
 	}
 
@@ -185,7 +185,7 @@ func (d *DNSProvider) getSiteId(siteName string) (int64, error) {
 	return 0, errors.New("site not found")
 }
 
-func (d *DNSProvider) findDNSRecord(siteId int64, effectiveFQDN string) (*aliesa.ListRecordsResponseBodyRecords, error) {
+func (d *DNSProvider) findDNSRecord(siteId int64, effectiveFQDN string, value string) (*aliesa.ListRecordsResponseBodyRecords, error) {
 	pageNumber := 1
 	pageSize := 500
 	for {
@@ -206,7 +206,7 @@ func (d *DNSProvider) findDNSRecord(siteId int64, effectiveFQDN string) (*aliesa
 			break
 		} else {
 			for _, record := range response.Body.Records {
-				if tea.StringValue(record.RecordName) == effectiveFQDN {
+				if tea.StringValue(record.RecordName) == effectiveFQDN && tea.StringValue(record.Data.Value) == value {
 					return record, nil
 				}
 			}
@@ -223,38 +223,30 @@ func (d *DNSProvider) findDNSRecord(siteId int64, effectiveFQDN string) (*aliesa
 }
 
 func (d *DNSProvider) addOrUpdateDNSRecord(siteId int64, effectiveFQDN, value string) error {
-	record, err := d.findDNSRecord(siteId, effectiveFQDN)
+	record, err := d.findDNSRecord(siteId, effectiveFQDN, value)
 	if err != nil {
 		return err
 	}
 
-	if record == nil {
-		request := &aliesa.CreateRecordRequest{
-			SiteId:     tea.Int64(siteId),
-			Type:       tea.String("TXT"),
-			RecordName: tea.String(effectiveFQDN),
-			Data: &aliesa.CreateRecordRequestData{
-				Value: tea.String(value),
-			},
-			Ttl: tea.Int32(d.config.TTL),
-		}
-		_, err := d.client.CreateRecord(request)
-		return err
-	} else {
-		request := &aliesa.UpdateRecordRequest{
-			RecordId: record.RecordId,
-			Ttl:      tea.Int32(d.config.TTL),
-			Data: &aliesa.UpdateRecordRequestData{
-				Value: tea.String(value),
-			},
-		}
-		_, err := d.client.UpdateRecord(request)
-		return err
+	if record != nil {
+		return nil
 	}
+
+	request := &aliesa.CreateRecordRequest{
+		SiteId:     tea.Int64(siteId),
+		Type:       tea.String("TXT"),
+		RecordName: tea.String(effectiveFQDN),
+		Data: &aliesa.CreateRecordRequestData{
+			Value: tea.String(value),
+		},
+		Ttl: tea.Int32(d.config.TTL),
+	}
+	_, err = d.client.CreateRecord(request)
+	return err
 }
 
-func (d *DNSProvider) removeDNSRecord(siteId int64, effectiveFQDN string) error {
-	record, err := d.findDNSRecord(siteId, effectiveFQDN)
+func (d *DNSProvider) removeDNSRecord(siteId int64, effectiveFQDN, value string) error {
+	record, err := d.findDNSRecord(siteId, effectiveFQDN, value)
 	if err != nil {
 		return err
 	}
