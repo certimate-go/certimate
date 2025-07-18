@@ -100,10 +100,17 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 		SiteId: tea.Int64(d.config.SiteId),
 		Type:   tea.String("cas"),
 		CasId:  tea.Int64(certId),
+		Region: tea.String(d.config.Region),
 	}
 	setCertificateResp, err := d.sdkClient.SetCertificate(setCertificateReq)
 	d.logger.Debug("sdk request 'esa.SetCertificate'", slog.Any("request", setCertificateReq), slog.Any("response", setCertificateResp))
 	if err != nil {
+		var sdkError *tea.SDKError
+		if errors.As(err, &sdkError) {
+			if tea.StringValue(sdkError.Code) == "Certificate.Duplicated" {
+				return &core.SSLDeployResult{}, nil
+			}
+		}
 		return nil, fmt.Errorf("failed to execute sdk request 'esa.SetCertificate': %w", err)
 	}
 
