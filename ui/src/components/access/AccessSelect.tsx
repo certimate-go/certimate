@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, Select, type SelectProps, Space, Typography, theme } from "antd";
+import { Avatar, Select, type SelectProps, Typography, theme } from "antd";
 
 import { type AccessModel } from "@/domain/access";
 import { accessProvidersMap } from "@/domain/provider";
@@ -38,23 +38,19 @@ const AccessSelect = ({ filter, ...props }: AccessTypeSelectProps) => {
     const access = accesses.find((e) => e.id === key);
     if (!access) {
       return (
-        <Space className="max-w-full grow truncate" size={4}>
+        <div className="flex items-center gap-2 overflow-hidden truncate">
           <Avatar shape="square" size="small" />
-          <Typography.Text className="leading-loose" ellipsis>
-            {key}
-          </Typography.Text>
-        </Space>
+          <Typography.Text ellipsis>{key}</Typography.Text>
+        </div>
       );
     }
 
     const provider = accessProvidersMap.get(access.provider);
     return (
-      <Space className="max-w-full grow truncate" size={4}>
+      <div className="flex items-center gap-2 overflow-hidden truncate">
         <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text className="leading-loose" ellipsis>
-          {access.name}
-        </Typography.Text>
-      </Space>
+        <Typography.Text ellipsis>{access.name}</Typography.Text>
+      </div>
     );
   };
 

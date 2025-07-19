@@ -1,6 +1,6 @@
 ﻿import { type ChangeEvent, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { UploadOutlined as UploadOutlinedIcon } from "@ant-design/icons";
+import { IconFileImport } from "@tabler/icons-react";
 import { Button, type ButtonProps, Input, Space, type UploadProps } from "antd";
 import { type TextAreaProps } from "antd/es/input/TextArea";
 
@@ -38,7 +38,7 @@ const TextFileInput = ({ className, style, accept, disabled, readOnly, uploadTex
       <Input.TextArea {...props} disabled={disabled} readOnly={readOnly} onChange={(e) => onChange?.(e.target.value)} />
       {!readOnly && (
         <>
-          <Button {...uploadButtonProps} block disabled={disabled} icon={<UploadOutlinedIcon />} onClick={handleButtonClick}>
+          <Button {...uploadButtonProps} block disabled={disabled} icon={<IconFileImport size="1.25em" />} onClick={handleButtonClick}>
             {uploadText ?? t("common.text.import_from_file")}
           </Button>
           <input ref={fileInputRef} type="file" style={{ display: "none" }} accept={accept} onChange={handleFileChange} />

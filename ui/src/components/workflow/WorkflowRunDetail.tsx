@@ -2,16 +2,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CheckCircleOutlined as CheckCircleOutlinedIcon,
-  CheckOutlined as CheckOutlinedIcon,
   ClockCircleOutlined as ClockCircleOutlinedIcon,
   CloseCircleOutlined as CloseCircleOutlinedIcon,
-  DownloadOutlined as DownloadOutlinedIcon,
-  RightOutlined as RightOutlinedIcon,
-  SelectOutlined as SelectOutlinedIcon,
-  SettingOutlined as SettingOutlinedIcon,
   StopOutlined as StopOutlinedIcon,
   SyncOutlined as SyncOutlinedIcon,
 } from "@ant-design/icons";
+import { IconBrowserShare, IconCheck, IconChevronRight, IconDownload, IconSettings2 } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
 import {
   Button,
@@ -162,7 +158,7 @@ const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: strin
         <details>
           <summary>{record.message}</summary>
           {Object.entries(record.data).map(([key, value]) => (
-            <div key={key} className="flex space-x-2 " style={{ wordBreak: "break-word" }}>
+            <div key={key} className="flex space-x-2" style={{ wordBreak: "break-word" }}>
               <div className="whitespace-nowrap">{key}:</div>
               <div className={!showWhitespace ? "whitespace-pre-line" : ""}>{JSON.stringify(value)}</div>
             </div>
@@ -232,13 +228,13 @@ const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: strin
                   {
                     key: "show-timestamp",
                     label: t("workflow_run.logs.menu.show_timestamps"),
-                    icon: <CheckOutlinedIcon className={showTimestamp ? "visible" : "invisible"} />,
+                    icon: <IconCheck className={showTimestamp ? "visible" : "invisible"} size="1.25em" />,
                     onClick: () => setShowTimestamp(!showTimestamp),
                   },
                   {
                     key: "show-whitespace",
                     label: t("workflow_run.logs.menu.show_whitespaces"),
-                    icon: <CheckOutlinedIcon className={showWhitespace ? "visible" : "invisible"} />,
+                    icon: <IconCheck className={showWhitespace ? "visible" : "invisible"} size="1.25em" />,
                     onClick: () => setShowWhitespace(!showWhitespace),
                   },
                   {
@@ -247,14 +243,14 @@ const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: strin
                   {
                     key: "download-logs",
                     label: t("workflow_run.logs.menu.download_logs"),
-                    icon: <DownloadOutlinedIcon className="invisible" />,
+                    icon: <IconDownload className="invisible" size="1.25em" />,
                     onClick: handleDownloadClick,
                   },
                 ],
               }}
               trigger={["click"]}
             >
-              <Button color="primary" icon={<SettingOutlinedIcon />} ghost={browserTheme === "light"} />
+              <Button color="primary" icon={<IconSettings2 size="1.25em" />} ghost={browserTheme === "light"} />
             </Dropdown>
           </div>
         </div>
@@ -274,7 +270,7 @@ const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: strin
               style={{ color: "inherit" }}
               bordered={false}
               defaultActiveKey={listData.map((group) => group.id)}
-              expandIcon={({ isActive }) => <RightOutlinedIcon rotate={isActive ? 90 : 0} />}
+              expandIcon={({ isActive }) => <IconChevronRight className={mergeCls(isActive ? "" : "rotate-90", "transition-transform")} size="1.25em" />}
               items={listData.map((group) => {
                 return {
                   key: group.id,
@@ -338,7 +334,7 @@ const WorkflowRunArtifacts = ({ runId }: { runId: string }) => {
             data={record}
             trigger={
               <Tooltip title={t("certificate.action.view")}>
-                <Button color="primary" disabled={!!record.deleted} icon={<SelectOutlinedIcon />} variant="text" />
+                <Button color="primary" disabled={!!record.deleted} icon={<IconBrowserShare size="1.25em" />} variant="text" />
               </Tooltip>
             }
           />

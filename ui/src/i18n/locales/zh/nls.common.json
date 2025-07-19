@@ -1,13 +1,14 @@
 ﻿{
   "common.button.add": "新增",
   "common.button.cancel": "取消",
+  "common.button.confirm": "确定",
   "common.button.copy": "复制",
   "common.button.delete": "刪除",
   "common.button.edit": "编辑",
   "common.button.more": "更多",
   "common.button.ok": "确定",
   "common.button.reset": "重置",
-  "common.button.save": "保存",
+  "common.button.save": "保存更改",
   "common.button.submit": "提交",
 
   "common.text.copied": "已复制",
@@ -20,14 +21,15 @@
   "common.text.request_error": "请求错误",
   "common.text.search": "搜索 ……",
 
+  "common.menu.document": "文档",
   "common.menu.theme": "切换主题",
   "common.menu.locale": "切换语言",
+  "common.menu.gethelp": "获取帮助",
   "common.menu.logout": "退出登录",
-  "common.menu.document": "文档",
 
   "common.theme.light": "浅色",
   "common.theme.dark": "暗黑",
-  "common.theme.system": "跟随系统",
+  "common.theme.system": "自动",
 
   "common.errmsg.string_max": "请输入不超过 {{max}} 个字符",
   "common.errmsg.email_invalid": "请输入正确的邮箱",

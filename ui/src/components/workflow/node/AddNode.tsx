@@ -65,8 +65,8 @@ const AddNode = ({ node, disabled }: AddNodeProps) => {
   return (
     <div className="relative py-6 before:absolute before:left-1/2 before:top-0 before:h-full before:w-[2px] before:-translate-x-1/2 before:bg-stone-200 before:content-['']">
       <Dropdown menu={{ items: dropdownMenus }} trigger={["click"]}>
-        <div className="relative z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-stone-400 hover:bg-stone-500">
-          <PlusOutlinedIcon className="text-white" />
+        <div className="relative z-1 flex size-5 cursor-pointer items-center justify-center rounded-full text-white bg-stone-400 hover:bg-stone-500">
+          <PlusOutlinedIcon />
         </div>
       </Dropdown>
     </div>

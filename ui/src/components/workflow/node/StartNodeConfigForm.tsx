@@ -87,12 +87,7 @@ const StartNodeConfigForm = forwardRef<StartNodeConfigFormInstance, StartNodeCon
 
     return (
       <Form className={className} style={style} {...formProps} disabled={disabled} layout="vertical" scrollToFirstError onValuesChange={handleFormChange}>
-        <Form.Item
-          name="trigger"
-          label={t("workflow_node.start.form.trigger.label")}
-          rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.start.form.trigger.tooltip") }}></span>}
-        >
+        <Form.Item name="trigger" label={t("workflow_node.start.form.trigger.label")} rules={[formRule]}>
           <Radio.Group onChange={(e) => handleTriggerChange(e.target.value)}>
             <Radio value={WORKFLOW_TRIGGERS.AUTO}>{t("workflow_node.start.form.trigger.option.auto.label")}</Radio>
             <Radio value={WORKFLOW_TRIGGERS.MANUAL}>{t("workflow_node.start.form.trigger.option.manual.label")}</Radio>

@@ -40,7 +40,7 @@ const BranchNode = ({ node, disabled }: BrandNodeProps) => {
         }}
       >
         <Button
-          className="absolute left-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 text-xs"
+          className="absolute left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 text-xs"
           disabled={disabled}
           size="small"
           shape="round"
@@ -55,38 +55,18 @@ const BranchNode = ({ node, disabled }: BrandNodeProps) => {
         {node.branches?.map((branch, index) => (
           <div
             key={branch.id}
-            className="relative flex flex-col items-center before:absolute  before:left-1/2 before:top-0 before:h-full before:w-[2px] before:-translate-x-1/2 before:bg-stone-200 before:content-['']"
+            className="relative flex flex-col items-center before:absolute before:left-1/2 before:top-0 before:h-full before:w-[2px] before:-translate-x-1/2 before:bg-stone-200 before:content-['']"
           >
             {index == 0 && (
               <>
-                <div
-                  className="absolute -left-px -top-1 h-2 w-1/2"
-                  style={{
-                    backgroundColor: themeToken.colorBgContainer,
-                  }}
-                ></div>
-                <div
-                  className="absolute -bottom-1 -left-px z-50 h-2 w-1/2"
-                  style={{
-                    backgroundColor: themeToken.colorBgContainer,
-                  }}
-                ></div>
+                <div className="absolute -left-[1px] -top-1 h-2 w-1/2" style={{ backgroundColor: themeToken.colorBgContainer }}></div>
+                <div className="absolute -bottom-1 -left-[1px] z-50 h-2 w-1/2" style={{ backgroundColor: themeToken.colorBgContainer }}></div>
               </>
             )}
-            {node.branches && index == node.branches.length - 1 && (
+            {index == node.branches?.length! - 1 && (
               <>
-                <div
-                  className="absolute -right-px -top-1 h-2 w-1/2"
-                  style={{
-                    backgroundColor: themeToken.colorBgContainer,
-                  }}
-                ></div>
-                <div
-                  className="absolute -bottom-1 -right-px z-50 h-2 w-1/2"
-                  style={{
-                    backgroundColor: themeToken.colorBgContainer,
-                  }}
-                ></div>
+                <div className="absolute -right-[1px] -top-1 h-2 w-1/2" style={{ backgroundColor: themeToken.colorBgContainer }}></div>
+                <div className="absolute -bottom-1 -right-[1px] z-50 h-2 w-1/2" style={{ backgroundColor: themeToken.colorBgContainer }}></div>
               </>
             )}
             <div className="relative flex flex-col items-center">{renderBranch(branch, node.id, index)}</div>

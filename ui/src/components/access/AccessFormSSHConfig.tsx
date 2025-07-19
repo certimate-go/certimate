@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import { IconChevronDown, IconChevronUp, IconPlus, IconX } from "@tabler/icons-react";
 import { Button, Collapse, Form, type FormInstance, Input, InputNumber, Select, Space } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod/v4";
@@ -129,7 +129,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
 
         <div className="w-1/3">
           <Form.Item name="port" label={t("access.form.ssh_port.label")} rules={[formRule]}>
-            <InputNumber className="w-full" min={1} max={65535} placeholder={t("access.form.ssh_port.placeholder")} />
+            <InputNumber style={{ width: "100%" }} min={1} max={65535} placeholder={t("access.form.ssh_port.placeholder")} />
           </Form.Item>
         </div>
       </div>
@@ -198,7 +198,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
                             </div>
                             <div className="w-1/3">
                               <Form.Item name={[field.name, "port"]} label={t("access.form.ssh_port.label")} rules={[formRule]}>
-                                <InputNumber className="w-full" placeholder={t("access.form.ssh_port.placeholder")} min={1} max={65535} />
+                                <InputNumber style={{ width: "100%" }} placeholder={t("access.form.ssh_port.placeholder")} min={1} max={65535} />
                               </Form.Item>
                             </div>
                           </div>
@@ -246,7 +246,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
                       extra: (
                         <Space.Compact>
                           <Button
-                            icon={<ArrowUpOutlined />}
+                            icon={<IconChevronUp size="1.25em" />}
                             color="default"
                             disabled={disabled || index === 0}
                             size="small"
@@ -257,7 +257,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
                             }}
                           />
                           <Button
-                            icon={<ArrowDownOutlined />}
+                            icon={<IconChevronDown size="1.25em" />}
                             color="default"
                             disabled={disabled || index === fields.length - 1}
                             size="small"
@@ -268,7 +268,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
                             }}
                           />
                           <Button
-                            icon={<CloseOutlined />}
+                            icon={<IconX size="1.25em" />}
                             color="default"
                             disabled={disabled}
                             size="small"
@@ -285,7 +285,7 @@ const AccessFormSSHConfig = ({ form: formInst, formName, disabled, initialValues
                   })}
                 />
               ) : null}
-              <Button className="w-full" type="dashed" icon={<PlusOutlined />} onClick={() => add(initFormModel())}>
+              <Button className="w-full" type="dashed" icon={<IconPlus size="1.25em" />} onClick={() => add(initFormModel())}>
                 {t("access.form.ssh_jump_servers.add")}
               </Button>
             </Space>

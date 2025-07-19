@@ -64,24 +64,26 @@ const ConditionNode = ({ node, disabled, branchId, branchIndex }: ConditionNodeP
         }
         placement="rightTop"
       >
-        <Card className="relative z-[1] mt-10 w-[256px] shadow-md" styles={{ body: { padding: 0 } }} hoverable onClick={() => setDrawerOpen(true)}>
-          <div className="flex h-[48px] flex-col items-center justify-center truncate px-4 py-2">
-            <div className="relative w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <SharedNode.Title
-                className="focus:bg-background focus:text-foreground overflow-hidden outline-slate-200 focus:rounded-sm"
-                node={node}
-                disabled={disabled}
-              />
-              <div className="absolute right-0 top-1/2 -translate-y-1/2" onClick={() => setDrawerOpen(true)}>
-                {node.config?.expression ? (
-                  <Button color="primary" icon={<FilterFilledIcon />} variant="link" />
-                ) : (
-                  <Button color="default" icon={<FilterOutlinedIcon />} variant="link" />
-                )}
+        <div className="relative w-[256px] z-1 mt-10">
+          <Card className="shadow-md" styles={{ body: { padding: 0 } }} hoverable onClick={() => setDrawerOpen(true)}>
+            <div className="flex h-[48px] flex-col items-center justify-center truncate px-4 py-2">
+              <div className="relative w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <SharedNode.Title
+                  className="focus:bg-background focus:text-foreground overflow-hidden outline-slate-200 focus:rounded-xs"
+                  node={node}
+                  disabled={disabled}
+                />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2" onClick={() => setDrawerOpen(true)}>
+                  {node.config?.expression ? (
+                    <Button color="primary" icon={<FilterFilledIcon />} variant="link" />
+                  ) : (
+                    <Button color="default" icon={<FilterOutlinedIcon />} variant="link" />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </Popover>
 
       <SharedNode.ConfigDrawer

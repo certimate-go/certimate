@@ -1,5 +1,6 @@
 {
   "workflow.page.title": "工作流",
+  "workflow.page.subtitle": "工作流是自动化流程的节点集合。当满足触发条件时，工作流开始顺序执行各节点以完成复杂的任务（如证书申请、部署等）。",
 
   "workflow.nodata": "暂无工作流，请先新建工作流",
 
@@ -10,7 +11,7 @@
   "workflow.action.duplicate": "复制工作流",
   "workflow.action.duplicate.confirm": "确定要复制此工作流吗？",
   "workflow.action.delete": "删除工作流",
-  "workflow.action.delete.confirm": "确定要删除此工作流吗？",
+  "workflow.action.delete.confirm": "确定要删除工作流「{{name}}」吗？<br>注意此操作不可撤销，请谨慎操作。",
   "workflow.action.enable": "启用",
   "workflow.action.enable.failed.uncompleted": "请先完成流程编排并发布更改",
   "workflow.action.disable": "停用",
@@ -18,7 +19,7 @@
   "workflow.props.name": "名称",
   "workflow.props.description": "描述",
   "workflow.props.trigger": "触发方式",
-  "workflow.props.trigger.auto": "自动",
+  "workflow.props.trigger.auto": "定时",
   "workflow.props.trigger.manual": "手动",
   "workflow.props.last_run_at": "最近执行时间",
   "workflow.props.state": "启用状态",
@@ -28,14 +29,14 @@
   "workflow.props.updated_at": "更新时间",
 
   "workflow.new.title": "新建工作流",
-  "workflow.new.subtitle": "使用工作流来申请证书、部署上传和发送通知",
+  "workflow.new.subtitle": "使用工作流来监控域名、申请证书、部署上传和发送通知。",
   "workflow.new.templates.title": "选择工作流模板",
   "workflow.new.templates.template.standard.title": "标准模板",
   "workflow.new.templates.template.standard.description": "一个包含证书申请 + 证书部署 + 消息通知步骤的工作流程。",
   "workflow.new.templates.template.certtest.title": "监控模板",
   "workflow.new.templates.template.certtest.description": "一个包含证书监控 + 消息通知步骤的工作流程。",
-  "workflow.new.templates.template.blank.title": "空白模板",
-  "workflow.new.templates.template.blank.description": "从零开始自定义工作流的任务内容。",
+  "workflow.new.templates.template.empty.title": "空白模板",
+  "workflow.new.templates.template.empty.description": "从零开始自定义工作流的任务内容。",
   "workflow.new.modal.title": "新建工作流",
   "workflow.new.modal.form.name.label": "名称",
   "workflow.new.modal.form.name.placeholder": "请输入工作流名称",

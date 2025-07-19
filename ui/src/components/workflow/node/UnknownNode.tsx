@@ -19,23 +19,25 @@ const UnknownNode = ({ node, disabled }: MonitorNodeProps) => {
 
   return (
     <>
-      <Card className="relative w-[256px] overflow-hidden shadow-md" styles={{ body: { padding: 0 } }} hoverable variant="borderless">
-        <div className="cursor-pointer ">
-          <Alert
-            type="error"
-            message={
-              <div className="flex items-center justify-between gap-4 overflow-hidden">
-                <div className="flex-1 text-center text-xs">
-                  INVALID NODE
-                  <br />
-                  PLEASE REMOVE
+      <div className="relative w-[256px] overflow-hidden">
+        <Card className="shadow-md" styles={{ body: { padding: 0 } }} hoverable variant="borderless">
+          <div className="cursor-pointer ">
+            <Alert
+              type="error"
+              message={
+                <div className="flex items-center justify-between gap-4 overflow-hidden">
+                  <div className="flex-1 text-center text-xs">
+                    INVALID NODE
+                    <br />
+                    PLEASE REMOVE
+                  </div>
+                  <Button color="primary" icon={<CloseCircleOutlinedIcon />} variant="text" onClick={handleClickRemove} />
                 </div>
-                <Button color="primary" icon={<CloseCircleOutlinedIcon />} variant="text" onClick={handleClickRemove} />
-              </div>
-            }
-          />
-        </div>
-      </Card>
+              }
+            />
+          </div>
+        </Card>
+      </div>
 
       <AddNode node={node} disabled={disabled} />
     </>

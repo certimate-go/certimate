@@ -1,16 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  ApartmentOutlined as ApartmentOutlinedIcon,
-  CaretRightOutlined as CaretRightOutlinedIcon,
-  DeleteOutlined as DeleteOutlinedIcon,
-  DownOutlined as DownOutlinedIcon,
-  EllipsisOutlined as EllipsisOutlinedIcon,
-  HistoryOutlined as HistoryOutlinedIcon,
-  UndoOutlined as UndoOutlinedIcon,
-} from "@ant-design/icons";
 import { PageHeader } from "@ant-design/pro-components";
+import { IconArrowBackUp, IconChevronDown, IconDots, IconHistory, IconPlayerPlay, IconRobot, IconTrash } from "@tabler/icons-react";
 import { Alert, Button, Card, Dropdown, Form, Input, Modal, Space, Tabs, Typography, message, notification } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { isEqual } from "radash";
@@ -101,8 +93,15 @@ const WorkflowDetail = () => {
 
   const handleDeleteClick = () => {
     modalApi.confirm({
-      title: t("workflow.action.delete"),
-      content: t("workflow.action.delete.confirm"),
+      title: <span className="text-error">{t("workflow.action.delete")}</span>,
+      content: <span dangerouslySetInnerHTML={{ __html: t("workflow.action.delete.confirm", { name: workflow.name }) }} />,
+      icon: (
+        <span className="anticon">
+          <IconTrash className="text-error" size="1em" />
+        </span>
+      ),
+      okText: t("common.button.confirm"),
+      okButtonProps: { danger: true },
       onOk: async () => {
         try {
           const resp = await removeWorkflow(workflow);
@@ -224,7 +223,7 @@ const WorkflowDetail = () => {
                             key: "delete",
                             label: t("workflow.action.delete"),
                             danger: true,
-                            icon: <DeleteOutlinedIcon />,
+                            icon: <IconTrash size="1.25em" />,
                             onClick: () => {
                               handleDeleteClick();
                             },
@@ -233,7 +232,7 @@ const WorkflowDetail = () => {
                       }}
                       trigger={["click"]}
                     >
-                      <Button icon={<DownOutlinedIcon />} iconPosition="end">
+                      <Button icon={<IconChevronDown size="1.25em" />} iconPosition="end">
                         {t("common.button.more")}
                       </Button>
                     </Dropdown>,
@@ -246,8 +245,24 @@ const WorkflowDetail = () => {
               activeKey={tabValue}
               defaultActiveKey="orchestration"
               items={[
-                { key: "orchestration", label: t("workflow.detail.orchestration.tab"), icon: <ApartmentOutlinedIcon /> },
-                { key: "runs", label: t("workflow.detail.runs.tab"), icon: <HistoryOutlinedIcon /> },
+                {
+                  key: "orchestration",
+                  label: t("workflow.detail.orchestration.tab"),
+                  icon: (
+                    <span className="anticon scale-125">
+                      <IconRobot size="1em" />
+                    </span>
+                  ),
+                },
+                {
+                  key: "runs",
+                  label: t("workflow.detail.runs.tab"),
+                  icon: (
+                    <span className="anticon scale-125">
+                      <IconHistory size="1em" />
+                    </span>
+                  ),
+                },
               ]}
               renderTabBar={(props, DefaultTabBar) => <DefaultTabBar {...props} style={{ margin: 0 }} />}
               tabBarStyle={{ border: "none" }}
@@ -270,7 +285,7 @@ const WorkflowDetail = () => {
             }}
             loading={!initialized}
           >
-            <div className="absolute inset-x-6 top-4 z-[2] flex items-center justify-between gap-4">
+            <div className="absolute inset-x-6 top-4 z-2 flex items-center justify-between gap-4">
               <div className="flex-1 overflow-hidden">
                 <Show when={workflow.hasDraft!}>
                   <Alert banner message={<div className="truncate">{t("workflow.detail.orchestration.draft.alert")}</div>} type="warning" />
@@ -278,7 +293,7 @@ const WorkflowDetail = () => {
               </div>
               <div className="flex justify-end">
                 <Space>
-                  <Button disabled={!allowRun} icon={<CaretRightOutlinedIcon />} loading={isPendingOrRunning} type="primary" onClick={handleRunClick}>
+                  <Button disabled={!allowRun} icon={<IconPlayerPlay size="1.25em" />} loading={isPendingOrRunning} type="primary" onClick={handleRunClick}>
                     {t("workflow.detail.orchestration.action.run")}
                   </Button>
 
@@ -294,14 +309,14 @@ const WorkflowDetail = () => {
                             key: "discard",
                             disabled: !allowDiscard,
                             label: t("workflow.detail.orchestration.action.discard"),
-                            icon: <UndoOutlinedIcon />,
+                            icon: <IconArrowBackUp size="1.25em" />,
                             onClick: handleDiscardClick,
                           },
                         ],
                       }}
                       trigger={["click"]}
                     >
-                      <Button color="primary" disabled={!allowDiscard} icon={<EllipsisOutlinedIcon />} variant="outlined" />
+                      <Button color="primary" disabled={!allowDiscard} icon={<IconDots size="1.25em" />} variant="outlined" />
                     </Dropdown>
                   </Space.Compact>
                 </Space>

@@ -3,7 +3,7 @@
   "workflow_run.action.cancel": "Cancel run",
   "workflow_run.action.cancel.confirm": "Are you sure to cancel this run?",
   "workflow_run.action.delete": "Delete run",
-  "workflow_run.action.delete.confirm": "Are you sure to delete this run?",
+  "workflow_run.action.delete.confirm": "Are you sure want to delete \"{{name}}\" workflow run?<br>Please be aware that this action is irreversible.",
 
   "workflow_run.table.alert": "Attention: The workflow run contains the execution results of each node. Deleting it may trigger re-application or re-deployment of certificates due to the inability to find the previous execution result. Please do not delete unless necessary. It is recommended to keep it for at least 180 days.",
 

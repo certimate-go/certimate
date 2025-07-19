@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
-import {
-  DeleteOutlined as DeleteOutlinedIcon,
-  EditOutlined as EditOutlinedIcon,
-  PlusOutlined as PlusOutlinedIcon,
-  ReloadOutlined as ReloadOutlinedIcon,
-  SnippetsOutlined as SnippetsOutlinedIcon,
-} from "@ant-design/icons";
-import { PageHeader } from "@ant-design/pro-components";
+import { IconCopy, IconEdit, IconPlus, IconReload, IconTrash } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
-import { Avatar, Button, Card, Empty, Flex, Input, Modal, Space, Table, type TableProps, Tooltip, Typography, notification } from "antd";
+import { App, Avatar, Button, Empty, Input, Space, Table, type TableProps, Tabs, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import { ClientResponseError } from "pocketbase";
 
@@ -28,8 +21,7 @@ const AccessList = () => {
 
   const { t } = useTranslation();
 
-  const [modalApi, ModelContextHolder] = Modal.useModal();
-  const [notificationApi, NotificationContextHolder] = notification.useNotification();
+  const { modal, notification } = App.useApp();
 
   const { accesses, loadedAtOnce, fetchAccesses, deleteAccess } = useAccessesStore(
     useZustandShallowSelector(["accesses", "loadedAtOnce", "fetchAccesses", "deleteAccess"])
@@ -55,10 +47,10 @@ const AccessList = () => {
       ellipsis: true,
       render: (_, record) => {
         return (
-          <Space className="max-w-full truncate" size={4}>
+          <div className="flex max-w-full items-center gap-2 truncate overflow-hidden">
             <Avatar shape="square" src={accessProvidersMap.get(record.provider)?.icon} size="small" />
             <Typography.Text ellipsis>{t(accessProvidersMap.get(record.provider)?.name ?? "")}</Typography.Text>
-          </Space>
+          </div>
         );
       },
     },
@@ -91,7 +83,7 @@ const AccessList = () => {
             scene="edit"
             trigger={
               <Tooltip title={t("access.action.edit")}>
-                <Button color="primary" icon={<EditOutlinedIcon />} variant="text" />
+                <Button color="primary" icon={<IconEdit size="1.25em" />} variant="text" />
               </Tooltip>
             }
           />
@@ -102,7 +94,7 @@ const AccessList = () => {
             scene="add"
             trigger={
               <Tooltip title={t("access.action.duplicate")}>
-                <Button color="primary" icon={<SnippetsOutlinedIcon />} variant="text" />
+                <Button color="primary" icon={<IconCopy size="1.25em" />} variant="text" />
               </Tooltip>
             }
           />
@@ -110,7 +102,7 @@ const AccessList = () => {
           <Tooltip title={t("access.action.delete")}>
             <Button
               color="danger"
-              icon={<DeleteOutlinedIcon />}
+              icon={<IconTrash size="1.25em" />}
               variant="text"
               onClick={() => {
                 handleDeleteClick(record);
@@ -131,8 +123,8 @@ const AccessList = () => {
     };
   });
 
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [page, setPage] = useState<number>(() => parseInt(+searchParams.get("page")! + "") || 1);
+  const [pageSize, setPageSize] = useState<number>(() => parseInt(+searchParams.get("perPage")! + "") || 15);
 
   useEffect(() => {
     fetchAccesses().catch((err) => {
@@ -141,7 +133,7 @@ const AccessList = () => {
       }
 
       console.error(err);
-      notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
     });
   }, []);
 
@@ -199,81 +191,85 @@ const AccessList = () => {
     fetchAccesses();
   };
 
-  const handleDeleteClick = async (data: AccessModel) => {
-    modalApi.confirm({
-      title: t("access.action.delete"),
-      content: t("access.action.delete.confirm"),
+  const handleDeleteClick = async (access: AccessModel) => {
+    modal.confirm({
+      title: <span className="text-error">{t("access.action.delete")}</span>,
+      content: <span dangerouslySetInnerHTML={{ __html: t("access.action.delete.confirm", { name: access.name }) }} />,
+      icon: (
+        <span className="anticon">
+          <IconTrash className="text-error" size="1em" />
+        </span>
+      ),
+      okText: t("common.button.confirm"),
+      okButtonProps: { danger: true },
       onOk: async () => {
         // TODO: 有关联数据的不允许被删除
         try {
-          await deleteAccess(data);
+          await deleteAccess(access);
           refreshData();
         } catch (err) {
           console.error(err);
-          notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
         }
       },
     });
   };
 
   return (
-    <div className="p-4">
-      {ModelContextHolder}
-      {NotificationContextHolder}
+    <div className="px-6 py-4">
+      <div className="mx-auto max-w-320">
+        <h1>{t("access.page.title")}</h1>
+        <p className="text-base text-gray-500">{t("access.page.subtitle")}</p>
 
-      <PageHeader
-        title={t("access.page.title")}
-        extra={[
-          <AccessEditDrawer
-            key="create"
-            usage={filters["usage"] as AccessUsageProp}
-            scene="add"
-            trigger={
-              <Button type="primary" icon={<PlusOutlinedIcon />}>
-                {t("access.action.add")}
-              </Button>
-            }
-          />,
-        ]}
-      />
-
-      <Card
-        className="rounded-b-none"
-        styles={{
-          body: {
-            padding: 0,
-          },
-        }}
-        tabList={[
-          {
-            key: "both-dns-hosting",
-            label: t("access.props.usage.both_dns_hosting"),
-          },
-          {
-            key: "ca-only",
-            label: t("access.props.usage.ca_only"),
-          },
-          {
-            key: "notification-only",
-            label: t("access.props.usage.notification_only"),
-          },
-        ]}
-        activeTabKey={filters["usage"] as string}
-        onTabChange={(key) => handleTabChange(key)}
-      />
-
-      <Card className="rounded-t-none " size="small">
-        <div className="mb-4">
-          <Flex gap="small">
+        <div className="flex items-center justify-between gap-x-2 gap-y-3 not-md:flex-col-reverse not-md:items-start not-md:justify-normal">
+          <div className="flex w-full flex-1 items-center gap-x-2 md:max-w-200">
             <div className="flex-1">
-              <Input.Search allowClear defaultValue={filters["keyword"] as string} placeholder={t("access.search.placeholder")} onSearch={handleSearch} />
+              <Input.Search
+                className="text-sm placeholder:text-sm"
+                allowClear
+                defaultValue={filters["keyword"] as string}
+                placeholder={t("access.search.placeholder")}
+                size="large"
+                onSearch={handleSearch}
+              />
             </div>
             <div>
-              <Button icon={<ReloadOutlinedIcon spin={loading} />} onClick={handleReloadClick} />
+              <Button icon={<IconReload size="1.25em" />} size="large" onClick={handleReloadClick} />
             </div>
-          </Flex>
+          </div>
+          <div>
+            <AccessEditDrawer
+              usage={filters["usage"] as AccessUsageProp}
+              scene="add"
+              trigger={
+                <Button className="text-sm" icon={<IconPlus size="1.25em" />} size="large" type="primary">
+                  {t("access.action.create")}
+                </Button>
+              }
+            />
+          </div>
         </div>
 
+        <Tabs
+          className="mt-2 -mb-2"
+          activeKey={filters["usage"] as string}
+          items={[
+            {
+              key: "both-dns-hosting",
+              label: t("access.props.usage.both_dns_hosting"),
+            },
+            {
+              key: "ca-only",
+              label: t("access.props.usage.ca_only"),
+            },
+            {
+              key: "notification-only",
+              label: t("access.props.usage.notification_only"),
+            },
+          ]}
+          size="large"
+          onChange={(key) => handleTabChange(key)}
+        />
         <Table<AccessModel>
           columns={tableColumns}
           dataSource={tableData}
@@ -298,7 +294,7 @@ const AccessList = () => {
           rowKey={(record) => record.id}
           scroll={{ x: "max(100%, 960px)" }}
         />
-      </Card>
+      </div>
     </div>
   );
 };

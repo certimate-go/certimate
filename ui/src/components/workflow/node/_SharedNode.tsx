@@ -251,19 +251,21 @@ const SharedNodeBlock = ({ children, node, disabled, onClick }: SharedNodeBlockP
         content={<SharedNodeMenu node={node} disabled={disabled} trigger={<Button color="primary" icon={<MoreOutlinedIcon />} variant="text" />} />}
         placement="rightTop"
       >
-        <Card className="relative w-[256px] overflow-hidden shadow-md" styles={{ body: { padding: 0 } }} hoverable>
-          <div className="bg-primary flex h-[48px] flex-col items-center justify-center truncate px-4 py-2 text-white">
-            <SharedNodeTitle
-              className="focus:bg-background focus:text-foreground overflow-hidden outline-none focus:rounded-sm"
-              node={node}
-              disabled={disabled}
-            />
-          </div>
+        <div className="relative w-[256px] overflow-hidden">
+          <Card className="shadow-md" styles={{ body: { padding: 0 } }} hoverable>
+            <div className="bg-primary flex h-[48px] flex-col items-center justify-center truncate px-4 py-2 text-white">
+              <SharedNodeTitle
+                className="focus:bg-background focus:text-foreground overflow-hidden outline-hidden focus:rounded-xs"
+                node={node}
+                disabled={disabled}
+              />
+            </div>
 
-          <div className="flex cursor-pointer flex-col justify-center px-4 py-2" onClick={handleNodeClick}>
-            <div className="overflow-hidden text-sm">{children}</div>
-          </div>
-        </Card>
+            <div className="flex cursor-pointer flex-col justify-center px-4 py-2" onClick={handleNodeClick}>
+              <div className="overflow-hidden text-sm">{children}</div>
+            </div>
+          </Card>
+        </div>
       </Popover>
 
       <AddNode node={node} disabled={disabled} />

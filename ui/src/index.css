@@ -11,6 +11,10 @@
 body {
   margin: 0;
   padding: 0;
-  min-width: 320px;
+  color: var(--color-foreground);
+  background: var(--color-background);
+  min-width: 360px;
+  min-height: 540px;
   min-height: 100vh;
+  min-height: calc(min(360px, 100vh));
 }

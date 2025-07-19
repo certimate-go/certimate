@@ -1,6 +1,6 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, Select, type SelectProps, Space, Tag, Typography, theme } from "antd";
+import { Avatar, Select, type SelectProps, Tag, Typography, theme } from "antd";
 
 import Show from "@/components/Show";
 import { ACCESS_USAGES, type AccessProvider, type AccessUsageType, accessProvidersMap } from "@/domain/provider";
@@ -18,19 +18,22 @@ const AccessProviderSelect = ({ filter, showOptionTags, ...props }: AccessProvid
 
   const { token: themeToken } = theme.useToken();
 
-  const [options, setOptions] = useState<Array<{ key: string; value: string; label: string; data: AccessProvider }>>([]);
-  useEffect(() => {
-    const allItems = Array.from(accessProvidersMap.values());
-    const filteredItems = filter != null ? allItems.filter(filter) : allItems;
-    setOptions(
-      filteredItems.map((item) => ({
-        key: item.type,
-        value: item.type,
-        label: t(item.name),
-        disabled: item.builtin,
-        data: item,
-      }))
-    );
+  const options = useMemo<Array<{ key: string; value: string; label: string; data: AccessProvider }>>(() => {
+    return Array.from(accessProvidersMap.values())
+      .filter((provider) => {
+        if (filter) {
+          return filter(provider);
+        }
+
+        return true;
+      })
+      .map((provider) => ({
+        key: provider.type,
+        value: provider.type,
+        label: t(provider.name),
+        disabled: provider.builtin,
+        data: provider,
+      }));
   }, [filter]);
 
   const showOptionTagForDNS = useMemo(() => {
@@ -50,13 +53,13 @@ const AccessProviderSelect = ({ filter, showOptionTags, ...props }: AccessProvid
     const provider = accessProvidersMap.get(key) ?? ({ type: "", name: "", icon: "", usages: [] } as unknown as AccessProvider);
     return (
       <div className="flex max-w-full items-center justify-between gap-4 overflow-hidden">
-        <Space className="max-w-full grow truncate" size={4}>
+        <div className="flex items-center gap-2 overflow-hidden truncate">
           <Avatar shape="square" src={provider.icon} size="small" />
-          <Typography.Text className="leading-loose" type={provider.builtin ? "secondary" : undefined} ellipsis>
+          <Typography.Text type={provider.builtin ? "secondary" : undefined} ellipsis>
             {t(provider.name)}
           </Typography.Text>
-        </Space>
-        <div className="origin-right scale-[75%]">
+        </div>
+        <div className="origin-right scale-75">
           <Show when={provider.builtin}>
             <Tag>{t("access.props.provider.builtin")}</Tag>
           </Show>

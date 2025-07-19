@@ -1,5 +1,6 @@
 {
   "certificate.page.title": "证书管理",
+  "certificate.page.subtitle": "SSL 证书含有网站的公钥和网站标识以及其他相关信息。它们来自于工作流的执行输出。",
 
   "certificate.nodata": "暂无证书，新建一个工作流去生成证书吧～ 😀",
 
@@ -7,7 +8,7 @@
 
   "certificate.action.view": "查看证书",
   "certificate.action.delete": "删除证书",
-  "certificate.action.delete.confirm": "确定要删除此证书吗？",
+  "certificate.action.delete.confirm": "确定要删除证书「{{name}}」吗？<br>注意此操作不可撤销，请谨慎操作。",
   "certificate.action.download": "下载证书",
 
   "certificate.props.subject_alt_names": "名称",

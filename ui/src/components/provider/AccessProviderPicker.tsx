@@ -74,7 +74,7 @@ const AccessProviderPicker = ({ className, style, autoFocus, filter, placeholder
               return (
                 <Col key={index} xs={24} md={12} span={8}>
                   <Card
-                    className={mergeCls("h-20 w-full overflow-hidden shadow-sm", provider.builtin ? " cursor-not-allowed" : "")}
+                    className={mergeCls("h-20 w-full overflow-hidden shadow-xs", provider.builtin ? " cursor-not-allowed" : "")}
                     styles={{ body: { height: "100%", padding: "0.5rem 1rem" } }}
                     hoverable
                     onClick={() => {
@@ -91,7 +91,7 @@ const AccessProviderPicker = ({ className, style, autoFocus, filter, placeholder
                         <Typography.Text className="mb-1 line-clamp-1" type={provider.builtin ? "secondary" : undefined}>
                           {t(provider.name)}
                         </Typography.Text>
-                        <div className="origin-left scale-[75%]">
+                        <div className="origin-left scale-75">
                           <Show when={provider.builtin}>
                             <Tag>{t("access.props.provider.builtin")}</Tag>
                           </Show>

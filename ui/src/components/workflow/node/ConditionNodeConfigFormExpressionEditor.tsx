@@ -269,11 +269,7 @@ const ConditionNodeConfigFormExpressionEditor = forwardRef<ConditionNodeConfigFo
         onValuesChange={handleFormChange}
       >
         <Show when={formModel.conditions?.length > 1}>
-          <Form.Item
-            className="mb-2"
-            name="logicalOperator"
-            rules={[{ required: true, message: t("workflow_node.condition.form.expression.logical_operator.errmsg") }]}
-          >
+          <Form.Item name="logicalOperator" rules={[{ required: true, message: t("workflow_node.condition.form.expression.logical_operator.errmsg") }]}>
             <Radio.Group block>
               <Radio.Button value="and">{t("workflow_node.condition.form.expression.logical_operator.option.and.label")}</Radio.Button>
               <Radio.Button value="or">{t("workflow_node.condition.form.expression.logical_operator.option.or.label")}</Radio.Button>

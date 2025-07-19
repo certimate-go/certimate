@@ -1,5 +1,6 @@
 {
   "certificate.page.title": "Certificates",
+  "certificate.page.subtitle": "SSL certificates contain the website's public key and the website's identity, along with related information. They are generated from the execution output of workflows.",
 
   "certificate.nodata": "No certificates. Please create a workflow to generate certificates! 😀",
 
@@ -7,7 +8,7 @@
 
   "certificate.action.view": "View certificate",
   "certificate.action.delete": "Delete certificate",
-  "certificate.action.delete.confirm": "Are you sure to delete this certificate?",
+  "certificate.action.delete.confirm": "Are you sure want to delete \"{{name}}\" certificate?<br>Please be aware that this action is irreversible.",
   "certificate.action.download": "Download certificate",
 
   "certificate.props.subject_alt_names": "Name",

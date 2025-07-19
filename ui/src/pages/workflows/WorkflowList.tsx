@@ -5,38 +5,12 @@ import {
   CheckCircleOutlined as CheckCircleOutlinedIcon,
   ClockCircleOutlined as ClockCircleOutlinedIcon,
   CloseCircleOutlined as CloseCircleOutlinedIcon,
-  DeleteOutlined as DeleteOutlinedIcon,
-  EditOutlined as EditOutlinedIcon,
-  PlusOutlined as PlusOutlinedIcon,
-  ReloadOutlined as ReloadOutlinedIcon,
-  SnippetsOutlined as SnippetsOutlinedIcon,
   StopOutlined as StopOutlinedIcon,
   SyncOutlined as SyncOutlinedIcon,
 } from "@ant-design/icons";
-
-import { PageHeader } from "@ant-design/pro-components";
+import { IconCopy, IconEdit, IconPlus, IconReload, IconTrash } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
-import {
-  Button,
-  Card,
-  Divider,
-  Empty,
-  Flex,
-  Input,
-  Menu,
-  type MenuProps,
-  Modal,
-  Radio,
-  Space,
-  Switch,
-  Table,
-  type TableProps,
-  Tooltip,
-  Typography,
-  message,
-  notification,
-  theme,
-} from "antd";
+import { App, Button, Divider, Empty, Input, Menu, type MenuProps, Radio, Space, Switch, Table, type TableProps, Tooltip, Typography, theme } from "antd";
 import dayjs from "dayjs";
 import { ClientResponseError } from "pocketbase";
 
@@ -51,11 +25,8 @@ const WorkflowList = () => {
 
   const { t } = useTranslation();
 
+  const { message, modal, notification } = App.useApp();
   const { token: themeToken } = theme.useToken();
-
-  const [messageApi, MessageContextHolder] = message.useMessage();
-  const [modalApi, ModelContextHolder] = Modal.useModal();
-  const [notificationApi, NotificationContextHolder] = notification.useNotification();
 
   const tableColumns: TableProps<WorkflowModel>["columns"] = [
     {
@@ -212,7 +183,7 @@ const WorkflowList = () => {
           <Tooltip title={t("workflow.action.edit")}>
             <Button
               color="primary"
-              icon={<EditOutlinedIcon />}
+              icon={<IconEdit size="1.25em" />}
               variant="text"
               onClick={() => {
                 navigate(`/workflows/${record.id}`);
@@ -223,7 +194,7 @@ const WorkflowList = () => {
           <Tooltip title={t("workflow.action.duplicate")}>
             <Button
               color="primary"
-              icon={<SnippetsOutlinedIcon />}
+              icon={<IconCopy size="1.25em" />}
               variant="text"
               onClick={() => {
                 handleDuplicateClick(record);
@@ -235,7 +206,7 @@ const WorkflowList = () => {
             <Button
               color="danger"
               danger
-              icon={<DeleteOutlinedIcon />}
+              icon={<IconTrash size="1.25em" />}
               variant="text"
               onClick={() => {
                 handleDeleteClick(record);
@@ -257,7 +228,7 @@ const WorkflowList = () => {
   });
 
   const [page, setPage] = useState<number>(() => parseInt(+searchParams.get("page")! + "") || 1);
-  const [pageSize, setPageSize] = useState<number>(() => parseInt(+searchParams.get("perPage")! + "") || 10);
+  const [pageSize, setPageSize] = useState<number>(() => parseInt(+searchParams.get("perPage")! + "") || 15);
 
   const {
     loading,
@@ -284,7 +255,7 @@ const WorkflowList = () => {
         }
 
         console.error(err);
-        notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
 
         throw err;
       },
@@ -309,7 +280,7 @@ const WorkflowList = () => {
   const handleEnabledChange = async (workflow: WorkflowModel) => {
     try {
       if (!workflow.enabled && (!workflow.content || !isAllNodesValidated(workflow.content))) {
-        messageApi.warning(t("workflow.action.enable.failed.uncompleted"));
+        message.warning(t("workflow.action.enable.failed.uncompleted"));
         return;
       }
 
@@ -329,12 +300,12 @@ const WorkflowList = () => {
       }
     } catch (err) {
       console.error(err);
-      notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
     }
   };
 
   const handleDuplicateClick = (workflow: WorkflowModel) => {
-    modalApi.confirm({
+    modal.confirm({
       title: t("workflow.action.duplicate"),
       content: t("workflow.action.duplicate.confirm"),
       onOk: async () => {
@@ -357,16 +328,23 @@ const WorkflowList = () => {
           }
         } catch (err) {
           console.error(err);
-          notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
         }
       },
     });
   };
 
   const handleDeleteClick = (workflow: WorkflowModel) => {
-    modalApi.confirm({
-      title: t("workflow.action.delete"),
-      content: t("workflow.action.delete.confirm"),
+    modal.confirm({
+      title: <span className="text-error">{t("workflow.action.delete")}</span>,
+      content: <span dangerouslySetInnerHTML={{ __html: t("workflow.action.delete.confirm", { name: workflow.name }) }} />,
+      icon: (
+        <span className="anticon">
+          <IconTrash className="text-error" size="1em" />
+        </span>
+      ),
+      okText: t("common.button.confirm"),
+      okButtonProps: { danger: true },
       onOk: async () => {
         try {
           const resp = await removeWorkflow(workflow);
@@ -376,47 +354,43 @@ const WorkflowList = () => {
           }
         } catch (err) {
           console.error(err);
-          notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
         }
       },
     });
   };
 
   return (
-    <div className="p-4">
-      {MessageContextHolder}
-      {ModelContextHolder}
-      {NotificationContextHolder}
+    <div className="px-6 py-4">
+      <div className="mx-auto max-w-320">
+        <h1>{t("workflow.page.title")}</h1>
+        <p className="text-base text-gray-500">{t("workflow.page.subtitle")}</p>
 
-      <PageHeader
-        title={t("workflow.page.title")}
-        extra={[
-          <Button
-            key="create"
-            type="primary"
-            icon={<PlusOutlinedIcon />}
-            onClick={() => {
-              handleCreateClick();
-            }}
-          >
-            {t("workflow.action.create")}
-          </Button>,
-        ]}
-      />
-
-      <Card size="small">
-        <div className="mb-4">
-          <Flex gap="small">
+        <div className="flex items-center justify-between gap-x-2 gap-y-3 not-md:flex-col-reverse not-md:items-start not-md:justify-normal">
+          <div className="flex w-full flex-1 items-center gap-x-2 md:max-w-200">
             <div className="flex-1">
-              <Input.Search allowClear defaultValue={filters["keyword"] as string} placeholder={t("workflow.search.placeholder")} onSearch={handleSearch} />
+              <Input.Search
+                className="text-sm placeholder:text-sm"
+                allowClear
+                defaultValue={filters["keyword"] as string}
+                placeholder={t("workflow.search.placeholder")}
+                size="large"
+                onSearch={handleSearch}
+              />
             </div>
             <div>
-              <Button icon={<ReloadOutlinedIcon spin={loading} />} onClick={handleReloadClick} />
+              <Button icon={<IconReload size="1.25em" />} size="large" onClick={handleReloadClick} />
             </div>
-          </Flex>
+          </div>
+          <div>
+            <Button className="text-sm" icon={<IconPlus size="1.25em" />} size="large" type="primary" onClick={handleCreateClick}>
+              {t("workflow.action.create")}
+            </Button>
+          </div>
         </div>
 
         <Table<WorkflowModel>
+          className="mt-4"
           columns={tableColumns}
           dataSource={tableData}
           loading={loading}
@@ -440,7 +414,7 @@ const WorkflowList = () => {
           rowKey={(record) => record.id}
           scroll={{ x: "max(100%, 960px)" }}
         />
-      </Card>
+      </div>
     </div>
   );
 };

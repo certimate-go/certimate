@@ -96,7 +96,7 @@ const DeploymentProviderPicker = ({ className, style, autoFocus, filter, placeho
                   return (
                     <Col key={index} xs={24} md={12} span={12}>
                       <Card
-                        className="h-16 w-full overflow-hidden shadow-sm"
+                        className="h-16 w-full overflow-hidden shadow-xs"
                         styles={{ body: { height: "100%", padding: "0.5rem 1rem" } }}
                         hoverable
                         onClick={() => {

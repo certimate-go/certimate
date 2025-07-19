@@ -1,9 +1,9 @@
 {
   "workflow_run.action.view": "查看详情",
   "workflow_run.action.cancel": "取消执行",
-  "workflow_run.action.cancel.confirm": "确定要取消此执行吗？请注意此操作仅中止流程，但不会回滚已执行的节点。",
+  "workflow_run.action.cancel.confirm": "确定要取消此执行吗？此操作仅中止流程，但不会回滚已执行的节点。",
   "workflow_run.action.delete": "删除执行",
-  "workflow_run.action.delete.confirm": "确定要删除此执行吗？请注意此操作仅清除日志历史，但不会影响签发的证书。",
+  "workflow_run.action.delete.confirm": "确定要删除工作流执行记录「{{name}}」吗？<br>此操作仅清除日志历史，但不会影响签发的证书。<br>注意此操作不可撤销，请谨慎操作。",
 
   "workflow_run.table.alert": "注意：执行记录中包含工作流各节点的执行结果，删除后可能导致因找不到前次执行结果而触发重新申请或部署证书。如无必要请勿提前删除，建议保留至少 180 天。",
 

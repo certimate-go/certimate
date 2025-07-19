@@ -4,7 +4,6 @@ import { Avatar, Flex, Typography } from "antd";
 import { produce } from "immer";
 
 import { notificationProvidersMap } from "@/domain/provider";
-import { notifyChannelsMap } from "@/domain/settings";
 import { type WorkflowNodeConfigForNotify, WorkflowNodeType } from "@/domain/workflow";
 import { useZustandShallowSelector } from "@/hooks";
 import { useWorkflowStore } from "@/stores/workflow";
@@ -39,12 +38,11 @@ const NotifyNode = ({ node, disabled }: NotifyNodeProps) => {
     }
 
     const config = (node.config as WorkflowNodeConfigForNotify) ?? {};
-    const channel = notifyChannelsMap.get(config.channel as string);
     const provider = notificationProvidersMap.get(config.provider);
     return (
       <Flex className="size-full overflow-hidden" align="center" gap={8}>
         <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text className="flex-1 truncate">{t(channel?.name ?? provider?.name ?? "　")}</Typography.Text>
+        <Typography.Text className="flex-1 truncate">{t(provider?.name ?? "　")}</Typography.Text>
         <Typography.Text className="truncate" type="secondary">
           {config.subject ?? ""}
         </Typography.Text>

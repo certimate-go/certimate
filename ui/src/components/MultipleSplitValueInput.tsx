@@ -1,8 +1,8 @@
 ﻿import { type ChangeEvent, useEffect } from "react";
-import { FormOutlined as FormOutlinedIcon } from "@ant-design/icons";
-import { nanoid } from "@ant-design/pro-components";
+import { IconList } from "@tabler/icons-react";
 import { useControllableValue } from "ahooks";
 import { Button, Form, Input, type InputProps, Space } from "antd";
+import { nanoid } from "nanoid";
 
 import { useAntdForm } from "@/hooks";
 import ModalForm from "./ModalForm";
@@ -91,7 +91,7 @@ const MultipleSplitValueInput = ({
         title={modalTitle}
         trigger={
           <Button disabled={disabled}>
-            <FormOutlinedIcon />
+            <IconList size="1.25em" />
           </Button>
         }
         validateTrigger="onSubmit"

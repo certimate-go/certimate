@@ -318,7 +318,7 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
             />
           </Form.Item>
 
-          <Form.Item className="mb-0" htmlFor="null">
+          <Form.Item noStyle>
             <label className="mb-1 block">
               <div className="flex w-full items-center justify-between gap-4">
                 <div className="max-w-full grow truncate">
@@ -375,7 +375,7 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
         </Divider>
 
         <Form className={className} style={style} {...formProps} disabled={disabled} layout="vertical" scrollToFirstError onValuesChange={handleFormChange}>
-          <Form.Item className="mb-0" htmlFor="null">
+          <Form.Item noStyle>
             <label className="mb-1 block">
               <div className="flex w-full items-center justify-between gap-4">
                 <div className="max-w-full grow truncate">
@@ -404,7 +404,7 @@ const ApplyNodeConfigForm = forwardRef<ApplyNodeConfigFormInstance, ApplyNodeCon
             </Form.Item>
           </Form.Item>
 
-          <Form.Item className="mb-0" htmlFor="null" hidden={!showCAProviderAccess}>
+          <Form.Item hidden={!showCAProviderAccess} noStyle>
             <label className="mb-1 block">
               <div className="flex w-full items-center justify-between gap-4">
                 <div className="max-w-full grow truncate">

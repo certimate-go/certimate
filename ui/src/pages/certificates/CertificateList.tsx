@@ -1,28 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { DeleteOutlined as DeleteOutlinedIcon, ReloadOutlined as ReloadOutlinedIcon, SelectOutlined as SelectOutlinedIcon } from "@ant-design/icons";
-import { PageHeader } from "@ant-design/pro-components";
+import { IconBrowserShare, IconReload, IconTrash } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
-import {
-  Button,
-  Card,
-  Divider,
-  Empty,
-  Flex,
-  Input,
-  Menu,
-  type MenuProps,
-  Modal,
-  Radio,
-  Space,
-  Table,
-  type TableProps,
-  Tooltip,
-  Typography,
-  notification,
-  theme,
-} from "antd";
+import { App, Button, Divider, Empty, Input, Menu, type MenuProps, Radio, Space, Table, type TableProps, Tooltip, Typography, theme } from "antd";
 import dayjs from "dayjs";
 import { ClientResponseError } from "pocketbase";
 
@@ -37,10 +18,8 @@ const CertificateList = () => {
 
   const { t } = useTranslation();
 
+  const { modal, notification } = App.useApp();
   const { token: themeToken } = theme.useToken();
-
-  const [modalApi, ModalContextHolder] = Modal.useModal();
-  const [notificationApi, NotificationContextHolder] = notification.useNotification();
 
   const tableColumns: TableProps<CertificateModel>["columns"] = [
     {
@@ -200,13 +179,13 @@ const CertificateList = () => {
             data={record}
             trigger={
               <Tooltip title={t("certificate.action.view")}>
-                <Button color="primary" icon={<SelectOutlinedIcon />} variant="text" />
+                <Button color="primary" icon={<IconBrowserShare size="1.25em" />} variant="text" />
               </Tooltip>
             }
           />
 
           <Tooltip title={t("certificate.action.delete")}>
-            <Button color="danger" icon={<DeleteOutlinedIcon />} variant="text" onClick={() => handleDeleteClick(record)} />
+            <Button color="danger" icon={<IconTrash size="1.25em" />} variant="text" onClick={() => handleDeleteClick(record)} />
           </Tooltip>
         </Space.Compact>
       ),
@@ -223,7 +202,7 @@ const CertificateList = () => {
   });
 
   const [page, setPage] = useState<number>(() => parseInt(+searchParams.get("page")! + "") || 1);
-  const [pageSize, setPageSize] = useState<number>(() => parseInt(+searchParams.get("perPage")! + "") || 10);
+  const [pageSize, setPageSize] = useState<number>(() => parseInt(+searchParams.get("perPage")! + "") || 15);
 
   const {
     loading,
@@ -250,7 +229,7 @@ const CertificateList = () => {
         }
 
         console.error(err);
-        notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
 
         throw err;
       },
@@ -269,9 +248,16 @@ const CertificateList = () => {
   };
 
   const handleDeleteClick = (certificate: CertificateModel) => {
-    modalApi.confirm({
-      title: t("certificate.action.delete"),
-      content: t("certificate.action.delete.confirm"),
+    modal.confirm({
+      title: <span className="text-error">{t("certificate.action.delete")}</span>,
+      content: <span dangerouslySetInnerHTML={{ __html: t("certificate.action.delete.confirm", { name: certificate.subjectAltNames }) }} />,
+      icon: (
+        <span className="anticon">
+          <IconTrash className="text-error" size="1em" />
+        </span>
+      ),
+      okText: t("common.button.confirm"),
+      okButtonProps: { danger: true },
       onOk: async () => {
         try {
           const resp = await removeCertificate(certificate);
@@ -281,32 +267,39 @@ const CertificateList = () => {
           }
         } catch (err) {
           console.error(err);
-          notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
         }
       },
     });
   };
 
   return (
-    <div className="p-4">
-      {ModalContextHolder}
-      {NotificationContextHolder}
+    <div className="px-6 py-4">
+      <div className="mx-auto max-w-320">
+        <h1>{t("certificate.page.title")}</h1>
+        <p className="text-base text-gray-500">{t("certificate.page.subtitle")}</p>
 
-      <PageHeader title={t("certificate.page.title")} />
-
-      <Card size="small">
-        <div className="mb-4">
-          <Flex gap="small">
+        <div className="flex items-center justify-between gap-x-2 gap-y-3 not-md:flex-col-reverse not-md:items-start not-md:justify-normal">
+          <div className="flex w-full flex-1 items-center gap-x-2 md:max-w-200">
             <div className="flex-1">
-              <Input.Search allowClear defaultValue={filters["keyword"] as string} placeholder={t("certificate.search.placeholder")} onSearch={handleSearch} />
+              <Input.Search
+                className="text-sm placeholder:text-sm"
+                allowClear
+                defaultValue={filters["keyword"] as string}
+                placeholder={t("certificate.search.placeholder")}
+                size="large"
+                onSearch={handleSearch}
+              />
             </div>
             <div>
-              <Button icon={<ReloadOutlinedIcon spin={loading} />} onClick={handleReloadClick} />
+              <Button icon={<IconReload size="1.25em" />} size="large" onClick={handleReloadClick} />
             </div>
-          </Flex>
+          </div>
+          <div></div>
         </div>
 
         <Table<CertificateModel>
+          className="mt-4"
           columns={tableColumns}
           dataSource={tableData}
           loading={loading}
@@ -330,7 +323,7 @@ const CertificateList = () => {
           rowKey={(record) => record.id}
           scroll={{ x: "max(100%, 960px)" }}
         />
-      </Card>
+      </div>
     </div>
   );
 };

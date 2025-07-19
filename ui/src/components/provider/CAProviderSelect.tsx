@@ -1,6 +1,6 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, Select, type SelectProps, Space, Typography, theme } from "antd";
+import { Avatar, Select, type SelectProps, Typography, theme } from "antd";
 
 import { type CAProvider, caProvidersMap } from "@/domain/provider";
 
@@ -16,45 +16,49 @@ const CAProviderSelect = ({ filter, ...props }: CAProviderSelectProps) => {
 
   const { token: themeToken } = theme.useToken();
 
-  const [options, setOptions] = useState<Array<{ key: string; value: string; label: string; data: CAProvider }>>([]);
-  useEffect(() => {
-    const allItems = Array.from(caProvidersMap.values());
-    const filteredItems = filter != null ? allItems.filter(filter) : allItems;
-    setOptions([
-      {
-        key: "",
-        value: "",
-        label: t("provider.default_ca_provider.label"),
-        data: {} as CAProvider,
-      },
-      ...filteredItems.map((item) => ({
-        key: item.type,
-        value: item.type,
-        label: t(item.name),
-        data: item,
-      })),
-    ]);
+  const options = useMemo<Array<{ key: string; value: string; label: string; data: CAProvider }>>(() => {
+    const temp = Array.from(caProvidersMap.values())
+      .filter((provider) => {
+        if (filter) {
+          return filter(provider);
+        }
+
+        return true;
+      })
+      .map((provider) => ({
+        key: provider.type as string,
+        value: provider.type as string,
+        label: t(provider.name),
+        data: provider,
+      }));
+
+    temp.unshift({
+      key: "",
+      value: "",
+      label: t("provider.default_ca_provider.label"),
+      data: {} as CAProvider,
+    });
+
+    return temp;
   }, [filter]);
 
   const renderOption = (key: string) => {
     if (key === "") {
       return (
-        <Space className="max-w-full grow overflow-hidden truncate" size={4}>
-          <Typography.Text className="italic leading-loose" type="secondary" ellipsis italic>
+        <div className="flex items-center gap-2 overflow-hidden truncate">
+          <Typography.Text className="italic" ellipsis italic>
             {t("provider.default_ca_provider.label")}
           </Typography.Text>
-        </Space>
+        </div>
       );
     }
 
     const provider = caProvidersMap.get(key);
     return (
-      <Space className="max-w-full grow overflow-hidden truncate" size={4}>
+      <div className="flex items-center gap-2 overflow-hidden truncate">
         <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text className="leading-loose" ellipsis>
-          {t(provider?.name ?? "")}
-        </Typography.Text>
-      </Space>
+        <Typography.Text ellipsis>{t(provider?.name ?? "")}</Typography.Text>
+      </div>
     );
   };
 

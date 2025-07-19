@@ -95,7 +95,7 @@ const AccessFormEmailConfig = ({ form: formInst, formName, disabled, initialValu
 
         <div className="w-2/5">
           <Form.Item name="smtpPort" label={t("access.form.email_smtp_port.label")} rules={[formRule]}>
-            <InputNumber className="w-full" placeholder={t("access.form.email_smtp_port.placeholder")} min={1} max={65535} />
+            <InputNumber style={{ width: "100%" }} placeholder={t("access.form.email_smtp_port.placeholder")} min={1} max={65535} />
           </Form.Item>
         </div>
       </div>

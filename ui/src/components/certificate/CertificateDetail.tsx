@@ -1,7 +1,7 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
-import { CopyOutlined as CopyOutlinedIcon, DownOutlined as DownOutlinedIcon, LikeOutlined as LikeOutlinedIcon } from "@ant-design/icons";
-import { Button, Dropdown, Form, Input, Space, Tooltip, message } from "antd";
+import { IconChevronDown, IconClipboard, IconThumbUp } from "@tabler/icons-react";
+import { App, Button, Dropdown, Form, Input, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 
@@ -17,7 +17,7 @@ export type CertificateDetailProps = {
 const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
   const { t } = useTranslation();
 
-  const [messageApi, MessageContextHolder] = message.useMessage();
+  const { message } = App.useApp();
 
   const handleDownloadClick = async (format: CertificateFormatType) => {
     try {
@@ -28,14 +28,12 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
       saveAs(blob, `${data.id}-${data.subjectAltNames}.zip`);
     } catch (err) {
       console.error(err);
-      messageApi.warning(t("common.text.operation_failed"));
+      message.warning(t("common.text.operation_failed"));
     }
   };
 
   return (
     <div {...props}>
-      {MessageContextHolder}
-
       <Form layout="vertical">
         <Form.Item label={t("certificate.props.subject_alt_names")}>
           <Input value={data.subjectAltNames} variant="filled" placeholder="" />
@@ -68,10 +66,10 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
               <CopyToClipboard
                 text={data.certificate}
                 onCopy={() => {
-                  messageApi.success(t("common.text.copied"));
+                  message.success(t("common.text.copied"));
                 }}
               >
-                <Button size="small" type="text" icon={<CopyOutlinedIcon />}></Button>
+                <Button size="small" type="text" icon={<IconClipboard size="1.25em" />}></Button>
               </CopyToClipboard>
             </Tooltip>
           </div>
@@ -85,10 +83,10 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
               <CopyToClipboard
                 text={data.privateKey}
                 onCopy={() => {
-                  messageApi.success(t("common.text.copied"));
+                  message.success(t("common.text.copied"));
                 }}
               >
-                <Button size="small" type="text" icon={<CopyOutlinedIcon />}></Button>
+                <Button size="small" type="text" icon={<IconClipboard size="1.25em" />}></Button>
               </CopyToClipboard>
             </Tooltip>
           </div>
@@ -103,7 +101,7 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
               {
                 key: "PEM",
                 label: "PEM",
-                extra: <LikeOutlinedIcon />,
+                extra: <IconThumbUp size="1.25em" />,
                 onClick: () => handleDownloadClick(CERTIFICATE_FORMATS.PEM),
               },
               {
@@ -119,11 +117,8 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
             ],
           }}
         >
-          <Button type="primary">
-            <Space>
-              <span>{t("certificate.action.download")}</span>
-              <DownOutlinedIcon />
-            </Space>
+          <Button icon={<IconChevronDown size="1.25em" />} iconPosition="end" type="primary">
+            {t("certificate.action.download")}
           </Button>
         </Dropdown>
       </div>

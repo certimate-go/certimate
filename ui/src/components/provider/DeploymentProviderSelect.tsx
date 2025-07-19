@@ -1,6 +1,6 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, Select, type SelectProps, Space, Typography, theme } from "antd";
+import { Avatar, Select, type SelectProps, Typography, theme } from "antd";
 
 import { type DeploymentProvider, deploymentProvidersMap } from "@/domain/provider";
 
@@ -16,29 +16,30 @@ const DeploymentProviderSelect = ({ filter, ...props }: DeploymentProviderSelect
 
   const { token: themeToken } = theme.useToken();
 
-  const [options, setOptions] = useState<Array<{ key: string; value: string; label: string; data: DeploymentProvider }>>([]);
-  useEffect(() => {
-    const allItems = Array.from(deploymentProvidersMap.values());
-    const filteredItems = filter != null ? allItems.filter(filter) : allItems;
-    setOptions(
-      filteredItems.map((item) => ({
-        key: item.type,
-        value: item.type,
-        label: t(item.name),
-        data: item,
-      }))
-    );
+  const options = useMemo<Array<{ key: string; value: string; label: string; data: DeploymentProvider }>>(() => {
+    return Array.from(deploymentProvidersMap.values())
+      .filter((provider) => {
+        if (filter) {
+          return filter(provider);
+        }
+
+        return true;
+      })
+      .map((provider) => ({
+        key: provider.type,
+        value: provider.type,
+        label: t(provider.name),
+        data: provider,
+      }));
   }, [filter]);
 
   const renderOption = (key: string) => {
     const provider = deploymentProvidersMap.get(key);
     return (
-      <Space className="max-w-full grow overflow-hidden truncate" size={4}>
+      <div className="flex items-center gap-2 overflow-hidden truncate">
         <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text className="leading-loose" ellipsis>
-          {t(provider?.name ?? "")}
-        </Typography.Text>
-      </Space>
+        <Typography.Text ellipsis>{t(provider?.name ?? "")}</Typography.Text>
+      </div>
     );
   };
 

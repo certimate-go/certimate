@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { DownOutlined as DownOutlinedIcon } from "@ant-design/icons";
+import { IconChevronDown } from "@tabler/icons-react";
 import { Button, Dropdown, Form, type FormInstance, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod/v4";
@@ -433,7 +433,7 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
         </Form.Item>
       </Show>
 
-      <Form.Item className="mb-0" htmlFor="null">
+      <Form.Item noStyle>
         <label className="mb-1 block">
           <div className="flex w-full items-center justify-between gap-4">
             <div className="max-w-full grow truncate">
@@ -452,7 +452,7 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
               >
                 <Button size="small" type="link">
                   {t("workflow_node.deploy.form.ssh_preset_scripts.button")}
-                  <DownOutlinedIcon />
+                  <IconChevronDown size="1.25em" />
                 </Button>
               </Dropdown>
             </div>
@@ -469,7 +469,7 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
         </Form.Item>
       </Form.Item>
 
-      <Form.Item className="mb-0" htmlFor="null">
+      <Form.Item noStyle>
         <label className="mb-1 block">
           <div className="flex w-full items-center justify-between gap-4">
             <div className="max-w-full grow truncate">
@@ -496,7 +496,7 @@ const DeployNodeConfigFormSSHConfig = ({ form: formInst, formName, disabled, ini
               >
                 <Button size="small" type="link">
                   {t("workflow_node.deploy.form.ssh_preset_scripts.button")}
-                  <DownOutlinedIcon />
+                  <IconChevronDown size="1.25em" />
                 </Button>
               </Dropdown>
             </div>

@@ -1,17 +1,56 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* NOTICE: There are layer conflicts between tailwindcss v4 and antd, hack for this. */
+/* @layer theme, base, antd, components, utilities; */
+/* @import "tailwindcss"; */
+
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+@import "antd/dist/reset.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: var(---twColorBackground);
+  --color-foreground: var(---twColorForeground);
+  --color-container: var(---twColorContainer);
+  --color-container-hover: var(---twColorContainerHover);
+  --color-primary: var(---twColorPrimary);
+  --color-info: var(---twColorInfo);
+  --color-success: var(---twColorSuccess);
+  --color-warning: var(---twColorWarning);
+  --color-error: var(---twColorError);
+}
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0, 0%, 8%;
-    --primary: 24.6 95% 53.1%;
+    ---twColorBackground: #ffffff;
+    ---twColorForeground: #141414;
+    ---twColorContainer: #f9fafb;
+    ---twColorContainerHover: #e5e7eb;
+    ---twColorPrimary: #f97316;
+    ---twColorInfo: #478ce6;
+    ---twColorSuccess: #59ab5c;
+    ---twColorWarning: #daa93e;
+    ---twColorError: #e5534b;
   }
 
   .dark {
-    --background: 0, 0%, 8%;
-    --foreground: 60 9.1% 97.8%;
-    --primary: 20.5 90.2% 48.2%;
+    ---twColorBackground: #17191c;
+    ---twColorForeground: #fafaf9;
+    ---twColorContainer: #1e2124;
+    ---twColorContainerHover: #32373e;
+    ---twColorPrimary: #ea580c;
+    ---twColorInfo: #0969da;
+    ---twColorSuccess: #1a7f37;
+    ---twColorWarning: #eac54f;
+    ---twColorError: #d1242f;
+  }
+}
+
+@layer base {
+  /* Fix non-antd icon's position not correct */
+  .ant-btn > .ant-btn-icon,
+  svg.tabler-icon,
+  svg.icon {
+    line-height: 1;
   }
 }

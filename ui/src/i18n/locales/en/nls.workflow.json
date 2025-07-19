@@ -1,5 +1,6 @@
 {
   "workflow.page.title": "Workflows",
+  "workflow.page.subtitle": "Workflows are collections of nodes that automate a process. Workflows begin execution when a trigger condition occurs and execute sequentially to achieve complex tasks.",
 
   "workflow.nodata": "No workflows. Please create a workflow to generate certificates! 😀",
 
@@ -10,7 +11,7 @@
   "workflow.action.duplicate": "Duplicate workflow",
   "workflow.action.duplicate.confirm": "Are you sure to duplicate this workflow?",
   "workflow.action.delete": "Delete workflow",
-  "workflow.action.delete.confirm": "Are you sure to delete this workflow?",
+  "workflow.action.delete.confirm": "Are you sure want to delete \"{{name}}\" workflow?<br>Please be aware that this action is irreversible.",
   "workflow.action.enable": "Enable",
   "workflow.action.enable.failed.uncompleted": "Please complete the orchestration and publish the changes first",
   "workflow.action.disable": "Disable",
@@ -18,7 +19,7 @@
   "workflow.props.name": "Name",
   "workflow.props.description": "Description",
   "workflow.props.trigger": "Trigger",
-  "workflow.props.trigger.auto": "Auto",
+  "workflow.props.trigger.auto": "Scheduled",
   "workflow.props.trigger.manual": "Manual",
   "workflow.props.last_run_at": "Last run at",
   "workflow.props.state": "State",
@@ -28,14 +29,14 @@
   "workflow.props.updated_at": "Updated at",
 
   "workflow.new.title": "Create Workflow",
-  "workflow.new.subtitle": "Apply, deploy and notify with Workflows",
+  "workflow.new.subtitle": "Using a workflow to monitor, apply, deploy and notify.",
   "workflow.new.templates.title": "Choose a Workflow Template",
   "workflow.new.templates.template.standard.title": "Standard template",
   "workflow.new.templates.template.standard.description": "A standard operating procedure that includes application, deployment, and notification steps.",
   "workflow.new.templates.template.certtest.title": "Monitoring template",
   "workflow.new.templates.template.certtest.description": "A monitoring operating procedure that includes monitoring, and notification steps.",
-  "workflow.new.templates.template.blank.title": "Blank template",
-  "workflow.new.templates.template.blank.description": "Customize all the contents of the workflow from the beginning.",
+  "workflow.new.templates.template.empty.title": "Empty template",
+  "workflow.new.templates.template.empty.description": "Customize all the contents of the workflow from the beginning.",
   "workflow.new.modal.title": "Create workflow",
   "workflow.new.modal.form.name.label": "Name",
   "workflow.new.modal.form.name.placeholder": "Please enter workflow name",

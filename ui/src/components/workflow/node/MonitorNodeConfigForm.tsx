@@ -91,7 +91,7 @@ const MonitorNodeConfigForm = forwardRef<MonitorNodeConfigFormInstance, MonitorN
 
           <div className="w-1/3">
             <Form.Item name="port" label={t("workflow_node.monitor.form.port.label")} rules={[formRule]}>
-              <InputNumber className="w-full" min={1} max={65535} placeholder={t("workflow_node.monitor.form.port.placeholder")} />
+              <InputNumber style={{ width: "100%" }} min={1} max={65535} placeholder={t("workflow_node.monitor.form.port.placeholder")} />
             </Form.Item>
           </div>
         </div>

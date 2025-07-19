@@ -1,6 +1,6 @@
 ﻿import { useRequest } from "ahooks";
 
-import { version } from "@/domain/version";
+import { APP_VERSION } from "@/domain/app";
 
 export type UseVersionCheckerReturns = {
   hasNewVersion: boolean;
@@ -42,12 +42,12 @@ const useVersionChecker = () => {
         .then((res) => res.json())
         .then((res) => Array.from(res));
 
-      const cIdx = releases.findIndex((e: any) => e.name === version);
+      const cIdx = releases.findIndex((e: any) => e.name === APP_VERSION);
       if (cIdx === 0) {
         return false;
       }
 
-      const nIdx = releases.findIndex((e: any) => compareVersions(e.name, version) !== -1);
+      const nIdx = releases.findIndex((e: any) => compareVersions(e.name, APP_VERSION) !== -1);
       if (cIdx !== -1 && cIdx <= nIdx) {
         return false;
       }

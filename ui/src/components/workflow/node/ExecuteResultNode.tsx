@@ -35,22 +35,24 @@ const ExecuteResultNode = ({ node, disabled, branchId, branchIndex }: ConditionN
         }
         placement="rightTop"
       >
-        <Card className="relative z-[1] mt-10 w-[256px] shadow-md" styles={{ body: { padding: 0 } }} hoverable>
-          <div className="flex h-[48px] flex-col items-center justify-center truncate px-4 py-2">
-            <div className="flex items-center space-x-2">
-              {node.type === WorkflowNodeType.ExecuteSuccess ? (
-                <CheckCircleOutlinedIcon style={{ color: themeToken.colorSuccess }} />
-              ) : (
-                <CloseCircleOutlinedIcon style={{ color: themeToken.colorError }} />
-              )}
-              <SharedNode.Title
-                className="focus:bg-background focus:text-foreground overflow-hidden outline-slate-200 focus:rounded-sm"
-                node={node}
-                disabled={disabled}
-              />
+        <div className="relative z-1 mt-10 w-[256px]">
+          <Card className="shadow-md" styles={{ body: { padding: 0 } }} hoverable>
+            <div className="flex h-[48px] flex-col items-center justify-center truncate px-4 py-2">
+              <div className="flex items-center space-x-2">
+                {node.type === WorkflowNodeType.ExecuteSuccess ? (
+                  <CheckCircleOutlinedIcon style={{ color: themeToken.colorSuccess }} />
+                ) : (
+                  <CloseCircleOutlinedIcon style={{ color: themeToken.colorError }} />
+                )}
+                <SharedNode.Title
+                  className="focus:bg-background focus:text-foreground overflow-hidden outline-slate-200 focus:rounded-xs"
+                  node={node}
+                  disabled={disabled}
+                />
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </Popover>
 
       <AddNode node={node} disabled={disabled} />

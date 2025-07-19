@@ -1,15 +1,16 @@
 ﻿{
-  "access.page.title": "Authorization",
+  "access.page.title": "Credentials",
+  "access.page.subtitle": "Credentials store authentication information (username and password, API key, OAuth tokens, etc.) to connect with specific third-party apps and services.",
 
-  "access.nodata": "No accesses. Please create an credential first.",
+  "access.nodata": "No credentials. Please create an credential first.",
 
-  "access.search.placeholder": "Search by access name ...",
+  "access.search.placeholder": "Search by credential name ...",
 
-  "access.action.add": "Create credential",
+  "access.action.create": "Create credential",
   "access.action.edit": "Edit credential",
   "access.action.duplicate": "Duplicate credential",
   "access.action.delete": "Delete credential",
-  "access.action.delete.confirm": "Are you sure to delete this credential?",
+  "access.action.delete.confirm": "Are you sure want to delete \"{{name}}\" credential?<br>Please be aware that this action is irreversible.",
 
   "access.props.name": "Name",
   "access.props.provider": "Provider",

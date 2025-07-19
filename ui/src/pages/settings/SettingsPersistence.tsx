@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Form, InputNumber, Skeleton, message, notification } from "antd";
+import { App, Button, Form, InputNumber, Skeleton } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { produce } from "immer";
 import { z } from "zod/v4";
@@ -14,8 +14,7 @@ import { getErrMsg } from "@/utils/error";
 const SettingsPersistence = () => {
   const { t } = useTranslation();
 
-  const [messageApi, MessageContextHolder] = message.useMessage();
-  const [notificationApi, NotificationContextHolder] = notification.useNotification();
+  const { message, notification } = App.useApp();
 
   const [settings, setSettings] = useState<SettingsModel<PersistenceSettingsContent>>();
   const [loading, setLoading] = useState(true);
@@ -60,9 +59,9 @@ const SettingsPersistence = () => {
           })
         );
 
-        messageApi.success(t("common.text.operation_succeeded"));
+        message.success(t("common.text.operation_succeeded"));
       } catch (err) {
-        notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
 
         throw err;
       }
@@ -79,11 +78,9 @@ const SettingsPersistence = () => {
 
   return (
     <>
-      {MessageContextHolder}
-      {NotificationContextHolder}
-
+      <h2>{t("settings.persistence.title")}</h2>
       <Show when={!loading} fallback={<Skeleton active />}>
-        <div className="md:max-w-[40rem]">
+        <div className="md:max-w-160">
           <Form {...formProps} form={formInst} disabled={formPending} layout="vertical">
             <Form.Item
               name="workflowRunsMaxDaysRetention"
@@ -92,7 +89,7 @@ const SettingsPersistence = () => {
               rules={[formRule]}
             >
               <InputNumber
-                className="w-full"
+                style={{ width: "100%" }}
                 min={0}
                 max={36500}
                 placeholder={t("settings.persistence.form.workflow_runs_max_days.placeholder")}
@@ -108,7 +105,7 @@ const SettingsPersistence = () => {
               rules={[formRule]}
             >
               <InputNumber
-                className="w-full"
+                style={{ width: "100%" }}
                 min={0}
                 max={36500}
                 placeholder={t("settings.persistence.form.expired_certificates_max_days.placeholder")}

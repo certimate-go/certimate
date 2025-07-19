@@ -475,7 +475,7 @@ const DeployNodeConfigForm = forwardRef<DeployNodeConfigFormInstance, DeployNode
               />
             </Form.Item>
 
-            <Form.Item className="mb-0" htmlFor="null" hidden={!showProviderAccess}>
+            <Form.Item hidden={!showProviderAccess} noStyle>
               <label className="mb-1 block">
                 <div className="flex w-full items-center justify-between gap-4">
                   <div className="max-w-full grow truncate">

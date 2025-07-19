@@ -2,28 +2,26 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  ApiOutlined as ApiOutlinedIcon,
   CheckCircleOutlined as CheckCircleOutlinedIcon,
   ClockCircleOutlined as ClockCircleOutlinedIcon,
   CloseCircleOutlined as CloseCircleOutlinedIcon,
-  LockOutlined as LockOutlinedIcon,
-  PlusOutlined as PlusOutlinedIcon,
-  SelectOutlined as SelectOutlinedIcon,
-  SendOutlined as SendOutlinedIcon,
   StopOutlined as StopOutlinedIcon,
   SyncOutlined as SyncOutlinedIcon,
 } from "@ant-design/icons";
-import { PageHeader } from "@ant-design/pro-components";
-import { useRequest } from "ahooks";
-import { Button, Card, Col, Divider, Empty, Flex, Grid, Row, Space, Statistic, Table, type TableProps, Tag, Typography, notification, theme } from "antd";
-import dayjs from "dayjs";
 import {
-  CalendarClock as CalendarClockIcon,
-  CalendarX2 as CalendarX2Icon,
-  FolderCheck as FolderCheckIcon,
-  SquareSigma as SquareSigmaIcon,
-  Workflow as WorkflowIcon,
-} from "lucide-react";
+  IconActivity,
+  IconBrowserShare,
+  IconPlugConnected,
+  IconPlus,
+  IconSchema,
+  IconShieldCheckered,
+  IconShieldExclamation,
+  IconShieldX,
+  IconUserShield,
+} from "@tabler/icons-react";
+import { useRequest } from "ahooks";
+import { App, Button, Card, Col, Divider, Empty, Flex, Grid, Row, Space, Statistic, Table, type TableProps, Tag, Typography, theme } from "antd";
+import dayjs from "dayjs";
 import { ClientResponseError } from "pocketbase";
 
 import { get as getStatistics } from "@/api/statistics";
@@ -38,10 +36,9 @@ const Dashboard = () => {
 
   const { t } = useTranslation();
 
+  const { notification } = App.useApp();
   const { token: themeToken } = theme.useToken();
   const breakpoints = Grid.useBreakpoint();
-
-  const [notificationApi, NotificationContextHolder] = notification.useNotification();
 
   const statisticsGridSpans = {
     xs: { flex: "50%" },
@@ -65,7 +62,7 @@ const Dashboard = () => {
         }
 
         console.error(err);
-        notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
 
         throw err;
       },
@@ -166,7 +163,7 @@ const Dashboard = () => {
       width: 120,
       render: (_, record) => (
         <Space.Compact>
-          <WorkflowRunDetailDrawer data={record} trigger={<Button color="primary" icon={<SelectOutlinedIcon />} variant="text" />} />
+          <WorkflowRunDetailDrawer data={record} trigger={<Button color="primary" icon={<IconBrowserShare size="1.25em" />} variant="text" />} />
         </Space.Compact>
       ),
     },
@@ -190,7 +187,7 @@ const Dashboard = () => {
         }
 
         console.error(err);
-        notificationApi.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
 
         throw err;
       },
@@ -198,98 +195,95 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="p-4">
-      {NotificationContextHolder}
+    <div className="px-6 py-4">
+      <div className="mx-auto max-w-320">
+        <h1>{t("dashboard.page.title")}</h1>
 
-      <PageHeader title={t("dashboard.page.title")} />
+        <Row className="justify-stretch" gutter={[16, 16]}>
+          <Col {...statisticsGridSpans}>
+            <StatisticCard
+              icon={<IconShieldCheckered size={48} strokeWidth={1} color={themeToken.colorInfo} />}
+              label={t("dashboard.statistics.all_certificates")}
+              loading={statisticsLoading}
+              value={statistics?.certificateTotal ?? "-"}
+              suffix={t("dashboard.statistics.unit")}
+              onClick={() => navigate("/certificates")}
+            />
+          </Col>
+          <Col {...statisticsGridSpans}>
+            <StatisticCard
+              icon={<IconShieldExclamation size={48} strokeWidth={1} color={themeToken.colorWarning} />}
+              label={t("dashboard.statistics.expire_soon_certificates")}
+              loading={statisticsLoading}
+              value={statistics?.certificateExpireSoon ?? "-"}
+              suffix={t("dashboard.statistics.unit")}
+              onClick={() => navigate("/certificates?state=expireSoon")}
+            />
+          </Col>
+          <Col {...statisticsGridSpans}>
+            <StatisticCard
+              icon={<IconShieldX size={48} strokeWidth={1} color={themeToken.colorError} />}
+              label={t("dashboard.statistics.expired_certificates")}
+              loading={statisticsLoading}
+              value={statistics?.certificateExpired ?? "-"}
+              suffix={t("dashboard.statistics.unit")}
+              onClick={() => navigate("/certificates?state=expired")}
+            />
+          </Col>
+          <Col {...statisticsGridSpans}>
+            <StatisticCard
+              icon={<IconSchema size={48} strokeWidth={1} color={themeToken.colorInfo} />}
+              label={t("dashboard.statistics.all_workflows")}
+              loading={statisticsLoading}
+              value={statistics?.workflowTotal ?? "-"}
+              suffix={t("dashboard.statistics.unit")}
+              onClick={() => navigate("/workflows")}
+            />
+          </Col>
+          <Col {...statisticsGridSpans}>
+            <StatisticCard
+              icon={<IconActivity size={48} strokeWidth={1} color={themeToken.colorSuccess} />}
+              label={t("dashboard.statistics.enabled_workflows")}
+              loading={statisticsLoading}
+              value={statistics?.workflowEnabled ?? "-"}
+              suffix={t("dashboard.statistics.unit")}
+              onClick={() => navigate("/workflows?state=enabled")}
+            />
+          </Col>
+        </Row>
 
-      <Row className="justify-stretch" gutter={[16, 16]}>
-        <Col {...statisticsGridSpans}>
-          <StatisticCard
-            icon={<SquareSigmaIcon size={48} strokeWidth={1} color={themeToken.colorInfo} />}
-            label={t("dashboard.statistics.all_certificates")}
-            loading={statisticsLoading}
-            value={statistics?.certificateTotal ?? "-"}
-            suffix={t("dashboard.statistics.unit")}
-            onClick={() => navigate("/certificates")}
-          />
-        </Col>
-        <Col {...statisticsGridSpans}>
-          <StatisticCard
-            icon={<CalendarClockIcon size={48} strokeWidth={1} color={themeToken.colorWarning} />}
-            label={t("dashboard.statistics.expire_soon_certificates")}
-            loading={statisticsLoading}
-            value={statistics?.certificateExpireSoon ?? "-"}
-            suffix={t("dashboard.statistics.unit")}
-            onClick={() => navigate("/certificates?state=expireSoon")}
-          />
-        </Col>
-        <Col {...statisticsGridSpans}>
-          <StatisticCard
-            icon={<CalendarX2Icon size={48} strokeWidth={1} color={themeToken.colorError} />}
-            label={t("dashboard.statistics.expired_certificates")}
-            loading={statisticsLoading}
-            value={statistics?.certificateExpired ?? "-"}
-            suffix={t("dashboard.statistics.unit")}
-            onClick={() => navigate("/certificates?state=expired")}
-          />
-        </Col>
-        <Col {...statisticsGridSpans}>
-          <StatisticCard
-            icon={<WorkflowIcon size={48} strokeWidth={1} color={themeToken.colorInfo} />}
-            label={t("dashboard.statistics.all_workflows")}
-            loading={statisticsLoading}
-            value={statistics?.workflowTotal ?? "-"}
-            suffix={t("dashboard.statistics.unit")}
-            onClick={() => navigate("/workflows")}
-          />
-        </Col>
-        <Col {...statisticsGridSpans}>
-          <StatisticCard
-            icon={<FolderCheckIcon size={48} strokeWidth={1} color={themeToken.colorSuccess} />}
-            label={t("dashboard.statistics.enabled_workflows")}
-            loading={statisticsLoading}
-            value={statistics?.workflowEnabled ?? "-"}
-            suffix={t("dashboard.statistics.unit")}
-            onClick={() => navigate("/workflows?state=enabled")}
-          />
-        </Col>
-      </Row>
+        <Divider />
 
-      <Divider />
-
-      <Flex justify="stretch" vertical={!breakpoints.lg} gap={16}>
-        <Card className="max-lg:flex-1 lg:w-[360px]" title={t("dashboard.quick_actions")}>
-          <Space className="w-full" direction="vertical" size="large">
-            <Button block type="primary" size="large" icon={<PlusOutlinedIcon />} onClick={() => navigate("/workflows/new")}>
-              {t("dashboard.quick_actions.create_workflow")}
-            </Button>
-            <Button block size="large" icon={<LockOutlinedIcon />} onClick={() => navigate("/settings/password")}>
-              {t("dashboard.quick_actions.change_login_password")}
-            </Button>
-            <Button block size="large" icon={<SendOutlinedIcon />} onClick={() => navigate("/settings/notification")}>
-              {t("dashboard.quick_actions.cofigure_notification")}
-            </Button>
-            <Button block size="large" icon={<ApiOutlinedIcon />} onClick={() => navigate("/settings/ssl-provider")}>
-              {t("dashboard.quick_actions.configure_ca")}
-            </Button>
-          </Space>
-        </Card>
-        <Card className="flex-1" title={t("dashboard.latest_workflow_runs")}>
-          <Table<WorkflowRunModel>
-            columns={tableColumns}
-            dataSource={tableData}
-            loading={tableLoading}
-            locale={{
-              emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />,
-            }}
-            pagination={false}
-            rowKey={(record) => record.id}
-            scroll={{ x: "max(100%, 720px)" }}
-            size="small"
-          />
-        </Card>
-      </Flex>
+        <Flex justify="stretch" vertical={!breakpoints.lg} gap={16}>
+          <Card className="max-lg:flex-1 lg:w-[360px]" title={t("dashboard.quick_actions")}>
+            <Space className="w-full" direction="vertical" size="large">
+              <Button block type="primary" size="large" icon={<IconPlus size="1.25em" />} onClick={() => navigate("/workflows/new")}>
+                {t("dashboard.quick_actions.create_workflow")}
+              </Button>
+              <Button block size="large" icon={<IconUserShield size="1.25em" />} onClick={() => navigate("/settings/account")}>
+                {t("dashboard.quick_actions.change_login_password")}
+              </Button>
+              <Button block size="large" icon={<IconPlugConnected size="1.25em" />} onClick={() => navigate("/settings/ssl-provider")}>
+                {t("dashboard.quick_actions.configure_ca")}
+              </Button>
+            </Space>
+          </Card>
+          <Card className="flex-1" title={t("dashboard.latest_workflow_runs")}>
+            <Table<WorkflowRunModel>
+              columns={tableColumns}
+              dataSource={tableData}
+              loading={tableLoading}
+              locale={{
+                emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+              }}
+              pagination={false}
+              rowKey={(record) => record.id}
+              scroll={{ x: "max(100%, 720px)" }}
+              size="small"
+            />
+          </Card>
+        </Flex>
+      </div>
     </div>
   );
 };
@@ -311,7 +305,7 @@ const StatisticCard = ({
 }) => {
   return (
     <Card className="size-full overflow-hidden" hoverable loading={loading} variant="borderless" onClick={onClick}>
-      <Space size="middle">
+      <div className="flex gap-2">
         {icon}
         <Statistic
           title={label}
@@ -320,7 +314,7 @@ const StatisticCard = ({
           }}
           suffix={<Typography.Text className="text-sm">{suffix}</Typography.Text>}
         />
-      </Space>
+      </div>
     </Card>
   );
 };
