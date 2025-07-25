@@ -64,6 +64,7 @@ require (
 	github.com/volcengine/ve-tos-golang-sdk/v2 v2.7.17
 	github.com/volcengine/volc-sdk-golang v1.0.212
 	github.com/volcengine/volcengine-go-sdk v1.1.18
+	github.com/xhit/go-str2duration/v2 v2.1.0
 	gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1
 	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0
 	golang.org/x/crypto v0.39.0
