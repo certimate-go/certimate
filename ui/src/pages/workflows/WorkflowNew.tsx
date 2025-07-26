@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { App, Card, Col, Form, Input, type InputRef, Row, Spin, Typography } from "antd";
-import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { App, Card, Col, Row, Spin, Typography } from "antd";
+import dayjs from "dayjs";
 
-import ModalForm from "@/components/ModalForm";
 import { type WorkflowModel, initWorkflow } from "@/domain/workflow";
-import { useAntdForm } from "@/hooks";
 import { save as saveWorkflow } from "@/repository/workflow";
 import { getErrMsg } from "@/utils/error";
 
 const TEMPLATE_KEY_STANDARD = "standard" as const;
-const TEMPLATE_KEY_CERTTEST = "monitor" as const;
+const TEMPLATE_KEY_CERTTEST = "certtest" as const;
 const TEMPLATE_KEY_EMPTY = "empty" as const;
 type TemplateKeys = typeof TEMPLATE_KEY_EMPTY | typeof TEMPLATE_KEY_CERTTEST | typeof TEMPLATE_KEY_STANDARD;
 
@@ -32,83 +29,45 @@ const WorkflowNew = () => {
   };
   const [templateSelectKey, setTemplateSelectKey] = useState<TemplateKeys>();
 
-  const formSchema = z.object({
-    name: z
-      .string()
-      .min(1, t("workflow.new.modal.form.name.placeholder"))
-      .max(64, t("common.errmsg.string_max", { max: 64 })),
-    description: z
-      .string()
-      .max(256, t("common.errmsg.string_max", { max: 256 }))
-      .nullish(),
-  });
-  const formRule = createSchemaFieldRule(formSchema);
-  const {
-    form: formInst,
-    formPending,
-    formProps,
-    submit: submitForm,
-  } = useAntdForm<z.infer<typeof formSchema>>({
-    initialValues: {
-      name: "",
-      description: "",
-    },
-    onSubmit: async (values) => {
-      try {
-        let workflow: WorkflowModel;
+  const [pending, setPending] = useState(false);
 
-        switch (templateSelectKey) {
-          case TEMPLATE_KEY_EMPTY:
-            workflow = initWorkflow();
-            break;
+  const handleTemplateClick = async (key: TemplateKeys) => {
+    if (pending) return;
 
-          case TEMPLATE_KEY_STANDARD:
-            workflow = initWorkflow({ template: "standard" });
-            break;
-
-          case TEMPLATE_KEY_CERTTEST:
-            workflow = initWorkflow({ template: "certtest" });
-            break;
-
-          default:
-            throw "Invalid state: `templateSelectKey`";
-        }
-
-        workflow.name = values.name?.trim() ?? workflow.name;
-        workflow.description = values.description?.trim() ?? workflow.description;
-        workflow = await saveWorkflow(workflow);
-        navigate(`/workflows/${workflow.id}`, { replace: true });
-      } catch (err) {
-        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
-
-        throw err;
-      }
-    },
-  });
-  const [formModalOpen, setFormModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (formModalOpen) {
-      setTimeout(() => inputRef.current?.focus({ cursor: "end" }), 1);
-    } else {
-      setTemplateSelectKey(undefined);
-      formInst.resetFields();
-    }
-  }, [formModalOpen]);
-
-  const inputRef = useRef<InputRef>(null);
-
-  const handleTemplateClick = (key: TemplateKeys) => {
     setTemplateSelectKey(key);
-    setFormModalOpen(true);
-  };
 
-  const handleModalOpenChange = (open: boolean) => {
-    setFormModalOpen(open);
-  };
+    try {
+      let workflow: WorkflowModel;
 
-  const handleModalFormFinish = () => {
-    return submitForm();
+      switch (key) {
+        case TEMPLATE_KEY_EMPTY:
+          workflow = initWorkflow();
+          break;
+
+        case TEMPLATE_KEY_STANDARD:
+          workflow = initWorkflow({ template: "standard" });
+          break;
+
+        case TEMPLATE_KEY_CERTTEST:
+          workflow = initWorkflow({ template: "certtest" });
+          break;
+
+        default:
+          throw "Invalid state: `templateSelectKey`";
+      }
+
+      workflow.name = t("workflow.new.templates.default_name");
+      workflow.description = t("workflow.new.templates.default_description", { date: dayjs().format("YYYY-MM-DD HH:mm") });
+      workflow = await saveWorkflow(workflow);
+      navigate(`/workflows/${workflow.id}`, { replace: true });
+    } catch (err) {
+      notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+
+      throw err;
+    } finally {
+      setPending(false);
+      setTemplateSelectKey(undefined);
+    }
   };
 
   return (
@@ -179,29 +138,6 @@ const WorkflowNew = () => {
           </Col>
         </Row>
       </div>
-
-      <ModalForm
-        {...formProps}
-        autoFocus
-        disabled={formPending}
-        layout="vertical"
-        form={formInst}
-        modalProps={{ destroyOnHidden: true }}
-        okText={t("common.button.submit")}
-        open={formModalOpen}
-        title={t(`workflow.new.modal.title`)}
-        width={480}
-        onFinish={handleModalFormFinish}
-        onOpenChange={handleModalOpenChange}
-      >
-        <Form.Item name="name" label={t("workflow.new.modal.form.name.label")} rules={[formRule]}>
-          <Input ref={inputRef} autoFocus placeholder={t("workflow.new.modal.form.name.placeholder")} />
-        </Form.Item>
-
-        <Form.Item name="description" label={t("workflow.new.modal.form.description.label")} rules={[formRule]}>
-          <Input placeholder={t("workflow.new.modal.form.description.placeholder")} />
-        </Form.Item>
-      </ModalForm>
     </div>
   );
 };

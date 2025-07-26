@@ -2,7 +2,7 @@
   "workflow_run.action.view.button": "查看详情",
   "workflow_run.action.cancel.button": "取消执行",
   "workflow_run.action.cancel.modal.title": "取消执行",
-  "workflow_run.action.cancel.modal.content": "确定要取消此执行吗？此操作仅中止流程，但不会回滚已执行的节点。",
+  "workflow_run.action.cancel.modal.content": "确定要取消此执行吗？取消后仅会中止流程，但不会回滚已执行的节点。",
   "workflow_run.action.delete.button": "删除执行",
   "workflow_run.action.delete.modal.title": "删除执行「{{name}}」",
   "workflow_run.action.delete.modal.content": "确定要删除该工作流执行记录吗？删除后仅会清除日志历史，但不会影响签发的证书。<br>注意此操作不可撤销，请谨慎操作。",

@@ -8,31 +8,28 @@ import { ClientResponseError } from "pocketbase";
 
 import { cancelRun as cancelWorkflowRun } from "@/api/workflows";
 import Empty from "@/components/Empty";
+import WorkflowRunDetailDrawer from "@/components/workflow/WorkflowRunDetailDrawer";
 import WorkflowStatusTag from "@/components/workflow/WorkflowStatusTag";
 import { WORKFLOW_TRIGGERS } from "@/domain/workflow";
 import { WORKFLOW_RUN_STATUSES, type WorkflowRunModel } from "@/domain/workflowRun";
-import { useAppSettings } from "@/hooks";
+import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import {
   list as listWorkflowRuns,
   remove as removeWorkflowRun,
   subscribe as subscribeWorkflowRun,
   unsubscribe as unsubscribeWorkflowRun,
 } from "@/repository/workflowRun";
+import { useWorkflowStore } from "@/stores/workflow";
 import { getErrMsg } from "@/utils/error";
-import WorkflowRunDetailDrawer from "./WorkflowRunDetailDrawer";
 
-export interface WorkflowRunsProps {
-  className?: string;
-  style?: React.CSSProperties;
-  workflowId: string;
-}
-
-const WorkflowRuns = ({ className, style, workflowId }: WorkflowRunsProps) => {
+const WorkflowDetailRuns = () => {
   const { t } = useTranslation();
 
   const { modal, notification } = App.useApp();
 
   const { appSettings: globalAppSettings } = useAppSettings();
+
+  const { workflow } = useWorkflowStore(useZustandShallowSelector(["workflow"]));
 
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(globalAppSettings.defaultPerPage!);
@@ -167,13 +164,13 @@ const WorkflowRuns = ({ className, style, workflowId }: WorkflowRunsProps) => {
   } = useRequest(
     () => {
       return listWorkflowRuns({
-        workflowId: workflowId,
+        workflowId: workflow.id,
         page: page,
         perPage: pageSize,
       });
     },
     {
-      refreshDeps: [workflowId, page, pageSize],
+      refreshDeps: [workflow.id, page, pageSize],
       onSuccess: (res) => {
         setTableData(res.items);
         setTableTotal(res.totalItems);
@@ -238,7 +235,7 @@ const WorkflowRuns = ({ className, style, workflowId }: WorkflowRunsProps) => {
       content: t("workflow_run.action.cancel.modal.content"),
       onOk: async () => {
         try {
-          const resp = await cancelWorkflowRun(workflowId, workflowRun.id);
+          const resp = await cancelWorkflowRun(workflow.id, workflowRun.id);
           if (resp) {
             refreshData();
           }
@@ -277,46 +274,48 @@ const WorkflowRuns = ({ className, style, workflowId }: WorkflowRunsProps) => {
   };
 
   return (
-    <div className={className} style={style}>
-      <Alert className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.deletion.alert") }}></span>} showIcon type="info" />
-      <Alert className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.cancellation.alert") }}></span>} showIcon type="info" />
+    <div className="mx-auto max-w-320">
+      <div className="pt-9">
+        <Alert className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.deletion.alert") }}></span>} showIcon type="info" />
+        <Alert className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.cancellation.alert") }}></span>} showIcon type="info" />
 
-      <Table<WorkflowRunModel>
-        columns={tableColumns}
-        dataSource={tableData}
-        loading={loading}
-        locale={{
-          emptyText: loading ? (
-            <Skeleton />
-          ) : (
-            <Empty
-              title={t("common.text.nodata")}
-              description={loadedError ? getErrMsg(loadedError) : t("workflow_run.nodata.description")}
-              icon={<IconHistory size={24} />}
-            />
-          ),
-        }}
-        pagination={{
-          current: page,
-          pageSize: pageSize,
-          total: tableTotal,
-          showSizeChanger: true,
-          onChange: handlePaginationChange,
-          onShowSizeChange: handlePaginationChange,
-        }}
-        rowClassName="cursor-pointer"
-        rowKey={(record) => record.id}
-        scroll={{ x: "max(100%, 960px)" }}
-        onRow={(record) => ({
-          onClick: () => {
-            handleRecordDetailClick(record);
-          },
-        })}
-      />
+        <Table<WorkflowRunModel>
+          columns={tableColumns}
+          dataSource={tableData}
+          loading={loading}
+          locale={{
+            emptyText: loading ? (
+              <Skeleton />
+            ) : (
+              <Empty
+                title={t("common.text.nodata")}
+                description={loadedError ? getErrMsg(loadedError) : t("workflow_run.nodata.description")}
+                icon={<IconHistory size={24} />}
+              />
+            ),
+          }}
+          pagination={{
+            current: page,
+            pageSize: pageSize,
+            total: tableTotal,
+            showSizeChanger: true,
+            onChange: handlePaginationChange,
+            onShowSizeChange: handlePaginationChange,
+          }}
+          rowClassName="cursor-pointer"
+          rowKey={(record) => record.id}
+          scroll={{ x: "max(100%, 960px)" }}
+          onRow={(record) => ({
+            onClick: () => {
+              handleRecordDetailClick(record);
+            },
+          })}
+        />
 
-      <WorkflowRunDetailDrawer {...detailDrawerProps} />
+        <WorkflowRunDetailDrawer {...detailDrawerProps} />
+      </div>
     </div>
   );
 };
 
-export default WorkflowRuns;
+export default WorkflowDetailRuns;

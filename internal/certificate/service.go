@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -49,12 +48,11 @@ func (s *CertificateService) InitSchedule(ctx context.Context) error {
 			return
 		}
 
-		var settingsContent *domain.SettingsContentAsPersistence
-		json.Unmarshal([]byte(settings.Content), &settingsContent)
-		if settingsContent != nil && settingsContent.ExpiredCertificatesMaxDaysRetention != 0 {
+		persistenceSettings, _ := settings.UnmarshalContentAsPersistence()
+		if persistenceSettings != nil && persistenceSettings.ExpiredCertificatesMaxDaysRetention != 0 {
 			ret, err := s.certificateRepo.DeleteWhere(
 				context.Background(),
-				dbx.NewExp(fmt.Sprintf("validityNotAfter<DATETIME('now', '-%d days')", settingsContent.ExpiredCertificatesMaxDaysRetention)),
+				dbx.NewExp(fmt.Sprintf("validityNotAfter<DATETIME('now', '-%d days')", persistenceSettings.ExpiredCertificatesMaxDaysRetention)),
 			)
 			if err != nil {
 				app.GetLogger().Error("failed to delete expired certificates", "err", err)

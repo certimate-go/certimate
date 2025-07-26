@@ -2,7 +2,6 @@ package workflow
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -59,14 +58,13 @@ func (s *WorkflowService) InitSchedule(ctx context.Context) error {
 			return
 		}
 
-		var settingsContent *domain.SettingsContentAsPersistence
-		json.Unmarshal([]byte(settings.Content), &settingsContent)
-		if settingsContent != nil && settingsContent.WorkflowRunsMaxDaysRetention != 0 {
+		persistenceSettings, _ := settings.UnmarshalContentAsPersistence()
+		if persistenceSettings != nil && persistenceSettings.WorkflowRunsMaxDaysRetention != 0 {
 			ret, err := s.workflowRunRepo.DeleteWhere(
 				context.Background(),
 				dbx.NewExp(fmt.Sprintf("status!='%s'", string(domain.WorkflowRunStatusTypePending))),
 				dbx.NewExp(fmt.Sprintf("status!='%s'", string(domain.WorkflowRunStatusTypeRunning))),
-				dbx.NewExp(fmt.Sprintf("endedAt<DATETIME('now', '-%d days')", settingsContent.WorkflowRunsMaxDaysRetention)),
+				dbx.NewExp(fmt.Sprintf("endedAt<DATETIME('now', '-%d days')", persistenceSettings.WorkflowRunsMaxDaysRetention)),
 			)
 			if err != nil {
 				app.GetLogger().Error("failed to delete workflow history runs", "err", err)

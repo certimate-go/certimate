@@ -23,8 +23,8 @@ export type WorkflowState = {
   init(id: string): void;
   setBaseInfo: (name: string, description: string) => void;
   setEnabled(enabled: boolean): void;
-  release(): void;
-  discard(): void;
+  publish(): void;
+  rollback(): void;
   destroy(): void;
 
   addNode: (node: WorkflowNode, previousNodeId: string) => void;
@@ -95,7 +95,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
     });
   },
 
-  release: async () => {
+  publish: async () => {
     if (!get().initialized) throw "Workflow not initialized yet";
 
     const root = get().workflow.draft!;
@@ -121,7 +121,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
     });
   },
 
-  discard: async () => {
+  rollback: async () => {
     if (!get().initialized) throw "Workflow not initialized yet";
 
     const root = get().workflow.content!;

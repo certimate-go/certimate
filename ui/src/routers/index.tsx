@@ -14,6 +14,8 @@ import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
+import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
+import WorkflowDetailRuns from "@/pages/workflows/WorkflowDetailRuns";
 import WorkflowList from "@/pages/workflows/WorkflowList";
 import WorkflowNew from "@/pages/workflows/WorkflowNew";
 
@@ -49,6 +51,16 @@ export const router = createHashRouter([
       {
         path: "/workflows/:id",
         element: <WorkflowDetail />,
+        children: [
+          {
+            path: "/workflows/:id/design",
+            element: <WorkflowDetailDesign />,
+          },
+          {
+            path: "/workflows/:id/runs",
+            element: <WorkflowDetailRuns />,
+          },
+        ],
       },
       {
         path: "/settings",

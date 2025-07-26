@@ -52,13 +52,13 @@ const Dashboard = () => {
           <Card className="transition-all max-lg:flex-1 lg:w-[280px] xl:w-[360px]" title={t("dashboard.quick_actions")}>
             <div className="flex flex-col gap-4">
               <Button block type="primary" size="large" icon={<IconCirclePlus size="1.25em" />} onClick={() => navigate("/workflows/new")}>
-                {t("dashboard.quick_actions.create_workflow")}
+                <span className="text-sm">{t("dashboard.quick_actions.create_workflow")}</span>
               </Button>
               <Button block size="large" icon={<IconLock size="1.25em" />} onClick={() => navigate("/settings/account")}>
-                {t("dashboard.quick_actions.change_password")}
+                <span className="text-sm">{t("dashboard.quick_actions.change_password")}</span>
               </Button>
               <Button block size="large" icon={<IconPlugConnected size="1.25em" />} onClick={() => navigate("/settings/ssl-provider")}>
-                {t("dashboard.quick_actions.configure_ca")}
+                <span className="text-sm">{t("dashboard.quick_actions.configure_ca")}</span>
               </Button>
             </div>
           </Card>
