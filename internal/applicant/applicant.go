@@ -16,6 +16,7 @@ import (
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/challenge/dns01"
 	"github.com/go-acme/lego/v4/lego"
+	"github.com/xhit/go-str2duration/v2"
 	"golang.org/x/exp/slices"
 	"golang.org/x/time/rate"
 
@@ -64,6 +65,7 @@ func NewWithWorkflowNode(config ApplicantWithWorkflowNodeConfig) (Applicant, err
 		CAProviderAccessConfig:  make(map[string]any),
 		CAProviderServiceConfig: nodeCfg.CAProviderConfig,
 		KeyAlgorithm:            nodeCfg.KeyAlgorithm,
+		LifeTime:                nodeCfg.LifeTime,
 		ACMEProfile:             nodeCfg.ACMEProfile,
 		Nameservers:             xslices.Filter(strings.Split(nodeCfg.Nameservers, ";"), func(s string) bool { return s != "" }),
 		DnsPropagationWait:      nodeCfg.DnsPropagationWait,
@@ -237,6 +239,13 @@ func applyUseLego(legoProvider challenge.Provider, options *applicantProviderOpt
 		Domains: options.Domains,
 		Bundle:  true,
 		Profile: options.ACMEProfile,
+	}
+	if options.LifeTime != "" {
+		lifeTime, err := str2duration.ParseDuration(options.LifeTime)
+		if err != nil {
+			return nil, fmt.Errorf("invalid lifetime: %w", err)
+		}
+		certRequest.NotAfter = time.Now().Add(lifeTime)
 	}
 	if options.ARIReplaceAcct == user.Registration.URI {
 		certRequest.ReplacesCertID = options.ARIReplaceCert
