@@ -1,35 +1,28 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
-import { IconArrowBackUp, IconChevronDown, IconDots, IconHistory, IconPlayerPlay, IconRobot, IconTrash } from "@tabler/icons-react";
-import { Alert, App, Button, Card, Dropdown, Flex, Form, Input, Segmented, Space } from "antd";
-import { createSchemaFieldRule } from "antd-zod";
-import { isEqual } from "radash";
-import { z } from "zod";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { IconEdit, IconHistory, IconPlayerPlay, IconRobot } from "@tabler/icons-react";
+import { useSize } from "ahooks";
+import { App, Button, Input, type InputRef, Segmented, Skeleton, Space } from "antd";
 
 import { startRun as startWorkflowRun } from "@/api/workflows";
-import ModalForm from "@/components/ModalForm";
 import Show from "@/components/Show";
-import WorkflowElementsContainer from "@/components/workflow/WorkflowElementsContainer";
-import WorkflowRuns from "@/components/workflow/WorkflowRuns";
-import { isAllNodesValidated } from "@/domain/workflow";
 import { WORKFLOW_RUN_STATUSES } from "@/domain/workflowRun";
-import { useAntdForm, useZustandShallowSelector } from "@/hooks";
-import { remove as removeWorkflow, subscribe as subscribeWorkflow, unsubscribe as unsubscribeWorkflow } from "@/repository/workflow";
+import { useZustandShallowSelector } from "@/hooks";
 import { useWorkflowStore } from "@/stores/workflow";
+import { mergeCls } from "@/utils/css";
 import { getErrMsg } from "@/utils/error";
 
 const WorkflowDetail = () => {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { t } = useTranslation();
 
-  const { message, modal, notification } = App.useApp();
+  const { message, modal } = App.useApp();
 
   const { id: workflowId } = useParams();
-  const { workflow, initialized, ...workflowState } = useWorkflowStore(
-    useZustandShallowSelector(["workflow", "initialized", "init", "destroy", "setEnabled", "release", "discard"])
-  );
+  const { workflow, initialized, ...workflowState } = useWorkflowStore(useZustandShallowSelector(["workflow", "initialized", "init", "destroy"]));
   useEffect(() => {
     workflowState.init(workflowId!);
 
@@ -38,119 +31,35 @@ const WorkflowDetail = () => {
     };
   }, [workflowId]);
 
-  const [tabValue, setTabValue] = useState<"orchestration" | "runs">("orchestration");
+  const divHeaderRef = useRef<HTMLDivElement>(null);
+  const divHeaderSize = useSize(divHeaderRef);
 
-  const [isPendingOrRunning, setIsPendingOrRunning] = useState(false);
-  const lastRunStatus = useMemo(() => workflow.lastRunStatus, [workflow]);
-
-  const [allowDiscard, setAllowDiscard] = useState(false);
-  const [allowRelease, setAllowRelease] = useState(false);
-  const [allowRun, setAllowRun] = useState(false);
-
+  const tabs = [
+    ["design", "workflow.detail.design.tab", <IconRobot size="1em" />],
+    ["runs", "workflow.detail.runs.tab", <IconHistory size="1em" />],
+  ] satisfies [string, string, React.ReactElement][];
+  const [tabValue, setTabValue] = useState<string>(tabs[0][0]);
   useEffect(() => {
-    setIsPendingOrRunning(lastRunStatus == WORKFLOW_RUN_STATUSES.PENDING || lastRunStatus == WORKFLOW_RUN_STATUSES.RUNNING);
-  }, [lastRunStatus]);
-
-  useEffect(() => {
-    if (!!workflowId && isPendingOrRunning) {
-      subscribeWorkflow(workflowId, (cb) => {
-        if (cb.record.lastRunStatus !== WORKFLOW_RUN_STATUSES.PENDING && cb.record.lastRunStatus !== WORKFLOW_RUN_STATUSES.RUNNING) {
-          setIsPendingOrRunning(false);
-          unsubscribeWorkflow(workflowId);
-        }
-      });
-
-      return () => {
-        unsubscribeWorkflow(workflowId);
-      };
-    }
-  }, [workflowId, isPendingOrRunning]);
-
-  useEffect(() => {
-    const hasReleased = !!workflow.content;
-    const hasChanges = workflow.hasDraft! || !isEqual(workflow.draft, workflow.content);
-    setAllowDiscard(!isPendingOrRunning && hasReleased && hasChanges);
-    setAllowRelease(!isPendingOrRunning && hasChanges);
-    setAllowRun(hasReleased);
-  }, [workflow.content, workflow.draft, workflow.hasDraft, isPendingOrRunning]);
-
-  const handleEnableChange = async () => {
-    if (!workflow.enabled && (!workflow.content || !isAllNodesValidated(workflow.content))) {
-      message.warning(t("workflow.action.enable.errmsg.uncompleted"));
+    const subpath = location.pathname.split("/")[3];
+    if (!subpath) {
+      navigate(`/workflows/${workflowId}/${tabs[0][0]}`, { replace: true });
       return;
     }
 
-    try {
-      await workflowState.setEnabled(!workflow.enabled);
-    } catch (err) {
-      console.error(err);
-      notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
-    }
+    setTabValue(subpath);
+  }, [location.pathname, workflowId]);
+
+  const handleTabChange = (value: string) => {
+    setTabValue(value);
+    navigate(`/workflows/${workflowId}/${value}`);
   };
 
-  const handleDeleteClick = () => {
-    modal.confirm({
-      title: <span className="text-error">{t("workflow.action.delete.modal.title", { name: workflow.name })}</span>,
-      content: <span dangerouslySetInnerHTML={{ __html: t("workflow.action.delete.modal.content") }} />,
-      icon: (
-        <span className="anticon" role="img">
-          <IconTrash className="text-error" size="1em" />
-        </span>
-      ),
-      okText: t("common.button.confirm"),
-      okButtonProps: { danger: true },
-      onOk: async () => {
-        try {
-          const resp = await removeWorkflow(workflow);
-          if (resp) {
-            navigate("/workflows", { replace: true });
-          }
-        } catch (err) {
-          console.error(err);
-          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
-        }
-      },
-    });
-  };
-
-  const handleDiscardClick = () => {
-    modal.confirm({
-      title: t("workflow.action.discard.modal.title"),
-      content: t("workflow.action.discard.modal.content"),
-      onOk: async () => {
-        try {
-          await workflowState.discard();
-
-          message.success(t("common.text.operation_succeeded"));
-        } catch (err) {
-          console.error(err);
-          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
-        }
-      },
-    });
-  };
-
-  const handleReleaseClick = () => {
-    if (!isAllNodesValidated(workflow.draft!)) {
-      message.warning(t("workflow.action.release.errmsg.uncompleted"));
-      return;
-    }
-
-    modal.confirm({
-      title: t("workflow.action.release.modal.title"),
-      content: t("workflow.action.release.modal.content"),
-      onOk: async () => {
-        try {
-          await workflowState.release();
-
-          message.success(t("common.text.operation_succeeded"));
-        } catch (err) {
-          console.error(err);
-          notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
-        }
-      },
-    });
-  };
+  const runButtonDisabled = useMemo(() => !workflow?.content, [workflow]);
+  const [runButtonLoading, setRunButtonLoading] = useState(false);
+  useEffect(() => {
+    const pending = workflow.lastRunStatus === WORKFLOW_RUN_STATUSES.PENDING || workflow.lastRunStatus === WORKFLOW_RUN_STATUSES.RUNNING;
+    setRunButtonLoading(pending);
+  }, [workflow.lastRunStatus]);
 
   const handleRunClick = () => {
     const { promise, resolve, reject } = Promise.withResolvers();
@@ -166,25 +75,14 @@ const WorkflowDetail = () => {
     }
 
     promise.then(async () => {
-      let unsubscribeFn: Awaited<ReturnType<typeof subscribeWorkflow>> | undefined = undefined;
-
       try {
-        setIsPendingOrRunning(true);
+        setRunButtonLoading(true);
 
-        // subscribe before running workflow
-        unsubscribeFn = await subscribeWorkflow(workflowId!, (e) => {
-          if (e.record.lastRunStatus !== WORKFLOW_RUN_STATUSES.PENDING && e.record.lastRunStatus !== WORKFLOW_RUN_STATUSES.RUNNING) {
-            setIsPendingOrRunning(false);
-            unsubscribeFn?.();
-          }
-        });
-
-        await startWorkflowRun(workflowId!);
+        await startWorkflowRun(workflow.id);
 
         message.info(t("workflow.action.run.prompt"));
       } catch (err) {
-        setIsPendingOrRunning(false);
-        unsubscribeFn?.();
+        setRunButtonLoading(false);
 
         console.error(err);
         message.warning(t("common.text.operation_failed"));
@@ -194,208 +92,215 @@ const WorkflowDetail = () => {
 
   return (
     <div className="flex size-full flex-col">
-      <div className="px-6 py-4">
-        <div className="relative mx-auto max-w-320">
-          <div className="flex justify-between gap-2">
-            <div>
-              <h1>{workflow.name || "\u00A0"}</h1>
-              <p className="mb-0 text-base text-gray-500">{workflow.description || "\u00A0"}</p>
-            </div>
-            <Flex className="my-2" gap="small">
-              {initialized
-                ? [
-                    <WorkflowBaseInfoModal key="edit" trigger={<Button>{t("common.button.edit")}</Button>} />,
-                    <Button key="enable" onClick={handleEnableChange}>
-                      {workflow.enabled ? t("workflow.action.disable.button") : t("workflow.action.enable.button")}
-                    </Button>,
-                    <Dropdown
-                      key="more"
-                      menu={{
-                        items: [
-                          {
-                            key: "delete",
-                            label: t("common.button.delete"),
-                            danger: true,
-                            icon: <IconTrash size="1.25em" />,
-                            onClick: () => {
-                              handleDeleteClick();
-                            },
-                          },
-                        ],
-                      }}
-                      trigger={["click"]}
-                    >
-                      <Button icon={<IconChevronDown size="1.25em" />} iconPosition="end">
-                        {t("common.button.more")}
-                      </Button>
-                    </Dropdown>,
-                  ]
-                : []}
-            </Flex>
-          </div>
+      <div className="px-6 py-4" ref={divHeaderRef}>
+        <div className="relative z-11 container flex justify-between gap-4">
+          <div className="flex-1">
+            <WorkflowDetailBaseName />
+            <WorkflowDetailBaseDescription />
 
-          <div className="absolute -bottom-12 left-1/2 z-1 -translate-x-1/2">
-            <Segmented
-              className="shadow"
-              options={[
-                {
-                  value: "orchestration",
-                  label: <span className="px-2 text-sm">{t("workflow.detail.orchestration.tab")}</span>,
+            <div className="absolute -bottom-12 left-1/2 z-1 -translate-x-1/2">
+              <Segmented
+                className="shadow"
+                options={tabs.map(([key, label, icon]) => ({
+                  value: key,
+                  label: <span className="px-2 text-sm">{t(label)}</span>,
                   icon: (
                     <span className="anticon scale-125" role="img">
-                      <IconRobot size="1em" />
+                      {icon}
                     </span>
                   ),
-                },
-                {
-                  value: "runs",
-                  label: <span className="px-2 text-sm">{t("workflow.detail.runs.tab")}</span>,
-                  icon: (
-                    <span className="anticon scale-125" role="img">
-                      <IconHistory size="1em" />
-                    </span>
-                  ),
-                },
-              ]}
-              size="large"
-              value={tabValue}
-              defaultValue="orchestration"
-              onChange={(value) => {
-                setTabValue(value as typeof tabValue);
-              }}
-            />
+                }))}
+                size="large"
+                value={tabValue}
+                onChange={handleTabChange}
+              />
+            </div>
+          </div>
+          <div className="py-2">
+            <Space.Compact>
+              <Button disabled={runButtonDisabled} icon={<IconPlayerPlay size="1.25em" />} loading={runButtonLoading} type="primary" onClick={handleRunClick}>
+                {t("workflow.action.run.button")}
+              </Button>
+            </Space.Compact>
           </div>
         </div>
       </div>
 
-      <Show when={tabValue === "orchestration"}>
-        <div className="min-h-[360px] flex-1 overflow-hidden p-4">
-          <Card
-            className="size-full overflow-hidden"
-            styles={{
-              body: {
-                position: "relative",
-                height: "100%",
-                padding: initialized ? 0 : undefined,
-              },
-            }}
-            loading={!initialized}
-          >
-            <div className="absolute inset-x-6 top-4 z-2 mx-auto flex max-w-320 items-center justify-between gap-4 pt-6">
-              <div className="flex-1 overflow-hidden">
-                <Show when={workflow.hasDraft!}>
-                  <Alert message={<div className="truncate">{t("workflow.detail.orchestration.draft.alert")}</div>} showIcon type="warning" />
-                </Show>
-              </div>
-              <div className="flex justify-end">
-                <Space>
-                  <Button disabled={!allowRun} icon={<IconPlayerPlay size="1.25em" />} loading={isPendingOrRunning} type="primary" onClick={handleRunClick}>
-                    {t("workflow.action.run.button")}
-                  </Button>
-                  <Space.Compact>
-                    <Button color="primary" disabled={!allowRelease} variant="outlined" onClick={handleReleaseClick}>
-                      {t("workflow.action.release.button")}
-                    </Button>
-                    <Dropdown
-                      menu={{
-                        items: [
-                          {
-                            key: "discard",
-                            disabled: !allowDiscard,
-                            label: t("workflow.action.discard.button"),
-                            icon: <IconArrowBackUp size="1.25em" />,
-                            onClick: handleDiscardClick,
-                          },
-                        ],
-                      }}
-                      trigger={["click"]}
-                    >
-                      <Button color="primary" disabled={!allowDiscard} icon={<IconDots size="1.25em" />} variant="outlined" />
-                    </Dropdown>
-                  </Space.Compact>
-                </Space>
-              </div>
+      <div
+        className="flex-1 p-4"
+        style={{
+          minHeight: `calc(max(360px, 100% - ${divHeaderSize?.height ?? 0}px))`,
+        }}
+      >
+        <Show
+          when={initialized}
+          fallback={
+            <div className="container pt-12">
+              <Skeleton active />
             </div>
-
-            <WorkflowElementsContainer className="pt-24" />
-          </Card>
-        </div>
-      </Show>
-
-      <Show when={tabValue === "runs"}>
-        <div className="p-4">
-          <div className="mx-auto max-w-320 pt-6">
-            <WorkflowRuns workflowId={workflowId!} />
-          </div>
-        </div>
-      </Show>
+          }
+        >
+          <Outlet />
+        </Show>
+      </div>
     </div>
   );
 };
 
-const WorkflowBaseInfoModal = ({ trigger }: { trigger?: React.ReactNode }) => {
+const WorkflowDetailBaseName = () => {
   const { t } = useTranslation();
 
   const { notification } = App.useApp();
 
-  const { workflow, ...workflowState } = useWorkflowStore(useZustandShallowSelector(["workflow", "setBaseInfo"]));
+  const { workflow, setBaseInfo: setWorkflowBaseInfo } = useWorkflowStore(useZustandShallowSelector(["workflow", "setBaseInfo"]));
 
-  const formSchema = z.object({
-    name: z
-      .string(t("workflow.detail.baseinfo.form.name.placeholder"))
-      .min(1, t("workflow.detail.baseinfo.form.name.placeholder"))
-      .max(64, t("common.errmsg.string_max", { max: 64 })),
-    description: z
-      .string(t("workflow.detail.baseinfo.form.description.placeholder"))
-      .max(256, t("common.errmsg.string_max", { max: 256 }))
-      .nullish(),
-  });
-  const formRule = createSchemaFieldRule(formSchema);
-  const {
-    form: formInst,
-    formPending,
-    formProps,
-    submit: submitForm,
-  } = useAntdForm<z.infer<typeof formSchema>>({
-    initialValues: { name: workflow.name, description: workflow.description },
-    onSubmit: async (values) => {
-      try {
-        await workflowState.setBaseInfo(values.name!, values.description!);
-      } catch (err) {
-        notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+  const inputRef = useRef<InputRef>(null);
 
-        throw err;
-      }
-    },
-  });
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
 
-  const handleFormFinish = async () => {
-    return submitForm();
+  useEffect(() => {
+    setEditing(false);
+  }, [workflow.id]);
+
+  const handleEditClick = () => {
+    setEditing(true);
+    setValue(workflow.name);
+    setTimeout(() => {
+      inputRef.current?.focus({ cursor: "all" });
+    }, 0);
+  };
+
+  const handleValueChange = (value: string) => {
+    setValue(value);
+  };
+
+  const handleValueConfirm = async (value: string) => {
+    value = value.trim();
+    if (value === (workflow.name || "")) {
+      setEditing(false);
+      return;
+    }
+
+    setEditing(false);
+
+    try {
+      await setWorkflowBaseInfo(value, workflow.description!);
+    } catch (err) {
+      notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+
+      throw err;
+    }
   };
 
   return (
-    <>
-      <ModalForm
-        disabled={formPending}
-        layout="vertical"
-        form={formInst}
-        modalProps={{ destroyOnHidden: true }}
-        okText={t("common.button.save")}
-        title={t(`workflow.detail.baseinfo.modal.title`)}
-        trigger={trigger}
-        width={480}
-        {...formProps}
-        onFinish={handleFormFinish}
+    <div className="group relative flex items-center gap-1">
+      <h1
+        className={mergeCls("break-all", {
+          invisible: editing,
+        })}
       >
-        <Form.Item name="name" label={t("workflow.detail.baseinfo.form.name.label")} rules={[formRule]}>
-          <Input placeholder={t("workflow.detail.baseinfo.form.name.placeholder")} />
-        </Form.Item>
+        {workflow.name || "\u00A0"}
+      </h1>
+      <Button
+        className={mergeCls("mb-2 opacity-0 transition-opacity group-hover:opacity-100", {
+          invisible: editing,
+        })}
+        icon={<IconEdit size="1.25em" stroke="1.25" />}
+        type="text"
+        onClick={handleEditClick}
+      />
+      <Input
+        className={mergeCls("absolute top-0 left-0", editing ? "block" : "hidden")}
+        ref={inputRef}
+        maxLength={100}
+        placeholder={t("workflow.detail.baseinfo.name.placeholder")}
+        size="large"
+        value={value}
+        variant="filled"
+        onBlur={(e) => handleValueConfirm(e.target.value)}
+        onChange={(e) => handleValueChange(e.target.value)}
+        onPressEnter={(e) => e.currentTarget.blur()}
+      />
+    </div>
+  );
+};
 
-        <Form.Item name="description" label={t("workflow.detail.baseinfo.form.description.label")} rules={[formRule]}>
-          <Input placeholder={t("workflow.detail.baseinfo.form.description.placeholder")} />
-        </Form.Item>
-      </ModalForm>
-    </>
+const WorkflowDetailBaseDescription = () => {
+  const { t } = useTranslation();
+
+  const { notification } = App.useApp();
+
+  const { workflow, setBaseInfo: setWorkflowBaseInfo } = useWorkflowStore(useZustandShallowSelector(["workflow", "setBaseInfo"]));
+
+  const inputRef = useRef<InputRef>(null);
+
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+
+  useEffect(() => {
+    setEditing(false);
+  }, [workflow.id]);
+
+  const handleEditClick = () => {
+    setEditing(true);
+    setValue(workflow.description || "");
+    setTimeout(() => {
+      inputRef.current?.focus({ cursor: "all" });
+    }, 0);
+  };
+
+  const handleValueChange = (value: string) => {
+    setValue(value);
+  };
+
+  const handleValueConfirm = async (value: string) => {
+    value = value.trim();
+    if (!value || value === (workflow.description || "")) {
+      setEditing(false);
+      return;
+    }
+
+    setEditing(false);
+
+    try {
+      await setWorkflowBaseInfo(workflow.name!, value);
+    } catch (err) {
+      notification.error({ message: t("common.text.request_error"), description: getErrMsg(err) });
+
+      throw err;
+    }
+  };
+
+  return (
+    <div className="group relative flex items-center gap-1">
+      <p
+        className={mergeCls("text-base text-gray-500", {
+          invisible: editing,
+        })}
+      >
+        {workflow.description || "\u00A0"}
+      </p>
+      <Button
+        className={mergeCls("mb-4 opacity-0 transition-opacity group-hover:opacity-100", {
+          invisible: editing,
+        })}
+        icon={<IconEdit size="1.25em" stroke="1.25" />}
+        type="text"
+        onClick={handleEditClick}
+      />
+      <Input
+        className={mergeCls("absolute top-0 left-0", editing ? "block" : "hidden")}
+        ref={inputRef}
+        maxLength={100}
+        placeholder={t("workflow.detail.baseinfo.description.placeholder")}
+        value={value}
+        variant="filled"
+        onBlur={(e) => handleValueConfirm(e.target.value)}
+        onChange={(e) => handleValueChange(e.target.value)}
+        onPressEnter={(e) => e.currentTarget.blur()}
+      />
+    </div>
   );
 };
 

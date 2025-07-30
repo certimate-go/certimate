@@ -4,7 +4,7 @@ import { IconFileImport } from "@tabler/icons-react";
 import { Button, type ButtonProps, Input, type UploadProps } from "antd";
 import { type TextAreaProps } from "antd/es/input/TextArea";
 
-import { readFileContent } from "@/utils/file";
+import { readFileAsText } from "@/utils/file";
 
 export interface TextFileInputProps extends Omit<TextAreaProps, "onChange"> {
   accept?: UploadProps["accept"];
@@ -27,7 +27,7 @@ const TextFileInput = ({ className, style, accept, disabled, readOnly, uploadTex
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target as HTMLInputElement;
     if (files?.length) {
-      const value = await readFileContent(files[0]);
+      const value = await readFileAsText(files[0]);
       onChange?.(value);
     }
   };

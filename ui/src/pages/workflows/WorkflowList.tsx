@@ -79,21 +79,21 @@ const WorkflowList = () => {
       title: t("workflow.props.state"),
       defaultFilteredValue: searchParams.has("state") ? [searchParams.get("state") as string] : undefined,
       render: (_, record) => {
-        const enabled = record.enabled;
         return (
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
+          <Switch
+            checked={record.enabled}
+            onChange={() => {
+              handleRecordActiveChange(record);
             }}
-          >
-            <Switch
-              checked={enabled}
-              onChange={() => {
-                handleRecordActiveChange(record);
-              }}
-            />
-          </div>
+          />
         );
+      },
+      onCell: () => {
+        return {
+          onClick: (e) => {
+            e.stopPropagation();
+          },
+        };
       },
     },
     {
@@ -102,12 +102,17 @@ const WorkflowList = () => {
       sorter: true,
       sortOrder: sorter.columnKey === "lastRun" ? sorter.order : undefined,
       render: (_, record) => {
-        return (
-          <Flex gap="small">
-            <WorkflowStatusIcon color={true} size="1.25em" status={record.lastRunStatus!} />
-            <Typography.Text>{record.lastRunTime ? dayjs(record.lastRunTime!).format("YYYY-MM-DD HH:mm:ss") : ""}</Typography.Text>
-          </Flex>
-        );
+        const { lastRunStatus, lastRunTime } = record;
+        if (!lastRunStatus) {
+          return <></>;
+        } else {
+          return (
+            <Flex gap="small">
+              <WorkflowStatusIcon color={true} size="1.25em" status={lastRunStatus} />
+              <Typography.Text>{lastRunTime ? dayjs(lastRunTime).format("YYYY-MM-DD HH:mm:ss") : ""}</Typography.Text>
+            </Flex>
+          );
+        }
       },
     },
     {
@@ -226,6 +231,7 @@ const WorkflowList = () => {
         sort: sort,
         page: page,
         perPage: pageSize,
+        expand: true,
       });
     },
     {
@@ -409,10 +415,12 @@ const WorkflowList = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="mx-auto max-w-320">
+      <div className="container">
         <h1>{t("workflow.page.title")}</h1>
         <p className="text-base text-gray-500">{t("workflow.page.subtitle")}</p>
+      </div>
 
+      <div className="container">
         <div className="flex items-center justify-between gap-x-2 gap-y-3 not-md:flex-col-reverse not-md:items-start not-md:justify-normal">
           <div className="flex w-full flex-1 items-center gap-x-2 md:max-w-200">
             <div>

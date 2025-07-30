@@ -9,6 +9,7 @@ export type ListRequest = {
   sort?: string;
   page?: number;
   perPage?: number;
+  expand?: boolean;
 };
 
 export const list = async (request: ListRequest) => {
@@ -28,6 +29,7 @@ export const list = async (request: ListRequest) => {
   const perPage = request.perPage || 10;
 
   return await pb.collection(COLLECTION_NAME_WORKFLOW).getList<WorkflowModel>(page, perPage, {
+    expand: request.expand ? "lastRunRef" : undefined,
     filter: filters.join(" && "),
     sort: sort,
     requestKey: null,
@@ -36,6 +38,7 @@ export const list = async (request: ListRequest) => {
 
 export const get = async (id: string) => {
   return await getPocketBase().collection(COLLECTION_NAME_WORKFLOW).getOne<WorkflowModel>(id, {
+    expand: "lastRunRef",
     requestKey: null,
   });
 };

@@ -69,7 +69,7 @@ const ConsoleLayout = () => {
             <div className="w-full px-2">
               <SiderMenu />
             </div>
-            <div className="w-full px-2">
+            <div className="w-full px-2 pb-2">
               <Menu
                 style={{ background: "transparent", borderInlineEnd: "none" }}
                 items={[

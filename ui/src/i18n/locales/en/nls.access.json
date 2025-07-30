@@ -1,6 +1,6 @@
 ﻿{
   "access.page.title": "Credentials",
-  "access.page.subtitle": "Credentials store authentication information (username and password, API key, OAuth tokens, etc.) to connect with specific third-party apps and services.",
+  "access.page.subtitle": "Credentials store authentication information (username and password, API key, tokens, etc.) to connect with specific third-party apps and services.",
 
   "access.nodata": "No credentials",
   "access.nodata.title": "No credentials",

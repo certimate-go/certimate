@@ -4,18 +4,9 @@ import { create } from "zustand";
 import { type EmailsSettingsContent, SETTINGS_NAMES, type SettingsModel } from "@/domain/settings";
 import { get as getSettings, save as saveSettings } from "@/repository/settings";
 
-export interface ContactEmailsState {
-  emails: string[];
-  loading: boolean;
-  loadedAtOnce: boolean;
+import { type ContactEmailsState, type ContactEmailsStore } from "./types";
 
-  fetchEmails: () => Promise<void>;
-  setEmails: (emails: string[]) => Promise<void>;
-  addEmail: (email: string) => Promise<void>;
-  removeEmail: (email: string) => Promise<void>;
-}
-
-export const useContactEmailsStore = create<ContactEmailsState>((set, get) => {
+export const useContactEmailsStore = create<ContactEmailsStore>((set, get) => {
   let fetcher: Promise<SettingsModel<EmailsSettingsContent>> | null = null; // 防止多次重复请求
   let settings: SettingsModel<EmailsSettingsContent>; // 记录当前设置的其他字段，保存回数据库时用
 

@@ -32,7 +32,7 @@
 
   "settings.sslprovider.tab": "证书颁发机构",
   "settings.sslprovider.ca.title": "全局证书颁发机构",
-  "settings.sslprovider.ca.tips": "如果你希望为在每个工作流中使用不同的证书颁发机构，请前往授权凭据页面。<br>不同服务商所支持的证书有效期、证书算法、多域名数量上限、是否允许泛域名等可能不同，切换服务商后请注意检查已有工作流的配置是否需要调整。",
+  "settings.sslprovider.ca.tips": "如果你希望在每个工作流中选择不同的证书颁发机构，请前往授权凭据页面。<br>不同服务商所支持的证书有效期、证书算法、多域名数量上限、是否允许泛域名等可能不同，切换服务商后请注意检查已有工作流的配置是否需要调整。",
   "settings.sslprovider.form.provider.label": "证书颁发机构提供商",
   "settings.sslprovider.form.letsencryptstaging_alert": "测试环境比生产环境有更宽松的速率限制，可进行测试性部署。<br><br>点击下方链接了解更多：<br><a href=\"https://letsencrypt.org/zh-cn/docs/staging-environment/\" target=\"_blank\">https://letsencrypt.org/zh-cn/docs/staging-environment/</a>",
   "settings.sslprovider.form.zerossl_eab_kid.label": "EAB KID",

@@ -43,7 +43,7 @@ const WorkflowStatusTag = ({ className, style, status }: WorkflowStatusTagProps)
       );
     case WORKFLOW_RUN_STATUSES.CANCELED:
       return (
-        <Tag className={className} style={style} color="var(--color-danger)" icon={Icon}>
+        <Tag className={className} style={style} color="var(--color-warning)" icon={Icon}>
           {t("workflow_run.props.status.canceled")}
         </Tag>
       );

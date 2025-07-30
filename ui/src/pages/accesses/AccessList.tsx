@@ -331,10 +331,12 @@ const AccessList = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="mx-auto max-w-320">
+      <div className="container">
         <h1>{t("access.page.title")}</h1>
         <p className="text-base text-gray-500">{t("access.page.subtitle")}</p>
+      </div>
 
+      <div className="container">
         <div className="flex items-center justify-between gap-x-2 gap-y-3 not-md:flex-col-reverse not-md:items-start not-md:justify-normal">
           <div className="flex w-full flex-1 items-center gap-x-2 md:max-w-200">
             <div className="flex-1">

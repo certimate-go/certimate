@@ -85,12 +85,12 @@ const AccessNew = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="mx-auto max-w-320">
+      <div className="container">
         <h1>{t("access.new.title")}</h1>
         <p className="text-base text-gray-500">{t("access.new.subtitle")}</p>
       </div>
 
-      <div className="mx-auto max-w-320">
+      <div className="container">
         <Show
           when={!!formModel?.provider}
           fallback={

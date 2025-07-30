@@ -59,3 +59,9 @@
     line-height: 1;
   }
 }
+
+@layer components {
+  .container {
+    @apply mx-auto max-w-320;
+  }
+}

@@ -16,22 +16,29 @@ const Settings = () => {
     ["ssl-provider", "settings.sslprovider.tab", <IconPlugConnected size="1em" />],
     ["persistence", "settings.persistence.tab", <IconDatabaseCog size="1em" />],
   ] satisfies [string, string, React.ReactElement][];
-  const [menuKey, setMenuValue] = useState("account");
+  const [menuKey, setMenuKey] = useState<string>(menus[0][0]);
   useEffect(() => {
-    const path = location.pathname.split("/")[2];
-    if (!path) {
+    const subpath = location.pathname.split("/")[2];
+    if (!subpath) {
       navigate("/settings/account");
       return;
     }
 
-    setMenuValue(path);
+    setMenuKey(subpath);
   }, [location.pathname]);
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    setMenuKey(key);
+    navigate(`/settings/${key}`);
+  };
 
   return (
     <div className="px-6 py-4">
-      <div className="mx-auto max-w-320">
+      <div className="container">
         <h1>{t("settings.page.title")}</h1>
+      </div>
 
+      <div className="container">
         <div className="hidden select-none max-lg:block">
           <Menu
             style={{ background: "transparent", borderInlineEnd: "none" }}
@@ -46,10 +53,7 @@ const Settings = () => {
                 </span>
               ),
             }))}
-            onClick={({ key }) => {
-              setMenuValue(key);
-              navigate(`/settings/${key}`);
-            }}
+            onClick={handleMenuClick}
           />
         </div>
 
@@ -68,10 +72,7 @@ const Settings = () => {
                   </span>
                 ),
               }))}
-              onClick={({ key }) => {
-                setMenuValue(key);
-                navigate(`/settings/${key}`);
-              }}
+              onClick={handleMenuClick}
             />
           </div>
 
