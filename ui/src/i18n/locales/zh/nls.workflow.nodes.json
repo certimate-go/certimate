@@ -8,9 +8,7 @@
   "workflow_node.action.rename_branch": "重命名",
   "workflow_node.action.duplicate_branch": "复制分支",
   "workflow_node.action.remove_branch": "删除分支",
-
   "workflow_node.unsaved_changes.confirm": "你有尚未保存的更改。确定要关闭面板吗？",
-
   "workflow_node.start.label": "开始",
   "workflow_node.start.default_name": "开始",
   "workflow_node.start.form.trigger.label": "触发方式",
@@ -23,7 +21,6 @@
   "workflow_node.start.form.trigger_cron.tooltip": "五段式表达式，支持使用任意值（即 <strong>*</strong>）、值列表分隔符（即 <strong>,</strong>）、值的范围（即 <strong>-</strong>）、步骤值（即 <strong>/</strong>）等四种表达式。时区以服务器设置为准。",
   "workflow_node.start.form.trigger_cron.extra": "预计最近 5 次执行时间：",
   "workflow_node.start.form.trigger_cron.guide": "小贴士：如果你有多个工作流，建议将它们设置为在一天中的多个时间段运行，而非总是在相同的特定时间。也不要总是设置为每日零时，以免遭遇证书颁发机构的流量高峰。<br><br>参考链接：<br>1. <a href=\"https://letsencrypt.org/zh-cn/docs/rate-limits/\" target=\"_blank\">Let’s Encrypt 速率限制</a><br>2. <a href=\"https://letsencrypt.org/zh-cn/docs/faq/#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E7%9A%84-let-s-encrypt-acme-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%AF%E5%8A%A8%E6%97%B6%E9%97%B4%E5%BA%94%E5%BD%93%E9%9A%8F%E6%9C%BA\" target=\"_blank\">为什么我的 Let’s Encrypt (ACME) 客户端启动时间应当随机？</a>",
-
   "workflow_node.apply.label": "申请签发证书",
   "workflow_node.apply.default_name": "申请",
   "workflow_node.apply.form.domains.label": "域名",
@@ -101,7 +98,6 @@
   "workflow_node.apply.form.skip_before_expiry_days.suffix": "时，再次执行工作流时跳过此申请节点。",
   "workflow_node.apply.form.skip_before_expiry_days.unit": "天",
   "workflow_node.apply.form.skip_before_expiry_days.tooltip": "注意不要超过颁发的证书最大有效期，否则证书可能永远不会续期。",
-
   "workflow_node.upload.label": "上传自有证书",
   "workflow_node.upload.default_name": "上传",
   "workflow_node.upload.form.domains.label": "域名",
@@ -110,7 +106,6 @@
   "workflow_node.upload.form.certificate.placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
   "workflow_node.upload.form.private_key.label": "私钥文件（PEM 格式）",
   "workflow_node.upload.form.private_key.placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
-
   "workflow_node.deploy.label": "部署证书到 ...",
   "workflow_node.deploy.default_name": "部署",
   "workflow_node.deploy.form.provider.label": "部署目标",
@@ -732,6 +727,8 @@
   "workflow_node.deploy.form.tencentcloud_eo_domains.tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/edgeone\" target=\"_blank\">https://console.cloud.tencent.com/edgeone</a>",
   "workflow_node.deploy.form.tencentcloud_eo_domains.multiple_input_modal.title": "修改腾讯云 EdgeOne 加速域名",
   "workflow_node.deploy.form.tencentcloud_eo_domains.multiple_input_modal.placeholder": "请输入腾讯云 EdgeOne 加速域名（支持泛域名）",
+  "workflow_node.deploy.form.tencentcloud_eo_deploy_to_all_domains.label": "部署到全部网站",
+  "workflow_node.deploy.form.tencentcloud_eo_deploy_to_all_domains.tooltip": "开启后将自动获取该站点下的所有加速域名并部署证书，无需手动指定域名列表",
   "workflow_node.deploy.form.tencentcloud_gaap_endpoint.label": "腾讯云 GAAP 接口端点（可选）",
   "workflow_node.deploy.form.tencentcloud_gaap_endpoint.placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",
   "workflow_node.deploy.form.tencentcloud_gaap_endpoint.tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/608/36934\" target=\"_blank\">https://cloud.tencent.com/document/product/608/36934</a><br><br>国际站用户请填写 <em>gaap.intl.tencentcloudapi.com</em>。",
@@ -935,7 +932,6 @@
   "workflow_node.deploy.form.skip_on_last_succeeded.suffix": "此部署节点。",
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.on": "跳过",
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.off": "不跳过",
-
   "workflow_node.monitor.label": "监控网站证书",
   "workflow_node.monitor.default_name": "监控",
   "workflow_node.monitor.form.guide": "小贴士：Certimate 将向目标地址发送一个 HEAD 请求来获取相应的域名证书，请确保该地址可通过 HTTPS 协议访问。",
@@ -947,7 +943,6 @@
   "workflow_node.monitor.form.domain.placeholder": "请输入域名（仅当主机地址为 IP 时可选）",
   "workflow_node.monitor.form.request_path.label": "请求路径（可选）",
   "workflow_node.monitor.form.request_path.placeholder": "请输入请求路径",
-
   "workflow_node.notify.label": "推送通知",
   "workflow_node.notify.default_name": "通知",
   "workflow_node.notify.form.subject.label": "通知主题",
@@ -986,13 +981,10 @@
   "workflow_node.notify.form.skip_on_all_prev_skipped.suffix": "此通知节点。",
   "workflow_node.notify.form.skip_on_all_prev_skipped.switch.on": "跳过",
   "workflow_node.notify.form.skip_on_all_prev_skipped.switch.off": "不跳过",
-
   "workflow_node.end.label": "结束",
   "workflow_node.end.default_name": "结束",
-
   "workflow_node.branch.label": "并行/条件分支",
   "workflow_node.branch.default_name": "分支",
-
   "workflow_node.condition.label": "分支",
   "workflow_node.condition.default_name": "分支",
   "workflow_node.condition.default_name.template_certtest_on_expire_soon": "若网站证书即将到期 ...",
@@ -1018,13 +1010,10 @@
   "workflow_node.condition.form.expression.value.option.true.label": "真",
   "workflow_node.condition.form.expression.value.option.false.label": "假",
   "workflow_node.condition.form.expression.add_condition.button": "添加条件",
-
   "workflow_node.execute_result_branch.label": "执行结果分支",
   "workflow_node.execute_result_branch.default_name": "分支",
-
   "workflow_node.execute_success.label": "若上一节点执行成功…",
   "workflow_node.execute_success.default_name": "执行成功",
-
   "workflow_node.execute_failure.label": "若上一节点执行失败…",
   "workflow_node.execute_failure.default_name": "执行失败"
 }

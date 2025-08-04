@@ -8,9 +8,7 @@
   "workflow_node.action.rename_branch": "Rename branch",
   "workflow_node.action.duplicate_branch": "Duplicate branch",
   "workflow_node.action.remove_branch": "Delete branch",
-
   "workflow_node.unsaved_changes.confirm": "You have unsaved changes. Do you really want to close the panel and drop those changes?",
-
   "workflow_node.start.label": "Start",
   "workflow_node.start.default_name": "Start",
   "workflow_node.start.form.trigger.label": "Trigger",
@@ -23,7 +21,6 @@
   "workflow_node.start.form.trigger_cron.tooltip": "Exactly 5 space separated segments. Time zone is based on the server.",
   "workflow_node.start.form.trigger_cron.extra": "Expected execution time for the last 5 times:",
   "workflow_node.start.form.trigger_cron.guide": "Tips: If you have multiple workflows, it is recommended to set them to run at different times of the day instead of always running at a specific time. And please don't always set it to midnight every day to avoid spikes in traffic. <br><br>Reference links:<br>1. <a href=\"https://letsencrypt.org/docs/rate-limits/\" target=\"_blank\">Let’s Encrypt rate limits</a><br>2. <a href=\"https://letsencrypt.org/docs/faq/#why-should-my-let-s-encrypt-acme-client-run-at-a-random-time\" target=\"_blank\">Why should my Let’s Encrypt (ACME) client run at a random time?</a>",
-
   "workflow_node.apply.label": "Obtain certificate",
   "workflow_node.apply.default_name": "Application",
   "workflow_node.apply.form.domains.label": "Domains",
@@ -102,7 +99,6 @@
   "workflow_node.apply.form.skip_before_expiry_days.suffix": ", skip to re-apply.",
   "workflow_node.apply.form.skip_before_expiry_days.unit": "days",
   "workflow_node.apply.form.skip_before_expiry_days.tooltip": "Be careful not to exceed the validity period limit of the issued certificate, otherwise the certificate may never be renewed.",
-
   "workflow_node.upload.label": "Upload certificate",
   "workflow_node.upload.default_name": "Uploading",
   "workflow_node.upload.form.domains.label": "Domains",
@@ -111,7 +107,6 @@
   "workflow_node.upload.form.certificate.placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
   "workflow_node.upload.form.private_key.label": "Private key (PEM format)",
   "workflow_node.upload.form.private_key.placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
-
   "workflow_node.deploy.label": "Deploy certificate",
   "workflow_node.deploy.default_name": "Deployment",
   "workflow_node.deploy.form.provider.label": "Deploy target",
@@ -734,6 +729,8 @@
   "workflow_node.deploy.form.tencentcloud_eo_domains.tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone\" target=\"_blank\">https://console.tencentcloud.com/edgeone</a>",
   "workflow_node.deploy.form.tencentcloud_eo_domains.multiple_input_modal.title": "Change Tencent Cloud EdgeOne domain",
   "workflow_node.deploy.form.tencentcloud_eo_domains.multiple_input_modal.placeholder": "Please enter Tencent Cloud EdgeOne domain name",
+  "workflow_node.deploy.form.tencentcloud_eo_deploy_to_all_domains.label": "Deploy to all websites",
+  "workflow_node.deploy.form.tencentcloud_eo_deploy_to_all_domains.tooltip": "When enabled, it will automatically retrieve all acceleration domain names under this site and deploy certificates without manually specifying domain list",
   "workflow_node.deploy.form.tencentcloud_gaap_endpoint.label": "Tencent Cloud GAAP API endpoint (Optional)",
   "workflow_node.deploy.form.tencentcloud_gaap_endpoint.placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
   "workflow_node.deploy.form.tencentcloud_gaap_endpoint.tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>",
@@ -937,7 +934,6 @@
   "workflow_node.deploy.form.skip_on_last_succeeded.suffix": " to re-deploy.",
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.on": "skip",
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.off": "not skip",
-
   "workflow_node.monitor.label": "Monitor certificate",
   "workflow_node.monitor.default_name": "Monitoring",
   "workflow_node.monitor.form.guide": "Tips: Certimate will send a HEAD request to the target address to obtain the certificate. Please ensure that the address is accessible through HTTPS protocol.",
@@ -949,7 +945,6 @@
   "workflow_node.monitor.form.domain.placeholder": "Please enter domain name",
   "workflow_node.monitor.form.request_path.label": "Request path (Optional)",
   "workflow_node.monitor.form.request_path.placeholder": "Please enter request path",
-
   "workflow_node.notify.label": "Send notification",
   "workflow_node.notify.default_name": "Notification",
   "workflow_node.notify.form.subject.label": "Subject",
@@ -988,13 +983,10 @@
   "workflow_node.notify.form.skip_on_all_prev_skipped.suffix": " to notify.",
   "workflow_node.notify.form.skip_on_all_prev_skipped.switch.on": "skip",
   "workflow_node.notify.form.skip_on_all_prev_skipped.switch.off": "not skip",
-
   "workflow_node.end.label": "End",
   "workflow_node.end.default_name": "End",
-
   "workflow_node.branch.label": "Parallel/Conditional branch",
   "workflow_node.branch.default_name": "Branch",
-
   "workflow_node.condition.label": "Branch",
   "workflow_node.condition.default_name": "Branch",
   "workflow_node.condition.default_name.template_certtest_on_expire_soon": "If the certificate will expire soon ...",
@@ -1020,13 +1012,10 @@
   "workflow_node.condition.form.expression.value.option.true.label": "True",
   "workflow_node.condition.form.expression.value.option.false.label": "False",
   "workflow_node.condition.form.expression.add_condition.button": "Add condition",
-
   "workflow_node.execute_result_branch.label": "Execution result branch",
   "workflow_node.execute_result_branch.default_name": "Branch",
-
   "workflow_node.execute_success.label": "If the previous node succeeded ...",
   "workflow_node.execute_success.default_name": "On Succeeded",
-
   "workflow_node.execute_failure.label": "If the previous node failed ...",
   "workflow_node.execute_failure.default_name": "On Failed"
 }
