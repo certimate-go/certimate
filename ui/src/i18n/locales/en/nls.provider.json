@@ -3,6 +3,7 @@
   "provider.1panel.console": "1Panel - Console",
   "provider.1panel.site": "1Panel - Website",
   "provider.acmeca": "ACME Custom CA Endpoint",
+  "provider.acmedns": "ACME DNS",
   "provider.acmehttpreq": "ACME Custom HTTP Endpoint",
   "provider.aliyun": "Alibaba Cloud",
   "provider.aliyun.alb": "Alibaba Cloud - ALB (Application Load Balancer)",

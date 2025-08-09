@@ -6,6 +6,7 @@
 export const ACCESS_PROVIDERS = Object.freeze({
   ["1PANEL"]: "1panel",
   ACMECA: "acmeca",
+  ACMEDNS: "acmedns",
   ACMEHTTPREQ: "acmehttpreq",
   ALIYUN: "aliyun",
   APISIX: "apisix",
@@ -174,6 +175,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.WESTCN, "provider.westcn", "/imgs/providers/westcn.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.POWERDNS, "provider.powerdns", "/imgs/providers/powerdns.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq", "/imgs/providers/acmehttpreq.svg", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.ACMEDNS, "provider.acmedns", "/imgs/providers/acmedns.svg", [ACCESS_USAGES.DNS]],
 
       [ACCESS_PROVIDERS.LETSENCRYPT, "provider.letsencrypt", "/imgs/providers/letsencrypt.svg", [ACCESS_USAGES.CA], "builtin"],
       [ACCESS_PROVIDERS.LETSENCRYPTSTAGING, "provider.letsencryptstaging", "/imgs/providers/letsencrypt.svg", [ACCESS_USAGES.CA], "builtin"],

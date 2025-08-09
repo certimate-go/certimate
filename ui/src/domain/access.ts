@@ -8,6 +8,7 @@ export interface AccessModel extends BaseModel {
     (
       | AccessConfigFor1Panel
       | AccessConfigForACMECA
+      | AccessConfigForACMEDNS
       | AccessConfigForACMEHttpReq
       | AccessConfigForAliyun
       | AccessConfigForAPISIX
@@ -94,6 +95,12 @@ export type AccessConfigForACMECA = {
   endpoint: string;
   eabKid?: string;
   eabHmacKey?: string;
+};
+
+export type AccessConfigForACMEDNS = {
+  apiBase: string;
+  storageBaseUrl?: string;
+  storagePath?: string;
 };
 
 export type AccessConfigForACMEHttpReq = {

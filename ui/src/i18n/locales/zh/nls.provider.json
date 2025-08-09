@@ -3,6 +3,7 @@
   "provider.1panel.console": "1Panel - 控制台",
   "provider.1panel.site": "1Panel - 网站",
   "provider.acmeca": "ACME 自定义 CA 端点",
+  "provider.acmedns": "ACME DNS",
   "provider.acmehttpreq": "ACME 自定义 HTTP 端点",
   "provider.aliyun": "阿里云",
   "provider.aliyun.alb": "阿里云 - 应用型负载均衡 ALB",
