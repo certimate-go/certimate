@@ -2,8 +2,9 @@ package acmedns
 
 import (
 	"errors"
-	"github.com/go-acme/lego/v4/providers/dns/acmedns"
 	"net/url"
+
+	"github.com/go-acme/lego/v4/providers/dns/acmedns"
 
 	"github.com/certimate-go/certimate/pkg/core"
 )
