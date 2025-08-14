@@ -6,6 +6,7 @@ import (
 	"github.com/go-acme/lego/v4/challenge"
 
 	"github.com/certimate-go/certimate/internal/domain"
+	pACMEDNS "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/acmedns"
 	pACMEHttpReq "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/acmehttpreq"
 	pAliyun "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/aliyun"
 	pAliyunESA "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/aliyun-esa"
@@ -75,6 +76,21 @@ func createApplicantProvider(options *applicantProviderOptions) (challenge.Provi
 	  NOTICE: If you add new constant, please keep ASCII order.
 	*/
 	switch options.Provider {
+	case domain.ACMEDns01ProviderTypeACMEDNS:
+		{
+			access := domain.AccessConfigForACMEDNS{}
+			if err := xmaps.Populate(options.ProviderAccessConfig, &access); err != nil {
+				return nil, fmt.Errorf("failed to populate provider access config: %w", err)
+			}
+
+			applicant, err := pACMEDNS.NewChallengeProvider(&pACMEDNS.ChallengeProviderConfig{
+				ApiBase:        access.ApiBase,
+				StorageBaseUrl: access.StorageBaseUrl,
+				StoragePath:    access.StoragePath,
+			})
+			return applicant, err
+		}
+
 	case domain.ACMEDns01ProviderTypeACMEHttpReq:
 		{
 			access := domain.AccessConfigForACMEHttpReq{}
