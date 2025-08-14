@@ -266,6 +266,7 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
   NOTICE: If you add new constant, please keep ASCII order.
  */
 export const ACME_DNS01_PROVIDERS = Object.freeze({
+  ACMEDNS: `${ACCESS_PROVIDERS.ACMEDNS}`,
   ACMEHTTPREQ: `${ACCESS_PROVIDERS.ACMEHTTPREQ}`,
   ALIYUN: `${ACCESS_PROVIDERS.ALIYUN}`, // 兼容旧值，等同于 `ALIYUN_DNS`
   ALIYUN_DNS: `${ACCESS_PROVIDERS.ALIYUN}-dns`,
@@ -333,6 +334,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
    */
   (
     [
+      [ACME_DNS01_PROVIDERS.ACMEDNS, "provider.acmedns"],
       [ACME_DNS01_PROVIDERS.ALIYUN_DNS, "provider.aliyun.dns"],
       [ACME_DNS01_PROVIDERS.ALIYUN_ESA, "provider.aliyun.esa"],
       [ACME_DNS01_PROVIDERS.TENCENTCLOUD_DNS, "provider.tencentcloud.dns"],
