@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
@@ -55,11 +56,15 @@ func (m *SSLManagerProvider) SetLogger(logger *slog.Logger) {
 }
 
 func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkeyPEM string) (*core.SSLManageUploadResult, error) {
+	// 生成新证书名（需符合腾讯云命名规则）
+	certName := fmt.Sprintf("certimate-%d", time.Now().UnixMilli())
+
 	// 上传新证书
 	// REF: https://cloud.tencent.com/document/api/400/41665
 	uploadCertificateReq := tcssl.NewUploadCertificateRequest()
 	uploadCertificateReq.CertificatePublicKey = common.StringPtr(certPEM)
 	uploadCertificateReq.CertificatePrivateKey = common.StringPtr(privkeyPEM)
+	uploadCertificateReq.Alias = common.StringPtr(certName)
 	uploadCertificateReq.Repeatable = common.BoolPtr(false)
 	uploadCertificateResp, err := m.sdkClient.UploadCertificate(uploadCertificateReq)
 	m.logger.Debug("sdk request 'ssl.UploadCertificate'", slog.Any("request", uploadCertificateReq), slog.Any("response", uploadCertificateResp))
@@ -68,7 +73,8 @@ func (m *SSLManagerProvider) Upload(ctx context.Context, certPEM string, privkey
 	}
 
 	return &core.SSLManageUploadResult{
-		CertId: *uploadCertificateResp.Response.CertificateId,
+		CertId:   *uploadCertificateResp.Response.CertificateId,
+		CertName: certName,
 	}, nil
 }
 
