@@ -8,7 +8,6 @@ import (
 	"log/slog"
 	"net"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -18,6 +17,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xfilepath "github.com/certimate-go/certimate/pkg/utils/filepath"
 )
 
 type JumpServerConfig struct {
@@ -419,7 +419,7 @@ func writeFileWithSFTP(sshCli *ssh.Client, path string, data []byte) error {
 	}
 	defer sftpCli.Close()
 
-	if err := sftpCli.MkdirAll(filepath.ToSlash(filepath.Dir(path))); err != nil {
+	if err := sftpCli.MkdirAll(xfilepath.Dir(path)); err != nil {
 		return fmt.Errorf("failed to create remote directory: %w", err)
 	}
 
