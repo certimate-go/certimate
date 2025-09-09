@@ -32,6 +32,11 @@ type SiteServerInfo struct {
 	SSL            *SiteServerSSLInfo `json:"ssl,omitempty"`
 }
 
+type SiteServerInfoMod struct {
+	ListenSSLPorts *[]string          `json:"listen_ssl_port,omitempty"`
+	SSL            *SiteServerSSLInfo `json:"ssl,omitempty"`
+}
+
 type SiteServerSSLInfo struct {
 	IsSSL      *int32  `json:"is_ssl,omitempty"`
 	FullChain  *string `json:"full_chain,omitempty"`

@@ -113,8 +113,8 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	modifySiteReq := &btwafsdk.ModifySiteRequest{
 		SiteId: xtypes.ToPtr(siteId),
 		Type:   xtypes.ToPtr("openCert"),
-		Server: &btwafsdk.SiteServerInfo{
-			ListenSSLPorts: xtypes.ToPtr([]int32{d.config.SitePort}),
+		Server: &btwafsdk.SiteServerInfoMod{
+			ListenSSLPorts: xtypes.ToPtr([]string{fmt.Sprintf("%d", d.config.SitePort)}),
 			SSL: &btwafsdk.SiteServerSSLInfo{
 				IsSSL:      xtypes.ToPtr(int32(1)),
 				FullChain:  xtypes.ToPtr(certPEM),

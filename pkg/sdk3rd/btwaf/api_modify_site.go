@@ -6,9 +6,9 @@ import (
 )
 
 type ModifySiteRequest struct {
-	SiteId *string         `json:"site_id,omitempty"`
-	Type   *string         `json:"types,omitempty"`
-	Server *SiteServerInfo `json:"server,omitempty"`
+	SiteId *string            `json:"site_id,omitempty"`
+	Type   *string            `json:"types,omitempty"`
+	Server *SiteServerInfoMod `json:"server,omitempty"`
 }
 
 type ModifySiteResponse struct {
