@@ -29,7 +29,7 @@ const AccessFormGoEdgeConfig = ({ form: formInst, formName, disabled, initialVal
 
   const formSchema = z.object({
     serverUrl: z.url(t("common.errmsg.url_invalid")),
-    role: z.literal(["user", "admin"], t("access.form.goedge_api_role.placeholder")),
+    apiRole: z.literal(["user", "admin"], t("access.form.goedge_api_role.placeholder")),
     accessKeyId: z.string().nonempty(t("access.form.goedge_access_key_id.placeholder")),
     accessKey: z.string().nonempty(t("access.form.goedge_access_key.placeholder")),
     allowInsecureConnections: z.boolean().nullish(),

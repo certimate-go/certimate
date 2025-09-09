@@ -30,7 +30,8 @@ const AccessFormLeCDNConfig = ({ form: formInst, formName, disabled, initialValu
 
   const formSchema = z.object({
     serverUrl: z.url(t("common.errmsg.url_invalid")),
-    role: z.literal(["client", "master"], t("access.form.lecdn_api_role.placeholder")),
+    apiVersion: z.literal(["v3"], t("access.form.lecdn_api_version.placeholder")),
+    apiRole: z.literal(["client", "master"], t("access.form.lecdn_api_role.placeholder")),
     username: z.string().nonempty(t("access.form.lecdn_username.placeholder")),
     password: z.string().nonempty(t("access.form.lecdn_password.placeholder")),
     allowInsecureConnections: z.boolean().nullish(),
