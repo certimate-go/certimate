@@ -20,11 +20,12 @@ func init() {
 		}
 
 		provider, err := tencentcloudeo.NewSSLDeployerProvider(&tencentcloudeo.SSLDeployerProviderConfig{
-			SecretId:  credentials.SecretId,
-			SecretKey: credentials.SecretKey,
-			Endpoint:  xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
-			ZoneId:    xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
-			Domains:   lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "domains"), ";"), func(s string, _ int) bool { return s != "" }),
+			SecretId:     credentials.SecretId,
+			SecretKey:    credentials.SecretKey,
+			Endpoint:     xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
+			ZoneId:       xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
+			MatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "matchPattern"),
+			Domains:      lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "domains"), ";"), func(s string, _ int) bool { return s != "" }),
 		})
 		return provider, err
 	}); err != nil {
