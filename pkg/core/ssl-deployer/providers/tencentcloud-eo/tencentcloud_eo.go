@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	"log/slog"
 	"strings"
 
@@ -15,6 +14,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	sslmgrsp "github.com/certimate-go/certimate/pkg/core/ssl-manager/providers/tencentcloud-ssl"
+	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
 type SSLDeployerProviderConfig struct {
