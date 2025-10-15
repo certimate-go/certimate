@@ -113,7 +113,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 			if len(d.config.Domains) == 0 {
 				return nil, errors.New("config `domains` is required")
 			}
-			
+
 			domainsInZone, err := d.getDomainsInZone(ctx, d.config.ZoneId)
 			if err != nil {
 				return nil, err
@@ -163,9 +163,9 @@ func (d *SSLDeployerProvider) getDomainsInZone(ctx context.Context, zoneId strin
 			return nil, ctx.Err()
 		default:
 		}
-    
-    // 查询加速域名列表
-    // REF: https://cloud.tencent.com/document/api/1552/86336
+
+		// 查询加速域名列表
+		// REF: https://cloud.tencent.com/document/api/1552/86336
 		describeAccelerationDomainsReq := tcteo.NewDescribeAccelerationDomainsRequest()
 		describeAccelerationDomainsReq.Limit = common.Int64Ptr(pageSize)
 		describeAccelerationDomainsReq.Offset = common.Int64Ptr(int64(offset))
@@ -175,14 +175,14 @@ func (d *SSLDeployerProvider) getDomainsInZone(ctx context.Context, zoneId strin
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeAccelerationDomains': %w", err)
 		}
-    
+
 		for _, accelerationDomain := range describeAccelerationDomainsResp.Response.AccelerationDomains {
 			if accelerationDomain == nil || accelerationDomain.DomainName == nil {
 				continue
 			}
 			domainsInZone = append(domainsInZone, *accelerationDomain.DomainName)
 		}
-    
+
 		if len(describeAccelerationDomainsResp.Response.AccelerationDomains) < pageSize {
 			break
 		}
