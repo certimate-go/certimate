@@ -97,20 +97,24 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	if len(d.config.Domains) == 0 || d.config.Domains[0] == "" {
-		return nil, errors.New("config `domains` is required")
-	}
-
 	var domains []string
 	switch d.config.MatchPattern {
 	case "", MatchPatternExact:
 		{
+			if len(d.config.Domains) == 0 {
+				return nil, errors.New("config `domains` is required")
+			}
+
 			domains = d.config.Domains
 		}
 
 	case MatchPatternWildcard:
 		{
-			domainsInZone, err := d.getDomainsInZone()
+			if len(d.config.Domains) == 0 {
+				return nil, errors.New("config `domains` is required")
+			}
+			
+			domainsInZone, err := d.getDomainsInZone(ctx, d.config.ZoneId)
 			if err != nil {
 				return nil, err
 			}
@@ -149,33 +153,41 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	return &core.SSLDeployResult{}, nil
 }
 
-// getDomainsInZone 获取站点下的所有域名
-func (d *SSLDeployerProvider) getDomainsInZone() ([]string, error) {
+func (d *SSLDeployerProvider) getDomainsInZone(ctx context.Context, zoneId string) ([]string, error) {
 	var domainsInZone []string
+
 	const pageSize = 200
 	for offset := 0; ; offset += pageSize {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+    
+    // 查询加速域名列表
+    // REF: https://cloud.tencent.com/document/api/1552/86336
 		describeAccelerationDomainsReq := tcteo.NewDescribeAccelerationDomainsRequest()
 		describeAccelerationDomainsReq.Limit = common.Int64Ptr(pageSize)
 		describeAccelerationDomainsReq.Offset = common.Int64Ptr(int64(offset))
-		describeAccelerationDomainsReq.ZoneId = common.StringPtr(d.config.ZoneId)
+		describeAccelerationDomainsReq.ZoneId = common.StringPtr(zoneId)
 		describeAccelerationDomainsResp, err := d.sdkClient.DescribeAccelerationDomains(describeAccelerationDomainsReq)
 		d.logger.Debug("sdk request 'teo.DescribeAccelerationDomains'", slog.Any("request", describeAccelerationDomainsReq), slog.Any("response", describeAccelerationDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeAccelerationDomains': %w", err)
 		}
-		if describeAccelerationDomainsResp == nil || describeAccelerationDomainsResp.Response == nil || describeAccelerationDomainsResp.Response.TotalCount == nil {
-			return nil, errors.New("unexpected deployment job status")
-		}
+    
 		for _, accelerationDomain := range describeAccelerationDomainsResp.Response.AccelerationDomains {
 			if accelerationDomain == nil || accelerationDomain.DomainName == nil {
 				continue
 			}
 			domainsInZone = append(domainsInZone, *accelerationDomain.DomainName)
 		}
-		if int(*describeAccelerationDomainsResp.Response.TotalCount) <= offset+pageSize {
+    
+		if len(describeAccelerationDomainsResp.Response.AccelerationDomains) < pageSize {
 			break
 		}
 	}
+
 	return domainsInZone, nil
 }
 
