@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { IconArrowRight, IconCode, IconSquarePlus2 } from "@tabler/icons-react";
 import { App, Button, Card, Spin, Typography } from "antd";
-import dayjs from "dayjs";
 
 import Show from "@/components/Show";
 import WorkflowGraphImportModal from "@/components/workflow/WorkflowGraphImportModal";
@@ -85,7 +84,7 @@ const WorkflowNew = () => {
     try {
       let workflow = {} as WorkflowModel;
       workflow.name = t("workflow.new.templates.default_name");
-      workflow.description = t("workflow.new.templates.default_description", { date: dayjs().format("YYYY-MM-DD HH:mm") });
+      workflow.description = t("workflow.new.templates.default_description");
       workflow.graphDraft = { nodes: [] };
       workflow.hasDraft = true;
 
@@ -261,7 +260,7 @@ const WorkflowNew = () => {
       try {
         let workflow = {} as WorkflowModel;
         workflow.name = t("workflow.new.templates.default_name");
-        workflow.description = t("workflow.new.templates.default_description", { date: dayjs().format("YYYY-MM-DD HH:mm") });
+        workflow.description = t("workflow.new.templates.default_description");
         workflow.graphDraft = graph;
         workflow.hasDraft = true;
         workflow = await saveWorkflow(workflow);

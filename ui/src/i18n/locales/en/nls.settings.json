@@ -29,6 +29,11 @@
   "settings.appearance.pagination.form.default_per_page.label": "Default items per page",
   "settings.appearance.pagination.form.default_per_page.placeholder": "Please enter default items per page",
   "settings.appearance.pagination.form.default_per_page.unit": "items per page",
+  "settings.appearance.workflow.title": "Workflow",
+  "settings.appearance.workflow.form.default_designer_layout.label": "Default designer layout",
+  "settings.appearance.workflow.form.default_designer_layout.placeholder": "Please select default designer layout",
+  "settings.appearance.workflow.form.default_designer_layout.option.horizontal": "Horizontal layout",
+  "settings.appearance.workflow.form.default_designer_layout.option.vertical": "Vertical layout",
 
   "settings.sslprovider.tab": "Certificate authority",
   "settings.sslprovider.ca.title": "System-wide CA",

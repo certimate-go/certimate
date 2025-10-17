@@ -102,6 +102,6 @@ type DomainOriginConfigWithWeight struct {
 }
 
 type DomainHttpsBasicConfig struct {
-	HttpsForce  string `json:"https_force"`
-	ForceStatus string `json:"force_status"`
+	HttpsForce  string `json:"https_force,omitempty"`
+	ForceStatus string `json:"force_status,omitempty"`
 }

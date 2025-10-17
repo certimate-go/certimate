@@ -14,7 +14,6 @@ export const BizMonitorNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Business,
 
   meta: {
-    helpText: getI18n().t("workflow_node.monitor.help"),
     labelText: getI18n().t("workflow_node.monitor.label"),
 
     icon: IconDeviceDesktopSearch,

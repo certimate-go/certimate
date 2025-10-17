@@ -23,7 +23,7 @@ func (c *Client) ModifyDomainConfig(req *ModifyDomainConfigRequest) (*ModifyDoma
 }
 
 func (c *Client) ModifyDomainConfigWithContext(ctx context.Context, req *ModifyDomainConfigRequest) (*ModifyDomainConfigResponse, error) {
-	httpreq, err := c.newRequest(http.MethodPost, "/ctapi/v1/accessone/domain/modify_config")
+	httpreq, err := c.newRequest(http.MethodPost, "/ctapi/v1/scdn/domain/modify_config")
 	if err != nil {
 		return nil, err
 	} else {

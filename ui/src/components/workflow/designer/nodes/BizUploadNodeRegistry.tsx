@@ -14,7 +14,6 @@ export const BizUploadNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Business,
 
   meta: {
-    helpText: getI18n().t("workflow_node.upload.help"),
     labelText: getI18n().t("workflow_node.upload.label"),
 
     icon: IconCloudUpload,

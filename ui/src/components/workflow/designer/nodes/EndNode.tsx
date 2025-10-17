@@ -13,7 +13,6 @@ export const EndNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Basis,
 
   meta: {
-    helpText: getI18n().t("workflow_node.end.help"),
     labelText: getI18n().t("workflow_node.end.label"),
 
     icon: IconLogout,

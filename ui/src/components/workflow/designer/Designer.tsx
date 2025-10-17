@@ -4,12 +4,12 @@ import {
   EditorRenderer,
   EditorState,
   FixedLayoutEditorProvider,
+  FlowLayoutDefault,
   type FixedLayoutPluginContext,
   type FixedLayoutProps,
   type FlowDocumentJSON,
   type FlowNodeEntity,
   FlowTextKey,
-  getNodeForm,
 } from "@flowgram.ai/fixed-layout-editor";
 import { createMinimapPlugin } from "@flowgram.ai/minimap-plugin";
 import "@flowgram.ai/fixed-layout-editor/index.css";
@@ -139,9 +139,11 @@ const Designer = forwardRef<DesignerInstance, DesignerProps>(
           rendered.current = true;
 
           // 画布初始化后向下滚动一点，露出可能被 Alert 遮挡的部分
-          setTimeout(() => {
-            ctx.playground.config.scroll({ scrollY: -80 });
-          }, 1);
+          if (defaultLayout === FlowLayoutDefault.VERTICAL_FIXED_LAYOUT) {
+            setTimeout(() => {
+              ctx.playground.config.scroll({ scrollY: -80 });
+            }, 1);
+          }
         },
       }),
       [defaultEditorState, defaultLayout, initialData, readonly, onDocumentChange, themeToken]
@@ -195,12 +197,12 @@ const Designer = forwardRef<DesignerInstance, DesignerProps>(
             node = flowgramEditorRef.current!.document.getNode(node)!;
           }
 
-          const form = getNodeForm(node);
+          const form = node.form;
           return form ? form.validate().then((res) => res && !form.state.invalid) : Promise.resolve(true);
         },
         validateAllNodes() {
           const nodes = flowgramEditorRef.current!.document.getAllNodes();
-          const forms = nodes.map((node) => getNodeForm(node)).filter((form) => form != null);
+          const forms = nodes.map((node) => node.form).filter((form) => form != null);
           return Promise.allSettled(forms.map((form) => form.validate())).then((res) => forms.every((form, index) => res[index] && !form.state.invalid));
         },
       };

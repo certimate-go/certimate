@@ -13,7 +13,6 @@ export const TryCatchNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Logic,
 
   meta: {
-    helpText: getI18n().t("workflow_node.try_catch.help"),
     labelText: getI18n().t("workflow_node.try_catch.label"),
 
     icon: IconArrowsSplit,

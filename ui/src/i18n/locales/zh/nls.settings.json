@@ -29,6 +29,11 @@
   "settings.appearance.pagination.form.default_per_page.label": "列表页默认显示数量",
   "settings.appearance.pagination.form.default_per_page.placeholder": "请输入列表页默认显示数量",
   "settings.appearance.pagination.form.default_per_page.unit": "条每页",
+  "settings.appearance.workflow.title": "工作流",
+  "settings.appearance.workflow.form.default_designer_layout.label": "编辑器默认布局",
+  "settings.appearance.workflow.form.default_designer_layout.placeholder": "请选择编辑器默认布局",
+  "settings.appearance.workflow.form.default_designer_layout.option.horizontal": "水平布局",
+  "settings.appearance.workflow.form.default_designer_layout.option.vertical": "垂直布局",
 
   "settings.sslprovider.tab": "证书颁发机构",
   "settings.sslprovider.ca.title": "全局证书颁发机构",

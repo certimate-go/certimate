@@ -63,10 +63,6 @@ export interface NodeMeta extends FlowNodeMeta {
    */
   style?: React.CSSProperties;
   /**
-   * 帮助文本。
-   */
-  helpText?: React.ReactNode;
-  /**
    * 标题文本。
    */
   labelText?: React.ReactNode;

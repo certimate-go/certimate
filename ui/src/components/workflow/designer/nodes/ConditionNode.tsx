@@ -18,7 +18,6 @@ export const ConditionNodeRegistry: NodeRegistry = {
   extend: FlowNodeSplitType.DYNAMIC_SPLIT,
 
   meta: {
-    helpText: getI18n().t("workflow_node.condition.help"),
     labelText: getI18n().t("workflow_node.condition.label"),
 
     icon: IconSitemap,

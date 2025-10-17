@@ -27,6 +27,11 @@ type SettingsContentForPersistence struct {
 func (c SettingsContent) AsSSLProvider() *SettingsContentForSSLProvider {
 	content := &SettingsContentForSSLProvider{}
 	xmaps.Populate(c, content)
+
+	if content.Provider == "" {
+		content.Provider = CAProviderTypeLetsEncrypt
+	}
+
 	return content
 }
 

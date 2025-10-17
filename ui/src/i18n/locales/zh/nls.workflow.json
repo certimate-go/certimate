@@ -51,7 +51,7 @@
   "workflow.new.templates.template.certtest.title": "域名证书监控",
   "workflow.new.templates.template.certtest.description": "一个包含证书监控 + 消息通知步骤的工作流程，可在线上证书到期前或已过期时发出告警。",
   "workflow.new.templates.default_name": "未命名工作流",
-  "workflow.new.templates.default_description": "创建于 {{date}}",
+  "workflow.new.templates.default_description": "",
 
   "workflow.detail.baseinfo.name.placeholder": "请输入工作流名称",
   "workflow.detail.baseinfo.description.placeholder": "请输入工作流描述",

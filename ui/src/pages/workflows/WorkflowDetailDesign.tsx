@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FlowLayoutDefault } from "@flowgram.ai/fixed-layout-editor";
 import { IconArrowBackUp, IconDots, IconTransferIn, IconTransferOut } from "@tabler/icons-react";
 import { useDeepCompareEffect } from "ahooks";
 import { Alert, App, Button, Card, Dropdown, Result, Space, theme } from "antd";
@@ -9,7 +10,7 @@ import Show from "@/components/Show";
 import { WorkflowDesigner, type WorkflowDesignerInstance, WorkflowNodeDrawer, WorkflowToolbar } from "@/components/workflow/designer";
 import WorkflowGraphExportModal from "@/components/workflow/WorkflowGraphExportModal";
 import WorkflowGraphImportModal from "@/components/workflow/WorkflowGraphImportModal";
-import { useZustandShallowSelector } from "@/hooks";
+import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { useWorkflowStore } from "@/stores/workflow";
 import { getErrMsg } from "@/utils/error";
 
@@ -18,6 +19,8 @@ const WorkflowDetailDesign = () => {
 
   const { token: themeToken } = theme.useToken();
   const { message, modal, notification } = App.useApp();
+
+  const { appSettings: globalAppSettings } = useAppSettings();
 
   const { workflow, ...workflowStore } = useWorkflowStore(useZustandShallowSelector(["workflow", "orchestrate", "publish", "rollback"]));
 
@@ -134,7 +137,18 @@ const WorkflowDetailDesign = () => {
           },
         }}
       >
-        <WorkflowDesigner ref={designerRef} onDocumentChange={handleDesignerDocumentChange} onNodeClick={(_, node) => designerNodeDrawer.open(node)}>
+        <WorkflowDesigner
+          ref={designerRef}
+          defaultLayout={
+            globalAppSettings.defaultWorkflowLayout === "horizontal"
+              ? FlowLayoutDefault.HORIZONTAL_FIXED_LAYOUT
+              : globalAppSettings.defaultWorkflowLayout === "vertical"
+                ? FlowLayoutDefault.VERTICAL_FIXED_LAYOUT
+                : void 0
+          }
+          onDocumentChange={handleDesignerDocumentChange}
+          onNodeClick={(_, node) => designerNodeDrawer.open(node)}
+        >
           <div className="absolute top-8 z-10 w-full px-4">
             <div className="container">
               <div className="flex items-center justify-end gap-4">

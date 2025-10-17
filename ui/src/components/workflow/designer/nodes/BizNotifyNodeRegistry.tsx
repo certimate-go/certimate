@@ -16,7 +16,6 @@ export const BizNotifyNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Business,
 
   meta: {
-    helpText: getI18n().t("workflow_node.notify.help"),
     labelText: getI18n().t("workflow_node.notify.label"),
 
     icon: IconSend,

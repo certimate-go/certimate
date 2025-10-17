@@ -24,7 +24,7 @@ func MatchHostname(match, candidate string) bool {
 	}
 
 	mockCert := &x509.Certificate{}
-	if ip := net.ParseIP(candidate); ip != nil {
+	if ip := net.ParseIP(match); ip != nil {
 		mockCert.IPAddresses = []net.IP{ip}
 	} else {
 		mockCert.DNSNames = []string{match}

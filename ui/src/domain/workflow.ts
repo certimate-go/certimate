@@ -327,74 +327,77 @@ export const newNode = (type: WorkflowNodeType, { i18n = getI18n() }: { i18n?: R
   }
 };
 
-export const duplicateNode = (node: WorkflowNode, options?: { withCopySuffix?: boolean }) => {
+const _deepCloneNode = (node: WorkflowNode, { withCopySuffix, nodeIdMap }: { withCopySuffix: boolean; nodeIdMap: Map<string, string> }) => {
   const { produce } = new Immer({ autoFreeze: false });
-  const deepClone = (node: WorkflowNode, { withCopySuffix, nodeIdMap }: { withCopySuffix: boolean; nodeIdMap: Map<string, string> }) => {
-    return produce(node, (draft) => {
-      draft.data ??= {};
-      draft.id = newNodeId();
-      draft.data.name = withCopySuffix ? `${draft.data?.name || ""}-copy` : `${draft.data?.name || ""}`;
+  return produce(node, (draft) => {
+    draft.data ??= {};
+    draft.id = newNodeId();
+    draft.data.name = withCopySuffix ? `${draft.data?.name || ""}-copy` : `${draft.data?.name || ""}`;
 
-      nodeIdMap.set(node.id, draft.id); // 原节点 ID 映射到新节点 ID
+    nodeIdMap.set(node.id, draft.id); // 原节点 ID 映射到新节点 ID
 
-      if (draft.blocks) {
-        draft.blocks = draft.blocks.map((block) => deepClone(block as WorkflowNode, { withCopySuffix: false, nodeIdMap }));
-      }
+    if (draft.blocks) {
+      draft.blocks = draft.blocks.map((block) => _deepCloneNode(block, { withCopySuffix: false, nodeIdMap }));
+    }
 
-      if (draft.data?.config) {
-        switch (draft.type) {
-          case WORKFLOW_NODE_TYPES.BIZ_DEPLOY:
-            {
-              const prevNodeId = draft.data.config.certificateOutputNodeId as string;
-              if (nodeIdMap.has(prevNodeId)) {
-                draft.data.config = {
-                  ...draft.data.config,
-                  certificateOutputNodeId: nodeIdMap.get(prevNodeId),
-                };
-              }
+    if (draft.data?.config) {
+      switch (draft.type) {
+        case WORKFLOW_NODE_TYPES.BIZ_DEPLOY:
+          {
+            const prevNodeId = draft.data.config.certificateOutputNodeId as string;
+            if (nodeIdMap.has(prevNodeId)) {
+              draft.data.config = {
+                ...draft.data.config,
+                certificateOutputNodeId: nodeIdMap.get(prevNodeId),
+              };
             }
-            break;
+          }
+          break;
 
-          case WORKFLOW_NODE_TYPES.CONDITION:
-            {
-              const stack = [] as Expr[];
-              const expr = draft.data.config.expression as Expr;
-              if (expr) {
-                stack.push(expr);
-                while (stack.length > 0) {
-                  const n = stack.pop()!;
-                  if ("left" in n) {
-                    stack.push(n.left);
-                    if ("selector" in n.left) {
-                      const prevNodeId = n.left.selector.id;
-                      if (nodeIdMap.has(prevNodeId)) {
-                        n.left.selector.id = nodeIdMap.get(prevNodeId)!;
-                      }
+        case WORKFLOW_NODE_TYPES.BRANCHBLOCK:
+          {
+            const stack = [] as Expr[];
+            const expr = draft.data.config.expression as Expr;
+            if (expr) {
+              stack.push(expr);
+              while (stack.length > 0) {
+                const n = stack.pop()!;
+                if ("left" in n) {
+                  stack.push(n.left);
+                  if ("selector" in n.left) {
+                    const prevNodeId = n.left.selector.id;
+                    if (nodeIdMap.has(prevNodeId)) {
+                      n.left.selector.id = nodeIdMap.get(prevNodeId)!;
                     }
                   }
-                  if ("right" in n) {
-                    stack.push(n.right);
-                  }
                 }
-                draft.data.config = {
-                  ...draft.data.config,
-                  expression: expr,
-                };
+                if ("right" in n) {
+                  stack.push(n.right);
+                }
               }
+
+              draft.data.config = {
+                ...draft.data.config,
+                expression: expr,
+              };
             }
-            break;
-        }
+          }
+          break;
       }
+    }
 
-      return draft;
-    });
-  };
+    return draft;
+  });
+};
 
-  return deepClone(node, { withCopySuffix: options?.withCopySuffix ?? true, nodeIdMap: new Map() });
+export const duplicateNode = (node: WorkflowNode, options?: { withCopySuffix?: boolean }) => {
+  const map = new Map<string, string>();
+  return _deepCloneNode(node, { withCopySuffix: options?.withCopySuffix ?? true, nodeIdMap: map });
 };
 
 export const duplicateNodes = (nodes: WorkflowNode[], options?: { withCopySuffix?: boolean }) => {
-  return nodes.map((node) => duplicateNode(node, options));
+  const map = new Map<string, string>();
+  return nodes.map((node) => _deepCloneNode(node, { withCopySuffix: options?.withCopySuffix ?? true, nodeIdMap: map }));
 };
 // #endregion
 

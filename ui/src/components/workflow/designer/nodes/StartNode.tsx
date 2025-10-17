@@ -14,7 +14,6 @@ export const StartNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Basis,
 
   meta: {
-    helpText: getI18n().t("workflow_node.start.help"),
     labelText: getI18n().t("workflow_node.start.label"),
 
     icon: IconRocket,

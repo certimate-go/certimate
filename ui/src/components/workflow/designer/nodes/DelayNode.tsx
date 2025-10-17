@@ -14,7 +14,6 @@ export const DelayNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Basis,
 
   meta: {
-    helpText: getI18n().t("workflow_node.delay.help"),
     labelText: getI18n().t("workflow_node.delay.label"),
 
     icon: IconHourglassHigh,

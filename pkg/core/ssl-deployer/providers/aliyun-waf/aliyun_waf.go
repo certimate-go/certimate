@@ -133,11 +133,15 @@ func (d *SSLDeployerProvider) deployToWAF3(ctx context.Context, certPEM string, 
 			RegionId:                       tea.String(d.config.Region),
 			CertId:                         tea.String(upres.ExtendedData["CertIdentifier"].(string)),
 			TLSVersion:                     tea.String("tlsv1"),
-			EnableTLSv3:                    tea.Bool(false),
+			EnableTLSv3:                    tea.Bool(true),
 		}
 		if describeDefaultHttpsResp.Body != nil && describeDefaultHttpsResp.Body.DefaultHttps != nil {
-			modifyDefaultHttpsReq.TLSVersion = describeDefaultHttpsResp.Body.DefaultHttps.TLSVersion
-			modifyDefaultHttpsReq.EnableTLSv3 = describeDefaultHttpsResp.Body.DefaultHttps.EnableTLSv3
+			if describeDefaultHttpsResp.Body.DefaultHttps.TLSVersion != nil {
+				modifyDefaultHttpsReq.TLSVersion = describeDefaultHttpsResp.Body.DefaultHttps.TLSVersion
+			}
+			if describeDefaultHttpsResp.Body.DefaultHttps.EnableTLSv3 == nil {
+				modifyDefaultHttpsReq.EnableTLSv3 = describeDefaultHttpsResp.Body.DefaultHttps.EnableTLSv3
+			}
 		}
 		modifyDefaultHttpsResp, err := d.sdkClient.ModifyDefaultHttps(modifyDefaultHttpsReq)
 		d.logger.Debug("sdk request 'waf.ModifyDefaultHttps'", slog.Any("request", modifyDefaultHttpsReq), slog.Any("response", modifyDefaultHttpsResp))

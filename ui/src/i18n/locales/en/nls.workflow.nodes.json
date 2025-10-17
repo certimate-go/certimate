@@ -4,7 +4,6 @@
   "workflow_node.kind.logic": "Logic",
 
   "workflow_node.start.label": "Start",
-  "workflow_node.start.help": "Define the trigger for workflow initiation. A workflow can only have one start node.",
   "workflow_node.start.default_name": "Start",
   "workflow_node.start.form_anchor.parameters.tab": "Parameters",
   "workflow_node.start.form.trigger.label": "Trigger",
@@ -17,8 +16,8 @@
   "workflow_node.start.form.trigger_cron.tooltip": "Exactly 5 space separated segments, in standard <em>crontab</em> rules.",
   "workflow_node.start.form.trigger_cron.help": "Expected execution time for the last 5 times (the actual time zone is based on the server):",
   "workflow_node.start.form.trigger_cron.guide": "If you have multiple workflows, it is recommended to set them to run at different times of the day instead of always running at a specific time. And please don't always set it to midnight every day to avoid spikes in traffic. <br><br>Reference links:<br>1. <a href=\"https://letsencrypt.org/docs/rate-limits/\" target=\"_blank\">Let’s Encrypt rate limits</a><br>2. <a href=\"https://letsencrypt.org/docs/faq/#why-should-my-let-s-encrypt-acme-client-run-at-a-random-time\" target=\"_blank\">Why should my Let’s Encrypt (ACME) client run at a random time?</a>",
+
   "workflow_node.apply.label": "Request certificate",
-  "workflow_node.apply.help": "Apply for SSL certificate issuance from the certificate authority.",
   "workflow_node.apply.default_name": "Application",
   "workflow_node.apply.form_anchor.parameters.tab": "Parameters",
   "workflow_node.apply.form_anchor.challenge.tab": "Challenge",
@@ -128,7 +127,6 @@
   "workflow_node.apply.form.skip_before_expiry_days.tooltip": "Be careful not to exceed the validity period limit of the issued certificate, otherwise the certificate may never be renewed.",
 
   "workflow_node.upload.label": "Upload certificate",
-  "workflow_node.upload.help": "Upload the user's existing SSL certificate.",
   "workflow_node.upload.default_name": "Uploading",
   "workflow_node.upload.form_anchor.parameters.tab": "Parameters",
   "workflow_node.upload.form.guide": "The file content will be read again every time this node executes.",
@@ -153,7 +151,6 @@
   "workflow_node.upload.form.private_key_url.placeholder": "Please enter the URL for downloading private key file",
 
   "workflow_node.monitor.label": "Monitor certificate",
-  "workflow_node.monitor.help": "Obtain the SSL certificate of the website through HTTPS protocol.",
   "workflow_node.monitor.default_name": "Monitoring",
   "workflow_node.monitor.form_anchor.parameters.tab": "Parameters",
   "workflow_node.monitor.form.guide": "Certimate will send a HEAD request to the target address to obtain the certificate. Please ensure that the address is accessible through HTTPS protocol.",
@@ -168,7 +165,6 @@
   "workflow_node.monitor.form.request_path.placeholder": "Please enter request path",
 
   "workflow_node.deploy.label": "Deploy certificate",
-  "workflow_node.deploy.help": "Invoke the APIs of the service provider to deploy the SSL certificate.",
   "workflow_node.deploy.default_name": "Deployment",
   "workflow_node.deploy.form_anchor.parameters.tab": "Parameters",
   "workflow_node.deploy.form_anchor.deployment.tab": "Deployment",
@@ -1051,7 +1047,6 @@
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.off": "not skip",
 
   "workflow_node.notify.label": "Send notification",
-  "workflow_node.notify.help": "Invoke the APIs of the service provider to push message notifications.",
   "workflow_node.notify.default_name": "Notification",
   "workflow_node.notify.form_anchor.parameters.tab": "Parameters",
   "workflow_node.notify.form_anchor.channel.tab": "Channel",
@@ -1099,7 +1094,6 @@
   "workflow_node.notify.form.skip_on_all_prev_skipped.switch.off": "not skip",
 
   "workflow_node.delay.label": "Delay",
-  "workflow_node.delay.help": "Pause the execution, and wait for a certain amount of time.",
   "workflow_node.delay.default_name": "Delay",
   "workflow_node.delay.form_anchor.parameters.tab": "Parameters",
   "workflow_node.delay.form.wait.label": "Waiting time",
@@ -1107,7 +1101,6 @@
   "workflow_node.delay.form.wait.unit": "seconds",
 
   "workflow_node.condition.label": "Parallel/Conditional branch",
-  "workflow_node.condition.help": "When the specified conditions are met, enter the corresponding branch. The failure of a node in a certain branch does not affect the continuation of parallel branch execution.",
   "workflow_node.condition.default_name": "Parallel",
   "workflow_node.condition.default_name.template_certtest_on_expiring_soon": "If the certificate will be expiring soon ...",
   "workflow_node.condition.default_name.template_certtest_on_expired": "If the certificate has expired ...",
@@ -1142,13 +1135,11 @@
   "workflow_node.branch_block.form.expression.add_condition.button": "Add condition",
 
   "workflow_node.try_catch.label": "Execution result branch",
-  "workflow_node.try_catch.help": "Attempt to execute subsequent nodes, and when any node fails to execute, interrupt and enter the execution failure branch.",
   "workflow_node.try_catch.default_name": "Try to ...",
 
   "workflow_node.catch_block.label": "Execution failure branch",
   "workflow_node.catch_block.default_name": "On failed ...",
 
   "workflow_node.end.label": "End",
-  "workflow_node.end.help": "Suspend the workflow and exit. Usually the last node of a workflow.",
   "workflow_node.end.default_name": "End"
 }

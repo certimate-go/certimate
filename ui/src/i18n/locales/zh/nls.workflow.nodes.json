@@ -4,7 +4,6 @@
   "workflow_node.kind.logic": "逻辑",
 
   "workflow_node.start.label": "开始",
-  "workflow_node.start.help": "定义工作流启动的触发条件。一个工作流只能有一个开始节点。",
   "workflow_node.start.default_name": "开始",
   "workflow_node.start.form_anchor.parameters.tab": "参数设置",
   "workflow_node.start.form.trigger.label": "触发方式",
@@ -19,7 +18,6 @@
   "workflow_node.start.form.trigger_cron.guide": "如果你有多个工作流，建议将它们设置为在一天中的多个时间段运行，而非总是在相同的特定时间。也不要总是设置为每日零时，以免遭遇证书颁发机构的流量高峰。<br><br>参考链接：<br>1. <a href=\"https://letsencrypt.org/zh-cn/docs/rate-limits/\" target=\"_blank\">Let’s Encrypt 速率限制</a><br>2. <a href=\"https://letsencrypt.org/zh-cn/docs/faq/#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E7%9A%84-let-s-encrypt-acme-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%AF%E5%8A%A8%E6%97%B6%E9%97%B4%E5%BA%94%E5%BD%93%E9%9A%8F%E6%9C%BA\" target=\"_blank\">为什么我的 Let’s Encrypt (ACME) 客户端启动时间应当随机？</a>",
 
   "workflow_node.apply.label": "申请签发证书",
-  "workflow_node.apply.help": "从证书颁发机构申请签发 SSL 证书。",
   "workflow_node.apply.default_name": "申请",
   "workflow_node.apply.form_anchor.parameters.tab": "参数设置",
   "workflow_node.apply.form_anchor.challenge.tab": "验证质询",
@@ -128,7 +126,6 @@
   "workflow_node.apply.form.skip_before_expiry_days.tooltip": "注意不要超过颁发的证书最大有效期，否则证书可能永远不会续期。",
 
   "workflow_node.upload.label": "上传自有证书",
-  "workflow_node.upload.help": "上传用户已有的本地 SSL 证书。",
   "workflow_node.upload.default_name": "上传",
   "workflow_node.upload.form_anchor.parameters.tab": "参数设置",
   "workflow_node.upload.form.guide": "每次执行此节点时，都将重新读取文件内容。",
@@ -153,7 +150,6 @@
   "workflow_node.upload.form.private_key_url.placeholder": "请输入私钥文件下载 URL",
 
   "workflow_node.monitor.label": "监控网站证书",
-  "workflow_node.monitor.help": "通过 HTTPS 协议获取指定网站的 SSL 证书。",
   "workflow_node.monitor.default_name": "监控",
   "workflow_node.monitor.form_anchor.parameters.tab": "参数设置",
   "workflow_node.monitor.form.guide": "Certimate 将向目标地址发送一个 HEAD 请求来获取相应的域名证书，请确保该地址可通过 HTTPS 协议访问。",
@@ -168,7 +164,6 @@
   "workflow_node.monitor.form.request_path.placeholder": "请输入请求路径",
 
   "workflow_node.deploy.label": "部署证书到 ...",
-  "workflow_node.deploy.help": "调用服务提供商相关 API，将 SSL 证书部署到指定的目标。",
   "workflow_node.deploy.default_name": "部署",
   "workflow_node.deploy.form_anchor.parameters.tab": "参数设置",
   "workflow_node.deploy.form_anchor.deployment.tab": "部署设置",
@@ -1050,7 +1045,6 @@
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.off": "不跳过",
 
   "workflow_node.notify.label": "推送通知",
-  "workflow_node.notify.help": "调用服务提供商相关 API，将消息通知推送到指定的目标。",
   "workflow_node.notify.default_name": "通知",
   "workflow_node.notify.form_anchor.parameters.tab": "参数设置",
   "workflow_node.notify.form_anchor.channel.tab": "渠道设置",
@@ -1097,7 +1091,6 @@
   "workflow_node.notify.form.skip_on_all_prev_skipped.switch.off": "不跳过",
 
   "workflow_node.delay.label": "延迟等待",
-  "workflow_node.delay.help": "暂停执行工作流并等待一段时间。这在某些需要降低调用执行频率的场景很有用。",
   "workflow_node.delay.default_name": "延迟",
   "workflow_node.delay.form_anchor.parameters.tab": "参数设置",
   "workflow_node.delay.form.wait.label": "等待时间",
@@ -1105,7 +1098,6 @@
   "workflow_node.delay.form.wait.unit": "秒",
 
   "workflow_node.condition.label": "并行/条件分支",
-  "workflow_node.condition.help": "当满足指定的条件时，进入相应分支。某一分支中的节点执行失败不影响平行分支继续执行。",
   "workflow_node.condition.default_name": "并行",
   "workflow_node.condition.default_name.template_certtest_on_expiring_soon": "若网站证书即将过期…",
   "workflow_node.condition.default_name.template_certtest_on_expired": "若网站证书已过期…",
@@ -1140,13 +1132,11 @@
   "workflow_node.branch_block.form.expression.add_condition.button": "添加条件",
 
   "workflow_node.try_catch.label": "执行结果分支",
-  "workflow_node.try_catch.help": "尝试执行后续节点，当任一节点执行失败后，中断并进入执行失败分支。",
   "workflow_node.try_catch.default_name": "尝试执行…",
 
   "workflow_node.catch_block.label": "执行失败分支",
   "workflow_node.catch_block.default_name": "若执行失败…",
 
   "workflow_node.end.label": "结束",
-  "workflow_node.end.help": "中止工作流运行并退出。通常是一个工作流的最后一个节点。",
   "workflow_node.end.default_name": "结束"
 }

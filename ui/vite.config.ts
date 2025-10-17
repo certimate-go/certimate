@@ -56,6 +56,11 @@ export default defineConfig(({ mode }) => {
       reactPlugin({}),
       legacyPlugin({
         targets: ["defaults", "not IE 11"],
+        modernTargets: "chrome>=111, firefox>=113, safari>=15.4",
+        polyfills: true,
+        modernPolyfills: true,
+        renderLegacyChunks: false,
+        renderModernChunks: true,
       }),
       tailwindcssPlugin(),
       preserveFilesPlugin(["dist/.gitkeep"]),

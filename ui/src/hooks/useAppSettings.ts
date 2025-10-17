@@ -7,8 +7,14 @@ if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
 }
 
 type AppSettings = {
-  // 每页显示的默认条目数
+  /**
+   * 每页显示的默认条目数。
+   */
   defaultPerPage?: number;
+  /**
+   * 工作流默认布局。
+   */
+  defaultWorkflowLayout?: "horizontal" | "vertical";
 };
 
 export type UseAppSettingsReturns = {
@@ -26,6 +32,7 @@ const useAppSettings = (): UseAppSettingsReturns => {
     defaultValue: {},
   });
   state.defaultPerPage ??= 15;
+  state.defaultWorkflowLayout ??= "vertical";
 
   const resetState = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);

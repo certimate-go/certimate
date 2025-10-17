@@ -17,7 +17,6 @@ export const BizDeployNodeRegistry: NodeRegistry = {
   kind: NodeKindType.Business,
 
   meta: {
-    helpText: getI18n().t("workflow_node.deploy.help"),
     labelText: getI18n().t("workflow_node.deploy.label"),
 
     icon: IconPackage,

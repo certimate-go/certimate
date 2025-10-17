@@ -51,7 +51,7 @@
   "workflow.new.templates.template.certtest.title": "Monitoring template",
   "workflow.new.templates.template.certtest.description": "A monitoring operating procedure that includes monitoring, and notification steps.",
   "workflow.new.templates.default_name": "Untitled workflow",
-  "workflow.new.templates.default_description": "Created at {{date}}",
+  "workflow.new.templates.default_description": "",
 
   "workflow.detail.baseinfo.name.placeholder": "Please enter workflow name",
   "workflow.detail.baseinfo.description.placeholder": "Please enter workflow description",

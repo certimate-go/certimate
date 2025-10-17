@@ -10,7 +10,7 @@ import {
   useWatchFormValueIn,
 } from "@flowgram.ai/fixed-layout-editor";
 import { IconCopy, IconDotsVertical, IconGripVertical, IconLabel, IconX } from "@tabler/icons-react";
-import { Button, type ButtonProps, Card, Dropdown, Input, type InputRef, Popover, Tooltip, theme } from "antd";
+import { Button, type ButtonProps, Card, Dropdown, Input, type InputRef, Popover, theme } from "antd";
 
 import { mergeCls } from "@/utils/css";
 
@@ -337,13 +337,7 @@ export const BaseNode = ({ className, style, children, description }: BaseNodePr
             children
           ) : (
             <div className={mergeCls("flex items-center gap-1 overflow-hidden p-3", inputVisible ? "invisible" : "visible")}>
-              {nodeRegistry.meta?.helpText == null ? (
-                renderNodeIcon()
-              ) : (
-                <Tooltip title={<span dangerouslySetInnerHTML={{ __html: nodeRegistry.meta.helpText }}></span>} mouseEnterDelay={1}>
-                  <div className="cursor-help">{renderNodeIcon()}</div>
-                </Tooltip>
-              )}
+              {renderNodeIcon()}
               <div className="flex-1 overflow-hidden">
                 <div className="truncate">
                   <Field<string> name="name">{({ field: { value } }) => <>{value || "\u00A0"}</>}</Field>
