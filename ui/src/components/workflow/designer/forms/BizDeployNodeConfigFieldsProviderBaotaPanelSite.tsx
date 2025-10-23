@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
 import Show from "@/components/Show";
+import Tips from "@/components/Tips";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -28,6 +29,10 @@ const BizDeployNodeConfigFieldsProviderBaotaPanelSite = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.baotapanel_site.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "siteType"]}
         initialValue={initialValues.siteType}

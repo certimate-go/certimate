@@ -3,13 +3,13 @@ package powerdns
 import (
 	"crypto/tls"
 	"errors"
-	"net/http"
 	"net/url"
 	"time"
 
 	"github.com/go-acme/lego/v4/providers/dns/pdns"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 )
 
 type ChallengeProviderConfig struct {
@@ -30,12 +30,9 @@ func NewChallengeProvider(config *ChallengeProviderConfig) (core.ACMEChallenger,
 	providerConfig.Host = serverUrl
 	providerConfig.APIKey = config.ApiKey
 	if config.AllowInsecureConnections {
-		providerConfig.HTTPClient.Transport = &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-		}
+		transport := xhttp.NewDefaultTransport()
+		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		providerConfig.HTTPClient.Transport = transport
 	}
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second

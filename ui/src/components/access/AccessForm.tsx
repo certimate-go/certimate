@@ -23,7 +23,9 @@ import AccessConfigFieldsProviderAzure from "./forms/AccessConfigFieldsProviderA
 import AccessConfigFieldsProviderBaiduCloud from "./forms/AccessConfigFieldsProviderBaiduCloud";
 import AccessConfigFieldsProviderBaishan from "./forms/AccessConfigFieldsProviderBaishan";
 import AccessConfigFieldsProviderBaotaPanel from "./forms/AccessConfigFieldsProviderBaotaPanel";
+import AccessConfigFieldsProviderBaotaPanelGo from "./forms/AccessConfigFieldsProviderBaotaPanelGo";
 import AccessConfigFieldsProviderBaotaWAF from "./forms/AccessConfigFieldsProviderBaotaWAF";
+import AccessConfigFieldsProviderBookMyName from "./forms/AccessConfigFieldsProviderBookMyName";
 import AccessConfigFieldsProviderBunny from "./forms/AccessConfigFieldsProviderBunny";
 import AccessConfigFieldsProviderBytePlus from "./forms/AccessConfigFieldsProviderBytePlus";
 import AccessConfigFieldsProviderCacheFly from "./forms/AccessConfigFieldsProviderCacheFly";
@@ -41,9 +43,9 @@ import AccessConfigFieldsProviderDNSLA from "./forms/AccessConfigFieldsProviderD
 import AccessConfigFieldsProviderDogeCloud from "./forms/AccessConfigFieldsProviderDogeCloud";
 import AccessConfigFieldsProviderDuckDNS from "./forms/AccessConfigFieldsProviderDuckDNS";
 import AccessConfigFieldsProviderDynv6 from "./forms/AccessConfigFieldsProviderDynv6";
-import AccessConfigFieldsProviderEdgio from "./forms/AccessConfigFieldsProviderEdgio";
 import AccessConfigFieldsProviderEmail from "./forms/AccessConfigFieldsProviderEmail";
 import AccessConfigFieldsProviderFlexCDN from "./forms/AccessConfigFieldsProviderFlexCDN";
+import AccessConfigFieldsProviderGandinet from "./forms/AccessConfigFieldsProviderGandinet";
 import AccessConfigFieldsProviderGcore from "./forms/AccessConfigFieldsProviderGcore";
 import AccessConfigFieldsProviderGlobalSignAtlas from "./forms/AccessConfigFieldsProviderGlobalSignAtlas";
 import AccessConfigFieldsProviderGname from "./forms/AccessConfigFieldsProviderGname";
@@ -51,12 +53,15 @@ import AccessConfigFieldsProviderGoDaddy from "./forms/AccessConfigFieldsProvide
 import AccessConfigFieldsProviderGoEdge from "./forms/AccessConfigFieldsProviderGoEdge";
 import AccessConfigFieldsProviderGoogleTrustServices from "./forms/AccessConfigFieldsProviderGoogleTrustServices";
 import AccessConfigFieldsProviderHetzner from "./forms/AccessConfigFieldsProviderHetzner";
+import AccessConfigFieldsProviderHostinger from "./forms/AccessConfigFieldsProviderHostinger";
 import AccessConfigFieldsProviderHuaweiCloud from "./forms/AccessConfigFieldsProviderHuaweiCloud";
+import AccessConfigFieldsProviderIONOS from "./forms/AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./forms/AccessConfigFieldsProviderJDCloud";
 import AccessConfigFieldsProviderKong from "./forms/AccessConfigFieldsProviderKong";
 import AccessConfigFieldsProviderKubernetes from "./forms/AccessConfigFieldsProviderKubernetes";
 import AccessConfigFieldsProviderLarkBot from "./forms/AccessConfigFieldsProviderLarkBot";
 import AccessConfigFieldsProviderLeCDN from "./forms/AccessConfigFieldsProviderLeCDN";
+import AccessConfigFieldsProviderLinode from "./forms/AccessConfigFieldsProviderLinode";
 import AccessConfigFieldsProviderMattermost from "./forms/AccessConfigFieldsProviderMattermost";
 import AccessConfigFieldsProviderNamecheap from "./forms/AccessConfigFieldsProviderNamecheap";
 import AccessConfigFieldsProviderNameDotCom from "./forms/AccessConfigFieldsProviderNameDotCom";
@@ -70,12 +75,14 @@ import AccessConfigFieldsProviderProxmoxVE from "./forms/AccessConfigFieldsProvi
 import AccessConfigFieldsProviderQiniu from "./forms/AccessConfigFieldsProviderQiniu";
 import AccessConfigFieldsProviderRainYun from "./forms/AccessConfigFieldsProviderRainYun";
 import AccessConfigFieldsProviderRatPanel from "./forms/AccessConfigFieldsProviderRatPanel";
+import AccessConfigFieldsProviderRFC2136 from "./forms/AccessConfigFieldsProviderRFC2136";
 import AccessConfigFieldsProviderSafeLine from "./forms/AccessConfigFieldsProviderSafeLine";
 import AccessConfigFieldsProviderSectigo from "./forms/AccessConfigFieldsProviderSectigo";
 import AccessConfigFieldsProviderSlackBot from "./forms/AccessConfigFieldsProviderSlackBot";
 import AccessConfigFieldsProviderSpaceship from "./forms/AccessConfigFieldsProviderSpaceship";
 import AccessConfigFieldsProviderSSH from "./forms/AccessConfigFieldsProviderSSH";
 import AccessConfigFieldsProviderSSLCom from "./forms/AccessConfigFieldsProviderSSLCom";
+import AccessConfigFieldsProviderTechnitiumDNS from "./forms/AccessConfigFieldsProviderTechnitiumDNS";
 import AccessConfigFieldsProviderTelegramBot from "./forms/AccessConfigFieldsProviderTelegramBot";
 import AccessConfigFieldsProviderTencentCloud from "./forms/AccessConfigFieldsProviderTencentCloud";
 import AccessConfigFieldsProviderUCloud from "./forms/AccessConfigFieldsProviderUCloud";
@@ -169,8 +176,14 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       case ACCESS_PROVIDERS.BAOTAPANEL: {
         return <AccessConfigFieldsProviderBaotaPanel />;
       }
+      case ACCESS_PROVIDERS.BAOTAPANELGO: {
+        return <AccessConfigFieldsProviderBaotaPanelGo />;
+      }
       case ACCESS_PROVIDERS.BAOTAWAF: {
         return <AccessConfigFieldsProviderBaotaWAF />;
+      }
+      case ACCESS_PROVIDERS.BOOKMYNAME: {
+        return <AccessConfigFieldsProviderBookMyName />;
       }
       case ACCESS_PROVIDERS.BUNNY: {
         return <AccessConfigFieldsProviderBunny />;
@@ -223,14 +236,14 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       case ACCESS_PROVIDERS.DYNV6: {
         return <AccessConfigFieldsProviderDynv6 />;
       }
-      case ACCESS_PROVIDERS.EDGIO: {
-        return <AccessConfigFieldsProviderEdgio />;
-      }
       case ACCESS_PROVIDERS.EMAIL: {
         return <AccessConfigFieldsProviderEmail />;
       }
       case ACCESS_PROVIDERS.FLEXCDN: {
         return <AccessConfigFieldsProviderFlexCDN />;
+      }
+      case ACCESS_PROVIDERS.GANDINET: {
+        return <AccessConfigFieldsProviderGandinet />;
       }
       case ACCESS_PROVIDERS.GCORE: {
         return <AccessConfigFieldsProviderGcore />;
@@ -253,8 +266,14 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       case ACCESS_PROVIDERS.HETZNER: {
         return <AccessConfigFieldsProviderHetzner />;
       }
+      case ACCESS_PROVIDERS.HOSTINGER: {
+        return <AccessConfigFieldsProviderHostinger />;
+      }
       case ACCESS_PROVIDERS.HUAWEICLOUD: {
         return <AccessConfigFieldsProviderHuaweiCloud />;
+      }
+      case ACCESS_PROVIDERS.IONOS: {
+        return <AccessConfigFieldsProviderIONOS />;
       }
       case ACCESS_PROVIDERS.JDCLOUD: {
         return <AccessConfigFieldsProviderJDCloud />;
@@ -270,6 +289,9 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       }
       case ACCESS_PROVIDERS.LECDN: {
         return <AccessConfigFieldsProviderLeCDN />;
+      }
+      case ACCESS_PROVIDERS.LINODE: {
+        return <AccessConfigFieldsProviderLinode />;
       }
       case ACCESS_PROVIDERS.MATTERMOST: {
         return <AccessConfigFieldsProviderMattermost />;
@@ -310,6 +332,9 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       case ACCESS_PROVIDERS.RATPANEL: {
         return <AccessConfigFieldsProviderRatPanel />;
       }
+      case ACCESS_PROVIDERS.RFC2136: {
+        return <AccessConfigFieldsProviderRFC2136 />;
+      }
       case ACCESS_PROVIDERS.SAFELINE: {
         return <AccessConfigFieldsProviderSafeLine />;
       }
@@ -322,14 +347,17 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       case ACCESS_PROVIDERS.SPACESHIP: {
         return <AccessConfigFieldsProviderSpaceship />;
       }
+      case ACCESS_PROVIDERS.SSLCOM: {
+        return <AccessConfigFieldsProviderSSLCom />;
+      }
       case ACCESS_PROVIDERS.SSH: {
         return <AccessConfigFieldsProviderSSH disabled={disabled} />;
       }
+      case ACCESS_PROVIDERS.TECHNITIUMDNS: {
+        return <AccessConfigFieldsProviderTechnitiumDNS />;
+      }
       case ACCESS_PROVIDERS.TELEGRAMBOT: {
         return <AccessConfigFieldsProviderTelegramBot />;
-      }
-      case ACCESS_PROVIDERS.SSLCOM: {
-        return <AccessConfigFieldsProviderSSLCom />;
       }
       case ACCESS_PROVIDERS.TENCENTCLOUD: {
         return <AccessConfigFieldsProviderTencentCloud />;

@@ -18,7 +18,7 @@ import (
 )
 
 type SSLDeployerProviderConfig struct {
-	// Gcore API Token。
+	// G-Core API Token。
 	ApiToken string `json:"apiToken"`
 	// CDN 资源 ID。
 	ResourceId int64 `json:"resourceId"`

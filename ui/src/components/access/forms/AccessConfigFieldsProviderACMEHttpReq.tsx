@@ -36,8 +36,8 @@ const AccessConfigFormFieldsProviderACMEHttpReq = () => {
       >
         <Select
           options={[
-            { value: "", label: "(default)" },
-            { value: "RAW", label: "RAW" },
+            { label: "(default)", value: "" },
+            { label: "RAW", value: "RAW" },
           ]}
           placeholder={t("access.form.acmehttpreq_mode.placeholder")}
         />

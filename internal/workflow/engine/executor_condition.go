@@ -15,7 +15,7 @@ type conditionNodeExecutor struct {
 func (ne *conditionNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
 	var engine *workflowEngine
 	if we, ok := execCtx.engine.(*workflowEngine); !ok {
-		panic("impossible!")
+		panic("unreachable")
 	} else {
 		engine = we
 	}
@@ -89,7 +89,7 @@ func (ne *branchBlockNodeExecutor) Execute(execCtx *NodeExecutionContext) (*Node
 	}
 
 	if engine, ok := execCtx.engine.(*workflowEngine); !ok {
-		panic("impossible!")
+		panic("unreachable")
 	} else {
 		if err := engine.executeBlocks(execCtx.Clone(), execCtx.Node.Blocks); err != nil {
 			return execRes, fmt.Errorf("%w: %w", ErrBlocksException, err)

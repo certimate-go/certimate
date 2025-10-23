@@ -3,6 +3,8 @@ import { Form, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import Tips from "@/components/Tips";
+
 import { useFormNestedFieldsContext } from "./_context";
 
 const BizDeployNodeConfigFieldsProviderBaotaPanelConsole = () => {
@@ -17,6 +19,10 @@ const BizDeployNodeConfigFieldsProviderBaotaPanelConsole = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.baotapanel_console.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "autoRestart"]}
         initialValue={initialValues.autoRestart}

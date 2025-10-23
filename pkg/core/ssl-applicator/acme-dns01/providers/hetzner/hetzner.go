@@ -1,4 +1,4 @@
-package namedotcom
+package hetzner
 
 import (
 	"errors"
@@ -21,7 +21,7 @@ func NewChallengeProvider(config *ChallengeProviderConfig) (core.ACMEChallenger,
 	}
 
 	providerConfig := hetzner.NewDefaultConfig()
-	providerConfig.APIKey = config.ApiToken
+	providerConfig.APIToken = config.ApiToken
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}

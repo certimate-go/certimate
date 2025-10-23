@@ -6,7 +6,7 @@ import (
 	"github.com/go-acme/lego/v4/challenge"
 
 	"github.com/certimate-go/certimate/internal/domain"
-	hetzner "github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/hetzner"
+	"github.com/certimate-go/certimate/pkg/core/ssl-applicator/acme-dns01/providers/hetzner"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

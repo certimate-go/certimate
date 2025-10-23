@@ -87,19 +87,30 @@ type AccessConfigForBaotaPanel struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForBaotaPanelGo struct {
+	ServerUrl                string `json:"serverUrl"`
+	ApiKey                   string `json:"apiKey"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForBaotaWAF struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForBytePlus struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
+type AccessConfigForBookMyName struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type AccessConfigForBunny struct {
 	ApiKey string `json:"apiKey"`
+}
+
+type AccessConfigForBytePlus struct {
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
 }
 
 type AccessConfigForCacheFly struct {
@@ -174,11 +185,6 @@ type AccessConfigForDynv6 struct {
 	HttpToken string `json:"httpToken"`
 }
 
-type AccessConfigForEdgio struct {
-	ClientId     string `json:"clientId"`
-	ClientSecret string `json:"clientSecret"`
-}
-
 type AccessConfigForEmail struct {
 	SmtpHost        string `json:"smtpHost"`
 	SmtpPort        int32  `json:"smtpPort"`
@@ -198,8 +204,21 @@ type AccessConfigForFlexCDN struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForGandinet struct {
+	PersonalAccessToken string `json:"personalAccessToken"`
+}
+
 type AccessConfigForGcore struct {
 	ApiToken string `json:"apiToken"`
+}
+
+type AccessConfigForGlobalSectigo struct {
+	AccessConfigForACMEExternalAccountBinding
+	ValidationType string `json:"validationType"`
+}
+
+type AccessConfigForGlobalSignAtlas struct {
+	AccessConfigForACMEExternalAccountBinding
 }
 
 type AccessConfigForGname struct {
@@ -220,10 +239,6 @@ type AccessConfigForGoEdge struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForGlobalSignAtlas struct {
-	AccessConfigForACMEExternalAccountBinding
-}
-
 type AccessConfigForGoogleTrustServices struct {
 	AccessConfigForACMEExternalAccountBinding
 }
@@ -232,10 +247,19 @@ type AccessConfigForHetzner struct {
 	ApiToken string `json:"apiToken"`
 }
 
+type AccessConfigForHostinger struct {
+	ApiToken string `json:"apiToken"`
+}
+
 type AccessConfigForHuaweiCloud struct {
 	AccessKeyId         string `json:"accessKeyId"`
 	SecretAccessKey     string `json:"secretAccessKey"`
 	EnterpriseProjectId string `json:"enterpriseProjectId,omitempty"`
+}
+
+type AccessConfigForIONOS struct {
+	ApiKeyPublicPrefix string `json:"apiKeyPublicPrefix"`
+	ApiKeySecret       string `json:"apiKeySecret"`
 }
 
 type AccessConfigForJDCloud struct {
@@ -264,6 +288,10 @@ type AccessConfigForLeCDN struct {
 	Username                 string `json:"username"`
 	Password                 string `json:"password"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
+type AccessConfigForLinode struct {
+	AccessToken string `json:"accessToken"`
 }
 
 type AccessConfigForMattermost struct {
@@ -335,15 +363,18 @@ type AccessConfigForRatPanel struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForRFC2136 struct {
+	Host          string `json:"host"`
+	Port          int32  `json:"port"`
+	TsigAlgorithm string `json:"tsigAlgorithm,omitempty"`
+	TsigKey       string `json:"tsigKey,omitempty"`
+	TsigSecret    string `json:"tsigSecret,omitempty"`
+}
+
 type AccessConfigForSafeLine struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForGlobalSectigo struct {
-	AccessConfigForACMEExternalAccountBinding
-	ValidationType string `json:"validationType"`
 }
 
 type AccessConfigForSlackBot struct {
@@ -377,6 +408,12 @@ type AccessConfigForSSH struct {
 
 type AccessConfigForSSLCom struct {
 	AccessConfigForACMEExternalAccountBinding
+}
+
+type AccessConfigForTechnitiumDNS struct {
+	ServerUrl                string `json:"serverUrl"`
+	ApiToken                 string `json:"apiToken"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
 type AccessConfigForTelegramBot struct {

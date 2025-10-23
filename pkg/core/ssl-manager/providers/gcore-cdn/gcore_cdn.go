@@ -15,7 +15,7 @@ import (
 )
 
 type SSLManagerProviderConfig struct {
-	// Gcore API Token。
+	// G-Core API Token。
 	ApiToken string `json:"apiToken"`
 }
 

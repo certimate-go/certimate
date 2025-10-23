@@ -334,7 +334,7 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 		if moutput.Response != nil {
 			return moutput.Response, nil
 		} else {
-			panic("impossible!")
+			panic("unreachable")
 		}
 	}
 

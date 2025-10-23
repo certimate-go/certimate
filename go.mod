@@ -8,7 +8,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.19.1
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.13.0
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates v1.4.0
-	github.com/Edgio/edgio-api v0.0.0-workspace
 	github.com/G-Core/gcorelabscdn-go v1.0.34
 	github.com/alibabacloud-go/alb-20200616/v2 v2.2.9
 	github.com/alibabacloud-go/apig-20240327/v4 v4.4.0
@@ -121,6 +120,7 @@ require (
 	github.com/kong/semver/v4 v4.0.1 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/linode/linodego v1.60.0 // indirect
 	github.com/magefile/mage v1.14.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -231,8 +231,6 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.39.1 // indirect
 )
-
-replace github.com/Edgio/edgio-api v0.0.0-workspace => ./pkg/forks/github.com/Edgio/edgio-api@v0.0.0-workspace
 
 replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0 => ./pkg/forks/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.0
 

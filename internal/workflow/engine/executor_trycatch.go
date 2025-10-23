@@ -15,7 +15,7 @@ type tryCatchNodeExecutor struct {
 func (ne *tryCatchNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
 	var engine *workflowEngine
 	if we, ok := execCtx.engine.(*workflowEngine); !ok {
-		panic("impossible!")
+		panic("unreachable")
 	} else {
 		engine = we
 	}
@@ -81,7 +81,7 @@ type tryBlockNodeExecutor struct {
 func (ne *tryBlockNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
 	var engine *workflowEngine
 	if we, ok := execCtx.engine.(*workflowEngine); !ok {
-		panic("impossible!")
+		panic("unreachable")
 	} else {
 		engine = we
 	}
@@ -110,7 +110,7 @@ func (ne *catchBlockNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeE
 
 	var engine *workflowEngine
 	if we, ok := execCtx.engine.(*workflowEngine); !ok {
-		panic("impossible!")
+		panic("unreachable")
 	} else {
 		engine = we
 	}
