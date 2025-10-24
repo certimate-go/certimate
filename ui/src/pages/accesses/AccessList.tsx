@@ -6,6 +6,7 @@ import { IconCirclePlus, IconCopy, IconDots, IconEdit, IconFingerprint, IconPlus
 import { useMount, useRequest } from "ahooks";
 import { App, Avatar, Button, Dropdown, Input, Skeleton, Table, type TableProps, Tabs, Typography, theme } from "antd";
 import dayjs from "dayjs";
+import { produce } from "immer";
 import { ClientResponseError } from "pocketbase";
 
 import AccessEditDrawer, { type AccessEditDrawerProps } from "@/components/access/AccessEditDrawer";
@@ -292,7 +293,17 @@ const AccessList = () => {
   };
 
   const handleRecordDuplicateClick = (access: AccessModel) => {
-    createDrawer.open({ data: { ...access, id: void 0, name: `${access.name}-copy` } });
+    const copier = (data: AccessModel) =>
+      produce(data, (draft) => {
+        draft.id = (void 0)!;
+        draft.created = (void 0)!;
+        draft.updated = (void 0)!;
+        draft.name = `${data.name}-copy`;
+        return draft;
+      });
+    getAccess(access.id).then((data) => {
+      createDrawer.open({ data: copier(data), loading: true });
+    });
   };
 
   const handleRecordDeleteClick = async (access: AccessModel) => {

@@ -88,7 +88,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 	}
 
 	// 设置自定义域名
-	// REF: https://www.volcengine.com/docs/6559/1250189
+	// REF: https://www.volcengine.com/docs/6349/764779
 	putBucketCustomDomainReq := &tos.PutBucketCustomDomainInput{
 		Bucket: d.config.Bucket,
 		Rule: tos.CustomDomainRule{

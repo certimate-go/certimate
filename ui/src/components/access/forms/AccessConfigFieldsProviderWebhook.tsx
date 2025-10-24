@@ -177,7 +177,7 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           [parentNamePath, "data"],
           JSON.stringify(
             {
-              text: "${SUBJECT}",
+              title: "${SUBJECT}",
               desp: "${MESSAGE}",
             },
             null,
