@@ -106,7 +106,7 @@ func (d *SSLDeployerProvider) Deploy(ctx context.Context, certPEM string, privke
 }
 
 func createSDKClient(accessKeyId, accessKeySecret, region string) (*tos.ClientV2, error) {
-	endpoint := fmt.Sprintf("tos-%s.ivolces.com", region)
+	endpoint := fmt.Sprintf("tos-%s.volces.com", region)
 
 	client, err := tos.NewClientV2(
 		endpoint,
