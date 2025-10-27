@@ -144,6 +144,7 @@
   "provider.slackbot": "Slack 机器人",
   "provider.spaceship": "Spaceship",
   "provider.ssh": "远程主机（SSH）",
+  "provider.dockerhost": "Docker 宿主机",
   "provider.sslcom": "SSL.com",
   "provider.technitiumdns": "Technitium DNS",
   "provider.telegrambot": "Telegram 机器人",
@@ -211,5 +212,6 @@
   "provider.text.default_group": "默认",
   "provider.text.available_group": "可用（已添加授权凭据）",
   "provider.text.unavailable_group": "不可用（未添加授权凭据）",
-  "provider.text.unavailable_divider": "以下提供商不可用（即未添加过授权凭据）"
+  "provider.text.unavailable_divider": "以下提供商不可用（即未添加过授权凭据）",
+  "provider.badge.unsupported": "环境不支持"
 }

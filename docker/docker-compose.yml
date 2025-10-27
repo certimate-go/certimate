@@ -10,3 +10,5 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - ./data:/app/pb_data
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

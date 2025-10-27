@@ -144,6 +144,7 @@
   "provider.slackbot": "Slack Bot",
   "provider.spaceship": "Spaceship",
   "provider.ssh": "Remote host (SSH)",
+  "provider.dockerhost": "Docker host",
   "provider.sslcom": "SSL.com",
   "provider.technitiumdns": "Technitium DNS",
   "provider.telegrambot": "Telegram Bot",
@@ -212,5 +213,6 @@
   "provider.text.default_group": "Default",
   "provider.text.available_group": "Available (with added credentials)",
   "provider.text.unavailable_group": "Unavailable (without added credentials)",
-  "provider.text.unavailable_divider": "The following providers are not available (without added credentials)"
+  "provider.text.unavailable_divider": "The following providers are not available (without added credentials)",
+  "provider.badge.unsupported": "Unsupported"
 }

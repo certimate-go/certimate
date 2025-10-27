@@ -12,6 +12,7 @@ import (
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/handlers"
 	"github.com/certimate-go/certimate/internal/statistics"
+	"github.com/certimate-go/certimate/internal/system"
 	"github.com/certimate-go/certimate/internal/workflow"
 )
 
@@ -20,6 +21,7 @@ var (
 	workflowSvc    *workflow.WorkflowService
 	statisticsSvc  *statistics.StatisticsService
 	notifySvc      *notify.NotifyService
+	systemSvc      *system.EnvironmentService
 )
 
 func Register(router *router.Router[*core.RequestEvent]) {
@@ -34,12 +36,14 @@ func Register(router *router.Router[*core.RequestEvent]) {
 	workflowSvc = workflow.NewWorkflowService(workflowRepo, workflowRunRepo, settingsRepo)
 	statisticsSvc = statistics.NewStatisticsService(statisticsRepo)
 	notifySvc = notify.NewNotifyService(accessRepo)
+	systemSvc = system.NewEnvironmentService(nil)
 
 	group := router.Group("/api")
 	group.Bind(apis.RequireSuperuserAuth())
 	handlers.NewCertificateHandler(group, certificateSvc)
 	handlers.NewWorkflowHandler(group, workflowSvc)
 	handlers.NewStatisticsHandler(group, statisticsSvc)
+	handlers.NewSystemHandler(group, systemSvc)
 	handlers.NewNotifyHandler(group, notifySvc)
 }
 

@@ -43,6 +43,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   DIGITALOCEAN: "digitalocean",
   DINGTALKBOT: "dingtalkbot",
   DISCORDBOT: "discordbot",
+  DOCKERHOST: "dockerhost",
   DNSLA: "dnsla",
   DOGECLOUD: "dogecloud",
   DUCKDNS: "duckdns",
@@ -118,6 +119,7 @@ export type AccessUsageType = (typeof ACCESS_USAGES)[keyof typeof ACCESS_USAGES]
 
 export interface AccessProvider extends BaseProvider<AccessProviderType> {
   usages: AccessUsageType[];
+  disabled?: boolean;
 }
 
 export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProvider> = new Map(
@@ -129,6 +131,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
     [
       [ACCESS_PROVIDERS.LOCAL, "provider.local", "/imgs/providers/local.svg", [ACCESS_USAGES.HOSTING], "builtin"],
       [ACCESS_PROVIDERS.SSH, "provider.ssh", "/imgs/providers/ssh.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.DOCKERHOST, "provider.dockerhost", "/imgs/providers/docker.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WEBHOOK, "provider.webhook", "/imgs/providers/webhook.svg", [ACCESS_USAGES.HOSTING, ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.KUBERNETES, "provider.kubernetes", "/imgs/providers/kubernetes.svg", [ACCESS_USAGES.HOSTING]],
 
@@ -232,6 +235,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
     },
   ])
 );
+accessProvidersMap.get(ACCESS_PROVIDERS.DOCKERHOST)!.disabled = true;
 // #endregion
 
 // #region CAProvider

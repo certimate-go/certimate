@@ -46,6 +46,7 @@ export const useSelectDataSource = <T extends Provider>({
       return accesses.some((access) => {
         if ("builtin" in provider && provider.builtin) return true;
         if ("provider" in provider) return access.provider === provider.provider;
+        if ("disabled" in provider && provider.disabled) return false;
         return access.provider === provider.type;
       });
     });
@@ -133,6 +134,7 @@ export const usePickerDataSource = <T extends Provider>({
       return accesses.some((access) => {
         if ("builtin" in provider && provider.builtin) return true;
         if ("provider" in provider) return access.provider === provider.provider;
+        if ("disabled" in provider && provider.disabled) return false;
         return access.provider === provider.type;
       });
     });
