@@ -41,7 +41,7 @@ const AccessConfigFieldsProviderDockerHost = ({ disabled }: { disabled?: boolean
     }
   }, [formInst, parentNamePath, resolvedHost]);
 
-  return <AccessConfigFieldsProviderSSH disabled={disabled} hostDisabled />;
+  return <AccessConfigFieldsProviderSSH disabled={disabled} hideJumpServers hostDisabled />;
 };
 
 export default AccessConfigFieldsProviderDockerHost;

@@ -15,7 +15,15 @@ const AUTH_METHOD_NONE = "none" as const;
 const AUTH_METHOD_PASSWORD = "password" as const;
 const AUTH_METHOD_KEY = "key" as const;
 
-const AccessConfigFormFieldsProviderSSH = ({ disabled, hostDisabled }: { disabled?: boolean; hostDisabled?: boolean }) => {
+const AccessConfigFormFieldsProviderSSH = ({
+  disabled,
+  hostDisabled,
+  hideJumpServers,
+}: {
+  disabled?: boolean;
+  hostDisabled?: boolean;
+  hideJumpServers?: boolean;
+}) => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -83,7 +91,8 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled, hostDisabled }: { disable
         </Form.Item>
       </Show>
 
-      <Form.Item label={t("access.form.ssh_jump_servers.label")}>
+      {!hideJumpServers && (
+        <Form.Item label={t("access.form.ssh_jump_servers.label")}>
         <Form.List name={[parentNamePath, "jumpServers"]}>
           {(fields, { add, remove, move }) => (
             <div className="flex flex-col gap-2">
@@ -215,7 +224,8 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled, hostDisabled }: { disable
           )}
         </Form.List>
         <Form.Item name={[parentNamePath, "jumpServers"]} noStyle rules={[formRule]} />
-      </Form.Item>
+        </Form.Item>
+      )}
     </>
   );
 };

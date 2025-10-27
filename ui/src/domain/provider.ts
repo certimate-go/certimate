@@ -434,6 +434,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
   NOTICE: If you add new constant, please keep ASCII order.
  */
 export const ACME_HTTP01_PROVIDERS = Object.freeze({
+  DOCKERHOST: `${ACCESS_PROVIDERS.DOCKERHOST}`,
   LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
   SSH: `${ACCESS_PROVIDERS.SSH}`,
 } as const);
@@ -449,6 +450,7 @@ export const acmeHttp01ProvidersMap: Map<ACMEHttp01Provider["type"] | string, AC
    */
   (
     [
+      [ACME_HTTP01_PROVIDERS.DOCKERHOST, "provider.dockerhost"],
       [ACME_HTTP01_PROVIDERS.LOCAL, "provider.local", "builtin"],
       [ACME_HTTP01_PROVIDERS.SSH, "provider.ssh"],
     ] satisfies Array<[ACMEHttp01ProviderType, string, "builtin"] | [ACMEHttp01ProviderType, string]>
