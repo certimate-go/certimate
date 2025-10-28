@@ -39,6 +39,7 @@ const (
 	AccessProviderTypeDigitalOcean        = AccessProviderType("digitalocean")
 	AccessProviderTypeDingTalkBot         = AccessProviderType("dingtalkbot")
 	AccessProviderTypeDiscordBot          = AccessProviderType("discordbot")
+	AccessProviderTypeDockerHost          = AccessProviderType("dockerhost")
 	AccessProviderTypeDNSLA               = AccessProviderType("dnsla")
 	AccessProviderTypeDogeCloud           = AccessProviderType("dogecloud")
 	AccessProviderTypeDuckDNS             = AccessProviderType("duckdns")
@@ -205,8 +206,9 @@ ACME HTTP-01 提供商常量值。
 NOTICE: If you add new constant, please keep ASCII order.
 */
 const (
-	ACMEHttp01ProviderTypeLocal = ACMEHttp01ProviderType(AccessProviderTypeLocal)
-	ACMEHttp01ProviderTypeSSH   = ACMEHttp01ProviderType(AccessProviderTypeSSH)
+	ACMEHttp01ProviderTypeLocal      = ACMEHttp01ProviderType(AccessProviderTypeLocal)
+	ACMEHttp01ProviderTypeSSH        = ACMEHttp01ProviderType(AccessProviderTypeSSH)
+	ACMEHttp01ProviderTypeDockerHost = ACMEHttp01ProviderType(AccessProviderTypeDockerHost)
 )
 
 type DeploymentProviderType string
@@ -290,6 +292,7 @@ const (
 	DeploymentProviderTypeRatPanelSite          = DeploymentProviderType(AccessProviderTypeRatPanel + "-site")
 	DeploymentProviderTypeSafeLine              = DeploymentProviderType(AccessProviderTypeSafeLine)
 	DeploymentProviderTypeSSH                   = DeploymentProviderType(AccessProviderTypeSSH)
+	DeploymentProviderTypeDockerHost            = DeploymentProviderType(AccessProviderTypeDockerHost)
 	DeploymentProviderTypeTencentCloudCDN       = DeploymentProviderType(AccessProviderTypeTencentCloud + "-cdn")
 	DeploymentProviderTypeTencentCloudCLB       = DeploymentProviderType(AccessProviderTypeTencentCloud + "-clb")
 	DeploymentProviderTypeTencentCloudCOS       = DeploymentProviderType(AccessProviderTypeTencentCloud + "-cos")

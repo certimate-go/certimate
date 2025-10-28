@@ -4,7 +4,13 @@ import { useMount } from "ahooks";
 import { Avatar, Card, Empty, Input, type InputRef, Tag, Tooltip, Typography } from "antd";
 
 import Show from "@/components/Show";
-import { ACCESS_USAGES, type AccessProvider, type AccessUsageType, accessProvidersMap } from "@/domain/provider";
+import {
+  ACCESS_PROVIDERS,
+  ACCESS_USAGES,
+  type AccessProvider,
+  type AccessUsageType,
+  accessProvidersMap,
+} from "@/domain/provider";
 import { mergeCls } from "@/utils/css";
 
 import { type SharedPickerProps, usePickerDataSource, usePickerWrapperCols } from "./_shared";
@@ -62,14 +68,20 @@ const AccessProviderPicker = ({
   });
 
   const renderOption = (provider: AccessProvider) => {
+    const shouldShowBadgeRow = showOptionTagAnyhow || provider.disabled;
+
     return (
       <div key={provider.type}>
         <Card
-          className={mergeCls("w-full overflow-hidden shadow", provider.builtin ? " cursor-not-allowed" : "", showOptionTagAnyhow ? "h-32" : "h-28")}
+          className={mergeCls(
+            "w-full overflow-hidden shadow",
+            provider.builtin || provider.disabled ? " cursor-not-allowed" : "",
+            shouldShowBadgeRow ? "h-32" : "h-28"
+          )}
           styles={{ body: { height: "100%", padding: "0.5rem 1rem" } }}
           hoverable
           onClick={() => {
-            if (provider.builtin) {
+            if (provider.builtin || provider.disabled) {
               return;
             }
 
@@ -81,13 +93,18 @@ const AccessProviderPicker = ({
               <Avatar className="bg-stone-100" icon={<img src={provider.icon} />} shape="square" size={32} />
             </div>
             <div className="w-full overflow-hidden text-center">
-              <div className={mergeCls("w-full truncate", { "mb-1": showOptionTagAnyhow })}>
+              <div className={mergeCls("w-full truncate", { "mb-1": shouldShowBadgeRow })}>
                 <Tooltip title={t(provider.name)} mouseEnterDelay={1}>
-                  <Typography.Text type={provider.builtin ? "secondary" : void 0}>{t(provider.name) || "\u00A0"}</Typography.Text>
+                  <Typography.Text type={provider.builtin || provider.disabled ? "secondary" : void 0}>
+                    {t(provider.name) || "\u00A0"}
+                  </Typography.Text>
                 </Tooltip>
               </div>
-              <Show when={showOptionTagAnyhow}>
+              <Show when={shouldShowBadgeRow}>
                 <div className="origin-top scale-80 whitespace-nowrap" style={{ marginInlineEnd: "-8px" }}>
+                  <Show when={provider.type === ACCESS_PROVIDERS.DOCKERHOST && provider.disabled}>
+                    <Tag color="default">{t("provider.badge.unsupported")}</Tag>
+                  </Show>
                   <Show when={showOptionTagForBuiltin && provider.builtin}>
                     <Tag>{t("access.props.provider.builtin")}</Tag>
                   </Show>

@@ -128,6 +128,9 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
       case CHALLENGE_TYPE_HTTP01:
         switch (fieldProvider) {
+          case ACME_HTTP01_PROVIDERS.DOCKERHOST: {
+            return BizApplyNodeConfigFieldsProviderSSH;
+          }
           case ACME_HTTP01_PROVIDERS.LOCAL: {
             return BizApplyNodeConfigFieldsProviderLocal;
           }

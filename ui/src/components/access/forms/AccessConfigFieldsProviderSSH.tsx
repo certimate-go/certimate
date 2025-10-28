@@ -15,7 +15,15 @@ const AUTH_METHOD_NONE = "none" as const;
 const AUTH_METHOD_PASSWORD = "password" as const;
 const AUTH_METHOD_KEY = "key" as const;
 
-const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean }) => {
+const AccessConfigFormFieldsProviderSSH = ({
+  disabled,
+  hostDisabled,
+  hideJumpServers,
+}: {
+  disabled?: boolean;
+  hostDisabled?: boolean;
+  hideJumpServers?: boolean;
+}) => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -24,7 +32,7 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
   });
   const formRule = createSchemaFieldRule(formSchema);
   const formInst = Form.useFormInstance();
-  const initialValues = getInitialValues();
+  const initialValues = getInitialValuesInternal();
 
   const fieldAuthMethod = Form.useWatch([parentNamePath, "authMethod"], formInst);
   const fieldJumpServers = Form.useWatch([parentNamePath, "jumpServers"], formInst);
@@ -34,7 +42,7 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
       <div className="flex space-x-2">
         <div className="w-2/3">
           <Form.Item name={[parentNamePath, "host"]} initialValue={initialValues.host} label={t("access.form.ssh_host.label")} rules={[formRule]}>
-            <Input placeholder={t("access.form.ssh_host.placeholder")} />
+            <Input disabled={disabled || hostDisabled} placeholder={t("access.form.ssh_host.placeholder")} />
           </Form.Item>
         </div>
 
@@ -83,7 +91,8 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
         </Form.Item>
       </Show>
 
-      <Form.Item label={t("access.form.ssh_jump_servers.label")}>
+      {!hideJumpServers && (
+        <Form.Item label={t("access.form.ssh_jump_servers.label")}>
         <Form.List name={[parentNamePath, "jumpServers"]}>
           {(fields, { add, remove, move }) => (
             <div className="flex flex-col gap-2">
@@ -203,7 +212,7 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
                 onClick={() => {
                   add();
                   setTimeout(() => {
-                    const jumpServer = getInitialValues();
+                    const jumpServer = getInitialValuesInternal();
                     delete jumpServer.jumpServers;
                     formInst.setFieldValue([parentNamePath, "jumpServers", (fieldJumpServers?.length ?? 0) + 1 - 1], jumpServer);
                   }, 0);
@@ -215,12 +224,13 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
           )}
         </Form.List>
         <Form.Item name={[parentNamePath, "jumpServers"]} noStyle rules={[formRule]} />
-      </Form.Item>
+        </Form.Item>
+      )}
     </>
   );
 };
 
-const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
+const getInitialValuesInternal = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     host: "127.0.0.1",
     port: 22,
@@ -228,6 +238,8 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
     username: "root",
   };
 };
+
+export const getAccessConfigFieldsProviderSSHInitialValues = getInitialValuesInternal;
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
   const { t } = i18n;
@@ -300,7 +312,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 };
 
 const _default = Object.assign(AccessConfigFormFieldsProviderSSH, {
-  getInitialValues,
+  getInitialValues: getInitialValuesInternal,
   getSchema,
 });
 

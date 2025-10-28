@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, type FormInstance, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
@@ -7,7 +7,8 @@ import { z } from "zod";
 import AccessProviderSelect from "@/components/provider/AccessProviderSelect";
 import { type AccessModel } from "@/domain/access";
 import { ACCESS_PROVIDERS, ACCESS_USAGES } from "@/domain/provider";
-import { useAntdForm } from "@/hooks";
+import { useSystemEnvironmentStore } from "@/stores/system";
+import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 
 import { FormNestedFieldsContextProvider } from "./forms/_context";
 import { useProviderFilterByUsage } from "./forms/_hooks";
@@ -43,6 +44,7 @@ import AccessConfigFieldsProviderDNSLA from "./forms/AccessConfigFieldsProviderD
 import AccessConfigFieldsProviderDogeCloud from "./forms/AccessConfigFieldsProviderDogeCloud";
 import AccessConfigFieldsProviderDuckDNS from "./forms/AccessConfigFieldsProviderDuckDNS";
 import AccessConfigFieldsProviderDynv6 from "./forms/AccessConfigFieldsProviderDynv6";
+import AccessConfigFieldsProviderDockerHost from "./forms/AccessConfigFieldsProviderDockerHost";
 import AccessConfigFieldsProviderEmail from "./forms/AccessConfigFieldsProviderEmail";
 import AccessConfigFieldsProviderFlexCDN from "./forms/AccessConfigFieldsProviderFlexCDN";
 import AccessConfigFieldsProviderGandinet from "./forms/AccessConfigFieldsProviderGandinet";
@@ -129,6 +131,12 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
     name: "accessForm",
     initialValues: initialValues,
   });
+
+  const { fetchEnvironment } = useSystemEnvironmentStore(useZustandShallowSelector(["fetchEnvironment"]));
+
+  useEffect(() => {
+    fetchEnvironment(false);
+  }, [fetchEnvironment]);
 
   const providerFilter = useProviderFilterByUsage(usage);
 
@@ -352,6 +360,9 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       }
       case ACCESS_PROVIDERS.SSH: {
         return <AccessConfigFieldsProviderSSH disabled={disabled} />;
+      }
+      case ACCESS_PROVIDERS.DOCKERHOST: {
+        return <AccessConfigFieldsProviderDockerHost disabled={disabled} />;
       }
       case ACCESS_PROVIDERS.TECHNITIUMDNS: {
         return <AccessConfigFieldsProviderTechnitiumDNS />;
