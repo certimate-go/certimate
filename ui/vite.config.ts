@@ -52,6 +52,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_VERSION__: JSON.stringify(appVersion),
     },
+    base: './',
     plugins: [
       reactPlugin({}),
       legacyPlugin({

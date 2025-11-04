@@ -34,13 +34,13 @@ const WorkflowNew = () => {
       key: TEMPLATE_KEY_STANDARD,
       name: t("workflow.new.templates.template.standard.title"),
       description: t("workflow.new.templates.template.standard.description"),
-      image: "/imgs/workflow/tpl-standard.png",
+      image: "./imgs/workflow/tpl-standard.png",
     },
     {
       key: TEMPLATE_KEY_CERTTEST,
       name: t("workflow.new.templates.template.certtest.title"),
       description: t("workflow.new.templates.template.certtest.description"),
-      image: "/imgs/workflow/tpl-certtest.png",
+      image: "./imgs/workflow/tpl-certtest.png",
     },
   ];
   const [templateSelectKey, setTemplateSelectKey] = useState<TemplateKeys>();

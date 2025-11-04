@@ -74,7 +74,7 @@ const Login = () => {
         <Card className="w-120 max-w-full rounded-md shadow-md max-sm:h-full max-sm:w-full max-sm:rounded-none">
           <div className="px-4 py-8">
             <div className="mb-12 flex items-center justify-center">
-              <img src="/logo.svg" className="w-16" />
+              <img src="./logo.svg" className="w-16" />
             </div>
 
             <Form {...formProps} form={formInst} disabled={formPending} layout="vertical" validateTrigger="onBlur">

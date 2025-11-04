@@ -39,15 +39,15 @@ const SettingsSSLProvider = () => {
   }, []);
 
   const providers = [
-    [CA_PROVIDERS.LETSENCRYPT, "provider.letsencrypt", "letsencrypt.org", "/imgs/providers/letsencrypt.svg"],
-    [CA_PROVIDERS.LETSENCRYPTSTAGING, "provider.letsencryptstaging", "letsencrypt.org", "/imgs/providers/letsencrypt.svg"],
-    [CA_PROVIDERS.ACTALISSSL, "provider.actalisssl", "actalis.com", "/imgs/providers/actalisssl.png"],
-    [CA_PROVIDERS.GLOBALSIGNATLAS, "provider.globalsignatlas", "atlas.globalsign.com", "/imgs/providers/globalsignatlas.png"],
-    [CA_PROVIDERS.GOOGLETRUSTSERVICES, "provider.googletrustservices", "pki.goog", "/imgs/providers/google.svg"],
-    [CA_PROVIDERS.SECTIGO, "provider.sectigo", "sectigo.com", "/imgs/providers/sectigo.svg"],
-    [CA_PROVIDERS.SSLCOM, "provider.sslcom", "ssl.com", "/imgs/providers/sslcom.svg"],
-    [CA_PROVIDERS.ZEROSSL, "provider.zerossl", "zerossl.com", "/imgs/providers/zerossl.svg"],
-    [CA_PROVIDERS.ACMECA, "provider.acmeca", "ACME v2 (RFC 8555)", "/imgs/providers/acmeca.svg"],
+    [CA_PROVIDERS.LETSENCRYPT, "provider.letsencrypt", "letsencrypt.org", "./imgs/providers/letsencrypt.svg"],
+    [CA_PROVIDERS.LETSENCRYPTSTAGING, "provider.letsencryptstaging", "letsencrypt.org", "./imgs/providers/letsencrypt.svg"],
+    [CA_PROVIDERS.ACTALISSSL, "provider.actalisssl", "actalis.com", "./imgs/providers/actalisssl.png"],
+    [CA_PROVIDERS.GLOBALSIGNATLAS, "provider.globalsignatlas", "atlas.globalsign.com", "./imgs/providers/globalsignatlas.png"],
+    [CA_PROVIDERS.GOOGLETRUSTSERVICES, "provider.googletrustservices", "pki.goog", "./imgs/providers/google.svg"],
+    [CA_PROVIDERS.SECTIGO, "provider.sectigo", "sectigo.com", "./imgs/providers/sectigo.svg"],
+    [CA_PROVIDERS.SSLCOM, "provider.sslcom", "ssl.com", "./imgs/providers/sslcom.svg"],
+    [CA_PROVIDERS.ZEROSSL, "provider.zerossl", "zerossl.com", "./imgs/providers/zerossl.svg"],
+    [CA_PROVIDERS.ACMECA, "provider.acmeca", "ACME v2 (RFC 8555)", "./imgs/providers/acmeca.svg"],
   ].map(([value, name, description, icon]) => {
     return {
       value: value as CAProviderType,
