@@ -14,7 +14,7 @@ const (
 	AccessProviderTypeACMEDNS             = AccessProviderType("acmedns")
 	AccessProviderTypeACMEHttpReq         = AccessProviderType("acmehttpreq")
 	AccessProviderTypeActalisSSL          = AccessProviderType("actalisssl")
-	AccessProviderTypeAkamai              = AccessProviderType("akamai") // Akamai（预留）
+	AccessProviderTypeAkamai              = AccessProviderType("akamai")
 	AccessProviderTypeAliyun              = AccessProviderType("aliyun")
 	AccessProviderTypeAPISIX              = AccessProviderType("apisix")
 	AccessProviderTypeArvanCloud          = AccessProviderType("arvancloud")
@@ -143,6 +143,7 @@ NOTICE: If you add new constant, please keep ASCII order.
 const (
 	ACMEDns01ProviderTypeACMEDNS           = ACMEDns01ProviderType(AccessProviderTypeACMEDNS)
 	ACMEDns01ProviderTypeACMEHttpReq       = ACMEDns01ProviderType(AccessProviderTypeACMEHttpReq)
+	ACMEDns01ProviderTypeAkamai			   = ACMEDns01ProviderType(AccessProviderTypeAkamai)
 	ACMEDns01ProviderTypeAliyun            = ACMEDns01ProviderType(AccessProviderTypeAliyun) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAliyunDNS]
 	ACMEDns01ProviderTypeAliyunDNS         = ACMEDns01ProviderType(AccessProviderTypeAliyun + "-dns")
 	ACMEDns01ProviderTypeAliyunESA         = ACMEDns01ProviderType(AccessProviderTypeAliyun + "-esa")

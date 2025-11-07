@@ -7,6 +7,7 @@ import AccessConfigFieldsProviderACMECA from "./AccessConfigFieldsProviderACMECA
 import AccessConfigFieldsProviderACMEDNS from "./AccessConfigFieldsProviderACMEDNS";
 import AccessConfigFieldsProviderACMEHttpReq from "./AccessConfigFieldsProviderACMEHttpReq";
 import AccessConfigFieldsProviderActalisSSL from "./AccessConfigFieldsProviderActalisSSL";
+import AccessConfigFieldsProviderAkamai from "./AccessConfigFieldsProviderAkamai";
 import AccessConfigFieldsProviderAliyun from "./AccessConfigFieldsProviderAliyun";
 import AccessConfigFieldsProviderAPISIX from "./AccessConfigFieldsProviderAPISIX";
 import AccessConfigFieldsProviderArvanCloud from "./AccessConfigFieldsProviderArvanCloud";
@@ -105,6 +106,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.ACMEDNS]: AccessConfigFieldsProviderACMEDNS,
   [ACCESS_PROVIDERS.ACMEHTTPREQ]: AccessConfigFieldsProviderACMEHttpReq,
   [ACCESS_PROVIDERS.ACTALISSSL]: AccessConfigFieldsProviderActalisSSL,
+  [ACCESS_PROVIDERS.AKAMAI]: AccessConfigFieldsProviderAkamai,
   [ACCESS_PROVIDERS.ALIYUN]: AccessConfigFieldsProviderAliyun,
   [ACCESS_PROVIDERS.APISIX]: AccessConfigFieldsProviderAPISIX,
   [ACCESS_PROVIDERS.ARVANCLOUD]: AccessConfigFieldsProviderArvanCloud,

@@ -20,6 +20,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   ACMEDNS: "acmedns",
   ACMEHTTPREQ: "acmehttpreq",
   ACTALISSSL: "actalisssl",
+  AKAMAI: "akamai",
   ALIYUN: "aliyun",
   APISIX: "apisix",
   ARVANCLOUD: "arvancloud",
@@ -177,6 +178,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.KONG, "provider.kong", "/imgs/providers/kong.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.PROXMOXVE, "provider.proxmoxve", "/imgs/providers/proxmoxve.svg", [ACCESS_USAGES.HOSTING]],
 
+      [ACCESS_PROVIDERS.AKAMAI, "provider.akamai", "/imgs/providers/akamai.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ARVANCLOUD, "provider.arvancloud", "/imgs/providers/arvancloud.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.BOOKMYNAME, "provider.bookmyname", "/imgs/providers/bookmyname.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.CLOUDFLARE, "provider.cloudflare", "/imgs/providers/cloudflare.svg", [ACCESS_USAGES.DNS]],
@@ -307,6 +309,7 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
 export const ACME_DNS01_PROVIDERS = Object.freeze({
   ACMEDNS: `${ACCESS_PROVIDERS.ACMEDNS}`,
   ACMEHTTPREQ: `${ACCESS_PROVIDERS.ACMEHTTPREQ}`,
+  AKAMAI: `${ACCESS_PROVIDERS.AKAMAI}`,
   ALIYUN: `${ACCESS_PROVIDERS.ALIYUN}`, // 兼容旧值，等同于 `ALIYUN_DNS`
   ALIYUN_DNS: `${ACCESS_PROVIDERS.ALIYUN}-dns`,
   ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
@@ -392,6 +395,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.JDCLOUD_DNS, "provider.jdcloud.dns"],
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws.route53"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure.dns"],
+      [ACME_DNS01_PROVIDERS.AKAMAI, "provider.akamai"],
       [ACME_DNS01_PROVIDERS.ARVANCLOUD, "provider.arvancloud"],
       [ACME_DNS01_PROVIDERS.BOOKMYNAME, "provider.bookmyname"],
       [ACME_DNS01_PROVIDERS.BUNNY, "provider.bunny"],

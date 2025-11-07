@@ -48,6 +48,13 @@ type AccessConfigForActalisSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
+type AccessConfigForAkamai struct {
+	ClientSecret string `json:"clientSecret"`
+	AccessToken  string `json:"accessToken"`
+	ClientToken  string `json:"clientToken"`
+	Host         string `json:"host"`
+}
+
 type AccessConfigForAliyun struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	AccessKeySecret string `json:"accessKeySecret"`

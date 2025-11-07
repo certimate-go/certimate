@@ -10,6 +10,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates v1.4.0
 	github.com/G-Core/gcorelabscdn-go v1.0.35
 	github.com/KscSDK/ksc-sdk-go v0.14.0
+	github.com/akamai/AkamaiOPEN-edgegrid-golang/v11 v11.1.0
 	github.com/alibabacloud-go/alb-20200616/v2 v2.2.9
 	github.com/alibabacloud-go/apig-20240327/v5 v5.0.1
 	github.com/alibabacloud-go/cas-20200407/v4 v4.0.3
@@ -28,7 +29,6 @@ require (
 	github.com/alibabacloud-go/vod-20170321/v4 v4.10.0
 	github.com/alibabacloud-go/waf-openapi-20211001/v6 v6.7.0
 	github.com/aliyun/alibabacloud-oss-go-sdk-v2 v1.3.0
-	github.com/aws/aws-sdk-go v1.40.45
 	github.com/aws/aws-sdk-go-v2/service/acm v1.37.10
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.55.3
 	github.com/aws/aws-sdk-go-v2/service/iam v1.49.1
@@ -89,7 +89,9 @@ require (
 	github.com/alibabacloud-go/tea-oss-utils v1.1.0 // indirect
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.7 // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
+	github.com/aws/aws-sdk-go v1.40.45 // indirect
 	github.com/aws/aws-sdk-go-v2/service/route53 v1.59.1 // indirect
+	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/buger/goterm v1.0.4 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/diskfs/go-diskfs v1.5.0 // indirect
@@ -123,6 +125,7 @@ require (
 	github.com/linode/linodego v1.60.0 // indirect
 	github.com/magefile/mage v1.14.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/namedotcom/go/v4 v4.0.2 // indirect
@@ -133,16 +136,20 @@ require (
 	github.com/ovh/go-ovh v1.9.0 // indirect
 	github.com/peterhellberg/link v1.2.0 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/qiniu/dyn v1.3.0 // indirect
 	github.com/qiniu/x v1.10.5 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/sirupsen/logrus v1.9.4-0.20230606125235-dd1b4c2e81af // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/vultr/govultr/v3 v3.24.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.mongodb.org/mongo-driver v1.17.2 // indirect
+	go.uber.org/ratelimit v0.3.1 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20251017212417-90e834f514db // indirect
