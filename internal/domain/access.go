@@ -49,10 +49,10 @@ type AccessConfigForActalisSSL struct {
 }
 
 type AccessConfigForAkamai struct {
+	Host         string `json:"host"`
+	ClientToken  string `json:"clientToken"`
 	ClientSecret string `json:"clientSecret"`
 	AccessToken  string `json:"accessToken"`
-	ClientToken  string `json:"clientToken"`
-	Host         string `json:"host"`
 }
 
 type AccessConfigForAliyun struct {

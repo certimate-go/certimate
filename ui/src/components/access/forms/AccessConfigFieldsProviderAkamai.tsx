@@ -18,6 +18,26 @@ const AccessConfigFormFieldsProviderAkamai = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "host"]}
+        initialValue={initialValues.host}
+        label={t("access.form.akamai_host.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.akamai_host.tooltip") }}></span>}
+      >
+        <Input autoComplete="new-password" placeholder={t("access.form.akamai_host.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "clientToken"]}
+        initialValue={initialValues.clientToken}
+        label={t("access.form.akamai_client_token.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.akamai_client_token.tooltip") }}></span>}
+      >
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.akamai_client_token.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "clientSecret"]}
         initialValue={initialValues.clientSecret}
         label={t("access.form.akamai_client_secret.label")}
@@ -34,27 +54,7 @@ const AccessConfigFormFieldsProviderAkamai = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.akamai_access_token.tooltip") }}></span>}
       >
-        <Input autoComplete="new-password" placeholder={t("access.form.akamai_access_token.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
-        name={[parentNamePath, "clientToken"]}
-        initialValue={initialValues.clientToken}
-        label={t("access.form.akamai_client_token.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.akamai_client_token.tooltip") }}></span>}
-      >
-        <Input autoComplete="new-password" placeholder={t("access.form.akamai_client_token.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
-        name={[parentNamePath, "host"]}
-        initialValue={initialValues.host}
-        label={t("access.form.akamai_host.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.akamai_host.tooltip") }}></span>}
-      >
-        <Input autoComplete="new-password" placeholder={t("access.form.akamai_host.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.akamai_access_token.placeholder")} />
       </Form.Item>
     </>
   );
@@ -62,10 +62,10 @@ const AccessConfigFormFieldsProviderAkamai = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    host: "",
+    clientToken: "",
     clientSecret: "",
     accessToken: "",
-    clientToken: "",
-    host: "",
   };
 };
 
@@ -73,26 +73,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    clientSecret: z
-      .string()
-      .trim()
-      .min(1, t("access.form.akamai_client_secret.placeholder"))
-      .max(128, t("common.errmsg.string_max", { max: 128 })),
-    accessToken: z
-      .string()
-      .trim()
-      .min(1, t("access.form.akamai_access_token.placeholder"))
-      .max(128, t("common.errmsg.string_max", { max: 128 })),
-    clientToken: z
-      .string()
-      .trim()
-      .min(1, t("access.form.akamai_client_token.placeholder"))
-      .max(128, t("common.errmsg.string_max", { max: 128 })),
-    host: z
-      .string()
-      .trim()
-      .min(1, t("access.form.akamai_host.placeholder"))
-      .max(255, t("common.errmsg.string_max", { max: 255 })),
+    host: z.string().nonempty(t("access.form.akamai_host.placeholder")),
+    clientToken: z.string().nonempty(t("access.form.akamai_client_token.placeholder")),
+    clientSecret: z.string().nonempty(t("access.form.akamai_client_secret.placeholder")),
+    accessToken: z.string().nonempty(t("access.form.akamai_access_token.placeholder")),
   });
 };
 

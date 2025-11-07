@@ -309,7 +309,8 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
 export const ACME_DNS01_PROVIDERS = Object.freeze({
   ACMEDNS: `${ACCESS_PROVIDERS.ACMEDNS}`,
   ACMEHTTPREQ: `${ACCESS_PROVIDERS.ACMEHTTPREQ}`,
-  AKAMAI: `${ACCESS_PROVIDERS.AKAMAI}`,
+  AKAMAI: `${ACCESS_PROVIDERS.AKAMAI}`,  // 兼容旧值，等同于 `AKAMAI_EDGEDNS`
+  AKAMAI_EDGEDNS: `${ACCESS_PROVIDERS.AKAMAI}-edgedns`,
   ALIYUN: `${ACCESS_PROVIDERS.ALIYUN}`, // 兼容旧值，等同于 `ALIYUN_DNS`
   ALIYUN_DNS: `${ACCESS_PROVIDERS.ALIYUN}-dns`,
   ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
@@ -395,7 +396,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.JDCLOUD_DNS, "provider.jdcloud.dns"],
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws.route53"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure.dns"],
-      [ACME_DNS01_PROVIDERS.AKAMAI, "provider.akamai"],
+      [ACME_DNS01_PROVIDERS.AKAMAI_EDGEDNS, "provider.akamai.edgedns"],
       [ACME_DNS01_PROVIDERS.ARVANCLOUD, "provider.arvancloud"],
       [ACME_DNS01_PROVIDERS.BOOKMYNAME, "provider.bookmyname"],
       [ACME_DNS01_PROVIDERS.BUNNY, "provider.bunny"],

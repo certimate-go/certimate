@@ -1,4 +1,4 @@
-package edgedns
+package akamaiedgedns
 
 import (
 	"time"
@@ -8,13 +8,12 @@ import (
 	"github.com/go-acme/lego/v4/providers/dns/edgedns"
 )
 
-// ChallengeProviderConfig is the configuration for the EdgeDNS provider
 type ChallengeProviderConfig struct {
+	Host                  string
 	ClientToken           string
 	ClientSecret          string
 	AccessToken           string
-	Host                  string
-	DnsPropagationTimeout time.Duration
+	DnsPropagationTimeout int
 	DnsTTL                int
 }
 
@@ -34,9 +33,8 @@ func NewChallengeProvider(config *ChallengeProviderConfig) (challenge.Provider, 
 
 	providerConfig := edgedns.NewDefaultConfig()
 	providerConfig.Config = edgegridConfig
-
 	if config.DnsPropagationTimeout > 0 {
-		providerConfig.PropagationTimeout = config.DnsPropagationTimeout
+		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}
 	if config.DnsTTL > 0 {
 		providerConfig.TTL = config.DnsTTL
