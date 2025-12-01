@@ -63,6 +63,10 @@ func internalCertApplyCommand(app core.App) *cobra.Command {
 				client, err := certacme.NewACMEClientWithAccount(params.Account, func(c *lego.Config) error {
 					c.UserAgent = "certimate"
 					c.Certificate.KeyType = params.Request.PrivateKeyType
+					// Disable CN in CSR for tlsserver and shortlived profiles
+					if params.Request.ACMEProfile == "tlsserver" || params.Request.ACMEProfile == "shortlived" {
+						c.Certificate.DisableCommonName = true
+					}
 					return nil
 				})
 				if err != nil {
