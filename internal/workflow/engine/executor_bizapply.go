@@ -394,6 +394,10 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 	legoClient, err := certacme.NewACMEClientWithAccount(legoUser, func(c *lego.Config) error {
 		c.UserAgent = "certimate"
 		c.Certificate.KeyType = legoKeyType
+		// Disable CN in CSR for tlsserver and shortlived profiles
+		if nodeCfg.ACMEProfile == "tlsserver" || nodeCfg.ACMEProfile == "shortlived" {
+			c.Certificate.DisableCommonName = true
+		}
 		return nil
 	})
 	if err != nil {
