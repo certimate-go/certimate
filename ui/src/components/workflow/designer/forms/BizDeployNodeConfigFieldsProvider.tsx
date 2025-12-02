@@ -59,6 +59,7 @@ import BizDeployNodeConfigFieldsProviderKsyunCDN from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderKubernetesSecret from "./BizDeployNodeConfigFieldsProviderKubernetesSecret";
 import BizDeployNodeConfigFieldsProviderLeCDN from "./BizDeployNodeConfigFieldsProviderLeCDN";
 import BizDeployNodeConfigFieldsProviderLocal from "./BizDeployNodeConfigFieldsProviderLocal";
+import BizDeployNodeConfigFieldsProviderMohuaMVH from "./BizDeployNodeConfigFieldsProviderMohuaMVH";
 import BizDeployNodeConfigFieldsProviderNetlifySite from "./BizDeployNodeConfigFieldsProviderNetlifySite";
 import BizDeployNodeConfigFieldsProviderProxmoxVE from "./BizDeployNodeConfigFieldsProviderProxmoxVE";
 import BizDeployNodeConfigFieldsProviderQiniuCDN from "./BizDeployNodeConfigFieldsProviderQiniuCDN";
@@ -161,6 +162,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.KSYUN_CDN]: BizDeployNodeConfigFieldsProviderKsyunCDN,
   [DEPLOYMENT_PROVIDERS.LECDN]: BizDeployNodeConfigFieldsProviderLeCDN,
   [DEPLOYMENT_PROVIDERS.LOCAL]: BizDeployNodeConfigFieldsProviderLocal,
+  [DEPLOYMENT_PROVIDERS.MOHUA_MVH]: BizDeployNodeConfigFieldsProviderMohuaMVH,
   [DEPLOYMENT_PROVIDERS.NETLIFY_SITE]: BizDeployNodeConfigFieldsProviderNetlifySite,
   [DEPLOYMENT_PROVIDERS.PROXMOXVE]: BizDeployNodeConfigFieldsProviderProxmoxVE,
   [DEPLOYMENT_PROVIDERS.QINIU_CDN]: BizDeployNodeConfigFieldsProviderQiniuCDN,

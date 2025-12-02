@@ -148,6 +148,8 @@
   "provider.qiniu.pili": "七牛云 - 视频直播 Pili",
   "provider.rainyun": "雨云",
   "provider.rainyun.rcdn": "雨云 - 雨盾 CDN",
+  "provider.mohua": "嘿华",
+  "provider.mohua.mvh": "嘿华 - 虚拟主机",
   "provider.ratpanel": "耗子面板（又名：AcePanel）",
   "provider.ratpanel.console": "耗子面板 - 面板自身",
   "provider.ratpanel.site": "耗子面板 - 网站",

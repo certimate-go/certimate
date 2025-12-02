@@ -63,6 +63,7 @@ import AccessConfigFieldsProviderLeCDN from "./AccessConfigFieldsProviderLeCDN";
 import AccessConfigFieldsProviderLinode from "./AccessConfigFieldsProviderLinode";
 import AccessConfigFieldsProviderLiteSSL from "./AccessConfigFieldsProviderLiteSSL";
 import AccessConfigFieldsProviderMattermost from "./AccessConfigFieldsProviderMattermost";
+import AccessConfigFieldsProviderMohua from "./AccessConfigFieldsProviderMohua";
 import AccessConfigFieldsProviderNamecheap from "./AccessConfigFieldsProviderNamecheap";
 import AccessConfigFieldsProviderNameDotCom from "./AccessConfigFieldsProviderNameDotCom";
 import AccessConfigFieldsProviderNameSilo from "./AccessConfigFieldsProviderNameSilo";
@@ -166,6 +167,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.LINODE]: AccessConfigFieldsProviderLinode,
   [ACCESS_PROVIDERS.LITESSL]: AccessConfigFieldsProviderLiteSSL,
   [ACCESS_PROVIDERS.MATTERMOST]: AccessConfigFieldsProviderMattermost,
+  [ACCESS_PROVIDERS.MOHUA]: AccessConfigFieldsProviderMohua,
   [ACCESS_PROVIDERS.NAMECHEAP]: AccessConfigFieldsProviderNamecheap,
   [ACCESS_PROVIDERS.NAMEDOTCOM]: AccessConfigFieldsProviderNameDotCom,
   [ACCESS_PROVIDERS.NAMESILO]: AccessConfigFieldsProviderNameSilo,

@@ -148,6 +148,8 @@
   "provider.qiniu.pili": "Qiniu - Pili",
   "provider.rainyun": "Rain Yun",
   "provider.rainyun.rcdn": "Rain Yun - RCDN (Content Delivery Network)",
+  "provider.mohua": "Mohua",
+  "provider.mohua.mvh": "Mohua - MVH (Virtual Host)",
   "provider.ratpanel": "AcePanel (aka RatPanel)",
   "provider.ratpanel.console": "AcePanel - Console itself",
   "provider.ratpanel.site": "AcePanel - Website",
