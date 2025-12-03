@@ -14,8 +14,8 @@ import (
 var (
 	fInputCertPath string
 	fInputKeyPath  string
-	fAccessKey     string
-	fSecretKey     string
+	fUsername     string
+	fApiPassword     string
 	fHostID        string
 	fDomainID      string
 )
@@ -25,8 +25,8 @@ func init() {
 
 	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "Path to certificate PEM file")
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "Path to private key PEM file")
-	flag.StringVar(&fAccessKey, argsPrefix+"ACCESSKEY", "", "Mohua Cloud Access Key")
-	flag.StringVar(&fSecretKey, argsPrefix+"SECRETKEY", "", "Mohua Cloud Secret Key")
+	flag.StringVar(&fUsername, argsPrefix+"USERNAME", "", "Mohua Cloud Access Key")
+	flag.StringVar(&fApiPassword, argsPrefix+"APIPASSWORD", "", "Mohua Cloud Secret Key")
 	flag.StringVar(&fHostID, argsPrefix+"HOSTID", "", "Virtual Host ID")
 	flag.StringVar(&fDomainID, argsPrefix+"DOMAINID", "", "Domain ID (integer)")
 }
@@ -37,8 +37,8 @@ Shell command to run this test:
 	go test -v ./mohuamvh_test.go -args \
 	--MOHUAMVH_INPUTCERTPATH="/path/to/your-input-cert.pem" \
 	--MOHUAMVH_INPUTKEYPATH="/path/to/your-input-key.pem" \
-	--MOHUAMVH_ACCESSKEY="your-access-key" \
-	--MOHUAMVH_SECRETKEY="your-secret-key" \
+	--MOHUAMVH_USERNAME="your-access-key" \
+	--MOHUAMVH_APIPASSWORD="your-secret-key" \
 	--MOHUAMVH_HOSTID="your-virtual-host-id" \
 	--MOHUAMVH_DOMAINID="123"  # Domain ID should be an integer
 */
@@ -50,18 +50,18 @@ func TestDeploy(t *testing.T) {
 			"args:",
 			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
 			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEY: %v", fAccessKey),
-			fmt.Sprintf("SECRETKEY: %v", strings.Repeat("*", len(fSecretKey))), // Hide secret key for security
+			fmt.Sprintf("USERNAME: %v", fUsername),
+			fmt.Sprintf("APIPASSWORD: %v", strings.Repeat("*", len(fApiPassword))), // Hide secret key for security
 			fmt.Sprintf("HOSTID: %v", fHostID),
 			fmt.Sprintf("DOMAINID: %v", fDomainID),
 		}, "\n"))
 
 		// Validate required parameters
-		if fAccessKey == "" {
-			t.Skip("Skipping test: MOHUAMVH_ACCESSKEY is required")
+		if fUsername == "" {
+			t.Skip("Skipping test: MOHUAMVH_USERNAME is required")
 		}
-		if fSecretKey == "" {
-			t.Skip("Skipping test: MOHUAMVH_SECRETKEY is required")
+		if fApiPassword == "" {
+			t.Skip("Skipping test: MOHUAMVH_APIPASSWORD is required")
 		}
 		if fHostID == "" {
 			t.Skip("Skipping test: MOHUAMVH_HOSTID is required")
@@ -78,8 +78,8 @@ func TestDeploy(t *testing.T) {
 
 		// Create provider
 		deployer, err := provider.NewDeployer(&provider.DeployerConfig{
-			AccessKey: fAccessKey,
-			SecretKey: fSecretKey,
+			Username: fUsername,
+			ApiPassword: fApiPassword,
 			HostID:    fHostID,
 			DomainID:  fDomainID,
 		})
@@ -127,28 +127,28 @@ func TestNewDeployerWithInvalidConfig(t *testing.T) {
 		{
 			name: "empty access key",
 			config: &provider.DeployerConfig{
-				AccessKey: "",
-				SecretKey: "secret",
+				Username: "",
+				ApiPassword: "secret",
 				HostID:    "host123",
 				DomainID:  "456",
 			},
-			expect: "accessKey",
+			expect: "username",
 		},
 		{
 			name: "empty secret key",
 			config: &provider.DeployerConfig{
-				AccessKey: "access",
-				SecretKey: "",
+				Username: "access",
+				ApiPassword: "",
 				HostID:    "host123",
 				DomainID:  "456",
 			},
-			expect: "secretKey",
+			expect: "apiPassword",
 		},
 		{
 			name: "empty host ID",
 			config: &provider.DeployerConfig{
-				AccessKey: "access",
-				SecretKey: "secret",
+				Username: "access",
+				ApiPassword: "secret",
 				HostID:    "",
 				DomainID:  "456",
 			},
@@ -157,8 +157,8 @@ func TestNewDeployerWithInvalidConfig(t *testing.T) {
 		{
 			name: "empty domain ID",
 			config: &provider.DeployerConfig{
-				AccessKey: "access",
-				SecretKey: "secret",
+				Username: "access",
+				ApiPassword: "secret",
 				HostID:    "host123",
 				DomainID:  "",
 			},

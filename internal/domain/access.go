@@ -412,8 +412,8 @@ type AccessConfigForQiniu struct {
 }
 
 type AccessConfigForMohua struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
+	Username string `json:"username"`
+	ApiPassword string `json:"apiPassword"`
 }
 
 type AccessConfigForRainYun struct {

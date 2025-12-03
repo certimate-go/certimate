@@ -49,28 +49,20 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
   const { t } = i18n;
 
-  return z
-    .object({
-      hostID: z.string(),
-      domainID: z.string(),
-    })
-    .superRefine((values, ctx) => {
-      // 两个字段都是必填的
-      if (!values.hostID?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder"),
-          path: ["hostID"],
-        });
-      }
-      if (!values.domainID?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder"),
-          path: ["domainID"],
-        });
-      }
-    });
+  return z.object({
+    hostID: z
+      .string()
+      .nonempty(t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder"))
+      .refine((val) => !isNaN(Number(val)), {
+        message: t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder"),
+      }),
+    domainID: z
+      .string()
+      .nonempty(t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder"))
+      .refine((val) => !isNaN(Number(val)), {
+        message: t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder"),
+      }),
+  });
 };
 
 const _default = Object.assign(BizDeployNodeConfigFieldsProviderMohuaMVH, {

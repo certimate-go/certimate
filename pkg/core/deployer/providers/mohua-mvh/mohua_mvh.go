@@ -14,9 +14,9 @@ import (
 // DeployerConfig 嘿华云虚拟主机部署器配置
 type DeployerConfig struct {
 	// 嘿华云账号
-	AccessKey string `json:"accessKey"`
+	Username string `json:"username"`
 	// 嘿华云API密钥
-	SecretKey string `json:"secretKey"`
+	ApiPassword string `json:"apiPassword"`
 	// 虚拟主机ID
 	HostID string `json:"hostID"`
 	// 域名ID
@@ -39,11 +39,11 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	}
 
 	// 验证必要参数
-	if config.AccessKey == "" {
-		return nil, errors.New("config `accessKey` is required")
+	if config.Username == "" {
+		return nil, errors.New("config `username` is required")
 	}
-	if config.SecretKey == "" {
-		return nil, errors.New("config `secretKey` is required")
+	if config.ApiPassword == "" {
+		return nil, errors.New("config `apiPassword` is required")
 	}
 	if config.HostID == "" {
 		return nil, errors.New("config `hostID` is required")
@@ -54,7 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 
 	// 创建SDK客户端
 	client := mohuasdk.NewClient(
-		mohuasdk.WithCredentials(config.AccessKey, config.SecretKey),
+		mohuasdk.WithCredentials(config.Username, config.ApiPassword),
 	)
 
 	return &Deployer{

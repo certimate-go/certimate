@@ -18,23 +18,23 @@ const AccessConfigFormFieldsProviderMohua = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "accessKey"]}
-        initialValue={initialValues.accessKey}
-        label={t("access.form.mohua_access_key.label")}
+        name={[parentNamePath, "username"]}
+        initialValue={initialValues.username}
+        label={t("access.form.mohua_username.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_access_key.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_username.tooltip") }}></span>}
       >
-        <Input autoComplete="new-password" placeholder={t("access.form.mohua_access_key.placeholder")} />
+        <Input autoComplete="new-password" placeholder={t("access.form.mohua_username.placeholder")} />
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "secretKey"]}
-        initialValue={initialValues.secretKey}
-        label={t("access.form.mohua_secret_key.label")}
+        name={[parentNamePath, "apiPassword"]}
+        initialValue={initialValues.apiPassword}
+        label={t("access.form.mohua_api_key.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_secret_key.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_api_key.tooltip") }}></span>}
       >
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.mohua_secret_key.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.mohua_api_key.placeholder")} />
       </Form.Item>
     </>
   );
@@ -42,8 +42,8 @@ const AccessConfigFormFieldsProviderMohua = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    accessKey: "",
-    secretKey: "",
+    username: "",
+    apiPassword: "",
   };
 };
 
@@ -51,8 +51,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    accessKey: z.string().nonempty(t("access.form.mohua_access_key.placeholder")),
-    secretKey: z.string().nonempty(t("access.form.mohua_secret_key.placeholder")),
+    username: z.string().nonempty(t("access.form.mohua_username.placeholder")),
+    apiPassword: z.string().nonempty(t("access.form.mohua_api_key.placeholder")),
   });
 };
 

@@ -17,8 +17,8 @@ func init() {
 		}
 
 		provider, err := mohuamvh.NewDeployer(&mohuamvh.DeployerConfig{
-			AccessKey:          credentials.AccessKey,
-			SecretKey:          credentials.SecretKey,
+			Username:          credentials.Username,
+			ApiPassword:          credentials.ApiPassword,
 			HostID:            xmaps.GetString(options.ProviderExtendedConfig, "hostID"),
 			DomainID:            xmaps.GetString(options.ProviderExtendedConfig, "domainID"),
 		})
