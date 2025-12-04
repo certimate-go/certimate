@@ -75,7 +75,7 @@ const (
 	AccessProviderTypeLiteSSL             = AccessProviderType("litessl")
 	AccessProviderTypeLocal               = AccessProviderType("local")
 	AccessProviderTypeMattermost          = AccessProviderType("mattermost")
-	AccessProviderTypeMohua				  = AccessProviderType("mohua")
+	AccessProviderTypeMohua               = AccessProviderType("mohua")
 	AccessProviderTypeNamecheap           = AccessProviderType("namecheap")
 	AccessProviderTypeNameDotCom          = AccessProviderType("namedotcom")
 	AccessProviderTypeNameSilo            = AccessProviderType("namesilo")

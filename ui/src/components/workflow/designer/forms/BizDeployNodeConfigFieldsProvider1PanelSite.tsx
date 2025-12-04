@@ -122,8 +122,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       nodeName: z.string().nullish(),
       resourceType: z.literal([RESOURCE_TYPE_WEBSITE, RESOURCE_TYPE_CERTIFICATE], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
       websiteMatchPattern: z.string().nullish(),
-      websiteId: z.union([z.string(), z.number()]).nullish(),
-      certificateId: z.union([z.string(), z.number()]).nullish(),
+      websiteId: z.union([z.string(), z.number().int()]).nullish(),
+      certificateId: z.union([z.string(), z.number().int()]).nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {

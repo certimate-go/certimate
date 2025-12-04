@@ -18,17 +18,18 @@ const BizDeployNodeConfigFieldsProviderMohuaMVH = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "hostID"]}
-        initialValue={initialValues.hostID}
+        name={[parentNamePath, "hostId"]}
+        initialValue={initialValues.hostId}
         label={t("workflow_node.deploy.form.mohua_mvh_host_id.label")}
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.mohua_mvh_host_id.tooltip") }}></span>}
       >
         <Input placeholder={t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder")} />
       </Form.Item>
+
       <Form.Item
-        name={[parentNamePath, "domainID"]}
-        initialValue={initialValues.domainID}
+        name={[parentNamePath, "domainId"]}
+        initialValue={initialValues.domainId}
         label={t("workflow_node.deploy.form.mohua_mvh_domain_id.label")}
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.mohua_mvh_domain_id.tooltip") }}></span>}
@@ -41,8 +42,8 @@ const BizDeployNodeConfigFieldsProviderMohuaMVH = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    hostID: undefined,
-    domainID: undefined,
+    hostId: "",
+    domainId: "",
   };
 };
 
@@ -50,18 +51,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    hostID: z
-      .string()
-      .nonempty(t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder"))
-      .refine((val) => !isNaN(Number(val)), {
-        message: t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder"),
-      }),
-    domainID: z
-      .string()
-      .nonempty(t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder"))
-      .refine((val) => !isNaN(Number(val)), {
-        message: t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder"),
-      }),
+    hostId: z.union([
+      z.string().nonempty(t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder")),
+      z.number().int(t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder")),
+    ]),
+    domainId: z.union([
+      z.string().nonempty(t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder")),
+      z.number().int(t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder")),
+    ]),
   });
 };
 

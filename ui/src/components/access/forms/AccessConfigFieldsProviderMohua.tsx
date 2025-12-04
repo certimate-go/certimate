@@ -22,7 +22,6 @@ const AccessConfigFormFieldsProviderMohua = () => {
         initialValue={initialValues.username}
         label={t("access.form.mohua_username.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_username.tooltip") }}></span>}
       >
         <Input autoComplete="new-password" placeholder={t("access.form.mohua_username.placeholder")} />
       </Form.Item>
@@ -30,11 +29,11 @@ const AccessConfigFormFieldsProviderMohua = () => {
       <Form.Item
         name={[parentNamePath, "apiPassword"]}
         initialValue={initialValues.apiPassword}
-        label={t("access.form.mohua_api_key.label")}
+        label={t("access.form.mohua_api_password.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_api_key.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mohua_api_password.tooltip") }}></span>}
       >
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.mohua_api_key.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.mohua_api_password.placeholder")} />
       </Form.Item>
     </>
   );
@@ -52,7 +51,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   return z.object({
     username: z.string().nonempty(t("access.form.mohua_username.placeholder")),
-    apiPassword: z.string().nonempty(t("access.form.mohua_api_key.placeholder")),
+    apiPassword: z.string().nonempty(t("access.form.mohua_api_password.placeholder")),
   });
 };
 

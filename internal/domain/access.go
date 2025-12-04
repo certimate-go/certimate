@@ -412,7 +412,7 @@ type AccessConfigForQiniu struct {
 }
 
 type AccessConfigForMohua struct {
-	Username string `json:"username"`
+	Username    string `json:"username"`
 	ApiPassword string `json:"apiPassword"`
 }
 
