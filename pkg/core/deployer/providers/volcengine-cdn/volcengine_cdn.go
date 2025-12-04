@@ -253,7 +253,8 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 
 func createSDKClient(accessKeyId, accessKeySecret string) (*internal.CdnClient, error) {
 	config := ve.NewConfig().
-		WithAkSk(accessKeyId, accessKeySecret)
+		WithAkSk(accessKeyId, accessKeySecret).
+		WithRegion("cn-north-1")
 
 	session, err := vesession.NewSession(config)
 	if err != nil {

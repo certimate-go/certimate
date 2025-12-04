@@ -146,7 +146,8 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 func createSDKClient(accessKeyId, accessKeySecret string) (*internal.CdnClient, error) {
 	config := ve.NewConfig().
-		WithAkSk(accessKeyId, accessKeySecret)
+		WithAkSk(accessKeyId, accessKeySecret).
+		WithRegion("cn-north-1")
 
 	session, err := vesession.NewSession(config)
 	if err != nil {
