@@ -9,7 +9,7 @@
   "workflow.search.placeholder": "按工作流名称搜索……",
 
   "workflow.action.create.button": "新建工作流",
-  "workflow.action.edit.menu": "编辑工作流",
+  "workflow.action.modify.menu": "编辑工作流",
   "workflow.action.duplicate.menu": "复制工作流",
   "workflow.action.duplicate.modal.title": "复制「{{name}}」",
   "workflow.action.duplicate.modal.content": "确定要复制该工作流吗？",

@@ -1,13 +1,14 @@
 ﻿import { useEffect, useMemo } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
-import { IconPlus } from "@tabler/icons-react";
+import { IconChevronDown, IconPlus } from "@tabler/icons-react";
 import { type AnchorProps, Button, Divider, Form, type FormInstance, Input, Switch, Typography } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import AccessEditDrawer from "@/components/access/AccessEditDrawer";
 import AccessSelect from "@/components/access/AccessSelect";
+import PresetNotifyTemplatesPopselect from "@/components/preset/PresetNotifyTemplatesPopselect";
 import NotificationProviderPicker from "@/components/provider/NotificationProviderPicker";
 import NotificationProviderSelect from "@/components/provider/NotificationProviderSelect";
 import Show from "@/components/Show";
@@ -111,8 +112,26 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
               <Input placeholder={t("workflow_node.notify.form.subject.placeholder")} />
             </Form.Item>
 
-            <Form.Item name="message" label={t("workflow_node.notify.form.message.label")} rules={[formRule]}>
-              <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.notify.form.message.placeholder")} />
+            <Form.Item label={t("workflow_node.notify.form.message.label")}>
+              <div className="absolute -top-1.5 right-0 -translate-y-full">
+                <PresetNotifyTemplatesPopselect
+                  trigger={["click"]}
+                  onSelect={(_, template) => {
+                    if (template) {
+                      formInst.setFieldValue("subject", template.subject);
+                      formInst.setFieldValue("message", template.message);
+                    }
+                  }}
+                >
+                  <Button size="small" type="link">
+                    {t("preset.dropdown.notification.button")}
+                    <IconChevronDown size="1.25em" />
+                  </Button>
+                </PresetNotifyTemplatesPopselect>
+              </div>
+              <Form.Item name="message" noStyle rules={[formRule]}>
+                <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.notify.form.message.placeholder")} />
+              </Form.Item>
             </Form.Item>
 
             <Form.Item>

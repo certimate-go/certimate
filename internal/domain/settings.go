@@ -13,8 +13,11 @@ type Settings struct {
 }
 
 const (
-	SettingsNameSSLProvider = "sslProvider"
-	SettingsNamePersistence = "persistence"
+	SettingsNameEmails               = "emails"
+	SettingsNameNotificationTemplate = "notifyTemplate"
+	SettingsNameScriptTemplate       = "scriptTemplate"
+	SettingsNameSSLProvider          = "sslProvider"
+	SettingsNamePersistence          = "persistence"
 )
 
 type SettingsContent map[string]any

@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/go-acme/lego/v4/providers/dns/baiducloud"
+
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/baiducloud/internal"
 )
 
 type ChallengerConfig struct {
@@ -22,7 +23,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 
 	// 没有使用 github.com/go-acme/lego/v4/providers/dns/baiducloud
 	// 因为该实现存在一些问题
-	providerConfig := internal.NewDefaultConfig()
+	providerConfig := baiducloud.NewDefaultConfig()
 	providerConfig.AccessKeyID = config.AccessKeyId
 	providerConfig.SecretAccessKey = config.SecretAccessKey
 	if config.DnsPropagationTimeout != 0 {
@@ -32,7 +33,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = config.DnsTTL
 	}
 
-	provider, err := internal.NewDNSProviderConfig(providerConfig)
+	provider, err := baiducloud.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}

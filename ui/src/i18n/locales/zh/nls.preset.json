@@ -1,0 +1,34 @@
+﻿{
+  "preset.page.title": "预设模板",
+  "preset.page.subtitle": "预设模板是一组可复用的数据片段，可以快速填充特定表单。",
+
+  "preset.action.create.button": "新建模板",
+  "preset.action.create.modal.title": "新建模板",
+  "preset.action.modify.menu": "编辑模板",
+  "preset.action.modify.modal.title": "编辑模板",
+  "preset.action.delete.menu": "删除模板",
+  "preset.action.delete.modal.title": "删除「{{name}}」",
+  "preset.action.delete.modal.content": "确定要删除该模板吗？<br>注意此操作不可撤销，请谨慎操作。",
+
+  "preset.props.name": "名称",
+  "preset.props.usage.notification": "通知模板",
+  "preset.props.usage.notification.tips": "你可以在工作流的通知节点中使用这些预设的通知主题和内容。",
+  "preset.props.usage.script": "脚本模板",
+  "preset.props.usage.script.tips": "你可以在工作流的部署节点（如本地主机、SSH 远程主机等）中使用这些预设的脚本命令。",
+
+  "preset.warning.excceeded": "可创建的模板数量已达上限",
+  "preset.form.name.label": "模板名称",
+  "preset.form.name.placeholder": "请输入模板名称",
+  "preset.form.name.errmsg.duplicated": "该名称已存在，请使用其他名称。",
+  "preset.form.notification_subject.label": "通知主题",
+  "preset.form.notification_subject.placeholder": "请输入通知主题",
+  "preset.form.notification_message.label": "通知内容",
+  "preset.form.notification_message.placeholder": "请输入通知内容",
+  "preset.form.script_command.label": "脚本命令",
+  "preset.form.script_command.placeholder": "请输入脚本命令",
+
+  "preset.dropdown.notification.button": "使用预设通知",
+  "preset.dropdown.script.button": "使用预设脚本",
+  "preset.dropdown.option_group.builtin": "内置模板",
+  "preset.dropdown.option_group.custom": "自定义模板"
+}

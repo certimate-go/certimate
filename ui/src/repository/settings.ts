@@ -3,9 +3,11 @@ import { ClientResponseError } from "pocketbase";
 import { CA_PROVIDERS } from "@/domain/provider";
 import {
   type EmailsSettingsContent,
+  type NotifyTemplateContent,
   type PersistenceSettingsContent,
   SETTINGS_NAMES,
   type SSLProviderSettingsContent,
+  type ScriptTemplateContent,
   type SettingsModel,
   type SettingsNames,
 } from "@/domain/settings";
@@ -14,6 +16,8 @@ import { COLLECTION_NAME_SETTINGS, getPocketBase } from "./_pocketbase";
 
 interface SettingsContentMap {
   [SETTINGS_NAMES.EMAILS]: EmailsSettingsContent;
+  [SETTINGS_NAMES.NOTIFY_TEMPLATE]: NotifyTemplateContent;
+  [SETTINGS_NAMES.SCRIPT_TEMPLATE]: ScriptTemplateContent;
   [SETTINGS_NAMES.SSL_PROVIDER]: SSLProviderSettingsContent;
   [SETTINGS_NAMES.PERSISTENCE]: PersistenceSettingsContent;
 }
@@ -44,6 +48,20 @@ export const get = async <K extends SettingsNames | string, T extends NonNullabl
       {
         resp.content ??= {};
         (resp.content as EmailsSettingsContent).emails ??= [];
+      }
+      break;
+
+    case SETTINGS_NAMES.NOTIFY_TEMPLATE:
+      {
+        resp.content ??= {};
+        (resp.content as NotifyTemplateContent).templates ??= [];
+      }
+      break;
+
+    case SETTINGS_NAMES.SCRIPT_TEMPLATE:
+      {
+        resp.content ??= {};
+        (resp.content as ScriptTemplateContent).templates ??= [];
       }
       break;
 

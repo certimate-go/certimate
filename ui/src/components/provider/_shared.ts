@@ -26,7 +26,9 @@ export const useSelectDataSource = <T extends Provider>({
   deps?: React.DependencyList;
 }) => {
   const { accesses, fetchAccesses } = useAccessesStore(useZustandShallowSelector(["accesses", "fetchAccesses"]));
-  useMount(() => fetchAccesses(false));
+  useMount(() => {
+    fetchAccesses(false);
+  });
 
   const filteredDataSource = useMemo(() => {
     return dataSource.filter((provider) => {
@@ -82,7 +84,7 @@ export const usePickerWrapperCols = (width: number) => {
     const wWidth = wrapperSize?.width ?? document.body.clientWidth - 256;
     const wCols = Math.floor(wWidth / width);
     return Math.min(9, Math.max(1, wCols));
-  }, [wrapperSize, width]);
+  }, [wrapperSize?.width, width]);
 
   return {
     wrapperElRef,
@@ -104,7 +106,9 @@ export const usePickerDataSource = <T extends Provider>({
   const { t } = useTranslation();
 
   const { accesses, fetchAccesses } = useAccessesStore(useZustandShallowSelector(["accesses", "fetchAccesses"]));
-  useMount(() => fetchAccesses(false));
+  useMount(() => {
+    fetchAccesses(false);
+  });
 
   const filteredDataSource = useMemo(() => {
     return dataSource

@@ -33,7 +33,6 @@ export interface ModalFormProps<T extends NonNullable<unknown> = any> extends Om
   title?: ModalProps["title"];
   trigger?: React.ReactNode;
   width?: ModalProps["width"];
-  onClose?: (e: React.MouseEvent | React.KeyboardEvent) => void | Promise<unknown>;
   onFinish?: (values: T) => unknown | Promise<unknown>;
   onOpenChange?: (open: boolean) => void;
 }

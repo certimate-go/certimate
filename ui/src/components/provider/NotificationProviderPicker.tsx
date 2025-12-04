@@ -55,7 +55,9 @@ const NotificationProviderPicker = ({
         >
           <div className={mergeCls("size-full", transparent ? "transition-opacity opacity-75 group-hover/provider:opacity-100" : void 0)}>
             <div className="flex size-full items-center gap-4 overflow-hidden">
-              <Avatar className="bg-stone-100" icon={<img src={provider.icon} />} shape="square" size={28} />
+              <div>
+                <Avatar className="bg-stone-50" icon={<img src={provider.icon} />} shape="square" size={28} />
+              </div>
               <div className="flex-1 overflow-hidden">
                 <div className="line-clamp-2 max-w-full">
                   <Tooltip title={t(provider.name)} mouseEnterDelay={1}>

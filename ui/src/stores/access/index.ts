@@ -17,7 +17,7 @@ export const useAccessesStore = create<AccessesStore>((set, get) => {
     fetchAccesses: async (refresh = true) => {
       if (!refresh) {
         if (get().loadedAtOnce) {
-          return;
+          return get().accesses;
         }
       }
 
@@ -31,6 +31,8 @@ export const useAccessesStore = create<AccessesStore>((set, get) => {
         fetcher = null;
         set({ loading: false });
       }
+
+      return get().accesses;
     },
 
     createAccess: async (access) => {

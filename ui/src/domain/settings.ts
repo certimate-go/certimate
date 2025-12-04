@@ -2,6 +2,8 @@ import { type CAProviderType } from "./provider";
 
 export const SETTINGS_NAMES = Object.freeze({
   EMAILS: "emails",
+  NOTIFY_TEMPLATE: "notifyTemplate",
+  SCRIPT_TEMPLATE: "scriptTemplate",
   SSL_PROVIDER: "sslProvider",
   PERSISTENCE: "persistence",
 } as const);
@@ -16,6 +18,25 @@ export interface SettingsModel<T extends NonNullable<unknown> = any> extends Bas
 // #region Settings: Emails
 export type EmailsSettingsContent = {
   emails: string[];
+};
+// #endregion
+
+// #region Settings: NotifyTemplate
+export type NotifyTemplateContent = {
+  templates: Array<{
+    name: string;
+    subject: string;
+    message: string;
+  }>;
+};
+// #endregion
+
+// #region Settings: ScriptTemplate
+export type ScriptTemplateContent = {
+  templates: Array<{
+    name: string;
+    command: string;
+  }>;
 };
 // #endregion
 

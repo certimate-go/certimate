@@ -127,9 +127,6 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 			return nil, fmt.Errorf("failed to unmarshal webhook data: %w", err)
 		}
 
-		replaceJsonValueRecursively(webhookData, "${SUBJECT}", subject)
-		replaceJsonValueRecursively(webhookData, "${MESSAGE}", message)
-
 		if webhookMethod == http.MethodGet || webhookContentType == CONTENT_TYPE_FORM || webhookContentType == CONTENT_TYPE_MULTIPART {
 			temp := make(map[string]string)
 			jsonb, err := json.Marshal(webhookData)
@@ -142,6 +139,14 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 			}
 		}
 	}
+
+	// 替换变量值
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
+
+	// 兼容旧版变量
+	replaceJsonValueRecursively(webhookData, "${SUBJECT}", subject)
+	replaceJsonValueRecursively(webhookData, "${MESSAGE}", message)
 
 	// 生成请求
 	// 其中 GET 请求需转换为查询参数

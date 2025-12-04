@@ -17,8 +17,8 @@ export interface MultipleSplitValueInputProps extends Omit<InputProps, "count" |
   defaultValue?: string;
   maxCount?: number;
   minCount?: number;
-  modalTitle?: string;
-  modalWidth?: number;
+  modalTitle?: React.ReactNode;
+  modalWidth?: number | string;
   placeholderInModal?: string;
   showSortButton?: boolean;
   separator?: string;
@@ -38,7 +38,7 @@ const MultipleSplitValueInput = ({
   maxCount,
   minCount,
   modalTitle,
-  modalWidth = 480,
+  modalWidth = "480px",
   placeholder,
   placeholderInModal,
   showSortButton = true,

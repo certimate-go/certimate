@@ -93,8 +93,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, fmt.Errorf("failed to parse webhook url: %w", err)
 	} else if webhookUrl.Scheme != "http" && webhookUrl.Scheme != "https" {
 		return nil, fmt.Errorf("unsupported webhook url scheme '%s'", webhookUrl.Scheme)
-	} else {
-		webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${DOMAIN}", url.PathEscape(certX509.Subject.CommonName))
 	}
 
 	// 处理 Webhook 请求谓词
@@ -143,13 +141,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			return nil, fmt.Errorf("failed to unmarshal webhook data: %w", err)
 		}
 
-		replaceJsonValueRecursively(webhookData, "${DOMAIN}", certX509.Subject.CommonName)
-		replaceJsonValueRecursively(webhookData, "${DOMAINS}", strings.Join(certX509.DNSNames, ";"))
-		replaceJsonValueRecursively(webhookData, "${CERTIFICATE}", certPEM)
-		replaceJsonValueRecursively(webhookData, "${SERVER_CERTIFICATE}", serverCertPEM)
-		replaceJsonValueRecursively(webhookData, "${INTERMEDIA_CERTIFICATE}", intermediaCertPEM)
-		replaceJsonValueRecursively(webhookData, "${PRIVATE_KEY}", privkeyPEM)
-
 		if webhookMethod == http.MethodGet || webhookContentType == CONTENT_TYPE_FORM || webhookContentType == CONTENT_TYPE_MULTIPART {
 			temp := make(map[string]string)
 			jsonb, err := json.Marshal(webhookData)
@@ -162,6 +153,24 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 		}
 	}
+
+	// 替换变量值
+	webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${CERTIMATE_DEPLOYER_COMMONNAME}", url.PathEscape(certX509.Subject.CommonName))
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_COMMONNAME}", certX509.Subject.CommonName)
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}", strings.Join(certX509.DNSNames, ";"))
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE}", certPEM)
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}", serverCertPEM)
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}", intermediaCertPEM)
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_PRIVATEKEY}", privkeyPEM)
+
+	// 兼容旧版变量
+	webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${DOMAIN}", url.PathEscape(certX509.Subject.CommonName))
+	replaceJsonValueRecursively(webhookData, "${DOMAIN}", certX509.Subject.CommonName)
+	replaceJsonValueRecursively(webhookData, "${DOMAINS}", strings.Join(certX509.DNSNames, ";"))
+	replaceJsonValueRecursively(webhookData, "${CERTIFICATE}", certPEM)
+	replaceJsonValueRecursively(webhookData, "${SERVER_CERTIFICATE}", serverCertPEM)
+	replaceJsonValueRecursively(webhookData, "${INTERMEDIA_CERTIFICATE}", intermediaCertPEM)
+	replaceJsonValueRecursively(webhookData, "${PRIVATE_KEY}", privkeyPEM)
 
 	// 生成请求
 	// 其中 GET 请求需转换为查询参数

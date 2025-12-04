@@ -4,6 +4,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   IconBrandGithub,
   IconCertificate,
+  IconCodeDots,
   IconFingerprint,
   IconHelpCircle,
   IconHierarchy3,
@@ -176,6 +177,7 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
   const MENU_KEY_WORKFLOWS = "/workflows";
   const MENU_KEY_CERTIFICATES = "/certificates";
   const MENU_KEY_ACCESSES = "/accesses";
+  const MENU_KEY_PRESETS = "/presets";
   const MENU_KEY_SETTINGS = "/settings";
   const menuItems: Required<MenuProps>["items"] = (
     [
@@ -183,6 +185,7 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
       [MENU_KEY_WORKFLOWS, "workflow.page.title", <IconHierarchy3 size="1em" />],
       [MENU_KEY_CERTIFICATES, "certificate.page.title", <IconCertificate size="1em" />],
       [MENU_KEY_ACCESSES, "access.page.title", <IconFingerprint size="1em" />],
+      [MENU_KEY_PRESETS, "preset.page.title", <IconCodeDots size="1em" />],
       [MENU_KEY_SETTINGS, "settings.page.title", <IconSettings size="1em" />],
     ] satisfies Array<[string, string, React.ReactNode]>
   ).map(([key, label, icon]) => {

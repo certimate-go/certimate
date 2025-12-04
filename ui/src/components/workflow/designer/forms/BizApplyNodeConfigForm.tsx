@@ -22,7 +22,7 @@ import { acmeDns01ProvidersMap, acmeHttp01ProvidersMap, caProvidersMap } from "@
 import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
-import { useContactEmailsStore } from "@/stores/contact";
+import { useContactEmailsStore } from "@/stores/settings";
 import { getErrMsg } from "@/utils/error";
 import { validDomainName, validIPv4Address, validIPv6Address } from "@/utils/validators";
 
@@ -653,7 +653,9 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 const InternalEmailInput = memo(
   ({ disabled, placeholder, ...props }: { disabled?: boolean; placeholder?: string; value?: string; onChange?: (value: string) => void }) => {
     const { emails, fetchEmails, removeEmail } = useContactEmailsStore();
-    useMount(() => fetchEmails(false));
+    useMount(() => {
+      fetchEmails(false);
+    });
 
     const [value, setValue] = useControllableValue<string>(props, {
       valuePropName: "value",

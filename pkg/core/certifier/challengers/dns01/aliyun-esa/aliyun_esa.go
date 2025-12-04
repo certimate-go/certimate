@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/go-acme/lego/v4/providers/dns/aliesa"
+
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/aliyun-esa/internal"
 )
 
 type ChallengerConfig struct {
@@ -21,8 +22,8 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		return nil, errors.New("the configuration of the acme challenge provider is nil")
 	}
 
-	providerConfig := internal.NewDefaultConfig()
-	providerConfig.SecretID = config.AccessKeyId
+	providerConfig := aliesa.NewDefaultConfig()
+	providerConfig.APIKey = config.AccessKeyId
 	providerConfig.SecretKey = config.AccessKeySecret
 	providerConfig.RegionID = config.Region
 	if config.DnsPropagationTimeout != 0 {
@@ -32,7 +33,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = config.DnsTTL
 	}
 
-	provider, err := internal.NewDNSProviderConfig(providerConfig)
+	provider, err := aliesa.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}

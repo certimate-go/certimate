@@ -5,7 +5,7 @@
 }
 
 export interface ContactEmailsActions {
-  fetchEmails: (refresh?: boolean) => Promise<void>;
+  fetchEmails: (refresh?: boolean) => Promise<string[]>;
   setEmails: (emails: string[]) => Promise<void>;
   addEmail: (email: string) => Promise<void>;
   removeEmail: (email: string) => Promise<void>;

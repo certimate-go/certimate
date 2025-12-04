@@ -194,7 +194,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			const algRSA = "RSA"
 			const algECC = "ECC"
 
-			privkeyAlg, _, _ := xcryptokey.GetPrivateKeyAlgorithm(privkeyPEM)
+			privkey, err := xcert.ParsePrivateKeyFromPEM(privkeyPEM)
+			if err != nil {
+				return nil, fmt.Errorf("could not parse private key: %w", err)
+			}
+			privkeyAlg, _, _ := xcryptokey.GetPrivateKeyAlgorithm(privkey)
 			privkeyAlgStr := ""
 			switch privkeyAlg {
 			case x509.RSA:

@@ -7,7 +7,7 @@ export interface AccessesState {
 }
 
 export interface AccessesActions {
-  fetchAccesses: (refresh?: boolean) => Promise<void>;
+  fetchAccesses: (refresh?: boolean) => Promise<AccessModel[]>;
   createAccess: (access: MaybeModelRecord<AccessModel>) => Promise<AccessModel>;
   updateAccess: (access: MaybeModelRecordWithId<AccessModel>) => Promise<AccessModel>;
   deleteAccess: (access: MaybeModelRecordWithId<AccessModel> | MaybeModelRecordWithId<AccessModel>[]) => Promise<AccessModel>;

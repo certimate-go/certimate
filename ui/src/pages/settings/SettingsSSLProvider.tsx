@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useMount } from "ahooks";
 import { App, Button, Card, Form, Input, Select, Skeleton } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { produce } from "immer";
@@ -8,9 +9,9 @@ import { z } from "zod";
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { type CAProviderType, CA_PROVIDERS } from "@/domain/provider";
-import { SETTINGS_NAMES, type SSLProviderSettingsContent, type SettingsModel } from "@/domain/settings";
-import { useAntdForm } from "@/hooks";
-import { get as getSettings, save as saveSettings } from "@/repository/settings";
+import { type SSLProviderSettingsContent } from "@/domain/settings";
+import { useAntdForm, useZustandShallowSelector } from "@/hooks";
+import { useSSLProviderSettingsStore } from "@/stores/settings";
 import { mergeCls } from "@/utils/css";
 import { getErrMsg } from "@/utils/error";
 
@@ -19,25 +20,13 @@ const SettingsSSLProvider = () => {
 
   const { message, notification } = App.useApp();
 
-  const [settings, setSettings] = useState<SettingsModel<SSLProviderSettingsContent>>();
-  const [loading, setLoading] = useState(true);
+  const { settings, loading, loadSettings, saveSettings } = useSSLProviderSettingsStore(
+    useZustandShallowSelector(["settings", "loading", "loadSettings", "saveSettings"])
+  );
+  useMount(() => loadSettings());
 
   const [formInst] = Form.useForm<{ provider?: string }>();
   const [formPending, setFormPending] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-
-      const settings = await getSettings(SETTINGS_NAMES.SSL_PROVIDER);
-      setSettings(settings);
-      setProviderValue(settings.content?.provider || CA_PROVIDERS.LETSENCRYPT);
-
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
 
   const providers = [
     [CA_PROVIDERS.LETSENCRYPT, "provider.letsencrypt", "letsencrypt.org", "/imgs/providers/letsencrypt.svg"],
@@ -84,13 +73,16 @@ const SettingsSSLProvider = () => {
     }
   }, [providerValue]);
 
-  const updateContextSettings = async (settings: MaybeModelRecordWithId<SettingsModel<SSLProviderSettingsContent>>) => {
+  useEffect(() => {
+    setProviderValue(settings.provider || CA_PROVIDERS.LETSENCRYPT);
+  }, [settings.provider]);
+
+  const updateContextSettings = async (settings: SSLProviderSettingsContent) => {
     setFormPending(true);
 
     try {
-      const resp = await saveSettings(settings);
-      setSettings(resp);
-      setProviderValue(resp.content?.provider);
+      await saveSettings(settings);
+      setProviderValue(settings.provider);
 
       message.success(t("common.text.operation_succeeded"));
     } catch (err) {
@@ -157,8 +149,8 @@ const InternalSettingsContext = createContext(
   {} as {
     loading: boolean;
     pending: boolean;
-    settings: SettingsModel<SSLProviderSettingsContent>;
-    updateSettings: (settings: MaybeModelRecordWithId<SettingsModel<SSLProviderSettingsContent>>) => Promise<void>;
+    settings: SSLProviderSettingsContent;
+    updateSettings: (settings: SSLProviderSettingsContent) => Promise<void>;
   }
 );
 
@@ -168,14 +160,12 @@ const InternalSharedForm = ({ children, provider }: { children?: React.ReactNode
   const { pending, settings, updateSettings } = useContext(InternalSettingsContext);
 
   const { form: formInst, formProps } = useAntdForm<NonNullable<unknown>>({
-    initialValues: settings?.content?.config?.[provider],
+    initialValues: settings?.config?.[provider],
     onSubmit: async (values) => {
       const newSettings = produce(settings, (draft) => {
-        draft.content ??= {} as SSLProviderSettingsContent;
-        draft.content.provider = provider;
-
-        draft.content.config ??= {} as SSLProviderSettingsContent["config"];
-        draft.content.config[provider] = values;
+        draft.provider = provider;
+        draft.config ??= {} as SSLProviderSettingsContent["config"];
+        draft.config[provider] = values;
       });
       await updateSettings(newSettings);
 
@@ -185,8 +175,8 @@ const InternalSharedForm = ({ children, provider }: { children?: React.ReactNode
 
   const [formChanged, setFormChanged] = useState(false);
   useEffect(() => {
-    setFormChanged(provider !== settings?.content?.provider);
-  }, [provider, settings?.content?.provider]);
+    setFormChanged(provider !== settings?.provider);
+  }, [provider, settings?.provider]);
 
   const handleFormChange = () => {
     setFormChanged(true);

@@ -8,7 +8,7 @@ import { type ContactEmailsState, type ContactEmailsStore } from "./types";
 
 export const useContactEmailsStore = create<ContactEmailsStore>((set, get) => {
   let fetcher: Promise<SettingsModel<EmailsSettingsContent>> | null = null; // 防止多次重复请求
-  let settings: SettingsModel<EmailsSettingsContent>; // 记录当前设置的其他字段，保存回数据库时用
+  let model: SettingsModel<EmailsSettingsContent>; // 记录当前设置的其他字段，保存回数据库时用
 
   return {
     emails: [],
@@ -18,7 +18,7 @@ export const useContactEmailsStore = create<ContactEmailsStore>((set, get) => {
     fetchEmails: async (refresh = true) => {
       if (!refresh) {
         if (get().loadedAtOnce) {
-          return;
+          return get().emails;
         }
       }
 
@@ -26,27 +26,29 @@ export const useContactEmailsStore = create<ContactEmailsStore>((set, get) => {
 
       try {
         set({ loading: true });
-        settings = await fetcher;
-        set({ emails: settings.content.emails?.filter((s) => !!s)?.sort() ?? [], loadedAtOnce: true });
+        model = await fetcher;
+        set({ emails: model.content.emails?.filter((s) => !!s)?.sort() ?? [], loadedAtOnce: true });
       } finally {
         fetcher = null;
         set({ loading: false });
       }
+
+      return get().emails;
     },
 
     setEmails: async (emails) => {
-      settings ??= await getSettings(SETTINGS_NAMES.EMAILS);
-      settings = await saveSettings<EmailsSettingsContent>({
-        ...settings,
+      model ??= await getSettings(SETTINGS_NAMES.EMAILS);
+      model = await saveSettings<EmailsSettingsContent>({
+        ...model,
         content: {
-          ...settings.content,
+          ...model.content,
           emails: emails,
         },
       });
 
       set(
         produce((state: ContactEmailsState) => {
-          state.emails = settings.content.emails?.sort() ?? [];
+          state.emails = model.content.emails?.sort() ?? [];
           state.loadedAtOnce = true;
         })
       );

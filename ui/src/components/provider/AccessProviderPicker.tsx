@@ -1,7 +1,7 @@
 ﻿import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMount } from "ahooks";
-import { Avatar, Card, Empty, Input, type InputRef, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Card, Empty, Input, type InputRef, Tag, Typography } from "antd";
 
 import Show from "@/components/Show";
 import { ACCESS_USAGES, type AccessProvider, type AccessUsageType, accessProvidersMap } from "@/domain/provider";
@@ -63,10 +63,15 @@ const AccessProviderPicker = ({
 
   const renderOption = (provider: AccessProvider) => {
     return (
-      <div key={provider.type}>
+      <div className="group/provider size-full" key={provider.type}>
         <Card
-          className={mergeCls("w-full overflow-hidden shadow", provider.builtin ? " cursor-not-allowed" : "", showOptionTagAnyhow ? "h-32" : "h-28")}
-          styles={{ body: { height: "100%", padding: "0.5rem 1rem" } }}
+          className={mergeCls("size-full overflow-hidden shadow", provider.builtin ? "cursor-not-allowed" : void 0)}
+          styles={{
+            body: {
+              height: "100%",
+              padding: "1.25rem 1rem",
+            },
+          }}
           hoverable
           onClick={() => {
             if (provider.builtin) {
@@ -76,36 +81,44 @@ const AccessProviderPicker = ({
             handleProviderTypeSelect(provider.type);
           }}
         >
-          <div className="flex size-full flex-col items-center justify-center gap-3 overflow-hidden p-2">
-            <div className="flex items-center justify-center">
-              <Avatar className="bg-stone-100" icon={<img src={provider.icon} />} shape="square" size={32} />
-            </div>
-            <div className="w-full overflow-hidden text-center">
-              <div className={mergeCls("w-full truncate", { "mb-1": showOptionTagAnyhow })}>
-                <Tooltip title={t(provider.name)} mouseEnterDelay={1}>
-                  <Typography.Text type={provider.builtin ? "secondary" : void 0}>{t(provider.name) || "\u00A0"}</Typography.Text>
-                </Tooltip>
+          <div className="flex size-full flex-col">
+            <div className="flex flex-1 justify-between gap-3">
+              <div className="flex-1">
+                <Typography.Text type={provider.builtin ? "secondary" : void 0}>{t(provider.name) || "\u00A0"}</Typography.Text>
               </div>
-              <Show when={showOptionTagAnyhow}>
-                <div className="origin-top scale-80 whitespace-nowrap">
-                  <Show when={showOptionTagForBuiltin && provider.builtin}>
-                    <Tag>{t("access.props.provider.builtin")}</Tag>
-                  </Show>
-                  <Show when={showOptionTagForDNS && provider.usages.includes(ACCESS_USAGES.DNS)}>
-                    <Tag color="#d93f0b99">{t("access.props.provider.usage.dns")}</Tag>
-                  </Show>
-                  <Show when={showOptionTagForHosting && provider.usages.includes(ACCESS_USAGES.HOSTING)}>
-                    <Tag color="#0052cc99">{t("access.props.provider.usage.hosting")}</Tag>
-                  </Show>
-                  <Show when={showOptionTagForCA && provider.usages.includes(ACCESS_USAGES.CA)}>
-                    <Tag color="#0e8a1699">{t("access.props.provider.usage.ca")}</Tag>
-                  </Show>
-                  <Show when={showOptionTagForNotification && provider.usages.includes(ACCESS_USAGES.NOTIFICATION)}>
-                    <Tag color="#1d76db99">{t("access.props.provider.usage.notification")}</Tag>
-                  </Show>
-                </div>
-              </Show>
+              <div className="transition-all group-hover/provider:scale-110">
+                <Avatar className="bg-stone-50" icon={<img src={provider.icon} />} shape="square" size={28} />
+              </div>
             </div>
+            <Show when={showOptionTagAnyhow}>
+              <div className="flex origin-left scale-80 items-center gap-1 whitespace-nowrap">
+                <Show when={showOptionTagForBuiltin && provider.builtin}>
+                  <Tag className="mt-4 -mb-2" color="default">
+                    {t("access.props.provider.builtin")}
+                  </Tag>
+                </Show>
+                <Show when={showOptionTagForDNS && provider.usages.includes(ACCESS_USAGES.DNS)}>
+                  <Tag className="mt-4 -mb-2" color="#d93f0b">
+                    {t("access.props.provider.usage.dns")}
+                  </Tag>
+                </Show>
+                <Show when={showOptionTagForHosting && provider.usages.includes(ACCESS_USAGES.HOSTING)}>
+                  <Tag className="mt-4 -mb-2" color="#0052cc">
+                    {t("access.props.provider.usage.hosting")}
+                  </Tag>
+                </Show>
+                <Show when={showOptionTagForCA && provider.usages.includes(ACCESS_USAGES.CA)}>
+                  <Tag className="mt-4 -mb-2" color="#0e8a16">
+                    {t("access.props.provider.usage.ca")}
+                  </Tag>
+                </Show>
+                <Show when={showOptionTagForNotification && provider.usages.includes(ACCESS_USAGES.NOTIFICATION)}>
+                  <Tag className="mt-4 -mb-2" color="#1d76db">
+                    {t("access.props.provider.usage.notification")}
+                  </Tag>
+                </Show>
+              </div>
+            </Show>
           </div>
         </Card>
       </div>

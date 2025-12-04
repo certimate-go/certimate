@@ -1,10 +1,11 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { IconChevronDown } from "@tabler/icons-react";
-import { Button, Dropdown, Form, Input, Select } from "antd";
+import { IconBulb, IconChevronDown } from "@tabler/icons-react";
+import { Button, Divider, Form, Input, Popover, Select, Space } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import CodeInput from "@/components/CodeInput";
+import PresetScriptTemplatesPopselect from "@/components/preset/PresetScriptTemplatesPopselect";
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { CERTIFICATE_FORMATS } from "@/domain/certificate";
@@ -59,8 +60,8 @@ sudo service nginx reload
       return `# *** 需要管理员权限 ***
 
 # 请将以下变量替换为实际值
-$pfxPath = "${params?.certPath || "<your-cert-path>"}" # PFX 文件路径（与表单中保持一致）
-$pfxPassword = "${params?.pfxPassword || "<your-pfx-password>"}" # PFX 密码（与表单中保持一致）
+$pfxPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # PFX 文件路径（与表单中保持一致）
+$pfxPassword = "\${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}" # PFX 密码（与表单中保持一致）
 $siteName = "<your-site-name>" # IIS 网站名称
 $domain = "<your-domain-name>" # 域名
 $ipaddr = "<your-binding-ip>"  # 绑定 IP，“*”表示所有 IP 绑定
@@ -90,8 +91,8 @@ Remove-Item -Path "$pfxPath" -Force
       return `# *** 需要管理员权限 ***
 
 # 请将以下变量替换为实际值
-$pfxPath = "${params?.certPath || "<your-cert-path>"}" # PFX 文件路径（与表单中保持一致）
-$pfxPassword = "${params?.pfxPassword || "<your-pfx-password>"}" # PFX 密码（与表单中保持一致）
+$pfxPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # PFX 文件路径（与表单中保持一致）
+$pfxPassword = "\${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}" # PFX 密码（与表单中保持一致）
 $ipaddr = "<your-binding-ip>"  # 绑定 IP，“0.0.0.0”表示所有 IP 绑定，可填入域名
 $port = "<your-binding-port>"  # 绑定端口
 
@@ -113,8 +114,8 @@ Remove-Item -Path "$pfxPath" -Force
       return `# *** 需要管理员权限 ***
 
 # 请将以下变量替换为实际值
-$pfxPath = "${params?.certPath || "<your-cert-path>"}" # PFX 文件路径（与表单中保持一致）
-$pfxPassword = "${params?.pfxPassword || "<your-pfx-password>"}" # PFX 密码（与表单中保持一致）
+$pfxPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # PFX 文件路径（与表单中保持一致）
+$pfxPassword = "\${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}" # PFX 密码（与表单中保持一致）
 
 # 导入证书到本地计算机的个人存储区
 $cert = Import-PfxCertificate -FilePath "$pfxPath" -CertStoreLocation Cert:\\LocalMachine\\My -Password (ConvertTo-SecureString -String "$pfxPassword" -AsPlainText -Force) -Exportable
@@ -339,21 +340,25 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
 
       <Form.Item label={t("workflow_node.deploy.form.local_pre_command.label")}>
         <div className="absolute -top-1.5 right-0 -translate-y-full">
-          <Dropdown
-            menu={{
-              items: ["sh_backup_files", "ps_backup_files"].map((key) => ({
-                key,
-                label: t(`workflow_node.deploy.form.local_preset_scripts.option.${key}.label`),
-                onClick: () => handlePresetPreScriptClick(key),
-              })),
-            }}
+          <PresetScriptTemplatesPopselect
+            options={["sh_backup_files", "ps_backup_files"].map((key) => ({
+              key,
+              label: t(`workflow_node.deploy.form.local_preset_scripts.${key}`),
+            }))}
             trigger={["click"]}
+            onSelect={(key, template) => {
+              if (template) {
+                formInst.setFieldValue([parentNamePath, "preCommand"], template.command);
+              } else {
+                handlePresetPreScriptClick(key);
+              }
+            }}
           >
             <Button size="small" type="link">
-              {t("workflow_node.deploy.form.local_preset_scripts.button")}
+              {t("preset.dropdown.script.button")}
               <IconChevronDown size="1.25em" />
             </Button>
-          </Dropdown>
+          </PresetScriptTemplatesPopselect>
         </div>
         <Form.Item name={[parentNamePath, "preCommand"]} initialValue={initialValues.preCommand} noStyle rules={[formRule]}>
           <CodeInput
@@ -368,21 +373,33 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
 
       <Form.Item label={t("workflow_node.deploy.form.local_post_command.label")}>
         <div className="absolute -top-1.5 right-0 -translate-y-full">
-          <Dropdown
-            menu={{
-              items: ["sh_reload_nginx", "ps_binding_iis", "ps_binding_netsh", "ps_binding_rdp"].map((key) => ({
+          <Space align="center" separator={<Divider orientation="vertical" />} size={0}>
+            <Popover content={<div dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_script_command.vartips") }} />} mouseEnterDelay={1}>
+              <Button color="default" size="small" variant="link">
+                <IconBulb size="1.25em" />
+              </Button>
+            </Popover>
+            <PresetScriptTemplatesPopselect
+              options={["sh_reload_nginx", "ps_binding_iis", "ps_binding_netsh", "ps_binding_rdp"].map((key) => ({
                 key,
-                label: t(`workflow_node.deploy.form.local_preset_scripts.option.${key}.label`),
+                label: t(`workflow_node.deploy.form.local_preset_scripts.${key}`),
                 onClick: () => handlePresetPostScriptClick(key),
-              })),
-            }}
-            trigger={["click"]}
-          >
-            <Button size="small" type="link">
-              {t("workflow_node.deploy.form.local_preset_scripts.button")}
-              <IconChevronDown size="1.25em" />
-            </Button>
-          </Dropdown>
+              }))}
+              trigger={["click"]}
+              onSelect={(key, template) => {
+                if (template) {
+                  formInst.setFieldValue([parentNamePath, "postCommand"], template.command);
+                } else {
+                  handlePresetPostScriptClick(key);
+                }
+              }}
+            >
+              <Button size="small" type="link">
+                {t("preset.dropdown.script.button")}
+                <IconChevronDown size="1.25em" />
+              </Button>
+            </PresetScriptTemplatesPopselect>
+          </Space>
         </div>
         <Form.Item name={[parentNamePath, "postCommand"]} initialValue={initialValues.postCommand} noStyle rules={[formRule]}>
           <CodeInput

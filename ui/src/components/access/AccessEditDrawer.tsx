@@ -82,20 +82,29 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
     }
 
     try {
-      if (mode === "create") {
-        if (data?.id) {
-          throw "Invalid props: `data`";
-        }
+      switch (mode) {
+        case "create":
+          {
+            if (data?.id) {
+              throw "Invalid props: `data`";
+            }
 
-        formValues = await createAccess(formValues);
-      } else if (mode === "modify") {
-        if (!data?.id) {
-          throw "Invalid props: `data`";
-        }
+            formValues = await createAccess(formValues);
+          }
+          break;
 
-        formValues = await updateAccess({ ...data, ...formValues });
-      } else {
-        throw "Invalid props: `action`";
+        case "modify":
+          {
+            if (!data?.id) {
+              throw "Invalid props: `data`";
+            }
+
+            formValues = await updateAccess({ ...data, ...formValues });
+          }
+          break;
+
+        default:
+          throw "Invalid props: `mode`";
       }
 
       afterSubmit?.(formValues);
@@ -174,11 +183,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
         title={
           <Flex align="center" justify="space-between" gap="small">
             <div className="flex-1 truncate">
-              {mode === "modify"
-                ? data?.id
-                  ? t("access.action.edit.modal.title") + ` #${data.id}`
-                  : t("access.action.edit.modal.title")
-                : t(`access.action.${mode}.modal.title`)}
+              {mode === "modify" && !!data?.id ? t("access.action.modify.modal.title") + ` #${data.id}` : t(`access.action.${mode}.modal.title`)}
             </div>
             <Button
               className="ant-drawer-close"

@@ -1,14 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useMount } from "ahooks";
 import { App, Button, Divider, Form, InputNumber, Skeleton } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { produce } from "immer";
 import { z } from "zod";
 
 import Show from "@/components/Show";
-import { type PersistenceSettingsContent, SETTINGS_NAMES, type SettingsModel } from "@/domain/settings";
-import { useAntdForm } from "@/hooks";
-import { get as getSettings, save as saveSettings } from "@/repository/settings";
+import { type PersistenceSettingsContent } from "@/domain/settings";
+import { useAntdForm, useZustandShallowSelector } from "@/hooks";
+import { usePersistenceSettingsStore } from "@/stores/settings";
 import { getErrMsg } from "@/utils/error";
 
 const SettingsPersistence = () => {
@@ -16,26 +17,14 @@ const SettingsPersistence = () => {
 
   const { message, notification } = App.useApp();
 
-  const [settings, setSettings] = useState<SettingsModel<PersistenceSettingsContent>>();
-  const [loading, setLoading] = useState(true);
+  const { settings, loading, loadSettings, saveSettings } = usePersistenceSettingsStore(
+    useZustandShallowSelector(["settings", "loading", "loadSettings", "saveSettings"])
+  );
+  useMount(() => loadSettings());
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-
-      const settings = await getSettings(SETTINGS_NAMES.PERSISTENCE);
-      setSettings(settings);
-
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const updateContextSettings = async (settings: MaybeModelRecordWithId<SettingsModel<PersistenceSettingsContent>>) => {
+  const updateContextSettings = async (settings: PersistenceSettingsContent) => {
     try {
-      const resp = await saveSettings(settings);
-      setSettings(resp);
+      await saveSettings(settings);
 
       message.success(t("common.text.operation_succeeded"));
     } catch (err) {
@@ -77,13 +66,12 @@ const SettingsPersistenceAlerting = ({ className, style }: { className?: string;
     formProps,
   } = useAntdForm<z.infer<typeof formSchema>>({
     initialValues: {
-      certificatesWarningDaysBeforeExpire: settings?.content?.certificatesWarningDaysBeforeExpire,
+      certificatesWarningDaysBeforeExpire: settings?.certificatesWarningDaysBeforeExpire,
     },
     onSubmit: async (values) => {
       updateSettings(
         produce(settings!, (draft) => {
-          draft.content ??= {} as PersistenceSettingsContent;
-          draft.content.certificatesWarningDaysBeforeExpire = values.certificatesWarningDaysBeforeExpire;
+          draft.certificatesWarningDaysBeforeExpire = values.certificatesWarningDaysBeforeExpire;
         })
       );
     },
@@ -144,15 +132,14 @@ const SettingsPersistenceDataRetention = ({ className, style }: { className?: st
     formProps,
   } = useAntdForm<z.infer<typeof formSchema>>({
     initialValues: {
-      certificatesRetentionMaxDays: settings?.content?.certificatesRetentionMaxDays,
-      workflowRunsRetentionMaxDays: settings?.content?.workflowRunsRetentionMaxDays,
+      certificatesRetentionMaxDays: settings?.certificatesRetentionMaxDays,
+      workflowRunsRetentionMaxDays: settings?.workflowRunsRetentionMaxDays,
     },
     onSubmit: async (values) => {
       updateSettings(
         produce(settings!, (draft) => {
-          draft.content ??= {} as PersistenceSettingsContent;
-          draft.content.certificatesRetentionMaxDays = values.certificatesRetentionMaxDays;
-          draft.content.workflowRunsRetentionMaxDays = values.workflowRunsRetentionMaxDays;
+          draft.certificatesRetentionMaxDays = values.certificatesRetentionMaxDays;
+          draft.workflowRunsRetentionMaxDays = values.workflowRunsRetentionMaxDays;
         })
       );
     },
@@ -218,8 +205,8 @@ const SettingsPersistenceDataRetention = ({ className, style }: { className?: st
 const InternalSettingsContext = createContext(
   {} as {
     loading: boolean;
-    settings: SettingsModel<PersistenceSettingsContent>;
-    updateSettings: (settings: MaybeModelRecordWithId<SettingsModel<PersistenceSettingsContent>>) => Promise<void>;
+    settings: PersistenceSettingsContent;
+    updateSettings: (settings: PersistenceSettingsContent) => Promise<void>;
   }
 );
 

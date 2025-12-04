@@ -1,5 +1,6 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input } from "antd";
+import { IconBulb } from "@tabler/icons-react";
+import { Button, Form, Input, Popover } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -30,21 +31,24 @@ const BizDeployNodeConfigFieldsProviderWebhook = () => {
 
   return (
     <>
-      <Form.Item
-        name={[parentNamePath, "webhookData"]}
-        initialValue={initialValues.webhookData}
-        label={t("workflow_node.deploy.form.webhook_data.label")}
-        extra={t("workflow_node.deploy.form.webhook_data.help")}
-        rules={[formRule]}
-      >
-        <CodeInput
-          height="auto"
-          minHeight="64px"
-          maxHeight="256px"
-          language="json"
-          placeholder={t("workflow_node.deploy.form.webhook_data.placeholder")}
-          onBlur={handleWebhookDataBlur}
-        />
+      <Form.Item label={t("workflow_node.deploy.form.webhook_data.label")} extra={t("workflow_node.deploy.form.webhook_data.help")}>
+        <div className="absolute -top-1.5 right-0 -translate-y-full">
+          <Popover content={<div dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.webhook_data.vartips") }} />} mouseEnterDelay={1}>
+            <Button color="default" size="small" variant="link">
+              <IconBulb size="1.25em" />
+            </Button>
+          </Popover>
+        </div>
+        <Form.Item name={[parentNamePath, "webhookData"]} initialValue={initialValues.webhookData} noStyle rules={[formRule]}>
+          <CodeInput
+            height="auto"
+            minHeight="64px"
+            maxHeight="256px"
+            language="json"
+            placeholder={t("workflow_node.deploy.form.webhook_data.placeholder")}
+            onBlur={handleWebhookDataBlur}
+          />
+        </Form.Item>
       </Form.Item>
 
       <Form.Item name={[parentNamePath, "timeout"]} label={t("workflow_node.deploy.form.webhook_timeout.label")} rules={[formRule]}>

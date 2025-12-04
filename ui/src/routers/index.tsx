@@ -8,6 +8,7 @@ import ConsoleLayout from "@/pages/ConsoleLayout";
 import Dashboard from "@/pages/dashboard/Dashboard";
 import ErrorLayout from "@/pages/ErrorLayout";
 import Login from "@/pages/login/Login";
+import PresetList from "@/pages/presets/PresetList";
 import Settings from "@/pages/settings/Settings";
 import SettingsAbout from "@/pages/settings/SettingsAbout";
 import SettingsAccount from "@/pages/settings/SettingsAccount";
@@ -63,6 +64,10 @@ export const router = createHashRouter([
             element: <WorkflowDetailRuns />,
           },
         ],
+      },
+      {
+        path: "/presets",
+        element: <PresetList />,
       },
       {
         path: "/settings",

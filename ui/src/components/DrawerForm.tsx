@@ -18,7 +18,6 @@ export interface DrawerFormProps<T extends NonNullable<unknown> = any> extends O
   open?: boolean;
   title?: React.ReactNode;
   trigger?: React.ReactNode;
-  onClose?: (e: React.MouseEvent | React.KeyboardEvent) => void | Promise<unknown>;
   onFinish?: (values: T) => unknown | Promise<unknown>;
   onOpenChange?: (open: boolean) => void;
 }

@@ -60,21 +60,21 @@ const AccessProviderSelect = ({ showOptionTags, onFilter, ...props }: AccessProv
             {t(provider.name)}
           </Typography.Text>
         </div>
-        <div className="origin-right scale-75 whitespace-nowrap">
+        <div className="flex origin-right scale-80 items-center justify-center gap-1 whitespace-nowrap">
           <Show when={showOptionTagForBuiltin && provider.builtin}>
-            <Tag>{t("access.props.provider.builtin")}</Tag>
+            <Tag color="default">{t("access.props.provider.builtin")}</Tag>
           </Show>
           <Show when={showOptionTagForDNS && provider.usages.includes(ACCESS_USAGES.DNS)}>
-            <Tag color="orange">{t("access.props.provider.usage.dns")}</Tag>
+            <Tag color="#d93f0b">{t("access.props.provider.usage.dns")}</Tag>
           </Show>
           <Show when={showOptionTagForHosting && provider.usages.includes(ACCESS_USAGES.HOSTING)}>
-            <Tag color="geekblue">{t("access.props.provider.usage.hosting")}</Tag>
+            <Tag color="#0052cc">{t("access.props.provider.usage.hosting")}</Tag>
           </Show>
           <Show when={showOptionTagForCA && provider.usages.includes(ACCESS_USAGES.CA)}>
-            <Tag color="magenta">{t("access.props.provider.usage.ca")}</Tag>
+            <Tag color="#0e8a16">{t("access.props.provider.usage.ca")}</Tag>
           </Show>
           <Show when={showOptionTagForNotification && provider.usages.includes(ACCESS_USAGES.NOTIFICATION)}>
-            <Tag color="cyan">{t("access.props.provider.usage.notification")}</Tag>
+            <Tag color="#1d76db">{t("access.props.provider.usage.notification")}</Tag>
           </Show>
         </div>
       </div>

@@ -125,7 +125,7 @@ export default defineConfig(
       "react-hooks/exhaustive-deps": ["warn"],
       "react-hooks/immutability": ["warn"],
       "react-hooks/refs": ["warn"],
-      "react-hooks/preserve-manual-memoization": ["warn"],
+      "react-hooks/preserve-manual-memoization": ["off"],
       "react-hooks/set-state-in-effect": ["warn"],
       "react-hooks/set-state-in-render": ["warn"],
       "react-refresh/only-export-components": [

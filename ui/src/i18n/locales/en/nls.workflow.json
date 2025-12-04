@@ -9,7 +9,7 @@
   "workflow.search.placeholder": "Search by workflow name ...",
 
   "workflow.action.create.button": "Create workflow",
-  "workflow.action.edit.menu": "Edit",
+  "workflow.action.modify.menu": "Edit",
   "workflow.action.duplicate.menu": "Duplicate",
   "workflow.action.duplicate.modal.title": "Duplicate \"{{name}}\"",
   "workflow.action.duplicate.modal.content": "Are you sure to duplicate this workflow?",

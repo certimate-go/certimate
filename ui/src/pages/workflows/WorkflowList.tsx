@@ -133,8 +133,8 @@ const WorkflowList = () => {
           menu={{
             items: [
               {
-                key: "edit",
-                label: t("workflow.action.edit.menu"),
+                key: "modify",
+                label: t("workflow.action.modify.menu"),
                 icon: (
                   <span className="anticon scale-125">
                     <IconEdit size="1em" />

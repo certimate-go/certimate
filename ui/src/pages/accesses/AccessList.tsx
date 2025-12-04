@@ -33,9 +33,7 @@ const AccessList = () => {
 
   const { appSettings: globalAppSettings } = useAppSettings();
 
-  const { accesses, loadedAtOnce, fetchAccesses, deleteAccess } = useAccessesStore(
-    useZustandShallowSelector(["accesses", "loadedAtOnce", "fetchAccesses", "deleteAccess"])
-  );
+  const { loadedAtOnce, fetchAccesses, deleteAccess } = useAccessesStore(useZustandShallowSelector(["loadedAtOnce", "fetchAccesses", "deleteAccess"]));
   useMount(() => {
     fetchAccesses().catch((err) => {
       if (err instanceof ClientResponseError && err.isAbort) {
@@ -118,7 +116,7 @@ const AccessList = () => {
             items: [
               {
                 key: "edit",
-                label: t("access.action.edit.menu"),
+                label: t("access.action.modify.menu"),
                 icon: (
                   <span className="anticon scale-125">
                     <IconEdit size="1em" />
@@ -199,10 +197,11 @@ const AccessList = () => {
   };
 
   const { loading, run: refreshData } = useRequest(
-    () => {
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const list = accesses
+    async () => {
+      const list = await fetchAccesses();
+      const startIdx = (page - 1) * pageSize;
+      const endIdx = startIdx + pageSize;
+      const items = list
         .filter((e) => {
           const keyword = (filters["keyword"] as string | undefined)?.trim();
           if (keyword) {
@@ -227,12 +226,12 @@ const AccessList = () => {
           }
         });
       return Promise.resolve({
-        items: list.slice(startIndex, endIndex),
-        totalItems: list.length,
+        items: items.slice(startIdx, endIdx),
+        totalItems: items.length,
       });
     },
     {
-      refreshDeps: [accesses, filters, page, pageSize],
+      refreshDeps: [filters, page, pageSize],
       onBefore: () => {
         setSearchParams((prev) => {
           if (filters["keyword"]) {
@@ -270,7 +269,7 @@ const AccessList = () => {
   const handleReloadClick = () => {
     if (loading) return;
 
-    fetchAccesses();
+    refreshData();
   };
 
   const handlePaginationChange = (page: number, pageSize: number) => {

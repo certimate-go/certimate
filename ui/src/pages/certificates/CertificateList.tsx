@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IconBrowserShare, IconCertificate, IconDots, IconExternalLink, IconReload, IconShieldCancel, IconTrash } from "@tabler/icons-react";
-import { useRequest } from "ahooks";
+import { useMount, useRequest } from "ahooks";
 import { App, Button, Dropdown, Input, Segmented, Skeleton, Table, type TableProps, Typography, theme } from "antd";
 import dayjs from "dayjs";
 import { ClientResponseError } from "pocketbase";
@@ -12,10 +12,9 @@ import CertificateDetailDrawer from "@/components/certificate/CertificateDetailD
 import Empty from "@/components/Empty";
 import Show from "@/components/Show";
 import { CERTIFICATE_SOURCES, type CertificateModel } from "@/domain/certificate";
-import { SETTINGS_NAMES } from "@/domain/settings";
-import { useAppSettings } from "@/hooks";
+import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { get as getCertificate, list as listCertificates, remove as removeCertificate } from "@/repository/certificate";
-import { get as getSettings } from "@/repository/settings";
+import { usePersistenceSettingsStore } from "@/stores/settings";
 import { getErrMsg } from "@/utils/error";
 
 const CertificateList = () => {
@@ -30,7 +29,15 @@ const CertificateList = () => {
 
   const { appSettings: globalAppSettings } = useAppSettings();
 
-  const [expiryThreshold, setExpiryThreshold] = useState(0);
+  const { settings: persistenceSettings, loadSettings: loadPersistenceSettings } = usePersistenceSettingsStore(
+    useZustandShallowSelector(["settings", "loadSettings"])
+  );
+  useMount(() => loadPersistenceSettings(false));
+
+  const [expiryThreshold, setExpiryThreshold] = useState(() => persistenceSettings.certificatesWarningDaysBeforeExpire || 0);
+  useEffect(() => {
+    setExpiryThreshold(persistenceSettings.certificatesWarningDaysBeforeExpire || 0);
+  }, [persistenceSettings.certificatesWarningDaysBeforeExpire]);
 
   const [filters, setFilters] = useState<Record<string, unknown>>(() => {
     return {
@@ -271,14 +278,6 @@ const CertificateList = () => {
 
           return prev;
         });
-
-        if (expiryThreshold === 0) {
-          const settings = await getSettings(SETTINGS_NAMES.PERSISTENCE);
-          const threshold = settings?.content?.certificatesWarningDaysBeforeExpire ?? 0;
-          if (threshold !== expiryThreshold) {
-            setExpiryThreshold(threshold);
-          }
-        }
       },
       onSuccess: (res) => {
         setTableData(res.items);

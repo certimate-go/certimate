@@ -68,8 +68,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           [parentNamePath, "data"],
           JSON.stringify(
             {
-              title: "${SUBJECT}",
-              body: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              body: "${CERTIMATE_NOTIFIER_MESSAGE}",
               device_key: "<your-bark-device-key>",
             },
             null,
@@ -86,8 +86,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           [parentNamePath, "data"],
           JSON.stringify(
             {
-              title: "${SUBJECT}",
-              message: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              message: "${CERTIMATE_NOTIFIER_MESSAGE}",
               priority: 1,
             },
             null,
@@ -105,8 +105,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           JSON.stringify(
             {
               topic: "<your-ntfy-topic>",
-              title: "${SUBJECT}",
-              message: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              message: "${CERTIMATE_NOTIFIER_MESSAGE}",
               priority: 1,
             },
             null,
@@ -125,8 +125,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
             {
               token: "<your-pushover-token>",
               user: "<your-pushover-user>",
-              title: "${SUBJECT}",
-              message: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              message: "${CERTIMATE_NOTIFIER_MESSAGE}",
             },
             null,
             2
@@ -143,8 +143,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           JSON.stringify(
             {
               token: "<your-pushplus-token>",
-              title: "${SUBJECT}",
-              content: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              content: "${CERTIMATE_NOTIFIER_MESSAGE}",
             },
             null,
             2
@@ -160,8 +160,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           [parentNamePath, "data"],
           JSON.stringify(
             {
-              title: "${SUBJECT}",
-              desp: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              desp: "${CERTIMATE_NOTIFIER_MESSAGE}",
             },
             null,
             2
@@ -177,8 +177,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           [parentNamePath, "data"],
           JSON.stringify(
             {
-              title: "${SUBJECT}",
-              desp: "${MESSAGE}",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              desp: "${CERTIMATE_NOTIFIER_MESSAGE}",
             },
             null,
             2
@@ -231,7 +231,7 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
                 items: [
                   {
                     key: "certimate",
-                    label: "Certimate",
+                    label: t("access.form.webhook_preset_data.common"),
                     onClick: handlePresetDataForDeploymentClick,
                   },
                 ],
@@ -239,7 +239,7 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
               trigger={["click"]}
             >
               <Button size="small" type="link">
-                {t("access.form.webhook_preset_data.button")}
+                {t("access.form.webhook_preset_data")}
                 <IconChevronDown size="1.25em" />
               </Button>
             </Dropdown>
@@ -268,14 +268,14 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
               menu={{
                 items: ["bark", "ntfy", "gotify", "pushover", "pushplus", "serverchan3", "serverchanturbo", "common"].map((key) => ({
                   key,
-                  label: <span dangerouslySetInnerHTML={{ __html: t(`access.form.webhook_preset_data.option.${key}.label`) }}></span>,
+                  label: <span dangerouslySetInnerHTML={{ __html: t(`access.form.webhook_preset_data.${key}`) }}></span>,
                   onClick: () => handlePresetDataForNotificationClick(key),
                 })),
               }}
               trigger={["click"]}
             >
               <Button size="small" type="link">
-                {t("access.form.webhook_preset_data.button")}
+                {t("access.form.webhook_preset_data")}
                 <IconChevronDown size="1.25em" />
               </Button>
             </Dropdown>
@@ -318,14 +318,14 @@ const getInitialValues = ({ usage = "none" }: { usage?: "deployment" | "notifica
     data: JSON.stringify(
       usage === "deployment"
         ? {
-            name: "${DOMAINS}",
-            cert: "${CERTIFICATE}",
-            privkey: "${PRIVATE_KEY}",
+            name: "${CERTIMATE_DEPLOYER_COMMONNAME}",
+            cert: "${CERTIMATE_DEPLOYER_CERTIFICATE}",
+            privkey: "${CERTIMATE_DEPLOYER_PRIVATEKEY}",
           }
         : usage === "notification"
           ? {
-              subject: "${SUBJECT}",
-              message: "${MESSAGE}",
+              subject: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              message: "${CERTIMATE_NOTIFIER_MESSAGE}",
             }
           : {},
       null,
