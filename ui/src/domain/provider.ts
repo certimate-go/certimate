@@ -115,6 +115,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   WESTCN: "westcn",
   XINNET: "xinnet",
   ZEROSSL: "zerossl",
+  MOHUA: "mohua",
 } as const);
 
 export type AccessProviderType = (typeof ACCESS_PROVIDERS)[keyof typeof ACCESS_PROVIDERS];
@@ -181,6 +182,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.APISIX, "provider.apisix", "/imgs/providers/apisix.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.KONG, "provider.kong", "/imgs/providers/kong.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.PROXMOXVE, "provider.proxmoxve", "/imgs/providers/proxmoxve.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.MOHUA, "provider.mohua", "/imgs/providers/mohua.png", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.AKAMAI, "provider.akamai", "/imgs/providers/akamai.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ARVANCLOUD, "provider.arvancloud", "/imgs/providers/arvancloud.svg", [ACCESS_USAGES.DNS]],
@@ -578,6 +580,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   KSYUN_CDN: `${ACCESS_PROVIDERS.KSYUN}-cdn`,
   LECDN: `${ACCESS_PROVIDERS.LECDN}`,
   LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
+  MOHUA_MVH: `${ACCESS_PROVIDERS.MOHUA}-mvh`,
   NETLIFY_SITE: `${ACCESS_PROVIDERS.NETLIFY}-site`,
   PROXMOXVE: `${ACCESS_PROVIDERS.PROXMOXVE}`,
   QINIU_CDN: `${ACCESS_PROVIDERS.QINIU}-cdn`,
@@ -693,6 +696,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud.elb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
       [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_WAF, "provider.huaweicloud.waf", DEPLOYMENT_CATEGORIES.FIREWALL],
       [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud.scm_upload", DEPLOYMENT_CATEGORIES.SSL],
+      [DEPLOYMENT_PROVIDERS.MOHUA_MVH, "provider.mohua.mvh", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.VOLCENGINE_TOS, "provider.volcengine.tos", DEPLOYMENT_CATEGORIES.STORAGE],
       [DEPLOYMENT_PROVIDERS.VOLCENGINE_CDN, "provider.volcengine.cdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.VOLCENGINE_DCDN, "provider.volcengine.dcdn", DEPLOYMENT_CATEGORIES.CDN],

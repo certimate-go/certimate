@@ -1,4 +1,4 @@
-﻿{
+{
   "access.page.title": "授权凭据",
   "access.page.subtitle": "授权凭据中存储有用于访问特定第三方应用程序或服务的身份验证信息（如账号密码、接口密钥、API 令牌等）。",
 
@@ -403,6 +403,11 @@
   "access.form.mattermost_channel_id.placeholder": "请输入默认的 Mattermost 频道 ID",
   "access.form.mattermost_channel_id.help": "提示：可在工作流中覆盖此设置。",
   "access.form.mattermost_channel_id.tooltip": "如何获取此参数？从左侧边栏中选择目标频道，点击顶部的频道名称，选择“频道详情”，即可在弹出页面中直接看到频道 ID。",
+  "access.form.mohua_username.label": "Mohua Cloud username",
+  "access.form.mohua_username.placeholder": "Please enter MoHua Cloud username",
+  "access.form.mohua_api_password.label": "Mohua Cloud API password",
+  "access.form.mohua_api_password.placeholder": "Please enter Mohua Cloud API password",
+  "access.form.mohua_api_password.tooltip": "For more information, see <a href=\"https://cloud.mhjz1.cn/apimanage\" target=\"_blank\">https://cloud.mhjz1.cn/apimanage</a>",
   "access.form.namecheap_username.label": "Namecheap 用户名",
   "access.form.namecheap_username.placeholder": "请输入 Namecheap 用户名",
   "access.form.namecheap_username.tooltip": "这是什么？请参阅 <a href=\"https://www.namecheap.com/support/api/intro/\" target=\"_blank\">https://www.namecheap.com/support/api/intro/</a>",

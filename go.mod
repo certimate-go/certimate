@@ -52,6 +52,7 @@ require (
 	github.com/libdns/dynv6 v1.1.1
 	github.com/libdns/libdns v1.1.1
 	github.com/luthermonson/go-proxmox v0.2.3
+	github.com/mohuatech/mohuacloud-go-sdk v0.0.0-20251115182757-6fba4d0a4c47
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/pkg/sftp v1.13.10
 	github.com/pocketbase/dbx v1.11.0

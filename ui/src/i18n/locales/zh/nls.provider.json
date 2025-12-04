@@ -129,6 +129,8 @@
   "provider.litessl": "LiteSSL",
   "provider.local": "本地主机",
   "provider.mattermost": "Mattermost",
+  "provider.mohua": "Mohua",
+  "provider.mohua.mvh": "Mohua - MVH (Virtual Host)",
   "provider.namecheap": "Namecheap",
   "provider.namedotcom": "Name.com",
   "provider.namesilo": "NameSilo",
