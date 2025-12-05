@@ -39,8 +39,8 @@ type Config struct {
 }
 
 type DNSProvider struct {
-	client *xinnetsdk.Client
 	config *Config
+	client *xinnetsdk.Client
 
 	recordIDs   map[string]*int64
 	recordIDsMu sync.Mutex
@@ -75,14 +75,14 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 
 	client, err := xinnetsdk.NewClient(config.AgentID, config.AppSecret)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("xinnet: %w", err)
 	} else {
 		client.SetTimeout(config.HTTPTimeout)
 	}
 
 	return &DNSProvider{
-		client:      client,
 		config:      config,
+		client:      client,
 		recordIDs:   make(map[string]*int64),
 		recordIDsMu: sync.Mutex{},
 	}, nil

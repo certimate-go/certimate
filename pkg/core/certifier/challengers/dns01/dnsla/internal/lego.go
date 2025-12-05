@@ -40,8 +40,8 @@ type Config struct {
 }
 
 type DNSProvider struct {
-	client *dnslasdk.Client
 	config *Config
+	client *dnslasdk.Client
 
 	recordIDs   map[string]string
 	recordIDsMu sync.Mutex
@@ -76,14 +76,14 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 
 	client, err := dnslasdk.NewClient(config.APIId, config.APISecret)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("dnsla: %w", err)
 	} else {
 		client.SetTimeout(config.HTTPTimeout)
 	}
 
 	return &DNSProvider{
-		client:      client,
 		config:      config,
+		client:      client,
 		recordIDs:   make(map[string]string),
 		recordIDsMu: sync.Mutex{},
 	}, nil

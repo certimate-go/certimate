@@ -41,8 +41,8 @@ type Config struct {
 }
 
 type DNSProvider struct {
-	client *DomainserviceClient
 	config *Config
+	client *DomainserviceClient
 
 	recordIDs   map[string]int
 	recordIDsMu sync.Mutex
@@ -81,8 +81,8 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	client.Config.SetTimeout(config.HTTPTimeout)
 
 	return &DNSProvider{
-		client:      client,
 		config:      config,
+		client:      client,
 		recordIDs:   make(map[string]int),
 		recordIDsMu: sync.Mutex{},
 	}, nil

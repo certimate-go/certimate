@@ -33,6 +33,7 @@ import AccessConfigFieldsProviderDeSEC from "./AccessConfigFieldsProviderDeSEC";
 import AccessConfigFieldsProviderDigitalOcean from "./AccessConfigFieldsProviderDigitalOcean";
 import AccessConfigFieldsProviderDingTalkBot from "./AccessConfigFieldsProviderDingTalkBot";
 import AccessConfigFieldsProviderDiscordBot from "./AccessConfigFieldsProviderDiscordBot";
+import AccessConfigFieldsProviderDNSExit from "./AccessConfigFieldsProviderDNSExit";
 import AccessConfigFieldsProviderDNSLA from "./AccessConfigFieldsProviderDNSLA";
 import AccessConfigFieldsProviderDNSMadeEasy from "./AccessConfigFieldsProviderDNSMadeEasy";
 import AccessConfigFieldsProviderDogeCloud from "./AccessConfigFieldsProviderDogeCloud";
@@ -137,6 +138,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.DIGITALOCEAN]: AccessConfigFieldsProviderDigitalOcean,
   [ACCESS_PROVIDERS.DINGTALKBOT]: AccessConfigFieldsProviderDingTalkBot,
   [ACCESS_PROVIDERS.DISCORDBOT]: AccessConfigFieldsProviderDiscordBot,
+  [ACCESS_PROVIDERS.DNSEXIT]: AccessConfigFieldsProviderDNSExit,
   [ACCESS_PROVIDERS.DNSLA]: AccessConfigFieldsProviderDNSLA,
   [ACCESS_PROVIDERS.DNSMADEEASY]: AccessConfigFieldsProviderDNSMadeEasy,
   [ACCESS_PROVIDERS.DOGECLOUD]: AccessConfigFieldsProviderDogeCloud,

@@ -48,6 +48,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Free disk space
+        uses: BRAINSia/free-disk-space@v2
+        with:
+          tool-cache: false
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 

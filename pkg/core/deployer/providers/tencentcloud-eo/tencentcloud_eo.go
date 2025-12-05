@@ -196,8 +196,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 			privkey, err := xcert.ParsePrivateKeyFromPEM(privkeyPEM)
 			if err != nil {
-				return nil, fmt.Errorf("could not parse private key: %w", err)
+				return nil, fmt.Errorf("failed to parse private key: %w", err)
 			}
+
 			privkeyAlg, _, _ := xcryptokey.GetPrivateKeyAlgorithm(privkey)
 			privkeyAlgStr := ""
 			switch privkeyAlg {

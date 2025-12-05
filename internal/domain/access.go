@@ -183,6 +183,10 @@ type AccessConfigForDiscordBot struct {
 	ChannelId string `json:"channelId,omitempty"`
 }
 
+type AccessConfigForDNSExit struct {
+	ApiKey string `json:"apiKey"`
+}
+
 type AccessConfigForDNSLA struct {
 	ApiId     string `json:"apiId"`
 	ApiSecret string `json:"apiSecret"`

@@ -41,8 +41,8 @@ type Config struct {
 }
 
 type DNSProvider struct {
-	client *udnr.UDNRClient
 	config *Config
+	client *udnr.UDNRClient
 }
 
 func NewDefaultConfig() *Config {
@@ -81,8 +81,8 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	client := udnr.NewClient(&cfg, &credential)
 
 	return &DNSProvider{
-		client: client,
 		config: config,
+		client: client,
 	}, nil
 }
 

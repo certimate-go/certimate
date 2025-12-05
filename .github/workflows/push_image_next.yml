@@ -47,6 +47,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Free disk space
+        uses: BRAINSia/free-disk-space@v2
+        with:
+          tool-cache: false
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -93,7 +98,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          # file: ./Dockerfile.gh
+          # file: ./Dockerfile
           file: ./Dockerfile.gh
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true

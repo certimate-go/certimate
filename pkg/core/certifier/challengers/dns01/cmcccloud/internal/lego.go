@@ -42,8 +42,8 @@ type Config struct {
 }
 
 type DNSProvider struct {
-	client *ecloudsdkclouddns.Client
 	config *Config
+	client *ecloudsdkclouddns.Client
 
 	recordIDs   map[string]string
 	recordIDsMu sync.Mutex
@@ -88,8 +88,8 @@ func NewDNSProviderConfig(cfg *Config) (*DNSProvider, error) {
 	})
 
 	return &DNSProvider{
-		client:      client,
 		config:      cfg,
+		client:      client,
 		recordIDs:   make(map[string]string),
 		recordIDsMu: sync.Mutex{},
 	}, nil

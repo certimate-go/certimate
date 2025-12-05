@@ -1,4 +1,4 @@
-﻿{
+{
   "provider.1panel": "1Panel",
   "provider.1panel.console": "1Panel - Console itself",
   "provider.1panel.site": "1Panel - Website",
@@ -80,6 +80,7 @@
   "provider.digitalocean": "DigitalOcean",
   "provider.dingtalkbot": "DingTalk Bot",
   "provider.discordbot": "Discord Bot",
+  "provider.dnsexit": "DNSExit",
   "provider.dnsla": "DNS.LA",
   "provider.dnsmadeeasy": "DNS Made Easy",
   "provider.dogecloud.cdn": "Doge Cloud - CDN (Content Delivery Network)",

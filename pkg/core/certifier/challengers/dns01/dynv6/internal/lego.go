@@ -34,8 +34,8 @@ type Config struct {
 }
 
 type DNSProvider struct {
-	client *dynv6.Provider
 	config *Config
+	client *dynv6.Provider
 }
 
 func NewDefaultConfig() *Config {
@@ -66,8 +66,8 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	client := &dynv6.Provider{Token: config.HTTPToken}
 
 	return &DNSProvider{
-		client: client,
 		config: config,
+		client: client,
 	}, nil
 }
 

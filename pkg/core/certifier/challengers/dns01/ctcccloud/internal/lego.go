@@ -74,7 +74,7 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 
 	client, err := ctyundns.NewClient(config.AccessKeyId, config.SecretAccessKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("ctyun: %w", err)
 	} else {
 		client.SetTimeout(config.HTTPTimeout)
 	}
