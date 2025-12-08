@@ -25,6 +25,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 	}
 
 	providerConfig := azuredns.NewDefaultConfig()
+	providerConfig.AuthMethod = "env"
 	providerConfig.TenantID = config.TenantId
 	providerConfig.ClientID = config.ClientId
 	providerConfig.ClientSecret = config.ClientSecret
