@@ -1,14 +1,15 @@
 package internal
 
 import (
+	"context"
+
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
-	util "github.com/alibabacloud-go/tea-utils/v2/service"
-	"github.com/alibabacloud-go/tea/tea"
+	"github.com/alibabacloud-go/tea/dara"
 )
 
-// This is a partial copy of https://github.com/alibabacloud-go/slb-20140515/blob/master/client/client.go
+// This is a partial copy of https://github.com/alibabacloud-go/slb-20140515/blob/master/client/client_context_func.go
 // to lightweight the vendor packages in the built binary.
 type SlbClient struct {
 	openapi.Client
@@ -33,576 +34,510 @@ func (client *SlbClient) Init(config *openapi.Config) (_err error) {
 	return nil
 }
 
-func (client *SlbClient) DescribeDomainExtensionsWithOptions(request *alislb.DescribeDomainExtensionsRequest, runtime *util.RuntimeOptions) (_result *alislb.DescribeDomainExtensionsResponse, _err error) {
-	_err = util.ValidateModel(request)
+func (client *SlbClient) DescribeDomainExtensionsWithContext(ctx context.Context, request *alislb.DescribeDomainExtensionsRequest, runtime *dara.RuntimeOptions) (_result *alislb.DescribeDomainExtensionsResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	query := map[string]interface{}{}
 
-	if !tea.BoolValue(util.IsUnset(request.DomainExtensionId)) {
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.DomainExtensionId) {
 		query["DomainExtensionId"] = request.DomainExtensionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ListenerPort)) {
+	if !dara.IsNil(request.ListenerPort) {
 		query["ListenerPort"] = request.ListenerPort
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.LoadBalancerId)) {
+	if !dara.IsNil(request.LoadBalancerId) {
 		query["LoadBalancerId"] = request.LoadBalancerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("DescribeDomainExtensions"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeDomainExtensions"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.DescribeDomainExtensionsResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }
 
-func (client *SlbClient) DescribeDomainExtensions(request *alislb.DescribeDomainExtensionsRequest) (_result *alislb.DescribeDomainExtensionsResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.DescribeDomainExtensionsResponse{}
-	_body, _err := client.DescribeDomainExtensionsWithOptions(request, runtime)
+func (client *SlbClient) DescribeLoadBalancerListenersWithContext(ctx context.Context, request *alislb.DescribeLoadBalancerListenersRequest, runtime *dara.RuntimeOptions) (_result *alislb.DescribeLoadBalancerListenersResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
-	return _result, _err
-}
 
-func (client *SlbClient) DescribeLoadBalancerListenersWithOptions(request *alislb.DescribeLoadBalancerListenersRequest, runtime *util.RuntimeOptions) (_result *alislb.DescribeLoadBalancerListenersResponse, _err error) {
-	_err = util.ValidateModel(request)
-	if _err != nil {
-		return _result, _err
-	}
 	query := map[string]interface{}{}
-
-	if !tea.BoolValue(util.IsUnset(request.Description)) {
+	if !dara.IsNil(request.Description) {
 		query["Description"] = request.Description
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ListenerPort)) {
+	if !dara.IsNil(request.ListenerPort) {
 		query["ListenerPort"] = request.ListenerPort
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ListenerProtocol)) {
+	if !dara.IsNil(request.ListenerProtocol) {
 		query["ListenerProtocol"] = request.ListenerProtocol
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.LoadBalancerId)) {
+	if !dara.IsNil(request.LoadBalancerId) {
 		query["LoadBalancerId"] = request.LoadBalancerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.MaxResults)) {
+	if !dara.IsNil(request.MaxResults) {
 		query["MaxResults"] = request.MaxResults
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.NextToken)) {
+	if !dara.IsNil(request.NextToken) {
 		query["NextToken"] = request.NextToken
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Tag)) {
+	if !dara.IsNil(request.Tag) {
 		query["Tag"] = request.Tag
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("DescribeLoadBalancerListeners"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeLoadBalancerListeners"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.DescribeLoadBalancerListenersResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }
 
-func (client *SlbClient) DescribeLoadBalancerListeners(request *alislb.DescribeLoadBalancerListenersRequest) (_result *alislb.DescribeLoadBalancerListenersResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.DescribeLoadBalancerListenersResponse{}
-	_body, _err := client.DescribeLoadBalancerListenersWithOptions(request, runtime)
+func (client *SlbClient) DescribeLoadBalancerAttributeWithContext(ctx context.Context, request *alislb.DescribeLoadBalancerAttributeRequest, runtime *dara.RuntimeOptions) (_result *alislb.DescribeLoadBalancerAttributeResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
-	return _result, _err
-}
 
-func (client *SlbClient) DescribeLoadBalancerAttributeWithOptions(request *alislb.DescribeLoadBalancerAttributeRequest, runtime *util.RuntimeOptions) (_result *alislb.DescribeLoadBalancerAttributeResponse, _err error) {
-	_err = util.ValidateModel(request)
-	if _err != nil {
-		return _result, _err
-	}
 	query := map[string]interface{}{}
-
-	if !tea.BoolValue(util.IsUnset(request.LoadBalancerId)) {
+	if !dara.IsNil(request.LoadBalancerId) {
 		query["LoadBalancerId"] = request.LoadBalancerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("DescribeLoadBalancerAttribute"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeLoadBalancerAttribute"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.DescribeLoadBalancerAttributeResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }
 
-func (client *SlbClient) DescribeLoadBalancerAttribute(request *alislb.DescribeLoadBalancerAttributeRequest) (_result *alislb.DescribeLoadBalancerAttributeResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.DescribeLoadBalancerAttributeResponse{}
-	_body, _err := client.DescribeLoadBalancerAttributeWithOptions(request, runtime)
+func (client *SlbClient) DescribeLoadBalancerHTTPSListenerAttributeWithContext(ctx context.Context, request *alislb.DescribeLoadBalancerHTTPSListenerAttributeRequest, runtime *dara.RuntimeOptions) (_result *alislb.DescribeLoadBalancerHTTPSListenerAttributeResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
-	return _result, _err
-}
 
-func (client *SlbClient) DescribeLoadBalancerHTTPSListenerAttributeWithOptions(request *alislb.DescribeLoadBalancerHTTPSListenerAttributeRequest, runtime *util.RuntimeOptions) (_result *alislb.DescribeLoadBalancerHTTPSListenerAttributeResponse, _err error) {
-	_err = util.ValidateModel(request)
-	if _err != nil {
-		return _result, _err
-	}
 	query := map[string]interface{}{}
-
-	if !tea.BoolValue(util.IsUnset(request.ListenerPort)) {
+	if !dara.IsNil(request.ListenerPort) {
 		query["ListenerPort"] = request.ListenerPort
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.LoadBalancerId)) {
+	if !dara.IsNil(request.LoadBalancerId) {
 		query["LoadBalancerId"] = request.LoadBalancerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("DescribeLoadBalancerHTTPSListenerAttribute"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeLoadBalancerHTTPSListenerAttribute"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.DescribeLoadBalancerHTTPSListenerAttributeResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }
 
-func (client *SlbClient) DescribeLoadBalancerHTTPSListenerAttribute(request *alislb.DescribeLoadBalancerHTTPSListenerAttributeRequest) (_result *alislb.DescribeLoadBalancerHTTPSListenerAttributeResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.DescribeLoadBalancerHTTPSListenerAttributeResponse{}
-	_body, _err := client.DescribeLoadBalancerHTTPSListenerAttributeWithOptions(request, runtime)
+func (client *SlbClient) SetDomainExtensionAttributeWithContext(ctx context.Context, request *alislb.SetDomainExtensionAttributeRequest, runtime *dara.RuntimeOptions) (_result *alislb.SetDomainExtensionAttributeResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
-	return _result, _err
-}
 
-func (client *SlbClient) SetDomainExtensionAttributeWithOptions(request *alislb.SetDomainExtensionAttributeRequest, runtime *util.RuntimeOptions) (_result *alislb.SetDomainExtensionAttributeResponse, _err error) {
-	_err = util.ValidateModel(request)
-	if _err != nil {
-		return _result, _err
-	}
 	query := map[string]interface{}{}
-
-	if !tea.BoolValue(util.IsUnset(request.DomainExtensionId)) {
+	if !dara.IsNil(request.DomainExtensionId) {
 		query["DomainExtensionId"] = request.DomainExtensionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ServerCertificateId)) {
+	if !dara.IsNil(request.ServerCertificateId) {
 		query["ServerCertificateId"] = request.ServerCertificateId
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("SetDomainExtensionAttribute"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("SetDomainExtensionAttribute"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.SetDomainExtensionAttributeResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }
 
-func (client *SlbClient) SetDomainExtensionAttribute(request *alislb.SetDomainExtensionAttributeRequest) (_result *alislb.SetDomainExtensionAttributeResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.SetDomainExtensionAttributeResponse{}
-	_body, _err := client.SetDomainExtensionAttributeWithOptions(request, runtime)
+func (client *SlbClient) SetLoadBalancerHTTPSListenerAttributeWithContext(ctx context.Context, request *alislb.SetLoadBalancerHTTPSListenerAttributeRequest, runtime *dara.RuntimeOptions) (_result *alislb.SetLoadBalancerHTTPSListenerAttributeResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
-	return _result, _err
-}
 
-func (client *SlbClient) SetLoadBalancerHTTPSListenerAttributeWithOptions(request *alislb.SetLoadBalancerHTTPSListenerAttributeRequest, runtime *util.RuntimeOptions) (_result *alislb.SetLoadBalancerHTTPSListenerAttributeResponse, _err error) {
-	_err = util.ValidateModel(request)
-	if _err != nil {
-		return _result, _err
-	}
 	query := map[string]interface{}{}
-
-	if !tea.BoolValue(util.IsUnset(request.AclId)) {
+	if !dara.IsNil(request.AclId) {
 		query["AclId"] = request.AclId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.AclStatus)) {
+	if !dara.IsNil(request.AclStatus) {
 		query["AclStatus"] = request.AclStatus
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.AclType)) {
+	if !dara.IsNil(request.AclType) {
 		query["AclType"] = request.AclType
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Bandwidth)) {
+	if !dara.IsNil(request.Bandwidth) {
 		query["Bandwidth"] = request.Bandwidth
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.CACertificateId)) {
+	if !dara.IsNil(request.CACertificateId) {
 		query["CACertificateId"] = request.CACertificateId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Cookie)) {
+	if !dara.IsNil(request.Cookie) {
 		query["Cookie"] = request.Cookie
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.CookieTimeout)) {
+	if !dara.IsNil(request.CookieTimeout) {
 		query["CookieTimeout"] = request.CookieTimeout
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Description)) {
+	if !dara.IsNil(request.Description) {
 		query["Description"] = request.Description
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.EnableHttp2)) {
+	if !dara.IsNil(request.EnableHttp2) {
 		query["EnableHttp2"] = request.EnableHttp2
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Gzip)) {
+	if !dara.IsNil(request.Gzip) {
 		query["Gzip"] = request.Gzip
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheck)) {
+	if !dara.IsNil(request.HealthCheck) {
 		query["HealthCheck"] = request.HealthCheck
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckConnectPort)) {
+	if !dara.IsNil(request.HealthCheckConnectPort) {
 		query["HealthCheckConnectPort"] = request.HealthCheckConnectPort
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckDomain)) {
+	if !dara.IsNil(request.HealthCheckDomain) {
 		query["HealthCheckDomain"] = request.HealthCheckDomain
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckHttpCode)) {
+	if !dara.IsNil(request.HealthCheckHttpCode) {
 		query["HealthCheckHttpCode"] = request.HealthCheckHttpCode
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckInterval)) {
+	if !dara.IsNil(request.HealthCheckInterval) {
 		query["HealthCheckInterval"] = request.HealthCheckInterval
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckMethod)) {
+	if !dara.IsNil(request.HealthCheckMethod) {
 		query["HealthCheckMethod"] = request.HealthCheckMethod
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckTimeout)) {
+	if !dara.IsNil(request.HealthCheckTimeout) {
 		query["HealthCheckTimeout"] = request.HealthCheckTimeout
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthCheckURI)) {
+	if !dara.IsNil(request.HealthCheckURI) {
 		query["HealthCheckURI"] = request.HealthCheckURI
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.HealthyThreshold)) {
+	if !dara.IsNil(request.HealthyThreshold) {
 		query["HealthyThreshold"] = request.HealthyThreshold
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.IdleTimeout)) {
+	if !dara.IsNil(request.IdleTimeout) {
 		query["IdleTimeout"] = request.IdleTimeout
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ListenerPort)) {
+	if !dara.IsNil(request.ListenerPort) {
 		query["ListenerPort"] = request.ListenerPort
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.LoadBalancerId)) {
+	if !dara.IsNil(request.LoadBalancerId) {
 		query["LoadBalancerId"] = request.LoadBalancerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RequestTimeout)) {
+	if !dara.IsNil(request.RequestTimeout) {
 		query["RequestTimeout"] = request.RequestTimeout
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Scheduler)) {
+	if !dara.IsNil(request.Scheduler) {
 		query["Scheduler"] = request.Scheduler
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ServerCertificateId)) {
+	if !dara.IsNil(request.ServerCertificateId) {
 		query["ServerCertificateId"] = request.ServerCertificateId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.StickySession)) {
+	if !dara.IsNil(request.StickySession) {
 		query["StickySession"] = request.StickySession
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.StickySessionType)) {
+	if !dara.IsNil(request.StickySessionType) {
 		query["StickySessionType"] = request.StickySessionType
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.TLSCipherPolicy)) {
+	if !dara.IsNil(request.TLSCipherPolicy) {
 		query["TLSCipherPolicy"] = request.TLSCipherPolicy
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.UnhealthyThreshold)) {
+	if !dara.IsNil(request.UnhealthyThreshold) {
 		query["UnhealthyThreshold"] = request.UnhealthyThreshold
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.VServerGroup)) {
+	if !dara.IsNil(request.VServerGroup) {
 		query["VServerGroup"] = request.VServerGroup
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.VServerGroupId)) {
+	if !dara.IsNil(request.VServerGroupId) {
 		query["VServerGroupId"] = request.VServerGroupId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.XForwardedFor)) {
+	if !dara.IsNil(request.XForwardedFor) {
 		query["XForwardedFor"] = request.XForwardedFor
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.XForwardedFor_ClientSrcPort)) {
+	if !dara.IsNil(request.XForwardedFor_ClientSrcPort) {
 		query["XForwardedFor_ClientSrcPort"] = request.XForwardedFor_ClientSrcPort
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.XForwardedFor_SLBID)) {
+	if !dara.IsNil(request.XForwardedFor_SLBID) {
 		query["XForwardedFor_SLBID"] = request.XForwardedFor_SLBID
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.XForwardedFor_SLBIP)) {
+	if !dara.IsNil(request.XForwardedFor_SLBIP) {
 		query["XForwardedFor_SLBIP"] = request.XForwardedFor_SLBIP
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.XForwardedFor_SLBPORT)) {
+	if !dara.IsNil(request.XForwardedFor_SLBPORT) {
 		query["XForwardedFor_SLBPORT"] = request.XForwardedFor_SLBPORT
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.XForwardedFor_proto)) {
+	if !dara.IsNil(request.XForwardedFor_proto) {
 		query["XForwardedFor_proto"] = request.XForwardedFor_proto
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("SetLoadBalancerHTTPSListenerAttribute"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("SetLoadBalancerHTTPSListenerAttribute"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.SetLoadBalancerHTTPSListenerAttributeResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
-	return _result, _err
-}
-
-func (client *SlbClient) SetLoadBalancerHTTPSListenerAttribute(request *alislb.SetLoadBalancerHTTPSListenerAttributeRequest) (_result *alislb.SetLoadBalancerHTTPSListenerAttributeResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.SetLoadBalancerHTTPSListenerAttributeResponse{}
-	_body, _err := client.SetLoadBalancerHTTPSListenerAttributeWithOptions(request, runtime)
-	if _err != nil {
-		return _result, _err
-	}
-	_result = _body
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }

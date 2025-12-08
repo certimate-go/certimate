@@ -14,6 +14,7 @@ import (
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
+	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
@@ -79,7 +80,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		ResourceGroupId: lo.EmptyableToPtr(c.config.ResourceGroupId),
 		RegionId:        tea.String(c.config.Region),
 	}
-	describeServerCertificatesResp, err := c.sdkClient.DescribeServerCertificates(describeServerCertificatesReq)
+	describeServerCertificatesResp, err := c.sdkClient.DescribeServerCertificatesWithContext(ctx, describeServerCertificatesReq, &dara.RuntimeOptions{})
 	c.logger.Debug("sdk request 'slb.DescribeServerCertificates'", slog.Any("request", describeServerCertificatesReq), slog.Any("response", describeServerCertificatesResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'slb.DescribeServerCertificates': %w", err)
@@ -133,7 +134,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		ServerCertificate:     tea.String(certPEM),
 		PrivateKey:            tea.String(privkeyPEM),
 	}
-	uploadServerCertificateResp, err := c.sdkClient.UploadServerCertificate(uploadServerCertificateReq)
+	uploadServerCertificateResp, err := c.sdkClient.UploadServerCertificateWithContext(ctx, uploadServerCertificateReq, &dara.RuntimeOptions{})
 	c.logger.Debug("sdk request 'slb.UploadServerCertificate'", slog.Any("request", uploadServerCertificateReq), slog.Any("response", uploadServerCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'slb.UploadServerCertificate': %w", err)

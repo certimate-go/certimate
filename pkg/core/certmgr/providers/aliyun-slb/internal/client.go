@@ -1,15 +1,15 @@
 package internal
 
 import (
+	"context"
+
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	openapiutil "github.com/alibabacloud-go/darabonba-openapi/v2/utils"
 	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
-	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/dara"
-	"github.com/alibabacloud-go/tea/tea"
 )
 
-// This is a partial copy of https://github.com/alibabacloud-go/slb-20140515/blob/master/client/client.go
+// This is a partial copy of https://github.com/alibabacloud-go/slb-20140515/blob/master/client/client_context_func.go
 // to lightweight the vendor packages in the built binary.
 type SlbClient struct {
 	openapi.Client
@@ -35,168 +35,146 @@ func (client *SlbClient) Init(config *openapi.Config) (_err error) {
 	return nil
 }
 
-func (client *SlbClient) DescribeServerCertificatesWithOptions(request *alislb.DescribeServerCertificatesRequest, runtime *util.RuntimeOptions) (_result *alislb.DescribeServerCertificatesResponse, _err error) {
-	_err = util.ValidateModel(request)
+func (client *SlbClient) DescribeServerCertificatesWithContext(ctx context.Context, request *alislb.DescribeServerCertificatesRequest, runtime *dara.RuntimeOptions) (_result *alislb.DescribeServerCertificatesResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	query := map[string]interface{}{}
 
-	if !dara.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceGroupId)) {
+	if !dara.IsNil(request.ResourceGroupId) {
 		query["ResourceGroupId"] = request.ResourceGroupId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ServerCertificateId)) {
+	if !dara.IsNil(request.ServerCertificateId) {
 		query["ServerCertificateId"] = request.ServerCertificateId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Tag)) {
+	if !dara.IsNil(request.Tag) {
 		query["Tag"] = request.Tag
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("DescribeServerCertificates"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeServerCertificates"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.DescribeServerCertificatesResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }
 
-func (client *SlbClient) DescribeServerCertificates(request *alislb.DescribeServerCertificatesRequest) (_result *alislb.DescribeServerCertificatesResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.DescribeServerCertificatesResponse{}
-	_body, _err := client.DescribeServerCertificatesWithOptions(request, runtime)
+func (client *SlbClient) UploadServerCertificateWithContext(ctx context.Context, request *alislb.UploadServerCertificateRequest, runtime *dara.RuntimeOptions) (_result *alislb.UploadServerCertificateResponse, _err error) {
+	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
-	_result = _body
-	return _result, _err
-}
 
-func (client *SlbClient) UploadServerCertificateWithOptions(request *alislb.UploadServerCertificateRequest, runtime *util.RuntimeOptions) (_result *alislb.UploadServerCertificateResponse, _err error) {
-	_err = util.ValidateModel(request)
-	if _err != nil {
-		return _result, _err
-	}
 	query := map[string]interface{}{}
-
-	if !tea.BoolValue(util.IsUnset(request.AliCloudCertificateId)) {
+	if !dara.IsNil(request.AliCloudCertificateId) {
 		query["AliCloudCertificateId"] = request.AliCloudCertificateId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.AliCloudCertificateName)) {
+	if !dara.IsNil(request.AliCloudCertificateName) {
 		query["AliCloudCertificateName"] = request.AliCloudCertificateName
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.AliCloudCertificateRegionId)) {
+	if !dara.IsNil(request.AliCloudCertificateRegionId) {
 		query["AliCloudCertificateRegionId"] = request.AliCloudCertificateRegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerAccount)) {
+	if !dara.IsNil(request.OwnerAccount) {
 		query["OwnerAccount"] = request.OwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.OwnerId)) {
+	if !dara.IsNil(request.OwnerId) {
 		query["OwnerId"] = request.OwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.PrivateKey)) {
+	if !dara.IsNil(request.PrivateKey) {
 		query["PrivateKey"] = request.PrivateKey
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.RegionId)) {
+	if !dara.IsNil(request.RegionId) {
 		query["RegionId"] = request.RegionId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceGroupId)) {
+	if !dara.IsNil(request.ResourceGroupId) {
 		query["ResourceGroupId"] = request.ResourceGroupId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerAccount)) {
+	if !dara.IsNil(request.ResourceOwnerAccount) {
 		query["ResourceOwnerAccount"] = request.ResourceOwnerAccount
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ResourceOwnerId)) {
+	if !dara.IsNil(request.ResourceOwnerId) {
 		query["ResourceOwnerId"] = request.ResourceOwnerId
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ServerCertificate)) {
+	if !dara.IsNil(request.ServerCertificate) {
 		query["ServerCertificate"] = request.ServerCertificate
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.ServerCertificateName)) {
+	if !dara.IsNil(request.ServerCertificateName) {
 		query["ServerCertificateName"] = request.ServerCertificateName
 	}
 
-	if !tea.BoolValue(util.IsUnset(request.Tag)) {
+	if !dara.IsNil(request.Tag) {
 		query["Tag"] = request.Tag
 	}
 
-	req := &openapi.OpenApiRequest{
+	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
-	params := &openapi.Params{
-		Action:      tea.String("UploadServerCertificate"),
-		Version:     tea.String("2014-05-15"),
-		Protocol:    tea.String("HTTPS"),
-		Pathname:    tea.String("/"),
-		Method:      tea.String("POST"),
-		AuthType:    tea.String("AK"),
-		Style:       tea.String("RPC"),
-		ReqBodyType: tea.String("formData"),
-		BodyType:    tea.String("json"),
+	params := &openapiutil.Params{
+		Action:      dara.String("UploadServerCertificate"),
+		Version:     dara.String("2014-05-15"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
 	}
 	_result = &alislb.UploadServerCertificateResponse{}
-	_body, _err := client.CallApi(params, req, runtime)
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
 	}
-	_err = tea.Convert(_body, &_result)
-	return _result, _err
-}
-
-func (client *SlbClient) UploadServerCertificate(request *alislb.UploadServerCertificateRequest) (_result *alislb.UploadServerCertificateResponse, _err error) {
-	runtime := &util.RuntimeOptions{}
-	_result = &alislb.UploadServerCertificateResponse{}
-	_body, _err := client.UploadServerCertificateWithOptions(request, runtime)
-	if _err != nil {
-		return _result, _err
-	}
-	_result = _body
+	_err = dara.Convert(_body, &_result)
 	return _result, _err
 }

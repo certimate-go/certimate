@@ -8,6 +8,7 @@ import (
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
+	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
@@ -124,7 +125,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		RegionId:       tea.String(d.config.Region),
 		LoadBalancerId: tea.String(d.config.LoadbalancerId),
 	}
-	describeLoadBalancerAttributeResp, err := d.sdkClient.DescribeLoadBalancerAttribute(describeLoadBalancerAttributeReq)
+	describeLoadBalancerAttributeResp, err := d.sdkClient.DescribeLoadBalancerAttributeWithContext(ctx, describeLoadBalancerAttributeReq, &dara.RuntimeOptions{})
 	d.logger.Debug("sdk request 'slb.DescribeLoadBalancerAttribute'", slog.Any("request", describeLoadBalancerAttributeReq), slog.Any("response", describeLoadBalancerAttributeResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'slb.DescribeLoadBalancerAttribute': %w", err)
@@ -148,7 +149,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 			LoadBalancerId:   tea.StringSlice([]string{d.config.LoadbalancerId}),
 			ListenerProtocol: tea.String("https"),
 		}
-		describeLoadBalancerListenersResp, err := d.sdkClient.DescribeLoadBalancerListeners(describeLoadBalancerListenersReq)
+		describeLoadBalancerListenersResp, err := d.sdkClient.DescribeLoadBalancerListenersWithContext(ctx, describeLoadBalancerListenersReq, &dara.RuntimeOptions{})
 		d.logger.Debug("sdk request 'slb.DescribeLoadBalancerListeners'", slog.Any("request", describeLoadBalancerListenersReq), slog.Any("response", describeLoadBalancerListenersResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'slb.DescribeLoadBalancerListeners': %w", err)
@@ -218,7 +219,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 		LoadBalancerId: tea.String(cloudLoadbalancerId),
 		ListenerPort:   tea.Int32(cloudListenerPort),
 	}
-	describeLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.DescribeLoadBalancerHTTPSListenerAttribute(describeLoadBalancerHTTPSListenerAttributeReq)
+	describeLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.DescribeLoadBalancerHTTPSListenerAttributeWithContext(ctx, describeLoadBalancerHTTPSListenerAttributeReq, &dara.RuntimeOptions{})
 	d.logger.Debug("sdk request 'slb.DescribeLoadBalancerHTTPSListenerAttribute'", slog.Any("request", describeLoadBalancerHTTPSListenerAttributeReq), slog.Any("response", describeLoadBalancerHTTPSListenerAttributeResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'slb.DescribeLoadBalancerHTTPSListenerAttribute': %w", err)
@@ -235,7 +236,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			ListenerPort:        tea.Int32(cloudListenerPort),
 			ServerCertificateId: tea.String(cloudCertId),
 		}
-		setLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.SetLoadBalancerHTTPSListenerAttribute(setLoadBalancerHTTPSListenerAttributeReq)
+		setLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.SetLoadBalancerHTTPSListenerAttributeWithContext(ctx, setLoadBalancerHTTPSListenerAttributeReq, &dara.RuntimeOptions{})
 		d.logger.Debug("sdk request 'slb.SetLoadBalancerHTTPSListenerAttribute'", slog.Any("request", setLoadBalancerHTTPSListenerAttributeReq), slog.Any("response", setLoadBalancerHTTPSListenerAttributeResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'slb.SetLoadBalancerHTTPSListenerAttribute': %w", err)
@@ -250,7 +251,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			LoadBalancerId: tea.String(cloudLoadbalancerId),
 			ListenerPort:   tea.Int32(cloudListenerPort),
 		}
-		describeDomainExtensionsResp, err := d.sdkClient.DescribeDomainExtensions(describeDomainExtensionsReq)
+		describeDomainExtensionsResp, err := d.sdkClient.DescribeDomainExtensionsWithContext(ctx, describeDomainExtensionsReq, &dara.RuntimeOptions{})
 		d.logger.Debug("sdk request 'slb.DescribeDomainExtensions'", slog.Any("request", describeDomainExtensionsReq), slog.Any("response", describeDomainExtensionsResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'slb.DescribeDomainExtensions': %w", err)
@@ -271,7 +272,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 					DomainExtensionId:   tea.String(*domainExtension.DomainExtensionId),
 					ServerCertificateId: tea.String(cloudCertId),
 				}
-				setDomainExtensionAttributeResp, err := d.sdkClient.SetDomainExtensionAttribute(setDomainExtensionAttributeReq)
+				setDomainExtensionAttributeResp, err := d.sdkClient.SetDomainExtensionAttributeWithContext(ctx, setDomainExtensionAttributeReq, &dara.RuntimeOptions{})
 				d.logger.Debug("sdk request 'slb.SetDomainExtensionAttribute'", slog.Any("request", setDomainExtensionAttributeReq), slog.Any("response", setDomainExtensionAttributeResp))
 				if err != nil {
 					errs = append(errs, fmt.Errorf("failed to execute sdk request 'slb.SetDomainExtensionAttribute': %w", err))
