@@ -114,7 +114,19 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	msg.To(n.config.ReceiverAddress)
 
 	if err := client.DialAndSend(msg); err != nil {
-		return nil, fmt.Errorf("failed to send mail: %w", err)
+		errShouldBeIgnored := false
+
+		// REF: https://github.com/wneessen/go-mail/issues/463
+		var sendErr *mail.SendError
+		if errors.As(err, &sendErr) {
+			if sendErr.Reason == mail.ErrSMTPReset {
+				errShouldBeIgnored = true
+			}
+		}
+
+		if !errShouldBeIgnored {
+			return nil, fmt.Errorf("failed to send mail: %w", err)
+		}
 	}
 
 	return &notifier.NotifyResult{}, nil
