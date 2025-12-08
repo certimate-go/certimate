@@ -1,4 +1,4 @@
-FROM node:22-alpine AS webui-builder
+FROM node:24-alpine AS webui-builder
 WORKDIR /app
 COPY . /app/
 RUN \

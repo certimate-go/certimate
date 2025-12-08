@@ -18,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22.19.0
+          node-version: 24
 
       - name: Build UI
         run: |
@@ -34,7 +34,7 @@ jobs:
           npm --prefix=./ui run build
 
       - name: Upload UI build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ui-build
           path: ./ui/dist
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Free disk space
         uses: BRAINSia/free-disk-space@v2
@@ -89,7 +89,7 @@ jobs:
       #     echo "VITE_APP_VERSION=${GITHUB_REF#refs/tags/}" > ./ui/.env
 
       - name: Download UI build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ui-build
           path: ./ui/dist
