@@ -60,7 +60,8 @@ const WorkflowRunDetail = ({ className, style, ...props }: WorkflowRunDetailProp
   return (
     <div className={className} style={style}>
       <Alert
-        message={
+        showIcon
+        title={
           <div className="text-xs">
             {mergedData.endedAt
               ? t("workflow_run.base.description_with_time_cost", {
@@ -74,7 +75,6 @@ const WorkflowRunDetail = ({ className, style, ...props }: WorkflowRunDetailProp
                 })}
           </div>
         }
-        showIcon
         type={
           {
             [WORKFLOW_RUN_STATUSES.SUCCEEDED]: "success" as const,
@@ -87,8 +87,8 @@ const WorkflowRunDetail = ({ className, style, ...props }: WorkflowRunDetailProp
         <Alert
           className="mt-1"
           icon={<IconBug size="1em" color="var(--color-error)" />}
-          message={<div className="text-xs text-error">{mergedData.error}</div>}
           showIcon
+          title={<div className="text-xs text-error">{mergedData.error}</div>}
         />
       )}
 

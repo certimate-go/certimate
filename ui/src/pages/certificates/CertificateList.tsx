@@ -130,7 +130,7 @@ const CertificateList = () => {
                 }
               }}
             >
-              {record.expand?.workflowRef?.name ?? <span className="font-mono">{t(`#${workflowId}`)}</span>}
+              {record.expand?.workflowRef?.name ?? <span className="font-mono">{`#${workflowId}`}</span>}
             </Typography.Link>
           </div>
         );

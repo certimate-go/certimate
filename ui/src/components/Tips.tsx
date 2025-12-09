@@ -14,7 +14,7 @@ const Tips = ({ className, style, message }: TipsProps) => {
     <Alert
       className={className}
       style={style}
-      message={
+      title={
         <Flex gap="small">
           <div style={{ marginTop: "1px" }}>
             <IconBulb size={18} color={themeToken.colorInfo} />

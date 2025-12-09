@@ -17,7 +17,7 @@ const AuthLayout = () => {
   return (
     <Layout className="h-screen">
       <Show when={!isBrowserHappy()}>
-        <Alert banner message={t("common.text.happy_browser")} type="warning" showIcon closable />
+        <Alert banner closable showIcon title={t("common.text.happy_browser")} type="warning" />
       </Show>
 
       <div className="relative">

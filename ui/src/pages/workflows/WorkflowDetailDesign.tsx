@@ -155,7 +155,7 @@ const WorkflowDetailDesign = () => {
                 <div className="flex flex-1 items-center justify-end gap-4 overflow-hidden">
                   <div className="flex-1 overflow-hidden">
                     <Show when={workflow.hasDraft!}>
-                      <Alert message={<div className="truncate">{t("workflow.detail.design.unpublished_draft.alert")}</div>} showIcon type="warning" />
+                      <Alert showIcon title={<div className="truncate">{t("workflow.detail.design.unpublished_draft.alert")}</div>} type="warning" />
                     </Show>
                   </div>
                   <Space.Compact>

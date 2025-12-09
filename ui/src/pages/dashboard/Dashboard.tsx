@@ -289,7 +289,7 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
                 }
               }}
             >
-              {workflow?.name ?? <span className="font-mono">{t(`#${record.workflowRef}`)}</span>}
+              {workflow?.name ?? <span className="font-mono">{`#${record.workflowRef}`}</span>}
             </Typography.Link>
           </div>
         );
