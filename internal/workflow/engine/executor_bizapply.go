@@ -329,7 +329,7 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 		PreferredChain:         nodeCfg.PreferredChain,
 		ACMEProfile:            nodeCfg.ACMEProfile,
 		ARIReplacesAcctUrl: lo.
-			If(lastCertificate == nil, "").
+			If(nodeCfg.DisableARI || lastCertificate == nil, "").
 			ElseF(func() string {
 				if lastCertificate.IsRenewed {
 					return ""
@@ -337,7 +337,7 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 				return lastCertificate.ACMEAcctUrl
 			}),
 		ARIReplacesCertId: lo.
-			If(lastCertificate == nil, "").
+			If(nodeCfg.DisableARI || lastCertificate == nil, "").
 			ElseF(func() string {
 				if lastCertificate.IsRenewed {
 					return ""
