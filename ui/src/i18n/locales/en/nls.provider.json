@@ -67,6 +67,8 @@
   "provider.cmcccloud": "China Mobile ECloud",
   "provider.cmcccloud_dns": "China Mobile ECloud - DNS",
   "provider.constellix": "Constellix",
+  "provider.cpanel": "cPanel",
+  "provider.cpanel_site": "cPanel - Website",
   "provider.ctcccloud": "China Telecom StateCloud",
   "provider.ctcccloud_ao": "China Telecom StateCloud - AccessOne",
   "provider.ctcccloud_cdn": "China Telecom StateCloud - CDN (Content Delivery Network)",

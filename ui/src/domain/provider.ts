@@ -41,6 +41,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   CLOUDNS: "cloudns",
   CMCCCLOUD: "cmcccloud",
   CONSTELLIX: "constellix",
+  CPANEL: "cpanel",
   CTCCCLOUD: "ctcccloud",
   DESEC: "desec",
   DIGITALOCEAN: "digitalocean",
@@ -160,6 +161,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.RAINYUN, "provider.rainyun", "/imgs/providers/rainyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.UCLOUD, "provider.ucloud", "/imgs/providers/ucloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CTCCCLOUD, "provider.ctcccloud", "/imgs/providers/ctcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.CPANEL, "provider.cpanel", "/imgs/providers/cpanel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.QINIU, "provider.qiniu", "/imgs/providers/qiniu.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.UPYUN, "provider.upyun", "/imgs/providers/upyun.svg", [ACCESS_USAGES.HOSTING]],
@@ -343,6 +345,7 @@ export const ACME_DNS01_PROVIDERS = Object.freeze({
   CMCCCLOUD: `${ACCESS_PROVIDERS.CMCCCLOUD}`, // 兼容旧值，等同于 `CMCCCLOUD_DNS`
   CMCCCLOUD_DNS: `${ACCESS_PROVIDERS.CMCCCLOUD}-dns`,
   CONSTELLIX: `${ACCESS_PROVIDERS.CONSTELLIX}`,
+  CPANEL: `${ACCESS_PROVIDERS.CPANEL}`,
   CTCCCLOUD: `${ACCESS_PROVIDERS.CTCCCLOUD}`, // 兼容旧值，等同于 `CTCCCLOUD_SMARTDNS`
   CTCCCLOUD_SMARTDNS: `${ACCESS_PROVIDERS.CTCCCLOUD}-smartdns`,
   DESEC: `${ACCESS_PROVIDERS.DESEC}`,
@@ -460,6 +463,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.WESTCN, "provider.westcn"],
       [ACME_DNS01_PROVIDERS["35CN"], "provider.35cn"],
       [ACME_DNS01_PROVIDERS.XINNET, "provider.xinnet"],
+      [ACME_DNS01_PROVIDERS.CPANEL, "provider.cpanel"],
       [ACME_DNS01_PROVIDERS.POWERDNS, "provider.powerdns"],
       [ACME_DNS01_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns"],
       [ACME_DNS01_PROVIDERS.RFC2136, "provider.rfc2136"],

@@ -24,7 +24,7 @@ const AccessConfigFormFieldsProviderMattermost = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.mattermost_server_url.tooltip") }}></span>}
       >
-        <Input placeholder={t("access.form.mattermost_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.mattermost_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

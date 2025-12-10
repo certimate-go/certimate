@@ -116,10 +116,8 @@ func createSDKClient(serverUrl, workspace, apiToken string, skipTlsVerify bool) 
 	}
 	if skipTlsVerify {
 		transport := xhttp.NewDefaultTransport()
-		if transport.TLSClientConfig == nil {
-			transport.TLSClientConfig = &tls.Config{}
-		}
-		transport.TLSClientConfig.InsecureSkipVerify = true
+		transport.DisableKeepAlives = true
+		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		httpClient.Transport = transport
 	} else {
 		httpClient.Transport = http.DefaultTransport

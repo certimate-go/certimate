@@ -24,7 +24,7 @@ const AccessConfigFormFieldsProvider1Panel = () => {
         extra={t("access.form.1panel_server_url.help")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.1panel_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.1panel_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

@@ -106,10 +106,8 @@ func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify b
 	}
 	if skipTlsVerify {
 		transport := xhttp.NewDefaultTransport()
-		if transport.TLSClientConfig == nil {
-			transport.TLSClientConfig = &tls.Config{}
-		}
-		transport.TLSClientConfig.InsecureSkipVerify = true
+		transport.DisableKeepAlives = true
+		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		httpClient.Transport = transport
 	}
 	client := proxmox.NewClient(

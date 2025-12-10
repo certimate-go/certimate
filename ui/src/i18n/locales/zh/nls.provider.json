@@ -67,6 +67,8 @@
   "provider.cmcccloud": "移动云",
   "provider.cmcccloud_dns": "移动云 - 云解析 DNS",
   "provider.constellix": "Constellix",
+  "provider.cpanel": "cPanel",
+  "provider.cpanel_site": "cPanel - 网站",
   "provider.ctcccloud": "天翼云",
   "provider.ctcccloud_ao": "天翼云 - 边缘安全加速平台 AccessOne",
   "provider.ctcccloud_cdn": "天翼云 - 内容分发网络 CDN",

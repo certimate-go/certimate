@@ -29,6 +29,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 	providerConfig.APIToken = config.ApiToken
 	if config.AllowInsecureConnections {
 		transport := xhttp.NewDefaultTransport()
+		transport.DisableKeepAlives = true
 		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 		providerConfig.HTTPClient.Transport = transport
 	}

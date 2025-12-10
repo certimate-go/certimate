@@ -23,7 +23,7 @@ const AccessConfigFormFieldsProviderSafeLine = () => {
         label={t("access.form.safeline_server_url.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.safeline_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.safeline_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

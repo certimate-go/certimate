@@ -35,6 +35,7 @@ const (
 	AccessProviderTypeClouDNS             = AccessProviderType("cloudns")
 	AccessProviderTypeCMCCCloud           = AccessProviderType("cmcccloud")
 	AccessProviderTypeConstellix          = AccessProviderType("constellix")
+	AccessProviderTypeCPanel              = AccessProviderType("cpanel")
 	AccessProviderTypeCTCCCloud           = AccessProviderType("ctcccloud")
 	AccessProviderTypeCUCCCloud           = AccessProviderType("cucccloud") // 联通云（预留）
 	AccessProviderTypeDeSEC               = AccessProviderType("desec")
@@ -169,6 +170,7 @@ const (
 	ACMEDns01ProviderTypeCMCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCMCCCloudDNS]
 	ACMEDns01ProviderTypeCMCCCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud + "-dns")
 	ACMEDns01ProviderTypeConstellix        = ACMEDns01ProviderType(AccessProviderTypeConstellix)
+	ACMEDns01ProviderTypeCPanel            = ACMEDns01ProviderType(AccessProviderTypeCPanel)
 	ACMEDns01ProviderTypeCTCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCTCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCTCCCloudSmartDNS]
 	ACMEDns01ProviderTypeCTCCCloudSmartDNS = ACMEDns01ProviderType(AccessProviderTypeCTCCCloud + "-smartdns")
 	ACMEDns01ProviderTypeDeSEC             = ACMEDns01ProviderType(AccessProviderTypeDeSEC)

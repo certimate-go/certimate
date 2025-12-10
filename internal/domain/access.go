@@ -160,6 +160,13 @@ type AccessConfigForConstellix struct {
 	SecretKey string `json:"secretKey"`
 }
 
+type AccessConfigForCPanel struct {
+	ServerUrl                string `json:"serverUrl"`
+	Username                 string `json:"username"`
+	ApiToken                 string `json:"apiToken"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForCTCCCloud struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`

@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const AccessConfigFormFieldsProviderBaotaPanel = () => {
+const AccessConfigFormFieldsProviderCPanel = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -20,21 +20,24 @@ const AccessConfigFormFieldsProviderBaotaPanel = () => {
       <Form.Item
         name={[parentNamePath, "serverUrl"]}
         initialValue={initialValues.serverUrl}
-        label={t("access.form.baotapanel_server_url.label")}
-        extra={t("access.form.baotapanel_server_url.help")}
+        label={t("access.form.cpanel_server_url.label")}
         rules={[formRule]}
       >
-        <Input type="url" placeholder={t("access.form.baotapanel_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.cpanel_server_url.placeholder")} />
+      </Form.Item>
+
+      <Form.Item name={[parentNamePath, "username"]} initialValue={initialValues.apiToken} label={t("access.form.cpanel_username.label")} rules={[formRule]}>
+        <Input autoComplete="new-password" placeholder={t("access.form.cpanel_username.placeholder")} />
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "apiKey"]}
-        initialValue={initialValues.apiKey}
-        label={t("access.form.baotapanel_api_key.label")}
+        name={[parentNamePath, "apiToken"]}
+        initialValue={initialValues.apiToken}
+        label={t("access.form.cpanel_api_token.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.baotapanel_api_key.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.cpanel_api_token.tooltip") }}></span>}
       >
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.baotapanel_api_key.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.cpanel_api_token.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -51,8 +54,9 @@ const AccessConfigFormFieldsProviderBaotaPanel = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    serverUrl: "http://<your-host-addr>:8888/",
-    apiKey: "",
+    serverUrl: "http://<your-host-addr>:2082/",
+    username: "",
+    apiToken: "",
   };
 };
 
@@ -61,12 +65,13 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   return z.object({
     serverUrl: z.url(t("common.errmsg.url_invalid")),
-    apiKey: z.string().nonempty(t("access.form.baotapanel_api_key.placeholder")),
+    username: z.string().nonempty(t("access.form.cpanel_username.placeholder")),
+    apiToken: z.string().nonempty(t("access.form.cpanel_api_token.placeholder")),
     allowInsecureConnections: z.boolean().nullish(),
   });
 };
 
-const _default = Object.assign(AccessConfigFormFieldsProviderBaotaPanel, {
+const _default = Object.assign(AccessConfigFormFieldsProviderCPanel, {
   getInitialValues,
   getSchema,
 });

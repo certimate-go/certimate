@@ -23,7 +23,7 @@ const AccessConfigFormFieldsProviderFlexCDN = () => {
         label={t("access.form.flexcdn_server_url.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.flexcdn_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.flexcdn_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item name={[parentNamePath, "apiRole"]} initialValue={initialValues.apiRole} label={t("access.form.flexcdn_api_role.label")} rules={[formRule]}>

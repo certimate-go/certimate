@@ -23,7 +23,7 @@ const AccessConfigFormFieldsProviderCdnfly = () => {
         label={t("access.form.cdnfly_server_url.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.cdnfly_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.cdnfly_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

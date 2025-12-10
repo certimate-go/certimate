@@ -24,7 +24,7 @@ const AccessConfigFormFieldsProviderBaotaPanelGo = () => {
         extra={t("access.form.baotapanelgo_server_url.help")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.baotapanelgo_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.baotapanelgo_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

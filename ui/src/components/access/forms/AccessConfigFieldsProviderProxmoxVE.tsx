@@ -23,7 +23,7 @@ const AccessConfigFormFieldsProviderProxmoxVE = () => {
         label={t("access.form.proxmoxve_server_url.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.proxmoxve_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.proxmoxve_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

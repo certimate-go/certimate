@@ -1,12 +1,11 @@
-package powerdns
+package cpanel
 
 import (
 	"crypto/tls"
 	"errors"
-	"net/url"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/pdns"
+	"github.com/go-acme/lego/v4/providers/dns/cpanel"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
@@ -14,10 +13,11 @@ import (
 
 type ChallengerConfig struct {
 	ServerUrl                string `json:"serverUrl"`
-	ApiKey                   string `json:"apiKey"`
-	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+	Username                 string `json:"username"`
+	ApiToken                 string `json:"apiToken"`
 	DnsPropagationTimeout    int    `json:"dnsPropagationTimeout,omitempty"`
 	DnsTTL                   int    `json:"dnsTTL,omitempty"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
 func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
@@ -25,10 +25,11 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		return nil, errors.New("the configuration of the acme challenge provider is nil")
 	}
 
-	serverUrl, _ := url.Parse(config.ServerUrl)
-	providerConfig := pdns.NewDefaultConfig()
-	providerConfig.Host = serverUrl
-	providerConfig.APIKey = config.ApiKey
+	providerConfig := cpanel.NewDefaultConfig()
+	providerConfig.Mode = "cpanel"
+	providerConfig.BaseURL = config.ServerUrl
+	providerConfig.Username = config.Username
+	providerConfig.Token = config.ApiToken
 	if config.AllowInsecureConnections {
 		transport := xhttp.NewDefaultTransport()
 		transport.DisableKeepAlives = true
@@ -42,7 +43,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = config.DnsTTL
 	}
 
-	provider, err := pdns.NewDNSProviderConfig(providerConfig)
+	provider, err := cpanel.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}

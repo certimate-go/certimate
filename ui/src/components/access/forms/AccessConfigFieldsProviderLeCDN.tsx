@@ -18,7 +18,7 @@ const AccessConfigFormFieldsProviderLeCDN = () => {
   return (
     <>
       <Form.Item name={[parentNamePath, "serverUrl"]} initialValue={initialValues.serverUrl} label={t("access.form.lecdn_server_url.label")} rules={[formRule]}>
-        <Input placeholder={t("access.form.lecdn_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.lecdn_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item

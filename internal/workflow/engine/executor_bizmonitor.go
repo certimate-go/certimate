@@ -118,6 +118,7 @@ func (ne *bizMonitorNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeE
 
 func (ne *bizMonitorNodeExecutor) tryRetrievePeerCertificates(execCtx *NodeExecutionContext, addr, domain, requestPath string) ([]*x509.Certificate, error) {
 	transport := xhttp.NewDefaultTransport()
+	transport.DisableKeepAlives = true
 	transport.TLSClientConfig = xtls.NewInsecureConfig()
 
 	client := &http.Client{

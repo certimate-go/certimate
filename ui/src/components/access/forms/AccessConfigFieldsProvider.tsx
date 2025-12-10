@@ -28,6 +28,7 @@ import AccessConfigFieldsProviderCloudflare from "./AccessConfigFieldsProviderCl
 import AccessConfigFieldsProviderClouDNS from "./AccessConfigFieldsProviderClouDNS";
 import AccessConfigFieldsProviderCMCCCloud from "./AccessConfigFieldsProviderCMCCCloud";
 import AccessConfigFieldsProviderConstellix from "./AccessConfigFieldsProviderConstellix";
+import AccessConfigFieldsProviderCPanel from "./AccessConfigFieldsProviderCPanel";
 import AccessConfigFieldsProviderCTCCCloud from "./AccessConfigFieldsProviderCTCCCloud";
 import AccessConfigFieldsProviderDeSEC from "./AccessConfigFieldsProviderDeSEC";
 import AccessConfigFieldsProviderDigitalOcean from "./AccessConfigFieldsProviderDigitalOcean";
@@ -133,6 +134,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.CLOUDNS]: AccessConfigFieldsProviderClouDNS,
   [ACCESS_PROVIDERS.CMCCCLOUD]: AccessConfigFieldsProviderCMCCCloud,
   [ACCESS_PROVIDERS.CONSTELLIX]: AccessConfigFieldsProviderConstellix,
+  [ACCESS_PROVIDERS.CPANEL]: AccessConfigFieldsProviderCPanel,
   [ACCESS_PROVIDERS.CTCCCLOUD]: AccessConfigFieldsProviderCTCCCloud,
   [ACCESS_PROVIDERS.DESEC]: AccessConfigFieldsProviderDeSEC,
   [ACCESS_PROVIDERS.DIGITALOCEAN]: AccessConfigFieldsProviderDigitalOcean,

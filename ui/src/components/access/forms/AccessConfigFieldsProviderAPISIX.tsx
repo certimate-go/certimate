@@ -23,7 +23,7 @@ const AccessConfigFormFieldsProviderAPISIX = () => {
         label={t("access.form.apisix_server_url.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("access.form.apisix_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.apisix_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item
