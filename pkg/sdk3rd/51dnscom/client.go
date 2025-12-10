@@ -1,42 +1,41 @@
-package gname
+package dnscom
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
 )
 
 type Client struct {
-	appId  string
-	appKey string
+	apiKey    string
+	apiSecret string
 
 	client *resty.Client
 }
 
-func NewClient(appId, appKey string) (*Client, error) {
-	if appId == "" {
-		return nil, fmt.Errorf("sdkerr: unset appId")
+func NewClient(apiKey, apiSecret string) (*Client, error) {
+	if apiKey == "" {
+		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
-	if appKey == "" {
-		return nil, fmt.Errorf("sdkerr: unset appKey")
+	if apiSecret == "" {
+		return nil, fmt.Errorf("sdkerr: unset apiSecret")
 	}
 
 	client := resty.New().
-		SetBaseURL("https://api.gname.com").
+		SetBaseURL("https://www.51dns.com/api").
 		SetHeader("Accept", "application/json").
-		SetHeader("Content-Type", "application/x-www-form-urlencoded").
+		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", "certimate")
 
 	return &Client{
-		appId:  appId,
-		appKey: appKey,
-		client: client,
+		apiKey:    apiKey,
+		apiSecret: apiSecret,
+		client:    client,
 	}, nil
 }
 
@@ -67,14 +66,14 @@ func (c *Client) newRequest(method string, path string, params any) (*resty.Requ
 		}
 	}
 
-	data["appid"] = c.appId
-	data["gntime"] = fmt.Sprintf("%d", time.Now().Unix())
-	data["gntoken"] = generateSignature(data, c.appKey)
+	data["apiKey"] = c.apiKey
+	data["timestamp"] = fmt.Sprintf("%d", time.Now().Unix())
+	data["hash"] = generateHash(data, c.apiSecret)
 
 	req := c.client.R()
 	req.Method = method
 	req.URL = path
-	req.SetFormData(data)
+	req.SetBody(data)
 	return req, nil
 }
 
@@ -114,7 +113,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res apiResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
 		} else {
-			if tcode := res.GetCode(); tcode != 1 {
+			if tcode := res.GetCode(); tcode != 0 {
 				return resp, fmt.Errorf("sdkerr: api error: code='%d', message='%s'", tcode, res.GetMessage())
 			}
 		}
@@ -123,26 +122,24 @@ func (c *Client) doRequestWithResult(req *resty.Request, res apiResponse) (*rest
 	return resp, nil
 }
 
-func generateSignature(params map[string]string, appKey string) string {
-	// Step 1: Sort parameters by ASCII order
-	var keys []string
+func generateHash(params map[string]string, secert string) string {
+	var keyList []string
 	for k := range params {
-		keys = append(keys, k)
+		keyList = append(keyList, k)
 	}
-	sort.Strings(keys)
+	sort.Strings(keyList)
 
-	// Step 2: Create string A with URL-encoded values
-	var pairs []string
-	for _, k := range keys {
-		encodedValue := url.QueryEscape(params[k])
-		pairs = append(pairs, fmt.Sprintf("%s=%s", k, encodedValue))
+	var hashString string
+	for _, key := range keyList {
+		if hashString == "" {
+			hashString += key + "=" + params[key]
+		} else {
+			hashString += "&" + key + "=" + params[key]
+		}
 	}
-	stringA := strings.Join(pairs, "&")
 
-	// Step 3: Append appkey to create string B
-	stringB := stringA + appKey
-
-	// Step 4: Calculate MD5 and convert to uppercase
-	hash := md5.Sum([]byte(stringB))
-	return strings.ToUpper(fmt.Sprintf("%x", hash))
+	m := md5.New()
+	m.Write([]byte(hashString + secert))
+	cipherStr := m.Sum(nil)
+	return hex.EncodeToString(cipherStr)
 }

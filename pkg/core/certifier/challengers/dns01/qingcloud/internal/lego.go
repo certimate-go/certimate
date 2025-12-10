@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	envNamespace = "DNSLA_"
+	envNamespace = "QINGCLOUD_"
 
 	EnvAccessKey    = envNamespace + "ACCESS_KEY"
 	EnvAccessSecret = envNamespace + "ACCESS_SECRET"
@@ -97,7 +97,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://docsv4.qingcloud.com/user_guide/development_docs/api/api_list/dns/record/#_createrecord
-	qingcloudCreateRecordReq := &qingcloudsdk.CreateRecordRequest{
+	request := &qingcloudsdk.CreateRecordRequest{
 		ZoneName:   lo.ToPtr(authZone),
 		DomainName: lo.ToPtr(info.EffectiveFQDN),
 		ViewId:     lo.ToPtr(int32(0)),
@@ -117,13 +117,13 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		Mode:      lo.ToPtr(int32(1)),
 		AutoMerge: lo.ToPtr(int32(1)),
 	}
-	qingcloudCreateRecordResp, err := d.client.CreateRecord(qingcloudCreateRecordReq)
+	response, err := d.client.CreateRecord(request)
 	if err != nil {
 		return fmt.Errorf("qingcloud: error when create record: %w", err)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token] = qingcloudCreateRecordResp.DomainRecordId
+	d.recordIDs[token] = response.DomainRecordId
 	d.recordIDsMu.Unlock()
 
 	return nil

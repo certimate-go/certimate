@@ -107,23 +107,23 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://docs.jdcloud.com/cn/jd-cloud-dns/api/createresourcerecord
-	jddnsCreateResourceRecordReq := jddns.NewCreateResourceRecordRequestWithoutParam()
-	jddnsCreateResourceRecordReq.SetRegionId(d.config.RegionId)
-	jddnsCreateResourceRecordReq.SetDomainId(fmt.Sprintf("%d", zone.Id))
-	jddnsCreateResourceRecordReq.SetReq(&jddnsmodel.AddRR{
+	request := jddns.NewCreateResourceRecordRequestWithoutParam()
+	request.SetRegionId(d.config.RegionId)
+	request.SetDomainId(fmt.Sprintf("%d", zone.Id))
+	request.SetReq(&jddnsmodel.AddRR{
 		Type:       "TXT",
 		HostRecord: subDomain,
 		HostValue:  info.Value,
 		Ttl:        int(d.config.TTL),
 		ViewValue:  -1,
 	})
-	jddnsCreateResourceRecordResp, err := d.client.CreateResourceRecord(jddnsCreateResourceRecordReq)
+	response, err := d.client.CreateResourceRecord(request)
 	if err != nil {
 		return fmt.Errorf("jdcloud: error when create record: %w", err)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token] = jddnsCreateResourceRecordResp.Result.DataList.Id
+	d.recordIDs[token] = response.Result.DataList.Id
 	d.recordIDsMu.Unlock()
 
 	return nil
@@ -150,11 +150,11 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://docs.jdcloud.com/cn/jd-cloud-dns/api/deleteresourcerecord
-	jddnsDeleteResourceRecordReq := jddns.NewDeleteResourceRecordRequestWithoutParam()
-	jddnsDeleteResourceRecordReq.SetRegionId(d.config.RegionId)
-	jddnsDeleteResourceRecordReq.SetDomainId(fmt.Sprintf("%d", zone.Id))
-	jddnsDeleteResourceRecordReq.SetResourceRecordId(fmt.Sprintf("%d", recordID))
-	_, err = d.client.DeleteResourceRecord(jddnsDeleteResourceRecordReq)
+	request := jddns.NewDeleteResourceRecordRequestWithoutParam()
+	request.SetRegionId(d.config.RegionId)
+	request.SetDomainId(fmt.Sprintf("%d", zone.Id))
+	request.SetResourceRecordId(fmt.Sprintf("%d", recordID))
+	_, err = d.client.DeleteResourceRecord(request)
 	if err != nil {
 		return fmt.Errorf("jdcloud: error when delete record: %w", err)
 	}
@@ -167,32 +167,32 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 }
 
 func (d *DNSProvider) findZone(zoneName string) (*jddnsmodel.DomainInfo, error) {
-	jddnsDescribeDomainsPageNumber := 1
-	jddnsDescribeDomainsPageSize := 10
+	pageNumber := 1
+	pageSize := 10
 	for {
 		// REF: https://docs.jdcloud.com/cn/jd-cloud-dns/api/describedomains
-		jddnsDescribeDomainsReq := jddns.NewDescribeDomainsRequestWithoutParam()
-		jddnsDescribeDomainsReq.SetRegionId(d.config.RegionId)
-		jddnsDescribeDomainsReq.SetPageNumber(jddnsDescribeDomainsPageNumber)
-		jddnsDescribeDomainsReq.SetPageSize(jddnsDescribeDomainsPageSize)
-		jddnsDescribeDomainsReq.SetDomainName(zoneName)
+		request := jddns.NewDescribeDomainsRequestWithoutParam()
+		request.SetRegionId(d.config.RegionId)
+		request.SetPageNumber(pageNumber)
+		request.SetPageSize(pageSize)
+		request.SetDomainName(zoneName)
 
-		jddnsDescribeDomainsResp, err := d.client.DescribeDomains(jddnsDescribeDomainsReq)
+		response, err := d.client.DescribeDomains(request)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, domainItem := range jddnsDescribeDomainsResp.Result.DataList {
+		for _, domainItem := range response.Result.DataList {
 			if domainItem.DomainName == zoneName {
 				return &domainItem, nil
 			}
 		}
 
-		if len(jddnsDescribeDomainsResp.Result.DataList) < jddnsDescribeDomainsPageSize {
+		if len(response.Result.DataList) < pageSize {
 			break
 		}
 
-		jddnsDescribeDomainsPageNumber++
+		pageNumber++
 	}
 
 	return nil, fmt.Errorf("could not find zone '%s'", zoneName)

@@ -101,7 +101,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&api=11259&data=181&isNormal=1&vid=259
-	ctyunAddRecordReq := &ctyundns.AddRecordRequest{
+	request := &ctyundns.AddRecordRequest{
 		Domain:   lo.ToPtr(dns01.UnFqdn(authZone)),
 		Host:     lo.ToPtr(subDomain),
 		Type:     lo.ToPtr("TXT"),
@@ -110,13 +110,13 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		State:    lo.ToPtr(int32(1)),
 		TTL:      lo.ToPtr(int32(d.config.TTL)),
 	}
-	ctyunAddRecordResp, err := d.client.AddRecord(ctyunAddRecordReq)
+	response, err := d.client.AddRecord(request)
 	if err != nil {
 		return fmt.Errorf("ctyun: error when create record: %w", err)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token] = ctyunAddRecordResp.ReturnObj.RecordId
+	d.recordIDs[token] = response.ReturnObj.RecordId
 	d.recordIDsMu.Unlock()
 
 	return nil
@@ -133,10 +133,10 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&api=11262&data=181&isNormal=1&vid=259
-	ctyunDeleteRecordReq := &ctyundns.DeleteRecordRequest{
+	request := &ctyundns.DeleteRecordRequest{
 		RecordId: lo.ToPtr(recordID),
 	}
-	if _, err := d.client.DeleteRecord(ctyunDeleteRecordReq); err != nil {
+	if _, err := d.client.DeleteRecord(request); err != nil {
 		return fmt.Errorf("ctyun: error when delete record: %w", err)
 	}
 

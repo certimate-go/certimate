@@ -27,6 +27,11 @@ type AccessConfigFor35cn struct {
 	ApiPassword string `json:"apiPassword"`
 }
 
+type AccessConfigFor51DNScom struct {
+	ApiKey    string `json:"apiKey"`
+	ApiSecret string `json:"apiSecret"`
+}
+
 type AccessConfigForACMEExternalAccountBinding struct {
 	EabKid     string `json:"eabKid,omitempty"`
 	EabHmacKey string `json:"eabHmacKey,omitempty"`

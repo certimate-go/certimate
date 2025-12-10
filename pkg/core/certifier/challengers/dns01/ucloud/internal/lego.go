@@ -95,16 +95,16 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://docs.ucloud.cn/api/udnr-api/udnr_domain_dns_add
-	udnrDomainDNSAddReq := d.client.NewAddDomainDNSRequest()
-	udnrDomainDNSAddReq.Dn = ucloud.String(authZone)
-	udnrDomainDNSAddReq.DnsType = ucloud.String("TXT")
-	udnrDomainDNSAddReq.RecordName = ucloud.String(dns01.UnFqdn(info.EffectiveFQDN))
-	udnrDomainDNSAddReq.Content = ucloud.String(info.Value)
-	udnrDomainDNSAddReq.TTL = ucloud.String(fmt.Sprintf("%d", d.config.TTL))
+	request := d.client.NewAddDomainDNSRequest()
+	request.Dn = ucloud.String(authZone)
+	request.DnsType = ucloud.String("TXT")
+	request.RecordName = ucloud.String(dns01.UnFqdn(info.EffectiveFQDN))
+	request.Content = ucloud.String(info.Value)
+	request.TTL = ucloud.String(fmt.Sprintf("%d", d.config.TTL))
 	if d.config.ProjectId != "" {
-		udnrDomainDNSAddReq.SetProjectId(d.config.ProjectId)
+		request.SetProjectId(d.config.ProjectId)
 	}
-	if _, err := d.client.AddDomainDNS(udnrDomainDNSAddReq); err != nil {
+	if _, err := d.client.AddDomainDNS(request); err != nil {
 		return fmt.Errorf("ucloud: error when create record: %w", err)
 	}
 
@@ -120,28 +120,28 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://docs.ucloud.cn/api/udnr-api/udnr_domain_dns_query
-	udnrDomainDNSQueryReq := d.client.NewQueryDomainDNSRequest()
-	udnrDomainDNSQueryReq.Dn = ucloud.String(authZone)
+	request := d.client.NewQueryDomainDNSRequest()
+	request.Dn = ucloud.String(authZone)
 	if d.config.ProjectId != "" {
-		udnrDomainDNSQueryReq.SetProjectId(d.config.ProjectId)
+		request.SetProjectId(d.config.ProjectId)
 	}
-	udnrDomainDNSQueryResp, err := d.client.QueryDomainDNS(udnrDomainDNSQueryReq)
+	response, err := d.client.QueryDomainDNS(request)
 	if err != nil {
 		return fmt.Errorf("ucloud: error when list records: %w", err)
 	}
 
 	// REF: https://docs.ucloud.cn/api/udnr-api/udnr_delete_dns_record
-	for _, record := range udnrDomainDNSQueryResp.Data {
+	for _, record := range response.Data {
 		if record.DnsType == "TXT" && record.RecordName == dns01.UnFqdn(info.EffectiveFQDN) && record.Content == info.Value {
-			udnrDomainDNSDeleteReq := d.client.NewDeleteDomainDNSRequest()
-			udnrDomainDNSDeleteReq.Dn = ucloud.String(authZone)
-			udnrDomainDNSDeleteReq.DnsType = ucloud.String(record.DnsType)
-			udnrDomainDNSDeleteReq.RecordName = ucloud.String(record.RecordName)
-			udnrDomainDNSDeleteReq.Content = ucloud.String(record.Content)
+			delreq := d.client.NewDeleteDomainDNSRequest()
+			delreq.Dn = ucloud.String(authZone)
+			delreq.DnsType = ucloud.String(record.DnsType)
+			delreq.RecordName = ucloud.String(record.RecordName)
+			delreq.Content = ucloud.String(record.Content)
 			if d.config.ProjectId != "" {
-				udnrDomainDNSDeleteReq.SetProjectId(d.config.ProjectId)
+				delreq.SetProjectId(d.config.ProjectId)
 			}
-			_, err := d.client.DeleteDomainDNS(udnrDomainDNSDeleteReq)
+			_, err := d.client.DeleteDomainDNS(delreq)
 			if err != nil {
 				return fmt.Errorf("ucloud: error when delete record: %w", err)
 			}

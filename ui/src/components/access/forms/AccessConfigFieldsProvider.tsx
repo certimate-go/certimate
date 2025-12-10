@@ -4,6 +4,7 @@ import { ACCESS_PROVIDERS, type AccessProviderType } from "@/domain/provider";
 
 import AccessConfigFieldsProvider1Panel from "./AccessConfigFieldsProvider1Panel";
 import AccessConfigFieldsProvider35cn from "./AccessConfigFieldsProvider35cn";
+import AccessConfigFieldsProvider51DNScom from "./AccessConfigFieldsProvider51DNScom";
 import AccessConfigFieldsProviderACMECA from "./AccessConfigFieldsProviderACMECA";
 import AccessConfigFieldsProviderACMEDNS from "./AccessConfigFieldsProviderACMEDNS";
 import AccessConfigFieldsProviderACMEHttpReq from "./AccessConfigFieldsProviderACMEHttpReq";
@@ -110,6 +111,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
     */
   [ACCESS_PROVIDERS["1PANEL"]]: AccessConfigFieldsProvider1Panel,
   [ACCESS_PROVIDERS["35CN"]]: AccessConfigFieldsProvider35cn,
+  [ACCESS_PROVIDERS["51DNSCOM"]]: AccessConfigFieldsProvider51DNScom,
   [ACCESS_PROVIDERS.ACMECA]: AccessConfigFieldsProviderACMECA,
   [ACCESS_PROVIDERS.ACMEDNS]: AccessConfigFieldsProviderACMEDNS,
   [ACCESS_PROVIDERS.ACMEHTTPREQ]: AccessConfigFieldsProviderACMEHttpReq,

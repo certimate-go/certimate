@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	envNamespace = "DNSLA_"
+	envNamespace = "XINNET_"
 
 	EnvAgentId   = envNamespace + "AGENT_ID"
 	EnvAppSecret = envNamespace + "APP_SECRET"
@@ -97,7 +97,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://apidoc.xin.cn/doc-7283900
-	xinnetDnsCreateReq := &xinnetsdk.DnsCreateRequest{
+	request := &xinnetsdk.DnsCreateRequest{
 		DomainName: lo.ToPtr(dns01.UnFqdn(authZone)),
 		RecordName: lo.ToPtr(dns01.UnFqdn(info.EffectiveFQDN)),
 		Type:       lo.ToPtr("TXT"),
@@ -105,13 +105,13 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		Line:       lo.ToPtr("默认"),
 		Ttl:        lo.ToPtr(int32(d.config.TTL)),
 	}
-	xinnetDnsCreateResp, err := d.client.DnsCreate(xinnetDnsCreateReq)
+	response, err := d.client.DnsCreate(request)
 	if err != nil {
 		return fmt.Errorf("xinnet: error when create record: %w", err)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token] = xinnetDnsCreateResp.Data
+	d.recordIDs[token] = response.Data
 	d.recordIDsMu.Unlock()
 
 	return nil
@@ -133,11 +133,11 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://apidoc.xin.cn/doc-7283901
-	xinnetDnsDeleteReq := &xinnetsdk.DnsDeleteRequest{
+	request := &xinnetsdk.DnsDeleteRequest{
 		DomainName: lo.ToPtr(dns01.UnFqdn(authZone)),
 		RecordId:   recordID,
 	}
-	if _, err := d.client.DnsDelete(xinnetDnsDeleteReq); err != nil {
+	if _, err := d.client.DnsDelete(request); err != nil {
 		return fmt.Errorf("xinnet: error when delete record: %w", err)
 	}
 

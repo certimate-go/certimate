@@ -102,20 +102,20 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://www.gname.vip/domain/api/dns/add
-	gnameAddDomainResolutionReq := &gnamesdk.AddDomainResolutionRequest{
+	request := &gnamesdk.AddDomainResolutionRequest{
 		ZoneName:    lo.ToPtr(dns01.UnFqdn(authZone)),
 		RecordType:  lo.ToPtr("TXT"),
 		RecordName:  lo.ToPtr(subDomain),
 		RecordValue: lo.ToPtr(info.Value),
 		TTL:         lo.ToPtr(int32(d.config.TTL)),
 	}
-	gnameAddDomainResolutionResp, err := d.client.AddDomainResolution(gnameAddDomainResolutionReq)
+	response, err := d.client.AddDomainResolution(request)
 	if err != nil {
 		return fmt.Errorf("gname: error when create record: %w", err)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token], _ = gnameAddDomainResolutionResp.Data.Int64()
+	d.recordIDs[token], _ = response.Data.Int64()
 	d.recordIDsMu.Unlock()
 
 	return nil
@@ -137,11 +137,11 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://www.gname.vip/domain/api/dns/del
-	gnameDeleteDomainResolutionReq := &gnamesdk.DeleteDomainResolutionRequest{
+	request := &gnamesdk.DeleteDomainResolutionRequest{
 		ZoneName: lo.ToPtr(dns01.UnFqdn(authZone)),
 		RecordID: lo.ToPtr(recordID),
 	}
-	_, err = d.client.DeleteDomainResolution(gnameDeleteDomainResolutionReq)
+	_, err = d.client.DeleteDomainResolution(request)
 	if err != nil {
 		return fmt.Errorf("gname: error when delete record: %w", err)
 	}

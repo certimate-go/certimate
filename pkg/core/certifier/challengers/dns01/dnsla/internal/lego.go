@@ -19,7 +19,7 @@ const (
 	envNamespace = "DNSLA_"
 
 	EnvAPIId     = envNamespace + "API_ID"
-	EnvAPISecret = envNamespace + "API_KEY"
+	EnvAPISecret = envNamespace + "API_SECRET"
 
 	EnvTTL                = envNamespace + "TTL"
 	EnvPropagationTimeout = envNamespace + "PROPAGATION_TIMEOUT"
@@ -108,20 +108,20 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://www.dnsla.cn/docs/ApiDoc
-	dnslaCreateRecordReq := &dnslasdk.CreateRecordRequest{
+	request := &dnslasdk.CreateRecordRequest{
 		DomainId: lo.ToPtr(zone.Id),
 		Type:     lo.ToPtr(int32(16)),
 		Host:     lo.ToPtr(subDomain),
 		Data:     lo.ToPtr(info.Value),
 		Ttl:      lo.ToPtr(int32(d.config.TTL)),
 	}
-	dnslaCreateRecordResp, err := d.client.CreateRecord(dnslaCreateRecordReq)
+	response, err := d.client.CreateRecord(request)
 	if err != nil {
 		return fmt.Errorf("dnsla: error when create record: %w", err)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token] = dnslaCreateRecordResp.Data.Id
+	d.recordIDs[token] = response.Data.Id
 	d.recordIDsMu.Unlock()
 
 	return nil
@@ -150,34 +150,34 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 }
 
 func (d *DNSProvider) findZone(zoneName string) (*dnslasdk.DomainRecord, error) {
-	dnslaListDomainsPageIndex := 1
-	dnslaListDomainsPageSize := 100
+	pageIndex := 1
+	pageSize := 100
 	for {
 		// REF: https://www.dnsla.cn/docs/ApiDoc
-		dnslaListDomainsReq := &dnslasdk.ListDomainsRequest{
-			PageIndex: lo.ToPtr(int32(dnslaListDomainsPageIndex)),
-			PageSize:  lo.ToPtr(int32(dnslaListDomainsPageSize)),
+		request := &dnslasdk.ListDomainsRequest{
+			PageIndex: lo.ToPtr(int32(pageIndex)),
+			PageSize:  lo.ToPtr(int32(pageSize)),
 		}
-		dnslaListDomainsResp, err := d.client.ListDomains(dnslaListDomainsReq)
+		response, err := d.client.ListDomains(request)
 		if err != nil {
 			return nil, err
 		}
 
-		if dnslaListDomainsResp.Data == nil {
+		if response.Data == nil {
 			break
 		}
 
-		for _, domainItem := range dnslaListDomainsResp.Data.Results {
+		for _, domainItem := range response.Data.Results {
 			if strings.TrimRight(domainItem.Domain, ".") == zoneName || strings.TrimRight(domainItem.DisplayDomain, ".") == zoneName {
 				return domainItem, nil
 			}
 		}
 
-		if len(dnslaListDomainsResp.Data.Results) < dnslaListDomainsPageSize {
+		if len(response.Data.Results) < pageSize {
 			break
 		}
 
-		dnslaListDomainsPageIndex++
+		pageIndex++
 	}
 
 	return nil, fmt.Errorf("could not find zone '%s'", zoneName)

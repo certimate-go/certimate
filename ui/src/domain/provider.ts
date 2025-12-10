@@ -17,6 +17,7 @@ interface BaseProviderWithAccess<P> extends BaseProvider<P> {
 export const ACCESS_PROVIDERS = Object.freeze({
   ["1PANEL"]: "1panel",
   ["35CN"]: "35cn",
+  ["51DNSCOM"]: "51dnscom",
   ACMECA: "acmeca",
   ACMEDNS: "acmedns",
   ACMEHTTPREQ: "acmehttpreq",
@@ -196,7 +197,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.DESEC, "provider.desec", "/imgs/providers/desec.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DIGITALOCEAN, "provider.digitalocean", "/imgs/providers/digitalocean.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DNSEXIT, "provider.dnsexit", "/imgs/providers/dnsexit.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DNSLA, "provider.dnsla", "/imgs/providers/dnsla.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DNSMADEEASY, "provider.dnsmadeeasy", "/imgs/providers/dnsmadeeasy.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DUCKDNS, "provider.duckdns", "/imgs/providers/duckdns.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DYNU, "provider.dynu", "/imgs/providers/dynu.png", [ACCESS_USAGES.DNS]],
@@ -225,6 +225,8 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.WESTCN, "provider.westcn", "/imgs/providers/westcn.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS["35CN"], "provider.35cn", "/imgs/providers/35cn.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.XINNET, "provider.xinnet", "/imgs/providers/xinnet.png", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS["51DNSCOM"], "provider.51dnscom", "/imgs/providers/51dnscom.png", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.DNSLA, "provider.dnsla", "/imgs/providers/dnsla.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.POWERDNS, "provider.powerdns", "/imgs/providers/powerdns.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns", "/imgs/providers/technitiumdns.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.RFC2136, "provider.rfc2136", "/imgs/providers/rfc.png", [ACCESS_USAGES.DNS]],
@@ -324,6 +326,7 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
  */
 export const ACME_DNS01_PROVIDERS = Object.freeze({
   ["35CN"]: `${ACCESS_PROVIDERS["35CN"]}`,
+  ["51DNSCOM"]: `${ACCESS_PROVIDERS["51DNSCOM"]}`,
   ACMEDNS: `${ACCESS_PROVIDERS.ACMEDNS}`,
   ACMEHTTPREQ: `${ACCESS_PROVIDERS.ACMEHTTPREQ}`,
   AKAMAI: `${ACCESS_PROVIDERS.AKAMAI}`, // 兼容旧值，等同于 `AKAMAI_EDGEDNS`
@@ -429,7 +432,6 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.DESEC, "provider.desec"],
       [ACME_DNS01_PROVIDERS.DIGITALOCEAN, "provider.digitalocean"],
       [ACME_DNS01_PROVIDERS.DNSEXIT, "provider.dnsexit"],
-      [ACME_DNS01_PROVIDERS.DNSLA, "provider.dnsla"],
       [ACME_DNS01_PROVIDERS.DNSMADEEASY, "provider.dnsmadeeasy"],
       [ACME_DNS01_PROVIDERS.DUCKDNS, "provider.duckdns"],
       [ACME_DNS01_PROVIDERS.DYNU, "provider.dynu"],
@@ -463,6 +465,8 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.WESTCN, "provider.westcn"],
       [ACME_DNS01_PROVIDERS["35CN"], "provider.35cn"],
       [ACME_DNS01_PROVIDERS.XINNET, "provider.xinnet"],
+      [ACME_DNS01_PROVIDERS["51DNSCOM"], "provider.51dnscom"],
+      [ACME_DNS01_PROVIDERS.DNSLA, "provider.dnsla"],
       [ACME_DNS01_PROVIDERS.CPANEL, "provider.cpanel"],
       [ACME_DNS01_PROVIDERS.POWERDNS, "provider.powerdns"],
       [ACME_DNS01_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns"],

@@ -3,6 +3,7 @@
   "provider.1panel_console": "1Panel - Console itself",
   "provider.1panel_site": "1Panel - Website",
   "provider.35cn": "35.cn",
+  "provider.51dnscom": "51DNS.com",
   "provider.acmeca": "ACME Custom CA Endpoint",
   "provider.acmedns": "ACME-DNS",
   "provider.acmehttpreq": "ACME Custom HTTP Endpoint",

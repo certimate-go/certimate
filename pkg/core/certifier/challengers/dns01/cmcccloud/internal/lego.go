@@ -108,7 +108,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		return fmt.Errorf("cmccecloud: %w", err)
 	}
 
-	cmccCreateRecordReq := &model.CreateRecordOpenapiRequest{
+	request := &model.CreateRecordOpenapiRequest{
 		CreateRecordOpenapiBody: &model.CreateRecordOpenapiBody{
 			LineId:      "0", // 默认线路
 			Rr:          subDomain,
@@ -119,15 +119,15 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 			Ttl:         lo.ToPtr(int32(d.config.TTL)),
 		},
 	}
-	cmccCreateRecordResp, err := d.client.CreateRecordOpenapi(cmccCreateRecordReq)
+	response, err := d.client.CreateRecordOpenapi(request)
 	if err != nil {
 		return fmt.Errorf("cmccecloud: error when create record: %w", err)
-	} else if cmccCreateRecordResp.State != model.CreateRecordOpenapiResponseStateEnumOk {
-		return fmt.Errorf("cmccecloud: failed to create record: unexpected response state: '%s', errcode: '%s', errmsg: '%s'", cmccCreateRecordResp.State, cmccCreateRecordResp.ErrorCode, cmccCreateRecordResp.ErrorMessage)
+	} else if response.State != model.CreateRecordOpenapiResponseStateEnumOk {
+		return fmt.Errorf("cmccecloud: failed to create record: unexpected response state: '%s', errcode: '%s', errmsg: '%s'", response.State, response.ErrorCode, response.ErrorMessage)
 	}
 
 	d.recordIDsMu.Lock()
-	d.recordIDs[token] = cmccCreateRecordResp.Body.RecordId
+	d.recordIDs[token] = response.Body.RecordId
 	d.recordIDsMu.Unlock()
 
 	return nil
@@ -143,16 +143,16 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 		return fmt.Errorf("cmccecloud: unknown record ID for '%s'", info.EffectiveFQDN)
 	}
 
-	cmccDeleteRecordReq := &model.DeleteRecordOpenapiRequest{
+	request := &model.DeleteRecordOpenapiRequest{
 		DeleteRecordOpenapiBody: &model.DeleteRecordOpenapiBody{
 			RecordIdList: []string{recordID},
 		},
 	}
-	cmccDeleteRecordResp, err := d.client.DeleteRecordOpenapi(cmccDeleteRecordReq)
+	response, err := d.client.DeleteRecordOpenapi(request)
 	if err != nil {
 		return fmt.Errorf("cmccecloud: error when delete record: %w", err)
-	} else if cmccDeleteRecordResp.State != model.DeleteRecordOpenapiResponseStateEnumOk {
-		return fmt.Errorf("cmccecloud: failed to delete record, unexpected response state: '%s', errcode: '%s', errmsg: '%s'", cmccDeleteRecordResp.State, cmccDeleteRecordResp.ErrorCode, cmccDeleteRecordResp.ErrorMessage)
+	} else if response.State != model.DeleteRecordOpenapiResponseStateEnumOk {
+		return fmt.Errorf("cmccecloud: failed to delete record, unexpected response state: '%s', errcode: '%s', errmsg: '%s'", response.State, response.ErrorCode, response.ErrorMessage)
 	}
 
 	return nil
