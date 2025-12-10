@@ -18,8 +18,8 @@ import (
 
 /**
  * Variables:
- *   - "certificate.domain": string
- *   - "certificate.domains": string
+ *   - "certificate.commanName": string
+ *   - "certificate.subjectAltNames": string
  *   - "certificate.notBefore": datetime
  *   - "certificate.notAfter": datetime
  *   - "certificate.hoursLeft": number
@@ -153,8 +153,8 @@ func (ne *bizMonitorNodeExecutor) tryRetrievePeerCertificates(execCtx *NodeExecu
 }
 
 func (ne *bizMonitorNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionContext, execRes *NodeExecutionResult, certX509 *x509.Certificate) {
-	var vDomain string
-	var vDomains string
+	var vCommonName string
+	var vSubjectAltNames string
 	var vNotBefore time.Time
 	var vNotAfter time.Time
 	var vHoursLeft int32
@@ -162,8 +162,8 @@ func (ne *bizMonitorNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionCon
 	var vValidity bool
 
 	if certX509 != nil {
-		vDomain = certX509.Subject.CommonName
-		vDomains = strings.Join(certX509.DNSNames, ";")
+		vCommonName = certX509.Subject.CommonName
+		vSubjectAltNames = strings.Join(certX509.DNSNames, ";")
 		vNotBefore = certX509.NotBefore
 		vNotAfter = certX509.NotAfter
 		vHoursLeft = int32(math.Floor(time.Until(certX509.NotAfter).Hours()))
@@ -171,15 +171,19 @@ func (ne *bizMonitorNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionCon
 		vValidity = certX509.NotAfter.After(time.Now())
 	}
 
-	execRes.AddVariable(stateVarKeyCertificateDomain, vDomain, "string")
-	execRes.AddVariable(stateVarKeyCertificateDomains, vDomains, "string")
+	execRes.AddVariable(stateVarKeyCertificateDomain, vCommonName, "string")
+	execRes.AddVariable(stateVarKeyCertificateDomains, vSubjectAltNames, "string")
+	execRes.AddVariable(stateVarKeyCertificateCommonName, vCommonName, "string")
+	execRes.AddVariable(stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, "string")
 	execRes.AddVariable(stateVarKeyCertificateNotBefore, vNotBefore, "datetime")
 	execRes.AddVariable(stateVarKeyCertificateNotAfter, vNotAfter, "datetime")
 	execRes.AddVariable(stateVarKeyCertificateHoursLeft, vHoursLeft, "number")
 	execRes.AddVariable(stateVarKeyCertificateDaysLeft, vDaysLeft, "number")
 	execRes.AddVariable(stateVarKeyCertificateValidity, vValidity, "boolean")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomain, vDomain, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomains, vDomains, "string")
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomain, vCommonName, "string")
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomains, vSubjectAltNames, "string")
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateCommonName, vCommonName, "string")
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, "string")
 	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotBefore, vNotBefore, "datetime")
 	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotAfter, vNotAfter, "datetime")
 	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateHoursLeft, vHoursLeft, "number")

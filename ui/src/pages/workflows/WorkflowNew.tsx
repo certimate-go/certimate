@@ -142,14 +142,14 @@ const WorkflowNew = () => {
               ...notifyOnExpiringSoonNode.data.config,
               subject: "[Certimate] Certificate Expiry Alert!",
               message:
-                "The certificate which you are monitoring will be expiring soon. Please pay attention to your website. \r\nDomains: {{ $certificate.domains }} \r\nExpiration: {{ $certificate.notAfter }}({{ $certificate.daysLeft }} days left)",
+                "The certificate which you are monitoring will be expiring soon. Please pay attention to your website. \r\nDomains: {{ $certificate.subjectAltNames }} \r\nExpiration: {{ $certificate.notAfter }}({{ $certificate.daysLeft }} days left)",
             } as WorkflowNodeConfigForBizNotify;
 
             notifyOnExpiredNode.data.config = {
               ...notifyOnExpiredNode.data.config,
               subject: "[Certimate] Certificate Expiry Alert!",
               message:
-                "The certificate which you are monitoring has already expired. Please pay attention to your website. \r\nDomains: {{ $certificate.domains }} \r\nExpiration: {{ $certificate.notAfter }}",
+                "The certificate which you are monitoring has already expired. Please pay attention to your website. \r\nDomains: {{ $certificate.subjectAltNames }} \r\nExpiration: {{ $certificate.notAfter }}",
             } as WorkflowNodeConfigForBizNotify;
 
             notifyOnFailureNode.data.config = {
