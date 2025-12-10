@@ -11,6 +11,7 @@
   "dashboard.shortcut.create_workflow": "创建新的工作流",
   "dashboard.shortcut.change_account": "修改登录账号密码",
   "dashboard.shortcut.configure_ca": "配置证书颁发机构",
+  "dashboard.shortcut.upgrade": "新版本可升级！",
 
   "dashboard.latest_workflow_runs": "最近的工作流运行",
   "dashboard.latest_workflow_runs.nodata.description": "当前未找到任何工作流运行历史。请先运行一个工作流。",

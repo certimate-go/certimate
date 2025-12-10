@@ -11,6 +11,7 @@
   "dashboard.shortcut.create_workflow": "Create new workflow",
   "dashboard.shortcut.change_account": "Change username or password",
   "dashboard.shortcut.configure_ca": "Configure certificate authorities",
+  "dashboard.shortcut.upgrade": "New version available!",
 
   "dashboard.latest_workflow_runs": "Latest workflow runs",
   "dashboard.latest_workflow_runs.nodata.description": "It looks like you don't have any runs. Get started by running a workflow.",
