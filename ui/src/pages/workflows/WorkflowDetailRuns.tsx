@@ -357,7 +357,7 @@ const WorkflowDetailRuns = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={t("common.text.nodata")}
+                  title={loadError ? t("common.text.nodata_failed") : t("workflow_run.nodata.title")}
                   description={loadError ? getErrMsg(loadError) : t("workflow_run.nodata.description")}
                   icon={<IconHistory size={24} />}
                 />

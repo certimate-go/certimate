@@ -12,6 +12,7 @@
   "workflow_run.deletion.alert": "运行历史中包含工作流各节点的运行结果，删除后可能导致因找不到前次运行结果而触发重新申请或部署证书。如无必要请勿提前删除，建议保留至少 180 天。",
   "workflow_run.cancellation.alert": "如遇进程意外中止、服务器超时等原因，你可以手动取消长时间挂起的运行，避免阻塞后续运行。",
 
+  "workflow_run.nodata.title": "暂无工作流运行",
   "workflow_run.nodata.description": "当前未找到任何运行历史。请先运行此工作流。",
 
   "workflow_run.props.workflow": "工作流",

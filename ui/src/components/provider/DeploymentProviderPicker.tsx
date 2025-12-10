@@ -111,7 +111,6 @@ const DeploymentProviderPicker = ({
             DEPLOYMENT_CATEGORIES.SERVERLESS,
             DEPLOYMENT_CATEGORIES.WEBSITE,
             DEPLOYMENT_CATEGORIES.SSL,
-            DEPLOYMENT_CATEGORIES.NAS,
             DEPLOYMENT_CATEGORIES.OTHER,
           ].map((key) => ({
             key: key,

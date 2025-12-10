@@ -33,7 +33,7 @@ const AccessList = () => {
 
   const { appSettings: globalAppSettings } = useAppSettings();
 
-  const { loadedAtOnce, fetchAccesses, deleteAccess } = useAccessesStore(useZustandShallowSelector(["loadedAtOnce", "fetchAccesses", "deleteAccess"]));
+  const { fetchAccesses, deleteAccess } = useAccessesStore(useZustandShallowSelector(["loadedAtOnce", "fetchAccesses", "deleteAccess"]));
   useMount(() => {
     fetchAccesses().catch((err) => {
       if (err instanceof ClientResponseError && err.isAbort) {
@@ -196,7 +196,11 @@ const AccessList = () => {
     },
   };
 
-  const { loading, run: refreshData } = useRequest(
+  const {
+    loading,
+    error: loadError,
+    run: refreshData,
+  } = useRequest(
     async () => {
       const list = await fetchAccesses();
       const startIdx = (page - 1) * pageSize;
@@ -424,11 +428,11 @@ const AccessList = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={t("access.nodata.title")}
-                  description={!loadedAtOnce ? getErrMsg("Network error.") : t("access.nodata.description")}
+                  title={loadError ? t("common.text.nodata_failed") : t("access.nodata.title")}
+                  description={loadError ? getErrMsg(loadError) : t("access.nodata.description")}
                   icon={<IconFingerprint size={24} />}
                   extra={
-                    !loadedAtOnce ? (
+                    loadError ? (
                       <Button ghost icon={<IconReload size="1.25em" />} type="primary" onClick={handleReloadClick}>
                         {t("common.button.reload")}
                       </Button>

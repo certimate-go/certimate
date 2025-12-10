@@ -492,7 +492,7 @@ const WorkflowList = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={t("workflow.nodata.title")}
+                  title={loadError ? t("common.text.nodata_failed") : t("workflow.nodata.title")}
                   description={loadError ? getErrMsg(loadError) : t("workflow.nodata.description")}
                   icon={<IconHierarchy3 size={24} />}
                   extra={

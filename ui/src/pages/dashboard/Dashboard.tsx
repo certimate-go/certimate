@@ -384,7 +384,7 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
           ) : (
             <Empty
               className="py-24"
-              title={t("common.text.nodata")}
+              title={loadError ? t("common.text.nodata_failed") : t("common.text.nodata")}
               description={loadError ? getErrMsg(loadError) : t("dashboard.latest_workflow_runs.nodata.description")}
               icon={<IconHistory size={24} />}
               extra={

@@ -20,6 +20,7 @@
   "common.text.import_from_file": "Import from file ...",
   "common.text.happy_browser": "The browser version is too low to make Certimate WebUI working well. Recommend using modern browsers such as Google Chrome v119.0 or higher.",
   "common.text.nodata": "No data available",
+  "common.text.nodata_failed": "Failed to load data",
   "common.text.operation_confirm": "Operation confirm",
   "common.text.operation_succeeded": "Operation succeeded",
   "common.text.operation_failed": "Operation failed",

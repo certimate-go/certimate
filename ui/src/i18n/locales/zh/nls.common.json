@@ -20,6 +20,7 @@
   "common.text.import_from_file": "从文件导入 ……",
   "common.text.happy_browser": "当前浏览器版本过低，Certimate WebUI 无法正常工作。推荐使用 Google Chrome v119.0 或更高版本的现代浏览器。",
   "common.text.nodata": "暂无数据",
+  "common.text.nodata_failed": "加载失败",
   "common.text.operation_confirm": "操作确认",
   "common.text.operation_succeeded": "操作成功",
   "common.text.operation_failed": "操作失败",
