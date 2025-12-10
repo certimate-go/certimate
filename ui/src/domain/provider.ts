@@ -564,6 +564,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   BYTEPLUS_CDN: `${ACCESS_PROVIDERS.BYTEPLUS}-cdn`,
   CACHEFLY: `${ACCESS_PROVIDERS.CACHEFLY}`,
   CDNFLY: `${ACCESS_PROVIDERS.CDNFLY}`,
+  CPANEL_SITE: `${ACCESS_PROVIDERS.CPANEL}-site`,
   CTCCCLOUD_AO: `${ACCESS_PROVIDERS.CTCCCLOUD}-ao`,
   CTCCCLOUD_CDN: `${ACCESS_PROVIDERS.CTCCCLOUD}-cdn`,
   CTCCCLOUD_CMS: `${ACCESS_PROVIDERS.CTCCCLOUD}-cms`,
@@ -763,6 +764,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.SAFELINE_SITE, "provider.safeline_site", DEPLOYMENT_CATEGORIES.FIREWALL],
       [DEPLOYMENT_PROVIDERS.APISIX, "provider.apisix", DEPLOYMENT_CATEGORIES.APIGATEWAY],
       [DEPLOYMENT_PROVIDERS.KONG, "provider.kong", DEPLOYMENT_CATEGORIES.APIGATEWAY],
+      [DEPLOYMENT_PROVIDERS.CPANEL_SITE, "provider.cpanel_site", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.PROXMOXVE, "provider.proxmoxve", DEPLOYMENT_CATEGORIES.OTHER],
     ] satisfies Array<[DeploymentProviderType, string, DeploymentCategoryType, "builtin"] | [DeploymentProviderType, string, DeploymentCategoryType]>
   ).map(([type, name, category, builtin]) => [

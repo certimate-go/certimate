@@ -493,6 +493,8 @@
   "workflow_node.deploy.form.cdnfly_certificate_id.label": "Cdnfly 证书 ID",
   "workflow_node.deploy.form.cdnfly_certificate_id.placeholder": "请输入 Cdnfly 证书 ID",
   "workflow_node.deploy.form.cdnfly_certificate_id.tooltip": "请登录 Cdnfly 控制台查看",
+  "workflow_node.deploy.form.cpanel_site_domain.label": "cPanel 网站域名",
+  "workflow_node.deploy.form.cpanel_site_domain.placeholder": "请输入 cPanel 网站域名",
   "workflow_node.deploy.form.ctcccloud_ao_domain.label": "天翼云 AccessOne 加速域名",
   "workflow_node.deploy.form.ctcccloud_ao_domain.placeholder": "请输入天翼云 AccessOne 加速域名",
   "workflow_node.deploy.form.ctcccloud_cdn_domain.label": "天翼云 CDN 加速域名",

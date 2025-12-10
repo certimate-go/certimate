@@ -32,7 +32,7 @@ type DeployerConfig struct {
 	// 部署资源类型。
 	ResourceType string `json:"resourceType"`
 	// 域名匹配模式。
-	// 零值时默认值 [WEBSITE_MATCH_PATTERN_EXACT]。
+	// 零值时默认值 [WEBSITE_MATCH_PATTERN_SPECIFIED]。
 	WebsiteMatchPattern string `json:"websiteMatchPattern,omitempty"`
 	// 网站 ID。
 	// 部署资源类型为 [RESOURCE_TYPE_WEBSITE]、且匹配模式非 [WEBSITE_MATCH_PATTERN_CERTSAN] 时必填。

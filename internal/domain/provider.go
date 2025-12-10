@@ -285,6 +285,7 @@ const (
 	DeploymentProviderTypeBytePlusCDN           = DeploymentProviderType(AccessProviderTypeBytePlus + "-cdn")
 	DeploymentProviderTypeCacheFly              = DeploymentProviderType(AccessProviderTypeCacheFly)
 	DeploymentProviderTypeCdnfly                = DeploymentProviderType(AccessProviderTypeCdnfly)
+	DeploymentProviderTypeCPanelSite            = DeploymentProviderType(AccessProviderTypeCPanel + "-site")
 	DeploymentProviderTypeCTCCCloudAO           = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-ao")
 	DeploymentProviderTypeCTCCCloudCDN          = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-cdn")
 	DeploymentProviderTypeCTCCCloudCMS          = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-cms")

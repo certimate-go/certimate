@@ -139,7 +139,7 @@
   "provider.namesilo": "NameSilo",
   "provider.netcup": "netcup",
   "provider.netlify": "Netlify",
-  "provider.netlify_site": "Netlify - Site",
+  "provider.netlify_site": "Netlify - 网站",
   "provider.ns1": "NS1 (IBM NS1 Connect)",
   "provider.ovhcloud": "OVHcloud",
   "provider.porkbun": "Porkbun",
