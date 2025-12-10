@@ -66,6 +66,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		ApiVersion:               config.ApiVersion,
 		ApiKey:                   config.ApiKey,
 		AllowInsecureConnections: config.AllowInsecureConnections,
+		NodeName:                 config.NodeName,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -234,7 +235,7 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 					}
 
 					for _, domainInfo := range websiteGetResp.Data.Domains {
-						if domainInfo.SSL {
+						if domainInfo.SSL || certX509.VerifyHostname(domainInfo.Domain) == nil {
 							websiteIds = append(websiteIds, websiteItem.ID)
 							break
 						}
@@ -288,7 +289,7 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 					}
 
 					for _, domainInfo := range websiteGetResp.Data.Domains {
-						if domainInfo.SSL {
+						if domainInfo.SSL || certX509.VerifyHostname(domainInfo.Domain) == nil {
 							websiteIds = append(websiteIds, websiteItem.ID)
 							break
 						}
@@ -411,18 +412,15 @@ func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool, n
 		return client, nil
 	} else if apiVersion == sdkVersionV2 {
 		var client *onepanelsdk2.Client
+		var err error
+
 		if nodeName == "" {
-			temp, err := onepanelsdk2.NewClient(serverUrl, apiKey)
-			if err != nil {
-				return nil, err
-			}
-			client = temp
+			client, err = onepanelsdk2.NewClient(serverUrl, apiKey)
 		} else {
-			temp, err := onepanelsdk2.NewClientWithNode(serverUrl, apiKey, nodeName)
-			if err != nil {
-				return nil, err
-			}
-			client = temp
+			client, err = onepanelsdk2.NewClientWithNode(serverUrl, apiKey, nodeName)
+		}
+		if err != nil {
+			return nil, err
 		}
 
 		if skipTlsVerify {

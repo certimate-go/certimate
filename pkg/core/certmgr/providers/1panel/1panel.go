@@ -24,6 +24,9 @@ type CertmgrConfig struct {
 	ApiKey string `json:"apiKey"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
+	// 子节点名称。
+	// 选填。
+	NodeName string `json:"nodeName,omitempty"`
 }
 
 type Certmgr struct {
@@ -39,7 +42,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, errors.New("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.ServerUrl, config.ApiVersion, config.ApiKey, config.AllowInsecureConnections)
+	client, err := createSDKClient(config.ServerUrl, config.ApiVersion, config.ApiKey, config.AllowInsecureConnections, config.NodeName)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -287,7 +290,7 @@ const (
 	sdkVersionV2 = "v2"
 )
 
-func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool) (any, error) {
+func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool, nodeName string) (any, error) {
 	if apiVersion == sdkVersionV1 {
 		client, err := onepanelsdk.NewClient(serverUrl, apiKey)
 		if err != nil {
@@ -300,7 +303,14 @@ func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool) (
 
 		return client, nil
 	} else if apiVersion == sdkVersionV2 {
-		client, err := onepanelsdk2.NewClient(serverUrl, apiKey)
+		var client *onepanelsdk2.Client
+		var err error
+
+		if nodeName == "" {
+			client, err = onepanelsdk2.NewClient(serverUrl, apiKey)
+		} else {
+			client, err = onepanelsdk2.NewClientWithNode(serverUrl, apiKey, nodeName)
+		}
 		if err != nil {
 			return nil, err
 		}
