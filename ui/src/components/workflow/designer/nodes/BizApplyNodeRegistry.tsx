@@ -31,7 +31,6 @@ export const BizApplyNodeRegistry: NodeRegistry = {
       ["config"]: ({ value }) => {
         const res = BizApplyNodeConfigForm.getSchema({}).safeParse(value);
         if (!res.success) {
-          console.log(res);
           return {
             message: res.error.message,
             level: FeedbackLevel.Error,
