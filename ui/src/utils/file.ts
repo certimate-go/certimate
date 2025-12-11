@@ -1,17 +1,16 @@
-export function readFileAsText(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+export const readFileAsText = (file: File): Promise<string> => {
+  const { promise, resolve, reject } = Promise.withResolvers<string>();
 
-    reader.onload = () => {
-      if (reader.result) {
-        resolve(reader.result.toString());
-      } else {
-        reject("No content found");
-      }
-    };
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (reader.result != null) {
+      resolve(reader.result.toString());
+    } else {
+      reject(new Error("read file failed: result is null"));
+    }
+  };
+  reader.onerror = () => reject(reader.error);
+  reader.readAsText(file, "utf-8");
 
-    reader.onerror = () => reject(reader.error);
-
-    reader.readAsText(file, "utf-8");
-  });
-}
+  return promise;
+};
