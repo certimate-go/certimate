@@ -210,6 +210,11 @@ const InternalNodeMenuButton = ({
 
   return playground.config.readonlyOrDisabled ? null : (
     <Dropdown
+      styles={{
+        root: {
+          zIndex: 10 /* 确保要比 Minimap 组件层级要高，防止被遮挡而点击不到 */,
+        },
+      }}
       arrow={false}
       destroyOnHidden
       menu={{
@@ -242,9 +247,6 @@ const InternalNodeMenuButton = ({
         onClick: (e) => {
           e.domEvent.stopPropagation();
         },
-      }}
-      overlayStyle={{
-        zIndex: 10 /* 确保要比 Minimap 组件层级要高，防止被遮挡而点击不到 */,
       }}
       trigger={["click"]}
     >
