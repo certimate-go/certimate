@@ -38,7 +38,7 @@ func (ne *bizDeployNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 		return execRes, err
 	} else {
 		if lastOutput != nil {
-			ne.logger.Info(fmt.Sprintf("found last workflow run #%s", lastOutput.RunId))
+			ne.logger.Info(fmt.Sprintf("found last run #%s", lastOutput.RunId))
 		}
 	}
 
