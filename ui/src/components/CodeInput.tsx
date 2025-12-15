@@ -6,7 +6,7 @@ import { powerShell } from "@codemirror/legacy-modes/mode/powershell";
 import { shell } from "@codemirror/legacy-modes/mode/shell";
 import { basicSetup } from "@uiw/codemirror-extensions-basic-setup";
 import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
-import CodeMirror, { type ReactCodeMirrorProps, type ReactCodeMirrorRef } from "@uiw/react-codemirror";
+import CodeMirror, { EditorView, type ReactCodeMirrorProps, type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { useFocusWithin, useHover } from "ahooks";
 import { theme } from "antd";
 import DisabledContext from "antd/es/config-provider/DisabledContext";
@@ -47,6 +47,7 @@ const CodeInput = ({ className, style, disabled, language, readOnly, ...props }:
         allowMultipleSelections: false,
         indentOnInput: false,
       }),
+      EditorView.lineWrapping,
     ];
 
     const langs = Array.isArray(language) ? language : [language];
