@@ -202,6 +202,7 @@
   "provider.volcengine_imagex": "火山引擎 - 图片服务 ImageX",
   "provider.volcengine_live": "火山引擎 - 视频直播 Live",
   "provider.volcengine_tos": "火山引擎 - 对象存储 TOS",
+  "provider.volcengine_vod": "火山引擎 - 视频点播 VOD",
   "provider.vultr": "Vultr",
   "provider.wangsu": "网宿云",
   "provider.wangsu_cdn": "网宿云 - 内容分发网络 CDN",
