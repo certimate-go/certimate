@@ -183,6 +183,7 @@
   "provider.tencentcloud_vod": "Tencent Cloud - VOD (Video on Demand)",
   "provider.tencentcloud_waf": "Tencent Cloud - WAF (Web Application Firewall)",
   "provider.ucloud": "UCloud",
+  "provider.ucloud_ualb": "UCloud - UALB (Application Load Balancer)",
   "provider.ucloud_ucdn": "UCloud - UCDN (Content Delivery Network)",
   "provider.ucloud_uclb": "UCloud - UCLB (Classic Load Balancer)",
   "provider.ucloud_udnr": "UCloud - UDNR (Domain Name Registrar)",

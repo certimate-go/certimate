@@ -183,6 +183,7 @@
   "provider.tencentcloud_vod": "腾讯云 - 云点播 VOD",
   "provider.tencentcloud_waf": "腾讯云 - Web 应用防火墙 WAF",
   "provider.ucloud": "优刻得",
+  "provider.ucloud_ualb": "优刻得 - 应用型负载均衡 ALB",
   "provider.ucloud_ucdn": "优刻得 - 内容分发 UCDN",
   "provider.ucloud_uclb": "优刻得 - 传统型负载均衡 CLB",
   "provider.ucloud_udnr": "优刻得 - 域名服务 UDNR",
