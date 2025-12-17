@@ -1,0 +1,278 @@
+package uclouduclb
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
+	"time"
+
+	"github.com/samber/lo"
+	ucloudlb "github.com/ucloud/ucloud-sdk-go/services/ulb"
+	"github.com/ucloud/ucloud-sdk-go/ucloud"
+	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
+
+	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
+	"github.com/certimate-go/certimate/pkg/core/deployer"
+	usdklb "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+)
+
+type DeployerConfig struct {
+	// 优刻得 API 私钥。
+	PrivateKey string `json:"privateKey"`
+	// 优刻得 API 公钥。
+	PublicKey string `json:"publicKey"`
+	// 优刻得项目 ID。
+	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得地域。
+	Region string `json:"region"`
+	// 部署资源类型。
+	ResourceType string `json:"resourceType"`
+	// 负载均衡实例 ID。
+	// 部署资源类型为 [RESOURCE_TYPE_LOADBALANCER]、[RESOURCE_TYPE_VSERVER] 时必填。
+	LoadbalancerId string `json:"loadbalancerId,omitempty"`
+	// 负载均衡 VServer ID。
+	// 部署资源类型为 [RESOURCE_TYPE_VSERVER] 时必填。
+	VServerId string `json:"vserverId,omitempty"`
+}
+
+type Deployer struct {
+	config     *DeployerConfig
+	logger     *slog.Logger
+	sdkClient  *usdklb.ULBClient
+	sdkCertmgr certmgr.Provider
+}
+
+var _ deployer.Provider = (*Deployer)(nil)
+
+func NewDeployer(config *DeployerConfig) (*Deployer, error) {
+	if config == nil {
+		return nil, errors.New("the configuration of the deployer provider is nil")
+	}
+
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+		PrivateKey: config.PrivateKey,
+		PublicKey:  config.PublicKey,
+		ProjectId:  config.ProjectId,
+		Region:     config.Region,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("could not create certmgr: %w", err)
+	}
+
+	return &Deployer{
+		config:     config,
+		logger:     slog.Default(),
+		sdkClient:  client,
+		sdkCertmgr: pcertmgr,
+	}, nil
+}
+
+func (d *Deployer) SetLogger(logger *slog.Logger) {
+	if logger == nil {
+		d.logger = slog.New(slog.DiscardHandler)
+	} else {
+		d.logger = logger
+	}
+
+	d.sdkCertmgr.SetLogger(logger)
+}
+
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+	// 上传证书
+	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+	} else {
+		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
+	}
+
+	// 根据部署资源类型决定部署方式
+	switch d.config.ResourceType {
+	case RESOURCE_TYPE_LOADBALANCER:
+		if err := d.deployToLoadbalancer(ctx, upres.CertId); err != nil {
+			return nil, err
+		}
+
+	case RESOURCE_TYPE_VSERVER:
+		if err := d.deployToVServer(ctx, upres.CertId); err != nil {
+			return nil, err
+		}
+
+	default:
+		return nil, fmt.Errorf("unsupported resource type '%s'", d.config.ResourceType)
+	}
+
+	return &deployer.DeployResult{}, nil
+}
+
+func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string) error {
+	if d.config.LoadbalancerId == "" {
+		return errors.New("config `loadbalancerId` is required")
+	}
+
+	// 获取 CLB 下的 HTTPS VServer 列表
+	// REF: https://docs.ucloud.cn/api/ulb-api/describe_vserver
+	vserverIds := make([]string, 0)
+	describeVServerOffset := 0
+	describeVServerLimit := 100
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		describeVServerReq := d.sdkClient.NewDescribeVServerRequest()
+		describeVServerReq.Region = ucloud.String(d.config.Region)
+		describeVServerReq.ULBId = ucloud.String(d.config.LoadbalancerId)
+		describeVServerReq.Offset = ucloud.Int(describeVServerOffset)
+		describeVServerReq.Limit = ucloud.Int(describeVServerLimit)
+		if d.config.ProjectId != "" {
+			describeVServerReq.ProjectId = ucloud.String(d.config.ProjectId)
+		}
+		describeVServerResp, err := d.sdkClient.DescribeVServer(describeVServerReq)
+		d.logger.Debug("sdk request 'ulb.DescribeVServer'", slog.Any("request", describeVServerReq), slog.Any("response", describeVServerResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
+		}
+
+		for _, vserverItem := range describeVServerResp.DataSet {
+			if vserverItem.Protocol == "HTTPS" {
+				vserverIds = append(vserverIds, vserverItem.VServerId)
+			}
+		}
+
+		if len(describeVServerResp.DataSet) < describeVServerLimit {
+			break
+		}
+
+		describeVServerOffset += describeVServerLimit
+	}
+
+	// 遍历更新 VServer 证书
+	if len(vserverIds) == 0 {
+		d.logger.Info("no clb vservers to deploy")
+	} else {
+		d.logger.Info("found https vservers to deploy", slog.Any("vserverIds", vserverIds))
+		var errs []error
+
+		for _, vserverId := range vserverIds {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+				if err := d.updateVServerCertificate(ctx, d.config.LoadbalancerId, vserverId, cloudCertId); err != nil {
+					errs = append(errs, err)
+				}
+			}
+		}
+
+		if len(errs) > 0 {
+			return errors.Join(errs...)
+		}
+	}
+
+	return nil
+}
+
+func (d *Deployer) deployToVServer(ctx context.Context, cloudCertId string) error {
+	if d.config.LoadbalancerId == "" {
+		return errors.New("config `loadbalancerId` is required")
+	}
+	if d.config.VServerId == "" {
+		return errors.New("config `vserverId` is required")
+	}
+
+	if err := d.updateVServerCertificate(ctx, d.config.LoadbalancerId, d.config.VServerId, cloudCertId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalancerId, cloudVServerId string, cloudCertId string) error {
+	// 获取 CLB 下的 VServer 信息
+	// REF: https://docs.ucloud.cn/api/ulb-api/describe_vserver
+	describeVServerReq := d.sdkClient.NewDescribeVServerRequest()
+	describeVServerReq.Region = ucloud.String(d.config.Region)
+	describeVServerReq.ULBId = ucloud.String(cloudLoadbalancerId)
+	describeVServerReq.VServerId = ucloud.String(cloudVServerId)
+	describeVServerReq.Limit = ucloud.Int(1)
+	if d.config.ProjectId != "" {
+		describeVServerReq.ProjectId = ucloud.String(d.config.ProjectId)
+	}
+	describeVServerResp, err := d.sdkClient.DescribeVServer(describeVServerReq)
+	d.logger.Debug("sdk request 'ulb.DescribeVServer'", slog.Any("request", describeVServerReq), slog.Any("response", describeVServerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
+	}
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
+	} else if len(describeVServerResp.DataSet) == 0 {
+		return fmt.Errorf("could not find vserver '%s'", cloudVServerId)
+	}
+
+	// 跳过已部署过的 VServer
+	vserverInfo := describeVServerResp.DataSet[0]
+	if lo.ContainsBy(vserverInfo.SSLSet, func(item ucloudlb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
+		return nil
+	}
+
+	// 绑定 SSL 证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/bind_ssl
+	bindSSLReq := d.sdkClient.NewBindSSLRequest()
+	bindSSLReq.Region = ucloud.String(d.config.Region)
+	bindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
+	bindSSLReq.VServerId = ucloud.String(cloudVServerId)
+	bindSSLReq.SSLId = ucloud.String(cloudCertId)
+	if d.config.ProjectId != "" {
+		bindSSLReq.ProjectId = ucloud.String(d.config.ProjectId)
+	}
+	bindSSLResp, err := d.sdkClient.BindSSL(bindSSLReq)
+	d.logger.Debug("sdk request 'ulb.BindSSL'", slog.Any("request", bindSSLReq), slog.Any("response", bindSSLResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ulb.BindSSL': %w", err)
+	}
+
+	// 解绑已过期的 SSL 证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/unbind_ssl
+	for _, sslItem := range vserverInfo.SSLSet {
+		if sslItem.NotAfter == 0 || int64(sslItem.NotAfter) >= time.Now().Unix() {
+			continue
+		}
+
+		unbindSSLReq := d.sdkClient.NewUnbindSSLRequest()
+		unbindSSLReq.Region = ucloud.String(d.config.Region)
+		unbindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
+		unbindSSLReq.VServerId = ucloud.String(cloudVServerId)
+		unbindSSLReq.SSLId = ucloud.String(sslItem.SSLId)
+		if d.config.ProjectId != "" {
+			unbindSSLReq.ProjectId = ucloud.String(d.config.ProjectId)
+		}
+		unbindSSLResp, err := d.sdkClient.UnbindSSL(unbindSSLReq)
+		d.logger.Debug("sdk request 'ulb.UnbindSSL'", slog.Any("request", unbindSSLReq), slog.Any("response", unbindSSLResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ulb.UnbindSSL': %w", err)
+		}
+	}
+
+	return nil
+}
+
+func createSDKClient(privateKey, publicKey string) (*usdklb.ULBClient, error) {
+	cfg := ucloud.NewConfig()
+
+	credential := auth.NewCredential()
+	credential.PrivateKey = privateKey
+	credential.PublicKey = publicKey
+
+	client := usdklb.NewClient(&cfg, &credential)
+	return client, nil
+}

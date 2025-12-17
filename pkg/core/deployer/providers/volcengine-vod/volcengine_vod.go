@@ -8,8 +8,9 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"github.com/volcengine/volc-sdk-golang/service/vod"
-	"github.com/volcengine/volc-sdk-golang/service/vod/models/business"
+	vevod "github.com/volcengine/volc-sdk-golang/service/vod"
+	vevodbusiness "github.com/volcengine/volc-sdk-golang/service/vod/models/business"
+	vevodrequest "github.com/volcengine/volc-sdk-golang/service/vod/models/request"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
@@ -17,7 +18,6 @@ import (
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
-	"github.com/volcengine/volc-sdk-golang/service/vod/models/request"
 )
 
 type DeployerConfig struct {
@@ -39,7 +39,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *vod.Vod
+	sdkClient  *vevod.Vod
 	sdkCertmgr certmgr.Provider
 }
 
@@ -50,7 +50,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	client := vod.NewInstance()
+	client := vevod.NewInstance()
 	client.SetAccessKey(config.AccessKeyId)
 	client.SetSecretKey(config.AccessKeySecret)
 
@@ -188,7 +188,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		default:
 		}
 
-		listDomainReq := &request.VodListDomainRequest{
+		listDomainReq := &vevodrequest.VodListDomainRequest{
 			SpaceName:         d.config.SpaceName,
 			DomainType:        d.config.DomainType,
 			SourceStationType: 1,
@@ -205,21 +205,21 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			break
 		}
 
-		var byteInstances []*business.VodDomainInstanceInfo
+		var domainInstances []*vevodbusiness.VodDomainInstanceInfo
 		switch d.config.DomainType {
 		case DOMAIN_TYPE_PLAY:
-			byteInstances = listDomainResp.GetResult().GetPlayInstanceInfo().GetByteInstances()
+			domainInstances = listDomainResp.GetResult().GetPlayInstanceInfo().GetByteInstances()
 		case DOMAIN_TYPE_IMAGE:
-			byteInstances = listDomainResp.GetResult().GetImageInstanceInfo().GetByteInstances()
+			domainInstances = listDomainResp.GetResult().GetImageInstanceInfo().GetByteInstances()
 		default:
 			return nil, fmt.Errorf("unsupported domain type: '%s'", d.config.DomainType)
 		}
 
-		for _, byteDomains := range byteInstances {
-			if byteDomains.Domains == nil {
-				break
+		for _, domainInstance := range domainInstances {
+			if domainInstance.Domains == nil {
+				continue
 			}
-			for _, domainItem := range byteDomains.Domains {
+			for _, domainItem := range domainInstance.Domains {
 				domains = append(domains, domainItem.Domain)
 			}
 		}
@@ -237,14 +237,14 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId string) error {
 	// 更新域名配置
 	// REF: https://www.volcengine.com/docs/4/1317310
-	updateDomainConfigReq := &request.VodUpdateDomainConfigRequest{
+	updateDomainConfigReq := &vevodrequest.VodUpdateDomainConfigRequest{
 		SpaceName:  d.config.SpaceName,
 		DomainType: d.config.DomainType,
 		Domain:     domain,
-		Config: &business.VodDomainConfig{
-			HTTPS: &business.HTTPS{
+		Config: &vevodbusiness.VodDomainConfig{
+			HTTPS: &vevodbusiness.HTTPS{
 				Switch: ve.Bool(true),
-				CertInfo: &business.CertInfo{
+				CertInfo: &vevodbusiness.CertInfo{
 					CertId: &cloudCertId,
 				},
 			},

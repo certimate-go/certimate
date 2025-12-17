@@ -13,7 +13,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ussl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	usdkCdn "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ucdn"
+	usdkcdn "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ucdn"
 )
 
 type DeployerConfig struct {
@@ -30,7 +30,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *usdkCdn.UCDNClient
+	sdkClient  *usdkcdn.UCDNClient
 	sdkCertmgr certmgr.Provider
 }
 
@@ -124,13 +124,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*usdkCdn.UCDNClient, error) {
+func createSDKClient(privateKey, publicKey string) (*usdkcdn.UCDNClient, error) {
 	cfg := ucloud.NewConfig()
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey
 	credential.PublicKey = publicKey
 
-	client := usdkCdn.NewClient(&cfg, &credential)
+	client := usdkcdn.NewClient(&cfg, &credential)
 	return client, nil
 }

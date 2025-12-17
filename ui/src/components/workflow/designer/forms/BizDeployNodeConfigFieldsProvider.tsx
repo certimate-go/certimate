@@ -84,6 +84,7 @@ import BizDeployNodeConfigFieldsProviderTencentCloudSSLUpdate from "./BizDeployN
 import BizDeployNodeConfigFieldsProviderTencentCloudVOD from "./BizDeployNodeConfigFieldsProviderTencentCloudVOD";
 import BizDeployNodeConfigFieldsProviderTencentCloudWAF from "./BizDeployNodeConfigFieldsProviderTencentCloudWAF";
 import BizDeployNodeConfigFieldsProviderUCloudUCDN from "./BizDeployNodeConfigFieldsProviderUCloudUCDN";
+import BizDeployNodeConfigFieldsProviderUCloudUCLB from "./BizDeployNodeConfigFieldsProviderUCloudUCLB";
 import BizDeployNodeConfigFieldsProviderUCloudUS3 from "./BizDeployNodeConfigFieldsProviderUCloudUS3";
 import BizDeployNodeConfigFieldsProviderUniCloudWebHost from "./BizDeployNodeConfigFieldsProviderUniCloudWebHost";
 import BizDeployNodeConfigFieldsProviderUpyunCDN from "./BizDeployNodeConfigFieldsProviderUpyunCDN";
@@ -189,6 +190,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_VOD]: BizDeployNodeConfigFieldsProviderTencentCloudVOD,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_WAF]: BizDeployNodeConfigFieldsProviderTencentCloudWAF,
   [DEPLOYMENT_PROVIDERS.UCLOUD_UCDN]: BizDeployNodeConfigFieldsProviderUCloudUCDN,
+  [DEPLOYMENT_PROVIDERS.UCLOUD_UCLB]: BizDeployNodeConfigFieldsProviderUCloudUCLB,
   [DEPLOYMENT_PROVIDERS.UCLOUD_US3]: BizDeployNodeConfigFieldsProviderUCloudUS3,
   [DEPLOYMENT_PROVIDERS.UNICLOUD_WEBHOST]: BizDeployNodeConfigFieldsProviderUniCloudWebHost,
   [DEPLOYMENT_PROVIDERS.UPYUN_CDN]: BizDeployNodeConfigFieldsProviderUpyunCDN,
