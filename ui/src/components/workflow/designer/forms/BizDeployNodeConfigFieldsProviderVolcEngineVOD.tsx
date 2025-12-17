@@ -1,12 +1,12 @@
-import {getI18n, useTranslation} from "react-i18next";
-import {Form, Input, Radio, Select} from "antd";
-import {createSchemaFieldRule} from "antd-zod";
-import {z} from "zod";
+import { getI18n, useTranslation } from "react-i18next";
+import { Form, Input, Radio, Select } from "antd";
+import { createSchemaFieldRule } from "antd-zod";
+import { z } from "zod";
 
 import Show from "@/components/Show";
-import {validDomainName} from "@/utils/validators";
+import { validDomainName } from "@/utils/validators";
 
-import {useFormNestedFieldsContext} from "./_context";
+import { useFormNestedFieldsContext } from "./_context";
 
 const DOMAIN_MATCH_PATTERN_EXACT = "exact" as const;
 const DOMAIN_MATCH_PATTERN_WILDCARD = "wildcard" as const;
@@ -16,11 +16,11 @@ const DOMAIN_TYPE_PLAY = "play" as const;
 const DOMAIN_TYPE_IMAGE = "image" as const;
 
 const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
-  const {i18n, t} = useTranslation();
+  const { i18n, t } = useTranslation();
 
-  const {parentNamePath} = useFormNestedFieldsContext();
+  const { parentNamePath } = useFormNestedFieldsContext();
   const formSchema = z.object({
-    [parentNamePath]: getSchema({i18n}),
+    [parentNamePath]: getSchema({ i18n }),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const formInst = Form.useFormInstance();
@@ -28,7 +28,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
 
   const fieldDomainMatchPattern = Form.useWatch([parentNamePath, "domainMatchPattern"], {
     form: formInst,
-    preserve: true
+    preserve: true,
   });
 
   return (
@@ -38,9 +38,11 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
         initialValue={initialValues.spaceName}
         label={t("workflow_node.deploy.form.volcengine_vod_space_name.label")}
         rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.volcengine_vod_space_name.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.volcengine_vod_space_name.placeholder")}/>
+        <Input placeholder={t("workflow_node.deploy.form.volcengine_vod_space_name.placeholder")} />
       </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "domainType"]}
         initialValue={initialValues.domainType}
@@ -48,13 +50,14 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
         rules={[formRule]}
       >
         <Select
-          options={[DOMAIN_TYPE_PLAY,DOMAIN_TYPE_IMAGE].map((s) => ({
+          options={[DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE].map((s) => ({
             value: s,
             label: t(`workflow_node.deploy.form.volcengine_vod_domain_type.option.${s}.label`),
           }))}
           placeholder={t("workflow_node.deploy.form.volcengine_vod_domain_type.placeholder")}
         />
       </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "domainMatchPattern"]}
         initialValue={initialValues.domainMatchPattern}
@@ -69,6 +72,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
           }))}
         />
       </Form.Item>
+
       <Show when={fieldDomainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN}>
         <Form.Item
           name={[parentNamePath, "domain"]}
@@ -76,7 +80,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
           label={t("workflow_node.deploy.form.volcengine_vod_domain.label")}
           rules={[formRule]}
         >
-          <Input placeholder={t("workflow_node.deploy.form.volcengine_vod_domain.placeholder")}/>
+          <Input placeholder={t("workflow_node.deploy.form.volcengine_vod_domain.placeholder")} />
         </Form.Item>
       </Show>
     </>
@@ -85,20 +89,20 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     spaceName: "",
+    domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domainType: DOMAIN_TYPE_PLAY,
     domain: "",
   };
 };
 
-const getSchema = ({i18n = getI18n()}: { i18n?: ReturnType<typeof getI18n> }) => {
-  const {t} = i18n;
+const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
+  const { t } = i18n;
 
   return z
     .object({
-      domainMatchPattern: z.string().nonempty(t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder")).default(DOMAIN_MATCH_PATTERN_EXACT),
       spaceName: z.string().nonempty(t("workflow_node.deploy.form.volcengine_vod_space_name.placeholder")).nullish(),
+      domainMatchPattern: z.string().nonempty(t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder")).default(DOMAIN_MATCH_PATTERN_EXACT),
       domainType: z.literal([DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE], t("workflow_node.deploy.form.volcengine_vod_domain_type.placeholder")),
       domain: z.string().nullish(),
     })
@@ -106,15 +110,16 @@ const getSchema = ({i18n = getI18n()}: { i18n?: ReturnType<typeof getI18n> }) =>
       if (values.domainMatchPattern) {
         switch (values.domainMatchPattern) {
           case DOMAIN_MATCH_PATTERN_EXACT:
-          case DOMAIN_MATCH_PATTERN_WILDCARD: {
-            if (!validDomainName(values.domain!, {allowWildcard: true})) {
-              ctx.addIssue({
-                code: "custom",
-                message: t("common.errmsg.domain_invalid"),
-                path: ["domain"],
-              });
+          case DOMAIN_MATCH_PATTERN_WILDCARD:
+            {
+              if (!validDomainName(values.domain!, { allowWildcard: true })) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("common.errmsg.domain_invalid"),
+                  path: ["domain"],
+                });
+              }
             }
-          }
             break;
         }
       }

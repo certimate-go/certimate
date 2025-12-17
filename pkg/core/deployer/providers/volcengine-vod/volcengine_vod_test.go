@@ -16,9 +16,9 @@ var (
 	fInputKeyPath    string
 	fAccessKeyId     string
 	fAccessKeySecret string
-	fDomain          string
 	fSpaceName       string
 	fDomainType      string
+	fDomain          string
 )
 
 func init() {
@@ -28,9 +28,9 @@ func init() {
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
 	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
 	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
 	flag.StringVar(&fSpaceName, argsPrefix+"SPACENAME", "", "")
 	flag.StringVar(&fDomainType, argsPrefix+"DOMAINTYPE", "", "")
+	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
 }
 
 /*
@@ -41,9 +41,9 @@ Shell command to run this test:
 	--VOLCENGINEVOD_INPUTKEYPATH="/path/to/your-input-key.pem" \
 	--VOLCENGINEVOD_ACCESSKEYID="your-access-key-id" \
 	--VOLCENGINEVOD_ACCESSKEYSECRET="your-access-key-secret" \
-	--VOLCENGINEVOD_DOMAIN="example.com" \
+	--VOLCENGINEVOD_SPACENAME="vod-space-name" \
 	--VOLCENGINEVOD_DOMAINTYPE="play" \
-	--VOLCENGINEVOD_SPACENAME="vod-space-name"
+	--VOLCENGINEVOD_DOMAIN="example.com"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -55,18 +55,18 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
 			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
 			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-			fmt.Sprintf("DOMAINTYPE: %v", fDomainType),
 			fmt.Sprintf("SPACENAME: %v", fSpaceName),
+			fmt.Sprintf("DOMAINTYPE: %v", fDomainType),
+			fmt.Sprintf("DOMAIN: %v", fDomain),
 		}, "\n"))
 
 		provider, err := provider.NewDeployer(&provider.DeployerConfig{
 			AccessKeyId:        fAccessKeyId,
 			AccessKeySecret:    fAccessKeySecret,
 			DomainMatchPattern: provider.DOMAIN_MATCH_PATTERN_EXACT,
-			Domain:             fDomain,
 			SpaceName:          fSpaceName,
 			DomainType:         fDomainType,
+			Domain:             fDomain,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

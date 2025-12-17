@@ -25,14 +25,14 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
-	// 空间名称
+	// 点播空间名称。
 	SpaceName string `json:"spaceName"`
-	// 域名类型 [DOMAIN_TYPE_PLAY] [DOMAIN_TYPE_IMAGE]
-	DomainType string `json:"domainType"`
 	// 域名匹配模式。
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
-	// 点播域名（支持泛域名）。
+	// 点播域名类型。
+	DomainType string `json:"domainType"`
+	// 点播加速域名（支持泛域名）。
 	Domain string `json:"domain"`
 }
 
@@ -179,8 +179,8 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 	// 获取空间域名列表
 	// REF: https://www.volcengine.com/docs/4/106062
-	listDomainDetailPageNum := int32(1)
-	listDomainDetailPageSize := int32(1000)
+	listDomainDetailOffset := int32(1)
+	listDomainDetailLimit := int32(1000)
 	for {
 		select {
 		case <-ctx.Done():
@@ -192,8 +192,8 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			SpaceName:         d.config.SpaceName,
 			DomainType:        d.config.DomainType,
 			SourceStationType: 1,
-			Offset:            (listDomainDetailPageNum - 1) * listDomainDetailPageSize,
-			Limit:             listDomainDetailPageSize,
+			Offset:            listDomainDetailOffset,
+			Limit:             listDomainDetailLimit,
 		}
 		listDomainResp, _, err := d.sdkClient.ListDomain(listDomainReq)
 		d.logger.Debug("sdk request 'vod.ListDomain'", slog.Any("request", listDomainReq), slog.Any("response", listDomainResp))
@@ -206,13 +206,15 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		}
 
 		var byteInstances []*business.VodDomainInstanceInfo
-		if d.config.DomainType == DOMAIN_TYPE_PLAY {
+		switch d.config.DomainType {
+		case DOMAIN_TYPE_PLAY:
 			byteInstances = listDomainResp.GetResult().GetPlayInstanceInfo().GetByteInstances()
-		} else if d.config.DomainType == DOMAIN_TYPE_IMAGE {
+		case DOMAIN_TYPE_IMAGE:
 			byteInstances = listDomainResp.GetResult().GetImageInstanceInfo().GetByteInstances()
-		} else {
+		default:
 			return nil, fmt.Errorf("unsupported domain type: '%s'", d.config.DomainType)
 		}
+
 		for _, byteDomains := range byteInstances {
 			if byteDomains.Domains == nil {
 				break
@@ -222,11 +224,11 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			}
 		}
 
-		if int32(listDomainResp.Result.Offset) < listDomainDetailPageSize {
+		if int32(listDomainResp.Result.Offset) < listDomainDetailLimit {
 			break
 		}
 
-		listDomainDetailPageNum++
+		listDomainDetailOffset += listDomainDetailLimit
 	}
 
 	return domains, nil
@@ -248,8 +250,8 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 			},
 		},
 	}
-	updateCertRes, _, err := d.sdkClient.UpdateDomainConfig(updateCertReq)
-	d.logger.Debug("sdk request 'vod.UpdateDomainConfig'", slog.Any("request", updateCertReq), slog.Any("response", updateCertRes))
+	updateCertResp, _, err := d.sdkClient.UpdateDomainConfig(updateCertReq)
+	d.logger.Debug("sdk request 'vod.UpdateDomainConfig'", slog.Any("request", updateCertReq), slog.Any("response", updateCertResp))
 	if err != nil {
 		return err
 	}

@@ -19,10 +19,10 @@ func init() {
 		provider, err := volcenginevod.NewDeployer(&volcenginevod.DeployerConfig{
 			AccessKeyId:        credentials.AccessKeyId,
 			AccessKeySecret:    credentials.SecretAccessKey,
-			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
-			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 			SpaceName:          xmaps.GetString(options.ProviderExtendedConfig, "spaceName"),
+			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			DomainType:         xmaps.GetString(options.ProviderExtendedConfig, "domainType"),
+			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 		})
 		return provider, err
 	})

@@ -202,7 +202,7 @@
   "provider.volcengine_imagex": "Volcengine - ImageX",
   "provider.volcengine_live": "Volcengine - Live",
   "provider.volcengine_tos": "Volcengine - TOS (Tinder Object Storage)",
-  "provider.volcengine_vod": "Volcengine - VOD",
+  "provider.volcengine_vod": "Volcengine - VOD (Video on Demand)",
   "provider.vultr": "Vultr",
   "provider.wangsu": "Wangsu Cloud",
   "provider.wangsu_cdn": "Wangsu Cloud - CDN (Content Delivery Network)",
