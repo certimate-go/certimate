@@ -228,6 +228,8 @@ func (we *workflowEngine) executeNode(wfCtx *WorkflowContext, node *Node) error 
 }
 
 func (we *workflowEngine) executeBlocks(wfCtx *WorkflowContext, blocks []*Node) error {
+	errs := make([]error, 0)
+
 	for _, node := range blocks {
 		select {
 		case <-wfCtx.ctx.Done():
@@ -237,8 +239,23 @@ func (we *workflowEngine) executeBlocks(wfCtx *WorkflowContext, blocks []*Node) 
 
 		err := we.executeNode(wfCtx, node)
 		if err != nil {
+			// 如果当前节点是 TryCatch 节点、且在 CatchBlock 分支中没有 End 节点，
+			// 则暂存错误，但继续执行下一个节点，直到当前 Blocks 全部执行完毕。
+			if node.Type == NodeTypeTryCatch {
+				if !errors.Is(err, ErrTerminated) {
+					errs = append(errs, err)
+					continue
+				}
+			}
 			return err
 		}
+	}
+
+	if len(errs) > 0 {
+		if len(errs) == 1 {
+			return errs[0]
+		}
+		return errors.Join(errs...)
 	}
 
 	return nil
