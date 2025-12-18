@@ -4,7 +4,7 @@ import { Button, Dropdown, Form, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 
@@ -214,7 +214,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.webhook_headers.tooltip") }}></span>}
       >
-        <CodeInput
+        <CodeTextInput
+          lineWrapping={false}
           height="auto"
           minHeight="64px"
           maxHeight="256px"
@@ -245,7 +246,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
             </Dropdown>
           </div>
           <Form.Item name={[parentNamePath, "data"]} initialValue={initialValues.data} noStyle rules={[formRule]}>
-            <CodeInput
+            <CodeTextInput
+              lineWrapping={false}
               height="auto"
               minHeight="64px"
               maxHeight="256px"
@@ -281,7 +283,8 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
             </Dropdown>
           </div>
           <Form.Item name={[parentNamePath, "data"]} initialValue={initialValues.data} noStyle rules={[formRule]}>
-            <CodeInput
+            <CodeTextInput
+              lineWrapping={false}
               height="auto"
               minHeight="64px"
               maxHeight="256px"

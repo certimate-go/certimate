@@ -8,7 +8,7 @@ import { nanoid } from "nanoid/non-secure";
 import { ClientResponseError } from "pocketbase";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 import DrawerForm from "@/components/DrawerForm";
 import Tips from "@/components/Tips";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
@@ -324,7 +324,7 @@ const InternalEditDrawer = ({
       </Form.Item>
 
       <Form.Item name="command" label={t("preset.form.script_command.label")} rules={[formRule]}>
-        <CodeInput height="auto" minHeight="256px" language={["shell", "powershell"]} placeholder={t("preset.form.script_command.placeholder")} />
+        <CodeTextInput height="auto" minHeight="256px" language={["shell", "powershell"]} placeholder={t("preset.form.script_command.placeholder")} />
       </Form.Item>
     </DrawerForm>
   );

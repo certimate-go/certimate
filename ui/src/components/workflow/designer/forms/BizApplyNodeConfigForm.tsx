@@ -16,7 +16,7 @@ import ACMEDns01ProviderSelect from "@/components/provider/ACMEDns01ProviderSele
 import ACMEHttp01ProviderSelect from "@/components/provider/ACMEHttp01ProviderSelect";
 import CAProviderSelect from "@/components/provider/CAProviderSelect";
 import Show from "@/components/Show";
-import TextFileInput from "@/components/TextFileInput";
+import FileTextInput from "@/components/FileTextInput";
 import { type AccessModel } from "@/domain/access";
 import { acmeDns01ProvidersMap, acmeHttp01ProvidersMap, caProvidersMap } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from "@/domain/workflow";
@@ -432,7 +432,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
           <Show when={fieldKeySource === KEY_SOURCE_CUSTOM}>
             <Form.Item name="keyContent" label={t("workflow_node.apply.form.key_content.label")} rules={[formRule]}>
-              <TextFileInput
+              <FileTextInput
                 autoSize={{ minRows: 3, maxRows: 10 }}
                 placeholder={t("workflow_node.apply.form.key_content.placeholder")}
                 onChange={handleKeyContentChange}

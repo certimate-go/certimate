@@ -4,7 +4,7 @@ import { Button, Divider, Form, Input, Popover, Select, Space } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 import PresetScriptTemplatesPopselect from "@/components/preset/PresetScriptTemplatesPopselect";
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
@@ -76,7 +76,7 @@ Import-Module WebAdministration
 # 检查是否已存在 HTTPS 绑定
 $existingBinding = Get-WebBinding -Name "$siteName" -Protocol "https" -Port $port -HostHeader "$domain" -ErrorAction SilentlyContinue
 if (!$existingBinding) {
-    # 添加新的 HTTPS 绑定
+  # 添加新的 HTTPS 绑定
   New-WebBinding -Name "$siteName" -Protocol "https" -Port $port -IPAddress "$ipaddr" -HostHeader "$domain"
 }
 # 获取绑定对象
@@ -361,7 +361,7 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
           </PresetScriptTemplatesPopselect>
         </div>
         <Form.Item name={[parentNamePath, "preCommand"]} initialValue={initialValues.preCommand} noStyle rules={[formRule]}>
-          <CodeInput
+          <CodeTextInput
             height="auto"
             minHeight="64px"
             maxHeight="256px"
@@ -402,7 +402,7 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
           </Space>
         </div>
         <Form.Item name={[parentNamePath, "postCommand"]} initialValue={initialValues.postCommand} noStyle rules={[formRule]}>
-          <CodeInput
+          <CodeTextInput
             height="auto"
             minHeight="64px"
             maxHeight="256px"

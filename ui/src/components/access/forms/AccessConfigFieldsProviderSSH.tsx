@@ -5,7 +5,7 @@ import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import Show from "@/components/Show";
-import TextFileInput from "@/components/TextFileInput";
+import FileTextInput from "@/components/FileTextInput";
 import { mergeCls } from "@/utils/css";
 import { validDomainName, validIPv4Address, validIPv6Address, validPortNumber } from "@/utils/validators";
 
@@ -70,7 +70,7 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
 
       <Show when={fieldAuthMethod === AUTH_METHOD_KEY}>
         <Form.Item name={[parentNamePath, "key"]} initialValue={initialValues.key} label={t("access.form.ssh_key.label")} rules={[formRule]}>
-          <TextFileInput autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key.placeholder")} />
+          <FileTextInput autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key.placeholder")} />
         </Form.Item>
 
         <Form.Item
@@ -184,7 +184,7 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
 
                         <Show when={subfieldAuthMethod === AUTH_METHOD_KEY}>
                           <Form.Item name={[index, "key"]} label={t("access.form.ssh_key.label")} shouldUpdate rules={[formRule]}>
-                            <TextFileInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key.placeholder")} />
+                            <FileTextInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key.placeholder")} />
                           </Form.Item>
 
                           <Form.Item name={[index, "keyPassphrase"]} label={t("access.form.ssh_key_passphrase.label")} shouldUpdate rules={[formRule]}>

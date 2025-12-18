@@ -3,7 +3,7 @@ import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -92,7 +92,8 @@ const BizDeployNodeConfigFieldsProviderKubernetesSecret = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.k8s_secret_annotations.tooltip") }}></span>}
       >
-        <CodeInput
+        <CodeTextInput
+          lineWrapping={false}
           height="auto"
           minHeight="64px"
           maxHeight="256px"
@@ -109,7 +110,8 @@ const BizDeployNodeConfigFieldsProviderKubernetesSecret = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.k8s_secret_labels.tooltip") }}></span>}
       >
-        <CodeInput
+        <CodeTextInput
+          lineWrapping={false}
           height="auto"
           minHeight="64px"
           maxHeight="256px"

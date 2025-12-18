@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import { validateCertificate, validatePrivateKey } from "@/api/certificates";
 import Show from "@/components/Show";
-import TextFileInput from "@/components/TextFileInput";
+import FileTextInput from "@/components/FileTextInput";
 import Tips from "@/components/Tips";
 import { type WorkflowNodeConfigForBizUpload, defaultNodeConfigForBizUpload } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
@@ -124,7 +124,7 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
             </Form.Item>
 
             <Form.Item name="certificate" label={t("workflow_node.upload.form.certificate_pem.label")} rules={[formRule]}>
-              <TextFileInput
+              <FileTextInput
                 autoSize={{ minRows: 3, maxRows: 10 }}
                 placeholder={t("workflow_node.upload.form.certificate_pem.placeholder")}
                 onChange={handleCertificatePEMChange}
@@ -132,7 +132,7 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
             </Form.Item>
 
             <Form.Item name="privateKey" label={t("workflow_node.upload.form.private_key_pem.label")} rules={[formRule]}>
-              <TextFileInput
+              <FileTextInput
                 autoSize={{ minRows: 3, maxRows: 10 }}
                 placeholder={t("workflow_node.upload.form.private_key_pem.placeholder")}
                 onChange={handlePrivateKeyPEMChange}

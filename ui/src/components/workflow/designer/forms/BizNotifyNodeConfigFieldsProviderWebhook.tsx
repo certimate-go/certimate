@@ -4,7 +4,7 @@ import { Button, Form, Input, Popover } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -40,7 +40,8 @@ const BizNotifyNodeConfigFieldsProviderWebhook = () => {
           </Popover>
         </div>
         <Form.Item name={[parentNamePath, "webhookData"]} initialValue={initialValues.webhookData} noStyle rules={[formRule]}>
-          <CodeInput
+          <CodeTextInput
+            lineWrapping={false}
             height="auto"
             minHeight="64px"
             maxHeight="256px"

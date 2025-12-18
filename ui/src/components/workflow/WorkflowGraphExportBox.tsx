@@ -6,7 +6,7 @@ import { IconClipboard } from "@tabler/icons-react";
 import { App, Button, Form, Radio, Tooltip } from "antd";
 import { stringify as stringifyYaml } from "yaml";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 import { type WorkflowGraph, type WorkflowNode } from "@/domain/workflow";
 
 import { getAllNodeRegistries } from "./designer/nodes";
@@ -130,7 +130,7 @@ const WorkflowGraphExportBox = ({ className, style, data }: WorkflowGraphExportB
             </CopyToClipboard>
           </Tooltip>
         </div>
-        <CodeInput height="calc(min(60vh, 512px))" language={format} value={content} readOnly />
+        <CodeTextInput height="calc(min(60vh, 512px))" language={format} lineWrapping={false} value={content} readOnly />
       </Form.Item>
     </Form>
   );

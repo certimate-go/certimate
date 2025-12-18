@@ -3,7 +3,7 @@ import { Form } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import TextFileInput from "@/components/TextFileInput";
+import FileTextInput from "@/components/FileTextInput";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -27,7 +27,7 @@ const AccessConfigFormFieldsProviderKubernetes = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.k8s_kubeconfig.tooltip") }}></span>}
       >
-        <TextFileInput allowClear autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("access.form.k8s_kubeconfig.placeholder")} />
+        <FileTextInput allowClear autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("access.form.k8s_kubeconfig.placeholder")} />
       </Form.Item>
     </>
   );

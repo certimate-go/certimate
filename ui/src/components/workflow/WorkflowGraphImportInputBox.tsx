@@ -5,7 +5,7 @@ import { createSchemaFieldRule } from "antd-zod";
 import { parse as parseYaml } from "yaml";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 import { WORKFLOW_NODE_TYPES, type WorkflowGraph, type WorkflowNode, type WorkflowNodeType } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
 
@@ -236,7 +236,7 @@ const WorkflowGraphImportInputBox = forwardRef<WorkflowGraphImportInputBoxInstan
       </Form.Item>
 
       <Form.Item name="content" label={t("workflow.detail.design.action.import.form.content.label")} rules={[formRule]}>
-        <CodeInput height="calc(min(60vh, 512px))" language={fieldFormat} value={fieldContent} />
+        <CodeTextInput height="calc(min(60vh, 512px))" language={fieldFormat} lineWrapping={false} value={fieldContent} />
       </Form.Item>
     </Form>
   );

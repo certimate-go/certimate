@@ -4,7 +4,7 @@ import { Button, Divider, Form, Input, Popover, Select, Space, Switch } from "an
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import CodeInput from "@/components/CodeInput";
+import CodeTextInput from "@/components/CodeTextInput";
 import PresetScriptTemplatesPopselect from "@/components/preset/PresetScriptTemplatesPopselect";
 import Show from "@/components/Show";
 import { CERTIFICATE_FORMATS } from "@/domain/certificate";
@@ -396,7 +396,7 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
           </PresetScriptTemplatesPopselect>
         </div>
         <Form.Item name={[parentNamePath, "preCommand"]} initialValue={initialValues.preCommand} noStyle rules={[formRule]}>
-          <CodeInput
+          <CodeTextInput
             height="auto"
             minHeight="64px"
             maxHeight="256px"
@@ -444,7 +444,7 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
           </Space>
         </div>
         <Form.Item name={[parentNamePath, "postCommand"]} initialValue={initialValues.postCommand} noStyle rules={[formRule]}>
-          <CodeInput
+          <CodeTextInput
             height="auto"
             minHeight="64px"
             maxHeight="256px"

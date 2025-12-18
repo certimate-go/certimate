@@ -3,7 +3,7 @@ import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod/v4";
 
-import TextFileInput from "@/components/TextFileInput";
+import FileTextInput from "@/components/FileTextInput";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -35,7 +35,7 @@ const AccessConfigFieldsProviderACMEDNS = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.acmedns_credentials.tooltip") }}></span>}
       >
-        <TextFileInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("access.form.acmedns_credentials.placeholder")} />
+        <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("access.form.acmedns_credentials.placeholder")} />
       </Form.Item>
     </>
   );

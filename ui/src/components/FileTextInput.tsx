@@ -7,14 +7,14 @@ import { type TextAreaProps } from "antd/es/input/TextArea";
 
 import { readFileAsText } from "@/utils/file";
 
-export interface TextFileInputProps extends Omit<TextAreaProps, "onChange"> {
+export interface FileTextInputProps extends Omit<TextAreaProps, "onChange"> {
   accept?: string;
   uploadButtonProps?: Omit<ButtonProps, "disabled" | "onClick">;
   uploadText?: string;
   onChange?: (value: string) => void;
 }
 
-const TextFileInput = ({ className, style, accept, disabled, readOnly, uploadText, uploadButtonProps, onChange, ...props }: TextFileInputProps) => {
+const FileTextInput = ({ className, style, accept, disabled, readOnly, uploadText, uploadButtonProps, onChange, ...props }: FileTextInputProps) => {
   const { t } = useTranslation();
 
   const injectedDisabled = useContext(DisabledContext);
@@ -53,4 +53,4 @@ const TextFileInput = ({ className, style, accept, disabled, readOnly, uploadTex
   );
 };
 
-export default TextFileInput;
+export default FileTextInput;
