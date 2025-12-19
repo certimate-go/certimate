@@ -324,7 +324,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.ElbClient, error) {
-	projectId, err := getSdkProjectId(accessKeyId, secretAccessKey, region)
+	projectId, err := getSDKProjectId(accessKeyId, secretAccessKey, region)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +355,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Elb
 	return client, nil
 }
 
-func getSdkProjectId(accessKeyId, secretAccessKey, region string) (string, error) {
+func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error) {
 	if region == "" {
 		region = "cn-north-4" // IAM 服务默认区域：华北四北京
 	}
@@ -390,7 +390,7 @@ func getSdkProjectId(accessKeyId, secretAccessKey, region string) (string, error
 	if err != nil {
 		return "", err
 	} else if response.Projects == nil || len(*response.Projects) == 0 {
-		return "", errors.New("no project found")
+		return "", errors.New("huaweicloud: no project found")
 	}
 
 	return (*response.Projects)[0].Id, nil

@@ -8,11 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ucloud/ucloud-sdk-go/services/uaccount"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/upathx"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -23,14 +24,12 @@ type CertmgrConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
-	// 优刻得地域。
-	Region string `json:"region"`
 }
 
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *ucloudsdk.ULBClient
+	sdkClient *ucloudsdk.UPathXClient
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -38,6 +37,15 @@ var _ certmgr.Provider = (*Certmgr)(nil)
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
 		return nil, errors.New("the configuration of the certmgr provider is nil")
+	}
+
+	if config.ProjectId == "" {
+		defaultProjectId, err := getSDKDefaultProjectId(config.PrivateKey, config.PublicKey)
+		if err != nil {
+			return nil, fmt.Errorf("could not create client: %w", err)
+		}
+
+		config.ProjectId = defaultProjectId
 	}
 
 	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
@@ -76,25 +84,24 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}
 
 	// 生成新证书名（需符合优刻得命名规则）
-	certName := fmt.Sprintf("certimate-%d", time.Now().UnixMilli())
+	certName := fmt.Sprintf("certimate_%d", time.Now().UnixMilli())
 
-	// 创建 SSL 证书
-	// REF: https://docs.ucloud.cn/api/ulb-api/create_ssl
-	createSSLReq := c.sdkClient.NewCreateSSLRequest()
-	createSSLReq.Region = ucloud.String(c.config.Region)
-	createSSLReq.SSLName = ucloud.String(certName)
-	createSSLReq.SSLType = ucloud.String("Pem")
-	createSSLReq.UserCert = ucloud.String(serverCertPEM)
-	createSSLReq.CaCert = ucloud.String(intermediaCertPEM)
-	createSSLReq.PrivateKey = ucloud.String(privkeyPEM)
+	// 创建证书
+	// REF: https://docs.ucloud.cn/api/pathx-api/create_path_xssl
+	createPathXSSLReq := c.sdkClient.NewCreatePathXSSLRequest()
+	createPathXSSLReq.SSLName = ucloud.String(certName)
+	createPathXSSLReq.SSLType = ucloud.String("Pem")
+	createPathXSSLReq.UserCert = ucloud.String(serverCertPEM)
+	createPathXSSLReq.CACert = ucloud.String(intermediaCertPEM)
+	createPathXSSLReq.PrivateKey = ucloud.String(privkeyPEM)
 	if c.config.ProjectId != "" {
-		createSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
+		createPathXSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
 	}
-	createSSLResp, err := c.sdkClient.CreateSSL(createSSLReq)
-	c.logger.Debug("sdk request 'ulb.CreateSSL'", slog.Any("request", createSSLReq), slog.Any("response", createSSLResp))
+	createPathXSSLResp, err := c.sdkClient.CreatePathXSSL(createPathXSSLReq)
+	c.logger.Debug("sdk request 'pathx.CreatePathXSSL'", slog.Any("request", createPathXSSLReq), slog.Any("response", createPathXSSLResp))
 
 	return &certmgr.UploadResult{
-		CertId:   createSSLResp.SSLId,
+		CertId:   createPathXSSLResp.SSLId,
 		CertName: certName,
 	}, nil
 }
@@ -110,10 +117,10 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 		return nil, false, err
 	}
 
-	// 获取 SSL 证书信息
-	// REF: https://docs.ucloud.cn/api/ulb-api/describe_ssl
-	describeSSLOffset := 0
-	describeSSLLimit := 100
+	// 获取证书信息
+	// REF: https://docs.ucloud.cn/api/pathx-api/describe_path_xssl
+	describePathXSSLOffset := 0
+	describePathXSSLLimit := 100
 	for {
 		select {
 		case <-ctx.Done():
@@ -121,27 +128,26 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 		default:
 		}
 
-		describeSSLReq := c.sdkClient.NewDescribeSSLRequest()
-		describeSSLReq.Region = ucloud.String(c.config.Region)
-		describeSSLReq.Offset = ucloud.Int(describeSSLOffset)
-		describeSSLReq.Limit = ucloud.Int(describeSSLLimit)
+		describePathXSSLReq := c.sdkClient.NewDescribePathXSSLRequest()
+		describePathXSSLReq.Offset = ucloud.Int(describePathXSSLOffset)
+		describePathXSSLReq.Limit = ucloud.Int(describePathXSSLLimit)
 		if c.config.ProjectId != "" {
-			describeSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
+			describePathXSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
 		}
-		describeSSLResp, err := c.sdkClient.DescribeSSL(describeSSLReq)
-		c.logger.Debug("sdk request 'ulb.DescribeSSL'", slog.Any("request", describeSSLReq), slog.Any("response", describeSSLResp))
+		describePathXSSLResp, err := c.sdkClient.DescribePathXSSL(describePathXSSLReq)
+		c.logger.Debug("sdk request 'pathx.DescribePathXSSL'", slog.Any("request", describePathXSSLReq), slog.Any("response", describePathXSSLResp))
 		if err != nil {
-			return nil, false, fmt.Errorf("failed to execute sdk request 'ulb.DescribeSSL': %w", err)
+			return nil, false, fmt.Errorf("failed to execute sdk request 'pathx.DescribePathXSSL': %w", err)
 		}
 
-		for _, sslItem := range describeSSLResp.DataSet {
+		for _, sslItem := range describePathXSSLResp.DataSet {
 			// 对比证书有效期
-			if int64(sslItem.NotBefore) != certX509.NotBefore.Unix() || int64(sslItem.NotAfter) != certX509.NotAfter.Unix() {
+			if int64(sslItem.ExpireTime) != certX509.NotAfter.Unix() {
 				continue
 			}
 
 			// 对比证书及私钥内容
-			// 按照“网站证书、私钥、中间证书”的方式拼接
+			// 按照“私钥、证书链”的方式拼接
 			serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 			if err != nil {
 				continue
@@ -152,7 +158,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 				oldSSLContent = strings.ReplaceAll(oldSSLContent, "\t", "")
 				oldSSLContent = strings.ReplaceAll(oldSSLContent, " ", "")
 
-				newSSLContent := serverCertPEM + privkeyPEM + intermediaCertPEM
+				newSSLContent := privkeyPEM + serverCertPEM + intermediaCertPEM
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\r", "")
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\n", "")
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\t", "")
@@ -170,17 +176,17 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 			}, true, nil
 		}
 
-		if len(describeSSLResp.DataSet) < describeSSLLimit {
+		if len(describePathXSSLResp.DataSet) < describePathXSSLLimit {
 			break
 		}
 
-		describeSSLOffset += describeSSLLimit
+		describePathXSSLOffset += describePathXSSLLimit
 	}
 
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey string) (*ucloudsdk.UPathXClient, error) {
 	cfg := ucloud.NewConfig()
 
 	credential := auth.NewCredential()
@@ -189,4 +195,28 @@ func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error)
 
 	client := ucloudsdk.NewClient(&cfg, &credential)
 	return client, nil
+}
+
+func getSDKDefaultProjectId(privateKey, publicKey string) (string, error) {
+	cfg := ucloud.NewConfig()
+
+	credential := auth.NewCredential()
+	credential.PrivateKey = privateKey
+	credential.PublicKey = publicKey
+
+	client := uaccount.NewClient(&cfg, &credential)
+
+	request := client.NewGetProjectListRequest()
+	response, err := client.GetProjectList(request)
+	if err != nil {
+		return "", err
+	}
+
+	for _, projectItem := range response.ProjectSet {
+		if projectItem.IsDefault {
+			return projectItem.ProjectId, nil
+		}
+	}
+
+	return "", errors.New("ucloud: no default project found")
 }

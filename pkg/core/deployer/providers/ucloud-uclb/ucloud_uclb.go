@@ -5,17 +5,21 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"slices"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/samber/lo"
-	ucloudlb "github.com/ucloud/ucloud-sdk-go/services/ulb"
+	"github.com/ucloud/ucloud-sdk-go/services/ulb"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	usdklb "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
 type DeployerConfig struct {
@@ -40,8 +44,11 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *usdklb.ULBClient
+	sdkClient  *ucloudsdk.ULBClient
 	sdkCertmgr certmgr.Provider
+
+	sslId2PemMap   map[string]string
+	sslId2PemMapMu sync.Mutex
 }
 
 var _ deployer.Provider = (*Deployer)(nil)
@@ -71,6 +78,9 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		logger:     slog.Default(),
 		sdkClient:  client,
 		sdkCertmgr: pcertmgr,
+
+		sslId2PemMap:   make(map[string]string),
+		sslId2PemMapMu: sync.Mutex{},
 	}, nil
 }
 
@@ -91,6 +101,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
 	} else {
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
+
+		d.sslId2PemMapMu.Lock()
+		d.sslId2PemMap[upres.CertId] = certPEM
+		d.sslId2PemMapMu.Unlock()
 	}
 
 	// 根据部署资源类型决定部署方式
@@ -212,16 +226,13 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	d.logger.Debug("sdk request 'ulb.DescribeVServer'", slog.Any("request", describeVServerReq), slog.Any("response", describeVServerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
-	}
-	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
 	} else if len(describeVServerResp.DataSet) == 0 {
 		return fmt.Errorf("could not find vserver '%s'", cloudVServerId)
 	}
 
 	// 跳过已部署过的 VServer
 	vserverInfo := describeVServerResp.DataSet[0]
-	if lo.ContainsBy(vserverInfo.SSLSet, func(item ucloudlb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
+	if lo.ContainsBy(vserverInfo.SSLSet, func(item ulb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
 		return nil
 	}
 
@@ -241,18 +252,54 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 		return fmt.Errorf("failed to execute sdk request 'ulb.BindSSL': %w", err)
 	}
 
-	// 解绑已过期的 SSL 证书
-	// REF: https://docs.ucloud.cn/api/ulb-api/unbind_ssl
+	// 找出需要解绑的 SSL 证书
+	sslIdsToUnbind := make([]string, 0)
 	for _, sslItem := range vserverInfo.SSLSet {
-		if sslItem.NotAfter == 0 || int64(sslItem.NotAfter) >= time.Now().Unix() {
+		if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
+			sslIdsToUnbind = append(sslIdsToUnbind, sslItem.SSLId) // 过期证书需要解绑
 			continue
 		}
 
+		d.sslId2PemMapMu.Lock()
+		certX509, err := xcert.ParseCertificateFromPEM(d.sslId2PemMap[cloudCertId])
+		d.sslId2PemMapMu.Unlock()
+		if err != nil {
+			continue
+		}
+
+		describeSSLV2Req := d.sdkClient.NewDescribeSSLV2Request()
+		describeSSLV2Req.Region = ucloud.String(d.config.Region)
+		describeSSLV2Req.SSLId = ucloud.String(sslItem.SSLId)
+		describeSSLV2Req.Limit = ucloud.Int(1)
+		if d.config.ProjectId != "" {
+			describeSSLV2Req.ProjectId = ucloud.String(d.config.ProjectId)
+		}
+		describeSSLV2Resp, err := d.sdkClient.DescribeSSLV2(describeSSLV2Req)
+		d.logger.Debug("sdk request 'ulb.DescribeSSLV2'", slog.Any("request", describeSSLV2Req), slog.Any("response", describeSSLV2Resp))
+		if err != nil {
+			continue
+		} else if len(describeSSLV2Resp.DataSet) == 0 {
+			continue
+		}
+
+		sslItem := describeSSLV2Resp.DataSet[0]
+		if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
+			sslIdsToUnbind = append(sslIdsToUnbind, sslItem.SSLId) // 过期证书需要解绑
+			continue
+		} else if sslItem.DNSNames != "" && slices.Equal(strings.Split(sslItem.DNSNames, ","), certX509.DNSNames) {
+			sslIdsToUnbind = append(sslIdsToUnbind, sslItem.SSLId) // 同域名证书需要解绑
+			continue
+		}
+	}
+
+	// 解绑 SSL 证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/unbind_ssl
+	for _, sslId := range sslIdsToUnbind {
 		unbindSSLReq := d.sdkClient.NewUnbindSSLRequest()
 		unbindSSLReq.Region = ucloud.String(d.config.Region)
 		unbindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
 		unbindSSLReq.VServerId = ucloud.String(cloudVServerId)
-		unbindSSLReq.SSLId = ucloud.String(sslItem.SSLId)
+		unbindSSLReq.SSLId = ucloud.String(sslId)
 		if d.config.ProjectId != "" {
 			unbindSSLReq.ProjectId = ucloud.String(d.config.ProjectId)
 		}
@@ -266,13 +313,13 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	return nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*usdklb.ULBClient, error) {
+func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error) {
 	cfg := ucloud.NewConfig()
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey
 	credential.PublicKey = publicKey
 
-	client := usdklb.NewClient(&cfg, &credential)
+	client := ucloudsdk.NewClient(&cfg, &credential)
 	return client, nil
 }

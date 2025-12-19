@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
-	ucloudauth "github.com/ucloud/ucloud-sdk-go/ucloud/auth"
+	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	ucloudssl "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ussl"
+	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ussl"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -32,7 +32,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *ucloudssl.USSLClient
+	sdkClient *ucloudsdk.USSLClient
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -233,13 +233,13 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudssl.USSLClient, error) {
+func createSDKClient(privateKey, publicKey string) (*ucloudsdk.USSLClient, error) {
 	cfg := ucloud.NewConfig()
 
-	credential := ucloudauth.NewCredential()
+	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey
 	credential.PublicKey = publicKey
 
-	client := ucloudssl.NewClient(&cfg, &credential)
+	client := ucloudsdk.NewClient(&cfg, &credential)
 	return client, nil
 }

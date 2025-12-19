@@ -152,7 +152,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.WafClient, error) {
-	projectId, err := getSdkProjectId(accessKeyId, secretAccessKey, region)
+	projectId, err := getSDKProjectId(accessKeyId, secretAccessKey, region)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Waf
 	return client, nil
 }
 
-func getSdkProjectId(accessKeyId, secretAccessKey, region string) (string, error) {
+func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error) {
 	auth, err := global.NewCredentialsBuilder().
 		WithAk(accessKeyId).
 		WithSk(secretAccessKey).
@@ -214,7 +214,7 @@ func getSdkProjectId(accessKeyId, secretAccessKey, region string) (string, error
 	if err != nil {
 		return "", err
 	} else if response.Projects == nil || len(*response.Projects) == 0 {
-		return "", errors.New("no project found")
+		return "", errors.New("huaweicloud: no project found")
 	}
 
 	return (*response.Projects)[0].Id, nil

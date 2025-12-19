@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	ucloudlb "github.com/ucloud/ucloud-sdk-go/services/ulb"
+	"github.com/ucloud/ucloud-sdk-go/services/ulb"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	usdklb "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
 )
 
 type DeployerConfig struct {
@@ -43,7 +43,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *usdklb.ULBClient
+	sdkClient  *ucloudsdk.ULBClient
 	sdkCertmgr certmgr.Provider
 }
 
@@ -215,9 +215,6 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	d.logger.Debug("sdk request 'ulb.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeListeners': %w", err)
-	}
-	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeListeners': %w", err)
 	} else if len(describeListenerResp.Listeners) == 0 {
 		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
 	}
@@ -225,11 +222,11 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	// 跳过已部署过的监听器
 	listenerInfo := describeListenerResp.Listeners[0]
 	if d.config.Domain == "" {
-		if lo.ContainsBy(listenerInfo.Certificates, func(item ucloudlb.Certificate) bool { return item.SSLId == cloudCertId && item.IsDefault }) {
+		if lo.ContainsBy(listenerInfo.Certificates, func(item ulb.Certificate) bool { return item.SSLId == cloudCertId && item.IsDefault }) {
 			return nil
 		}
 	} else {
-		if lo.ContainsBy(listenerInfo.Certificates, func(item ucloudlb.Certificate) bool { return item.SSLId == cloudCertId && !item.IsDefault }) {
+		if lo.ContainsBy(listenerInfo.Certificates, func(item ulb.Certificate) bool { return item.SSLId == cloudCertId && !item.IsDefault }) {
 			return nil
 		}
 	}
@@ -269,9 +266,9 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			return fmt.Errorf("failed to execute sdk request 'ulb.AddSSLBinding': %w", err)
 		}
 
-		// 删除已过期的监听器绑定的扩展证书
+		// 找出需要删除绑定的扩展证书
 		// REF: https://docs.ucloud.cn/api/ulb-api/describe_sslv2
-		// REF: https://docs.ucloud.cn/api/ulb-api/delete_ssl_binding_json
+		sslIdsToDelete := make([]string, 0)
 		for _, certItem := range listenerInfo.Certificates {
 			if certItem.IsDefault {
 				continue
@@ -290,19 +287,26 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 				continue
 			} else if len(describeSSLV2Resp.DataSet) == 0 {
 				continue
-			} else {
 			}
 
 			sslItem := describeSSLV2Resp.DataSet[0]
-			if sslItem.NotAfter == 0 || int64(sslItem.NotAfter) >= time.Now().Unix() {
+			if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
+				sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 过期证书需要删除
+				continue
+			} else if sslItem.Domains == d.config.Domain {
+				sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 同域名证书需要删除
 				continue
 			}
+		}
 
+		// 删除监听器绑定的扩展证书
+		// REF: https://docs.ucloud.cn/api/ulb-api/delete_ssl_binding_json
+		if len(sslIdsToDelete) > 0 {
 			deleteSSLBindingReq := d.sdkClient.NewDeleteSSLBindingRequest()
 			deleteSSLBindingReq.Region = ucloud.String(d.config.Region)
 			deleteSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
 			deleteSSLBindingReq.ListenerId = ucloud.String(cloudListenerId)
-			deleteSSLBindingReq.SSLIds = []string{sslItem.SSLId}
+			deleteSSLBindingReq.SSLIds = sslIdsToDelete
 			if d.config.ProjectId != "" {
 				deleteSSLBindingReq.ProjectId = ucloud.String(d.config.ProjectId)
 			}
@@ -317,13 +321,13 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	return nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*usdklb.ULBClient, error) {
+func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error) {
 	cfg := ucloud.NewConfig()
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey
 	credential.PublicKey = publicKey
 
-	client := usdklb.NewClient(&cfg, &credential)
+	client := ucloudsdk.NewClient(&cfg, &credential)
 	return client, nil
 }
