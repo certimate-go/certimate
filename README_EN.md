@@ -40,7 +40,7 @@ Certimate aims to provide users with a secure and user-friendly SSL certificate 
 - Supports DNS-01 challenge and HTTP-01 challenge both.
 - Supports various certificate formats such as PEM, PFX, JKS.
 - Supports more than 60+ domain registrars (e.g., Alibaba Cloud, Tencent Cloud, Cloudflare, etc. [Check out full providers](https://docs.certimate.me/en/docs/reference/providers#supported-dns-providers));
-- Supports more than 100+ deployment targets (e.g., Kubernetes, CDN, WAF, load balancers, etc. [Check out full providers](https://docs.certimate.me/en/docs/reference/providers#supported-hosting-providers));
+- Supports more than 110+ deployment targets (e.g., Kubernetes, CDN, WAF, load balancers, etc. [Check out full providers](https://docs.certimate.me/en/docs/reference/providers#supported-hosting-providers));
 - Supports multiple notification channels including email, DingTalk, Feishu, WeCom, Webhook, and more;
 - Supports multiple ACME CAs including Let's Encrypt, Actalis, Google Trust Services，SSL.com, ZeroSSL, and more;
 - More features waiting to be discovered.
