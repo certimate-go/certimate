@@ -43,16 +43,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	if config.ProjectId == "" {
-		defaultProjectId, err := getSDKDefaultProjectId(config.PrivateKey, config.PublicKey)
-		if err != nil {
-			return nil, fmt.Errorf("could not create client: %w", err)
-		}
-
-		config.ProjectId = defaultProjectId
-	}
-
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -106,9 +97,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	bindPathXSSLReq.UGAId = ucloud.String(d.config.AcceleratorId)
 	bindPathXSSLReq.Port = []int{int(d.config.ListenerPort)}
 	bindPathXSSLReq.SSLId = ucloud.String(upres.CertId)
-	if d.config.ProjectId != "" {
-		bindPathXSSLReq.ProjectId = ucloud.String(d.config.ProjectId)
-	}
 	bindPathXSSLResp, err := d.sdkClient.BindPathXSSL(bindPathXSSLReq)
 	d.logger.Debug("sdk request 'pathx.BindPathXSSL'", slog.Any("request", bindPathXSSLReq), slog.Any("response", bindPathXSSLResp))
 	if err != nil {
@@ -118,8 +106,26 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.UPathXClient, error) {
+func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathXClient, error) {
+	if privateKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid private key")
+	}
+	if publicKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid public key")
+	}
+
 	cfg := ucloud.NewConfig()
+	cfg.ProjectId = projectId
+
+	// PathX 相关接口要求必传 ProjectId 参数
+	if cfg.ProjectId == "" {
+		defaultProjectId, err := getSDKDefaultProjectId(privateKey, publicKey)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.ProjectId = defaultProjectId
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

@@ -951,6 +951,8 @@
   "workflow_node.deploy.form.ucloud_us3_bucket.placeholder": "Please enter UCloud US3 bucket name",
   "workflow_node.deploy.form.ucloud_us3_domain.label": "UCloud US3 custom domain",
   "workflow_node.deploy.form.ucloud_us3_domain.placeholder": "Please enter UCloud US3 bucket custom domain name",
+  "workflow_node.deploy.form.ucloud_uewaf_domain.label": "UCloud UEWAF domain",
+  "workflow_node.deploy.form.ucloud_uewaf_domain.placeholder": "Please enter UCloud UEWAF domain name",
   "workflow_node.deploy.form.unicloud_webhost.guide": "This uses webpage simulator login and does not guarantee stability. If there are any changes to the uniCloud, please create a GitHub Issue.",
   "workflow_node.deploy.form.unicloud_webhost_space_provider.label": "uniCloud space provider",
   "workflow_node.deploy.form.unicloud_webhost_space_provider.placeholder": "Please select uniCloud space provider",

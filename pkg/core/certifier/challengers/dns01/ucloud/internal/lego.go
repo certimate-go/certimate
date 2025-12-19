@@ -75,6 +75,7 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 
 	cfg := ucloud.NewConfig()
 	cfg.Timeout = config.HTTPTimeout
+	cfg.ProjectId = config.ProjectId
 	credential := auth.NewCredential()
 	credential.PrivateKey = config.PrivateKey
 	credential.PublicKey = config.PublicKey
@@ -101,9 +102,6 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	request.RecordName = ucloud.String(dns01.UnFqdn(info.EffectiveFQDN))
 	request.Content = ucloud.String(info.Value)
 	request.TTL = ucloud.String(fmt.Sprintf("%d", d.config.TTL))
-	if d.config.ProjectId != "" {
-		request.SetProjectId(d.config.ProjectId)
-	}
 	if _, err := d.client.AddDomainDNS(request); err != nil {
 		return fmt.Errorf("ucloud: error when create record: %w", err)
 	}
@@ -122,9 +120,6 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	// REF: https://docs.ucloud.cn/api/udnr-api/udnr_domain_dns_query
 	request := d.client.NewQueryDomainDNSRequest()
 	request.Dn = ucloud.String(authZone)
-	if d.config.ProjectId != "" {
-		request.SetProjectId(d.config.ProjectId)
-	}
 	response, err := d.client.QueryDomainDNS(request)
 	if err != nil {
 		return fmt.Errorf("ucloud: error when list records: %w", err)
@@ -138,9 +133,6 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 			delreq.DnsType = ucloud.String(record.DnsType)
 			delreq.RecordName = ucloud.String(record.RecordName)
 			delreq.Content = ucloud.String(record.Content)
-			if d.config.ProjectId != "" {
-				delreq.SetProjectId(d.config.ProjectId)
-			}
 			_, err := d.client.DeleteDomainDNS(delreq)
 			if err != nil {
 				return fmt.Errorf("ucloud: error when delete record: %w", err)

@@ -187,6 +187,7 @@
   "provider.ucloud_ucdn": "优刻得 - 云分发 UCDN",
   "provider.ucloud_uclb": "优刻得 - 传统型负载均衡 CLB",
   "provider.ucloud_udnr": "优刻得 - 域名服务 UDNR",
+  "provider.ucloud_uewaf": "优刻得 - 企业 Web 应用防火墙 UEWAF",
   "provider.ucloud_upathx": "优刻得 - 全球动态加速 UPathX",
   "provider.ucloud_us3": "优刻得 - 对象存储 US3",
   "provider.unicloud": "uniCloud (DCloud)",

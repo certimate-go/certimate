@@ -58,7 +58,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -144,13 +144,9 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		}
 
 		describeVServerReq := d.sdkClient.NewDescribeVServerRequest()
-		describeVServerReq.Region = ucloud.String(d.config.Region)
 		describeVServerReq.ULBId = ucloud.String(d.config.LoadbalancerId)
 		describeVServerReq.Offset = ucloud.Int(describeVServerOffset)
 		describeVServerReq.Limit = ucloud.Int(describeVServerLimit)
-		if d.config.ProjectId != "" {
-			describeVServerReq.ProjectId = ucloud.String(d.config.ProjectId)
-		}
 		describeVServerResp, err := d.sdkClient.DescribeVServer(describeVServerReq)
 		d.logger.Debug("sdk request 'ulb.DescribeVServer'", slog.Any("request", describeVServerReq), slog.Any("response", describeVServerResp))
 		if err != nil {
@@ -215,13 +211,9 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	// 获取 CLB 下的 VServer 信息
 	// REF: https://docs.ucloud.cn/api/ulb-api/describe_vserver
 	describeVServerReq := d.sdkClient.NewDescribeVServerRequest()
-	describeVServerReq.Region = ucloud.String(d.config.Region)
 	describeVServerReq.ULBId = ucloud.String(cloudLoadbalancerId)
 	describeVServerReq.VServerId = ucloud.String(cloudVServerId)
 	describeVServerReq.Limit = ucloud.Int(1)
-	if d.config.ProjectId != "" {
-		describeVServerReq.ProjectId = ucloud.String(d.config.ProjectId)
-	}
 	describeVServerResp, err := d.sdkClient.DescribeVServer(describeVServerReq)
 	d.logger.Debug("sdk request 'ulb.DescribeVServer'", slog.Any("request", describeVServerReq), slog.Any("response", describeVServerResp))
 	if err != nil {
@@ -239,13 +231,9 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	// 绑定 SSL 证书
 	// REF: https://docs.ucloud.cn/api/ulb-api/bind_ssl
 	bindSSLReq := d.sdkClient.NewBindSSLRequest()
-	bindSSLReq.Region = ucloud.String(d.config.Region)
 	bindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
 	bindSSLReq.VServerId = ucloud.String(cloudVServerId)
 	bindSSLReq.SSLId = ucloud.String(cloudCertId)
-	if d.config.ProjectId != "" {
-		bindSSLReq.ProjectId = ucloud.String(d.config.ProjectId)
-	}
 	bindSSLResp, err := d.sdkClient.BindSSL(bindSSLReq)
 	d.logger.Debug("sdk request 'ulb.BindSSL'", slog.Any("request", bindSSLReq), slog.Any("response", bindSSLResp))
 	if err != nil {
@@ -268,12 +256,8 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 		}
 
 		describeSSLV2Req := d.sdkClient.NewDescribeSSLV2Request()
-		describeSSLV2Req.Region = ucloud.String(d.config.Region)
 		describeSSLV2Req.SSLId = ucloud.String(sslItem.SSLId)
 		describeSSLV2Req.Limit = ucloud.Int(1)
-		if d.config.ProjectId != "" {
-			describeSSLV2Req.ProjectId = ucloud.String(d.config.ProjectId)
-		}
 		describeSSLV2Resp, err := d.sdkClient.DescribeSSLV2(describeSSLV2Req)
 		d.logger.Debug("sdk request 'ulb.DescribeSSLV2'", slog.Any("request", describeSSLV2Req), slog.Any("response", describeSSLV2Resp))
 		if err != nil {
@@ -296,13 +280,9 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	// REF: https://docs.ucloud.cn/api/ulb-api/unbind_ssl
 	for _, sslId := range sslIdsToUnbind {
 		unbindSSLReq := d.sdkClient.NewUnbindSSLRequest()
-		unbindSSLReq.Region = ucloud.String(d.config.Region)
 		unbindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
 		unbindSSLReq.VServerId = ucloud.String(cloudVServerId)
 		unbindSSLReq.SSLId = ucloud.String(sslId)
-		if d.config.ProjectId != "" {
-			unbindSSLReq.ProjectId = ucloud.String(d.config.ProjectId)
-		}
 		unbindSSLResp, err := d.sdkClient.UnbindSSL(unbindSSLReq)
 		d.logger.Debug("sdk request 'ulb.UnbindSSL'", slog.Any("request", unbindSSLReq), slog.Any("response", unbindSSLResp))
 		if err != nil {
@@ -313,8 +293,17 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	return nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.ULBClient, error) {
+	if privateKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid private key")
+	}
+	if publicKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid public key")
+	}
+
 	cfg := ucloud.NewConfig()
+	cfg.ProjectId = projectId
+	cfg.Region = region
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

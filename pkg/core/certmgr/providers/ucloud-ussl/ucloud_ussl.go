@@ -42,7 +42,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, errors.New("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -79,9 +79,6 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	uploadNormalCertificateReq.SslPublicKey = ucloud.String(certPEMBase64)
 	uploadNormalCertificateReq.SslPrivateKey = ucloud.String(privkeyPEMBase64)
 	uploadNormalCertificateReq.SslMD5 = ucloud.String(certMd5Hex)
-	if c.config.ProjectId != "" {
-		uploadNormalCertificateReq.ProjectId = ucloud.String(c.config.ProjectId)
-	}
 	uploadNormalCertificateResp, err := c.sdkClient.UploadNormalCertificate(uploadNormalCertificateReq)
 	c.logger.Debug("sdk request 'ussl.UploadNormalCertificate'", slog.Any("request", uploadNormalCertificateReq), slog.Any("response", uploadNormalCertificateResp))
 	if err != nil {
@@ -137,9 +134,6 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		getCertificateListReq.Sort = ucloud.String("2")
 		getCertificateListReq.Page = ucloud.Int(getCertificateListPage)
 		getCertificateListReq.PageSize = ucloud.Int(getCertificateListLimit)
-		if c.config.ProjectId != "" {
-			getCertificateListReq.ProjectId = ucloud.String(c.config.ProjectId)
-		}
 		getCertificateListResp, err := c.sdkClient.GetCertificateList(getCertificateListReq)
 		c.logger.Debug("sdk request 'ussl.GetCertificateList'", slog.Any("request", getCertificateListReq), slog.Any("response", getCertificateListResp))
 		if err != nil {
@@ -164,9 +158,6 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 
 			getCertificateDetailInfoReq := c.sdkClient.NewGetCertificateDetailInfoRequest()
 			getCertificateDetailInfoReq.CertificateID = ucloud.Int(certItem.CertificateID)
-			if c.config.ProjectId != "" {
-				getCertificateDetailInfoReq.ProjectId = ucloud.String(c.config.ProjectId)
-			}
 			getCertificateDetailInfoResp, err := c.sdkClient.GetCertificateDetailInfo(getCertificateDetailInfoReq)
 			if err != nil {
 				return nil, false, fmt.Errorf("failed to execute sdk request 'ussl.GetCertificateDetailInfo': %w", err)
@@ -233,8 +224,16 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.USSLClient, error) {
+func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.USSLClient, error) {
+	if privateKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid private key")
+	}
+	if publicKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid public key")
+	}
+
 	cfg := ucloud.NewConfig()
+	cfg.ProjectId = projectId
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

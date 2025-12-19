@@ -339,6 +339,7 @@ const (
 	DeploymentProviderTypeUCloudUALB            = DeploymentProviderType(AccessProviderTypeUCloud + "-ualb")
 	DeploymentProviderTypeUCloudUCDN            = DeploymentProviderType(AccessProviderTypeUCloud + "-ucdn")
 	DeploymentProviderTypeUCloudUCLB            = DeploymentProviderType(AccessProviderTypeUCloud + "-uclb")
+	DeploymentProviderTypeUCloudUEWAF           = DeploymentProviderType(AccessProviderTypeUCloud + "-uewaf")
 	DeploymentProviderTypeUCloudUPathX          = DeploymentProviderType(AccessProviderTypeUCloud + "-pathx")
 	DeploymentProviderTypeUCloudUS3             = DeploymentProviderType(AccessProviderTypeUCloud + "-us3")
 	DeploymentProviderTypeUniCloudWebHost       = DeploymentProviderType(AccessProviderTypeUniCloud + "-webhost")

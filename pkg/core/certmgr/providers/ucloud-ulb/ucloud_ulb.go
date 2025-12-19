@@ -40,7 +40,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, errors.New("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -81,15 +81,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// 创建 SSL 证书
 	// REF: https://docs.ucloud.cn/api/ulb-api/create_ssl
 	createSSLReq := c.sdkClient.NewCreateSSLRequest()
-	createSSLReq.Region = ucloud.String(c.config.Region)
 	createSSLReq.SSLName = ucloud.String(certName)
 	createSSLReq.SSLType = ucloud.String("Pem")
 	createSSLReq.UserCert = ucloud.String(serverCertPEM)
 	createSSLReq.CaCert = ucloud.String(intermediaCertPEM)
 	createSSLReq.PrivateKey = ucloud.String(privkeyPEM)
-	if c.config.ProjectId != "" {
-		createSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
-	}
 	createSSLResp, err := c.sdkClient.CreateSSL(createSSLReq)
 	c.logger.Debug("sdk request 'ulb.CreateSSL'", slog.Any("request", createSSLReq), slog.Any("response", createSSLResp))
 
@@ -122,12 +118,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 		}
 
 		describeSSLReq := c.sdkClient.NewDescribeSSLRequest()
-		describeSSLReq.Region = ucloud.String(c.config.Region)
 		describeSSLReq.Offset = ucloud.Int(describeSSLOffset)
 		describeSSLReq.Limit = ucloud.Int(describeSSLLimit)
-		if c.config.ProjectId != "" {
-			describeSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
-		}
 		describeSSLResp, err := c.sdkClient.DescribeSSL(describeSSLReq)
 		c.logger.Debug("sdk request 'ulb.DescribeSSL'", slog.Any("request", describeSSLReq), slog.Any("response", describeSSLResp))
 		if err != nil {
@@ -180,8 +172,17 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.ULBClient, error) {
+	if privateKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid private key")
+	}
+	if publicKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid public key")
+	}
+
 	cfg := ucloud.NewConfig()
+	cfg.ProjectId = projectId
+	cfg.Region = region
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

@@ -158,7 +158,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func createSDKClients(apiToken string) (*wSDKClients, error) {
 	if apiToken == "" {
-		return nil, errors.New("invalid gcore api token")
+		return nil, errors.New("gcore: invalid api token")
 	}
 
 	requester := provider.NewClient(

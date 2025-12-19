@@ -132,5 +132,5 @@ func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool) (
 		return client, nil
 	}
 
-	return nil, fmt.Errorf("invalid 1panel api version")
+	return nil, errors.New("1panel: invalid api version")
 }

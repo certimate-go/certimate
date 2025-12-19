@@ -170,5 +170,5 @@ func createSDKClient(serverUrl, apiVersion, apiRole, username, password string, 
 		return client, nil
 	}
 
-	return nil, fmt.Errorf("invalid lecdn api version or user role")
+	return nil, errors.New("lecdn: invalid api version or user role")
 }

@@ -949,6 +949,8 @@
   "workflow_node.deploy.form.ucloud_us3_bucket.placeholder": "请输入优刻得 US3 存储桶名",
   "workflow_node.deploy.form.ucloud_us3_domain.label": "优刻得 US3 自定义域名",
   "workflow_node.deploy.form.ucloud_us3_domain.placeholder": "请输入优刻得 US3 自定义域名",
+  "workflow_node.deploy.form.ucloud_uewaf_domain.label": "优刻得 UEWAF 防护域名",
+  "workflow_node.deploy.form.ucloud_uewaf_domain.placeholder": "请输入优刻得 UEWAF 防护域名",
   "workflow_node.deploy.form.unicloud_webhost.guide": "由于 uniCloud 未公开相关 API，这里将使用网页模拟登录方式部署，但无法保证稳定性。如遇 uniCloud 接口变更，请到 GitHub 发起 Issue 告知。",
   "workflow_node.deploy.form.unicloud_webhost_space_provider.label": "uniCloud 服务空间提供商",
   "workflow_node.deploy.form.unicloud_webhost_space_provider.placeholder": "请选择 uniCloud 服务空间提供商",

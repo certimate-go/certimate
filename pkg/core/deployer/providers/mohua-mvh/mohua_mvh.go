@@ -93,10 +93,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func createSDKClient(username, apiPassword string) (*mohuasdk.Client, error) {
 	if username == "" {
-		return nil, errors.New("invalid mohua username")
+		return nil, errors.New("mohua: invalid username")
 	}
 	if apiPassword == "" {
-		return nil, errors.New("invalid mohua api password")
+		return nil, errors.New("mohua: invalid api password")
 	}
 
 	client := mohuasdk.NewClient(

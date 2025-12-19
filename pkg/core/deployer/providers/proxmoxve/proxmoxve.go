@@ -93,11 +93,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify bool) (*proxmox.Client, error) {
 	if _, err := url.Parse(serverUrl); err != nil {
-		return nil, errors.New("invalid pve server url")
+		return nil, errors.New("pve: invalid server url")
 	}
 
 	if apiToken == "" {
-		return nil, errors.New("invalid pve api token")
+		return nil, errors.New("pve: invalid api token")
 	}
 
 	httpClient := &http.Client{

@@ -39,16 +39,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, errors.New("the configuration of the certmgr provider is nil")
 	}
 
-	if config.ProjectId == "" {
-		defaultProjectId, err := getSDKDefaultProjectId(config.PrivateKey, config.PublicKey)
-		if err != nil {
-			return nil, fmt.Errorf("could not create client: %w", err)
-		}
-
-		config.ProjectId = defaultProjectId
-	}
-
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -94,9 +85,6 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	createPathXSSLReq.UserCert = ucloud.String(serverCertPEM)
 	createPathXSSLReq.CACert = ucloud.String(intermediaCertPEM)
 	createPathXSSLReq.PrivateKey = ucloud.String(privkeyPEM)
-	if c.config.ProjectId != "" {
-		createPathXSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
-	}
 	createPathXSSLResp, err := c.sdkClient.CreatePathXSSL(createPathXSSLReq)
 	c.logger.Debug("sdk request 'pathx.CreatePathXSSL'", slog.Any("request", createPathXSSLReq), slog.Any("response", createPathXSSLResp))
 
@@ -131,9 +119,6 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 		describePathXSSLReq := c.sdkClient.NewDescribePathXSSLRequest()
 		describePathXSSLReq.Offset = ucloud.Int(describePathXSSLOffset)
 		describePathXSSLReq.Limit = ucloud.Int(describePathXSSLLimit)
-		if c.config.ProjectId != "" {
-			describePathXSSLReq.ProjectId = ucloud.String(c.config.ProjectId)
-		}
 		describePathXSSLResp, err := c.sdkClient.DescribePathXSSL(describePathXSSLReq)
 		c.logger.Debug("sdk request 'pathx.DescribePathXSSL'", slog.Any("request", describePathXSSLReq), slog.Any("response", describePathXSSLResp))
 		if err != nil {
@@ -186,8 +171,26 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.UPathXClient, error) {
+func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathXClient, error) {
+	if privateKey == "" {
+		return nil, errors.New("ucloud: invalid private key")
+	}
+	if publicKey == "" {
+		return nil, errors.New("ucloud: invalid public key")
+	}
+
 	cfg := ucloud.NewConfig()
+	cfg.ProjectId = projectId
+
+	// PathX 相关接口要求必传 ProjectId 参数
+	if cfg.ProjectId == "" {
+		defaultProjectId, err := getSDKDefaultProjectId(privateKey, publicKey)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.ProjectId = defaultProjectId
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

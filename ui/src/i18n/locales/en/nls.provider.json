@@ -187,6 +187,7 @@
   "provider.ucloud_ucdn": "UCloud - UCDN (Content Delivery Network)",
   "provider.ucloud_uclb": "UCloud - UCLB (Classic Load Balancer)",
   "provider.ucloud_udnr": "UCloud - UDNR (Domain Name Registrar)",
+  "provider.ucloud_uewaf": "UCloud - UEWAF (Enterprise Web Application Firewall)",
   "provider.ucloud_upathx": "UCloud - UPathX (Global Dynamic Acceleration)",
   "provider.ucloud_us3": "UCloud - US3 (Object-based Storage)",
   "provider.unicloud": "uniCloud (DCloud)",

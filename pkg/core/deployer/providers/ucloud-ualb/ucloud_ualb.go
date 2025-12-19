@@ -54,7 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -133,13 +133,9 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		}
 
 		describeListenerReq := d.sdkClient.NewDescribeListenersRequest()
-		describeListenerReq.Region = ucloud.String(d.config.Region)
 		describeListenerReq.LoadBalancerId = ucloud.String(d.config.LoadbalancerId)
 		describeListenerReq.Offset = ucloud.Int(describeListenersOffset)
 		describeListenerReq.Limit = ucloud.Int(describeListenersLimit)
-		if d.config.ProjectId != "" {
-			describeListenerReq.ProjectId = ucloud.String(d.config.ProjectId)
-		}
 		describeListenerResp, err := d.sdkClient.DescribeListeners(describeListenerReq)
 		d.logger.Debug("sdk request 'ulb.DescribeListeners'", slog.Any("request", describeListenerReq), slog.Any("response", describeListenerResp))
 		if err != nil {
@@ -204,13 +200,9 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	// 描述应用型负载均衡监听器
 	// REF: https://docs.ucloud.cn/api/ulb-api/describe_listeners
 	describeListenersReq := d.sdkClient.NewDescribeListenersRequest()
-	describeListenersReq.Region = ucloud.String(d.config.Region)
 	describeListenersReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
 	describeListenersReq.ListenerId = ucloud.String(cloudListenerId)
 	describeListenersReq.Limit = ucloud.Int(1)
-	if d.config.ProjectId != "" {
-		describeListenersReq.ProjectId = ucloud.String(d.config.ProjectId)
-	}
 	describeListenerResp, err := d.sdkClient.DescribeListeners(describeListenersReq)
 	d.logger.Debug("sdk request 'ulb.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenerResp))
 	if err != nil {
@@ -235,13 +227,9 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 		// 未指定 SNI，只需部署到监听器
 
 		updateListenerAttributeReq := d.sdkClient.NewUpdateListenerAttributeRequest()
-		updateListenerAttributeReq.Region = ucloud.String(d.config.Region)
 		updateListenerAttributeReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
 		updateListenerAttributeReq.ListenerId = ucloud.String(cloudListenerId)
 		updateListenerAttributeReq.Certificates = []string{cloudCertId}
-		if d.config.ProjectId != "" {
-			updateListenerAttributeReq.ProjectId = ucloud.String(d.config.ProjectId)
-		}
 		updateListenerResp, err := d.sdkClient.UpdateListenerAttribute(updateListenerAttributeReq)
 		d.logger.Debug("sdk request 'ulb.UpdateListenerAttribute'", slog.Any("request", updateListenerAttributeReq), slog.Any("response", updateListenerResp))
 		if err != nil {
@@ -253,13 +241,9 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 		// 新增监听器扩展证书
 		// REF: https://docs.ucloud.cn/api/ulb-api/add_ssl_binding_json
 		addSSLBindingReq := d.sdkClient.NewAddSSLBindingRequest()
-		addSSLBindingReq.Region = ucloud.String(d.config.Region)
 		addSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
 		addSSLBindingReq.ListenerId = ucloud.String(cloudListenerId)
 		addSSLBindingReq.SSLIds = []string{cloudCertId}
-		if d.config.ProjectId != "" {
-			addSSLBindingReq.ProjectId = ucloud.String(d.config.ProjectId)
-		}
 		addSSLBindingResp, err := d.sdkClient.AddSSLBinding(addSSLBindingReq)
 		d.logger.Debug("sdk request 'ulb.AddSSLBinding'", slog.Any("request", addSSLBindingReq), slog.Any("response", addSSLBindingResp))
 		if err != nil {
@@ -275,12 +259,8 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			}
 
 			describeSSLV2Req := d.sdkClient.NewDescribeSSLV2Request()
-			describeSSLV2Req.Region = ucloud.String(d.config.Region)
 			describeSSLV2Req.SSLId = ucloud.String(certItem.SSLId)
 			describeSSLV2Req.Limit = ucloud.Int(1)
-			if d.config.ProjectId != "" {
-				describeSSLV2Req.ProjectId = ucloud.String(d.config.ProjectId)
-			}
 			describeSSLV2Resp, err := d.sdkClient.DescribeSSLV2(describeSSLV2Req)
 			d.logger.Debug("sdk request 'ulb.DescribeSSLV2'", slog.Any("request", describeSSLV2Req), slog.Any("response", describeSSLV2Resp))
 			if err != nil {
@@ -303,13 +283,9 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 		// REF: https://docs.ucloud.cn/api/ulb-api/delete_ssl_binding_json
 		if len(sslIdsToDelete) > 0 {
 			deleteSSLBindingReq := d.sdkClient.NewDeleteSSLBindingRequest()
-			deleteSSLBindingReq.Region = ucloud.String(d.config.Region)
 			deleteSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
 			deleteSSLBindingReq.ListenerId = ucloud.String(cloudListenerId)
 			deleteSSLBindingReq.SSLIds = sslIdsToDelete
-			if d.config.ProjectId != "" {
-				deleteSSLBindingReq.ProjectId = ucloud.String(d.config.ProjectId)
-			}
 			deleteSSLBindingResp, err := d.sdkClient.DeleteSSLBinding(deleteSSLBindingReq)
 			d.logger.Debug("sdk request 'ulb.DeleteSSLBinding'", slog.Any("request", deleteSSLBindingReq), slog.Any("response", deleteSSLBindingResp))
 			if err != nil {
@@ -321,8 +297,17 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	return nil
 }
 
-func createSDKClient(privateKey, publicKey string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.ULBClient, error) {
+	if privateKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid private key")
+	}
+	if publicKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid public key")
+	}
+
 	cfg := ucloud.NewConfig()
+	cfg.ProjectId = projectId
+	cfg.Region = region
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

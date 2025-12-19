@@ -152,11 +152,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 func createSDKClient(accessKey, secretKey string) (*qiniusdk.SslCertManager, error) {
 	if secretKey == "" {
-		return nil, errors.New("invalid qiniu access key")
+		return nil, errors.New("qiniu: invalid access key")
 	}
-
 	if secretKey == "" {
-		return nil, errors.New("invalid qiniu secret key")
+		return nil, errors.New("qiniu: invalid secret key")
 	}
 
 	credential := auth.New(accessKey, secretKey)

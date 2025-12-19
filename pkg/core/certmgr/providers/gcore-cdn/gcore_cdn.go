@@ -80,7 +80,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 func createSDKClient(apiToken string) (*sslcerts.Service, error) {
 	if apiToken == "" {
-		return nil, errors.New("invalid gcore api token")
+		return nil, errors.New("gcore: invalid api token")
 	}
 
 	requester := gcore.NewClient(
