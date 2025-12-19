@@ -101,6 +101,7 @@ import BizDeployNodeConfigFieldsProviderVolcEngineImageX from "./BizDeployNodeCo
 import BizDeployNodeConfigFieldsProviderVolcEngineLive from "./BizDeployNodeConfigFieldsProviderVolcEngineLive";
 import BizDeployNodeConfigFieldsProviderVolcEngineTOS from "./BizDeployNodeConfigFieldsProviderVolcEngineTOS";
 import BizDeployNodeConfigFieldsProviderVolcEngineVOD from "./BizDeployNodeConfigFieldsProviderVolcEngineVOD.tsx";
+import BizDeployNodeConfigFieldsProviderVolcEngineWAF from "./BizDeployNodeConfigFieldsProviderVolcEngineWAF.tsx";
 import BizDeployNodeConfigFieldsProviderWangsuCDN from "./BizDeployNodeConfigFieldsProviderWangsuCDN";
 import BizDeployNodeConfigFieldsProviderWangsuCDNPro from "./BizDeployNodeConfigFieldsProviderWangsuCDNPro";
 import BizDeployNodeConfigFieldsProviderWangsuCertificate from "./BizDeployNodeConfigFieldsProviderWangsuCertificate";
@@ -210,6 +211,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_LIVE]: BizDeployNodeConfigFieldsProviderVolcEngineLive,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_TOS]: BizDeployNodeConfigFieldsProviderVolcEngineTOS,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_VOD]: BizDeployNodeConfigFieldsProviderVolcEngineVOD,
+  [DEPLOYMENT_PROVIDERS.VOLCENGINE_WAF]: BizDeployNodeConfigFieldsProviderVolcEngineWAF,
   [DEPLOYMENT_PROVIDERS.WANGSU_CDN]: BizDeployNodeConfigFieldsProviderWangsuCDN,
   [DEPLOYMENT_PROVIDERS.WANGSU_CDNPRO]: BizDeployNodeConfigFieldsProviderWangsuCDNPro,
   [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE]: BizDeployNodeConfigFieldsProviderWangsuCertificate,

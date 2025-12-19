@@ -256,7 +256,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudLoad
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'appblb.DescribeAppHTTPSListeners': %w", err)
 	} else if len(describeAppHTTPSListenersResp.ListenerList) == 0 {
-		return fmt.Errorf("cloud not find listener '%s:%d'", cloudLoadbalancerId, cloudHttpsListenerPort)
+		return fmt.Errorf("could not find listener '%s:%d'", cloudLoadbalancerId, cloudHttpsListenerPort)
 	}
 
 	if d.config.Domain == "" {

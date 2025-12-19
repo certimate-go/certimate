@@ -173,7 +173,7 @@ func (d *Deployer) deployToWAF3WithCloudResource(ctx context.Context, cloudCertI
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'waf.DescribeProductInstances': %w", err)
 	} else if len(describeProductInstancesResp.Body.ProductInstances) == 0 {
-		return fmt.Errorf("cloud not find waf '%s' cloud resource '%s %s'", d.config.InstanceId, d.config.ResourceProduct, d.config.ResourceId)
+		return fmt.Errorf("could not find waf '%s' cloud resource '%s %s'", d.config.InstanceId, d.config.ResourceProduct, d.config.ResourceId)
 	} else {
 		resourceInstance = describeProductInstancesResp.Body.ProductInstances[0]
 
