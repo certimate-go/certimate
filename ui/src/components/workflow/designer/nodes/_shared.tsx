@@ -23,7 +23,7 @@ const useInternalRenamingInput = ({ nodeRender }: { nodeRender: NodeRenderReturn
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
-  const handleNodeRenameClick = () => {
+  const showInput = () => {
     setInputVisible(true);
     setInputValue(nodeRender.data?.name);
     setTimeout(() => {
@@ -31,12 +31,13 @@ const useInternalRenamingInput = ({ nodeRender }: { nodeRender: NodeRenderReturn
     }, 0);
   };
 
-  const handleNodeNameChange = (value: string) => {
-    setInputValue(value);
+  const hideInput = () => {
+    setInputVisible(false);
+    setInputValue(nodeRender.data?.name);
   };
 
-  const handleNodeNameConfirm = async (value: string) => {
-    value = value.trim();
+  const handleInputBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
     if (!value || value === (nodeRender.data?.name || "")) {
       setInputVisible(false);
       return;
@@ -47,13 +48,37 @@ const useInternalRenamingInput = ({ nodeRender }: { nodeRender: NodeRenderReturn
     nodeRender.updateData({ ...nodeRender.data, name: value });
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputMouseDown = (e: React.MouseEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+  };
+
+  const handleInputMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+  };
+
+  const handleInputPressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.currentTarget.blur();
+  };
+
   return {
     inputRef: inputRef,
+    inputProps: {
+      value: inputValue,
+      onBlur: handleInputBlur,
+      onChange: handleInputChange,
+      onPressEnter: handleInputPressEnter,
+      onMouseDown: handleInputMouseDown,
+      onMouseUp: handleInputMouseUp,
+    },
     visible: inputVisible,
     value: inputValue,
-    onClick: handleNodeRenameClick,
-    onChange: handleNodeNameChange,
-    onConfirm: handleNodeNameConfirm,
+
+    show: showInput,
+    hide: hideInput,
   };
 };
 
@@ -296,14 +321,7 @@ export const BaseNode = ({ className, style, children, description }: BaseNodePr
     );
   };
 
-  const {
-    inputRef,
-    visible: inputVisible,
-    value: inputValue,
-    onClick: handleNodeRenameClick,
-    onChange: handleNodeNameChange,
-    onConfirm: handleNodeNameConfirm,
-  } = useInternalRenamingInput({ nodeRender });
+  const { inputRef, inputProps, visible: inputVisible, show: showInput } = useInternalRenamingInput({ nodeRender });
 
   return (
     <Popover
@@ -317,7 +335,7 @@ export const BaseNode = ({ className, style, children, description }: BaseNodePr
             onMenuSelect={(key) => {
               switch (key) {
                 case "rename":
-                  handleNodeRenameClick();
+                  showInput();
                   break;
               }
             }}
@@ -362,15 +380,7 @@ export const BaseNode = ({ className, style, children, description }: BaseNodePr
 
         {!playground.config.readonlyOrDisabled && (
           <div className={mergeCls("absolute top-1/2 left-2 right-2 -translate-y-1/2 z-1", inputVisible ? "block" : "hidden")}>
-            <Input
-              ref={inputRef}
-              maxLength={100}
-              variant="underlined"
-              value={inputValue}
-              onBlur={(e) => handleNodeNameConfirm(e.target.value)}
-              onChange={(e) => handleNodeNameChange(e.target.value)}
-              onPressEnter={(e) => e.currentTarget.blur()}
-            />
+            <Input ref={inputRef} maxLength={100} variant="underlined" {...inputProps} />
           </div>
         )}
       </div>
@@ -387,14 +397,7 @@ export const BranchNode = ({ className, style, children, description }: BranchNo
   const nodeRender = useNodeRenderContext();
   const nodeRegistry = nodeRender.node.getNodeRegistry<NodeRegistry>();
 
-  const {
-    inputRef,
-    visible: inputVisible,
-    value: inputValue,
-    onClick: handleNodeRenameClick,
-    onChange: handleNodeNameChange,
-    onConfirm: handleNodeNameConfirm,
-  } = useInternalRenamingInput({ nodeRender });
+  const { inputRef, inputProps, visible: inputVisible, show: showInput } = useInternalRenamingInput({ nodeRender });
 
   return (
     <Popover
@@ -408,7 +411,7 @@ export const BranchNode = ({ className, style, children, description }: BranchNo
             onMenuSelect={(key) => {
               switch (key) {
                 case "rename":
-                  handleNodeRenameClick();
+                  showInput();
                   break;
               }
             }}
@@ -445,15 +448,7 @@ export const BranchNode = ({ className, style, children, description }: BranchNo
 
         {!playground.config.readonlyOrDisabled && (
           <div className={mergeCls("absolute top-1/2 left-2 right-2 -translate-y-1/2 z-1", inputVisible ? "block" : "hidden")}>
-            <Input
-              ref={inputRef}
-              maxLength={100}
-              variant="underlined"
-              value={inputValue}
-              onBlur={(e) => handleNodeNameConfirm(e.target.value)}
-              onChange={(e) => handleNodeNameChange(e.target.value)}
-              onPressEnter={(e) => e.currentTarget.blur()}
-            />
+            <Input ref={inputRef} maxLength={100} variant="underlined" {...inputProps} />
           </div>
         )}
       </div>
