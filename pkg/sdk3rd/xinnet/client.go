@@ -115,7 +115,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if err != nil {
 		return resp, fmt.Errorf("sdkerr: failed to send request: %w", err)
 	} else if resp.IsError() {
-		return resp, fmt.Errorf("sdkerr: unexpected status code: %d, resp: %s", resp.StatusCode(), resp.String())
+		return resp, fmt.Errorf("sdkerr: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
 	}
 
 	return resp, nil
@@ -136,7 +136,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res apiResponse) (*rest
 
 	if len(resp.Body()) != 0 {
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
-			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
+			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
 			if tcode := res.GetCode(); tcode != "0" {
 				return resp, fmt.Errorf("sdkerr: code='%s', msg='%s'", tcode, res.GetMessage())

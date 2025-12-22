@@ -119,7 +119,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	if resp.StatusCode != http.StatusOK {
 		body := &bytes.Buffer{}
 		body.ReadFrom(resp.Body)
-		return nil, fmt.Errorf("huaweicloud obs api error: unexpected status code: %d, resp: %s", resp.StatusCode, body.String())
+		return nil, fmt.Errorf("huaweicloud obs api error: unexpected status code: %d (resp: %s)", resp.StatusCode, body.String())
 	}
 
 	return &deployer.DeployResult{}, nil

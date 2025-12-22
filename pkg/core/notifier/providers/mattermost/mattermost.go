@@ -69,7 +69,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	if err != nil {
 		return nil, fmt.Errorf("mattermost api error: failed to send request: %w", err)
 	} else if loginResp.IsError() {
-		return nil, fmt.Errorf("mattermost api error: unexpected status code: %d, resp: %s", loginResp.StatusCode(), loginResp.String())
+		return nil, fmt.Errorf("mattermost api error: unexpected status code: %d (resp: %s)", loginResp.StatusCode(), loginResp.String())
 	} else if loginResp.Header().Get("Token") == "" {
 		return nil, fmt.Errorf("mattermost api error: received empty login token")
 	}
@@ -93,7 +93,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	if err != nil {
 		return nil, fmt.Errorf("mattermost api error: failed to send request: %w", err)
 	} else if postResp.IsError() {
-		return nil, fmt.Errorf("mattermost api error: unexpected status code: %d, resp: %s", postResp.StatusCode(), postResp.String())
+		return nil, fmt.Errorf("mattermost api error: unexpected status code: %d (resp: %s)", postResp.StatusCode(), postResp.String())
 	}
 
 	return &notifier.NotifyResult{}, nil

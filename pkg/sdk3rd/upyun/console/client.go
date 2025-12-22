@@ -80,7 +80,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if err != nil {
 		return resp, fmt.Errorf("sdkerr: failed to send request: %w", err)
 	} else if resp.IsError() {
-		return resp, fmt.Errorf("sdkerr: unexpected status code: %d, resp: %s", resp.StatusCode(), resp.String())
+		return resp, fmt.Errorf("sdkerr: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
 	}
 
 	return resp, nil
@@ -101,11 +101,11 @@ func (c *Client) doRequestWithResult(req *resty.Request, res apiResponse) (*rest
 
 	if len(resp.Body()) != 0 {
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
-			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
+			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
 			tresp := &apiResponseBase{}
 			if err := json.Unmarshal(resp.Body(), &tresp); err != nil {
-				return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
+				return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 			} else if tdata := tresp.GetData(); tdata == nil {
 				return resp, fmt.Errorf("sdkerr: received empty data")
 			} else if terrcode := tdata.GetErrorCode(); terrcode != 0 {

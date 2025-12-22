@@ -171,7 +171,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	if err != nil {
 		return nil, fmt.Errorf("webhook error: failed to send request: %w", err)
 	} else if resp.IsError() {
-		return nil, fmt.Errorf("webhook error: unexpected status code: %d, resp: %s", resp.StatusCode(), resp.String())
+		return nil, fmt.Errorf("webhook error: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
 	}
 
 	n.logger.Debug("webhook responded", slog.String("response", resp.String()))
