@@ -4,7 +4,7 @@ import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import Show from "@/components/Show";
-import { isEmail, isPortNumber } from "@/utils/validator";
+import { isDomain, isEmail, isIPv4, isIPv6, isPortNumber } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -127,7 +127,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    smtpHost: z.string().nonempty(t("access.form.email_smtp_host.placeholder")),
+    smtpHost: z.string().refine((v) => isDomain(v) || isIPv4(v) || isIPv6(v), t("common.errmsg.host_invalid")),
     smtpPort: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
     smtpTls: z.boolean().nullish(),
     username: z.string().nonempty(t("access.form.email_username.placeholder")),

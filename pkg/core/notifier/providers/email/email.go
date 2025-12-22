@@ -91,7 +91,6 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 		clientOptions = append(clientOptions, mail.WithTLSConfig(tlsConfig))
 		clientOptions = append(clientOptions, mail.WithTLSPolicy(mail.TLSMandatory))
 	} else {
-		clientOptions = append(clientOptions, mail.WithSSLPort(true))
 		clientOptions = append(clientOptions, mail.WithTLSPolicy(mail.TLSOpportunistic))
 	}
 
