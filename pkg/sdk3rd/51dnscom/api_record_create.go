@@ -6,8 +6,8 @@ import (
 )
 
 type RecordCreateRequest struct {
-	DomainID *int64  `json:"domainID,omitempty"`
-	ViewID   *int64  `json:"viewID,omitempty"`
+	DomainID *string `json:"domainID,omitempty"`
+	ViewID   *string `json:"viewID,omitempty"`
 	Type     *string `json:"type,omitempty"`
 	Host     *string `json:"host,omitempty"`
 	Value    *string `json:"value,omitempty"`

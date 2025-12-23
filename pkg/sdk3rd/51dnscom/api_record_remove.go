@@ -6,8 +6,8 @@ import (
 )
 
 type RecordRemoveRequest struct {
-	DomainID *int64 `json:"domainID,omitempty"`
-	RecordID *int64 `json:"recordID,omitempty"`
+	DomainID *string `json:"domainID,omitempty"`
+	RecordID *string `json:"recordID,omitempty"`
 }
 
 type RecordRemoveResponse struct {

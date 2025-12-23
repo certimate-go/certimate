@@ -1,5 +1,9 @@
 package dnscom
 
+import (
+	"encoding/json"
+)
+
 type apiResponse interface {
 	GetCode() int32
 	GetMessage() string
@@ -21,21 +25,26 @@ func (r *apiResponseBase) GetMessage() string {
 var _ apiResponse = (*apiResponseBase)(nil)
 
 type DomainRecord struct {
-	DomainID int64  `json:"domainID"`
-	Domain   string `json:"domain"`
-	State    int32  `json:"state"`
+	GroupID        json.Number `json:"groupID"`
+	DomainID       json.Number `json:"domainsID"`
+	Domain         string      `json:"domains"`
+	State          int32       `json:"state"`
+	UserLockState  int32       `json:"userLock"`
+	AdminLockState int32       `json:"adminLock"`
+	HealthState    int32       `json:"healthState"`
+	ViewType       string      `json:"view_type"`
 }
 
 type DNSRecord struct {
-	DomainID int64  `json:"domainID"`
-	RecordID int64  `json:"recordID"`
-	ViewID   int64  `json:"viewID"`
-	Record   string `json:"record"`
-	Type     string `json:"type"`
-	Host     string `json:"host"`
-	Value    string `json:"value"`
-	TTL      int32  `json:"ttl"`
-	MX       int32  `json:"mx"`
-	State    int32  `json:"state"`
-	Remark   string `json:"remark"`
+	DomainID json.Number `json:"domainID"`
+	RecordID json.Number `json:"recordID"`
+	ViewID   json.Number `json:"viewID"`
+	Record   string      `json:"record"`
+	Type     string      `json:"type"`
+	Host     string      `json:"host"`
+	Value    string      `json:"value"`
+	TTL      int32       `json:"ttl"`
+	MX       int32       `json:"mx"`
+	State    int32       `json:"state"`
+	Remark   string      `json:"remark"`
 }

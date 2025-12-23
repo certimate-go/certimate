@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -108,7 +107,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 
 	// REF: https://www.51dns.com/document/api/4/12.html
 	request := &dnscomsdk.RecordCreateRequest{
-		DomainID: lo.ToPtr(zone.DomainID),
+		DomainID: lo.ToPtr(zone.DomainID.String()),
 		Type:     lo.ToPtr("TXT"),
 		Host:     lo.ToPtr(subDomain),
 		Value:    lo.ToPtr(info.Value),
@@ -120,7 +119,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	}
 
 	d.recordCacheMu.Lock()
-	d.recordCache[token] = dnsRecordCacheEntry{DomainID: zone.DomainID, RecordID: response.Data.RecordID}
+	d.recordCache[token] = dnsRecordCacheEntry{DomainID: zone.DomainID.String(), RecordID: response.Data.RecordID.String()}
 	d.recordCacheMu.Unlock()
 
 	return nil
@@ -153,8 +152,8 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 }
 
 type dnsRecordCacheEntry struct {
-	DomainID int64
-	RecordID int64
+	DomainID string
+	RecordID string
 }
 
 func (d *DNSProvider) findZone(zoneName string) (*dnscomsdk.DomainRecord, error) {
@@ -176,7 +175,7 @@ func (d *DNSProvider) findZone(zoneName string) (*dnscomsdk.DomainRecord, error)
 		}
 
 		for _, domainItem := range response.Data.Data {
-			if strings.TrimRight(domainItem.Domain, ".") == zoneName {
+			if domainItem.Domain == zoneName {
 				return domainItem, nil
 			}
 		}

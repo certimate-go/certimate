@@ -6,20 +6,19 @@ import (
 )
 
 type DomainListRequest struct {
-	GroupID  *int64 `json:"groupID,omitempty"`
-	Page     *int32 `json:"page,omitempty"`
-	PageSize *int32 `json:"pageSize,omitempty"`
+	GroupID  *string `json:"groupID,omitempty"`
+	Page     *int32  `json:"page,omitempty"`
+	PageSize *int32  `json:"pageSize,omitempty"`
 }
 
 type DomainListResponse struct {
 	apiResponseBase
 
 	Data *struct {
-		Data        []*DomainRecord `json:"data"`
-		RecordCount int32           `json:"recordCount"`
-		Page        int32           `json:"page"`
-		PageSize    int32           `json:"pageSize"`
-		PageCount   int32           `json:"pageCount"`
+		Data      []*DomainRecord `json:"data"`
+		Page      int32           `json:"page"`
+		PageSize  int32           `json:"pageSize"`
+		PageCount int32           `json:"pageCount"`
 	} `json:"data"`
 }
 
