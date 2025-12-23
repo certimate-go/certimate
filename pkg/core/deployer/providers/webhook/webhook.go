@@ -16,6 +16,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
 )
 
 type DeployerConfig struct {
@@ -131,7 +132,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	var webhookData interface{}
 	if d.config.WebhookData == "" {
 		webhookData = map[string]string{
-			"name":    strings.Join(certX509.DNSNames, ";"),
+			"name":    strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"),
 			"cert":    certPEM,
 			"privkey": privkeyPEM,
 		}
@@ -155,9 +156,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 
 	// 替换变量值
-	webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${CERTIMATE_DEPLOYER_COMMONNAME}", url.PathEscape(certX509.Subject.CommonName))
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_COMMONNAME}", certX509.Subject.CommonName)
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}", strings.Join(certX509.DNSNames, ";"))
+	webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${CERTIMATE_DEPLOYER_COMMONNAME}", url.PathEscape(xcertx509.GetSubjectCommonName(certX509)))
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_COMMONNAME}", xcertx509.GetSubjectCommonName(certX509))
+	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}", strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"))
 	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE}", certPEM)
 	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}", serverCertPEM)
 	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}", intermediaCertPEM)
