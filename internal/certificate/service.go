@@ -18,6 +18,7 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/domain/dtos"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
 	xcryptokey "github.com/certimate-go/certimate/pkg/utils/crypto/key"
 )
 
@@ -255,8 +256,8 @@ func (s *CertificateService) ValidateCertificate(ctx context.Context, req *dtos.
 	}
 
 	return &dtos.CertificateValidateCertificateResp{
-		IsValid: true,
-		Domains: strings.Join(certX509.DNSNames, ";"),
+		IsValid:         true,
+		SubjectAltNames: strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"),
 	}, nil
 }
 

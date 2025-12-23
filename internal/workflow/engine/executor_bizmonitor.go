@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/internal/repository"
+	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 	xtls "github.com/certimate-go/certimate/pkg/utils/tls"
 )
@@ -84,7 +85,7 @@ func (ne *bizMonitorNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeE
 			ne.logger.Info(fmt.Sprintf("ssl certificate retrieved (serial='%s', subject='%s', issuer='%s', not_before='%s', not_after='%s', sans='%s')",
 				cert.SerialNumber, cert.Subject.String(), cert.Issuer.String(),
 				cert.NotBefore.Format(time.RFC3339), cert.NotAfter.Format(time.RFC3339),
-				strings.Join(cert.DNSNames, ";")),
+				strings.Join(xcertx509.GetSubjectAltNames(cert), ";")),
 			)
 			ne.setVariablesOfResult(execCtx, execRes, cert)
 
@@ -164,7 +165,7 @@ func (ne *bizMonitorNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionCon
 
 	if certX509 != nil {
 		vCommonName = certX509.Subject.CommonName
-		vSubjectAltNames = strings.Join(certX509.DNSNames, ";")
+		vSubjectAltNames = strings.Join(xcertx509.GetSubjectAltNames(certX509), ";")
 		vNotBefore = certX509.NotBefore
 		vNotAfter = certX509.NotAfter
 		vHoursLeft = int32(math.Floor(time.Until(certX509.NotAfter).Hours()))

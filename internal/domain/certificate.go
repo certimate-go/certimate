@@ -9,6 +9,7 @@ import (
 	"github.com/go-acme/lego/v4/certcrypto"
 
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
 	xcryptokey "github.com/certimate-go/certimate/pkg/utils/crypto/key"
 )
 
@@ -39,7 +40,7 @@ type Certificate struct {
 }
 
 func (c *Certificate) PopulateFromX509(certX509 *x509.Certificate) *Certificate {
-	c.SubjectAltNames = strings.Join(certX509.DNSNames, ";")
+	c.SubjectAltNames = strings.Join(xcertx509.GetSubjectAltNames(certX509), ";")
 	c.SerialNumber = strings.ToUpper(certX509.SerialNumber.Text(16))
 	c.IssuerOrg = strings.Join(certX509.Issuer.Organization, ";")
 	c.ValidityNotBefore = certX509.NotBefore

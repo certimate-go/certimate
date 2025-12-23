@@ -21,8 +21,8 @@ type CertificateValidateCertificateReq struct {
 }
 
 type CertificateValidateCertificateResp struct {
-	IsValid bool   `json:"isValid"`
-	Domains string `json:"domains,omitempty"`
+	IsValid         bool   `json:"isValid"`
+	SubjectAltNames string `json:"subjectAltNames,omitempty"`
 }
 
 type CertificateValidatePrivateKeyReq struct {

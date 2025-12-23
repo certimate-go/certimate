@@ -48,7 +48,7 @@ export const validateCertificate = async (certificate: string) => {
 
   type RespData = {
     isValid: boolean;
-    domains: string;
+    subjectAltNames: string;
   };
   const resp = await pb.send<BaseResponse<RespData>>(`/api/certificates/pre-validate/certificate`, {
     method: "POST",

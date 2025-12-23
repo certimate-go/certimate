@@ -49,12 +49,12 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
 
   const handleSourceChange = (value: string) => {
     if (value === initialValues?.source) {
-      formInst.resetFields(["certificate", "privateKey", "domains"]);
+      formInst.resetFields(["certificate", "privateKey", "name"]);
     } else {
       setTimeout(() => {
         formInst.setFieldValue("certificate", "");
         formInst.setFieldValue("privateKey", "");
-        formInst.setFieldValue("domains", "");
+        formInst.setFieldValue("name", "");
       }, 0);
     }
   };
@@ -64,8 +64,8 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
       const resp = await validateCertificate(value);
       formInst.setFields([
         {
-          name: "domains",
-          value: resp.data.domains,
+          name: "name",
+          value: resp.data.subjectAltNames,
         },
         {
           name: "certificate",
@@ -75,7 +75,7 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
     } catch (e) {
       formInst.setFields([
         {
-          name: "domains",
+          name: "name",
           value: "",
         },
         {
@@ -120,8 +120,8 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
           </Form.Item>
 
           <Show when={fieldSource === UPLOAD_SOURCE_FORM}>
-            <Form.Item name="domains" label={t("workflow_node.upload.form.domains.label")} rules={[formRule]}>
-              <Input variant="filled" placeholder={t("workflow_node.upload.form.domains.placeholder")} readOnly />
+            <Form.Item name="name" label={t("workflow_node.upload.form.name.label")} rules={[formRule]}>
+              <Input variant="filled" placeholder={t("workflow_node.upload.form.name.placeholder")} readOnly />
             </Form.Item>
 
             <Form.Item name="certificate" label={t("workflow_node.upload.form.certificate_pem.label")} rules={[formRule]}>
@@ -198,9 +198,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       source: z.enum([UPLOAD_SOURCE_FORM, UPLOAD_SOURCE_LOCAL, UPLOAD_SOURCE_URL], t("workflow_node.upload.form.source.placeholder")),
+      name: z.string().nullish(),
       certificate: z.string().nonempty(),
       privateKey: z.string().nonempty(),
-      domains: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.source) {

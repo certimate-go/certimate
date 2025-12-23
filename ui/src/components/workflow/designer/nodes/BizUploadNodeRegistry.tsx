@@ -47,8 +47,8 @@ export const BizUploadNodeRegistry: NodeRegistry = {
               {({ field: { value: fieldSource } }) => (
                 <>
                   {fieldSource == null || fieldSource === "" || fieldSource === "form" ? (
-                    <Field<string> name="config.domains">
-                      {({ field: { value: fieldDomains } }) => <>{fieldDomains || t("workflow.detail.design.editor.placeholder")}</>}
+                    <Field<string> name="config.name">
+                      {({ field: { value: fieldName } }) => <>{fieldName || t("workflow.detail.design.editor.placeholder")}</>}
                     </Field>
                   ) : (
                     <Field<string> name="config.certificate">
