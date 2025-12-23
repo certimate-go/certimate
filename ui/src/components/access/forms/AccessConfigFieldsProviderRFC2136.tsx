@@ -3,7 +3,7 @@ import { Form, Input, InputNumber, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import { isDomain, isIPv4, isIPv6, isPortNumber } from "@/utils/validator";
+import { isHostname, isPortNumber } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -81,7 +81,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    host: z.string().refine((v) => isDomain(v) || isIPv4(v) || isIPv6(v), t("common.errmsg.host_invalid")),
+    host: z.string().refine((v) => isHostname(v), t("common.errmsg.host_invalid")),
     port: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
     tsigAlgorithm: z.string().nonempty(t("access.form.rfc2136_tsig_algorithm.placeholder")),
     tsigKey: z.string().nullish(),

@@ -25,7 +25,7 @@ import { useAccessesStore } from "@/stores/access";
 import { useContactEmailsStore } from "@/stores/settings";
 import { getErrMsg } from "@/utils/error";
 import { matchSearchOption } from "@/utils/search";
-import { isDomain, isIPv4, isIPv6 } from "@/utils/validator";
+import { isDomain, isHostname } from "@/utils/validator";
 
 import { FormNestedFieldsContextProvider, NodeFormContextProvider } from "./_context";
 import BizApplyNodeConfigFieldsProvider from "./BizApplyNodeConfigFieldsProvider";
@@ -886,7 +886,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
           return String(v)
             .split(MULTIPLE_INPUT_SEPARATOR)
-            .every((e) => isIPv4(e) || isIPv6(e) || isDomain(e));
+            .every((e) => isHostname(e) || isDomain(e));
         }, t("common.errmsg.host_invalid")),
       dnsPropagationWait: z.preprocess(
         (v) => (v == null || v === "" ? void 0 : Number(v)),

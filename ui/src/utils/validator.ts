@@ -8,13 +8,17 @@ export const isCron = (value: string) => {
 
 export const isDomain = (value: string, { allowWildcard = false }: { allowWildcard?: boolean } = {}) => {
   const re = allowWildcard
-    ? /^(?:\*\.)?(?!-)[A-Za-z0-9-]{1,}(?<!-)(\.[A-Za-z0-9-]{1,}(?<!-)){0,}$/
-    : /^(?!-)[A-Za-z0-9-]{1,}(?<!-)(\.[A-Za-z0-9-]{1,}(?<!-)){0,}$/;
+    ? /^(?:\*\.)?(?!-)[A-Za-z0-9-]{1,}(?<!-)(\.[A-Za-z0-9-]{1,}(?<!-)){0,}(?<![-0-9])$/
+    : /^(?!-)[A-Za-z0-9-]{1,}(?<!-)(\.[A-Za-z0-9-]{1,}(?<!-)){0,}(?<![-0-9])$/;
   return re.test(value);
 };
 
 export const isEmail = (value: string) => {
   return z.email().safeParse(value).success;
+};
+
+export const isHostname = (value: string) => {
+  return isDomain(value, { allowWildcard: false }) || isIPv4(value) || isIPv6(value);
 };
 
 export const isIPv4 = (value: string) => {

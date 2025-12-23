@@ -7,7 +7,7 @@ import { z } from "zod";
 import FileTextInput from "@/components/FileTextInput";
 import Show from "@/components/Show";
 import { mergeCls } from "@/utils/css";
-import { isDomain, isIPv4, isIPv6, isPortNumber } from "@/utils/validator";
+import { isHostname, isPortNumber } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -234,7 +234,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   const baseSchema = z
     .object({
-      host: z.string().refine((v) => isDomain(v) || isIPv4(v) || isIPv6(v), t("common.errmsg.host_invalid")),
+      host: z.string().refine((v) => isHostname(v), t("common.errmsg.host_invalid")),
       port: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
       authMethod: z.literal([AUTH_METHOD_NONE, AUTH_METHOD_PASSWORD, AUTH_METHOD_KEY], t("access.form.ssh_auth_method.placeholder")),
       username: z.string().nonempty(t("access.form.ssh_username.placeholder")),
