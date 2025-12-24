@@ -124,6 +124,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
 
   const handleOkAndContinueClick = async () => {
     await submitForm();
+    message.success(t("common.text.saved"));
   };
 
   const handleCancelClick = () => {

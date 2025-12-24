@@ -137,10 +137,12 @@ func (c WorkflowNodeConfig) AsBranchBlock() WorkflowNodeConfigForBranchBlock {
 
 func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
 	domains := lo.Filter(strings.Split(xmaps.GetString(c, "domains"), ";"), func(s string, _ int) bool { return s != "" })
+	ipaddrs := lo.Filter(strings.Split(xmaps.GetString(c, "ipaddrs"), ";"), func(s string, _ int) bool { return s != "" })
 	nameservers := lo.Filter(strings.Split(xmaps.GetString(c, "nameservers"), ";"), func(s string, _ int) bool { return s != "" })
 
 	return WorkflowNodeConfigForBizApply{
 		Domains:               domains,
+		IPAddrs:               ipaddrs,
 		ContactEmail:          xmaps.GetString(c, "contactEmail"),
 		ChallengeType:         xmaps.GetString(c, "challengeType"),
 		Provider:              xmaps.GetString(c, "provider"),
@@ -160,6 +162,7 @@ func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
 		DnsPropagationTimeout: xmaps.GetInt(c, "dnsPropagationTimeout"),
 		DnsTTL:                xmaps.GetInt(c, "dnsTTL"),
 		HttpDelayWait:         xmaps.GetInt(c, "httpDelayWait"),
+		DisableCommonName:     xmaps.GetBool(c, "disableCommonName"),
 		DisableFollowCNAME:    xmaps.GetBool(c, "disableFollowCNAME"),
 		DisableARI:            xmaps.GetBool(c, "disableARI"),
 		SkipBeforeExpiryDays:  xmaps.GetInt(c, "skipBeforeExpiryDays"),
@@ -215,6 +218,7 @@ type WorkflowNodeConfigForBranchBlock struct {
 
 type WorkflowNodeConfigForBizApply struct {
 	Domains               []string       `json:"domains"`                         // 域名列表，以半角分号分隔
+	IPAddrs               []string       `json:"ipaddrs"`                         // IP 地址列表，以半角分号分隔
 	ContactEmail          string         `json:"contactEmail"`                    // 联系邮箱
 	ChallengeType         string         `json:"challengeType"`                   // 质询方式
 	Provider              string         `json:"provider"`                        // 质询提供商
@@ -234,6 +238,7 @@ type WorkflowNodeConfigForBizApply struct {
 	DnsPropagationTimeout int            `json:"dnsPropagationTimeout,omitempty"` // DNS 传播检查超时时间（零值时使用提供商的默认值）
 	DnsTTL                int            `json:"dnsTTL,omitempty"`                // DNS 解析记录 TTL（零值时使用提供商的默认值）
 	HttpDelayWait         int            `json:"httpDelayWait,omitempty"`         // HTTP 等待时间
+	DisableCommonName     bool           `json:"disableCommonName,omitempty"`     // 是否不包含 CommonName
 	DisableFollowCNAME    bool           `json:"disableFollowCNAME,omitempty"`    // 是否关闭 CNAME 跟随
 	DisableARI            bool           `json:"disableARI,omitempty"`            // 是否关闭 ARI
 	SkipBeforeExpiryDays  int            `json:"skipBeforeExpiryDays,omitempty"`  // 证书到期前多少天前跳过续期

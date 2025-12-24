@@ -63,6 +63,7 @@ func internalCertApplyCommand(app core.App) *cobra.Command {
 				client, err := certacme.NewACMEClientWithAccount(params.Account, func(c *lego.Config) error {
 					c.UserAgent = "certimate"
 					c.Certificate.KeyType = params.Request.PrivateKeyType
+					c.Certificate.DisableCommonName = params.Request.NoCommonName
 					return nil
 				})
 				if err != nil {

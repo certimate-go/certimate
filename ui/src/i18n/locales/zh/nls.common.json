@@ -26,6 +26,7 @@
   "common.text.operation_succeeded": "操作成功",
   "common.text.operation_failed": "操作失败",
   "common.text.request_error": "请求错误",
+  "common.text.saved": "已保存",
   "common.text.saving": "保存中 ……",
   "common.text.search": "搜索 ……",
 

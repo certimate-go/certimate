@@ -23,10 +23,11 @@ import (
 )
 
 type ObtainCertificateRequest struct {
-	Domains          []string
+	DomainOrIPs      []string
 	PrivateKeyType   certcrypto.KeyType
 	PrivateKeyPEM    string
 	ValidityNotAfter time.Time
+	NoCommonName     bool
 
 	// 提供商相关
 	ChallengeType          string
@@ -163,7 +164,7 @@ func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequ
 	}
 
 	req := certificate.ObtainRequest{
-		Domains:        request.Domains,
+		Domains:        request.DomainOrIPs,
 		PrivateKey:     privkey,
 		Bundle:         true,
 		PreferredChain: request.PreferredChain,

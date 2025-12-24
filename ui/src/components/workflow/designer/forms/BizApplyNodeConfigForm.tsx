@@ -23,7 +23,7 @@ import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { useContactEmailsStore } from "@/stores/settings";
 import { matchSearchOption } from "@/utils/search";
-import { isDomain, isHostname } from "@/utils/validator";
+import { isDomain, isHostname, isIPv4, isIPv6 } from "@/utils/validator";
 import { getPrivateKeyAlgorithm as getPKIXPrivateKeyAlgorithm, validatePEMPrivateKey } from "@/utils/x509";
 
 import { FormNestedFieldsContextProvider, NodeFormContextProvider } from "./_context";
@@ -32,8 +32,11 @@ import { NodeType } from "../nodes/typings";
 
 const MULTIPLE_INPUT_SEPARATOR = ";";
 
-const CHALLENGE_TYPE_DNS01 = "dns-01";
-const CHALLENGE_TYPE_HTTP01 = "http-01";
+const FOR_DOMAIN = "domain" as const;
+const FOR_IP = "ip" as const;
+
+const CHALLENGE_TYPE_DNS01 = "dns-01" as const;
+const CHALLENGE_TYPE_HTTP01 = "http-01" as const;
 
 const KEY_SOURCE_AUTO = "auto" as const;
 const KEY_SOURCE_REUSE = "reuse" as const;
@@ -76,6 +79,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     initialValues: initialValues ?? getInitialValues(),
   });
 
+  const fieldFor = Form.useWatch<FormSchema["for"]>("for", { form: formInst, preserve: true });
   const fieldChallengeType = Form.useWatch<FormSchema["challengeType"]>("challengeType", { form: formInst, preserve: true });
   const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
   const fieldProviderAccessId = Form.useWatch<string>("providerAccessId", { form: formInst, preserve: true });
@@ -168,6 +172,27 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     }
   }, [fieldCAProvider, fieldCAProviderAccessId]);
 
+  const handleForChange = (value: string) => {
+    switch (value) {
+      case FOR_DOMAIN:
+        {
+          formInst.setFieldValue("ipaddrs", void 0);
+        }
+        break;
+
+      case FOR_IP:
+        {
+          formInst.setFieldValue("domains", void 0);
+
+          resetFieldIfInvalid("nameservers");
+          resetFieldIfInvalid("dnsPropagationWait");
+          resetFieldIfInvalid("dnsPropagationTimeout");
+          resetFieldIfInvalid("dnsTTL");
+        }
+        break;
+    }
+  };
+
   const handleChallengeTypeChange = (value: string) => {
     switch (value) {
       case CHALLENGE_TYPE_DNS01:
@@ -231,30 +256,58 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     <NodeFormContextProvider value={{ node }}>
       <Form {...formProps} clearOnDestroy={true} form={formInst} layout="vertical" preserve={false} scrollToFirstError>
         <div id="parameters" data-anchor="parameters">
-          <Form.Item
-            name="domains"
-            dependencies={["challengeType"]}
-            label={t("workflow_node.apply.form.domains.label")}
-            extra={
-              <span
-                dangerouslySetInnerHTML={{
-                  __html:
-                    fieldChallengeType === CHALLENGE_TYPE_HTTP01
-                      ? t("workflow_node.apply.form.domains.help_no_wildcard")
-                      : t("workflow_node.apply.form.domains.help"),
-                }}
-              ></span>
-            }
-            rules={[formRule]}
-          >
-            <MultipleSplitValueInput
-              modalTitle={t("workflow_node.apply.form.domains.multiple_input_modal.title")}
-              placeholder={t("workflow_node.apply.form.domains.placeholder")}
-              placeholderInModal={t("workflow_node.apply.form.domains.multiple_input_modal.placeholder")}
-              separator={MULTIPLE_INPUT_SEPARATOR}
-              splitOptions={{ removeEmpty: true, trimSpace: true }}
-            />
+          <Form.Item name="for" label={t("workflow_node.apply.form.for.label")} rules={[formRule]}>
+            <Radio.Group block onChange={(e) => handleForChange(e.target.value)}>
+              <Radio.Button value={FOR_DOMAIN}>{t("workflow_node.apply.form.for.option.domain.label")}</Radio.Button>
+              <Radio.Button value={FOR_IP}>{t("workflow_node.apply.form.for.option.ip.label")}</Radio.Button>
+            </Radio.Group>
           </Form.Item>
+
+          <Show>
+            <Show.Case when={fieldFor === FOR_DOMAIN}>
+              <Form.Item
+                name="domains"
+                dependencies={["for", "challengeType"]}
+                label={t("workflow_node.apply.form.domains.label")}
+                extra={
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        fieldChallengeType === CHALLENGE_TYPE_HTTP01
+                          ? t("workflow_node.apply.form.domains.help_no_wildcard")
+                          : t("workflow_node.apply.form.domains.help"),
+                    }}
+                  ></span>
+                }
+                rules={[formRule]}
+              >
+                <MultipleSplitValueInput
+                  modalTitle={t("workflow_node.apply.form.domains.multiple_input_modal.title")}
+                  placeholder={t("workflow_node.apply.form.domains.placeholder")}
+                  placeholderInModal={t("workflow_node.apply.form.domains.multiple_input_modal.placeholder")}
+                  separator={MULTIPLE_INPUT_SEPARATOR}
+                  splitOptions={{ removeEmpty: true, trimSpace: true }}
+                />
+              </Form.Item>
+            </Show.Case>
+            <Show.Case when={fieldFor === FOR_IP}>
+              <Form.Item
+                name="ipaddrs"
+                dependencies={["for", "challengeType"]}
+                label={t("workflow_node.apply.form.ipaddrs.label")}
+                extra={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.ipaddrs.help") }}></span>}
+                rules={[formRule]}
+              >
+                <MultipleSplitValueInput
+                  modalTitle={t("workflow_node.apply.form.ipaddrs.multiple_input_modal.title")}
+                  placeholder={t("workflow_node.apply.form.ipaddrs.placeholder")}
+                  placeholderInModal={t("workflow_node.apply.form.ipaddrs.multiple_input_modal.placeholder")}
+                  separator={MULTIPLE_INPUT_SEPARATOR}
+                  splitOptions={{ removeEmpty: true, trimSpace: true }}
+                />
+              </Form.Item>
+            </Show.Case>
+          </Show>
 
           <Form.Item
             name="contactEmail"
@@ -275,12 +328,15 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
           <Form.Item
             name="challengeType"
+            dependencies={["for", "domains", "ipaddrs"]}
             label={t("workflow_node.apply.form.challenge_type.label")}
             rules={[formRule]}
             tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.challenge_type.tooltip") }}></span>}
           >
             <Radio.Group block onChange={(e) => handleChallengeTypeChange(e.target.value)}>
-              <Radio.Button value={CHALLENGE_TYPE_DNS01}>DNS-01</Radio.Button>
+              <Radio.Button disabled={fieldFor === FOR_IP} value={CHALLENGE_TYPE_DNS01}>
+                DNS-01
+              </Radio.Button>
               <Radio.Button value={CHALLENGE_TYPE_HTTP01}>HTTP-01</Radio.Button>
             </Radio.Group>
           </Form.Item>
@@ -534,6 +590,16 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
               }}
             />
           </Form.Item>
+
+          <Form.Item
+            name="disableCommonName"
+            label={t("workflow_node.apply.form.disable_cn.label")}
+            extra={t("workflow_node.apply.form.disable_cn.help")}
+            rules={[formRule]}
+            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_cn.tooltip") }}></span>}
+          >
+            <Switch />
+          </Form.Item>
         </div>
 
         <div id="advanced" data-anchor="advanced">
@@ -545,6 +611,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
           <Form.Item
             name="nameservers"
+            hidden={fieldFor !== FOR_DOMAIN}
             label={t("workflow_node.apply.form.nameservers.label")}
             rules={[formRule]}
             tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.nameservers.tooltip") }}></span>}
@@ -612,6 +679,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
           <Form.Item
             name="disableFollowCNAME"
+            hidden={fieldFor !== FOR_DOMAIN}
             label={t("workflow_node.apply.form.disable_follow_cname.label")}
             rules={[formRule]}
             tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_follow_cname.tooltip") }}></span>}
@@ -821,7 +889,6 @@ const getAnchorItems = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    domains: "",
     contactEmail: "",
     ...(defaultNodeConfigForBizApply() as Nullish<z.infer<ReturnType<typeof getSchema>>>),
   };
@@ -832,12 +899,25 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      domains: z.string().refine((v) => {
-        if (!v) return false;
-        return String(v)
-          .split(MULTIPLE_INPUT_SEPARATOR)
-          .every((e) => isDomain(e, { allowWildcard: true }));
-      }, t("common.errmsg.domain_invalid")),
+      for: z.enum([FOR_DOMAIN, FOR_IP]),
+      domains: z
+        .string()
+        .nullish()
+        .refine((v) => {
+          if (!v) return true;
+          return String(v)
+            .split(MULTIPLE_INPUT_SEPARATOR)
+            .every((e) => isDomain(e, { allowWildcard: true }));
+        }, t("common.errmsg.domain_invalid")),
+      ipaddrs: z
+        .string()
+        .nullish()
+        .refine((v) => {
+          if (!v) return true;
+          return String(v)
+            .split(MULTIPLE_INPUT_SEPARATOR)
+            .every((e) => isIPv4(e) || isIPv6(e));
+        }, t("common.errmsg.ip_invalid")),
       contactEmail: z.email(t("common.errmsg.email_invalid")),
       challengeType: z.enum([CHALLENGE_TYPE_DNS01, CHALLENGE_TYPE_HTTP01], t("workflow_node.apply.form.challenge_type.placeholder")),
       provider: z.string().nonempty(t("workflow_node.apply.form.provider.placeholder")),
@@ -880,18 +960,64 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         }, t("workflow_node.apply.form.validity_lifetime.placeholder")),
       preferredChain: z.string().nullish(),
       acmeProfile: z.string().nullish(),
+      disableCommonName: z.boolean().nullish(),
       disableFollowCNAME: z.boolean().nullish(),
       disableARI: z.boolean().nullish(),
       skipBeforeExpiryDays: z.coerce.number().int().positive(),
     })
     .superRefine((values, ctx) => {
-      if (values.domains) {
-        if (values.challengeType === CHALLENGE_TYPE_HTTP01 && values.domains.includes("*")) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("workflow_node.apply.form.domains.errmsg.no_wildcard_in_http01"),
-            path: ["domains"],
-          });
+      if (values.for) {
+        switch (values.for) {
+          case FOR_DOMAIN:
+            {
+              if (!values.domains) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("common.errmsg.domain_invalid"),
+                  path: ["domains"],
+                });
+              }
+            }
+            break;
+          case FOR_IP:
+            {
+              if (!values.ipaddrs) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("common.errmsg.ip_invalid"),
+                  path: ["ipaddrs"],
+                });
+              }
+            }
+            break;
+        }
+      }
+
+      if (values.challengeType) {
+        switch (values.challengeType) {
+          case CHALLENGE_TYPE_DNS01:
+            {
+              if (String(values.ipaddrs)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("workflow_node.apply.form.challenge_type.errmsg.no_ip_in_dns01"),
+                  path: ["challengeType"],
+                });
+              }
+            }
+            break;
+
+          case CHALLENGE_TYPE_HTTP01:
+            {
+              if (String(values.domains).includes("*")) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("workflow_node.apply.form.challenge_type.errmsg.no_wildcard_in_http01"),
+                  path: ["challengeType"],
+                });
+              }
+            }
+            break;
         }
       }
 

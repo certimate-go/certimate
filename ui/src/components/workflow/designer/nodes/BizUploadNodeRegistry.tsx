@@ -49,9 +49,10 @@ export const BizUploadNodeRegistry: NodeRegistry = {
                 <>
                   {fieldSource == null || fieldSource === "" || fieldSource === "form" ? (
                     <Field<string> name="config.certificate">
-                      {({ field: { value: fieldCertificate } }) => (
-                        <>{(fieldCertificate ? getX509SubjectAltNames(fieldCertificate).join(";") : "") || t("workflow.detail.design.editor.placeholder")}</>
-                      )}
+                      {({ field: { value: fieldCertificate } }) => {
+                        const displayText = fieldCertificate ? getX509SubjectAltNames(fieldCertificate).join(";") : void 0;
+                        return <>{displayText || t("workflow.detail.design.editor.placeholder")}</>;
+                      }}
                     </Field>
                   ) : (
                     <Field<string> name="config.certificate">

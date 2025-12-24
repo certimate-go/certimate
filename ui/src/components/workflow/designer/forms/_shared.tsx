@@ -116,6 +116,7 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
     }
 
     await submitForm();
+    message.success(t("common.text.saved"));
   };
 
   const handleCancelClick = () => {

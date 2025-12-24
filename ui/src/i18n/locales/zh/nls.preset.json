@@ -1,6 +1,6 @@
 ﻿{
   "preset.page.title": "预设模板",
-  "preset.page.subtitle": "预设模板是一组可复用的数据片段，可以快速填充特定表单。",
+  "preset.page.subtitle": "预设模板代表一组可复用的数据片段，可以快速填充特定表单。",
 
   "preset.action.create.button": "新建模板",
   "preset.action.create.modal.title": "新建模板",

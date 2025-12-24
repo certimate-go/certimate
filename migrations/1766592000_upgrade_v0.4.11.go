@@ -17,6 +17,34 @@ func init() {
 				_changed = false
 				_err = nil
 
+				if node.Type != "bizApply" {
+					return
+				}
+
+				if node.Data == nil {
+					return
+				}
+
+				if _, ok := node.Data["config"]; ok {
+					nodeCfg := node.Data["config"].(map[string]any)
+
+					if nodeCfg["for"] == nil {
+						if nodeCfg["domains"] != nil && nodeCfg["domains"].(string) != "" {
+							nodeCfg["for"] = "domain"
+
+							node.Data["config"] = nodeCfg
+							_changed = true
+							return
+						}
+					}
+				}
+
+				return
+			})
+			walker.Define(func(node *mWorkflowNode) (_changed bool, _err error) {
+				_changed = false
+				_err = nil
+
 				if node.Type != "bizUpload" {
 					return
 				}
