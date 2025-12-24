@@ -185,9 +185,6 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
           formInst.setFieldValue("domains", void 0);
 
           resetFieldIfInvalid("nameservers");
-          resetFieldIfInvalid("dnsPropagationWait");
-          resetFieldIfInvalid("dnsPropagationTimeout");
-          resetFieldIfInvalid("dnsTTL");
         }
         break;
     }
@@ -200,6 +197,8 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
           formInst.setFieldValue("provider", void 0);
           formInst.setFieldValue("providerAccessId", void 0);
           formInst.setFieldValue("providerConfig", void 0);
+
+          resetFieldIfInvalid("httpDelayWait");
         }
         break;
 
@@ -678,8 +677,25 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
           </Form.Item>
 
           <Form.Item
+            name="httpDelayWait"
+            hidden={fieldChallengeType !== CHALLENGE_TYPE_HTTP01}
+            label={t("workflow_node.apply.form.http_delay_wait.label")}
+            rules={[formRule]}
+            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.http_delay_wait.tooltip") }}></span>}
+          >
+            <Input
+              type="number"
+              allowClear
+              min={0}
+              max={3600}
+              placeholder={t("workflow_node.apply.form.http_delay_wait.placeholder")}
+              suffix={t("workflow_node.apply.form.http_delay_wait.unit")}
+            />
+          </Form.Item>
+
+          <Form.Item
             name="disableFollowCNAME"
-            hidden={fieldFor !== FOR_DOMAIN}
+            hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
             label={t("workflow_node.apply.form.disable_follow_cname.label")}
             rules={[formRule]}
             tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_follow_cname.tooltip") }}></span>}
@@ -929,6 +945,15 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       keySource: z.enum([KEY_SOURCE_AUTO, KEY_SOURCE_REUSE, KEY_SOURCE_CUSTOM], t("workflow_node.apply.form.key_source.placeholder")),
       keyAlgorithm: z.string().nonempty(t("workflow_node.apply.form.key_algorithm.placeholder")),
       keyContent: z.string().nullish(),
+      validityLifetime: z
+        .string()
+        .nullish()
+        .refine((v) => {
+          if (!v) return true;
+          return /^\d+[d|h]$/.test(v) && parseInt(v) > 0;
+        }, t("workflow_node.apply.form.validity_lifetime.placeholder")),
+      preferredChain: z.string().nullish(),
+      acmeProfile: z.string().nullish(),
       nameservers: z
         .string()
         .nullish()
@@ -951,15 +976,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         (v) => (v == null || v === "" ? void 0 : Number(v)),
         z.number().int().gte(1, t("workflow_node.apply.form.dns_ttl.placeholder")).nullish()
       ),
-      validityLifetime: z
-        .string()
-        .nullish()
-        .refine((v) => {
-          if (!v) return true;
-          return /^\d+[d|h]$/.test(v) && parseInt(v) > 0;
-        }, t("workflow_node.apply.form.validity_lifetime.placeholder")),
-      preferredChain: z.string().nullish(),
-      acmeProfile: z.string().nullish(),
+      httpDelayWait: z.preprocess(
+        (v) => (v == null || v === "" ? void 0 : Number(v)),
+        z.number().int().gte(0, t("workflow_node.apply.form.http_delay_wait.placeholder")).nullish()
+      ),
       disableCommonName: z.boolean().nullish(),
       disableFollowCNAME: z.boolean().nullish(),
       disableARI: z.boolean().nullish(),

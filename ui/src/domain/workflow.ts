@@ -109,8 +109,10 @@ export type WorkflowNodeConfigForBizApply = {
   validityLifetime?: string;
   acmeProfile?: string;
   nameservers?: string;
+  dnsPropagationWait?: number;
   dnsPropagationTimeout?: number;
   dnsTTL?: number;
+  httpDelayWait?: number;
   disableFollowCNAME?: boolean;
   disableARI?: boolean;
   skipBeforeExpiryDays: number;

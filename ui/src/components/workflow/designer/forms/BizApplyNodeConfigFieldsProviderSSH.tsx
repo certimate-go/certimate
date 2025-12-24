@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input } from "antd";
+import { Form, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -26,6 +26,16 @@ const BizApplyNodeConfigFieldsProviderSSH = () => {
       >
         <Input placeholder={t("workflow_node.apply.form.ssh_webroot_path.placeholder")} />
       </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "useSCP"]}
+        initialValue={initialValues.useSCP}
+        label={t("workflow_node.apply.form.ssh_use_scp.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.ssh_use_scp.tooltip") }}></span>}
+      >
+        <Switch />
+      </Form.Item>
     </>
   );
 };
@@ -46,6 +56,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       .refine((v) => !!v && (v.endsWith("/") || v.endsWith("\\")), {
         error: t("workflow_node.apply.form.ssh_webroot_path.placeholder"),
       }),
+    useSCP: z.boolean().nullish(),
   });
 };
 
