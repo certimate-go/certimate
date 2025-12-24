@@ -13,6 +13,7 @@ import { type WorkflowNodeConfigForBizUpload, defaultNodeConfigForBizUpload } fr
 import { useAntdForm } from "@/hooks";
 import { getErrMsg } from "@/utils/error";
 import { isUrlWithHttpOrHttps } from "@/utils/validator";
+import { getSubjectAltNames as getX509SubjectAltNames } from "@/utils/x509";
 
 import { NodeFormContextProvider } from "./_context";
 import { NodeType } from "../nodes/typings";
@@ -46,42 +47,40 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
   });
 
   const fieldSource = Form.useWatch("source", { form: formInst, preserve: true });
+  const fieldCertificate = Form.useWatch("certificate", { form: formInst, preserve: true });
+  const fieldName = useMemo(() => {
+    if (!fieldSource || fieldSource === UPLOAD_SOURCE_FORM) {
+      return fieldCertificate ? getX509SubjectAltNames(fieldCertificate).join(";") : void 0;
+    }
+    return void 0;
+  }, [fieldSource, fieldCertificate]);
 
   const handleSourceChange = (value: string) => {
     if (value === initialValues?.source) {
-      formInst.resetFields(["certificate", "privateKey", "name"]);
+      formInst.resetFields(["certificate", "privateKey"]);
     } else {
       setTimeout(() => {
         formInst.setFieldValue("certificate", "");
         formInst.setFieldValue("privateKey", "");
-        formInst.setFieldValue("name", "");
       }, 0);
     }
   };
 
   const handleCertificatePEMChange = async (value: string) => {
     try {
-      const resp = await validateCertificate(value);
+      await validateCertificate(value);
       formInst.setFields([
-        {
-          name: "name",
-          value: resp.data.subjectAltNames,
-        },
         {
           name: "certificate",
           value: value,
         },
       ]);
-    } catch (e) {
+    } catch (err) {
       formInst.setFields([
-        {
-          name: "name",
-          value: "",
-        },
         {
           name: "certificate",
           value: value,
-          errors: [getErrMsg(e)],
+          errors: [getErrMsg(err)],
         },
       ]);
     }
@@ -96,12 +95,12 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
           value: value,
         },
       ]);
-    } catch (e) {
+    } catch (err) {
       formInst.setFields([
         {
           name: "privateKey",
           value: value,
-          errors: [getErrMsg(e)],
+          errors: [getErrMsg(err)],
         },
       ]);
     }
@@ -120,8 +119,8 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
           </Form.Item>
 
           <Show when={fieldSource === UPLOAD_SOURCE_FORM}>
-            <Form.Item name="name" label={t("workflow_node.upload.form.name.label")} rules={[formRule]}>
-              <Input variant="filled" placeholder={t("workflow_node.upload.form.name.placeholder")} readOnly />
+            <Form.Item label={t("workflow_node.upload.form.name.label")}>
+              <Input placeholder={t("workflow_node.upload.form.name.placeholder")} readOnly value={fieldName} variant="filled" />
             </Form.Item>
 
             <Form.Item name="certificate" label={t("workflow_node.upload.form.certificate_pem.label")} rules={[formRule]}>

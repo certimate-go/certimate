@@ -227,12 +227,12 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
           value: resp.data.keyAlgorithm,
         },
       ]);
-    } catch (e) {
+    } catch (err) {
       formInst.setFields([
         {
           name: "keyContent",
           value: value,
-          errors: [getErrMsg(e)],
+          errors: [getErrMsg(err)],
         },
       ]);
     }

@@ -3,6 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconCloudUpload } from "@tabler/icons-react";
 
 import { newNode } from "@/domain/workflow";
+import { getSubjectAltNames as getX509SubjectAltNames } from "@/utils/x509";
 
 import { BaseNode } from "./_shared";
 import { NodeKindType, type NodeRegistry, NodeType } from "./typings";
@@ -47,8 +48,10 @@ export const BizUploadNodeRegistry: NodeRegistry = {
               {({ field: { value: fieldSource } }) => (
                 <>
                   {fieldSource == null || fieldSource === "" || fieldSource === "form" ? (
-                    <Field<string> name="config.name">
-                      {({ field: { value: fieldName } }) => <>{fieldName || t("workflow.detail.design.editor.placeholder")}</>}
+                    <Field<string> name="config.certificate">
+                      {({ field: { value: fieldCertificate } }) => (
+                        <>{(fieldCertificate ? getX509SubjectAltNames(fieldCertificate).join(";") : "") || t("workflow.detail.design.editor.placeholder")}</>
+                      )}
                     </Field>
                   ) : (
                     <Field<string> name="config.certificate">

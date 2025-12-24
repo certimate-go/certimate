@@ -125,7 +125,6 @@ export const defaultNodeConfigForBizApply = (): Partial<WorkflowNodeConfigForBiz
 
 export type WorkflowNodeConfigForBizUpload = {
   source: string;
-  domains?: string;
   certificate: string;
   privateKey: string;
 };

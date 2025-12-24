@@ -1,4 +1,5 @@
-﻿import { useEffect, useLayoutEffect, useState } from "react";
+﻿import "reflect-metadata";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 import { Alert, App, ConfigProvider, type ThemeConfig, theme } from "antd";
