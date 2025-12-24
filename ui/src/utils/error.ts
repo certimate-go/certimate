@@ -1,15 +1,15 @@
 import { ClientResponseError } from "pocketbase";
 
-export const getErrMsg = (error: unknown): string => {
+export const unwrapErrMsg = (error: unknown): string => {
   if (error instanceof ClientResponseError) {
-    return Object.keys(error.response ?? {}).length ? getErrMsg(error.response) : error.message;
+    return Object.keys(error.response ?? {}).length ? unwrapErrMsg(error.response) : error.message;
   } else if (error instanceof Error) {
     return error.message;
   } else if (typeof error === "object" && error != null) {
     if ("message" in error) {
-      return getErrMsg(error.message);
+      return unwrapErrMsg(error.message);
     } else if ("msg" in error) {
-      return getErrMsg(error.msg);
+      return unwrapErrMsg(error.msg);
     }
   } else if (typeof error === "string") {
     return error || "Unknown error";

@@ -10,7 +10,7 @@ import { type AccessModel } from "@/domain/access";
 import { ACCESS_USAGES } from "@/domain/provider";
 import { useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const AccessNew = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const AccessNew = () => {
 
       navigate(`/accesses?usage=${providerUsage}`, { replace: true });
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
       throw err;
     } finally {

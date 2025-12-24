@@ -11,7 +11,7 @@ import { WORKFLOW_RUN_STATUSES } from "@/domain/workflowRun";
 import { useZustandShallowSelector } from "@/hooks";
 import { useWorkflowStore } from "@/stores/workflow";
 import { mergeCls } from "@/utils/css";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const WorkflowDetail = () => {
   const location = useLocation();
@@ -26,7 +26,7 @@ const WorkflowDetail = () => {
   useEffect(() => {
     Promise.try(() => workflowState.init(workflowId!)).catch((err) => {
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     });
 
     return () => {
@@ -102,7 +102,7 @@ const WorkflowDetail = () => {
       await workflowState.setEnabled(!workflow.enabled);
     } catch (err) {
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     }
   };
 
@@ -205,7 +205,7 @@ const WorkflowDetailBaseName = () => {
     try {
       await workflowStore.setName(value);
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
       throw err;
     }
@@ -283,7 +283,7 @@ const WorkflowDetailBaseDescription = () => {
     try {
       await workflowStore.setDescription(value);
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
       throw err;
     }

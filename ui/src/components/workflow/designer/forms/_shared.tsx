@@ -7,7 +7,7 @@ import { Anchor, type AnchorProps, App, Button, Drawer, Dropdown, Flex, type For
 import { isEqual } from "radash";
 
 import Show from "@/components/Show";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 import { type NodeRegistry } from "../nodes/typings";
 
@@ -60,7 +60,7 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
       node.form!.setValueIn("config", formValues);
       node.form!.validate();
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
       throw err;
     } finally {

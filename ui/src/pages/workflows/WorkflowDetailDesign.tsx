@@ -12,7 +12,7 @@ import WorkflowGraphExportModal from "@/components/workflow/WorkflowGraphExportM
 import WorkflowGraphImportModal from "@/components/workflow/WorkflowGraphImportModal";
 import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { useWorkflowStore } from "@/stores/workflow";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const WorkflowDetailDesign = () => {
   const { t } = useTranslation();
@@ -55,7 +55,7 @@ const WorkflowDetailDesign = () => {
       await workflowStore.orchestrate(graph);
     } catch (err) {
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     } finally {
       designerPending.current = false;
     }
@@ -72,7 +72,7 @@ const WorkflowDetailDesign = () => {
           message.success(t("common.text.operation_succeeded"));
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -94,7 +94,7 @@ const WorkflowDetailDesign = () => {
           message.success(t("common.text.operation_succeeded"));
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -116,7 +116,7 @@ const WorkflowDetailDesign = () => {
       } catch (err) {
         console.error(err);
         message.destroy(loadingKey);
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
       }
     });
   };
@@ -214,7 +214,7 @@ const WorkflowDetailDesign = () => {
 
           {!!designerError && (
             <div className="absolute top-1/2 left-1/2 z-10 w-full -translate-1/2 px-4">
-              <Result status="warning" title="Data corruption!" subTitle={`Error: ${getErrMsg(designerError)}`} />
+              <Result status="warning" title="Data corruption!" subTitle={`Error: ${unwrapErrMsg(designerError)}`} />
             </div>
           )}
 

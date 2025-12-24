@@ -15,7 +15,7 @@ import {
   newNode,
 } from "@/domain/workflow";
 import { save as saveWorkflow } from "@/repository/workflow";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const TEMPLATE_KEY_BLANK = "blank" as const;
 const TEMPLATE_KEY_STANDARD = "standard" as const;
@@ -242,7 +242,7 @@ const WorkflowNew = () => {
       workflow = await saveWorkflow(workflow);
       navigate(`/workflows/${workflow.id}`, { replace: true });
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
       throw err;
     } finally {
@@ -266,7 +266,7 @@ const WorkflowNew = () => {
         workflow = await saveWorkflow(workflow);
         navigate(`/workflows/${workflow.id}`, { replace: true });
       } catch (err) {
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       } finally {

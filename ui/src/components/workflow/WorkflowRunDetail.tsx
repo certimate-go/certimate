@@ -17,7 +17,7 @@ import { listByWorkflowRunId as listCertificatesByWorkflowRunId } from "@/reposi
 import { listByWorkflowRunId as listLogsByWorkflowRunId } from "@/repository/workflowLog";
 import { subscribe as subscribeWorkflowRun } from "@/repository/workflowRun";
 import { mergeCls } from "@/utils/css";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 import WorkflowDesigner from "./designer/Designer";
 import WorkflowToolbar from "./designer/Toolbar";
@@ -439,7 +439,7 @@ const WorkflowRunArtifacts = ({ runId }: { runId: string }) => {
         }
 
         console.error(err);
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       },

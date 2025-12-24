@@ -12,7 +12,7 @@ import DrawerForm from "@/components/DrawerForm";
 import Tips from "@/components/Tips";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useNotifyTemplatesStore } from "@/stores/settings";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const MAX_TEMPLATE_COUNT = 99;
 
@@ -35,7 +35,7 @@ const PresetListNotifyTemplates = () => {
       }
 
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     });
   });
 
@@ -77,7 +77,7 @@ const PresetListNotifyTemplates = () => {
           await removeTemplateByIndex(index);
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -90,7 +90,7 @@ const PresetListNotifyTemplates = () => {
       setCreateDrawerOpen(false);
     } catch (err) {
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     }
   };
 
@@ -105,7 +105,7 @@ const PresetListNotifyTemplates = () => {
       setDetailDrawerOpen(false);
     } catch (err) {
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     }
   };
 

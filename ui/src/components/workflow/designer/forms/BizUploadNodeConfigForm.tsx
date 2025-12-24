@@ -11,7 +11,7 @@ import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { type WorkflowNodeConfigForBizUpload, defaultNodeConfigForBizUpload } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 import { isUrlWithHttpOrHttps } from "@/utils/validator";
 import { getSubjectAltNames as getX509SubjectAltNames } from "@/utils/x509";
 
@@ -80,7 +80,7 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
         {
           name: "certificate",
           value: value,
-          errors: [getErrMsg(err)],
+          errors: [unwrapErrMsg(err)],
         },
       ]);
     }
@@ -100,7 +100,7 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
         {
           name: "privateKey",
           value: value,
-          errors: [getErrMsg(err)],
+          errors: [unwrapErrMsg(err)],
         },
       ]);
     }

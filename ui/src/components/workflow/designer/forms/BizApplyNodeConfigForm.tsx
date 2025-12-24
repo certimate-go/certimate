@@ -23,7 +23,7 @@ import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { useContactEmailsStore } from "@/stores/settings";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 import { matchSearchOption } from "@/utils/search";
 import { isDomain, isHostname } from "@/utils/validator";
 
@@ -232,7 +232,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
         {
           name: "keyContent",
           value: value,
-          errors: [getErrMsg(err)],
+          errors: [unwrapErrMsg(err)],
         },
       ]);
     }

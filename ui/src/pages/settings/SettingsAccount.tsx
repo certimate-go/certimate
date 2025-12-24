@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import { useAntdForm } from "@/hooks";
 import { authWithPassword, getAuthStore, save as saveAdmin } from "@/repository/admin";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const SettingsAccount = () => {
   const { t } = useTranslation();
@@ -60,7 +60,7 @@ const SettingsAccountUsername = ({ className, style }: { className?: string; sty
           navigate("/login");
         }, 500);
       } catch (err) {
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       }
@@ -163,7 +163,7 @@ const SettingsAccountPassword = ({ className, style }: { className?: string; sty
           navigate("/login");
         }, 500);
       } catch (err) {
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       }

@@ -13,7 +13,7 @@ import { type SSLProviderSettingsContent } from "@/domain/settings";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useSSLProviderSettingsStore } from "@/stores/settings";
 import { mergeCls } from "@/utils/css";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const SettingsSSLProvider = () => {
   const { t } = useTranslation();
@@ -86,7 +86,7 @@ const SettingsSSLProvider = () => {
 
       message.success(t("common.text.operation_succeeded"));
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     } finally {
       setFormPending(false);
     }

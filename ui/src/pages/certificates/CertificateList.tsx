@@ -15,7 +15,7 @@ import { CERTIFICATE_SOURCES, type CertificateModel } from "@/domain/certificate
 import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { get as getCertificate, list as listCertificates, remove as removeCertificate } from "@/repository/certificate";
 import { usePersistenceSettingsStore } from "@/stores/settings";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const CertificateList = () => {
   const navigate = useNavigate();
@@ -290,7 +290,7 @@ const CertificateList = () => {
         }
 
         console.error(err);
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       },
@@ -343,7 +343,7 @@ const CertificateList = () => {
           }
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -371,7 +371,7 @@ const CertificateList = () => {
           }
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -403,7 +403,7 @@ const CertificateList = () => {
           }
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -463,7 +463,7 @@ const CertificateList = () => {
                 <Empty
                   className="py-24"
                   title={loadError ? t("common.text.nodata_failed") : t("certificate.nodata.title")}
-                  description={loadError ? getErrMsg(loadError) : t("certificate.nodata.description")}
+                  description={loadError ? unwrapErrMsg(loadError) : t("certificate.nodata.description")}
                   icon={<IconCertificate size={24} />}
                   extra={
                     loadError ? (

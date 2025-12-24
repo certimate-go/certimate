@@ -17,7 +17,7 @@ import { ACCESS_USAGES, accessProvidersMap } from "@/domain/provider";
 import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { get as getAccess } from "@/repository/access";
 import { useAccessesStore } from "@/stores/access";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 type AccessUsages = AccessEditDrawerProps["usage"];
 
@@ -41,7 +41,7 @@ const AccessList = () => {
       }
 
       console.error(err);
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     });
   });
 
@@ -327,7 +327,7 @@ const AccessList = () => {
           refreshData();
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -359,7 +359,7 @@ const AccessList = () => {
           }
         } catch (err) {
           console.error(err);
-          notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+          notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
         }
       },
     });
@@ -429,7 +429,7 @@ const AccessList = () => {
                 <Empty
                   className="py-24"
                   title={loadError ? t("common.text.nodata_failed") : t("access.nodata.title")}
-                  description={loadError ? getErrMsg(loadError) : t("access.nodata.description")}
+                  description={loadError ? unwrapErrMsg(loadError) : t("access.nodata.description")}
                   icon={<IconFingerprint size={24} />}
                   extra={
                     loadError ? (

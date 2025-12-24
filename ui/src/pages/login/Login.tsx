@@ -13,7 +13,7 @@ import AppVersion from "@/components/AppVersion";
 import { useAntdForm, useBrowserTheme } from "@/hooks";
 
 import { authWithPassword } from "@/repository/admin";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const Login = () => {
   const navigage = useNavigate();
@@ -59,7 +59,7 @@ const Login = () => {
         await authWithPassword(values.username, values.password);
         await navigage("/");
       } catch (err) {
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       }

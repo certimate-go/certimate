@@ -30,7 +30,7 @@ import { type WorkflowRunModel } from "@/domain/workflowRun";
 import { useBrowserTheme, useVersionChecker } from "@/hooks";
 import { get as getWorkflowRun, list as listWorkflowRuns } from "@/repository/workflowRun";
 import { mergeCls } from "@/utils/css";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -149,7 +149,7 @@ const StatisticCards = ({ className, style }: { className?: string; style?: Reac
         }
 
         console.error(err);
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       },
@@ -365,7 +365,7 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
         }
 
         console.error(err);
-        notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+        notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       },
@@ -400,7 +400,7 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
             <Empty
               className="py-24"
               title={loadError ? t("common.text.nodata_failed") : t("common.text.nodata")}
-              description={loadError ? getErrMsg(loadError) : t("dashboard.latest_workflow_runs.nodata.description")}
+              description={loadError ? unwrapErrMsg(loadError) : t("dashboard.latest_workflow_runs.nodata.description")}
               icon={<IconHistory size={24} />}
               extra={
                 loadError ? (

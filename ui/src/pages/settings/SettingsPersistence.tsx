@@ -10,7 +10,7 @@ import Show from "@/components/Show";
 import { type PersistenceSettingsContent } from "@/domain/settings";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { usePersistenceSettingsStore } from "@/stores/settings";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const SettingsPersistence = () => {
   const { t } = useTranslation();
@@ -28,7 +28,7 @@ const SettingsPersistence = () => {
 
       message.success(t("common.text.operation_succeeded"));
     } catch (err) {
-      notification.error({ title: t("common.text.request_error"), description: getErrMsg(err) });
+      notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
     }
   };
 

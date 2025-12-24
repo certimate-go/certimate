@@ -10,7 +10,7 @@ import Show from "@/components/Show";
 import { listCronJobs, listLogs } from "@/repository/system";
 import { getNextCronExecutions } from "@/utils/cron";
 import { mergeCls } from "@/utils/css";
-import { getErrMsg } from "@/utils/error";
+import { unwrapErrMsg } from "@/utils/error";
 
 const SettingsDiagnostics = () => {
   const { t } = useTranslation();
@@ -139,7 +139,7 @@ const SettingsDiagnosticsLogs = ({ className, style }: { className?: string; sty
             <Show.Case when={listData.length === 0}>
               <div className="px-4 py-2">
                 <div className="w-full overflow-hidden">
-                  <div className="text-xs leading-relaxed text-stone-400">{loadError ? `> ${getErrMsg(loadError)}` : "> no logs avaiable"}</div>
+                  <div className="text-xs leading-relaxed text-stone-400">{loadError ? `> ${unwrapErrMsg(loadError)}` : "> no logs avaiable"}</div>
                 </div>
                 <div className="flex w-full items-center">
                   <a onClick={handleReloadClick}>
@@ -241,7 +241,7 @@ const SettingsDiagnosticsCrons = ({ className, style }: { className?: string; st
         loading={loading}
         locale={{
           emptyText: (
-            <Empty description={loadError ? getErrMsg(loadError) : t("common.text.nodata")} image={Empty.PRESENTED_IMAGE_SIMPLE}>
+            <Empty description={loadError ? unwrapErrMsg(loadError) : t("common.text.nodata")} image={Empty.PRESENTED_IMAGE_SIMPLE}>
               {loadError && (
                 <Button ghost icon={<IconReload size="1.25em" />} type="primary" onClick={handleReloadClick}>
                   {t("common.button.reload")}
