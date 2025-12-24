@@ -5,15 +5,13 @@ import { type AnchorProps, Form, type FormInstance, Input, Radio } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import { validateCertificate, validatePrivateKey } from "@/api/certificates";
 import FileTextInput from "@/components/FileTextInput";
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { type WorkflowNodeConfigForBizUpload, defaultNodeConfigForBizUpload } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
-import { unwrapErrMsg } from "@/utils/error";
 import { isUrlWithHttpOrHttps } from "@/utils/validator";
-import { getSubjectAltNames as getX509SubjectAltNames } from "@/utils/x509";
+import { getCertificateSubjectAltNames as getX509SubjectAltNames, validatePEMCertificate, validatePEMPrivateKey } from "@/utils/x509";
 
 import { NodeFormContextProvider } from "./_context";
 import { NodeType } from "../nodes/typings";
@@ -66,46 +64,6 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
     }
   };
 
-  const handleCertificatePEMChange = async (value: string) => {
-    try {
-      await validateCertificate(value);
-      formInst.setFields([
-        {
-          name: "certificate",
-          value: value,
-        },
-      ]);
-    } catch (err) {
-      formInst.setFields([
-        {
-          name: "certificate",
-          value: value,
-          errors: [unwrapErrMsg(err)],
-        },
-      ]);
-    }
-  };
-
-  const handlePrivateKeyPEMChange = async (value: string) => {
-    try {
-      await validatePrivateKey(value);
-      formInst.setFields([
-        {
-          name: "privateKey",
-          value: value,
-        },
-      ]);
-    } catch (err) {
-      formInst.setFields([
-        {
-          name: "privateKey",
-          value: value,
-          errors: [unwrapErrMsg(err)],
-        },
-      ]);
-    }
-  };
-
   return (
     <NodeFormContextProvider value={{ node }}>
       <Form {...formProps} clearOnDestroy={true} form={formInst} layout="vertical" preserve={false} scrollToFirstError>
@@ -124,19 +82,11 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
             </Form.Item>
 
             <Form.Item name="certificate" label={t("workflow_node.upload.form.certificate_pem.label")} rules={[formRule]}>
-              <FileTextInput
-                autoSize={{ minRows: 3, maxRows: 10 }}
-                placeholder={t("workflow_node.upload.form.certificate_pem.placeholder")}
-                onChange={handleCertificatePEMChange}
-              />
+              <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.upload.form.certificate_pem.placeholder")} />
             </Form.Item>
 
             <Form.Item name="privateKey" label={t("workflow_node.upload.form.private_key_pem.label")} rules={[formRule]}>
-              <FileTextInput
-                autoSize={{ minRows: 3, maxRows: 10 }}
-                placeholder={t("workflow_node.upload.form.private_key_pem.placeholder")}
-                onChange={handlePrivateKeyPEMChange}
-              />
+              <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.upload.form.private_key_pem.placeholder")} />
             </Form.Item>
           </Show>
 
@@ -205,18 +155,18 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.source) {
         case UPLOAD_SOURCE_FORM:
           {
-            if (!z.string().nonempty().safeParse(values.certificate).success) {
+            if (!validatePEMCertificate(values.certificate)) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.certificate_pem.placeholder"),
+                message: t("workflow_node.upload.form.certificate_pem.errmsg.invalid"),
                 path: ["certificate"],
               });
             }
 
-            if (!z.string().nonempty().safeParse(values.privateKey).success) {
+            if (!validatePEMPrivateKey(values.privateKey)) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.private_key_pem.placeholder"),
+                message: t("workflow_node.upload.form.private_key_pem.errmsg.invalid"),
                 path: ["privateKey"],
               });
             }

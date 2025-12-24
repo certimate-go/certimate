@@ -29,7 +29,6 @@ func init() {
 					nodeCfg := node.Data["config"].(map[string]any)
 
 					if nodeCfg["domains"] != nil {
-						nodeCfg["name"] = nodeCfg["domains"]
 						delete(nodeCfg, "domains")
 
 						node.Data["config"] = nodeCfg

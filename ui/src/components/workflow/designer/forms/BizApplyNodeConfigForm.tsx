@@ -8,7 +8,6 @@ import { type AnchorProps, AutoComplete, Button, Divider, Form, type FormInstanc
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import { validatePrivateKey } from "@/api/certificates";
 import AccessEditDrawer from "@/components/access/AccessEditDrawer";
 import AccessSelect from "@/components/access/AccessSelect";
 import FileTextInput from "@/components/FileTextInput";
@@ -23,9 +22,9 @@ import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { useContactEmailsStore } from "@/stores/settings";
-import { unwrapErrMsg } from "@/utils/error";
 import { matchSearchOption } from "@/utils/search";
 import { isDomain, isHostname } from "@/utils/validator";
+import { getPrivateKeyAlgorithm as getPKIXPrivateKeyAlgorithm, validatePEMPrivateKey } from "@/utils/x509";
 
 import { FormNestedFieldsContextProvider, NodeFormContextProvider } from "./_context";
 import BizApplyNodeConfigFieldsProvider from "./BizApplyNodeConfigFieldsProvider";
@@ -211,30 +210,6 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
       setTimeout(() => {
         formInst.setFieldValue("keyContent", "");
       }, 0);
-    }
-  };
-
-  const handleKeyContentChange = async (value: string) => {
-    try {
-      const resp = await validatePrivateKey(value);
-      formInst.setFields([
-        {
-          name: "keyContent",
-          value: value,
-        },
-        {
-          name: "keyAlgorithm",
-          value: resp.data.keyAlgorithm,
-        },
-      ]);
-    } catch (err) {
-      formInst.setFields([
-        {
-          name: "keyContent",
-          value: value,
-          errors: [unwrapErrMsg(err)],
-        },
-      ]);
     }
   };
 
@@ -433,11 +408,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
           <Show when={fieldKeySource === KEY_SOURCE_CUSTOM}>
             <Form.Item name="keyContent" label={t("workflow_node.apply.form.key_content.label")} rules={[formRule]}>
-              <FileTextInput
-                autoSize={{ minRows: 3, maxRows: 10 }}
-                placeholder={t("workflow_node.apply.form.key_content.placeholder")}
-                onChange={handleKeyContentChange}
-              />
+              <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.apply.form.key_content.placeholder")} />
             </Form.Item>
           </Show>
 
@@ -927,12 +898,25 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       if (values.keySource) {
         switch (values.keySource) {
           case KEY_SOURCE_CUSTOM:
-            if (!values.keyContent) {
-              ctx.addIssue({
-                code: "custom",
-                message: t("workflow_node.apply.form.key_content.placeholder"),
-                path: ["keyContent"],
-              });
+            {
+              if (!validatePEMPrivateKey(values.keyContent!)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("workflow_node.apply.form.key_content.errmsg.invalid"),
+                  path: ["keyContent"],
+                });
+              } else {
+                const { algorithm, keySize } = getPKIXPrivateKeyAlgorithm(values.keyContent!);
+                const expectedKeyAlg = values.keyAlgorithm;
+                const actualKeyAlg = `${algorithm}${keySize}`;
+                if (actualKeyAlg !== expectedKeyAlg) {
+                  ctx.addIssue({
+                    code: "custom",
+                    message: t("workflow_node.apply.form.key_content.errmsg.not_matched", { expected: expectedKeyAlg, actual: actualKeyAlg }),
+                    path: ["keyContent"],
+                  });
+                }
+              }
             }
             break;
         }

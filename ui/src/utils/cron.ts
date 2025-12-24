@@ -49,14 +49,14 @@ function parseCronSegment(segment: string, min: number, max: number): Set<number
         {
           const parsedStep = parseInt(stepParts[1], 10);
           if (isNaN(parsedStep) || parsedStep < 1 || parsedStep > max) {
-            throw new Error(`invalid segment step boundary - the step must be between 1 and the ${max}`);
+            throw new Error(`Invalid segment step boundary - the step must be between 1 and the ${max}`);
           }
           step = parsedStep;
         }
         break;
 
       default:
-        throw new Error("invalid segment step format - must be in the format */n or 1-30/n");
+        throw new Error("Invalid segment step format - must be in the format */n or 1-30/n");
     }
 
     let rangeMin: number, rangeMax: number;
@@ -69,11 +69,11 @@ function parseCronSegment(segment: string, min: number, max: number): Set<number
         case 1:
           {
             if (step !== 1) {
-              throw new Error("invalid segment step - step > 1 could be used only with the wildcard or range format");
+              throw new Error("Invalid segment step - step > 1 could be used only with the wildcard or range format");
             }
             const parsed = parseInt(rangeParts[0], 10);
             if (isNaN(parsed) || parsed < min || parsed > max) {
-              throw new Error("invalid segment value - must be between the min and max of the segment");
+              throw new Error("Invalid segment value - must be between the min and max of the segment");
             }
             rangeMin = parsed;
             rangeMax = rangeMin;
@@ -84,20 +84,20 @@ function parseCronSegment(segment: string, min: number, max: number): Set<number
           {
             const parsedMin = parseInt(rangeParts[0], 10);
             if (isNaN(parsedMin) || parsedMin < min || parsedMin > max) {
-              throw new Error(`invalid segment range minimum - must be between ${min} and ${max}`);
+              throw new Error(`Invalid segment range minimum - must be between ${min} and ${max}`);
             }
             rangeMin = parsedMin;
 
             const parsedMax = parseInt(rangeParts[1], 10);
             if (isNaN(parsedMax) || parsedMax < rangeMin || parsedMax > max) {
-              throw new Error(`invalid segment range maximum - must be between ${rangeMin} and ${max}`);
+              throw new Error(`Invalid segment range maximum - must be between ${rangeMin} and ${max}`);
             }
             rangeMax = parsedMax;
           }
           break;
 
         default:
-          throw new Error("invalid segment range format - the range must have 1 or 2 parts");
+          throw new Error("Invalid segment range format - the range must have 1 or 2 parts");
       }
     }
 

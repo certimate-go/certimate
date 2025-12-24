@@ -6,7 +6,7 @@ export const readFileAsText = (file: File): Promise<string> => {
     if (reader.result != null) {
       resolve(reader.result.toString());
     } else {
-      reject(new Error("read file failed: result is null"));
+      reject(new Error("Read file failed: result is null"));
     }
   };
   reader.onerror = () => reject(reader.error);

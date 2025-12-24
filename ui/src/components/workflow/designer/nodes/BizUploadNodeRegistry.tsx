@@ -3,7 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconCloudUpload } from "@tabler/icons-react";
 
 import { newNode } from "@/domain/workflow";
-import { getSubjectAltNames as getX509SubjectAltNames } from "@/utils/x509";
+import { getCertificateSubjectAltNames as getX509SubjectAltNames } from "@/utils/x509";
 
 import { BaseNode } from "./_shared";
 import { NodeKindType, type NodeRegistry, NodeType } from "./typings";

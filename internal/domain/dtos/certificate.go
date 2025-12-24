@@ -1,8 +1,8 @@
 package dtos
 
 type CertificateArchiveFileReq struct {
-	CertificateId string `json:"-"`
-	Format        string `json:"format"`
+	CertificateId     string `json:"-"`
+	CertificateFormat string `json:"format"`
 }
 
 type CertificateArchiveFileResp struct {
@@ -15,21 +15,3 @@ type CertificateRevokeReq struct {
 }
 
 type CertificateRevokeResp struct{}
-
-type CertificateValidateCertificateReq struct {
-	Certificate string `json:"certificate"`
-}
-
-type CertificateValidateCertificateResp struct {
-	IsValid         bool   `json:"isValid"`
-	SubjectAltNames string `json:"subjectAltNames,omitempty"`
-}
-
-type CertificateValidatePrivateKeyReq struct {
-	PrivateKey string `json:"privateKey"`
-}
-
-type CertificateValidatePrivateKeyResp struct {
-	IsValid      bool   `json:"isValid"`
-	KeyAlgorithm string `json:"keyAlgorithm,omitempty"`
-}

@@ -4,12 +4,10 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"crypto/x509"
 	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
-	"time"
 
 	"github.com/pocketbase/dbx"
 
@@ -18,8 +16,6 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/domain/dtos"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
-	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
-	xcryptokey "github.com/certimate-go/certimate/pkg/utils/crypto/key"
 )
 
 type CertificateService struct {
@@ -63,7 +59,7 @@ func (s *CertificateService) DownloadArchivedFile(ctx context.Context, req *dtos
 	defer zipWriter.Close()
 
 	var bytes []byte
-	switch strings.ToUpper(req.Format) {
+	switch strings.ToUpper(req.CertificateFormat) {
 	case "", "PEM":
 		{
 			serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certificate.Certificate)
@@ -245,43 +241,6 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 	}
 
 	return &dtos.CertificateRevokeResp{}, nil
-}
-
-func (s *CertificateService) ValidateCertificate(ctx context.Context, req *dtos.CertificateValidateCertificateReq) (*dtos.CertificateValidateCertificateResp, error) {
-	certX509, err := xcert.ParseCertificateFromPEM(req.Certificate)
-	if err != nil {
-		return nil, err
-	} else if certX509.NotAfter.Before(time.Now()) {
-		return nil, fmt.Errorf("certificate has expired at %s", certX509.NotAfter.UTC().Format(time.RFC3339))
-	}
-
-	return &dtos.CertificateValidateCertificateResp{
-		IsValid:         true,
-		SubjectAltNames: strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"),
-	}, nil
-}
-
-func (s *CertificateService) ValidatePrivateKey(ctx context.Context, req *dtos.CertificateValidatePrivateKeyReq) (*dtos.CertificateValidatePrivateKeyResp, error) {
-	privkey, err := xcert.ParsePrivateKeyFromPEM(req.PrivateKey)
-	if err != nil {
-		return nil, err
-	}
-
-	var keyAlgorithm string
-	privkeyAlg, privkeySize, _ := xcryptokey.GetPrivateKeyAlgorithm(privkey)
-	switch privkeyAlg {
-	case x509.RSA:
-		keyAlgorithm = fmt.Sprintf("RSA%d", privkeySize)
-	case x509.ECDSA:
-		keyAlgorithm = fmt.Sprintf("EC%d", privkeySize)
-	case x509.Ed25519:
-		keyAlgorithm = "Ed25519"
-	}
-
-	return &dtos.CertificateValidatePrivateKeyResp{
-		IsValid:      true,
-		KeyAlgorithm: keyAlgorithm,
-	}, nil
 }
 
 func (s *CertificateService) cleanupExpiredCertificates(ctx context.Context) error {

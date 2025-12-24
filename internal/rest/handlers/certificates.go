@@ -13,8 +13,6 @@ import (
 type certificateService interface {
 	DownloadArchivedFile(ctx context.Context, req *dtos.CertificateArchiveFileReq) (*dtos.CertificateArchiveFileResp, error)
 	RevokeCertificate(ctx context.Context, req *dtos.CertificateRevokeReq) (*dtos.CertificateRevokeResp, error)
-	ValidateCertificate(ctx context.Context, req *dtos.CertificateValidateCertificateReq) (*dtos.CertificateValidateCertificateResp, error)
-	ValidatePrivateKey(ctx context.Context, req *dtos.CertificateValidatePrivateKeyReq) (*dtos.CertificateValidatePrivateKeyResp, error)
 }
 
 type CertificatesHandler struct {
@@ -29,8 +27,6 @@ func NewCertificatesHandler(router *router.RouterGroup[*core.RequestEvent], serv
 	group := router.Group("/certificates")
 	group.POST("/{certificateId}/archive", handler.archiveCertificate)
 	group.POST("/{certificateId}/revoke", handler.revokeCertificate)
-	group.POST("/pre-validate/certificate", handler.validateCertificate)
-	group.POST("/pre-validate/private-key", handler.validatePrivateKey)
 }
 
 func (handler *CertificatesHandler) archiveCertificate(e *core.RequestEvent) error {
@@ -56,34 +52,6 @@ func (handler *CertificatesHandler) revokeCertificate(e *core.RequestEvent) erro
 	}
 
 	res, err := handler.service.RevokeCertificate(e.Request.Context(), req)
-	if err != nil {
-		return resp.Err(e, err)
-	}
-
-	return resp.Ok(e, res)
-}
-
-func (handler *CertificatesHandler) validateCertificate(e *core.RequestEvent) error {
-	req := &dtos.CertificateValidateCertificateReq{}
-	if err := e.BindBody(req); err != nil {
-		return resp.Err(e, err)
-	}
-
-	res, err := handler.service.ValidateCertificate(e.Request.Context(), req)
-	if err != nil {
-		return resp.Err(e, err)
-	}
-
-	return resp.Ok(e, res)
-}
-
-func (handler *CertificatesHandler) validatePrivateKey(e *core.RequestEvent) error {
-	req := &dtos.CertificateValidatePrivateKeyReq{}
-	if err := e.BindBody(req); err != nil {
-		return resp.Err(e, err)
-	}
-
-	res, err := handler.service.ValidatePrivateKey(e.Request.Context(), req)
 	if err != nil {
 		return resp.Err(e, err)
 	}
