@@ -11,7 +11,7 @@
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-yaml": "^6.1.2",
-    "@codemirror/language": "^6.11.3",
+    "@codemirror/language": "^6.12.1",
     "@codemirror/legacy-modes": "^6.5.2",
     "@flowgram.ai/document": "0.5.6",
     "@flowgram.ai/fixed-layout-editor": "0.5.6",
@@ -26,7 +26,7 @@
     "@uiw/codemirror-theme-vscode": "^4.25.4",
     "@uiw/react-codemirror": "^4.25.4",
     "ahooks": "^3.9.6",
-    "antd": "^6.1.1",
+    "antd": "^6.1.2",
     "antd-zod": "^8.0.0",
     "clsx": "^2.1.1",
     "cron-parser": "^5.4.0",
@@ -56,13 +56,13 @@
     "@tailwindcss/vite": "^4.1.18",
     "@types/file-saver": "^2.0.7",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.18.12",
+    "@types/node": "^24.10.4",
     "@types/react": "^18.3.26",
     "@types/react-copy-to-clipboard": "^5.0.7",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-legacy": "^7.2.1",
     "@vitejs/plugin-react": "^5.1.2",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-better-tailwindcss": "^3.8.0",
@@ -74,7 +74,7 @@
     "prettier": "^3.7.4",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.0",
+    "typescript-eslint": "^8.50.1",
     "vite": "^7.3.0"
   }
 }
