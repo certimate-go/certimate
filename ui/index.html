@@ -18,8 +18,7 @@
           width: 50px;
           height: 50px;
           border-radius: 50px;
-          background: orange;
-          background: var(--color-primary);
+          background: var(--color-primary, orange);
           -webkit-transform: translate(-50%, -50%);
           -moz-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
@@ -31,33 +30,33 @@
         @-webkit-keyframes apploader {
           0% {
             opacity: 1;
-            -webkit-transform: scale(0.1);
+            -webkit-transform: translate(-50%, -50%) scale(0.1);
           }
           100% {
             opacity: 0;
-            -webkit-transform: scale(1);
+            -webkit-transform: translate(-50%, -50%) scale(1);
           }
         }
 
         @-moz-keyframes apploader {
           0% {
             opacity: 1;
-            -moz-transform: scale(0.1);
+            -moz-transform: translate(-50%, -50%) scale(0.1);
           }
           100% {
             opacity: 0;
-            -moz-transform: scale(1);
+            -moz-transform: translate(-50%, -50%) scale(1);
           }
         }
 
         @keyframes apploader {
           0% {
             opacity: 1;
-            transform: scale(0.1);
+            transform: translate(-50%, -50%) scale(0.1);
           }
           100% {
             opacity: 0;
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
           }
         }
       </style>
