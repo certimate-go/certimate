@@ -23,10 +23,10 @@ require (
 	github.com/alibabacloud-go/fc-20230330/v4 v4.6.6
 	github.com/alibabacloud-go/fc-open-20210406/v2 v2.0.12
 	github.com/alibabacloud-go/ga-20191120/v3 v3.1.8
-	github.com/alibabacloud-go/live-20161101/v2 v2.4.0
+	github.com/alibabacloud-go/live-20161101/v2 v2.5.0
 	github.com/alibabacloud-go/nlb-20220430/v4 v4.1.0
 	github.com/alibabacloud-go/openapi-util v0.1.1
-	github.com/alibabacloud-go/slb-20140515/v4 v4.0.12
+	github.com/alibabacloud-go/slb-20140515/v4 v4.0.13
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/alibabacloud-go/vod-20170321/v4 v4.11.0
@@ -38,7 +38,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/acm v1.37.18
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.58.3
 	github.com/aws/aws-sdk-go-v2/service/iam v1.53.1
-	github.com/baidubce/bce-sdk-go v0.9.254
+	github.com/baidubce/bce-sdk-go v0.9.256
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.60
 	github.com/go-acme/lego/v4 v4.30.1
 	github.com/go-cmd/cmd v1.4.3
@@ -62,16 +62,16 @@ require (
 	github.com/samber/lo v1.52.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.17
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.20
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb v1.3.13
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.17
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.20
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap v1.1.45
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live v1.3.16
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live v1.3.20
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf v1.3.4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.2.2
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.17
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.17
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.11
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.3.20
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.18
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.20
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.20
 	github.com/ucloud/ucloud-sdk-go v0.22.58
 	github.com/volcengine/ve-tos-golang-sdk/v2 v2.8.0
 	github.com/volcengine/volc-sdk-golang v1.0.232
