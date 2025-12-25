@@ -2,9 +2,25 @@ import { memo, useEffect, useMemo, useState } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
-import { IconChevronRight, IconCircleMinus, IconPlus } from "@tabler/icons-react";
+import { IconArrowRight, IconChevronRight, IconCircleMinus, IconMapPin, IconPlus, IconWorldWww } from "@tabler/icons-react";
 import { useControllableValue, useMount } from "ahooks";
-import { type AnchorProps, AutoComplete, Button, Divider, Form, type FormInstance, Input, InputNumber, Radio, Select, Space, Switch, Typography } from "antd";
+import {
+  type AnchorProps,
+  AutoComplete,
+  Avatar,
+  Button,
+  Card,
+  Divider,
+  Form,
+  type FormInstance,
+  Input,
+  InputNumber,
+  Radio,
+  Select,
+  Space,
+  Switch,
+  Typography,
+} from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -17,11 +33,12 @@ import ACMEHttp01ProviderSelect from "@/components/provider/ACMEHttp01ProviderSe
 import CAProviderSelect from "@/components/provider/CAProviderSelect";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { acmeDns01ProvidersMap, acmeHttp01ProvidersMap, caProvidersMap } from "@/domain/provider";
+import { CA_PROVIDERS, acmeDns01ProvidersMap, acmeHttp01ProvidersMap, caProvidersMap } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { useContactEmailsStore } from "@/stores/settings";
+import { mergeCls } from "@/utils/css";
 import { matchSearchOption } from "@/utils/search";
 import { isDomain, isHostname, isIPv4, isIPv6 } from "@/utils/validator";
 import { getPrivateKeyAlgorithm as getPKIXPrivateKeyAlgorithm, validatePEMPrivateKey } from "@/utils/x509";
@@ -32,8 +49,8 @@ import { NodeType } from "../nodes/typings";
 
 const MULTIPLE_INPUT_SEPARATOR = ";";
 
-const FOR_DOMAIN = "domain" as const;
-const FOR_IP = "ip" as const;
+const IDENTIFIER_DOMAIN = "domain" as const;
+const IDENTIFIER_IP = "ip" as const;
 
 const CHALLENGE_TYPE_DNS01 = "dns-01" as const;
 const CHALLENGE_TYPE_HTTP01 = "http-01" as const;
@@ -63,7 +80,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   };
   const accessOptionFilterForCA = (_: string, option: AccessModel) => {
     if (option.reserve !== "ca") return false;
-    return caProvidersMap.get(fieldCAProvider)?.provider === option.provider;
+    return caProvidersMap.get(fieldCAProvider!)?.provider === option.provider;
   };
 
   const initialValues = useMemo(() => {
@@ -79,13 +96,13 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     initialValues: initialValues ?? getInitialValues(),
   });
 
-  const fieldFor = Form.useWatch<FormSchema["for"]>("for", { form: formInst, preserve: true });
-  const fieldChallengeType = Form.useWatch<FormSchema["challengeType"]>("challengeType", { form: formInst, preserve: true });
-  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
-  const fieldProviderAccessId = Form.useWatch<string>("providerAccessId", { form: formInst, preserve: true });
-  const fieldKeySource = Form.useWatch<string>("keySource", { form: formInst, preserve: true });
-  const fieldCAProvider = Form.useWatch<string>("caProvider", { form: formInst, preserve: true });
-  const fieldCAProviderAccessId = Form.useWatch<string>("caProviderAccessId", { form: formInst, preserve: true });
+  const fieldIdentifier = Form.useWatch("identifier", { form: formInst, preserve: true });
+  const fieldChallengeType = Form.useWatch("challengeType", { form: formInst, preserve: true });
+  const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
+  const fieldProviderAccessId = Form.useWatch("providerAccessId", { form: formInst, preserve: true });
+  const fieldKeySource = Form.useWatch("keySource", { form: formInst, preserve: true });
+  const fieldCAProvider = Form.useWatch("caProvider", { form: formInst, preserve: true });
+  const fieldCAProviderAccessId = Form.useWatch("caProviderAccessId", { form: formInst, preserve: true });
 
   const renderNestedFieldProviderComponent = BizApplyNodeConfigFieldsProvider.useComponent(fieldChallengeType, fieldProvider, {});
 
@@ -172,15 +189,43 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     }
   }, [fieldCAProvider, fieldCAProviderAccessId]);
 
-  const handleForChange = (value: string) => {
+  const handleIdentifierPick = (value: string) => {
     switch (value) {
-      case FOR_DOMAIN:
+      case IDENTIFIER_DOMAIN:
+        {
+          formInst.setFieldValue("identifier", IDENTIFIER_DOMAIN);
+          formInst.setFieldValue("domains", formInst.getFieldValue("domains") || "");
+          formInst.setFieldValue("challengeType", CHALLENGE_TYPE_DNS01);
+        }
+        break;
+
+      case IDENTIFIER_IP:
+        {
+          formInst.setFieldValue("identifier", IDENTIFIER_IP);
+          formInst.setFieldValue("ipaddrs", formInst.getFieldValue("ipaddrs") || "");
+          formInst.setFieldValue("challengeType", CHALLENGE_TYPE_HTTP01);
+          formInst.setFieldValue("caProvider", CA_PROVIDERS.LETSENCRYPT);
+          formInst.setFieldValue("caProviderAccessId", void 0);
+          formInst.setFieldValue("caProviderConfig", void 0);
+          formInst.setFieldValue("acmeProfile", "shortlived");
+          formInst.setFieldValue("disableCommonName", true);
+          formInst.setFieldValue("skipBeforeExpiryDays", 3);
+        }
+        break;
+    }
+
+    setTimeout(() => handleIdentifierChange(value), 0);
+  };
+
+  const handleIdentifierChange = (value: string) => {
+    switch (value) {
+      case IDENTIFIER_DOMAIN:
         {
           formInst.setFieldValue("ipaddrs", void 0);
         }
         break;
 
-      case FOR_IP:
+      case IDENTIFIER_IP:
         {
           formInst.setFieldValue("domains", void 0);
 
@@ -245,7 +290,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     } else if (value === initialValues?.caProvider) {
       formInst.setFieldValue("caProviderAccessId", initialValues?.caProviderAccessId);
     } else {
-      if (caProvidersMap.get(fieldCAProvider)?.provider !== caProvidersMap.get(value!)?.provider) {
+      if (caProvidersMap.get(fieldCAProvider!)?.provider !== caProvidersMap.get(value!)?.provider) {
         formInst.setFieldValue("caProviderAccessId", void 0);
       }
     }
@@ -254,644 +299,719 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   return (
     <NodeFormContextProvider value={{ node }}>
       <Form {...formProps} clearOnDestroy={true} form={formInst} layout="vertical" preserve={false} scrollToFirstError>
-        <div id="parameters" data-anchor="parameters">
-          <Form.Item name="for" label={t("workflow_node.apply.form.for.label")} rules={[formRule]}>
-            <Radio.Group block onChange={(e) => handleForChange(e.target.value)}>
-              <Radio.Button value={FOR_DOMAIN}>{t("workflow_node.apply.form.for.option.domain.label")}</Radio.Button>
-              <Radio.Button value={FOR_IP}>{t("workflow_node.apply.form.for.option.ip.label")}</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
+        <Show when={!fieldIdentifier}>
+          <InternalIdentifierPicker onSelect={handleIdentifierPick} />
+        </Show>
 
-          <Show>
-            <Show.Case when={fieldFor === FOR_DOMAIN}>
-              <Form.Item
-                name="domains"
-                dependencies={["for", "challengeType"]}
-                label={t("workflow_node.apply.form.domains.label")}
-                extra={
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        fieldChallengeType === CHALLENGE_TYPE_HTTP01
-                          ? t("workflow_node.apply.form.domains.help_no_wildcard")
-                          : t("workflow_node.apply.form.domains.help"),
-                    }}
-                  ></span>
-                }
-                rules={[formRule]}
-              >
-                <MultipleSplitValueInput
-                  modalTitle={t("workflow_node.apply.form.domains.multiple_input_modal.title")}
-                  placeholder={t("workflow_node.apply.form.domains.placeholder")}
-                  placeholderInModal={t("workflow_node.apply.form.domains.multiple_input_modal.placeholder")}
-                  separator={MULTIPLE_INPUT_SEPARATOR}
-                  splitOptions={{ removeEmpty: true, trimSpace: true }}
-                />
-              </Form.Item>
-            </Show.Case>
-            <Show.Case when={fieldFor === FOR_IP}>
-              <Form.Item
-                name="ipaddrs"
-                dependencies={["for", "challengeType"]}
-                label={t("workflow_node.apply.form.ipaddrs.label")}
-                extra={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.ipaddrs.help") }}></span>}
-                rules={[formRule]}
-              >
-                <MultipleSplitValueInput
-                  modalTitle={t("workflow_node.apply.form.ipaddrs.multiple_input_modal.title")}
-                  placeholder={t("workflow_node.apply.form.ipaddrs.placeholder")}
-                  placeholderInModal={t("workflow_node.apply.form.ipaddrs.multiple_input_modal.placeholder")}
-                  separator={MULTIPLE_INPUT_SEPARATOR}
-                  splitOptions={{ removeEmpty: true, trimSpace: true }}
-                />
-              </Form.Item>
-            </Show.Case>
-          </Show>
-
-          <Form.Item
-            name="contactEmail"
-            label={t("workflow_node.apply.form.contact_email.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.contact_email.tooltip") }}></span>}
-          >
-            <InternalEmailInput placeholder={t("workflow_node.apply.form.contact_email.placeholder")} />
-          </Form.Item>
-        </div>
-
-        <div id="challenge" data-anchor="challenge">
-          <Divider size="small">
-            <Typography.Text className="text-xs font-normal" type="secondary">
-              {t("workflow_node.apply.form_anchor.challenge.title")}
-            </Typography.Text>
-          </Divider>
-
-          <Form.Item
-            name="challengeType"
-            dependencies={["for", "domains", "ipaddrs"]}
-            label={t("workflow_node.apply.form.challenge_type.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.challenge_type.tooltip") }}></span>}
-          >
-            <Radio.Group block onChange={(e) => handleChallengeTypeChange(e.target.value)}>
-              <Radio.Button disabled={fieldFor === FOR_IP} value={CHALLENGE_TYPE_DNS01}>
-                DNS-01
-              </Radio.Button>
-              <Radio.Button value={CHALLENGE_TYPE_HTTP01}>HTTP-01</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-
-          <Form.Item
-            name="provider"
-            dependencies={["challengeType"]}
-            label={
-              fieldChallengeType === CHALLENGE_TYPE_DNS01
-                ? t("workflow_node.apply.form.provider_dns01.label")
-                : fieldChallengeType === CHALLENGE_TYPE_HTTP01
-                  ? t("workflow_node.apply.form.provider_http01.label")
-                  : t("workflow_node.apply.form.provider.label")
-            }
-            rules={[formRule]}
-          >
-            {fieldChallengeType === CHALLENGE_TYPE_DNS01 ? (
-              <ACMEDns01ProviderSelect
-                placeholder={t("workflow_node.apply.form.provider_dns01.placeholder")}
-                showAvailability
-                showSearch
-                onSelect={handleProviderSelect}
-                onClear={handleProviderSelect}
-              />
-            ) : fieldChallengeType === CHALLENGE_TYPE_HTTP01 ? (
-              <ACMEHttp01ProviderSelect
-                placeholder={t("workflow_node.apply.form.provider_http01.placeholder")}
-                showAvailability
-                showSearch
-                onSelect={handleProviderSelect}
-                onClear={handleProviderSelect}
-              />
-            ) : (
-              <Select disabled placeholder={t("workflow_node.apply.form.provider.placeholder")} />
-            )}
-          </Form.Item>
-
-          <Form.Item
-            className="relative"
-            hidden={!showProviderAccess}
-            label={
-              fieldChallengeType === CHALLENGE_TYPE_DNS01
-                ? t("workflow_node.apply.form.provider_access_dns01.label")
-                : fieldChallengeType === CHALLENGE_TYPE_HTTP01
-                  ? t("workflow_node.apply.form.provider_access_http01.label")
-                  : t("workflow_node.apply.form.provider_access.label")
-            }
-          >
-            <div className="absolute -top-1.5 right-0 -translate-y-full">
-              <AccessEditDrawer
-                mode="create"
-                trigger={
-                  <Button size="small" type="link">
-                    {t("workflow_node.apply.form.provider_access.button")}
-                    <IconPlus size="1.25em" />
-                  </Button>
-                }
-                usage={fieldChallengeType === CHALLENGE_TYPE_DNS01 ? "dns" : fieldChallengeType === CHALLENGE_TYPE_HTTP01 ? "hosting" : "dns-hosting"}
-                afterSubmit={(record) => {
-                  if (!accessOptionFilter(record.provider, record)) return;
-                  if (fieldChallengeType === CHALLENGE_TYPE_DNS01 && acmeDns01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
-                  if (fieldChallengeType === CHALLENGE_TYPE_HTTP01 && acmeHttp01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
-                  formInst.setFieldValue("providerAccessId", record.id);
-                }}
-              />
-            </div>
-            <Form.Item name="providerAccessId" dependencies={["challengeType", "provider"]} rules={[formRule]} noStyle>
-              <AccessSelect
-                disabled={!fieldProvider}
-                placeholder={
-                  fieldChallengeType === CHALLENGE_TYPE_DNS01
-                    ? t("workflow_node.apply.form.provider_access_dns01.placeholder")
-                    : fieldChallengeType === CHALLENGE_TYPE_HTTP01
-                      ? t("workflow_node.apply.form.provider_access_http01.placeholder")
-                      : t("workflow_node.apply.form.provider_access.placeholder")
-                }
-                showSearch
-                onFilter={accessOptionFilter}
-              />
+        <div style={{ display: fieldIdentifier ? "block" : "none" }}>
+          <div id="parameters" data-anchor="parameters">
+            <Form.Item name="identifier" hidden label={t("workflow_node.apply.form.identifier.label")} rules={[formRule]}>
+              <Radio.Group block onChange={(e) => handleIdentifierChange(e.target.value)}>
+                <Radio.Button value={IDENTIFIER_DOMAIN}>{t("workflow_node.apply.form.identifier.option.domain.label")}</Radio.Button>
+                <Radio.Button value={IDENTIFIER_IP}>{t("workflow_node.apply.form.identifier.option.ip.label")}</Radio.Button>
+              </Radio.Group>
             </Form.Item>
-          </Form.Item>
 
-          <FormNestedFieldsContextProvider value={{ parentNamePath: "providerConfig" }}>
-            {renderNestedFieldProviderComponent && <>{renderNestedFieldProviderComponent}</>}
-          </FormNestedFieldsContextProvider>
-        </div>
+            <Show>
+              <Show.Case when={fieldIdentifier === IDENTIFIER_DOMAIN}>
+                <Form.Item
+                  name="domains"
+                  dependencies={["identifier", "challengeType"]}
+                  label={t("workflow_node.apply.form.domains.label")}
+                  extra={
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          fieldChallengeType === CHALLENGE_TYPE_HTTP01
+                            ? t("workflow_node.apply.form.domains.help_no_wildcard")
+                            : t("workflow_node.apply.form.domains.help"),
+                      }}
+                    ></span>
+                  }
+                  rules={[formRule]}
+                >
+                  <MultipleSplitValueInput
+                    modalTitle={t("workflow_node.apply.form.domains.multiple_input_modal.title")}
+                    placeholder={t("workflow_node.apply.form.domains.placeholder")}
+                    placeholderInModal={t("workflow_node.apply.form.domains.multiple_input_modal.placeholder")}
+                    separator={MULTIPLE_INPUT_SEPARATOR}
+                    splitOptions={{ removeEmpty: true, trimSpace: true }}
+                  />
+                </Form.Item>
+              </Show.Case>
+              <Show.Case when={fieldIdentifier === IDENTIFIER_IP}>
+                <Form.Item
+                  name="ipaddrs"
+                  dependencies={["identifier", "challengeType"]}
+                  label={t("workflow_node.apply.form.ipaddrs.label")}
+                  extra={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.ipaddrs.help") }}></span>}
+                  rules={[formRule]}
+                >
+                  <MultipleSplitValueInput
+                    modalTitle={t("workflow_node.apply.form.ipaddrs.multiple_input_modal.title")}
+                    placeholder={t("workflow_node.apply.form.ipaddrs.placeholder")}
+                    placeholderInModal={t("workflow_node.apply.form.ipaddrs.multiple_input_modal.placeholder")}
+                    separator={MULTIPLE_INPUT_SEPARATOR}
+                    splitOptions={{ removeEmpty: true, trimSpace: true }}
+                  />
+                </Form.Item>
+              </Show.Case>
+            </Show>
 
-        <div id="certificate" data-anchor="certificate">
-          <Divider size="small">
-            <Typography.Text className="text-xs font-normal" type="secondary">
-              {t("workflow_node.apply.form_anchor.certificate.title")}
-            </Typography.Text>
-          </Divider>
+            <Form.Item
+              name="contactEmail"
+              label={t("workflow_node.apply.form.contact_email.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.contact_email.tooltip") }}></span>}
+            >
+              <InternalEmailInput />
+            </Form.Item>
+          </div>
 
-          <Form.Item name="keySource" label={t("workflow_node.apply.form.key_source.label")} rules={[formRule]}>
-            <Radio.Group block onChange={(e) => handleKeySourceChange(e.target.value)}>
-              <Radio.Button value={KEY_SOURCE_AUTO}>{t("workflow_node.apply.form.key_source.option.auto.label")}</Radio.Button>
-              <Radio.Button value={KEY_SOURCE_REUSE}>{t("workflow_node.apply.form.key_source.option.reuse.label")}</Radio.Button>
-              <Radio.Button value={KEY_SOURCE_CUSTOM}>{t("workflow_node.apply.form.key_source.option.custom.label")}</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
+          <div id="challenge" data-anchor="challenge">
+            <Divider size="small">
+              <Typography.Text className="text-xs font-normal" type="secondary">
+                {t("workflow_node.apply.form_anchor.challenge.title")}
+              </Typography.Text>
+            </Divider>
 
-          <Form.Item
-            name="keyAlgorithm"
-            label={t("workflow_node.apply.form.key_algorithm.label")}
-            extra={
-              fieldKeySource === KEY_SOURCE_REUSE ? (
-                <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_algorithm.help_reuse") }}></span>
-              ) : fieldKeySource === KEY_SOURCE_CUSTOM ? (
-                <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_algorithm.help_custom") }}></span>
+            <Form.Item
+              name="challengeType"
+              dependencies={["identifier", "domains", "ipaddrs"]}
+              label={t("workflow_node.apply.form.challenge_type.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.challenge_type.tooltip") }}></span>}
+            >
+              <Radio.Group block onChange={(e) => handleChallengeTypeChange(e.target.value)}>
+                <Radio.Button disabled={fieldIdentifier === IDENTIFIER_IP} value={CHALLENGE_TYPE_DNS01}>
+                  DNS-01
+                </Radio.Button>
+                <Radio.Button value={CHALLENGE_TYPE_HTTP01}>HTTP-01</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.Item
+              name="provider"
+              dependencies={["challengeType"]}
+              label={
+                fieldChallengeType === CHALLENGE_TYPE_DNS01
+                  ? t("workflow_node.apply.form.provider_dns01.label")
+                  : fieldChallengeType === CHALLENGE_TYPE_HTTP01
+                    ? t("workflow_node.apply.form.provider_http01.label")
+                    : t("workflow_node.apply.form.provider.label")
+              }
+              rules={[formRule]}
+            >
+              {fieldChallengeType === CHALLENGE_TYPE_DNS01 ? (
+                <ACMEDns01ProviderSelect
+                  placeholder={t("workflow_node.apply.form.provider_dns01.placeholder")}
+                  showAvailability
+                  showSearch
+                  onSelect={handleProviderSelect}
+                  onClear={handleProviderSelect}
+                />
+              ) : fieldChallengeType === CHALLENGE_TYPE_HTTP01 ? (
+                <ACMEHttp01ProviderSelect
+                  placeholder={t("workflow_node.apply.form.provider_http01.placeholder")}
+                  showAvailability
+                  showSearch
+                  onSelect={handleProviderSelect}
+                  onClear={handleProviderSelect}
+                />
               ) : (
-                void 0
-              )
-            }
-            rules={[formRule]}
-          >
-            <Select
-              options={["RSA2048", "RSA3072", "RSA4096", "RSA8192", "EC256", "EC384"].map((e) => ({
-                label: e,
-                value: e,
-              }))}
-              placeholder={t("workflow_node.apply.form.key_algorithm.placeholder")}
-            />
-          </Form.Item>
-
-          <Show when={fieldKeySource === KEY_SOURCE_CUSTOM}>
-            <Form.Item name="keyContent" label={t("workflow_node.apply.form.key_content.label")} rules={[formRule]}>
-              <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.apply.form.key_content.placeholder")} />
+                <Select disabled placeholder={t("workflow_node.apply.form.provider.placeholder")} />
+              )}
             </Form.Item>
-          </Show>
 
-          <Form.Item className="relative" label={t("workflow_node.apply.form.ca_provider.label")}>
-            <div className="absolute -top-1.5 right-0 -translate-y-full">
-              <Show when={!fieldCAProvider}>
-                <Link className="ant-typography" to="/settings/ssl-provider" target="_blank">
-                  <Button size="small" type="link">
-                    {t("workflow_node.apply.form.ca_provider.button")}
-                    <IconChevronRight size="1.25em" />
-                  </Button>
-                </Link>
-              </Show>
-            </div>
-            <Form.Item name="caProvider" noStyle rules={[formRule]}>
-              <CAProviderSelect
-                allowClear
-                placeholder={t("workflow_node.apply.form.ca_provider.placeholder")}
-                showAvailability
-                showDefault
-                showSearch
-                onSelect={handleCAProviderSelect}
-                onClear={handleCAProviderSelect}
-              />
-            </Form.Item>
-          </Form.Item>
-
-          <Form.Item label={t("workflow_node.apply.form.ca_provider_access.label")} hidden={!showCAProviderAccess}>
-            <div className="absolute -top-1.5 right-0 -translate-y-full">
-              <AccessEditDrawer
-                data={{ provider: caProvidersMap.get(fieldCAProvider!)?.provider }}
-                mode="create"
-                trigger={
-                  <Button size="small" type="link">
-                    {t("workflow_node.apply.form.ca_provider_access.button")}
-                    <IconChevronRight size="1.25em" />
-                  </Button>
-                }
-                usage="ca"
-                afterSubmit={(record) => {
-                  if (accessOptionFilterForCA(record.provider, record)) return;
-                  if (caProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
-                  formInst.setFieldValue("caProviderAccessId", record.id);
-                }}
-              />
-            </div>
-            <Form.Item name="caProviderAccessId" dependencies={["caProvider"]} noStyle rules={[formRule]}>
-              <AccessSelect
-                disabled={!fieldCAProvider}
-                placeholder={t("workflow_node.apply.form.ca_provider_access.placeholder")}
-                showSearch
-                onFilter={accessOptionFilterForCA}
-              />
-            </Form.Item>
-          </Form.Item>
-
-          <Form.Item
-            name="validityLifetime"
-            label={t("workflow_node.apply.form.validity_lifetime.label")}
-            extra={t("workflow_node.apply.form.validity_lifetime.help")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.validity_lifetime.tooltip") }}></span>}
-          >
-            <InternalValidityLifetimeInput placeholder={t("workflow_node.apply.form.validity_lifetime.placeholder")} />
-          </Form.Item>
-
-          <Form.Item
-            name="preferredChain"
-            label={t("workflow_node.apply.form.preferred_chain.label")}
-            extra={t("workflow_node.apply.form.preferred_chain.help")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.preferred_chain.tooltip") }}></span>}
-          >
-            <AutoComplete
-              allowClear
-              options={[
-                {
-                  ca: "Let's Encrypt",
-                  roots: ["ISRG", "ISRG Root X1", "ISRG Root X2"],
-                },
-                {
-                  ca: "Google Trust Services",
-                  roots: ["GTS", "GTS Root R1", "GTS Root R2", "GTS Root R3", "GTS Root R4", "GlobalSign", "GlobalSign R4"],
-                },
-              ].map((e) => ({
-                label: e.ca,
-                options: e.roots.map((s) => ({
-                  label: s,
-                  value: s,
-                })),
-              }))}
-              placeholder={t("workflow_node.apply.form.preferred_chain.placeholder")}
-              showSearch={{
-                filterOption: (inputValue, option) => matchSearchOption(inputValue, option!),
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="acmeProfile"
-            label={t("workflow_node.apply.form.acme_profile.label")}
-            extra={t("workflow_node.apply.form.acme_profile.help")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.acme_profile.tooltip") }}></span>}
-          >
-            <AutoComplete
-              allowClear
-              options={[
-                {
-                  ca: "Let's Encrypt",
-                  profiles: ["classic", "tlsserver", "shortlived"],
-                },
-              ].map((e) => ({
-                label: e.ca,
-                options: e.profiles.map((s) => ({
-                  label: s,
-                  value: s,
-                })),
-              }))}
-              placeholder={t("workflow_node.apply.form.acme_profile.placeholder")}
-              showSearch={{
-                filterOption: (inputValue, option) => matchSearchOption(inputValue, option!),
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="disableCommonName"
-            label={t("workflow_node.apply.form.disable_cn.label")}
-            extra={t("workflow_node.apply.form.disable_cn.help")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_cn.tooltip") }}></span>}
-          >
-            <Switch />
-          </Form.Item>
-        </div>
-
-        <div id="advanced" data-anchor="advanced">
-          <Divider size="small">
-            <Typography.Text className="text-xs font-normal" type="secondary">
-              {t("workflow_node.apply.form_anchor.advanced.title")}
-            </Typography.Text>
-          </Divider>
-
-          <Form.Item
-            name="nameservers"
-            hidden={fieldFor !== FOR_DOMAIN}
-            label={t("workflow_node.apply.form.nameservers.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.nameservers.tooltip") }}></span>}
-          >
-            <MultipleSplitValueInput
-              modalTitle={t("workflow_node.apply.form.nameservers.multiple_input_modal.title")}
-              placeholder={t("workflow_node.apply.form.nameservers.placeholder")}
-              placeholderInModal={t("workflow_node.apply.form.nameservers.multiple_input_modal.placeholder")}
-              separator={MULTIPLE_INPUT_SEPARATOR}
-              splitOptions={{ removeEmpty: true, trimSpace: true }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="dnsPropagationWait"
-            hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
-            label={t("workflow_node.apply.form.dns_propagation_wait.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.dns_propagation_wait.tooltip") }}></span>}
-          >
-            <Input
-              type="number"
-              allowClear
-              min={0}
-              max={3600}
-              placeholder={t("workflow_node.apply.form.dns_propagation_wait.placeholder")}
-              suffix={t("workflow_node.apply.form.dns_propagation_wait.unit")}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="dnsPropagationTimeout"
-            hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
-            label={t("workflow_node.apply.form.dns_propagation_timeout.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.dns_propagation_timeout.tooltip") }}></span>}
-          >
-            <Input
-              type="number"
-              allowClear
-              min={0}
-              max={3600}
-              placeholder={t("workflow_node.apply.form.dns_propagation_timeout.placeholder")}
-              suffix={t("workflow_node.apply.form.dns_propagation_timeout.unit")}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="dnsTTL"
-            hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
-            label={t("workflow_node.apply.form.dns_ttl.label")}
-            extra={t("workflow_node.apply.form.dns_ttl.help")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.dns_ttl.tooltip") }}></span>}
-          >
-            <Input
-              type="number"
-              allowClear
-              min={0}
-              max={86400}
-              placeholder={t("workflow_node.apply.form.dns_ttl.placeholder")}
-              suffix={t("workflow_node.apply.form.dns_ttl.unit")}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="httpDelayWait"
-            hidden={fieldChallengeType !== CHALLENGE_TYPE_HTTP01}
-            label={t("workflow_node.apply.form.http_delay_wait.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.http_delay_wait.tooltip") }}></span>}
-          >
-            <Input
-              type="number"
-              allowClear
-              min={0}
-              max={3600}
-              placeholder={t("workflow_node.apply.form.http_delay_wait.placeholder")}
-              suffix={t("workflow_node.apply.form.http_delay_wait.unit")}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="disableFollowCNAME"
-            hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
-            label={t("workflow_node.apply.form.disable_follow_cname.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_follow_cname.tooltip") }}></span>}
-          >
-            <Switch />
-          </Form.Item>
-
-          <Form.Item
-            name="disableARI"
-            label={t("workflow_node.apply.form.disable_ari.label")}
-            rules={[formRule]}
-            tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_ari.tooltip") }}></span>}
-          >
-            <Switch />
-          </Form.Item>
-        </div>
-
-        <div id="strategy" data-anchor="strategy">
-          <Divider size="small">
-            <Typography.Text className="text-xs font-normal" type="secondary">
-              {t("workflow_node.apply.form_anchor.strategy.title")}
-            </Typography.Text>
-          </Divider>
-
-          <Form.Item label={t("workflow_node.apply.form.skip_before_expiry_days.label")}>
-            <span className="me-2 inline-block">{t("workflow_node.apply.form.skip_before_expiry_days.prefix")}</span>
-            <span className="inline-block">
-              <Form.Item name="skipBeforeExpiryDays" noStyle rules={[formRule]}>
-                <InputNumber
-                  className="w-24"
-                  min={1}
-                  max={365}
-                  placeholder={t("workflow_node.apply.form.skip_before_expiry_days.placeholder")}
-                  suffix={t("workflow_node.apply.form.skip_before_expiry_days.unit")}
+            <Form.Item
+              className="relative"
+              hidden={!showProviderAccess}
+              label={
+                fieldChallengeType === CHALLENGE_TYPE_DNS01
+                  ? t("workflow_node.apply.form.provider_access_dns01.label")
+                  : fieldChallengeType === CHALLENGE_TYPE_HTTP01
+                    ? t("workflow_node.apply.form.provider_access_http01.label")
+                    : t("workflow_node.apply.form.provider_access.label")
+              }
+            >
+              <div className="absolute -top-1.5 right-0 -translate-y-full">
+                <AccessEditDrawer
+                  mode="create"
+                  trigger={
+                    <Button size="small" type="link">
+                      {t("workflow_node.apply.form.provider_access.button")}
+                      <IconPlus size="1.25em" />
+                    </Button>
+                  }
+                  usage={fieldChallengeType === CHALLENGE_TYPE_DNS01 ? "dns" : fieldChallengeType === CHALLENGE_TYPE_HTTP01 ? "hosting" : "dns-hosting"}
+                  afterSubmit={(record) => {
+                    if (!accessOptionFilter(record.provider, record)) return;
+                    if (fieldChallengeType === CHALLENGE_TYPE_DNS01 && acmeDns01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
+                    if (fieldChallengeType === CHALLENGE_TYPE_HTTP01 && acmeHttp01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
+                    formInst.setFieldValue("providerAccessId", record.id);
+                  }}
+                />
+              </div>
+              <Form.Item name="providerAccessId" dependencies={["challengeType", "provider"]} rules={[formRule]} noStyle>
+                <AccessSelect
+                  disabled={!fieldProvider}
+                  placeholder={
+                    fieldChallengeType === CHALLENGE_TYPE_DNS01
+                      ? t("workflow_node.apply.form.provider_access_dns01.placeholder")
+                      : fieldChallengeType === CHALLENGE_TYPE_HTTP01
+                        ? t("workflow_node.apply.form.provider_access_http01.placeholder")
+                        : t("workflow_node.apply.form.provider_access.placeholder")
+                  }
+                  showSearch
+                  onFilter={accessOptionFilter}
                 />
               </Form.Item>
-            </span>
-            <span className="ms-2 inline-block">{t("workflow_node.apply.form.skip_before_expiry_days.suffix")}</span>
-          </Form.Item>
+            </Form.Item>
+
+            <FormNestedFieldsContextProvider value={{ parentNamePath: "providerConfig" }}>
+              {renderNestedFieldProviderComponent && <>{renderNestedFieldProviderComponent}</>}
+            </FormNestedFieldsContextProvider>
+          </div>
+
+          <div id="certificate" data-anchor="certificate">
+            <Divider size="small">
+              <Typography.Text className="text-xs font-normal" type="secondary">
+                {t("workflow_node.apply.form_anchor.certificate.title")}
+              </Typography.Text>
+            </Divider>
+
+            <Form.Item name="keySource" label={t("workflow_node.apply.form.key_source.label")} rules={[formRule]}>
+              <Radio.Group block onChange={(e) => handleKeySourceChange(e.target.value)}>
+                <Radio.Button value={KEY_SOURCE_AUTO}>{t("workflow_node.apply.form.key_source.option.auto.label")}</Radio.Button>
+                <Radio.Button value={KEY_SOURCE_REUSE}>{t("workflow_node.apply.form.key_source.option.reuse.label")}</Radio.Button>
+                <Radio.Button value={KEY_SOURCE_CUSTOM}>{t("workflow_node.apply.form.key_source.option.custom.label")}</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.Item
+              name="keyAlgorithm"
+              label={t("workflow_node.apply.form.key_algorithm.label")}
+              extra={
+                fieldKeySource === KEY_SOURCE_REUSE ? (
+                  <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_algorithm.help_reuse") }}></span>
+                ) : fieldKeySource === KEY_SOURCE_CUSTOM ? (
+                  <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_algorithm.help_custom") }}></span>
+                ) : (
+                  void 0
+                )
+              }
+              rules={[formRule]}
+            >
+              <Select
+                options={["RSA2048", "RSA3072", "RSA4096", "RSA8192", "EC256", "EC384"].map((e) => ({
+                  label: e,
+                  value: e,
+                }))}
+                placeholder={t("workflow_node.apply.form.key_algorithm.placeholder")}
+              />
+            </Form.Item>
+
+            <Show when={fieldKeySource === KEY_SOURCE_CUSTOM}>
+              <Form.Item name="keyContent" label={t("workflow_node.apply.form.key_content.label")} rules={[formRule]}>
+                <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("workflow_node.apply.form.key_content.placeholder")} />
+              </Form.Item>
+            </Show>
+
+            <Form.Item className="relative" label={t("workflow_node.apply.form.ca_provider.label")}>
+              <div className="absolute -top-1.5 right-0 -translate-y-full">
+                <Show when={!fieldCAProvider}>
+                  <Link className="ant-typography" to="/settings/ssl-provider" target="_blank">
+                    <Button size="small" type="link">
+                      {t("workflow_node.apply.form.ca_provider.button")}
+                      <IconChevronRight size="1.25em" />
+                    </Button>
+                  </Link>
+                </Show>
+              </div>
+              <Form.Item name="caProvider" noStyle rules={[formRule]}>
+                <CAProviderSelect
+                  allowClear
+                  placeholder={t("workflow_node.apply.form.ca_provider.placeholder")}
+                  showAvailability
+                  showDefault
+                  showSearch
+                  onSelect={handleCAProviderSelect}
+                  onClear={handleCAProviderSelect}
+                />
+              </Form.Item>
+            </Form.Item>
+
+            <Form.Item label={t("workflow_node.apply.form.ca_provider_access.label")} hidden={!showCAProviderAccess}>
+              <div className="absolute -top-1.5 right-0 -translate-y-full">
+                <AccessEditDrawer
+                  data={{ provider: caProvidersMap.get(fieldCAProvider!)?.provider }}
+                  mode="create"
+                  trigger={
+                    <Button size="small" type="link">
+                      {t("workflow_node.apply.form.ca_provider_access.button")}
+                      <IconChevronRight size="1.25em" />
+                    </Button>
+                  }
+                  usage="ca"
+                  afterSubmit={(record) => {
+                    if (accessOptionFilterForCA(record.provider, record)) return;
+                    if (caProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
+                    formInst.setFieldValue("caProviderAccessId", record.id);
+                  }}
+                />
+              </div>
+              <Form.Item name="caProviderAccessId" dependencies={["caProvider"]} noStyle rules={[formRule]}>
+                <AccessSelect
+                  disabled={!fieldCAProvider}
+                  placeholder={t("workflow_node.apply.form.ca_provider_access.placeholder")}
+                  showSearch
+                  onFilter={accessOptionFilterForCA}
+                />
+              </Form.Item>
+            </Form.Item>
+
+            <Form.Item
+              name="validityLifetime"
+              label={t("workflow_node.apply.form.validity_lifetime.label")}
+              extra={t("workflow_node.apply.form.validity_lifetime.help")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.validity_lifetime.tooltip") }}></span>}
+            >
+              <InternalValidityLifetimeInput />
+            </Form.Item>
+
+            <Form.Item
+              name="preferredChain"
+              label={t("workflow_node.apply.form.preferred_chain.label")}
+              extra={t("workflow_node.apply.form.preferred_chain.help")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.preferred_chain.tooltip") }}></span>}
+            >
+              <AutoComplete
+                allowClear
+                options={[
+                  {
+                    ca: "Let's Encrypt",
+                    roots: ["ISRG", "ISRG Root X1", "ISRG Root X2"],
+                  },
+                  {
+                    ca: "Google Trust Services",
+                    roots: ["GTS", "GTS Root R1", "GTS Root R2", "GTS Root R3", "GTS Root R4", "GlobalSign", "GlobalSign R4"],
+                  },
+                ].map((e) => ({
+                  label: e.ca,
+                  options: e.roots.map((s) => ({
+                    label: s,
+                    value: s,
+                  })),
+                }))}
+                placeholder={t("workflow_node.apply.form.preferred_chain.placeholder")}
+                showSearch={{
+                  filterOption: (inputValue, option) => matchSearchOption(inputValue, option!),
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="acmeProfile"
+              label={t("workflow_node.apply.form.acme_profile.label")}
+              extra={t("workflow_node.apply.form.acme_profile.help")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.acme_profile.tooltip") }}></span>}
+            >
+              <AutoComplete
+                allowClear
+                options={[
+                  {
+                    ca: "Let's Encrypt",
+                    profiles: ["classic", "tlsserver", "shortlived"],
+                  },
+                ].map((e) => ({
+                  label: e.ca,
+                  options: e.profiles.map((s) => ({
+                    label: s,
+                    value: s,
+                  })),
+                }))}
+                placeholder={t("workflow_node.apply.form.acme_profile.placeholder")}
+                showSearch={{
+                  filterOption: (inputValue, option) => matchSearchOption(inputValue, option!),
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="disableCommonName"
+              label={t("workflow_node.apply.form.disable_cn.label")}
+              extra={t("workflow_node.apply.form.disable_cn.help")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_cn.tooltip") }}></span>}
+            >
+              <Switch />
+            </Form.Item>
+          </div>
+
+          <div id="advanced" data-anchor="advanced">
+            <Divider size="small">
+              <Typography.Text className="text-xs font-normal" type="secondary">
+                {t("workflow_node.apply.form_anchor.advanced.title")}
+              </Typography.Text>
+            </Divider>
+
+            <Form.Item
+              name="nameservers"
+              hidden={fieldIdentifier !== IDENTIFIER_DOMAIN}
+              label={t("workflow_node.apply.form.nameservers.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.nameservers.tooltip") }}></span>}
+            >
+              <MultipleSplitValueInput
+                modalTitle={t("workflow_node.apply.form.nameservers.multiple_input_modal.title")}
+                placeholder={t("workflow_node.apply.form.nameservers.placeholder")}
+                placeholderInModal={t("workflow_node.apply.form.nameservers.multiple_input_modal.placeholder")}
+                separator={MULTIPLE_INPUT_SEPARATOR}
+                splitOptions={{ removeEmpty: true, trimSpace: true }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="dnsPropagationWait"
+              hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
+              label={t("workflow_node.apply.form.dns_propagation_wait.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.dns_propagation_wait.tooltip") }}></span>}
+            >
+              <Input
+                type="number"
+                allowClear
+                min={0}
+                max={3600}
+                placeholder={t("workflow_node.apply.form.dns_propagation_wait.placeholder")}
+                suffix={t("workflow_node.apply.form.dns_propagation_wait.unit")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="dnsPropagationTimeout"
+              hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
+              label={t("workflow_node.apply.form.dns_propagation_timeout.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.dns_propagation_timeout.tooltip") }}></span>}
+            >
+              <Input
+                type="number"
+                allowClear
+                min={0}
+                max={3600}
+                placeholder={t("workflow_node.apply.form.dns_propagation_timeout.placeholder")}
+                suffix={t("workflow_node.apply.form.dns_propagation_timeout.unit")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="dnsTTL"
+              hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
+              label={t("workflow_node.apply.form.dns_ttl.label")}
+              extra={t("workflow_node.apply.form.dns_ttl.help")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.dns_ttl.tooltip") }}></span>}
+            >
+              <Input
+                type="number"
+                allowClear
+                min={0}
+                max={86400}
+                placeholder={t("workflow_node.apply.form.dns_ttl.placeholder")}
+                suffix={t("workflow_node.apply.form.dns_ttl.unit")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="httpDelayWait"
+              hidden={fieldChallengeType !== CHALLENGE_TYPE_HTTP01}
+              label={t("workflow_node.apply.form.http_delay_wait.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.http_delay_wait.tooltip") }}></span>}
+            >
+              <Input
+                type="number"
+                allowClear
+                min={0}
+                max={3600}
+                placeholder={t("workflow_node.apply.form.http_delay_wait.placeholder")}
+                suffix={t("workflow_node.apply.form.http_delay_wait.unit")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="disableFollowCNAME"
+              hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
+              label={t("workflow_node.apply.form.disable_follow_cname.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_follow_cname.tooltip") }}></span>}
+            >
+              <Switch />
+            </Form.Item>
+
+            <Form.Item
+              name="disableARI"
+              label={t("workflow_node.apply.form.disable_ari.label")}
+              rules={[formRule]}
+              tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_ari.tooltip") }}></span>}
+            >
+              <Switch />
+            </Form.Item>
+          </div>
+
+          <div id="strategy" data-anchor="strategy">
+            <Divider size="small">
+              <Typography.Text className="text-xs font-normal" type="secondary">
+                {t("workflow_node.apply.form_anchor.strategy.title")}
+              </Typography.Text>
+            </Divider>
+
+            <Form.Item label={t("workflow_node.apply.form.skip_before_expiry_days.label")}>
+              <span className="me-2 inline-block">{t("workflow_node.apply.form.skip_before_expiry_days.prefix")}</span>
+              <span className="inline-block">
+                <Form.Item name="skipBeforeExpiryDays" noStyle rules={[formRule]}>
+                  <InputNumber
+                    className="w-24"
+                    min={1}
+                    max={365}
+                    placeholder={t("workflow_node.apply.form.skip_before_expiry_days.placeholder")}
+                    suffix={t("workflow_node.apply.form.skip_before_expiry_days.unit")}
+                  />
+                </Form.Item>
+              </span>
+              <span className="ms-2 inline-block">{t("workflow_node.apply.form.skip_before_expiry_days.suffix")}</span>
+            </Form.Item>
+          </div>
         </div>
       </Form>
     </NodeFormContextProvider>
   );
 };
 
-const InternalEmailInput = memo(
-  ({ disabled, placeholder, ...props }: { disabled?: boolean; placeholder?: string; value?: string; onChange?: (value: string) => void }) => {
-    const { emails, fetchEmails, removeEmail } = useContactEmailsStore();
-    useMount(() => {
-      fetchEmails(false);
-    });
+const InternalIdentifierPicker = memo(({ disabled, onSelect }: { disabled?: boolean; onSelect?: (value: string) => void }) => {
+  const { t } = useTranslation();
 
-    const [value, setValue] = useControllableValue<string>(props, {
-      valuePropName: "value",
-      defaultValuePropName: "defaultValue",
-      trigger: "onChange",
-    });
+  const [value, setValue] = useState<string>();
 
-    const [inputValue, setInputValue] = useState<string>();
+  const options = [
+    {
+      value: IDENTIFIER_DOMAIN,
+      label: t("workflow_node.apply.form.identifier.option.domain.label"),
+      description: t("workflow_node.apply.form.identifier.option.domain.description"),
+      icon: <IconWorldWww size="2rem" stroke="1.25" />,
+    },
+    {
+      value: IDENTIFIER_IP,
+      label: t("workflow_node.apply.form.identifier.option.ip.label"),
+      description: t("workflow_node.apply.form.identifier.option.ip.description"),
+      icon: <IconMapPin size="2rem" stroke="1.25" />,
+    },
+  ];
 
-    const renderOptionLabel = (email: string, removable: boolean = false) => (
-      <div className="flex items-center gap-2 overflow-hidden">
-        <span className="flex-1 truncate overflow-hidden">{email}</span>
-        {removable && (
-          <Button
-            color="default"
-            disabled={disabled}
-            icon={<IconCircleMinus size="1.25em" />}
-            size="small"
-            type="text"
-            onClick={(e) => {
-              removeEmail(email);
-              e.stopPropagation();
-            }}
-          />
-        )}
-      </div>
-    );
+  const handleContinueClick = () => {
+    if (!value) return;
 
-    const options = useMemo(() => {
-      const temp = emails.map((email) => ({
-        label: renderOptionLabel(email, true),
-        value: email,
-      }));
+    onSelect?.(value);
+  };
 
-      if (!!inputValue && temp.every((option) => option.value !== inputValue)) {
-        temp.unshift({
-          label: renderOptionLabel(inputValue),
-          value: inputValue,
-        });
-      }
+  return (
+    <>
+      <Form.Item label={t("workflow_node.apply.form.identifier.label2")}>
+        <div className="flex flex-col gap-4">
+          {options.map((option) => (
+            <Card
+              className={mergeCls("relative overflow-hidden", { ["border-primary"]: value === option.value })}
+              hoverable={!disabled}
+              onClick={() => {
+                if (disabled) return;
 
-      return temp;
-    }, [emails, inputValue]);
-
-    const handleChange = (value: string) => {
-      setValue(value);
-    };
-
-    const handleSearch = (value: string) => {
-      setInputValue(value?.trim());
-    };
-
-    return (
-      <AutoComplete
-        backfill
-        defaultValue={value}
-        disabled={disabled}
-        options={options}
-        placeholder={placeholder}
-        showSearch={{
-          filterOption: true,
-          onSearch: handleSearch,
-        }}
-        value={value}
-        onChange={handleChange}
-      />
-    );
-  }
-);
-
-const InternalValidityLifetimeInput = memo(
-  ({ disabled, placeholder, ...props }: { disabled?: boolean; placeholder?: string; value?: string; onChange?: (value: string) => void }) => {
-    const { t } = useTranslation();
-
-    const [value, setValue] = useControllableValue<string>(props, {
-      valuePropName: "value",
-      defaultValuePropName: "defaultValue",
-      trigger: "onChange",
-    });
-
-    const parseCombinedValue = (val: string): [string | undefined, string | undefined] => {
-      const match = String(val).match(/^(\d+)([a-zA-Z]+)$/);
-      if (match) {
-        return [match[1], match[2]];
-      }
-
-      return [undefined, undefined];
-    };
-
-    const [inputValue, setInputValue] = useState(parseCombinedValue(value)[0]);
-    const [selectValue, setSelectValue] = useState(parseCombinedValue(value)[1] || "d");
-    useEffect(() => {
-      const [v, u] = parseCombinedValue(value);
-      setInputValue(v);
-      setSelectValue(u || "d");
-    }, [value]);
-
-    const handleInputClear = () => {
-      setValue("");
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(e.currentTarget.value);
-
-      if (e.currentTarget.value) {
-        setValue(`${e.currentTarget.value}${selectValue}`);
-      } else {
-        setValue("");
-      }
-    };
-
-    const handleSelectChange = (value: string) => {
-      setSelectValue(value);
-
-      if (inputValue) {
-        setValue(`${inputValue}${value}`);
-      }
-    };
-
-    return (
-      <Space.Compact className="w-full">
-        <Input
-          allowClear
-          disabled={disabled}
-          placeholder={placeholder}
-          type="number"
-          value={inputValue}
-          onChange={handleInputChange}
-          onClear={handleInputClear}
-        />
-        <div className="w-24">
-          <Select
-            options={["h", "d"].map((s) => ({
-              key: s,
-              label: t(`workflow_node.apply.form.validity_lifetime.units.${s}`),
-              value: s,
-            }))}
-            value={selectValue}
-            onChange={handleSelectChange}
-          />
+                setValue(option.value);
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-24 text-center">
+                  <Avatar
+                    style={{
+                      background: "var(--color-primary)",
+                    }}
+                    icon={option.icon}
+                    size={36}
+                  />
+                  <div className="mt-2 truncate text-sm font-medium">{option.label}</div>
+                </div>
+                <div className="flex-1 text-sm">
+                  <Typography.Paragraph>
+                    <blockquote dangerouslySetInnerHTML={{ __html: option.description }}></blockquote>
+                  </Typography.Paragraph>
+                </div>
+              </div>
+              {value === option.value && <div className="absolute top-0 left-0 size-full bg-primary opacity-20"></div>}
+            </Card>
+          ))}
         </div>
-      </Space.Compact>
-    );
-  }
-);
+        <div className="mt-4 flex items-center justify-end gap-4">
+          <Button disabled={disabled} icon={<IconArrowRight size="1.25em" />} iconPlacement="end" type="primary" onClick={handleContinueClick}>
+            {t("workflow_node.apply.form.identifier.continue.button")}
+          </Button>
+        </div>
+      </Form.Item>
+    </>
+  );
+});
+
+const InternalEmailInput = memo(({ disabled, ...props }: { disabled?: boolean; value?: string; onChange?: (value: string) => void }) => {
+  const { t } = useTranslation();
+
+  const { emails, fetchEmails, removeEmail } = useContactEmailsStore();
+  useMount(() => {
+    fetchEmails(false);
+  });
+
+  const [value, setValue] = useControllableValue<string>(props, {
+    valuePropName: "value",
+    defaultValuePropName: "defaultValue",
+    trigger: "onChange",
+  });
+
+  const [inputValue, setInputValue] = useState<string>();
+
+  const renderOptionLabel = (email: string, removable: boolean = false) => (
+    <div className="flex items-center gap-2 overflow-hidden">
+      <span className="flex-1 truncate overflow-hidden">{email}</span>
+      {removable && (
+        <Button
+          color="default"
+          disabled={disabled}
+          icon={<IconCircleMinus size="1.25em" />}
+          size="small"
+          type="text"
+          onClick={(e) => {
+            removeEmail(email);
+            e.stopPropagation();
+          }}
+        />
+      )}
+    </div>
+  );
+
+  const options = useMemo(() => {
+    const temp = emails.map((email) => ({
+      label: renderOptionLabel(email, true),
+      value: email,
+    }));
+
+    if (!!inputValue && temp.every((option) => option.value !== inputValue)) {
+      temp.unshift({
+        label: renderOptionLabel(inputValue),
+        value: inputValue,
+      });
+    }
+
+    return temp;
+  }, [emails, inputValue]);
+
+  const handleChange = (value: string) => {
+    setValue(value);
+  };
+
+  const handleSearch = (value: string) => {
+    setInputValue(value?.trim());
+  };
+
+  return (
+    <AutoComplete
+      backfill
+      defaultValue={value}
+      disabled={disabled}
+      options={options}
+      placeholder={t("workflow_node.apply.form.contact_email.placeholder")}
+      showSearch={{
+        filterOption: true,
+        onSearch: handleSearch,
+      }}
+      value={value}
+      onChange={handleChange}
+    />
+  );
+});
+
+const InternalValidityLifetimeInput = memo(({ disabled, ...props }: { disabled?: boolean; value?: string; onChange?: (value: string) => void }) => {
+  const { t } = useTranslation();
+
+  const [value, setValue] = useControllableValue<string>(props, {
+    valuePropName: "value",
+    defaultValuePropName: "defaultValue",
+    trigger: "onChange",
+  });
+
+  const parseCombinedValue = (val: string): [string | undefined, string | undefined] => {
+    const match = String(val).match(/^(\d+)([a-zA-Z]+)$/);
+    if (match) {
+      return [match[1], match[2]];
+    }
+
+    return [undefined, undefined];
+  };
+
+  const [inputValue, setInputValue] = useState(parseCombinedValue(value)[0]);
+  const [selectValue, setSelectValue] = useState(parseCombinedValue(value)[1] || "d");
+  useEffect(() => {
+    const [v, u] = parseCombinedValue(value);
+    setInputValue(v);
+    setSelectValue(u || "d");
+  }, [value]);
+
+  const handleInputClear = () => {
+    setValue("");
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.currentTarget.value);
+
+    if (e.currentTarget.value) {
+      setValue(`${e.currentTarget.value}${selectValue}`);
+    } else {
+      setValue("");
+    }
+  };
+
+  const handleSelectChange = (value: string) => {
+    setSelectValue(value);
+
+    if (inputValue) {
+      setValue(`${inputValue}${value}`);
+    }
+  };
+
+  return (
+    <Space.Compact className="w-full">
+      <Input
+        allowClear
+        disabled={disabled}
+        placeholder={t("workflow_node.apply.form.validity_lifetime.placeholder")}
+        type="number"
+        value={inputValue}
+        onChange={handleInputChange}
+        onClear={handleInputClear}
+      />
+      <div className="w-24">
+        <Select
+          options={["h", "d"].map((s) => ({
+            key: s,
+            label: t(`workflow_node.apply.form.validity_lifetime.units.${s}`),
+            value: s,
+          }))}
+          value={selectValue}
+          onChange={handleSelectChange}
+        />
+      </div>
+    </Space.Compact>
+  );
+});
 
 const getAnchorItems = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }): Required<AnchorProps>["items"] => {
   const { t } = i18n;
@@ -915,7 +1035,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      for: z.enum([FOR_DOMAIN, FOR_IP]),
+      identifier: z.enum([IDENTIFIER_DOMAIN, IDENTIFIER_IP]),
       domains: z
         .string()
         .nullish()
@@ -986,9 +1106,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       skipBeforeExpiryDays: z.coerce.number().int().positive(),
     })
     .superRefine((values, ctx) => {
-      if (values.for) {
-        switch (values.for) {
-          case FOR_DOMAIN:
+      if (values.identifier) {
+        switch (values.identifier) {
+          case IDENTIFIER_DOMAIN:
             {
               if (!values.domains) {
                 ctx.addIssue({
@@ -999,7 +1119,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
               }
             }
             break;
-          case FOR_IP:
+          case IDENTIFIER_IP:
             {
               if (!values.ipaddrs) {
                 ctx.addIssue({

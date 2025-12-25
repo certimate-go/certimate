@@ -54,7 +54,7 @@ export const BizApplyNodeRegistry: NodeRegistry = {
             <div className="flex items-center justify-between gap-1">
               <Field<WorkflowNodeConfigForBizApply> name="config">
                 {({ field: { value } }) => {
-                  const displayText = value.for === "domain" ? value.domains : value.for === "ip" ? value.ipaddrs : void 0;
+                  const displayText = value.identifier === "domain" ? value.domains : value.identifier === "ip" ? value.ipaddrs : void 0;
                   return <div className="flex-1 truncate">{displayText || t("workflow.detail.design.editor.placeholder")}</div>;
                 }}
               </Field>

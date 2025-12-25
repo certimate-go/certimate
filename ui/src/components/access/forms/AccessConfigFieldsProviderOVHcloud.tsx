@@ -22,7 +22,7 @@ const AccessConfigFormFieldsProviderOVHcloud = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldAuthMethod = Form.useWatch([parentNamePath, "authMethod"], formInst);
+  const fieldAuthMethod = Form.useWatch<string>([parentNamePath, "authMethod"], formInst);
 
   return (
     <>

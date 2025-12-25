@@ -70,7 +70,7 @@ const Adder = ({ from, hoverActivated }: AdderProps) => {
     <div className="relative">
       <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["click"]} open={menuOpen} onOpenChange={setMenuOpen}>
         {hoverActivated || menuOpen ? (
-          <Button icon={<IconPlus size="1em" stroke={3} />} shape="circle" size="small" type="primary" />
+          <Button icon={<IconPlus size="1em" stroke="3" />} shape="circle" size="small" type="primary" />
         ) : (
           <div className="size-2 rounded-full bg-primary opacity-75"></div>
         )}

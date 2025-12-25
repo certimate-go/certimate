@@ -26,8 +26,8 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldAuthMethod = Form.useWatch([parentNamePath, "authMethod"], formInst);
-  const fieldJumpServers = Form.useWatch([parentNamePath, "jumpServers"], formInst);
+  const fieldAuthMethod = Form.useWatch<string>([parentNamePath, "authMethod"], formInst);
+  const fieldJumpServers = Form.useWatch<any[]>([parentNamePath, "jumpServers"], formInst);
 
   return (
     <>

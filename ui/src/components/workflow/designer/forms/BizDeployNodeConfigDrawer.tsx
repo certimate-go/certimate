@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { Form } from "antd";
 
+import { type WorkflowNodeConfigForBizDeploy } from "@/domain/workflow";
+
 import { NodeConfigDrawer } from "./_shared";
 import BizDeployNodeConfigForm from "./BizDeployNodeConfigForm";
 import { NodeType } from "../nodes/typings";
@@ -23,7 +25,7 @@ const BizDeployNodeConfigDrawer = ({ node, ...props }: BizDeployNodeConfigDrawer
 
   const [formInst] = Form.useForm();
 
-  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
+  const fieldProvider = Form.useWatch<WorkflowNodeConfigForBizDeploy["provider"]>("provider", { form: formInst, preserve: true });
 
   return (
     <NodeConfigDrawer

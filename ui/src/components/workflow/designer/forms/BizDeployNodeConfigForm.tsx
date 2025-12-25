@@ -64,8 +64,8 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
     initialValues: initialValues ?? getInitialValues(),
   });
 
-  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
-  const fieldProviderAccessId = Form.useWatch<string>("providerAccessId", { form: formInst, preserve: true });
+  const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
+  const fieldProviderAccessId = Form.useWatch("providerAccessId", { form: formInst, preserve: true });
 
   const certificateOutputNodeIdOptions = useMemo(() => {
     return getAllPreviousNodes(node)

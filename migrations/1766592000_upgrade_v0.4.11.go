@@ -1,6 +1,8 @@
 package migrations
 
 import (
+	"net"
+
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
@@ -28,9 +30,13 @@ func init() {
 				if _, ok := node.Data["config"]; ok {
 					nodeCfg := node.Data["config"].(map[string]any)
 
-					if nodeCfg["for"] == nil {
+					if nodeCfg["identifier"] == nil {
 						if nodeCfg["domains"] != nil && nodeCfg["domains"].(string) != "" {
-							nodeCfg["for"] = "domain"
+							if ip := net.ParseIP(nodeCfg["domains"].(string)); ip != nil {
+								nodeCfg["identifier"] = "ip"
+							} else {
+								nodeCfg["identifier"] = "domain"
+							}
 
 							node.Data["config"] = nodeCfg
 							_changed = true

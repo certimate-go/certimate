@@ -47,7 +47,7 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
     initialValues: initialValues,
   });
 
-  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
+  const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
 
   const renderNestedFieldProviderComponent = AccessConfigFieldsProvider.useComponent(fieldProvider, {
     initProps: (provider) => {

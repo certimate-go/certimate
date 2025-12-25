@@ -53,8 +53,8 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
     initialValues: initialValues ?? getInitialValues(),
   });
 
-  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
-  const fieldProviderAccessId = Form.useWatch<string>("providerAccessId", { form: formInst, preserve: true });
+  const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
+  const fieldProviderAccessId = Form.useWatch("providerAccessId", { form: formInst, preserve: true });
 
   const renderNestedFieldProviderComponent = BizNotifyNodeConfigFieldsProvider.useComponent(fieldProvider, {});
 

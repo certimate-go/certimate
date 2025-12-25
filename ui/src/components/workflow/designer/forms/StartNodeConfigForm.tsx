@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
-import { WORKFLOW_TRIGGERS, type WorkflowNodeConfigForStart, type WorkflowTriggerType, defaultNodeConfigForStart } from "@/domain/workflow";
+import { WORKFLOW_TRIGGERS, type WorkflowNodeConfigForStart, defaultNodeConfigForStart } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
 import { getNextCronExecutions, validateCronExpression } from "@/utils/cron";
 
@@ -40,11 +40,11 @@ const StartNodeConfigForm = ({ node, ...props }: StartNodeConfigFormProps) => {
     initialValues: initialValues ?? getInitialValues(),
   });
 
-  const fieldTrigger = Form.useWatch<WorkflowTriggerType>("trigger", formInst);
-  const fieldTriggerCron = Form.useWatch<string>("triggerCron", formInst);
+  const fieldTrigger = Form.useWatch("trigger", formInst);
+  const fieldTriggerCron = Form.useWatch("triggerCron", formInst);
   const [fieldTriggerCronExpectedExecutions, setFieldTriggerCronExpectedExecutions] = useState<Date[]>([]);
   useEffect(() => {
-    setFieldTriggerCronExpectedExecutions(getNextCronExecutions(fieldTriggerCron, 5));
+    setFieldTriggerCronExpectedExecutions(getNextCronExecutions(fieldTriggerCron!, 5));
   }, [fieldTriggerCron]);
 
   const handleTriggerChange = (value: string) => {

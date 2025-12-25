@@ -92,7 +92,7 @@ export const defaultNodeConfigForBranchBlock = (): Partial<WorkflowNodeConfigFor
 };
 
 export type WorkflowNodeConfigForBizApply = {
-  for: "domain" | "ip";
+  identifier: "domain" | "ip";
   domains: string;
   ipaddrs: string;
   contactEmail: string;

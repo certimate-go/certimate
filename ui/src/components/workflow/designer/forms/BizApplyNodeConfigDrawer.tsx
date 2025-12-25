@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { Form } from "antd";
 
+import { type WorkflowNodeConfigForBizApply } from "@/domain/workflow";
+
 import { NodeConfigDrawer } from "./_shared";
 import BizApplyNodeConfigForm from "./BizApplyNodeConfigForm";
 import { NodeType } from "../nodes/typings";
@@ -23,11 +25,12 @@ const BizApplyNodeConfigDrawer = ({ node, ...props }: BizApplyNodeConfigDrawerPr
 
   const [formInst] = Form.useForm();
 
+  const fieldIdentifier = Form.useWatch<WorkflowNodeConfigForBizApply["identifier"]>("identifier", { form: formInst, preserve: true });
+
   return (
     <NodeConfigDrawer
-      anchor={{
-        items: BizApplyNodeConfigForm.getAnchorItems({ i18n }),
-      }}
+      anchor={fieldIdentifier ? { items: BizApplyNodeConfigForm.getAnchorItems({ i18n }) } : false}
+      footer={fieldIdentifier ? void 0 : false}
       form={formInst}
       node={node}
       {...props}
