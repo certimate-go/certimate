@@ -3,9 +3,17 @@
 import (
 	"crypto/x509"
 	"encoding/asn1"
+	"net"
 )
 
 var oidSubjectAlternativeNameExtension = asn1.ObjectIdentifier{2, 5, 29, 17}
+
+const (
+	sanGeneralNameTagEmail = 1
+	sanGeneralNameTagDNS   = 2
+	sanGeneralNameTagURI   = 6
+	sanGeneralNameTagIP    = 7
+)
 
 // 返回指定 x509.Certificate 对象的主题名称。
 // 如果主题名称为空，则返回第一个主题替代名称。
@@ -55,7 +63,18 @@ func GetSubjectAltNames(cert *x509.Certificate) []string {
 					continue
 				}
 
-				sans = append(sans, string(seq.Bytes))
+				switch seq.Tag {
+				case sanGeneralNameTagIP:
+					// IPv4 地址需要单独处理，否则直接转换为字符串会得到乱码
+					var ip net.IP = seq.Bytes
+					sans = append(sans, ip.String())
+
+				case sanGeneralNameTagEmail, sanGeneralNameTagDNS, sanGeneralNameTagURI:
+					sans = append(sans, string(seq.Bytes))
+
+				default:
+					// 忽略其他非 Critical 的 GeneralName​
+				}
 			}
 		}
 	}
