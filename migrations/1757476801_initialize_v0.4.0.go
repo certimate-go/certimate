@@ -10,7 +10,7 @@ import (
 
 func init() {
 	m.Register(func(app core.App) error {
-		if _, err := app.FindFirstRecordByFilter("_migrations", "file='1757476801_m0.4.0_initialize.go'"); err != nil {
+		if mr, _ := app.FindFirstRecordByFilter("_migrations", "file='1757476801_m0.4.0_initialize.go'"); mr != nil {
 			return nil
 		}
 

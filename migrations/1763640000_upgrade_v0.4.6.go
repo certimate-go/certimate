@@ -8,7 +8,7 @@ import (
 
 func init() {
 	m.Register(func(app core.App) error {
-		if _, err := app.FindFirstRecordByFilter("_migrations", "file='1763640000_m0.4.6.go'"); err != nil {
+		if mr, _ := app.FindFirstRecordByFilter("_migrations", "file='1763640000_m0.4.6.go'"); mr != nil {
 			return nil
 		}
 

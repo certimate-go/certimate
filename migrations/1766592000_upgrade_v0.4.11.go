@@ -12,6 +12,7 @@ func init() {
 	m.Register(func(app core.App) error {
 		tracer := NewTracer("v0.4.11")
 		tracer.Printf("go ...")
+
 		// adapt to new workflow data structure
 		{
 			walker := &mWorkflowGraphWalker{}
