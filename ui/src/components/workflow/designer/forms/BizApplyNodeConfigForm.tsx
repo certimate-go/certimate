@@ -643,7 +643,6 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
             <Form.Item
               name="disableCommonName"
               label={t("workflow_node.apply.form.disable_cn.label")}
-              extra={t("workflow_node.apply.form.disable_cn.help")}
               rules={[formRule]}
               tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.disable_cn.tooltip") }}></span>}
             >
@@ -821,7 +820,7 @@ const InternalIdentifierPicker = memo(({ disabled, onSelect }: { disabled?: bool
   return (
     <>
       <Form.Item label={t("workflow_node.apply.form.identifier.label2")}>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {options.map((option) => (
             <Card
               className={mergeCls("relative overflow-hidden", { ["border-primary"]: value === option.value })}
