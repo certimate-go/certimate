@@ -167,7 +167,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
             <Flex className="px-2" justify="space-between">
               {usage === "notification" ? (
                 <Button className="max-sm:invisible" disabled={mode !== "modify" || formChanged} loading={isTesting} onClick={handleTestPushClick}>
-                  {t("access.action.test_push.button")}
+                  {t("access.action.test_notify.button")}
                 </Button>
               ) : (
                 <span>{/* TODO: 测试连接 */}</span>

@@ -19,7 +19,7 @@
   "access.action.delete.modal.content": "Are you sure want to delete this credential? <br>This action cannot be undone.",
   "access.action.batch_delete.modal.title": "Delete credentials",
   "access.action.batch_delete.modal.content": "Are you sure want to delete these {{count}} selected credentials? <br>This action cannot be undone.",
-  "access.action.test_push.button": "Send test push",
+  "access.action.test_notify.button": "Test notify",
 
   "access.props.name": "Name",
   "access.props.provider.usage.dns": "DNS",
@@ -273,6 +273,9 @@
   "access.form.dogecloud_secret_key.label": "Doge Cloud SecretKey",
   "access.form.dogecloud_secret_key.placeholder": "Please enter Doge Cloud SecretKey",
   "access.form.dogecloud_secret_key.tooltip": "For more information, see <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>",
+  "access.form.dokploy_api_key.label": "Dokploy API key",
+  "access.form.dokploy_api_key.placeholder": "Please enter Dokploy API key",
+  "access.form.dokploy_api_key.tooltip": "For more information, see <a href=\"https://docs.dokploy.com/docs/api\" target=\"_blank\">https://docs.dokploy.com/docs/api</a>",
   "access.form.duckdns_token.label": "DuckDNS token",
   "access.form.duckdns_token.placeholder": "Please enter DuckDNS token",
   "access.form.duckdns_token.tooltip": "For more information, see <a href=\"https://www.duckdns.org/spec.jsp\" target=\"_blank\">https://www.duckdns.org/spec.jsp</a>",

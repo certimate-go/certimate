@@ -19,7 +19,7 @@
   "access.action.delete.modal.content": "确定要删除该授权吗？<br>注意此操作不可撤销，请谨慎操作。",
   "access.action.batch_delete.modal.title": "删除授权",
   "access.action.batch_delete.modal.content": "确定要删除这 {{count}} 个被选中的授权吗？<br>注意此操作不可撤销，请谨慎操作。",
-  "access.action.test_push.button": "发送测试通知",
+  "access.action.test_notify.button": "测试通知",
 
   "access.props.name": "名称",
   "access.props.provider.usage.dns": "DNS 提供商",
@@ -273,6 +273,9 @@
   "access.form.dogecloud_secret_key.label": "多吉云 SecretKey",
   "access.form.dogecloud_secret_key.placeholder": "请输入多吉云 SecretKey",
   "access.form.dogecloud_secret_key.tooltip": "这是什么？请参阅 <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>",
+  "access.form.dokploy_api_key.label": "Dokploy API Key",
+  "access.form.dokploy_api_key.placeholder": "请输入 Dokploy API Key",
+  "access.form.dokploy_api_key.tooltip": "这是什么？请参阅 <a href=\"https://docs.dokploy.com/docs/api\" target=\"_blank\">https://docs.dokploy.com/docs/api</a>",
   "access.form.duckdns_token.label": "DuckDNS Token",
   "access.form.duckdns_token.placeholder": "请输入 DuckDNS Token",
   "access.form.duckdns_token.tooltip": "这是什么？请参阅 <a href=\"https://www.duckdns.org/spec.jsp\" target=\"_blank\">https://www.duckdns.org/spec.jsp</a>",
