@@ -80,10 +80,15 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	d.logger.Debug("sdk request 'faas.GetCustomDomain'", slog.Any("request", getCustomDomainReq), slog.Any("response", getCustomDomainResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'faas.GetCustomDomain': %w", err)
-	} else if getCustomDomainResp.ReturnObj == nil || len(getCustomDomainResp.ReturnObj.Data) == 0 {
-		return nil, fmt.Errorf("could not find custom domain '%s'", d.config.Domain)
 	} else {
-		faasCustomDomain = getCustomDomainResp.ReturnObj.Data[0]
+		faasCustomDomain = getCustomDomainResp.ReturnObj
+
+		// 已部署过此域名，跳过
+		if faasCustomDomain.CertConfig != nil &&
+			faasCustomDomain.CertConfig.Certificate == certPEM &&
+			faasCustomDomain.CertConfig.PrivateKey == privkeyPEM {
+			return &deployer.DeployResult{}, nil
+		}
 	}
 
 	// 更新自定义域名

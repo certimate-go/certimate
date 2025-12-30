@@ -10,17 +10,15 @@ import (
 )
 
 type GetCustomDomainRequest struct {
-	RegionId   *string `json:"-"`
-	DomainName *string `json:"domainName,omitempty"`
+	RegionId   *string `json:"-" url:"-"`
+	DomainName *string `json:"domainName,omitempty" url:"-"`
 	CnameCheck *bool   `json:"cnameCheck,omitempty" url:"cnameCheck,omitempty"`
 }
 
 type GetCustomDomainResponse struct {
 	apiResponseBase
 
-	ReturnObj *struct {
-		Data []*CustomDomainRecord `json:"data,omitempty"`
-	} `json:"returnObj,omitempty"`
+	ReturnObj *CustomDomainRecord `json:"returnObj,omitempty"`
 }
 
 func (c *Client) GetCustomDomain(req *GetCustomDomainRequest) (*GetCustomDomainResponse, error) {
