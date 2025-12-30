@@ -98,8 +98,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LOADBALANCER:
           {
-            const res = z.string().nonempty().safeParse(values.loadbalancerId);
-            if (!res.success) {
+            const scLoadbalancerId = z.string().nonempty();
+            if (!scLoadbalancerId.safeParse(values.loadbalancerId).success) {
               ctx.addIssue({
                 code: "custom",
                 message: t("workflow_node.deploy.form.volcengine_clb_loadbalancer_id.placeholder"),
@@ -111,8 +111,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_LISTENER:
           {
-            const res = z.string().nonempty().safeParse(values.listenerId);
-            if (!res.success) {
+            const scListenerId = z.string().nonempty();
+            if (!scListenerId.safeParse(values.listenerId).success) {
               ctx.addIssue({
                 code: "custom",
                 message: t("workflow_node.deploy.form.volcengine_clb_listener_id.placeholder"),

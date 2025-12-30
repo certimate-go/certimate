@@ -145,7 +145,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
                       });
                     }
 
-                    const scHostId = z.preprocess((v) => Number(v), z.number().int().positive());
+                    const scHostId = z.coerce.number().int().positive();
                     if (!scHostId.safeParse(values.hostId).success) {
                       ctx.addIssue({
                         code: "custom",
@@ -168,8 +168,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_CERTIFICATE:
           {
-            const res = z.preprocess((v) => Number(v), z.number().int().positive()).safeParse(values.certificateId);
-            if (!res.success) {
+            const scCertificateId = z.coerce.number().int().positive();
+            if (!scCertificateId.safeParse(values.certificateId).success) {
               ctx.addIssue({
                 code: "custom",
                 message: t("workflow_node.deploy.form.nginxproxymanager_certificate_id.placeholder"),

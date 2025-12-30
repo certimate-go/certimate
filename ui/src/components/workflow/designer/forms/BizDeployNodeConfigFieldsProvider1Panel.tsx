@@ -133,8 +133,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
               switch (values.websiteMatchPattern) {
                 case WEBSITE_MATCH_PATTERN_SPECIFIED:
                   {
-                    const res = z.preprocess((v) => Number(v), z.number().int().positive()).safeParse(values.websiteId);
-                    if (!res.success) {
+                    const scWebsiteId = z.coerce.number().int().positive();
+                    if (!scWebsiteId.safeParse(values.websiteId).success) {
                       ctx.addIssue({
                         code: "custom",
                         message: t("workflow_node.deploy.form.1panel_website_id.placeholder"),
@@ -156,8 +156,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_CERTIFICATE:
           {
-            const res = z.preprocess((v) => Number(v), z.number().int().positive()).safeParse(values.certificateId);
-            if (!res.success) {
+            const scCertificateId = z.coerce.number().int().positive();
+            if (!scCertificateId.safeParse(values.certificateId).success) {
               ctx.addIssue({
                 code: "custom",
                 message: t("workflow_node.deploy.form.1panel_certificate_id.placeholder"),

@@ -73,8 +73,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_WEBSITE:
           {
-            const res = z.string().nonempty().safeParse(values.siteId);
-            if (!res.success) {
+            const scSiteId = z.string().nonempty();
+            if (!scSiteId.safeParse(values.siteId).success) {
               ctx.addIssue({
                 code: "custom",
                 message: t("workflow_node.deploy.form.netlify_site_id.placeholder"),
