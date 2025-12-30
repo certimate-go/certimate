@@ -27,7 +27,7 @@ type DeployerConfig struct {
 	// 部署资源类型。
 	ResourceType string `json:"resourceType"`
 	// 网站 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_SITE] 时必填。
+	// 部署资源类型为 [RESOURCE_TYPE_WEBSITE] 时必填。
 	SiteId string `json:"siteId,omitempty"`
 	// 证书 ID。
 	// 部署资源类型为 [RESOURCE_TYPE_CERTIFICATE] 时必填。
@@ -70,7 +70,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	// 根据部署资源类型决定部署方式
 	switch d.config.ResourceType {
-	case RESOURCE_TYPE_SITE:
+	case RESOURCE_TYPE_WEBSITE:
 		if err := d.deployToSite(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}

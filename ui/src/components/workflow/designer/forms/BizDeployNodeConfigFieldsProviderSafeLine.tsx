@@ -7,10 +7,9 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_WEBSITE = "website" as const;
 const RESOURCE_TYPE_CERTIFICATE = "certificate" as const;
 
-const BizDeployNodeConfigFieldsProviderCdnfly = () => {
+const BizDeployNodeConfigFieldsProviderSafeLine = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -32,35 +31,23 @@ const BizDeployNodeConfigFieldsProviderCdnfly = () => {
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_WEBSITE, RESOURCE_TYPE_CERTIFICATE].map((s) => ({
+          options={[RESOURCE_TYPE_CERTIFICATE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.cdnfly_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.safeline_resource_type.option.${s}.label`),
           }))}
           placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_WEBSITE}>
-        <Form.Item
-          name={[parentNamePath, "siteId"]}
-          initialValue={initialValues.siteId}
-          label={t("workflow_node.deploy.form.cdnfly_site_id.label")}
-          rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.cdnfly_site_id.tooltip") }}></span>}
-        >
-          <Input type="number" placeholder={t("workflow_node.deploy.form.cdnfly_site_id.placeholder")} />
-        </Form.Item>
-      </Show>
-
       <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>
         <Form.Item
           name={[parentNamePath, "certificateId"]}
           initialValue={initialValues.certificateId}
-          label={t("workflow_node.deploy.form.cdnfly_certificate_id.label")}
+          label={t("workflow_node.deploy.form.safeline_certificate_id.label")}
           rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.cdnfly_certificate_id.tooltip") }}></span>}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.safeline_certificate_id.tooltip") }}></span>}
         >
-          <Input type="number" placeholder={t("workflow_node.deploy.form.cdnfly_certificate_id.placeholder")} />
+          <Input type="number" placeholder={t("workflow_node.deploy.form.safeline_certificate_id.placeholder")} />
         </Form.Item>
       </Show>
     </>
@@ -69,7 +56,7 @@ const BizDeployNodeConfigFieldsProviderCdnfly = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_WEBSITE,
+    resourceType: RESOURCE_TYPE_CERTIFICATE,
   };
 };
 
@@ -78,32 +65,18 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.literal([RESOURCE_TYPE_WEBSITE, RESOURCE_TYPE_CERTIFICATE], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      siteId: z.union([z.string(), z.number().int()]).nullish(),
+      resourceType: z.literal(RESOURCE_TYPE_CERTIFICATE, t("workflow_node.deploy.form.shared_resource_type.placeholder")),
       certificateId: z.union([z.string(), z.number().int()]).nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {
-        case RESOURCE_TYPE_WEBSITE:
-          {
-            const res = z.preprocess((v) => Number(v), z.number().int().positive()).safeParse(values.siteId);
-            if (!res.success) {
-              ctx.addIssue({
-                code: "custom",
-                message: t("workflow_node.deploy.form.cdnfly_site_id.placeholder"),
-                path: ["siteId"],
-              });
-            }
-          }
-          break;
-
         case RESOURCE_TYPE_CERTIFICATE:
           {
             const res = z.preprocess((v) => Number(v), z.number().int().positive()).safeParse(values.certificateId);
             if (!res.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.cdnfly_certificate_id.placeholder"),
+                message: t("workflow_node.deploy.form.safeline_certificate_id.placeholder"),
                 path: ["certificateId"],
               });
             }
@@ -113,7 +86,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderCdnfly, {
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderSafeLine, {
   getInitialValues,
   getSchema,
 });
