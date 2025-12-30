@@ -83,14 +83,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_WEBSITE:
           {
-            const schema = z
+            const scSiteNames = z
               .string()
               .nonempty()
               .refine((v) => {
                 if (!v) return false;
                 return v.split(MULTIPLE_INPUT_SEPARATOR).every((s) => !!s.trim());
               });
-            if (!schema.safeParse(values.siteNames).success) {
+            if (!scSiteNames.safeParse(values.siteNames).success) {
               ctx.addIssue({
                 code: "custom",
                 message: t("workflow_node.deploy.form.ratpanel_site_names.placeholder"),

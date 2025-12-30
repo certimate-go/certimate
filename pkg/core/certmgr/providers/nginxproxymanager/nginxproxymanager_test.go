@@ -1,4 +1,4 @@
-package dokploy_test
+package nginxproxymanager_test
 
 import (
 	"context"
@@ -9,33 +9,36 @@ import (
 	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/certmgr/providers/dokploy"
+	provider "github.com/certimate-go/certimate/pkg/core/certmgr/providers/nginxproxymanager"
 )
 
 var (
 	fInputCertPath string
 	fInputKeyPath  string
 	fServerUrl     string
-	fApiKey        string
+	fUsername      string
+	fPassword      string
 )
 
 func init() {
-	argsPrefix := "DOKPLOY_"
+	argsPrefix := "NGINXPROXYMANAGER_"
 
 	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
 	flag.StringVar(&fServerUrl, argsPrefix+"SERVERURL", "", "")
-	flag.StringVar(&fApiKey, argsPrefix+"APIKEY", "", "")
+	flag.StringVar(&fUsername, argsPrefix+"USERNAME", "", "")
+	flag.StringVar(&fPassword, argsPrefix+"PASSWORD", "", "")
 }
 
 /*
 Shell command to run this test:
 
-	go test -v ./dokploy_test.go -args \
-	--DOKPLOY_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--DOKPLOY_INPUTKEYPATH="/path/to/your-input-key.pem" \
-	--DOKPLOY_SERVERURL="http://127.0.0.1:3000" \
-	--DOKPLOY_APIKEY="your-api-key"
+	go test -v ./nginxproxymanager_test.go -args \
+	--NGINXPROXYMANAGER_INPUTCERTPATH="/path/to/your-input-cert.pem" \
+	--NGINXPROXYMANAGER_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--NGINXPROXYMANAGER_SERVERURL="http://127.0.0.1:81" \
+	--NGINXPROXYMANAGER_USERNAME="your-username" \
+	--NGINXPROXYMANAGER_PASSWORD="your-password"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -46,12 +49,15 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
 			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
 			fmt.Sprintf("SERVERURL: %v", fServerUrl),
-			fmt.Sprintf("APIKEY: %v", fApiKey),
+			fmt.Sprintf("USERNAME: %v", fUsername),
+			fmt.Sprintf("PASSWORD: %v", fPassword),
 		}, "\n"))
 
 		provider, err := provider.NewCertmgr(&provider.CertmgrConfig{
 			ServerUrl:                fServerUrl,
-			ApiKey:                   fApiKey,
+			AuthMethod:               provider.AUTH_METHOD_PASSWORD,
+			Username:                 fUsername,
+			Password:                 fPassword,
 			AllowInsecureConnections: true,
 		})
 		if err != nil {

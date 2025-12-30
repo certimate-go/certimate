@@ -398,6 +398,15 @@ type AccessConfigForNetlify struct {
 	ApiToken string `json:"apiToken"`
 }
 
+type AccessConfigForNginxProxyManager struct {
+	ServerUrl                string `json:"serverUrl"`
+	AuthMethod               string `json:"authMethod"`
+	Username                 string `json:"username,omitempty"`
+	Password                 string `json:"password,omitempty"`
+	ApiToken                 string `json:"apiToken,omitempty"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForNS1 struct {
 	ApiKey string `json:"apiKey"`
 }

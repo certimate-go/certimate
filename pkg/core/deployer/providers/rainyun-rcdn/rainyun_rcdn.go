@@ -133,7 +133,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	}
 
 	// 替换证书
-	opres, err := d.sdkCertmgr.Replace(ctx, fmt.Sprintf("%d", d.config.CertificateId), certPEM, privkeyPEM)
+	opres, err := d.sdkCertmgr.Replace(ctx, strconv.FormatInt(d.config.CertificateId, 10), certPEM, privkeyPEM)
 	if err != nil {
 		return fmt.Errorf("failed to replace certificate file: %w", err)
 	} else {

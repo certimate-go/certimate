@@ -73,6 +73,7 @@ import AccessConfigFieldsProviderNameDotCom from "./AccessConfigFieldsProviderNa
 import AccessConfigFieldsProviderNameSilo from "./AccessConfigFieldsProviderNameSilo";
 import AccessConfigFieldsProviderNetcup from "./AccessConfigFieldsProviderNetcup";
 import AccessConfigFieldsProviderNetlify from "./AccessConfigFieldsProviderNetlify";
+import AccessConfigFieldsProviderNginxProxyManager from "./AccessConfigFieldsProviderNginxProxyManager";
 import AccessConfigFieldsProviderNS1 from "./AccessConfigFieldsProviderNS1";
 import AccessConfigFieldsProviderOVHcloud from "./AccessConfigFieldsProviderOVHcloud";
 import AccessConfigFieldsProviderPorkbun from "./AccessConfigFieldsProviderPorkbun";
@@ -182,6 +183,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.NAMESILO]: AccessConfigFieldsProviderNameSilo,
   [ACCESS_PROVIDERS.NETCUP]: AccessConfigFieldsProviderNetcup,
   [ACCESS_PROVIDERS.NETLIFY]: AccessConfigFieldsProviderNetlify,
+  [ACCESS_PROVIDERS.NGINXPROXYMANAGER]: AccessConfigFieldsProviderNginxProxyManager,
   [ACCESS_PROVIDERS.NS1]: AccessConfigFieldsProviderNS1,
   [ACCESS_PROVIDERS.OVHCLOUD]: AccessConfigFieldsProviderOVHcloud,
   [ACCESS_PROVIDERS.PORKBUN]: AccessConfigFieldsProviderPorkbun,

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strconv"
+	"time"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/1panel"
@@ -153,13 +154,16 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 		var errs []error
 
 		websiteSSLId, _ := strconv.ParseInt(upres.CertId, 10, 64)
-		for _, websiteId := range websiteIds {
+		for i, websiteId := range websiteIds {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
 				if err := d.updateWebsiteCertificate(ctx, websiteId, websiteSSLId); err != nil {
 					errs = append(errs, err)
+				}
+				if i < len(websiteIds)-1 {
+					time.Sleep(time.Second * 5)
 				}
 			}
 		}
@@ -178,7 +182,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	}
 
 	// 替换证书
-	opres, err := d.sdkCertmgr.Replace(ctx, fmt.Sprintf("%d", d.config.CertificateId), certPEM, privkeyPEM)
+	opres, err := d.sdkCertmgr.Replace(ctx, strconv.FormatInt(d.config.CertificateId, 10), certPEM, privkeyPEM)
 	if err != nil {
 		return fmt.Errorf("failed to replace certificate file: %w", err)
 	} else {

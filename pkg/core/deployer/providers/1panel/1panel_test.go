@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	argsPrefix := "1PANELSITE_"
+	argsPrefix := "1PANEL_"
 
 	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")

@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input } from "antd";
+import { Form, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -35,6 +35,15 @@ const AccessConfigFormFieldsProviderDokploy = () => {
       >
         <Input.Password autoComplete="new-password" placeholder={t("access.form.dokploy_api_key.placeholder")} />
       </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "allowInsecureConnections"]}
+        initialValue={initialValues.allowInsecureConnections}
+        label={t("access.form.shared_allow_insecure_conns.label")}
+        rules={[formRule]}
+      >
+        <Switch />
+      </Form.Item>
     </>
   );
 };
@@ -52,6 +61,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   return z.object({
     serverUrl: z.url(t("common.errmsg.url_invalid")),
     apiKey: z.string().nonempty(t("access.form.dokploy_api_key.placeholder")),
+    allowInsecureConnections: z.boolean().nullish(),
   });
 };
 

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/samber/lo"
 
@@ -75,13 +76,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 	// 遍历更新站点证书
 	var errs []error
-	for _, siteName := range d.config.SiteNames {
+	for i, siteName := range d.config.SiteNames {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
 			if err := d.updatePHPSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM); err != nil {
 				errs = append(errs, err)
+			}
+			if i < len(d.config.SiteNames)-1 {
+				time.Sleep(time.Second * 5)
 			}
 		}
 	}
