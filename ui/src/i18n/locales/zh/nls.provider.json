@@ -75,6 +75,7 @@
   "provider.ctcccloud_cdn": "天翼云 - 内容分发网络 CDN",
   "provider.ctcccloud_cms_upload": "天翼云 - 上传到证书管理服务 CMS",
   "provider.ctcccloud_elb": "天翼云 - 弹性负载均衡 ELB",
+  "provider.ctcccloud_faas": "天翼云 - 函数计算 FaaS",
   "provider.ctcccloud_icdn": "天翼云 - 全站加速 ICDN",
   "provider.ctcccloud_lvdn": "天翼云 - 视频直播 LVDN",
   "provider.ctcccloud_smartdns": "天翼云 - 智能 DNS",

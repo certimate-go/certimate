@@ -292,6 +292,7 @@ const (
 	DeploymentProviderTypeCTCCCloudCDN          = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-cdn")
 	DeploymentProviderTypeCTCCCloudCMS          = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-cms")
 	DeploymentProviderTypeCTCCCloudELB          = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-elb")
+	DeploymentProviderTypeCTCCCloudFaaS         = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-faas")
 	DeploymentProviderTypeCTCCCloudICDN         = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-icdn")
 	DeploymentProviderTypeCTCCCloudLVDN         = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-ldvn")
 	DeploymentProviderTypeDogeCloudCDN          = DeploymentProviderType(AccessProviderTypeDogeCloud + "-cdn")

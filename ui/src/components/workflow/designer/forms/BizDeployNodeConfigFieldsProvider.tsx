@@ -41,6 +41,7 @@ import BizDeployNodeConfigFieldsProviderCPanelSite from "./BizDeployNodeConfigFi
 import BizDeployNodeConfigFieldsProviderCTCCCloudAO from "./BizDeployNodeConfigFieldsProviderCTCCCloudAO";
 import BizDeployNodeConfigFieldsProviderCTCCCloudCDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudCDN";
 import BizDeployNodeConfigFieldsProviderCTCCCloudELB from "./BizDeployNodeConfigFieldsProviderCTCCCloudELB";
+import BizDeployNodeConfigFieldsProviderCTCCCloudFaaS from "./BizDeployNodeConfigFieldsProviderCTCCCloudFaaS";
 import BizDeployNodeConfigFieldsProviderCTCCCloudICDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudICDN";
 import BizDeployNodeConfigFieldsProviderCTCCCloudLVDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudLVDN";
 import BizDeployNodeConfigFieldsProviderDogeCloudCDN from "./BizDeployNodeConfigFieldsProviderDogeCloudCDN";
@@ -151,6 +152,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_AO]: BizDeployNodeConfigFieldsProviderCTCCCloudAO,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_CDN]: BizDeployNodeConfigFieldsProviderCTCCCloudCDN,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_ELB]: BizDeployNodeConfigFieldsProviderCTCCCloudELB,
+  [DEPLOYMENT_PROVIDERS.CTCCCLOUD_FAAS]: BizDeployNodeConfigFieldsProviderCTCCCloudFaaS,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_ICDN]: BizDeployNodeConfigFieldsProviderCTCCCloudICDN,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_LVDN]: BizDeployNodeConfigFieldsProviderCTCCCloudLVDN,
   [DEPLOYMENT_PROVIDERS.DOGECLOUD_CDN]: BizDeployNodeConfigFieldsProviderDogeCloudCDN,

@@ -75,6 +75,7 @@
   "provider.ctcccloud_cdn": "China Telecom StateCloud - CDN (Content Delivery Network)",
   "provider.ctcccloud_cms_upload": "China Telecom StateCloud - Upload to Certificate Management Service",
   "provider.ctcccloud_elb": "China Telecom StateCloud - ELB (Elastic Load Balancing)",
+  "provider.ctcccloud_faas": "China Telecom StateCloud - FaaS (Function as a Service)",
   "provider.ctcccloud_icdn": "China Telecom StateCloud - ICDN (Integrated Content Delivery Network)",
   "provider.ctcccloud_lvdn": "China Telecom StateCloud - LVDN (Live Video Delivery Network)",
   "provider.ctcccloud_smartdns": "China Telecom StateCloud - Smart DNS",
