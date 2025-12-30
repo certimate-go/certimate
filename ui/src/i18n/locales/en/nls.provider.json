@@ -159,6 +159,7 @@
   "provider.ratpanel_console": "AcePanel - Console itself",
   "provider.ratpanel_site": "AcePanel - Website",
   "provider.rfc2136": "RFC 2136: Dynamic DNS Updates",
+  "provider.s3": "Object storage (S3-compatible)",
   "provider.safeline": "SafeLine",
   "provider.safeline_site": "SafeLine - Website",
   "provider.sectigo": "Sectigo",

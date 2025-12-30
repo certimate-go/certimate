@@ -7,6 +7,7 @@ import BizApplyNodeConfigFieldsProviderAWSRoute53 from "./BizApplyNodeConfigFiel
 import BizApplyNodeConfigFieldsProviderHuaweiCloudDNS from "./BizApplyNodeConfigFieldsProviderHuaweiCloudDNS";
 import BizApplyNodeConfigFieldsProviderJDCloudDNS from "./BizApplyNodeConfigFieldsProviderJDCloudDNS";
 import BizApplyNodeConfigFieldsProviderLocal from "./BizApplyNodeConfigFieldsProviderLocal";
+import BizApplyNodeConfigFieldsProviderS3 from "./BizApplyNodeConfigFieldsProviderS3";
 import BizApplyNodeConfigFieldsProviderSSH from "./BizApplyNodeConfigFieldsProviderSSH";
 
 const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React.ComponentType<any>>> = {
@@ -29,6 +30,7 @@ const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, Rea
     NOTICE: If you add new child component, please keep ASCII order.
     */
   [ACME_HTTP01_PROVIDERS.LOCAL]: BizApplyNodeConfigFieldsProviderLocal,
+  [ACME_HTTP01_PROVIDERS.S3]: BizApplyNodeConfigFieldsProviderS3,
   [ACME_HTTP01_PROVIDERS.SSH]: BizApplyNodeConfigFieldsProviderSSH,
 };
 

@@ -94,6 +94,7 @@ const (
 	AccessProviderTypeRainYun             = AccessProviderType("rainyun")
 	AccessProviderTypeRatPanel            = AccessProviderType("ratpanel")
 	AccessProviderTypeRFC2136             = AccessProviderType("rfc2136")
+	AccessProviderTypeS3                  = AccessProviderType("s3")
 	AccessProviderTypeSafeLine            = AccessProviderType("safeline")
 	AccessProviderTypeSectigo             = AccessProviderType("sectigo")
 	AccessProviderTypeSlackBot            = AccessProviderType("slackbot")
@@ -236,6 +237,7 @@ NOTICE: If you add new constant, please keep ASCII order.
 */
 const (
 	ACMEHttp01ProviderTypeLocal = ACMEHttp01ProviderType(AccessProviderTypeLocal)
+	ACMEHttp01ProviderTypeS3    = ACMEHttp01ProviderType(AccessProviderTypeS3)
 	ACMEHttp01ProviderTypeSSH   = ACMEHttp01ProviderType(AccessProviderTypeSSH)
 )
 

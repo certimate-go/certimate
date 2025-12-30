@@ -363,6 +363,11 @@ type AccessConfigForMattermost struct {
 	ChannelId string `json:"channelId,omitempty"`
 }
 
+type AccessConfigForMohua struct {
+	Username    string `json:"username"`
+	ApiPassword string `json:"apiPassword"`
+}
+
 type AccessConfigForNamecheap struct {
 	Username string `json:"username"`
 	ApiKey   string `json:"apiKey"`
@@ -429,11 +434,6 @@ type AccessConfigForQiniu struct {
 	SecretKey string `json:"secretKey"`
 }
 
-type AccessConfigForMohua struct {
-	Username    string `json:"username"`
-	ApiPassword string `json:"apiPassword"`
-}
-
 type AccessConfigForRainYun struct {
 	ApiKey string `json:"apiKey"`
 }
@@ -451,6 +451,15 @@ type AccessConfigForRFC2136 struct {
 	TsigAlgorithm string `json:"tsigAlgorithm,omitempty"`
 	TsigKey       string `json:"tsigKey,omitempty"`
 	TsigSecret    string `json:"tsigSecret,omitempty"`
+}
+
+type AccessConfigForS3 struct {
+	Endpoint                 string `json:"endpoint"`
+	AccessKey                string `json:"accessKey"`
+	SecretKey                string `json:"secretKey"`
+	SignatureVersion         string `json:"signatureVersion,omitempty"`
+	UsePathStyle             bool   `json:"usePathStyle,omitempty"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
 type AccessConfigForSafeLine struct {

@@ -82,6 +82,7 @@ import AccessConfigFieldsProviderQiniu from "./AccessConfigFieldsProviderQiniu";
 import AccessConfigFieldsProviderRainYun from "./AccessConfigFieldsProviderRainYun";
 import AccessConfigFieldsProviderRatPanel from "./AccessConfigFieldsProviderRatPanel";
 import AccessConfigFieldsProviderRFC2136 from "./AccessConfigFieldsProviderRFC2136";
+import AccessConfigFieldsProviderS3 from "./AccessConfigFieldsProviderS3";
 import AccessConfigFieldsProviderSafeLine from "./AccessConfigFieldsProviderSafeLine";
 import AccessConfigFieldsProviderSectigo from "./AccessConfigFieldsProviderSectigo";
 import AccessConfigFieldsProviderSlackBot from "./AccessConfigFieldsProviderSlackBot";
@@ -189,6 +190,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.RAINYUN]: AccessConfigFieldsProviderRainYun,
   [ACCESS_PROVIDERS.RATPANEL]: AccessConfigFieldsProviderRatPanel,
   [ACCESS_PROVIDERS.RFC2136]: AccessConfigFieldsProviderRFC2136,
+  [ACCESS_PROVIDERS.S3]: AccessConfigFieldsProviderS3,
   [ACCESS_PROVIDERS.SAFELINE]: AccessConfigFieldsProviderSafeLine,
   [ACCESS_PROVIDERS.SECTIGO]: AccessConfigFieldsProviderSectigo,
   [ACCESS_PROVIDERS.SLACKBOT]: AccessConfigFieldsProviderSlackBot,

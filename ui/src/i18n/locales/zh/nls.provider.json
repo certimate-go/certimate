@@ -159,6 +159,7 @@
   "provider.ratpanel_console": "耗子面板 - 面板自身",
   "provider.ratpanel_site": "耗子面板 - 网站",
   "provider.rfc2136": "RFC 2136: Dynamic DNS Updates",
+  "provider.s3": "对象存储（S3 兼容）",
   "provider.safeline": "雷池",
   "provider.safeline_site": "雷池 - 网站",
   "provider.sectigo": "Sectigo",

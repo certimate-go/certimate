@@ -98,6 +98,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   RAINYUN: "rainyun",
   RATPANEL: "ratpanel",
   RFC2136: "rfc2136",
+  S3: "s3",
   SAFELINE: "safeline",
   SECTIGO: "sectigo",
   SLACKBOT: "slackbot",
@@ -147,6 +148,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.SSH, "provider.ssh", "/imgs/providers/ssh.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WEBHOOK, "provider.webhook", "/imgs/providers/webhook.svg", [ACCESS_USAGES.HOSTING, ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.KUBERNETES, "provider.kubernetes", "/imgs/providers/kubernetes.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.S3, "provider.s3", "/imgs/providers/s3.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.ALIYUN, "provider.aliyun", "/imgs/providers/aliyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.TENCENTCLOUD, "provider.tencentcloud", "/imgs/providers/tencentcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -494,6 +496,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
  */
 export const ACME_HTTP01_PROVIDERS = Object.freeze({
   LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
+  S3: `${ACCESS_PROVIDERS.S3}`,
   SSH: `${ACCESS_PROVIDERS.SSH}`,
 } as const);
 
@@ -510,6 +513,7 @@ export const acmeHttp01ProvidersMap: Map<ACMEHttp01Provider["type"] | string, AC
     [
       [ACME_HTTP01_PROVIDERS.LOCAL, "provider.local", "builtin"],
       [ACME_HTTP01_PROVIDERS.SSH, "provider.ssh"],
+      [ACME_HTTP01_PROVIDERS.S3, "provider.s3"],
     ] satisfies Array<[ACMEHttp01ProviderType, string, "builtin"] | [ACMEHttp01ProviderType, string]>
   ).map(([type, name, builtin]) => [
     type,
