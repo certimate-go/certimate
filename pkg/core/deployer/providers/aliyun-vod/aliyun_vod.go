@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"strings"
-	"time"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
@@ -86,6 +86,14 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+	// 上传证书
+	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+	} else {
+		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
+	}
+
 	// 获取待部署的域名列表
 	var domains []string
 	switch d.config.DomainMatchPattern {
@@ -157,7 +165,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			case <-ctx.Done():
 				return nil, ctx.Err()
 			default:
-				if err := d.updateDomainCertificate(ctx, domain, certPEM, privkeyPEM); err != nil {
+				if err := d.updateDomainCertificate(ctx, domain, upres.CertId, upres.CertName); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -214,21 +222,19 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, certPEM, privkeyPEM string) error {
+func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId, cloudCertName string) error {
 	// 设置域名证书
 	// REF: https://help.aliyun.com/zh/vod/developer-reference/api-vod-2017-03-21-setvoddomainsslcertificate
-	certId := time.Now().UnixMilli()
+	certId, _ := strconv.ParseInt(cloudCertId, 10, 64)
 	setVodDomainSSLCertificateReq := &alivod.SetVodDomainSSLCertificateRequest{
 		DomainName: tea.String(domain),
 		CertType:   tea.String("cas"),
 		CertId:     tea.Int64(certId),
-		CertName:   tea.String(fmt.Sprintf("certimate-%d", certId)),
+		CertName:   tea.String(cloudCertName),
 		CertRegion: lo.
 			If(d.config.Region == "" || strings.HasPrefix(d.config.Region, "cn-"), tea.String("cn-hangzhou")).
 			Else(tea.String("ap-southeast-1")),
 		SSLProtocol: tea.String("on"),
-		SSLPri:      tea.String(privkeyPEM),
-		SSLPub:      tea.String(certPEM),
 	}
 	setVodDomainSSLCertificateResp, err := d.sdkClient.SetVodDomainSSLCertificateWithContext(ctx, setVodDomainSSLCertificateReq, &dara.RuntimeOptions{})
 	d.logger.Debug("sdk request 'live.SetVodDomainSSLCertificate'", slog.Any("request", setVodDomainSSLCertificateReq), slog.Any("response", setVodDomainSSLCertificateResp))
