@@ -56,9 +56,12 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	lastOutput, lastCertificate, err := ne.getLastOutputArtifacts(execCtx)
 	if err != nil {
 		return execRes, err
-	} else if lastCertificate != nil {
-		ne.setOuputsOfResult(execCtx, execRes, lastCertificate, false)
-		ne.setVariablesOfResult(execCtx, execRes, lastCertificate)
+	} else {
+		if lastCertificate != nil {
+			ne.setOuputsOfResult(execCtx, execRes, lastCertificate, false)
+			ne.setVariablesOfResult(execCtx, execRes, lastCertificate)
+			ne.logger.Info(fmt.Sprintf("found last certificate #%s record", lastCertificate.Id))
+		}
 	}
 
 	// 检测是否可以跳过本次执行

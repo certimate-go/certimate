@@ -72,12 +72,13 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		return execRes, err
 	} else {
 		if lastOutput != nil {
-			ne.logger.Info(fmt.Sprintf("found last run #%s", lastOutput.RunId))
+			ne.logger.Info(fmt.Sprintf("found last workrun #%s record", lastOutput.RunId))
 		}
 
 		if lastCertificate != nil {
 			ne.setOuputsOfResult(execCtx, execRes, lastCertificate, false)
 			ne.setVariablesOfResult(execCtx, execRes, lastCertificate)
+			ne.logger.Info(fmt.Sprintf("found last certificate #%s record", lastCertificate.Id))
 		}
 	}
 
@@ -91,7 +92,7 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		if reason != "" {
 			ne.logger.Info(fmt.Sprintf("re-apply, because %s", reason))
 		} else {
-			ne.logger.Info("no found last issued certificate, begin to apply")
+			ne.logger.Info("no found last requested certificate, begin to apply")
 		}
 
 		execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, false, "boolean")
@@ -215,10 +216,10 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 		expirationTime := time.Until(lastCertificate.ValidityNotAfter)
 		daysLeft := int(math.Floor(expirationTime.Hours() / 24))
 		if expirationTime > renewalInterval {
-			return true, fmt.Sprintf("the last issued certificate #%s expires in %d day(s), next renewal will be in %d day(s)", lastCertificate.Id, daysLeft, thisNodeCfg.SkipBeforeExpiryDays)
+			return true, fmt.Sprintf("the last requested certificate expires in %d day(s), next renewal will be in %d day(s)", daysLeft, thisNodeCfg.SkipBeforeExpiryDays)
 		}
 
-		return false, fmt.Sprintf("the last issued certificate #%s expires in %d day(s)", lastCertificate.Id, daysLeft)
+		return false, fmt.Sprintf("the last requested certificate expires in %d day(s)", daysLeft)
 	}
 
 	return false, ""
