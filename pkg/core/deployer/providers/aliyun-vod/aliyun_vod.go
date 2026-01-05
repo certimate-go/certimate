@@ -165,7 +165,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			case <-ctx.Done():
 				return nil, ctx.Err()
 			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertId, upres.CertName); err != nil {
+				certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+				certName := upres.CertName
+				if err := d.updateDomainCertificate(ctx, domain, certId, certName); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -222,14 +224,13 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId, cloudCertName string) error {
+func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64, cloudCertName string) error {
 	// 设置域名证书
 	// REF: https://help.aliyun.com/zh/vod/developer-reference/api-vod-2017-03-21-setvoddomainsslcertificate
-	certId, _ := strconv.ParseInt(cloudCertId, 10, 64)
 	setVodDomainSSLCertificateReq := &alivod.SetVodDomainSSLCertificateRequest{
 		DomainName: tea.String(domain),
 		CertType:   tea.String("cas"),
-		CertId:     tea.Int64(certId),
+		CertId:     tea.Int64(cloudCertId),
 		CertName:   tea.String(cloudCertName),
 		CertRegion: lo.
 			If(d.config.Region == "" || strings.HasPrefix(d.config.Region, "cn-"), tea.String("cn-hangzhou")).
