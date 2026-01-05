@@ -158,7 +158,12 @@ const WorkflowDetailDesign = () => {
                       <Alert showIcon title={<div className="truncate">{t("workflow.detail.design.unpublished_draft.alert")}</div>} type="warning" />
                     </Show>
                   </div>
-                  <Space.Compact>
+                  <Space.Compact
+                    style={{
+                      backgroundColor: themeToken.colorBgContainer,
+                      borderRadius: themeToken.borderRadius,
+                    }}
+                  >
                     <Button disabled={workflowPublishDisabled} ghost type="primary" onClick={handlePublishClick}>
                       {t("workflow.detail.design.action.publish.button")}
                     </Button>
