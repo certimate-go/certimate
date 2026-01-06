@@ -77,7 +77,6 @@ type DomainRecord struct {
 	ProductName string `json:"product_name"`
 	AreaScope   int32  `json:"area_scope"`
 	Status      int32  `json:"status"`
-	CreatedTime int64  `json:"insert_date"`
 }
 
 type DomainDetail struct {

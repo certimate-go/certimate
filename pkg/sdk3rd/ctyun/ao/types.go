@@ -96,7 +96,6 @@ type DomainRecord struct {
 	ProductName string `json:"product_name"`
 	Status      int32  `json:"status"`
 	AreaScope   int32  `json:"area_scope"`
-	CreatedTime int64  `json:"insert_date"`
 }
 
 type DomainOriginConfig struct {
