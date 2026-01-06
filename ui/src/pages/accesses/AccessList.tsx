@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { IconCirclePlus, IconCopy, IconDots, IconEdit, IconFingerprint, IconPlus, IconReload, IconTrash } from "@tabler/icons-react";
@@ -10,6 +9,7 @@ import { produce } from "immer";
 import { ClientResponseError } from "pocketbase";
 
 import AccessEditDrawer, { type AccessEditDrawerProps } from "@/components/access/AccessEditDrawer";
+import CopyableText from "@/components/CopyableText";
 import Empty from "@/components/Empty";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
@@ -29,7 +29,7 @@ const AccessList = () => {
 
   const { token: themeToken } = theme.useToken();
 
-  const { message, modal, notification } = App.useApp();
+  const { modal, notification } = App.useApp();
 
   const { appSettings: globalAppSettings } = useAppSettings();
 
@@ -64,19 +64,9 @@ const AccessList = () => {
       width: 160,
       render: (_, record) => {
         return (
-          <CopyToClipboard
-            text={record.id}
-            onCopy={() => {
-              message.success(t("common.text.copied"));
-            }}
-          >
-            <div className="group/td cursor-pointer" onClick={(e) => e.stopPropagation()}>
-              <div className="relative inline-block">
-                <span className="z-1 font-mono">{record.id}</span>
-                <div className="absolute top-0 left-0 size-full scale-110 overflow-hidden rounded bg-primary opacity-0 transition-opacity group-hover/td:opacity-10"></div>
-              </div>
-            </div>
-          </CopyToClipboard>
+          <div onClick={(e) => e.stopPropagation()}>
+            <CopyableText className="font-mono">{record.id}</CopyableText>
+          </div>
         );
       },
     },
