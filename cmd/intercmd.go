@@ -12,6 +12,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/spf13/cobra"
 
+	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
 )
@@ -27,7 +28,7 @@ func NewInternalCommand(app core.App) *cobra.Command {
 	return command
 }
 
-func internalCertApplyCommand(app core.App) *cobra.Command {
+func internalCertApplyCommand(_ core.App) *cobra.Command {
 	var flagInput string
 	var flagOutput string
 	var flagError string
@@ -61,7 +62,7 @@ func internalCertApplyCommand(app core.App) *cobra.Command {
 				legolog.Logger = log.New(os.Stdout, "", 0)
 
 				client, err := certacme.NewACMEClientWithAccount(params.Account, func(c *lego.Config) error {
-					c.UserAgent = "certimate"
+					c.UserAgent = app.AppUserAgent
 					c.Certificate.KeyType = params.Request.PrivateKeyType
 					c.Certificate.DisableCommonName = params.Request.NoCommonName
 					return nil

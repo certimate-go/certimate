@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -54,7 +56,7 @@ func NewClient(serverUrl, apiRole, accessKeyId, accessKey string) (*Client, erro
 		SetBaseURL(strings.TrimRight(serverUrl, "/")).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			if client.accessToken != "" {
 				req.Header.Set("X-Edge-Access-Token", client.accessToken)

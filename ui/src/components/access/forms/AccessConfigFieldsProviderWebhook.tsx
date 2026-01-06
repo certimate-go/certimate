@@ -232,7 +232,7 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
               menu={{
                 items: [
                   {
-                    key: "certimate",
+                    key: "common",
                     label: t("access.form.webhook_preset_data.common"),
                     onClick: handlePresetDataForDeploymentClick,
                   },

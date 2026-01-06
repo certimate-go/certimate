@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -33,7 +35,7 @@ func NewClient(serverUrl string, username, apiToken string) (*Client, error) {
 		SetBaseURL(strings.TrimRight(serverUrl, "/")+"/execute").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", fmt.Sprintf("cpanel %s:%s", username, apiToken)).
-		SetHeader("User-Agent", "certimate")
+		SetHeader("User-Agent", app.AppUserAgent)
 
 	return &Client{client}, nil
 }

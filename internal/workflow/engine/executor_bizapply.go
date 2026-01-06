@@ -412,7 +412,7 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 	// 初始化 ACME 客户端
 	legolog.Logger = certacme.NewLegoLogger(app.GetLogger())
 	legoClient, err := certacme.NewACMEClientWithAccount(legoUser, func(c *lego.Config) error {
-		c.UserAgent = "certimate"
+		c.UserAgent = app.AppUserAgent
 		c.Certificate.KeyType = legoKeyType
 		c.Certificate.DisableCommonName = obtainReq.NoCommonName
 		return nil

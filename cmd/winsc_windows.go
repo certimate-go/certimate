@@ -14,6 +14,8 @@ import (
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 const winscName = "certimate"
@@ -32,7 +34,7 @@ func NewWinscCommand(app core.App) *cobra.Command {
 	return command
 }
 
-func winscInstallCommand(app core.App) *cobra.Command {
+func winscInstallCommand(_ core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "install [args...]",
 		Example: "winsc install",
@@ -53,7 +55,7 @@ func winscInstallCommand(app core.App) *cobra.Command {
 			defer manager.Disconnect()
 
 			config := mgr.Config{
-				DisplayName: "Certimate",
+				DisplayName: app.AppName,
 				Description: "https://github.com/certimate-go/certimate",
 				StartType:   mgr.StartAutomatic,
 			}
@@ -79,7 +81,7 @@ func winscInstallCommand(app core.App) *cobra.Command {
 	return command
 }
 
-func winscUninstallCommand(app core.App) *cobra.Command {
+func winscUninstallCommand(_ core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "uninstall",
 		Example: "winsc uninstall",
@@ -122,7 +124,7 @@ func winscUninstallCommand(app core.App) *cobra.Command {
 	return command
 }
 
-func winscStartCommand(app core.App) *cobra.Command {
+func winscStartCommand(_ core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "start",
 		Example: "winsc start",

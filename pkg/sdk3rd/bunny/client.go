@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -20,7 +22,7 @@ func NewClient(apiToken string) (*Client, error) {
 		SetBaseURL("https://api.bunny.net").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetHeader("AccessKey", apiToken)
 
 	return &Client{client}, nil

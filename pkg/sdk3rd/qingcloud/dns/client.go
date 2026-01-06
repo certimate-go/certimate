@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -30,7 +32,7 @@ func NewClient(accessKeyId, secretAccessKey string) (*Client, error) {
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Host", "api.routewize.com").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			// 生成时间
 			date := time.Now().UTC().Format(time.RFC1123)

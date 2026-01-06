@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -29,7 +31,7 @@ func NewClient(accessKey, secretKey string) (*Client, error) {
 		SetBaseURL("https://api.dogecloud.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(ctx *resty.Client, req *http.Request) error {
 			requestUrl := req.URL.Path
 			requestQuery := req.URL.Query().Encode()

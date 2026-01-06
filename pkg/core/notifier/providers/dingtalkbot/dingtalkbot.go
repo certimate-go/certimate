@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
+	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/pkg/core/notifier"
 )
 
@@ -40,7 +41,7 @@ func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 
 	client := resty.New().
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			if config.Secret != "" {
 				timestamp := fmt.Sprintf("%d", time.Now().UnixMilli())

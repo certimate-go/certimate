@@ -1,11 +1,10 @@
-import { type SpawnSyncReturns, execFileSync } from "node:child_process";
 import path from "node:path";
 
 import tailwindcssPlugin from "@tailwindcss/vite";
 import legacyPlugin from "@vitejs/plugin-legacy";
 import reactPlugin from "@vitejs/plugin-react";
 import fs from "fs-extra";
-import { type Plugin, defineConfig, loadEnv } from "vite";
+import { type Plugin, defineConfig } from "vite";
 
 const preserveFilesPlugin = (filesToPreserve: string[]): Plugin => {
   return {
@@ -34,18 +33,19 @@ const preserveFilesPlugin = (filesToPreserve: string[]): Plugin => {
   };
 };
 
-export default defineConfig(({ mode }) => {
-  const envs = loadEnv(mode, process.cwd());
+export default defineConfig(() => {
   let appVersion = undefined;
-  if (!envs?.VITE_APP_VERSION) {
-    try {
-      appVersion = execFileSync("git", ["describe", "--match", "v[0-9]*", "--tags", "--abbrev=8"], {
-        stdio: [],
-      })?.toString();
-    } catch (error) {
-      const err = error as SpawnSyncReturns<Buffer>;
-      console.warn("failed to get version number through git", err?.stderr?.toString());
+  try {
+    const content = fs.readFileSync(path.resolve(__dirname, "../internal/app/app.go"), "utf-8");
+    const matches = content.match(/AppVersion\s+=\s+"(.+?)"/);
+    if (matches) {
+      appVersion = matches[1];
+      console.info("[certimate] AppVersion is " + appVersion);
+    } else {
+      throw new Error("AppVersion not found in '/internal/app/app.go'");
     }
+  } catch (err) {
+    throw new Error("Could not read app version: " + (err as Error).message);
   }
 
   return {

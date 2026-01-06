@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -30,7 +32,7 @@ func NewClient(agentId, appSecret string) (*Client, error) {
 		SetBaseURL("https://apiv2.xinnet.com/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			// 生成时间戳
 			timestamp := time.Now().UTC().Format("20060102T150405Z")

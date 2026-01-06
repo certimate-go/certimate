@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type Client struct {
@@ -59,12 +61,12 @@ func NewClient(username, password string) (*Client, error) {
 	client.serverlessClient = resty.New().
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate")
+		SetHeader("User-Agent", app.AppUserAgent)
 	client.apiClient = resty.New().
 		SetBaseURL("https://unicloud-api.dcloud.net.cn/unicloud/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", "certimate").
+		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			if client.apiUserToken != "" {
 				req.Header.Set("Token", client.apiUserToken)
@@ -86,12 +88,12 @@ func (c *Client) buildServerlessClientInfo(appId string) (_clientInfo map[string
 		"PLATFORM":           "web",
 		"OS":                 strings.ToUpper(runtime.GOOS),
 		"APPID":              appId,
-		"DEVICEID":           "certimate",
+		"DEVICEID":           app.AppName,
 		"LOCALE":             "zh-Hans",
 		"osName":             runtime.GOOS,
 		"appId":              appId,
 		"appName":            "uniCloud",
-		"deviceId":           "certimate",
+		"deviceId":           app.AppName,
 		"deviceType":         "pc",
 		"uniPlatform":        "web",
 		"uniCompilerVersion": "4.45",

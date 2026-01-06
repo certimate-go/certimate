@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/repository"
 	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
@@ -139,7 +140,7 @@ func (ne *bizMonitorNodeExecutor) tryRetrievePeerCertificates(execCtx *NodeExecu
 	}
 
 	req.Header.Set("Host", domain)
-	req.Header.Set("User-Agent", "certimate")
+	req.Header.Set("User-Agent", app.AppUserAgent)
 	resp, err := client.Do(req)
 	if err != nil {
 		err = fmt.Errorf("failed to send http request: %w", err)
