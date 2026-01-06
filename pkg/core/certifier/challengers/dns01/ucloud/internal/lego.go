@@ -97,7 +97,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 
 	// REF: https://docs.ucloud.cn/api/udnr-api/udnr_domain_dns_add
 	request := d.client.NewAddDomainDNSRequest()
-	request.Dn = ucloud.String(authZone)
+	request.Dn = ucloud.String(dns01.UnFqdn(authZone))
 	request.DnsType = ucloud.String("TXT")
 	request.RecordName = ucloud.String(dns01.UnFqdn(info.EffectiveFQDN))
 	request.Content = ucloud.String(info.Value)
@@ -119,7 +119,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 
 	// REF: https://docs.ucloud.cn/api/udnr-api/udnr_domain_dns_query
 	request := d.client.NewQueryDomainDNSRequest()
-	request.Dn = ucloud.String(authZone)
+	request.Dn = ucloud.String(dns01.UnFqdn(authZone))
 	response, err := d.client.QueryDomainDNS(request)
 	if err != nil {
 		return fmt.Errorf("ucloud: error when list records: %w", err)
@@ -129,7 +129,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	for _, record := range response.Data {
 		if record.DnsType == "TXT" && record.RecordName == dns01.UnFqdn(info.EffectiveFQDN) && record.Content == info.Value {
 			delreq := d.client.NewDeleteDomainDNSRequest()
-			delreq.Dn = ucloud.String(authZone)
+			delreq.Dn = ucloud.String(dns01.UnFqdn(authZone))
 			delreq.DnsType = ucloud.String(record.DnsType)
 			delreq.RecordName = ucloud.String(record.RecordName)
 			delreq.Content = ucloud.String(record.Content)
