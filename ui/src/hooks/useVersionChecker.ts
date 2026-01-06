@@ -97,10 +97,10 @@ const useVersionChecker = () => {
       return !!releases[nIdx];
     },
     {
-      pollingInterval: 6 * 60 * 60 * 1000,
-      focusTimespan: 15 * 60 * 1000,
-      throttleWait: 60 * 1000,
       manual: true,
+      focusTimespan: 15 * 60 * 1000,
+      pollingInterval: 6 * 60 * 60 * 1000,
+      throttleWait: 60 * 1000,
       onSuccess: (res) => {
         setHasUpdate(res);
       },

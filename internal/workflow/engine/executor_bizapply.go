@@ -219,7 +219,7 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 			return true, fmt.Sprintf("the last requested certificate expires in %d day(s), next renewal will be in %d day(s)", daysLeft, thisNodeCfg.SkipBeforeExpiryDays)
 		}
 
-		return false, fmt.Sprintf("the last requested certificate expires in %d day(s)", daysLeft)
+		return false, fmt.Sprintf("the last requested certificate expires in %d day(s), the renewal window period has been reached", daysLeft)
 	}
 
 	return false, ""

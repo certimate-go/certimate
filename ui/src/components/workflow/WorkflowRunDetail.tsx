@@ -218,7 +218,7 @@ const WorkflowRunLogs = ({ runData }: { runData: WorkflowRunModel }) => {
         );
       },
       onFinally: () => {
-        if (runStatus === WORKFLOW_RUN_STATUSES.PENDING || runStatus === WORKFLOW_RUN_STATUSES.PROCESSING) {
+        if (runStatus !== WORKFLOW_RUN_STATUSES.PENDING && runStatus !== WORKFLOW_RUN_STATUSES.PROCESSING) {
           req.cancel();
         }
       },

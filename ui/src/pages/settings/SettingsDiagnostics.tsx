@@ -310,10 +310,10 @@ const SettingsDiagnosticsWorkflowDispatcher = ({ className, style }: { className
       return getWorkflowStats();
     },
     {
+      pollingInterval: 3000,
+      pollingWhenHidden: false,
       throttleWait: 1000,
       throttleLeading: true,
-      pollingInterval: 3000,
-      pollingWhenHidden: true,
       onSuccess: (res) => {
         setStatistics(res.data);
       },
