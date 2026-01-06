@@ -89,10 +89,10 @@ func (wd *workflowDispatcher) Bootup(ctx context.Context) error {
 	wd.taskMtx.Lock()
 	defer wd.taskMtx.Unlock()
 
-	if _, err := app.GetDB().NewQuery("UPDATE workflow SET lastRunStatus = 'canceled' WHERE lastRunStatus = 'pending' OR lastRunStatus = 'processing'").Execute(); err != nil {
+	if _, err := app.GetDB().NewQuery(fmt.Sprintf("UPDATE %s SET lastRunStatus = 'canceled' WHERE lastRunStatus = 'pending' OR lastRunStatus = 'processing'", domain.CollectionNameWorkflow)).Execute(); err != nil {
 		return err
 	}
-	if _, err := app.GetDB().NewQuery("UPDATE workflow_run SET status = 'canceled' WHERE status = 'pending' OR status = 'processing'").Execute(); err != nil {
+	if _, err := app.GetDB().NewQuery(fmt.Sprintf("UPDATE %s SET status = 'canceled' WHERE status = 'pending' OR status = 'processing'", domain.CollectionNameWorkflowRun)).Execute(); err != nil {
 		return err
 	}
 
@@ -255,6 +255,7 @@ func (wd *workflowDispatcher) tryExecuteAsync(task *taskInfo) {
 			workflowRun.Error = errmsg
 		}
 		wd.workflowRunRepo.SaveWithCascading(task.ctx, workflowRun)
+
 		return nil
 	})
 	we.OnError(func(ctx context.Context, err error) error {
@@ -267,6 +268,7 @@ func (wd *workflowDispatcher) tryExecuteAsync(task *taskInfo) {
 			workflowRun.Error = err.Error()
 			wd.workflowRunRepo.SaveWithCascading(task.ctx, workflowRun)
 		}
+
 		return nil
 	})
 	we.OnNodeError(func(ctx context.Context, node *engine.Node, err error) error {

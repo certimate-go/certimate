@@ -107,8 +107,8 @@ func (ne *bizMonitorNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeE
 				}
 
 				// 除了验证证书有效期，还要确保证书与域名匹配
-				execRes.AddVariable(stateVarKeyCertificateValidity, false, "boolean")
-				execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateValidity, false, "boolean")
+				execRes.AddVariable(stateVarKeyCertificateValidity, false, stateValTypeBoolean)
+				execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateValidity, false, stateValTypeBoolean)
 			}
 		}
 	}
@@ -173,24 +173,24 @@ func (ne *bizMonitorNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionCon
 		vValidity = certX509.NotAfter.After(time.Now())
 	}
 
-	execRes.AddVariable(stateVarKeyCertificateDomain, vCommonName, "string")
-	execRes.AddVariable(stateVarKeyCertificateDomains, vSubjectAltNames, "string")
-	execRes.AddVariable(stateVarKeyCertificateCommonName, vCommonName, "string")
-	execRes.AddVariable(stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, "string")
-	execRes.AddVariable(stateVarKeyCertificateNotBefore, vNotBefore, "datetime")
-	execRes.AddVariable(stateVarKeyCertificateNotAfter, vNotAfter, "datetime")
-	execRes.AddVariable(stateVarKeyCertificateHoursLeft, vHoursLeft, "number")
-	execRes.AddVariable(stateVarKeyCertificateDaysLeft, vDaysLeft, "number")
-	execRes.AddVariable(stateVarKeyCertificateValidity, vValidity, "boolean")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomain, vCommonName, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomains, vSubjectAltNames, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateCommonName, vCommonName, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotBefore, vNotBefore, "datetime")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotAfter, vNotAfter, "datetime")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateHoursLeft, vHoursLeft, "number")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDaysLeft, vDaysLeft, "number")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateValidity, vValidity, "boolean")
+	execRes.AddVariable(stateVarKeyCertificateDomain, vCommonName, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateDomains, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateCommonName, vCommonName, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateNotBefore, vNotBefore, stateValTypeDateTime)
+	execRes.AddVariable(stateVarKeyCertificateNotAfter, vNotAfter, stateValTypeDateTime)
+	execRes.AddVariable(stateVarKeyCertificateHoursLeft, vHoursLeft, stateValTypeNumber)
+	execRes.AddVariable(stateVarKeyCertificateDaysLeft, vDaysLeft, stateValTypeNumber)
+	execRes.AddVariable(stateVarKeyCertificateValidity, vValidity, stateValTypeBoolean)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomain, vCommonName, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomains, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateCommonName, vCommonName, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotBefore, vNotBefore, stateValTypeDateTime)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotAfter, vNotAfter, stateValTypeDateTime)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateHoursLeft, vHoursLeft, stateValTypeNumber)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDaysLeft, vDaysLeft, stateValTypeNumber)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateValidity, vValidity, stateValTypeBoolean)
 }
 
 func newBizMonitorNodeExecutor() NodeExecutor {

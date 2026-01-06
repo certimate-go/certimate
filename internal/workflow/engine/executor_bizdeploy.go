@@ -67,15 +67,15 @@ func (ne *bizDeployNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 		if skippable, reason := ne.checkCanSkip(execCtx, lastOutput); skippable {
 			ne.logger.Info(fmt.Sprintf("skip this deployment, because %s", reason))
 
-			execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, true, "boolean")
+			execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, true, stateValTypeBoolean)
 			return execRes, nil
 		} else if reason != "" {
 			ne.logger.Info(fmt.Sprintf("re-deploy, because %s", reason))
 
-			execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, false, "boolean")
+			execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, false, stateValTypeBoolean)
 		}
 	} else {
-		execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, false, "boolean")
+		execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, false, stateValTypeBoolean)
 	}
 
 	// 读取部署提供商授权

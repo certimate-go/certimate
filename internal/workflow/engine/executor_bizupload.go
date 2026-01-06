@@ -68,7 +68,7 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	if skippable, reason := ne.checkCanSkip(execCtx, lastOutput, lastCertificate); skippable {
 		ne.logger.Info(fmt.Sprintf("skip this uploading, because %s", reason))
 
-		execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, true, "boolean")
+		execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, true, stateValTypeBoolean)
 		return execRes, nil
 	} else if reason != "" {
 		ne.logger.Info(fmt.Sprintf("re-upload, because %s", reason))
@@ -248,9 +248,9 @@ func (ne *bizUploadNodeExecutor) setOuputsOfResult(execCtx *NodeExecutionContext
 		key := "certificate"
 		value := fmt.Sprintf("%s#%s", domain.CollectionNameCertificate, certificate.Id)
 		if persistent {
-			execRes.AddOutputWithPersistent(stateIOTypeRef, key, value, "string")
+			execRes.AddOutputWithPersistent(stateIOTypeRef, key, value, stateValTypeString)
 		} else {
-			execRes.AddOutput(stateIOTypeRef, key, value, "string")
+			execRes.AddOutput(stateIOTypeRef, key, value, stateValTypeString)
 		}
 	}
 }
@@ -274,24 +274,24 @@ func (ne *bizUploadNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionCont
 		vValidity = certificate.ValidityNotAfter.After(time.Now())
 	}
 
-	execRes.AddVariable(stateVarKeyCertificateDomain, vCommonName, "string")
-	execRes.AddVariable(stateVarKeyCertificateDomains, vSubjectAltNames, "string")
-	execRes.AddVariable(stateVarKeyCertificateCommonName, vCommonName, "string")
-	execRes.AddVariable(stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, "string")
-	execRes.AddVariable(stateVarKeyCertificateNotBefore, vNotBefore, "datetime")
-	execRes.AddVariable(stateVarKeyCertificateNotAfter, vNotAfter, "datetime")
-	execRes.AddVariable(stateVarKeyCertificateHoursLeft, vHoursLeft, "number")
-	execRes.AddVariable(stateVarKeyCertificateDaysLeft, vDaysLeft, "number")
-	execRes.AddVariable(stateVarKeyCertificateValidity, vValidity, "boolean")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomain, vCommonName, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomains, vSubjectAltNames, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateCommonName, vCommonName, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, "string")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotBefore, vNotBefore, "datetime")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotAfter, vNotAfter, "datetime")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateHoursLeft, vHoursLeft, "number")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDaysLeft, vDaysLeft, "number")
-	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateValidity, vValidity, "boolean")
+	execRes.AddVariable(stateVarKeyCertificateDomain, vCommonName, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateDomains, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateCommonName, vCommonName, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariable(stateVarKeyCertificateNotBefore, vNotBefore, stateValTypeDateTime)
+	execRes.AddVariable(stateVarKeyCertificateNotAfter, vNotAfter, stateValTypeDateTime)
+	execRes.AddVariable(stateVarKeyCertificateHoursLeft, vHoursLeft, stateValTypeNumber)
+	execRes.AddVariable(stateVarKeyCertificateDaysLeft, vDaysLeft, stateValTypeNumber)
+	execRes.AddVariable(stateVarKeyCertificateValidity, vValidity, stateValTypeBoolean)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomain, vCommonName, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDomains, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateCommonName, vCommonName, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateSubjectAltNames, vSubjectAltNames, stateValTypeString)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotBefore, vNotBefore, stateValTypeDateTime)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateNotAfter, vNotAfter, stateValTypeDateTime)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateHoursLeft, vHoursLeft, stateValTypeNumber)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateDaysLeft, vDaysLeft, stateValTypeNumber)
+	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyCertificateValidity, vValidity, stateValTypeBoolean)
 }
 
 func newBizUploadNodeExecutor() NodeExecutor {

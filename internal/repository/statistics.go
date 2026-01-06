@@ -28,7 +28,7 @@ func (r *StatisticsRepository) Get(ctx context.Context) (*domain.Statistics, err
 		Content string `db:"content"`
 	}{}
 	if err := app.GetDB().
-		NewQuery("SELECT content FROM settings WHERE name = {:name}").
+		NewQuery(fmt.Sprintf("SELECT content FROM %s WHERE name = {:name}", domain.CollectionNameSettings)).
 		Bind(dbx.Params{"name": domain.SettingsNamePersistence}).
 		One(&rsSettings); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -45,7 +45,7 @@ func (r *StatisticsRepository) Get(ctx context.Context) (*domain.Statistics, err
 		Total int `db:"total"`
 	}{}
 	if err := app.GetDB().
-		NewQuery("SELECT COUNT(*) AS total FROM certificate WHERE deleted = ''").
+		NewQuery(fmt.Sprintf("SELECT COUNT(*) AS total FROM %s WHERE deleted = ''", domain.CollectionNameCertificate)).
 		One(&rsCertTotal); err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (r *StatisticsRepository) Get(ctx context.Context) (*domain.Statistics, err
 		Total int `db:"total"`
 	}{}
 	if err := app.GetDB().
-		NewQuery(fmt.Sprintf("SELECT COUNT(*) AS total FROM certificate WHERE validityNotAfter <= DATETIME('now', '+%d days') AND validityNotAfter > DATETIME('now') AND isRevoked = 0 AND deleted = ''", persistenceSettings.CertificatesWarningDaysBeforeExpire)).
+		NewQuery(fmt.Sprintf("SELECT COUNT(*) AS total FROM %s WHERE validityNotAfter <= DATETIME('now', '+%d days') AND validityNotAfter > DATETIME('now') AND isRevoked = 0 AND deleted = ''", domain.CollectionNameCertificate, persistenceSettings.CertificatesWarningDaysBeforeExpire)).
 		One(&rsCertExpiringSoonTotal); err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (r *StatisticsRepository) Get(ctx context.Context) (*domain.Statistics, err
 		Total int `db:"total"`
 	}{}
 	if err := app.GetDB().
-		NewQuery("SELECT COUNT(*) AS total FROM certificate WHERE validityNotAfter <= DATETIME('now') AND deleted = ''").
+		NewQuery(fmt.Sprintf("SELECT COUNT(*) AS total FROM %s WHERE validityNotAfter <= DATETIME('now') AND deleted = ''", domain.CollectionNameCertificate)).
 		One(&rsCertExpiredTotal); err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (r *StatisticsRepository) Get(ctx context.Context) (*domain.Statistics, err
 		Total int `db:"total"`
 	}{}
 	if err := app.GetDB().
-		NewQuery("SELECT COUNT(*) AS total FROM workflow").
+		NewQuery(fmt.Sprintf("SELECT COUNT(*) AS total FROM %s", domain.CollectionNameWorkflow)).
 		One(&rsWorkflowTotal); err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (r *StatisticsRepository) Get(ctx context.Context) (*domain.Statistics, err
 		Total int `db:"total"`
 	}{}
 	if err := app.GetDB().
-		NewQuery("SELECT COUNT(*) AS total FROM workflow WHERE enabled IS TRUE").
+		NewQuery(fmt.Sprintf("SELECT COUNT(*) AS total FROM %s WHERE enabled IS TRUE", domain.CollectionNameWorkflow)).
 		One(&rsWorkflowEnabledTotal); err != nil {
 		return nil, err
 	}

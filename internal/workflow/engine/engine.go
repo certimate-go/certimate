@@ -69,13 +69,13 @@ func (we *workflowEngine) Invoke(ctx context.Context, execution WorkflowExecutio
 	wfIOs := newInOutManager()
 
 	wfVars := newVariableManager()
-	wfVars.Set(stateVarKeyWorkflowId, execution.WorkflowId, "string")
-	wfVars.Set(stateVarKeyWorkflowName, execution.WorkflowName, "string")
-	wfVars.Set(stateVarKeyRunId, execution.RunId, "string")
-	wfVars.Set(stateVarKeyRunTrigger, execution.RunTrigger, "string")
-	wfVars.Set(stateVarKeyErrorNodeId, "", "string")
-	wfVars.Set(stateVarKeyErrorNodeName, "", "string")
-	wfVars.Set(stateVarKeyErrorMessage, "", "string")
+	wfVars.Set(stateVarKeyWorkflowId, execution.WorkflowId, stateValTypeString)
+	wfVars.Set(stateVarKeyWorkflowName, execution.WorkflowName, stateValTypeString)
+	wfVars.Set(stateVarKeyRunId, execution.RunId, stateValTypeString)
+	wfVars.Set(stateVarKeyRunTrigger, execution.RunTrigger, stateValTypeString)
+	wfVars.Set(stateVarKeyErrorNodeId, "", stateValTypeString)
+	wfVars.Set(stateVarKeyErrorNodeName, "", stateValTypeString)
+	wfVars.Set(stateVarKeyErrorMessage, "", stateValTypeString)
 
 	wfCtx := (&WorkflowContext{}).
 		SetExecutingWorkflow(execution.WorkflowId, execution.RunId, execution.Graph).
@@ -153,8 +153,8 @@ func (we *workflowEngine) executeNode(wfCtx *WorkflowContext, node *Node) error 
 		executor.SetLogger(logger)
 	}
 
-	wfCtx.variables.SetScoped(node.Id, stateVarKeyNodeId, node.Id, "string")
-	wfCtx.variables.SetScoped(node.Id, stateVarKeyNodeName, node.Data.Name, "string")
+	wfCtx.variables.SetScoped(node.Id, stateVarKeyNodeId, node.Id, stateValTypeString)
+	wfCtx.variables.SetScoped(node.Id, stateVarKeyNodeName, node.Data.Name, stateValTypeString)
 
 	// 节点已禁用，直接跳过执行
 	if node.Data.Disabled {
@@ -167,9 +167,9 @@ func (we *workflowEngine) executeNode(wfCtx *WorkflowContext, node *Node) error 
 	execRes, err := executor.Execute(execCtx)
 	if err != nil && !errors.Is(err, ErrTerminated) {
 		if !errors.Is(err, ErrBlocksException) {
-			wfCtx.variables.Set(stateVarKeyErrorNodeId, node.Id, "string")
-			wfCtx.variables.Set(stateVarKeyErrorNodeName, node.Data.Name, "string")
-			wfCtx.variables.Set(stateVarKeyErrorMessage, err.Error(), "string")
+			wfCtx.variables.Set(stateVarKeyErrorNodeId, node.Id, stateValTypeString)
+			wfCtx.variables.Set(stateVarKeyErrorNodeName, node.Data.Name, stateValTypeString)
+			wfCtx.variables.Set(stateVarKeyErrorMessage, err.Error(), stateValTypeString)
 		}
 
 		we.fireOnNodeErrorHooks(wfCtx.ctx, node, err)
@@ -198,7 +198,7 @@ func (we *workflowEngine) executeNode(wfCtx *WorkflowContext, node *Node) error 
 				RunId:      execCtx.RunId,
 				NodeId:     execCtx.Node.Id,
 				NodeConfig: execCtx.Node.Data.Config,
-				Succeeded:  true, // 目前恒为 true
+				Succeeded:  true, // TODO: 目前恒为 true
 			}
 			if len(execOutputs) > 0 {
 				output.Outputs = lo.Map(execOutputs, func(state InOutState, _ int) *domain.WorkflowOutputEntry {

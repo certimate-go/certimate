@@ -17,13 +17,13 @@ type VariableState struct {
 
 func (s VariableState) ValueString() string {
 	switch s.ValueType {
-	case "string":
+	case stateValTypeString:
 		return fmt.Sprintf("%s", s.Value)
-	case "number":
+	case stateValTypeNumber:
 		return fmt.Sprintf("%d", s.Value)
-	case "boolean":
+	case stateValTypeBoolean:
 		return strconv.FormatBool(s.Value.(bool))
-	case "datetime":
+	case stateValTypeDateTime:
 		valueAsTime := s.Value.(time.Time)
 		if valueAsTime.IsZero() {
 			return "-"
@@ -166,11 +166,11 @@ type InOutState struct {
 
 func (s InOutState) ValueString() string {
 	switch s.ValueType {
-	case "string":
+	case stateValTypeString:
 		return s.Value.(string)
-	case "number":
+	case stateValTypeNumber:
 		return fmt.Sprintf("%d", s.Value)
-	case "boolean":
+	case stateValTypeBoolean:
 		return strconv.FormatBool(s.Value.(bool))
 	default:
 		return fmt.Sprintf("%v", s.Value)
@@ -277,6 +277,13 @@ func newInOutManager() InOutManager {
 		states: make([]InOutState, 0),
 	}
 }
+
+const (
+	stateValTypeBoolean  = "boolean"
+	stateValTypeDateTime = "datetime"
+	stateValTypeNumber   = "number"
+	stateValTypeString   = "string"
+)
 
 const (
 	stateIOTypeRef = "ref"
