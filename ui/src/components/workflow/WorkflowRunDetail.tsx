@@ -99,13 +99,13 @@ const WorkflowRunDetail = ({ className, style, ...props }: WorkflowRunDetailProp
 
       <div className="mt-8">
         <Typography.Title level={5}>{t("workflow_run.logs")}</Typography.Title>
-        <WorkflowRunLogs runId={mergedData.id} runStatus={mergedData.status} />
+        <WorkflowRunLogs runData={mergedData} />
       </div>
 
-      <Show when={mergedData.status === WORKFLOW_RUN_STATUSES.SUCCEEDED}>
+      <Show when={mergedData.outputs && mergedData.outputs.length > 0}>
         <div className="mt-8">
           <Typography.Title level={5}>{t("workflow_run.artifacts")}</Typography.Title>
-          <WorkflowRunArtifacts runId={mergedData.id} />
+          <WorkflowRunArtifacts runData={mergedData} />
         </div>
       </Show>
     </div>
@@ -183,10 +183,12 @@ const WorkflowRunProcess = ({ runData }: { runData: WorkflowRunModel }) => {
   );
 };
 
-const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: string }) => {
+const WorkflowRunLogs = ({ runData }: { runData: WorkflowRunModel }) => {
   const { t } = useTranslation();
 
   const { theme: browserTheme } = useBrowserTheme();
+
+  const { id: runId, status: runStatus } = runData;
 
   type Log = Pick<WorkflowLogModel, "timestamp" | "level" | "message" | "data">;
   type LogGroup = { id: string; name: string; records: Log[] };
@@ -197,7 +199,7 @@ const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: strin
     },
     {
       refreshDeps: [runId, runStatus],
-      pollingInterval: 1500,
+      pollingInterval: 1000,
       pollingWhenHidden: false,
       throttleWait: 500,
       onSuccess: (res) => {
@@ -374,10 +376,12 @@ const WorkflowRunLogs = ({ runId, runStatus }: { runId: string; runStatus: strin
   );
 };
 
-const WorkflowRunArtifacts = ({ runId }: { runId: string }) => {
+const WorkflowRunArtifacts = ({ runData }: { runData: WorkflowRunModel }) => {
   const { t } = useTranslation();
 
   const { notification } = App.useApp();
+
+  const { id: runId } = runData;
 
   const tableColumns: TableProps<CertificateModel>["columns"] = [
     {
@@ -426,6 +430,7 @@ const WorkflowRunArtifacts = ({ runId }: { runId: string }) => {
   const [tableData, setTableData] = useState<CertificateModel[]>([]);
   const { loading } = useRequest(
     () => {
+      // TODO: 目前输出产物只有证书
       return listCertificatesByWorkflowRunId(runId);
     },
     {

@@ -27,6 +27,7 @@
   "workflow_run.props.trigger.manual": "Manual",
   "workflow_run.props.started_at": "Started at",
   "workflow_run.props.ended_at": "Ended at",
+  "workflow_run.props.artifacts": "Artifacts",
 
   "workflow_run.base.description": "Triggered {{trigger}} at {{startedAt}}",
   "workflow_run.base.description_with_time_cost": "Triggered {{trigger}} at {{startedAt}}. Time cost: {{timeCost}}.",

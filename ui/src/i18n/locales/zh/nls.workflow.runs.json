@@ -27,6 +27,7 @@
   "workflow_run.props.trigger.manual": "手动",
   "workflow_run.props.started_at": "开始时间",
   "workflow_run.props.ended_at": "完成时间",
+  "workflow_run.props.artifacts": "输出产物",
 
   "workflow_run.base.description": "{{trigger}}触发于 {{startedAt}}",
   "workflow_run.base.description_with_time_cost": "{{trigger}}触发于 {{startedAt}}，总计用时 {{timeCost}}。",

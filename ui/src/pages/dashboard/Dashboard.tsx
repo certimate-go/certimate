@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   IconActivity,
   IconAlertHexagon,
+  IconBox,
+  IconCertificate,
   IconCirclePlus,
   IconConfetti,
   IconExternalLink,
@@ -336,6 +338,37 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
       render: (_, record) => {
         if (record.endedAt) {
           return dayjs(record.endedAt).format("YYYY-MM-DD HH:mm:ss");
+        }
+
+        return <></>;
+      },
+    },
+    {
+      key: "artifacts",
+      title: t("workflow_run.props.artifacts"),
+      width: 160,
+      render: (_, record) => {
+        if (record.outputs && record.outputs.length > 0) {
+          const keys = new Set<string>();
+          const icons: React.ReactNode[] = [];
+
+          for (const output of record.outputs) {
+            if (output.type === "ref" && output.value?.split("#")?.at(0) === "certificate") {
+              const KEY = "certificate";
+              if (keys.has(KEY)) continue;
+
+              keys.add(KEY);
+              icons.push(<IconCertificate key={KEY} size="1.25em" />);
+            } else {
+              const KEY = "other";
+              if (keys.has(KEY)) continue;
+
+              keys.add(KEY);
+              icons.push(<IconBox key={KEY} size="1.25em" />);
+            }
+          }
+
+          return <div className="flex items-center gap-2">{icons}</div>;
         }
 
         return <></>;
