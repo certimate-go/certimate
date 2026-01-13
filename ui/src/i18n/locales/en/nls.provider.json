@@ -165,6 +165,7 @@
   "provider.spaceship": "Spaceship",
   "provider.ssh": "Remote host (SSH)",
   "provider.sslcom": "SSL.com",
+  "provider.synologydsm": "Synology DSM",
   "provider.technitiumdns": "Technitium DNS",
   "provider.telegrambot": "Telegram Bot",
   "provider.tencentcloud": "Tencent Cloud",

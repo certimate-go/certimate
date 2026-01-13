@@ -165,6 +165,7 @@
   "provider.spaceship": "Spaceship",
   "provider.ssh": "远程主机（SSH）",
   "provider.sslcom": "SSL.com",
+  "provider.synologydsm": "群晖 DSM (Synology DSM)",
   "provider.technitiumdns": "Technitium DNS",
   "provider.telegrambot": "Telegram 机器人",
   "provider.tencentcloud": "腾讯云",

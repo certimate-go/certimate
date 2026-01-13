@@ -516,6 +516,14 @@ type AccessConfigForSSLCom struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
+type AccessConfigForSynologyDSM struct {
+	ServerUrl                string `json:"serverUrl"`
+	Username                 string `json:"username"`
+	Password                 string `json:"password"`
+	TotpSecret               string `json:"totpSecret,omitempty"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForTechnitiumDNS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`

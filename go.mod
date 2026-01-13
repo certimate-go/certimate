@@ -58,6 +58,7 @@ require (
 	github.com/pocketbase/dbx v1.11.0
 	github.com/pocketbase/pocketbase v0.35.0
 	github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df
+	github.com/pquerna/otp v1.5.0
 	github.com/qiniu/go-sdk/v7 v7.25.5
 	github.com/samber/lo v1.52.0
 	github.com/spf13/cobra v1.10.2
@@ -194,6 +195,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.5 // indirect
 	github.com/aws/smithy-go v1.24.0 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
