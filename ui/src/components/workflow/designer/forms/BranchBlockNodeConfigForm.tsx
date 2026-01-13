@@ -66,7 +66,7 @@ const BranchBlockNodeConfigForm = ({ node, ...props }: BranchBlockNodeConfigForm
     <NodeFormContextProvider value={{ node }}>
       <Form {...formProps} clearOnDestroy={true} form={formInst} layout="vertical" preserve={false} scrollToFirstError>
         <div id="parameters" data-anchor="parameters">
-          <Form.Item name="expression" label={t("workflow_node.branch_block.form.expression.label")} rules={[formRule]}>
+          <Form.Item name="expression" label={t("workflow_node.branch_block.form.expression.label")} rules={[formRule]} validateTrigger={false}>
             <BranchBlockNodeConfigExprInputBox ref={exprInputBoxRef} />
           </Form.Item>
         </div>

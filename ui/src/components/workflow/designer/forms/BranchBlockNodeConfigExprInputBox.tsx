@@ -251,8 +251,11 @@ const BranchBlockNodeConfigExprInputBox = forwardRef<BranchBlockNodeConfigExprIn
     const handleFormChange = (_: unknown, values: ConditionFormValues) => {
       // TODO: 这里直接用参数 `values` 会丢失部分字段，引发 Issue #1096。
       // 暂时先用 `getFieldsValue()` 代替，待排查原因，疑似与 antd v6 升级有关。
-      values = formInst.getFieldsValue();
-      setValue(formValuesToExpr(values));
+      setTimeout(() => {
+        values = formInst.getFieldsValue();
+        const expr = formValuesToExpr(values);
+        setValue(expr);
+      }, 0);
     };
 
     useImperativeHandle(ref, () => {
@@ -370,7 +373,7 @@ const BranchBlockNodeConfigExprInputBox = forwardRef<BranchBlockNodeConfigExprIn
                 </div>
               ))}
 
-              <Form.Item>
+              <Form.Item noStyle>
                 <Button type="dashed" block icon={<IconCirclePlus size="1.25em" />} onClick={() => add({})}>
                   {t("workflow_node.branch_block.form.expression.add_condition.button")}
                 </Button>

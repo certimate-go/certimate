@@ -176,21 +176,35 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
                           <Input autoComplete="new-password" placeholder={t("access.form.ssh_username.placeholder")} />
                         </Form.Item>
 
-                        <Show when={subfieldAuthMethod === AUTH_METHOD_PASSWORD}>
-                          <Form.Item name={[index, "password"]} label={t("access.form.ssh_password.label")} shouldUpdate rules={[formRule]}>
-                            <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.ssh_password.placeholder")} />
-                          </Form.Item>
-                        </Show>
+                        <Form.Item
+                          name={[index, "password"]}
+                          hidden={subfieldAuthMethod !== AUTH_METHOD_PASSWORD}
+                          label={t("access.form.ssh_password.label")}
+                          shouldUpdate
+                          rules={[formRule]}
+                        >
+                          <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.ssh_password.placeholder")} />
+                        </Form.Item>
 
-                        <Show when={subfieldAuthMethod === AUTH_METHOD_KEY}>
-                          <Form.Item name={[index, "key"]} label={t("access.form.ssh_key.label")} shouldUpdate rules={[formRule]}>
-                            <FileTextInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key.placeholder")} />
-                          </Form.Item>
+                        <Form.Item
+                          name={[index, "key"]}
+                          hidden={subfieldAuthMethod !== AUTH_METHOD_KEY}
+                          label={t("access.form.ssh_key.label")}
+                          shouldUpdate
+                          rules={[formRule]}
+                        >
+                          <FileTextInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key.placeholder")} />
+                        </Form.Item>
 
-                          <Form.Item name={[index, "keyPassphrase"]} label={t("access.form.ssh_key_passphrase.label")} shouldUpdate rules={[formRule]}>
-                            <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.ssh_key_passphrase.placeholder")} />
-                          </Form.Item>
-                        </Show>
+                        <Form.Item
+                          name={[index, "keyPassphrase"]}
+                          hidden={subfieldAuthMethod !== AUTH_METHOD_KEY}
+                          label={t("access.form.ssh_key_passphrase.label")}
+                          shouldUpdate
+                          rules={[formRule]}
+                        >
+                          <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.ssh_key_passphrase.placeholder")} />
+                        </Form.Item>
                       </>
                     ),
                   };
