@@ -18,19 +18,10 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "certificateName"]}
-        initialValue={initialValues.certificateName}
-        label={t("workflow_node.deploy.form.synologydsm_certificate_name.label")}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm_certificate_name.tooltip") }}></span>}
-        rules={[formRule]}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.synologydsm_certificate_name.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
         name={[parentNamePath, "certificateId"]}
         initialValue={initialValues.certificateId}
         label={t("workflow_node.deploy.form.synologydsm_certificate_id.label")}
+        extra={t("workflow_node.deploy.form.synologydsm_certificate_id.help")}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm_certificate_id.tooltip") }}></span>}
         rules={[formRule]}
       >
@@ -41,7 +32,6 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
         name={[parentNamePath, "isDefault"]}
         initialValue={initialValues.isDefault}
         label={t("workflow_node.deploy.form.synologydsm_is_default.label")}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm_is_default.tooltip") }}></span>}
         rules={[formRule]}
       >
         <Switch />
@@ -52,15 +42,12 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    certificateName: "",
-    certificateId: "",
-    isDefault: false,
+    isDefault: true,
   };
 };
 
 const getSchema = ({ i18n: _i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
   return z.object({
-    certificateName: z.string().nullish(),
     certificateId: z.string().nullish(),
     isDefault: z.boolean().nullish(),
   });

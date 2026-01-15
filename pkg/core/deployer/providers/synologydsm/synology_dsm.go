@@ -2,69 +2,63 @@ package synologydsm
 
 import (
 	"context"
+	"crypto/tls"
+	"errors"
 	"fmt"
 	"log/slog"
+	"time"
+
+	"github.com/pquerna/otp/totp"
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	synology "github.com/certimate-go/certimate/pkg/sdk3rd/synology"
+	dsmsdk "github.com/certimate-go/certimate/pkg/sdk3rd/synologydsm"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
 type DeployerConfig struct {
-	// Server hostname or IP address.
-	Hostname string `json:"hostname"`
-	// Server port.
-	// Default is 5000 for HTTP, 5001 for HTTPS.
-	Port int32 `json:"port,omitempty"`
-	// Connection scheme (http or https).
-	// Default is "http".
-	Scheme string `json:"scheme,omitempty"`
-	// Synology DSM admin username.
-	Username string `json:"username"`
-	// Synology DSM admin password.
-	Password string `json:"password"`
-	// 2FA TOTP secret key (optional).
-	// If provided, OTP code will be auto-generated at login time.
-	TotpSecret string `json:"totpSecret,omitempty"`
-	// Allow insecure HTTPS connections (skip TLS verification).
-	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
-	// Certificate ID to update (optional).
-	// If not provided and CertificateName is not provided, a new certificate will be created.
-	CertificateID string `json:"certificateId,omitempty"`
-	// Certificate description/name to find and update (optional).
-	// If provided, will search for existing certificate with this description.
 	CertificateName string `json:"certificateName,omitempty"`
-	// Set as default certificate.
+
+	// Synology DSM server URL.
+	// 群晖 DSM 服务地址。
+	ServerUrl string `json:"serverUrl"`
+	// 群晖 DSM 用户名。
+	Username string `json:"username"`
+	// 群晖 DSM 用户密码。
+	Password string `json:"password"`
+	// 群晖 DSM 2FA TOTP 密钥。
+	TotpSecret string `json:"totpSecret,omitempty"`
+	// 是否允许不安全的连接。
+	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
+	// 证书 ID。
+	// 选填。零值时表示新建证书；否则表示更新证书。
+	CertificateId string `json:"certificateId,omitempty"`
+	// 是否设为默认证书。
 	IsDefault bool `json:"isDefault,omitempty"`
 }
 
 type Deployer struct {
-	config *DeployerConfig
-	logger *slog.Logger
+	config    *DeployerConfig
+	logger    *slog.Logger
+	sdkClient *dsmsdk.Client
 }
 
 var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, fmt.Errorf("config is required")
+		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	if config.Hostname == "" {
-		return nil, fmt.Errorf("hostname is required")
-	}
-
-	if config.Username == "" {
-		return nil, fmt.Errorf("username is required")
-	}
-
-	if config.Password == "" {
-		return nil, fmt.Errorf("password is required")
+	client, err := createSDKClient(config.ServerUrl, config.AllowInsecureConnections)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
 	return &Deployer{
-		config: config,
-		logger: slog.Default(),
+		config:    config,
+		logger:    slog.Default(),
+		sdkClient: client,
 	}, nil
 }
 
@@ -77,121 +71,158 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string) (*deployer.DeployResult, error) {
-	// Create Synology client
-	client := synology.NewClient(
-		d.config.Hostname,
-		int(d.config.Port),
-		d.config.Scheme,
-		d.config.AllowInsecureConnections,
-	)
+	// 提取服务器证书和中间证书
+	serverCertPEM, intermediateCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract certs: %w", err)
+	}
 
-	// Generate OTP code from TOTP secret if provided
+	// 如果启用了 TOTP，则等到下一个时间窗口后生成 OTP 动态密码
 	var otpCode string
 	if d.config.TotpSecret != "" {
-		code, err := synology.GenerateTOTPCode(d.config.TotpSecret)
+		now := time.Now()
+		wait := time.Duration(30-now.Unix()%30) * time.Second
+		if wait > 0 {
+			wait = wait + 1*time.Second
+			d.logger.Info("waiting for the next TOTP time step ...", slog.Int("wait", int(wait.Seconds())))
+			xwait.DelayWithContext(ctx, wait)
+		}
+
+		now = time.Now()
+		otpCodeStr, err := totp.GenerateCode(d.config.TotpSecret, now)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate TOTP code: %w", err)
 		}
-		otpCode = code
-		d.logger.Info("generated TOTP code for 2FA")
+
+		otpCode = otpCodeStr
 	}
 
-	// Login
-	d.logger.Info("logging in to Synology DSM", slog.String("hostname", d.config.Hostname))
-	if err := client.Login(d.config.Username, d.config.Password, otpCode); err != nil {
-		return nil, fmt.Errorf("failed to login to Synology DSM: %w", err)
+	// 登录到群晖 DSM
+	loginReq := &dsmsdk.LoginRequest{
+		Account:  d.config.Username,
+		Password: d.config.Password,
+		OtpCode:  otpCode,
+	}
+	loginResp, err := d.sdkClient.Login(loginReq)
+	d.logger.Debug("sdk request 'SYNO.API.Auth:login'", slog.Any("request", loginReq), slog.Any("response", loginResp))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sdk request 'SYNO.API.Auth:login': %w", err)
 	}
 	defer func() {
-		if err := client.Logout(); err != nil {
-			d.logger.Warn("failed to logout from Synology DSM", slog.Any("error", err))
-		}
+		logoutResp, _ := d.sdkClient.Logout()
+		d.logger.Debug("sdk request 'SYNO.API.Auth:logout'", slog.Any("response", logoutResp))
 	}()
 
-	// Determine certificate ID
-	certID := d.config.CertificateID
-
-	// If CertificateName is provided, search for existing certificate
-	if certID == "" && d.config.CertificateName != "" {
-		d.logger.Info("searching for certificate by name", slog.String("name", d.config.CertificateName))
-		certs, err := client.ListCertificates()
+	// 如果原证书 ID 为空，则创建证书；否则更新证书。
+	if d.config.CertificateId == "" {
+		// 导入证书
+		importCertificateReq := &dsmsdk.ImportCertificateRequest{
+			ID:          "",
+			Description: fmt.Sprintf("certimate-%d", time.Now().UnixMilli()),
+			Key:         privkeyPEM,
+			Cert:        serverCertPEM,
+			InterCert:   intermediateCertPEM,
+			AsDefault:   d.config.IsDefault,
+		}
+		importCertificateResp, err := d.sdkClient.ImportCertificate(importCertificateReq)
+		d.logger.Debug("sdk request 'SYNO.Core.Certificate:import'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to list certificates: %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate:import': %w", err)
 		}
-
-		for _, cert := range certs {
-			if cert.Description == d.config.CertificateName {
-				certID = cert.ID
-				d.logger.Info("found existing certificate", slog.String("id", certID), slog.String("desc", cert.Description))
-				break
-			}
-		}
-
-		if certID == "" {
-			d.logger.Info("certificate not found, will create new one", slog.String("name", d.config.CertificateName))
-		}
-	}
-
-	// Extract server certificate and intermediate certificate from the full chain
-	// Uses the standard certimate utility function to ensure correct extraction
-	serverCertPEM, intermediateCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
-	if err != nil {
-		return nil, fmt.Errorf("failed to extract certificates from PEM: %w", err)
-	}
-
-	// Log certificate info for debugging
-	d.logger.Info("certificate data for import",
-		slog.Int("serverCertLen", len(serverCertPEM)),
-		slog.Int("intermediateCertLen", len(intermediateCertPEM)),
-		slog.Int("keyLen", len(privkeyPEM)),
-	)
-
-	// Import certificate
-	d.logger.Info("importing certificate to Synology DSM",
-		slog.String("certId", certID),
-		slog.String("description", d.config.CertificateName),
-		slog.Bool("isDefault", d.config.IsDefault),
-	)
-
-	if err := client.ImportCertificate(
-		serverCertPEM, // Only the server certificate
-		privkeyPEM,
-		intermediateCertPEM, // Intermediate/CA certificates
-		certID,
-		d.config.CertificateName,
-		d.config.IsDefault,
-	); err != nil {
-		return nil, fmt.Errorf("failed to import certificate: %w", err)
-	}
-
-	d.logger.Info("certificate imported successfully")
-
-	// If setting as default, also apply certificate to all services
-	if d.config.IsDefault {
-		d.logger.Info("applying certificate to all services")
-
-		// Get the new certificate ID by searching for it
-		certs, err := client.ListCertificates()
+	} else {
+		// 查找证书列表，找到已有证书
+		var certInfo *dsmsdk.CertificateInfo
+		listCertificatesResp, err := d.sdkClient.ListCertificates()
+		d.logger.Debug("sdk request 'SYNO.Core.Certificate.CRT:list'", slog.Any("response", listCertificatesResp))
 		if err != nil {
-			d.logger.Warn("failed to list certificates after import", slog.Any("error", err))
+			return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate.CRT:list': %w", err)
 		} else {
-			var newCertID string
-			for _, cert := range certs {
-				if cert.IsDefault {
-					newCertID = cert.ID
+			for _, certItem := range listCertificatesResp.Data.Certificates {
+				if certItem.ID == d.config.CertificateId {
+					certInfo = certItem
 					break
 				}
 			}
 
-			if newCertID != "" {
-				d.logger.Info("found new default certificate", slog.String("id", newCertID))
-				if err := client.SetCertificateForAllServices(newCertID, ""); err != nil {
-					d.logger.Warn("failed to set certificate for all services", slog.Any("error", err))
-				} else {
-					d.logger.Info("certificate applied to all services successfully")
+			if certInfo == nil {
+				return nil, fmt.Errorf("could not find certificate with ID '%s'", d.config.CertificateId)
+			}
+		}
+
+		// 导入证书
+		importCertificateReq := &dsmsdk.ImportCertificateRequest{
+			ID:          certInfo.ID,
+			Description: certInfo.Description,
+			Key:         privkeyPEM,
+			Cert:        serverCertPEM,
+			InterCert:   intermediateCertPEM,
+			AsDefault:   d.config.IsDefault || certInfo.IsDefault,
+		}
+		importCertificateResp, err := d.sdkClient.ImportCertificate(importCertificateReq)
+		d.logger.Debug("sdk request 'SYNO.Core.Certificate:import'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate:import': %w", err)
+		}
+	}
+
+	if d.config.IsDefault {
+		// 查找证书列表，找到默认证书
+		listCertificatesResp, err := d.sdkClient.ListCertificates()
+		d.logger.Debug("sdk request 'SYNO.Core.Certificate.CRT:list'", slog.Any("response", listCertificatesResp))
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate.CRT:list': %w", err)
+		} else {
+			var defaultCertId string
+			for _, certItem := range listCertificatesResp.Data.Certificates {
+				if certItem.IsDefault {
+					defaultCertId = certItem.ID
+					break
+				}
+			}
+
+			if defaultCertId != "" {
+				settings := make([]*dsmsdk.ServiceCertificateSetting, 0)
+				for _, certItem := range listCertificatesResp.Data.Certificates {
+					if certItem.ID == defaultCertId {
+						continue
+					}
+
+					for _, service := range certItem.Services {
+						settings = append(settings, &dsmsdk.ServiceCertificateSetting{
+							Service:   service,
+							CertID:    defaultCertId,
+							OldCertID: certItem.ID,
+						})
+					}
+				}
+
+				// 应用到所有服务并重启
+				if len(settings) > 0 {
+					setServiceCertificateReq := &dsmsdk.SetServiceCertificateRequest{
+						Settings: settings,
+					}
+					setServiceCertificateResp, err := d.sdkClient.SetServiceCertificate(setServiceCertificateReq)
+					d.logger.Debug("sdk request 'SYNO.Core.Certificate.Service:set'", slog.Any("request", setServiceCertificateReq), slog.Any("response", setServiceCertificateResp))
+					if err != nil {
+						return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate.Service:set': %w", err)
+					}
 				}
 			}
 		}
 	}
 
 	return &deployer.DeployResult{}, nil
+}
+
+func createSDKClient(serverUrl string, skipTlsVerify bool) (*dsmsdk.Client, error) {
+	client, err := dsmsdk.NewClient(serverUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	if skipTlsVerify {
+		client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+	}
+
+	return client, nil
 }
