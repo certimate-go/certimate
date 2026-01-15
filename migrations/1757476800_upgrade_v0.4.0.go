@@ -11,6 +11,9 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
 	"github.com/samber/lo"
+
+	snapsv03 "github.com/certimate-go/certimate/migrations/snaps/v0.3"
+	snapsv04 "github.com/certimate-go/certimate/migrations/snaps/v0.4"
 )
 
 func init() {
@@ -986,36 +989,15 @@ func init() {
 
 		// adapt to new workflow data structure
 		{
-			type dLegacyWorkflowNode struct {
-				Id       string                 `json:"id"`
-				Type     string                 `json:"type"`
-				Name     string                 `json:"name"`
-				Config   map[string]any         `json:"config,omitempty"`
-				Next     *dLegacyWorkflowNode   `json:"next,omitempty"`
-				Branches []*dLegacyWorkflowNode `json:"branches,omitempty"`
-			}
-
-			type dWorkflowNodeData struct {
-				Name   string         `json:"name"`
-				Config map[string]any `json:"config,omitempty"`
-			}
-
-			type dWorkflowNode struct {
-				Id     string            `json:"id"`
-				Type   string            `json:"type"`
-				Data   dWorkflowNodeData `json:"data"`
-				Blocks []*dWorkflowNode  `json:"blocks,omitempty"`
-			}
-
-			convertNode := func(root *dLegacyWorkflowNode) []*dWorkflowNode {
+			convertNode := func(root *snapsv03.WorkflowNode) []*snapsv04.WorkflowNode {
 				lang := lo.
 					IfF(root == nil, func() string { return "zh" }).
 					ElseIf(regexp.MustCompile(`[\p{Han}]`).MatchString(root.Name), "zh").
 					Else("en")
 
-				var deepConvertNode func(node *dLegacyWorkflowNode) []*dWorkflowNode
-				deepConvertNode = func(node *dLegacyWorkflowNode) []*dWorkflowNode {
-					temp := make([]*dWorkflowNode, 0)
+				var deepConvertNode func(node *snapsv03.WorkflowNode) []*snapsv04.WorkflowNode
+				deepConvertNode = func(node *snapsv03.WorkflowNode) []*snapsv04.WorkflowNode {
+					temp := make([]*snapsv04.WorkflowNode, 0)
 
 					current := node
 					for current != nil {
@@ -1026,10 +1008,10 @@ func init() {
 
 						switch current.Type {
 						case "start":
-							temp = append(temp, &dWorkflowNode{
+							temp = append(temp, &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "start",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   current.Name,
 									Config: current.Config,
 								},
@@ -1040,10 +1022,10 @@ func init() {
 								current.Config["challengeType"] = "dns-01"
 							}
 
-							temp = append(temp, &dWorkflowNode{
+							temp = append(temp, &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "bizApply",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   current.Name,
 									Config: current.Config,
 								},
@@ -1054,20 +1036,20 @@ func init() {
 								current.Config["source"] = "form"
 							}
 
-							temp = append(temp, &dWorkflowNode{
+							temp = append(temp, &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "bizUpload",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   current.Name,
 									Config: current.Config,
 								},
 							})
 
 						case "monitor":
-							temp = append(temp, &dWorkflowNode{
+							temp = append(temp, &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "bizMonitor",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   current.Name,
 									Config: current.Config,
 								},
@@ -1079,10 +1061,10 @@ func init() {
 								delete(current.Config, "certificate")
 							}
 
-							temp = append(temp, &dWorkflowNode{
+							temp = append(temp, &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "bizDeploy",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   current.Name,
 									Config: current.Config,
 								},
@@ -1093,10 +1075,10 @@ func init() {
 								delete(current.Config, "channel")
 							}
 
-							temp = append(temp, &dWorkflowNode{
+							temp = append(temp, &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "bizNotify",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   current.Name,
 									Config: current.Config,
 								},
@@ -1110,45 +1092,45 @@ func init() {
 							tryNode, _ := lo.Last(temp)
 							temp = lo.DropRight(temp, 1)
 
-							branches := lo.GroupBy(current.Branches, func(b *dLegacyWorkflowNode) string { return b.Type })
-							successBranch := lo.IfF(len(branches["execute_success"]) > 0, func() *dLegacyWorkflowNode {
+							branches := lo.GroupBy(current.Branches, func(b *snapsv03.WorkflowNode) string { return b.Type })
+							successBranch := lo.IfF(len(branches["execute_success"]) > 0, func() *snapsv03.WorkflowNode {
 								return branches["execute_success"][0]
 							}).Else(nil)
-							failureBranch := lo.IfF(len(branches["execute_failure"]) > 0, func() *dLegacyWorkflowNode {
+							failureBranch := lo.IfF(len(branches["execute_failure"]) > 0, func() *snapsv03.WorkflowNode {
 								return branches["execute_failure"][0]
 							}).Else(nil)
 							successBranchId := lo.If(successBranch != nil, successBranch.Id).Else(core.GenerateDefaultRandomId())
 							failureBranchId := lo.If(failureBranch != nil, failureBranch.Id).Else(core.GenerateDefaultRandomId())
 
-							catchBlocks := lo.If(failureBranch != nil && failureBranch.Next != nil, deepConvertNode(failureBranch.Next)).Else([]*dWorkflowNode{})
-							catchBlocks = append(catchBlocks, &dWorkflowNode{
+							catchBlocks := lo.If(failureBranch != nil && failureBranch.Next != nil, deepConvertNode(failureBranch.Next)).Else([]*snapsv04.WorkflowNode{})
+							catchBlocks = append(catchBlocks, &snapsv04.WorkflowNode{
 								Id:   core.GenerateDefaultRandomId(),
 								Type: "end",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name: lo.If(lang == "en", "End").Else("结束"),
 								},
 							})
 
-							tryCatchNode := &dWorkflowNode{
+							tryCatchNode := &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "tryCatch",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   lo.If(lang == "en", "Try to ...").Else("尝试执行…"),
 									Config: current.Config,
 								},
-								Blocks: []*dWorkflowNode{
+								Blocks: []*snapsv04.WorkflowNode{
 									{
 										Id:   successBranchId,
 										Type: "tryBlock",
-										Data: dWorkflowNodeData{
+										Data: snapsv04.WorkflowNodeData{
 											Name: "",
 										},
-										Blocks: []*dWorkflowNode{tryNode},
+										Blocks: []*snapsv04.WorkflowNode{tryNode},
 									},
 									{
 										Id:   failureBranchId,
 										Type: "catchBlock",
-										Data: dWorkflowNodeData{
+										Data: snapsv04.WorkflowNodeData{
 											Name: lo.If(lang == "en", "On failed ...").Else("若执行失败…"),
 										},
 										Blocks: catchBlocks,
@@ -1160,18 +1142,18 @@ func init() {
 							current = successBranch
 
 						case "branch":
-							branchNode := &dWorkflowNode{
+							branchNode := &snapsv04.WorkflowNode{
 								Id:   current.Id,
 								Type: "condition",
-								Data: dWorkflowNodeData{
+								Data: snapsv04.WorkflowNodeData{
 									Name:   lo.If(lang == "en", "Parallel").Else("并行"),
 									Config: current.Config,
 								},
-								Blocks: lo.Map(current.Branches, func(b *dLegacyWorkflowNode, _ int) *dWorkflowNode {
-									return &dWorkflowNode{
+								Blocks: lo.Map(current.Branches, func(b *snapsv03.WorkflowNode, _ int) *snapsv04.WorkflowNode {
+									return &snapsv04.WorkflowNode{
 										Id:   b.Id,
 										Type: "branchBlock",
-										Data: dWorkflowNodeData{
+										Data: snapsv04.WorkflowNodeData{
 											Name:   b.Name,
 											Config: b.Config,
 										},
@@ -1191,20 +1173,20 @@ func init() {
 					return temp
 				}
 
-				nodes := lo.Ternary(root == nil, []*dWorkflowNode{
+				nodes := lo.Ternary(root == nil, []*snapsv04.WorkflowNode{
 					{
 						Id:   core.GenerateDefaultRandomId(),
 						Type: "start",
-						Data: dWorkflowNodeData{
+						Data: snapsv04.WorkflowNodeData{
 							Name: lo.If(lang == "en", "Start").Else("开始"),
 						},
 					},
 				}, deepConvertNode(root))
 
-				return append(nodes, &dWorkflowNode{
+				return append(nodes, &snapsv04.WorkflowNode{
 					Id:   core.GenerateDefaultRandomId(),
 					Type: "end",
-					Data: dWorkflowNodeData{
+					Data: snapsv04.WorkflowNodeData{
 						Name: lo.If(lang == "en", "End").Else("结束"),
 					},
 				})
@@ -1230,7 +1212,7 @@ func init() {
 							if err := record.UnmarshalJSONField("graphDraft", &graphDraft); err == nil {
 								if len(graphDraft) > 0 {
 									if _, ok := graphDraft["nodes"]; !ok {
-										legacyRootNode := &dLegacyWorkflowNode{}
+										legacyRootNode := &snapsv03.WorkflowNode{}
 										if err := record.UnmarshalJSONField("graphDraft", legacyRootNode); err != nil {
 											return err
 										} else {
@@ -1247,7 +1229,7 @@ func init() {
 							if err := record.UnmarshalJSONField("graphContent", &graphContent); err == nil {
 								if len(graphContent) > 0 {
 									if _, ok := graphContent["nodes"]; !ok {
-										legacyRootNode := &dLegacyWorkflowNode{}
+										legacyRootNode := &snapsv03.WorkflowNode{}
 										if err := record.UnmarshalJSONField("graphContent", legacyRootNode); err != nil {
 											return err
 										} else {
@@ -1293,7 +1275,7 @@ func init() {
 							if err := record.UnmarshalJSONField("graph", &graphContent); err == nil {
 								if len(graphContent) > 0 {
 									if _, ok := graphContent["nodes"]; !ok {
-										legacyRootNode := &dLegacyWorkflowNode{}
+										legacyRootNode := &snapsv03.WorkflowNode{}
 										if err := record.UnmarshalJSONField("graph", legacyRootNode); err != nil {
 											return err
 										} else {
