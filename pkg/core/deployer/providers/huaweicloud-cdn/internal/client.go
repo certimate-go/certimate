@@ -26,16 +26,6 @@ func (c *CdnClient) ListDomains(request *model.ListDomainsRequest) (*model.ListD
 	}
 }
 
-func (c *CdnClient) ShowDomainFullConfig(request *model.ShowDomainFullConfigRequest) (*model.ShowDomainFullConfigResponse, error) {
-	requestDef := hwcdn.GenReqDefForShowDomainFullConfig()
-
-	if resp, err := c.HcClient.Sync(request, requestDef); err != nil {
-		return nil, err
-	} else {
-		return resp.(*model.ShowDomainFullConfigResponse), nil
-	}
-}
-
 func (c *CdnClient) UpdateDomainMultiCertificates(request *model.UpdateDomainMultiCertificatesRequest) (*model.UpdateDomainMultiCertificatesResponse, error) {
 	requestDef := hwcdn.GenReqDefForUpdateDomainMultiCertificates()
 

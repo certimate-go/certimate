@@ -162,12 +162,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
 		var errs []error
 
-		for _, domain := range domains {
+		const MAX_DOMAIN_PER_REQUEST = 50
+		domainChunks := lo.Chunk(domains, MAX_DOMAIN_PER_REQUEST)
+		for _, domains := range domainChunks {
 			select {
 			case <-ctx.Done():
 				return nil, ctx.Err()
 			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertId, upres.CertName); err != nil {
+				if err := d.updateDomainsCertificate(ctx, domains, upres.CertId, upres.CertName); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -229,33 +231,20 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId, cloudCertName string) error {
-	// 查询加速域名配置
-	// REF: https://support.huaweicloud.com/api-cdn/ShowDomainFullConfig.html
-	showDomainFullConfigReq := &hccdnmodel.ShowDomainFullConfigRequest{
-		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
-		DomainName:          domain,
-	}
-	showDomainFullConfigResp, err := d.sdkClient.ShowDomainFullConfig(showDomainFullConfigReq)
-	d.logger.Debug("sdk request 'cdn.ShowDomainFullConfig'", slog.Any("request", showDomainFullConfigReq), slog.Any("response", showDomainFullConfigResp))
-	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'cdn.ShowDomainFullConfig': %w", err)
-	}
-
+func (d *Deployer) updateDomainsCertificate(ctx context.Context, domains []string, cloudCertId, cloudCertName string) error {
 	// 更新加速域名配置
 	// REF: https://support.huaweicloud.com/api-cdn/UpdateDomainMultiCertificates.html
 	// REF: https://support.huaweicloud.com/usermanual-cdn/cdn_01_0306.html
-	updateDomainMultiCertificatesReqBodyContent := &hccdnmodel.UpdateDomainMultiCertificatesRequestBodyContent{}
-	updateDomainMultiCertificatesReqBodyContent.DomainName = domain
-	updateDomainMultiCertificatesReqBodyContent.HttpsSwitch = 1
-	updateDomainMultiCertificatesReqBodyContent.CertificateType = lo.ToPtr(int32(2))
-	updateDomainMultiCertificatesReqBodyContent.ScmCertificateId = lo.ToPtr(cloudCertId)
-	updateDomainMultiCertificatesReqBodyContent.CertName = lo.ToPtr(cloudCertName)
-	updateDomainMultiCertificatesReqBodyContent = _assign(updateDomainMultiCertificatesReqBodyContent, showDomainFullConfigResp.Configs)
 	updateDomainMultiCertificatesReq := &hccdnmodel.UpdateDomainMultiCertificatesRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 		Body: &hccdnmodel.UpdateDomainMultiCertificatesRequestBody{
-			Https: updateDomainMultiCertificatesReqBodyContent,
+			Https: &hccdnmodel.UpdateDomainMultiCertificatesRequestBodyContent{
+				DomainName:       strings.Join(domains, ","),
+				HttpsSwitch:      1,
+				CertificateType:  lo.ToPtr(int32(2)),
+				ScmCertificateId: lo.ToPtr(cloudCertId),
+				CertName:         lo.ToPtr(cloudCertName),
+			},
 		},
 	}
 	updateDomainMultiCertificatesResp, err := d.sdkClient.UpdateDomainMultiCertificates(updateDomainMultiCertificatesReq)
@@ -295,42 +284,4 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Cdn
 
 	client := internal.NewCdnClient(hcClient)
 	return client, nil
-}
-
-func _assign(source *hccdnmodel.UpdateDomainMultiCertificatesRequestBodyContent, target *hccdnmodel.ConfigsGetBody) *hccdnmodel.UpdateDomainMultiCertificatesRequestBodyContent {
-	// `UpdateDomainMultiCertificates` 中不传的字段表示使用默认值、而非保留原值，
-	// 因此这里需要把原配置中的参数重新赋值回去。
-
-	if target == nil {
-		return source
-	}
-
-	if lo.FromPtr(target.OriginProtocol) == "follow" {
-		source.AccessOriginWay = lo.ToPtr(int32(1))
-	} else if lo.FromPtr(target.OriginProtocol) == "http" {
-		source.AccessOriginWay = lo.ToPtr(int32(2))
-	} else if lo.FromPtr(target.OriginProtocol) == "https" {
-		source.AccessOriginWay = lo.ToPtr(int32(3))
-	}
-
-	if target.ForceRedirect != nil {
-		if source.ForceRedirectConfig == nil {
-			source.ForceRedirectConfig = &hccdnmodel.ForceRedirect{}
-		}
-
-		if target.ForceRedirect.Status == "on" {
-			source.ForceRedirectConfig.Switch = 1
-			source.ForceRedirectConfig.RedirectType = lo.FromPtr(target.ForceRedirect.Type)
-		} else {
-			source.ForceRedirectConfig.Switch = 0
-		}
-	}
-
-	if target.Https != nil {
-		if lo.FromPtr(target.Https.Http2Status) == "on" {
-			source.Http2 = lo.ToPtr(int32(1))
-		}
-	}
-
-	return source
 }
