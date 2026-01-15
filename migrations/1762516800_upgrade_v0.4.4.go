@@ -37,12 +37,46 @@ func init() {
 		// update collection `settings`
 		//   - modify field `content` schema of `persistence`
 		{
-			if _, err := app.DB().NewQuery("UPDATE settings SET content = REPLACE(content, '\"expiredCertificatesMaxDaysRetention\"', '\"certificatesRetentionMaxDays\"') WHERE name = 'persistence'").Execute(); err != nil {
+			collection, err := app.FindCollectionByNameOrId("dy6ccjb60spfy6p")
+			if err != nil {
 				return err
 			}
 
-			if _, err := app.DB().NewQuery("UPDATE settings SET content = REPLACE(content, '\"workflowRunsMaxDaysRetention\"', '\"workflowRunsRetentionMaxDays\"') WHERE name = 'persistence'").Execute(); err != nil {
+			records, err := app.FindRecordsByFilter(collection, "name=\"persistence\"", "", 1, 0)
+			if err != nil {
 				return err
+			} else if len(records) != 0 {
+				record := records[0]
+				changed := false
+
+				content := make(map[string]any)
+				if err := record.UnmarshalJSONField("content", &content); err != nil {
+					return err
+				} else {
+					if _, ok := content["expiredCertificatesMaxDaysRetention"]; ok {
+						content["certificatesRetentionMaxDays"] = content["expiredCertificatesMaxDaysRetention"]
+						delete(content, "expiredCertificatesMaxDaysRetention")
+
+						record.Set("content", content)
+						changed = true
+					}
+
+					if _, ok := content["workflowRunsMaxDaysRetention"]; ok {
+						content["workflowRunsRetentionMaxDays"] = content["workflowRunsMaxDaysRetention"]
+						delete(content, "workflowRunsMaxDaysRetention")
+
+						record.Set("content", content)
+						changed = true
+					}
+				}
+
+				if changed {
+					if err := app.Save(record); err != nil {
+						return err
+					}
+
+					tracer.Printf("record #%s in collection '%s' updated", record.Id, collection.Name)
+				}
 			}
 		}
 

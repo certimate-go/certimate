@@ -58,7 +58,7 @@ func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 		if settings != nil {
 			sslProviderSettings := settings.Content.AsSSLProvider()
 			caProvider = string(sslProviderSettings.Provider)
-			caAccessConfig = sslProviderSettings.Config[sslProviderSettings.Provider]
+			caAccessConfig = sslProviderSettings.Configs[sslProviderSettings.Provider]
 		}
 	}
 

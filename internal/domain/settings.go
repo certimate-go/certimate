@@ -24,7 +24,8 @@ type SettingsContent map[string]any
 
 type SettingsContentForSSLProvider struct {
 	Provider CAProviderType                    `json:"provider"`
-	Config   map[CAProviderType]map[string]any `json:"config"`
+	Configs  map[CAProviderType]map[string]any `json:"configs"`
+	Timeout  int                               `json:"timeout"`
 }
 
 type SettingsContentForPersistence struct {
@@ -39,6 +40,10 @@ func (c SettingsContent) AsSSLProvider() *SettingsContentForSSLProvider {
 
 	if content.Provider == "" {
 		content.Provider = CAProviderTypeLetsEncrypt
+	}
+
+	if content.Timeout < 0 {
+		content.Timeout = 0
 	}
 
 	return content

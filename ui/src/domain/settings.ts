@@ -43,9 +43,10 @@ export type ScriptTemplateContent = {
 // #region Settings: SSLProvider
 export type SSLProviderSettingsContent = {
   provider: CAProviderType;
-  config: {
+  configs: {
     [key: string]: Record<string, unknown> | undefined;
   };
+  timeout?: number;
 };
 // #endregion
 
