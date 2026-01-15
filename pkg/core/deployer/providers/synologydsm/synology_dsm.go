@@ -17,9 +17,6 @@ import (
 )
 
 type DeployerConfig struct {
-	CertificateName string `json:"certificateName,omitempty"`
-
-	// Synology DSM server URL.
 	// 群晖 DSM 服务地址。
 	ServerUrl string `json:"serverUrl"`
 	// 群晖 DSM 用户名。
