@@ -21,7 +21,6 @@ const AccessConfigFieldsProviderSynologyDSM = () => {
         name={[parentNamePath, "serverUrl"]}
         initialValue={initialValues.serverUrl}
         label={t("access.form.synologydsm_server_url.label")}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.synologydsm_server_url.tooltip") }}></span>}
         rules={[formRule]}
       >
         <Input type="url" placeholder={t("access.form.synologydsm_server_url.placeholder")} />
@@ -49,8 +48,9 @@ const AccessConfigFieldsProviderSynologyDSM = () => {
         name={[parentNamePath, "totpSecret"]}
         initialValue={initialValues.totpSecret}
         label={t("access.form.synologydsm_totp_secret.label")}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.synologydsm_totp_secret.tooltip") }}></span>}
+        extra={t("access.form.synologydsm_totp_secret.help")}
         rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.synologydsm_totp_secret.tooltip") }}></span>}
       >
         <Input.Password autoComplete="new-password" placeholder={t("access.form.synologydsm_totp_secret.placeholder")} />
       </Form.Item>
@@ -58,8 +58,8 @@ const AccessConfigFieldsProviderSynologyDSM = () => {
       <Form.Item
         name={[parentNamePath, "allowInsecureConnections"]}
         initialValue={initialValues.allowInsecureConnections}
-        label={t("access.form.shared_allow_insecure_conns.label")}
         rules={[formRule]}
+        label={t("access.form.shared_allow_insecure_conns.label")}
       >
         <Switch />
       </Form.Item>
@@ -69,11 +69,9 @@ const AccessConfigFieldsProviderSynologyDSM = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    serverUrl: "",
+    serverUrl: "http://<your-host-addr>:5000/",
     username: "",
     password: "",
-    totpSecret: "",
-    allowInsecureConnections: false,
   };
 };
 
@@ -84,7 +82,13 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
     serverUrl: z.url(t("common.errmsg.url_invalid")),
     username: z.string().nonempty(t("access.form.synologydsm_username.placeholder")),
     password: z.string().nonempty(t("access.form.synologydsm_password.placeholder")),
-    totpSecret: z.string().nullish(),
+    totpSecret: z
+      .string()
+      .nullish()
+      .refine((v) => {
+        if (!v) return true;
+        return /^[A-Z2-7]{16,32}$/.test(v);
+      }),
     allowInsecureConnections: z.boolean().nullish(),
   });
 };

@@ -688,7 +688,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
     [
       [DEPLOYMENT_PROVIDERS.LOCAL, "provider.local", DEPLOYMENT_CATEGORIES.OTHER, "builtin"],
       [DEPLOYMENT_PROVIDERS.SSH, "provider.ssh", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.WEBHOOK, "provider.webhook", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.KUBERNETES_SECRET, "provider.kubernetes_secret", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.ALIYUN_OSS, "provider.aliyun_oss", DEPLOYMENT_CATEGORIES.STORAGE],
@@ -800,6 +799,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.DOKPLOY, "provider.dokploy", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.NGINXPROXYMANAGER, "provider.nginxproxymanager", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.PROXMOXVE, "provider.proxmoxve", DEPLOYMENT_CATEGORIES.OTHER],
+      [DEPLOYMENT_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", DEPLOYMENT_CATEGORIES.OTHER],
     ] satisfies Array<[DeploymentProviderType, string, DeploymentCategoryType, "builtin"] | [DeploymentProviderType, string, DeploymentCategoryType]>
   ).map(([type, name, category, builtin]) => [
     type,
