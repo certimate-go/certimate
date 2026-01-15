@@ -72,7 +72,7 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		return execRes, err
 	} else {
 		if lastOutput != nil {
-			ne.logger.Info(fmt.Sprintf("found last workrun #%s record", lastOutput.RunId))
+			ne.logger.Info(fmt.Sprintf("found last node output #%s record", lastOutput.RunId))
 		}
 
 		if lastCertificate != nil {

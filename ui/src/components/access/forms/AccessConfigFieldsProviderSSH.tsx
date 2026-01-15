@@ -209,7 +209,7 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
                   }, 0);
                 }}
               >
-                {t("access.form.ssh_jump_servers.add")}
+                {t("access.form.ssh_jump_servers.add.button")}
               </Button>
             </div>
           )}

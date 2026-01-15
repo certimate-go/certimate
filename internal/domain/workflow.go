@@ -233,12 +233,12 @@ type WorkflowNodeConfigForBizApply struct {
 	ValidityLifetime      string         `json:"validityLifetime,omitempty"`      // 有效期，形如 "30d"、"6h"
 	PreferredChain        string         `json:"preferredChain,omitempty"`        // 首选证书链
 	ACMEProfile           string         `json:"acmeProfile,omitempty"`           // ACME Profiles Extension
-	Nameservers           []string       `json:"nameservers,omitempty"`           // DNS 服务器列表，以半角分号分隔
-	DnsPropagationWait    int            `json:"dnsPropagationWait,omitempty"`    // DNS 传播等待时间，等同于 lego 的 `--dns.propagation-wait` 参数
-	DnsPropagationTimeout int            `json:"dnsPropagationTimeout,omitempty"` // DNS 传播检查超时时间（零值时使用提供商的默认值）
-	DnsTTL                int            `json:"dnsTTL,omitempty"`                // DNS 解析记录 TTL（零值时使用提供商的默认值）
-	HttpDelayWait         int            `json:"httpDelayWait,omitempty"`         // HTTP 等待时间，等同于 lego 的 `--http.delay` 参数
-	DisableCommonName     bool           `json:"disableCommonName,omitempty"`     // 是否不包含 CommonName
+	Nameservers           []string       `json:"nameservers,omitempty"`           // DNS 服务器列表，以半角分号分隔。等同于 lego 的 `--dns.resolvers` 参数
+	DnsPropagationWait    int            `json:"dnsPropagationWait,omitempty"`    // DNS 传播等待时间。等同于 lego 的 `--dns.propagation-wait` 参数
+	DnsPropagationTimeout int            `json:"dnsPropagationTimeout,omitempty"` // DNS 传播检查超时时间。等同于 lego 的 `--dns-timeout` 参数
+	DnsTTL                int            `json:"dnsTTL,omitempty"`                // DNS 解析记录 TTL
+	HttpDelayWait         int            `json:"httpDelayWait,omitempty"`         // HTTP 等待时间。等同于 lego 的 `--http.delay` 参数
+	DisableCommonName     bool           `json:"disableCommonName,omitempty"`     // 是否不包含 CommonName。等同于 lego 的 `--disable-cn` 参数
 	DisableFollowCNAME    bool           `json:"disableFollowCNAME,omitempty"`    // 是否关闭 CNAME 跟随
 	DisableARI            bool           `json:"disableARI,omitempty"`            // 是否关闭 ARI
 	SkipBeforeExpiryDays  int            `json:"skipBeforeExpiryDays,omitempty"`  // 证书到期前多少天前跳过续期

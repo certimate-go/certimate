@@ -606,7 +606,7 @@
   "access.form.ssh_jump_servers.label": "Jump servers (Optional)",
   "access.form.ssh_jump_servers.errmsg.invalid": "Please configure valid jump servers",
   "access.form.ssh_jump_servers.item.label": "Jump server",
-  "access.form.ssh_jump_servers.add": "Add jump server",
+  "access.form.ssh_jump_servers.add.button": "Add jump server",
   "access.form.sslcom_eab.guide": "Learn more about using EAB key in SSL.com: <br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>",
   "access.form.telegrambot_token.label": "Telegram bot token",
   "access.form.telegrambot_token.placeholder": "Please enter Telegram bot token",

@@ -57,6 +57,10 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	if err != nil {
 		return execRes, err
 	} else {
+		if lastOutput != nil {
+			ne.logger.Info(fmt.Sprintf("found last node output #%s record", lastOutput.RunId))
+		}
+
 		if lastCertificate != nil {
 			ne.setOuputsOfResult(execCtx, execRes, lastCertificate, false)
 			ne.setVariablesOfResult(execCtx, execRes, lastCertificate)

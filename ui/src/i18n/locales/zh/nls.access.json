@@ -606,7 +606,7 @@
   "access.form.ssh_jump_servers.label": "跳板机（可选）",
   "access.form.ssh_jump_servers.errmsg.invalid": "请配置有效的跳板机信息",
   "access.form.ssh_jump_servers.item.label": "跳板机",
-  "access.form.ssh_jump_servers.add": "添加跳板机",
+  "access.form.ssh_jump_servers.add.button": "添加跳板机",
   "access.form.sslcom_eab.guide": "点击下方链接了解如何获取 SSL.com EAB：<br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>",
   "access.form.technitiumdns_server_url.label": "Technitium DNS 服务地址",
   "access.form.technitiumdns_server_url.placeholder": "请输入 Technitium DNS 服务地址",
