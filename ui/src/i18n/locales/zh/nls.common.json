@@ -47,6 +47,7 @@
   "common.errmsg.port_invalid": "请输入正确的端口号",
   "common.errmsg.ip_invalid": "请输入正确的 IP 地址",
   "common.errmsg.url_invalid": "请输入正确的 URL 地址",
+  "common.errmsg.json_invalid": "请输入有效的 JSON 格式字符串",
   "common.errmsg.form_invalid": "请检查表单内容",
 
   "common.notifier.bark": "Bark",

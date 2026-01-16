@@ -17,7 +17,8 @@ func init() {
 		}
 
 		provider, err := wecombot.NewNotifier(&wecombot.NotifierConfig{
-			WebhookUrl: credentials.WebhookUrl,
+			WebhookUrl:    credentials.WebhookUrl,
+			CustomPayload: credentials.CustomPayload,
 		})
 		return provider, err
 	})

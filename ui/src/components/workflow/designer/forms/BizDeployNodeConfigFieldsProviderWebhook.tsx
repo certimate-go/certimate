@@ -81,7 +81,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       .refine((v) => {
         if (!v) return true;
         return isJsonObject(v);
-      }, t("workflow_node.deploy.form.webhook_data.errmsg.json_invalid")),
+      }, t("common.errmsg.json_invalid")),
     timeout: z.preprocess(
       (v) => (v == null || v === "" ? void 0 : Number(v)),
       z.number().int().gte(1, t("workflow_node.deploy.form.webhook_timeout.placeholder")).nullish()

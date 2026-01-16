@@ -17,8 +17,9 @@ func init() {
 		}
 
 		provider, err := dingtalkbot.NewNotifier(&dingtalkbot.NotifierConfig{
-			WebhookUrl: credentials.WebhookUrl,
-			Secret:     credentials.Secret,
+			WebhookUrl:    credentials.WebhookUrl,
+			Secret:        credentials.Secret,
+			CustomPayload: credentials.CustomPayload,
 		})
 		return provider, err
 	})

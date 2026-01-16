@@ -188,8 +188,9 @@ type AccessConfigForDigitalOcean struct {
 }
 
 type AccessConfigForDingTalkBot struct {
-	WebhookUrl string `json:"webhookUrl"`
-	Secret     string `json:"secret,omitempty"`
+	WebhookUrl    string `json:"webhookUrl"`
+	Secret        string `json:"secret,omitempty"`
+	CustomPayload string `json:"customPayload,omitempty"`
 }
 
 type AccessConfigForDiscordBot struct {
@@ -341,8 +342,9 @@ type AccessConfigForKsyun struct {
 }
 
 type AccessConfigForLarkBot struct {
-	WebhookUrl string `json:"webhookUrl"`
-	Secret     string `json:"secret,omitempty"`
+	WebhookUrl    string `json:"webhookUrl"`
+	Secret        string `json:"secret,omitempty"`
+	CustomPayload string `json:"customPayload,omitempty"`
 }
 
 type AccessConfigForLeCDN struct {
@@ -585,7 +587,8 @@ type AccessConfigForWebhook struct {
 }
 
 type AccessConfigForWeComBot struct {
-	WebhookUrl string `json:"webhookUrl"`
+	WebhookUrl    string `json:"webhookUrl"`
+	CustomPayload string `json:"customPayload,omitempty"`
 }
 
 type AccessConfigForWestcn struct {

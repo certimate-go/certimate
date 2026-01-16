@@ -364,7 +364,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
       .refine((v) => {
         if (!v) return true;
         return isJsonObject(v);
-      }, t("access.form.webhook_data.errmsg.json_invalid")),
+      }, t("common.errmsg.json_invalid")),
     allowInsecureConnections: z.boolean().nullish(),
   });
 };
