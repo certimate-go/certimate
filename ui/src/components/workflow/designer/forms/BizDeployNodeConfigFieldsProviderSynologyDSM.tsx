@@ -18,14 +18,14 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "certificateId"]}
-        initialValue={initialValues.certificateId}
-        label={t("workflow_node.deploy.form.synologydsm_certificate_id.label")}
-        extra={t("workflow_node.deploy.form.synologydsm_certificate_id.help")}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm_certificate_id.tooltip") }}></span>}
+        name={[parentNamePath, "certificateIdOrDesc"]}
+        initialValue={initialValues.certificateIdOrDesc}
+        label={t("workflow_node.deploy.form.synologydsm_certificate_id_or_desc.label")}
+        extra={t("workflow_node.deploy.form.synologydsm_certificate_id_or_desc.help")}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm_certificate_id_or_desc.tooltip") }}></span>}
         rules={[formRule]}
       >
-        <Input placeholder={t("workflow_node.deploy.form.synologydsm_certificate_id.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.synologydsm_certificate_id_or_desc.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -48,7 +48,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 
 const getSchema = ({ i18n: _i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
   return z.object({
-    certificateId: z.string().nullish(),
+    certificateIdOrDesc: z.string().nullish(),
     isDefault: z.boolean().nullish(),
   });
 };

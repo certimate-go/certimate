@@ -17,13 +17,13 @@ func init() {
 		}
 
 		provider, err := synologydsm.NewDeployer(&synologydsm.DeployerConfig{
-			ServerUrl:                credentials.ServerUrl,
-			Username:                 credentials.Username,
-			Password:                 credentials.Password,
-			TotpSecret:               credentials.TotpSecret,
-			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			CertificateId:            xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
-			IsDefault:                xmaps.GetBool(options.ProviderExtendedConfig, "isDefault"),
+			ServerUrl:                  credentials.ServerUrl,
+			Username:                   credentials.Username,
+			Password:                   credentials.Password,
+			TotpSecret:                 credentials.TotpSecret,
+			AllowInsecureConnections:   credentials.AllowInsecureConnections,
+			CertificateIdOrDescription: xmaps.GetString(options.ProviderExtendedConfig, "certificateIdOrDesc"),
+			IsDefault:                  xmaps.GetBool(options.ProviderExtendedConfig, "isDefault"),
 		})
 		return provider, err
 	})

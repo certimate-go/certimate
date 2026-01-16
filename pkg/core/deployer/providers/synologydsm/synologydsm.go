@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/pquerna/otp/totp"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	dsmsdk "github.com/certimate-go/certimate/pkg/sdk3rd/synologydsm"
@@ -27,9 +28,9 @@ type DeployerConfig struct {
 	TotpSecret string `json:"totpSecret,omitempty"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
-	// 证书 ID。
+	// 证书 ID 或描述。
 	// 选填。零值时表示新建证书；否则表示更新证书。
-	CertificateId string `json:"certificateId,omitempty"`
+	CertificateIdOrDescription string `json:"certificateIdOrDesc,omitempty"`
 	// 是否设为默认证书。
 	IsDefault bool `json:"isDefault,omitempty"`
 }
@@ -110,8 +111,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string
 		d.logger.Debug("sdk request 'SYNO.API.Auth:logout'", slog.Any("response", logoutResp))
 	}()
 
-	// 如果原证书 ID 为空，则创建证书；否则更新证书。
-	if d.config.CertificateId == "" {
+	// 如果原证书 ID 或描述为空，则创建证书；否则更新证书。
+	if d.config.CertificateIdOrDescription == "" {
 		// 导入证书
 		importCertificateReq := &dsmsdk.ImportCertificateRequest{
 			ID:          "",
@@ -134,15 +135,21 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate.CRT:list': %w", err)
 		} else {
-			for _, certItem := range listCertificatesResp.Data.Certificates {
-				if certItem.ID == d.config.CertificateId {
-					certInfo = certItem
-					break
-				}
+			matchedCerts := lo.Filter(listCertificatesResp.Data.Certificates, func(certItem *dsmsdk.CertificateInfo, _ int) bool {
+				return certItem.ID == d.config.CertificateIdOrDescription
+			})
+			if len(matchedCerts) == 0 {
+				matchedCerts = lo.Filter(listCertificatesResp.Data.Certificates, func(certItem *dsmsdk.CertificateInfo, _ int) bool {
+					return certItem.Description == d.config.CertificateIdOrDescription
+				})
 			}
-
-			if certInfo == nil {
-				return nil, fmt.Errorf("could not find certificate with ID '%s'", d.config.CertificateId)
+			if len(matchedCerts) == 0 {
+				return nil, fmt.Errorf("could not find certificate '%s'", d.config.CertificateIdOrDescription)
+			} else {
+				if len(matchedCerts) > 1 {
+					d.logger.Warn("found several certificates matched '%s', using the first one")
+				}
+				certInfo = matchedCerts[0]
 			}
 		}
 

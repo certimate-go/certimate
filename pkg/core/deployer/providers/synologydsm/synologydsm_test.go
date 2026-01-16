@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fServerUrl     string
-	fUsername      string
-	fPassword      string
-	fTotpSecret    string
-	fCertificateId string
-	fIsDefault     bool
+	fInputCertPath       string
+	fInputKeyPath        string
+	fServerUrl           string
+	fUsername            string
+	fPassword            string
+	fTotpSecret          string
+	fCertificateIdOrDesc string
+	fIsDefault           bool
 )
 
 func init() {
@@ -31,7 +31,7 @@ func init() {
 	flag.StringVar(&fUsername, argsPrefix+"USERNAME", "", "")
 	flag.StringVar(&fPassword, argsPrefix+"PASSWORD", "", "")
 	flag.StringVar(&fTotpSecret, argsPrefix+"TOTPSECRET", "", "")
-	flag.StringVar(&fCertificateId, argsPrefix+"CERTIFICATEID", "", "")
+	flag.StringVar(&fCertificateIdOrDesc, argsPrefix+"CERTIFICATEIDORDESC", "", "")
 	flag.BoolVar(&fIsDefault, argsPrefix+"ISDEFAULT", false, "")
 }
 
@@ -44,7 +44,7 @@ Shell command to run this test:
 	--SYNOLOGYDSM_SERVERURL="http://127.0.0.1:5000/" \
 	--SYNOLOGYDSM_USERNAME="admin" \
 	--SYNOLOGYDSM_PASSWORD="password" \
-	--SYNOLOGYDSM_CERTIFICATEID="your-certificate-id" \
+	--SYNOLOGYDSM_CERTIFICATEIDORDESC="your-certificate-id-or-desc" \
 	--SYNOLOGYDSM_ISDEFAULT=true
 */
 func TestDeploy(t *testing.T) {
@@ -59,18 +59,18 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("USERNAME: %v", fUsername),
 			fmt.Sprintf("PASSWORD: %v", fPassword),
 			fmt.Sprintf("TOTPSECRET: %v", fTotpSecret),
-			fmt.Sprintf("CERTIFICATEID: %v", fCertificateId),
+			fmt.Sprintf("CERTIFICATEIDORDESC: %v", fCertificateIdOrDesc),
 			fmt.Sprintf("ISDEFAULT: %v", fIsDefault),
 		}, "\n"))
 
 		deployer, err := provider.NewDeployer(&provider.DeployerConfig{
-			ServerUrl:                fServerUrl,
-			Username:                 fUsername,
-			Password:                 fPassword,
-			TotpSecret:               fTotpSecret,
-			AllowInsecureConnections: true,
-			CertificateId:            fCertificateId,
-			IsDefault:                fIsDefault,
+			ServerUrl:                  fServerUrl,
+			Username:                   fUsername,
+			Password:                   fPassword,
+			TotpSecret:                 fTotpSecret,
+			AllowInsecureConnections:   true,
+			CertificateIdOrDescription: fCertificateIdOrDesc,
+			IsDefault:                  fIsDefault,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
