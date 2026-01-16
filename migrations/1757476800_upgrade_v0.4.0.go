@@ -18,10 +18,15 @@ import (
 
 func init() {
 	m.Register(func(app core.App) error {
-		if mr, _ := app.FindFirstRecordByFilter("_migrations", "file='1757476800_m0.4.0_migrate.go'"); mr != nil {
+		file := "1757476800_m0.4.0_migrate.go"
+		var one int
+		err := app.DB().
+			NewQuery(`SELECT 1 FROM _migrations WHERE file = {:file} LIMIT 1`).
+			Bind(map[string]any{"file": file}).
+			Row(&one)
+		if one == 1 && err == nil {
 			return nil
 		}
-
 		tracer := NewTracer("v0.4.0")
 		tracer.Printf("go ...")
 
@@ -1375,10 +1380,10 @@ func init() {
 				app.DB().NewQuery(`UPDATE workflow_run SET graph=REPLACE(graph, '"id":"_', '"id":"')`).Execute()
 
 				app.DB().NewQuery(`UPDATE workflow_output SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '-%'`).Execute()
-				app.DB().NewQuery(`UPDATE workflow_output SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '_%'`).Execute()
+				app.DB().NewQuery(`UPDATE workflow_output SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '\_%' ESCAPE '\'`).Execute()
 
 				app.DB().NewQuery(`UPDATE workflow_logs SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '-%'`).Execute()
-				app.DB().NewQuery(`UPDATE workflow_logs SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '_%'`).Execute()
+				app.DB().NewQuery(`UPDATE workflow_logs SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '\_%' ESCAPE '\'`).Execute()
 			}
 		}
 

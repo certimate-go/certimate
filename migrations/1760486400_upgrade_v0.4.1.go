@@ -9,7 +9,13 @@ import (
 
 func init() {
 	m.Register(func(app core.App) error {
-		if mr, _ := app.FindFirstRecordByFilter("_migrations", "file='1760486400_m0.4.1.go'"); mr != nil {
+		file := "1760486400_m0.4.1.go"
+		var one int
+		err := app.DB().
+			NewQuery(`SELECT 1 FROM _migrations WHERE file = {:file} LIMIT 1`).
+			Bind(map[string]any{"file": file}).
+			Row(&one)
+		if one == 1 && err == nil {
 			return nil
 		}
 
