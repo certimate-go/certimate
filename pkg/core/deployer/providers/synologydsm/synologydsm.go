@@ -31,9 +31,6 @@ type DeployerConfig struct {
 	// 证书 ID 或描述。
 	// 选填。零值时表示新建证书；否则表示更新证书。
 	CertificateIdOrDescription string `json:"certificateIdOrDesc,omitempty"`
-	// 当证书不存在时是否创建新证书。
-	// 仅当 CertificateIdOrDescription 不为空时生效。
-	CreateIfNotExists bool `json:"createIfNotExists,omitempty"`
 	// 是否设为默认证书。
 	IsDefault bool `json:"isDefault,omitempty"`
 }
@@ -147,24 +144,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string
 				})
 			}
 			if len(matchedCerts) == 0 {
-				if d.config.CreateIfNotExists {
-					// 找不到证书但启用了自动创建，使用用户输入的描述创建新证书
-					importCertificateReq := &dsmsdk.ImportCertificateRequest{
-						ID:          "",
-						Description: d.config.CertificateIdOrDescription,
-						Key:         privkeyPEM,
-						Cert:        serverCertPEM,
-						InterCert:   intermediateCertPEM,
-						AsDefault:   d.config.IsDefault,
-					}
-					importCertificateResp, err := d.sdkClient.ImportCertificate(importCertificateReq)
-					d.logger.Debug("sdk request 'SYNO.Core.Certificate:import'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
-					if err != nil {
-						return nil, fmt.Errorf("failed to execute sdk request 'SYNO.Core.Certificate:import': %w", err)
-					}
-					// 跳转到默认证书处理逻辑
-					goto handleDefaultCert
-				}
 				return nil, fmt.Errorf("could not find certificate '%s'", d.config.CertificateIdOrDescription)
 			} else {
 				if len(matchedCerts) > 1 {
@@ -190,7 +169,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string
 		}
 	}
 
-handleDefaultCert:
 	if d.config.IsDefault {
 		// 查找证书列表，找到默认证书
 		listCertificatesResp, err := d.sdkClient.ListCertificates()

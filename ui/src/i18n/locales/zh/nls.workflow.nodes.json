@@ -752,8 +752,6 @@
   "workflow_node.deploy.form.synologydsm_certificate_id_or_desc.placeholder": "请输入群晖 DSM 原证书 ID 或描述",
   "workflow_node.deploy.form.synologydsm_certificate_id_or_desc.help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
   "workflow_node.deploy.form.synologydsm_certificate_id_or_desc.tooltip": "请登录群晖 DSM 面板查看<br><br>（目前需要在「控制面板 -> 安全性 -> 证书」页面，并打开浏览器开发者工具抓取网络请求后得到证书 ID）",
-  "workflow_node.deploy.form.synologydsm_create_if_not_exists.label": "当证书不存在时自动创建",
-  "workflow_node.deploy.form.synologydsm_create_if_not_exists.tooltip": "启用后，如果找不到匹配的证书 ID 或描述，将自动创建一个新证书并使用上述输入作为证书描述。",
   "workflow_node.deploy.form.synologydsm_is_default.label": "设为默认证书并应用到所有 DSM 服务",
   "workflow_node.deploy.form.qiniu_cdn_domain.label": "七牛云 CDN 加速域名",
   "workflow_node.deploy.form.qiniu_cdn_domain.placeholder": "请输入七牛云 CDN 加速域名",
