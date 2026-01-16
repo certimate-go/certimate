@@ -1375,10 +1375,10 @@ func init() {
 				app.DB().NewQuery(`UPDATE workflow_run SET graph=REPLACE(graph, '"id":"_', '"id":"')`).Execute()
 
 				app.DB().NewQuery(`UPDATE workflow_output SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '-%'`).Execute()
-				app.DB().NewQuery(`UPDATE workflow_output SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '_%'`).Execute()
+				app.DB().NewQuery(`UPDATE workflow_output SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '\_%' ESCAPE '\'`).Execute()
 
 				app.DB().NewQuery(`UPDATE workflow_logs SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '-%'`).Execute()
-				app.DB().NewQuery(`UPDATE workflow_logs SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '_%'`).Execute()
+				app.DB().NewQuery(`UPDATE workflow_logs SET nodeId=SUBSTR(nodeId, 2) WHERE nodeId LIKE '\_%' ESCAPE '\'`).Execute()
 			}
 		}
 
