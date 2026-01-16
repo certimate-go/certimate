@@ -5,7 +5,7 @@
   "provider.51dnscom": "帝恩思（51DNS）",
   "provider.acmeca": "自定义 ACME CA 端点",
   "provider.acmedns": "ACME-DNS",
-  "provider.acmehttpreq": "自定义 ACME 基于 HTTP 请求的质询验证端点",
+  "provider.acmehttpreq": "自定义基于 HTTP 请求的 ACME 质询验证端点",
   "provider.actalisssl": "Actalis SSL",
   "provider.akamai": "Akamai",
   "provider.akamai_cdn": "Akamai - 内容分发网络 CDN",

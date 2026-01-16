@@ -478,8 +478,8 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.CPANEL, "provider.cpanel"],
       [ACME_DNS01_PROVIDERS.POWERDNS, "provider.powerdns"],
       [ACME_DNS01_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns"],
-      [ACME_DNS01_PROVIDERS.RFC2136, "provider.rfc2136"],
       [ACME_DNS01_PROVIDERS.ACMEDNS, "provider.acmedns"],
+      [ACME_DNS01_PROVIDERS.RFC2136, "provider.rfc2136"],
       [ACME_DNS01_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq"],
     ] satisfies Array<[ACMEDns01ProviderType, string]>
   ).map(([type, name]) => [
