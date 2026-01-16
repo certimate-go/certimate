@@ -13,17 +13,19 @@ type LogoutResponse struct {
 
 func (c *Client) Logout() (*LogoutResponse, error) {
 	if c.sid == "" {
-		return nil, nil
+		result := &LogoutResponse{}
+		result.Success = true
+		return result, nil
 	}
 
 	params := url.Values{
 		"api":     {"SYNO.API.Auth"},
-		"version": {strconv.Itoa(c.apiVersion)},
+		"version": {strconv.Itoa(c.authApiVersion)},
 		"method":  {"logout"},
 		"_sid":    {c.sid},
 	}
 
-	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/webapi/%s?%s", c.apiPath, params.Encode()))
+	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/webapi/%s?%s", c.authApiPath, params.Encode()))
 	if err != nil {
 		return nil, err
 	}

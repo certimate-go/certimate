@@ -22,7 +22,6 @@ func (c *Client) QueryAPIInfo(req *QueryAPIInfoRequest) (*QueryAPIInfoResponse, 
 		"api":     {"SYNO.API.Info"},
 		"version": {"1"},
 		"method":  {"query"},
-		"query":   {"SYNO.API.Auth"},
 	}
 
 	values, err := qs.Values(req)

@@ -26,27 +26,28 @@ type LoginResponse struct {
 }
 
 func (c *Client) Login(req *LoginRequest) (*LoginResponse, error) {
-	if c.apiPath == "" || c.apiVersion == 0 {
+	const AUTH_API_NAME = "SYNO.API.Auth"
+	if c.authApiPath == "" || c.authApiVersion == 0 {
 		queryInfoReq := &QueryAPIInfoRequest{
-			Query: "SYNO.API.Auth",
+			Query: AUTH_API_NAME,
 		}
 		queryInfoResp, err := c.QueryAPIInfo(queryInfoReq)
 		if err != nil {
 			return nil, fmt.Errorf("sdkerr: failed to query API info: %w", err)
 		} else {
-			authInfo, ok := queryInfoResp.Data["SYNO.API.Auth"]
+			authApiInfo, ok := queryInfoResp.Data[AUTH_API_NAME]
 			if !ok {
-				return nil, fmt.Errorf("sdkerr: failed to query API info: \"SYNO.API.Auth\" not found")
+				return nil, fmt.Errorf("sdkerr: failed to query API info: \"%s\" not found", AUTH_API_NAME)
 			}
 
-			c.apiPath = authInfo.Path
-			c.apiVersion = authInfo.MaxVersion
+			c.authApiPath = authApiInfo.Path
+			c.authApiVersion = authApiInfo.MaxVersion
 		}
 	}
 
 	params := url.Values{
-		"api":                 {"SYNO.API.Auth"},
-		"version":             {strconv.Itoa(c.apiVersion)},
+		"api":                 {AUTH_API_NAME},
+		"version":             {strconv.Itoa(c.authApiVersion)},
 		"method":              {"login"},
 		"format":              {"sid"},
 		"enable_syno_token":   {"yes"},
@@ -62,7 +63,7 @@ func (c *Client) Login(req *LoginRequest) (*LoginResponse, error) {
 		params.Set(k, values.Get(k))
 	}
 
-	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/webapi/%s?%s", c.apiPath, params.Encode()))
+	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/webapi/%s?%s", c.authApiPath, params.Encode()))
 	if err != nil {
 		return nil, err
 	}

@@ -16,8 +16,8 @@ import (
 )
 
 type Client struct {
-	apiPath    string
-	apiVersion int
+	authApiPath    string
+	authApiVersion int
 
 	sid          string
 	synoToken    string
