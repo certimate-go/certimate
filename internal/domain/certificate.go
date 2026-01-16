@@ -112,3 +112,11 @@ func (t CertificateKeyAlgorithmType) KeyType() (certcrypto.KeyType, error) {
 
 	return certcrypto.RSA2048, fmt.Errorf("unsupported key algorithm type: '%s'", t)
 }
+
+type CertificateFormatType string
+
+const (
+	CertificateFormatTypePEM CertificateFormatType = "PEM"
+	CertificateFormatTypePFX CertificateFormatType = "PFX"
+	CertificateFormatTypeJKS CertificateFormatType = "JKS"
+)

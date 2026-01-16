@@ -202,53 +202,59 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	// 上传证书和私钥文件
 	switch d.config.OutputFormat {
 	case OUTPUT_FORMAT_PEM:
-		if err := xssh.WriteRemoteString(client, d.config.OutputKeyPath, privkeyPEM, d.config.UseSCP); err != nil {
-			return nil, fmt.Errorf("failed to upload private key file: %w", err)
-		}
-		d.logger.Info("ssl private key file uploaded", slog.String("path", d.config.OutputKeyPath))
-
-		if err := xssh.WriteRemoteString(client, d.config.OutputCertPath, certPEM, d.config.UseSCP); err != nil {
-			return nil, fmt.Errorf("failed to upload certificate file: %w", err)
-		}
-		d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
-
-		if d.config.OutputServerCertPath != "" {
-			if err := xssh.WriteRemoteString(client, d.config.OutputServerCertPath, serverCertPEM, d.config.UseSCP); err != nil {
-				return nil, fmt.Errorf("failed to save server certificate file: %w", err)
+		{
+			if err := xssh.WriteRemoteString(client, d.config.OutputCertPath, certPEM, d.config.UseSCP); err != nil {
+				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
 			}
-			d.logger.Info("ssl server certificate file uploaded", slog.String("path", d.config.OutputServerCertPath))
-		}
+			d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 
-		if d.config.OutputIntermediaCertPath != "" {
-			if err := xssh.WriteRemoteString(client, d.config.OutputIntermediaCertPath, intermediaCertPEM, d.config.UseSCP); err != nil {
-				return nil, fmt.Errorf("failed to save intermedia certificate file: %w", err)
+			if d.config.OutputServerCertPath != "" {
+				if err := xssh.WriteRemoteString(client, d.config.OutputServerCertPath, serverCertPEM, d.config.UseSCP); err != nil {
+					return nil, fmt.Errorf("failed to save server certificate file: %w", err)
+				}
+				d.logger.Info("ssl server certificate file uploaded", slog.String("path", d.config.OutputServerCertPath))
 			}
-			d.logger.Info("ssl intermedia certificate file uploaded", slog.String("path", d.config.OutputIntermediaCertPath))
+
+			if d.config.OutputIntermediaCertPath != "" {
+				if err := xssh.WriteRemoteString(client, d.config.OutputIntermediaCertPath, intermediaCertPEM, d.config.UseSCP); err != nil {
+					return nil, fmt.Errorf("failed to save intermedia certificate file: %w", err)
+				}
+				d.logger.Info("ssl intermedia certificate file uploaded", slog.String("path", d.config.OutputIntermediaCertPath))
+			}
+
+			if err := xssh.WriteRemoteString(client, d.config.OutputKeyPath, privkeyPEM, d.config.UseSCP); err != nil {
+				return nil, fmt.Errorf("failed to upload private key file: %w", err)
+			}
+			d.logger.Info("ssl private key file uploaded", slog.String("path", d.config.OutputKeyPath))
 		}
 
 	case OUTPUT_FORMAT_PFX:
-		pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword)
-		if err != nil {
-			return nil, fmt.Errorf("failed to transform certificate to PFX: %w", err)
-		}
-		d.logger.Info("ssl certificate transformed to pfx")
+		{
+			pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword)
+			if err != nil {
+				return nil, fmt.Errorf("failed to transform certificate to PFX: %w", err)
+			}
+			d.logger.Info("ssl certificate transformed to pfx")
 
-		if err := xssh.WriteRemote(client, d.config.OutputCertPath, pfxData, d.config.UseSCP); err != nil {
-			return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if err := xssh.WriteRemote(client, d.config.OutputCertPath, pfxData, d.config.UseSCP); err != nil {
+				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			}
+			d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 		}
-		d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 
 	case OUTPUT_FORMAT_JKS:
-		jksData, err := xcert.TransformCertificateFromPEMToJKS(certPEM, privkeyPEM, d.config.JksAlias, d.config.JksKeypass, d.config.JksStorepass)
-		if err != nil {
-			return nil, fmt.Errorf("failed to transform certificate to JKS: %w", err)
-		}
-		d.logger.Info("ssl certificate transformed to jks")
+		{
+			jksData, err := xcert.TransformCertificateFromPEMToJKS(certPEM, privkeyPEM, d.config.JksAlias, d.config.JksKeypass, d.config.JksStorepass)
+			if err != nil {
+				return nil, fmt.Errorf("failed to transform certificate to JKS: %w", err)
+			}
+			d.logger.Info("ssl certificate transformed to jks")
 
-		if err := xssh.WriteRemote(client, d.config.OutputCertPath, jksData, d.config.UseSCP); err != nil {
-			return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if err := xssh.WriteRemote(client, d.config.OutputCertPath, jksData, d.config.UseSCP); err != nil {
+				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			}
+			d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 		}
-		d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 
 	default:
 		return nil, fmt.Errorf("unsupported output format '%s'", d.config.OutputFormat)

@@ -104,53 +104,59 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	// 写入证书和私钥文件
 	switch d.config.OutputFormat {
 	case OUTPUT_FORMAT_PEM:
-		if err := xfile.WriteString(d.config.OutputCertPath, certPEM); err != nil {
-			return nil, fmt.Errorf("failed to save certificate file: %w", err)
-		}
-		d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
-
-		if d.config.OutputServerCertPath != "" {
-			if err := xfile.WriteString(d.config.OutputServerCertPath, serverCertPEM); err != nil {
-				return nil, fmt.Errorf("failed to save server certificate file: %w", err)
+		{
+			if err := xfile.WriteString(d.config.OutputCertPath, certPEM); err != nil {
+				return nil, fmt.Errorf("failed to save certificate file: %w", err)
 			}
-			d.logger.Info("ssl server certificate file saved", slog.String("path", d.config.OutputServerCertPath))
-		}
+			d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 
-		if d.config.OutputIntermediaCertPath != "" {
-			if err := xfile.WriteString(d.config.OutputIntermediaCertPath, intermediaCertPEM); err != nil {
-				return nil, fmt.Errorf("failed to save intermedia certificate file: %w", err)
+			if d.config.OutputServerCertPath != "" {
+				if err := xfile.WriteString(d.config.OutputServerCertPath, serverCertPEM); err != nil {
+					return nil, fmt.Errorf("failed to save server certificate file: %w", err)
+				}
+				d.logger.Info("ssl server certificate file saved", slog.String("path", d.config.OutputServerCertPath))
 			}
-			d.logger.Info("ssl intermedia certificate file saved", slog.String("path", d.config.OutputIntermediaCertPath))
-		}
 
-		if err := xfile.WriteString(d.config.OutputKeyPath, privkeyPEM); err != nil {
-			return nil, fmt.Errorf("failed to save private key file: %w", err)
+			if d.config.OutputIntermediaCertPath != "" {
+				if err := xfile.WriteString(d.config.OutputIntermediaCertPath, intermediaCertPEM); err != nil {
+					return nil, fmt.Errorf("failed to save intermedia certificate file: %w", err)
+				}
+				d.logger.Info("ssl intermedia certificate file saved", slog.String("path", d.config.OutputIntermediaCertPath))
+			}
+
+			if err := xfile.WriteString(d.config.OutputKeyPath, privkeyPEM); err != nil {
+				return nil, fmt.Errorf("failed to save private key file: %w", err)
+			}
+			d.logger.Info("ssl private key file saved", slog.String("path", d.config.OutputKeyPath))
 		}
-		d.logger.Info("ssl private key file saved", slog.String("path", d.config.OutputKeyPath))
 
 	case OUTPUT_FORMAT_PFX:
-		pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword)
-		if err != nil {
-			return nil, fmt.Errorf("failed to transform certificate to PFX: %w", err)
-		}
-		d.logger.Info("ssl certificate transformed to pfx")
+		{
+			pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword)
+			if err != nil {
+				return nil, fmt.Errorf("failed to transform certificate to PFX: %w", err)
+			}
+			d.logger.Info("ssl certificate transformed to pfx")
 
-		if err := xfile.Write(d.config.OutputCertPath, pfxData); err != nil {
-			return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			if err := xfile.Write(d.config.OutputCertPath, pfxData); err != nil {
+				return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			}
+			d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 		}
-		d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 
 	case OUTPUT_FORMAT_JKS:
-		jksData, err := xcert.TransformCertificateFromPEMToJKS(certPEM, privkeyPEM, d.config.JksAlias, d.config.JksKeypass, d.config.JksStorepass)
-		if err != nil {
-			return nil, fmt.Errorf("failed to transform certificate to JKS: %w", err)
-		}
-		d.logger.Info("ssl certificate transformed to jks")
+		{
+			jksData, err := xcert.TransformCertificateFromPEMToJKS(certPEM, privkeyPEM, d.config.JksAlias, d.config.JksKeypass, d.config.JksStorepass)
+			if err != nil {
+				return nil, fmt.Errorf("failed to transform certificate to JKS: %w", err)
+			}
+			d.logger.Info("ssl certificate transformed to jks")
 
-		if err := xfile.Write(d.config.OutputCertPath, jksData); err != nil {
-			return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			if err := xfile.Write(d.config.OutputCertPath, jksData); err != nil {
+				return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			}
+			d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 		}
-		d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 
 	default:
 		return nil, fmt.Errorf("unsupported output format '%s'", d.config.OutputFormat)

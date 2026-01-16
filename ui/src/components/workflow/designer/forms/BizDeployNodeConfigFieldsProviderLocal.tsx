@@ -418,8 +418,8 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     format: FORMAT_PEM,
-    certPath: "/etc/ssl/certimate/cert.crt",
     keyPath: "/etc/ssl/certimate/cert.key",
+    certPath: "/etc/ssl/certimate/cert.crt",
     shellEnv: SHELLENV_SH,
   };
 };

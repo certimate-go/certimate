@@ -62,8 +62,7 @@ type provider struct {
 
 func (p *provider) Present(domain, token, keyAuth string) error {
 	objectKey := strings.Trim(http01.ChallengePath(token), "/")
-	reader := strings.NewReader(keyAuth)
-	if err := p.client.PutObject(context.Background(), p.bucket, objectKey, reader); err != nil {
+	if err := p.client.PutObjectString(context.Background(), p.bucket, objectKey, keyAuth); err != nil {
 		return fmt.Errorf("s3: failed to upload token to s3: %w", err)
 	}
 
