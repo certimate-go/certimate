@@ -33,7 +33,7 @@ func (c *Client) QueryAPIInfo(req *QueryAPIInfoRequest) (*QueryAPIInfoResponse, 
 		params.Set(k, values.Get(k))
 	}
 
-	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/query.cgi?%s", params.Encode()))
+	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/webapi/query.cgi?%s", params.Encode()))
 	if err != nil {
 		return nil, err
 	}
