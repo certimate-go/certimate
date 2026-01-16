@@ -159,6 +159,7 @@
   "provider.ratpanel_console": "AcePanel - Console itself",
   "provider.rfc2136": "RFC 2136: Dynamic DNS Updates",
   "provider.s3": "Object storage (S3-compatible)",
+  "provider.s3_upload": "Upload to S3-compatible object storage",
   "provider.safeline": "SafeLine",
   "provider.sectigo": "Sectigo",
   "provider.slackbot": "Slack Bot",

@@ -1,6 +1,7 @@
 ﻿package s3
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -87,16 +88,26 @@ func NewClient(config *Config) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) PutObject(ctx context.Context, bucket, key string, reader io.Reader) error {
+func (c *Client) PutObject(ctx context.Context, bucket, key string, reader io.Reader, size int64) error {
 	putOpts := minio.PutObjectOptions{
 		DisableMultipart: true,
 	}
-	_, err := c.client.PutObject(ctx, bucket, key, reader, 1024*1024*16, putOpts)
+	_, err := c.client.PutObject(ctx, bucket, key, reader, size, putOpts)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (c *Client) PutObjectString(ctx context.Context, bucket, key string, data string) error {
+	reader := strings.NewReader(data)
+	return c.PutObject(ctx, bucket, key, reader, reader.Size())
+}
+
+func (c *Client) PutObjectBytes(ctx context.Context, bucket, key string, data []byte) error {
+	reader := bytes.NewReader(data)
+	return c.PutObject(ctx, bucket, key, reader, reader.Size())
 }
 
 func (c *Client) RemoveObject(ctx context.Context, bucket, key string) error {

@@ -97,6 +97,24 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
         );
         break;
 
+      case "messagenest":
+        formInst.setFieldValue([parentNamePath, "url"], "http://<your-messagenest-server>/api/v1/message/send");
+        formInst.setFieldValue([parentNamePath, "method"], "POST");
+        formInst.setFieldValue([parentNamePath, "headers"], "Content-Type: application/json");
+        formInst.setFieldValue(
+          [parentNamePath, "data"],
+          JSON.stringify(
+            {
+              token: "<your-messagenest-token>",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              text: "${CERTIMATE_NOTIFIER_MESSAGE}",
+            },
+            null,
+            2
+          )
+        );
+        break;
+
       case "ntfy":
         formInst.setFieldValue([parentNamePath, "url"], "https://<your-ntfy-server>/");
         formInst.setFieldValue([parentNamePath, "method"], "POST");
@@ -109,6 +127,25 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
               title: "${CERTIMATE_NOTIFIER_SUBJECT}",
               message: "${CERTIMATE_NOTIFIER_MESSAGE}",
               priority: 1,
+            },
+            null,
+            2
+          )
+        );
+        break;
+
+      case "pushme":
+        formInst.setFieldValue([parentNamePath, "url"], "https://push.i-i.me/");
+        formInst.setFieldValue([parentNamePath, "method"], "POST");
+        formInst.setFieldValue([parentNamePath, "headers"], "Content-Type: application/json");
+        formInst.setFieldValue(
+          [parentNamePath, "data"],
+          JSON.stringify(
+            {
+              push_key: "<your-pushme-pushkey>",
+              type: "text",
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              content: "${CERTIMATE_NOTIFIER_MESSAGE}",
             },
             null,
             2
@@ -180,6 +217,23 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
             {
               title: "${CERTIMATE_NOTIFIER_SUBJECT}",
               desp: "${CERTIMATE_NOTIFIER_MESSAGE}",
+            },
+            null,
+            2
+          )
+        );
+        break;
+
+      case "wxpush":
+        formInst.setFieldValue([parentNamePath, "url"], "http://<your-wxpush-server>/wxsend");
+        formInst.setFieldValue([parentNamePath, "method"], "POST");
+        formInst.setFieldValue([parentNamePath, "headers"], "Content-Type: application/json\r\nAuthorization: <your-wxpush-token>");
+        formInst.setFieldValue(
+          [parentNamePath, "data"],
+          JSON.stringify(
+            {
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              content: "${CERTIMATE_NOTIFIER_MESSAGE}",
             },
             null,
             2
@@ -269,11 +323,13 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           <div className="absolute -top-1.5 right-0 -translate-y-full">
             <Dropdown
               menu={{
-                items: ["bark", "ntfy", "gotify", "pushover", "pushplus", "serverchan3", "serverchanturbo", "common"].map((key) => ({
-                  key,
-                  label: <span dangerouslySetInnerHTML={{ __html: t(`access.form.webhook_preset_data.${key}`) }}></span>,
-                  onClick: () => handlePresetDataForNotificationClick(key),
-                })),
+                items: ["bark", "ntfy", "gotify", "serverchan3", "serverchanturbo", "pushover", "pushplus", "messagenest", "wxpush", "pushme", "common"].map(
+                  (key) => ({
+                    key,
+                    label: <span dangerouslySetInnerHTML={{ __html: t(`access.form.webhook_preset_data.${key}`) }}></span>,
+                    onClick: () => handlePresetDataForNotificationClick(key),
+                  })
+                ),
               }}
               trigger={["click"]}
             >
@@ -364,7 +420,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
       .refine((v) => {
         if (!v) return true;
         return isJsonObject(v);
-      }, t("access.form.webhook_data.errmsg.json_invalid")),
+      }, t("common.errmsg.json_invalid")),
     allowInsecureConnections: z.boolean().nullish(),
   });
 };

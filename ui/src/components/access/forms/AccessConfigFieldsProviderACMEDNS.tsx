@@ -54,7 +54,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   return z.object({
     serverUrl: z.url(t("common.errmsg.url_invalid")),
-    credentials: z.string().refine((v) => isJsonObject(v), t("access.form.acmedns_credentials.errmsg.json_invalid")),
+    credentials: z.string().refine((v) => isJsonObject(v), t("common.errmsg.json_invalid")),
   });
 };
 

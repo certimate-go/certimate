@@ -59,7 +59,7 @@ func (s *CertificateService) DownloadArchivedFile(ctx context.Context, req *dtos
 
 	var bytes []byte
 	switch strings.ToUpper(req.CertificateFormat) {
-	case "", "PEM":
+	case "", string(domain.CertificateFormatTypePEM):
 		{
 			serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certificate.Certificate)
 			if err != nil {
@@ -114,7 +114,7 @@ func (s *CertificateService) DownloadArchivedFile(ctx context.Context, req *dtos
 			bytes = buf.Bytes()
 		}
 
-	case "PFX":
+	case string(domain.CertificateFormatTypePFX):
 		{
 			const pfxPassword = "certimate"
 
@@ -151,7 +151,7 @@ func (s *CertificateService) DownloadArchivedFile(ctx context.Context, req *dtos
 			bytes = buf.Bytes()
 		}
 
-	case "JKS":
+	case string(domain.CertificateFormatTypeJKS):
 		{
 			const jksPassword = "certimate"
 

@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/go-acme/lego/v4/providers/dns/jdcloud"
+
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/jdcloud/internal"
 )
 
 type ChallengerConfig struct {
@@ -27,10 +28,10 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		regionId = "cn-north-1"
 	}
 
-	providerConfig := internal.NewDefaultConfig()
+	providerConfig := jdcloud.NewDefaultConfig()
 	providerConfig.AccessKeyID = config.AccessKeyId
 	providerConfig.AccessKeySecret = config.AccessKeySecret
-	providerConfig.RegionId = regionId
+	providerConfig.RegionID = regionId
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}
@@ -38,7 +39,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = config.DnsTTL
 	}
 
-	provider, err := internal.NewDNSProviderConfig(providerConfig)
+	provider, err := jdcloud.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}

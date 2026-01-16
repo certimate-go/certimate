@@ -47,6 +47,7 @@
   "common.errmsg.port_invalid": "Please enter a valid port",
   "common.errmsg.ip_invalid": "Please enter a valid IP address",
   "common.errmsg.url_invalid": "Please enter a valid URL",
+  "access.errmsg.json_invalid": "Please enter a valid JSON string",
   "common.errmsg.form_invalid": "Please check the form content",
 
   "common.notifier.bark": "Bark",

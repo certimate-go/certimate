@@ -189,6 +189,12 @@ func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interf
 		for i, val := range v {
 			v[i] = replaceJsonValueRecursively(val, oldStr, newStr)
 		}
+	case []string:
+		for i, s := range v {
+			var val interface{} = s
+			var newVal interface{} = replaceJsonValueRecursively(val, oldStr, newStr)
+			v[i] = newVal.(string)
+		}
 	case string:
 		return strings.ReplaceAll(v, oldStr, newStr)
 	}

@@ -329,6 +329,7 @@ const (
 	DeploymentProviderTypeRainYunRCDN           = DeploymentProviderType(AccessProviderTypeRainYun + "-rcdn")
 	DeploymentProviderTypeRatPanel              = DeploymentProviderType(AccessProviderTypeRatPanel)
 	DeploymentProviderTypeRatPanelConsole       = DeploymentProviderType(AccessProviderTypeRatPanel + "-console")
+	DeploymentProviderTypeS3                    = DeploymentProviderType(AccessProviderTypeS3)
 	DeploymentProviderTypeSafeLine              = DeploymentProviderType(AccessProviderTypeSafeLine)
 	DeploymentProviderTypeSSH                   = DeploymentProviderType(AccessProviderTypeSSH)
 	DeploymentProviderTypeSynologyDSM           = DeploymentProviderType(AccessProviderTypeSynologyDSM)
