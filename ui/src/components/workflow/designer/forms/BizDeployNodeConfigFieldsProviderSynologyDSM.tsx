@@ -29,6 +29,16 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
       </Form.Item>
 
       <Form.Item
+        name={[parentNamePath, "createIfNotExists"]}
+        initialValue={initialValues.createIfNotExists}
+        label={t("workflow_node.deploy.form.synologydsm_create_if_not_exists.label")}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm_create_if_not_exists.tooltip") }}></span>}
+        rules={[formRule]}
+      >
+        <Switch />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "isDefault"]}
         initialValue={initialValues.isDefault}
         label={t("workflow_node.deploy.form.synologydsm_is_default.label")}
@@ -42,6 +52,7 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    createIfNotExists: false,
     isDefault: true,
   };
 };
@@ -49,6 +60,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 const getSchema = ({ i18n: _i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
   return z.object({
     certificateIdOrDesc: z.string().nullish(),
+    createIfNotExists: z.boolean().nullish(),
     isDefault: z.boolean().nullish(),
   });
 };

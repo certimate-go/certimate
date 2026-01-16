@@ -23,6 +23,7 @@ func init() {
 			TotpSecret:                 credentials.TotpSecret,
 			AllowInsecureConnections:   credentials.AllowInsecureConnections,
 			CertificateIdOrDescription: xmaps.GetString(options.ProviderExtendedConfig, "certificateIdOrDesc"),
+			CreateIfNotExists:          xmaps.GetBool(options.ProviderExtendedConfig, "createIfNotExists"),
 			IsDefault:                  xmaps.GetBool(options.ProviderExtendedConfig, "isDefault"),
 		})
 		return provider, err
