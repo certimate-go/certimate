@@ -3,6 +3,8 @@ import { Form, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import Tips from "@/components/Tips";
+
 import { useFormNestedFieldsContext } from "./_context";
 
 const BizDeployNodeConfigFieldsProviderProxmoxVE = () => {
@@ -17,6 +19,10 @@ const BizDeployNodeConfigFieldsProviderProxmoxVE = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.proxmoxve.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "nodeName"]}
         initialValue={initialValues.nodeName}

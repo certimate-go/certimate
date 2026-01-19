@@ -3,6 +3,8 @@ import { Form, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import Tips from "@/components/Tips";
+
 import { useFormNestedFieldsContext } from "./_context";
 
 const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
@@ -17,6 +19,10 @@ const BizDeployNodeConfigFieldsProviderSynologyDSM = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.synologydsm.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "certificateIdOrDesc"]}
         initialValue={initialValues.certificateIdOrDesc}

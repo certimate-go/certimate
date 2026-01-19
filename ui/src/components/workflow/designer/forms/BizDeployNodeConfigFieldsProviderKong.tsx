@@ -4,6 +4,7 @@ import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import Show from "@/components/Show";
+import Tips from "@/components/Tips";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -24,6 +25,10 @@ const BizDeployNodeConfigFieldsProviderKong = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.kong.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "resourceType"]}
         initialValue={initialValues.resourceType}

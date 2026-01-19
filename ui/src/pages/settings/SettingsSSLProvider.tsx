@@ -175,7 +175,6 @@ const SettingsSSLProviderOthers = ({ className, style }: { className?: string; s
     timeout: z.union([z.string(), z.number().int().positive()]).nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);
-
   const { form: formInst, formProps } = useAntdForm<z.infer<typeof formSchema>>({
     initialValues: { timeout: settings.timeout },
     onSubmit: async (values) => {
@@ -195,10 +194,6 @@ const SettingsSSLProviderOthers = ({ className, style }: { className?: string; s
   });
   const [formPending, setFormPending] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
-
-  useEffect(() => {
-    setFormChanged(settings.timeout !== formInst.getFieldValue("timeout"));
-  }, [settings?.timeout]);
 
   const handleFormChange = () => {
     setFormChanged(true);

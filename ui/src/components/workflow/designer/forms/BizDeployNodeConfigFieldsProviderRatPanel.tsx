@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
 import Show from "@/components/Show";
+import Tips from "@/components/Tips";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -27,6 +28,10 @@ const BizDeployNodeConfigFieldsProviderRatPanel = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ratpanel.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "resourceType"]}
         initialValue={initialValues.resourceType}

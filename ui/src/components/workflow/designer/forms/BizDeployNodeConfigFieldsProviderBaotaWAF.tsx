@@ -4,6 +4,7 @@ import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
+import Tips from "@/components/Tips";
 import { isPortNumber } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
@@ -22,6 +23,10 @@ const BizDeployNodeConfigFieldsProviderBaotaWAF = () => {
 
   return (
     <>
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.baotawaf.guide") }}></span>} />
+      </Form.Item>
+
       <Form.Item
         name={[parentNamePath, "siteNames"]}
         initialValue={initialValues.siteNames}

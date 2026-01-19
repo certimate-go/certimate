@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { IconDots, IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useControllableValue, useMount } from "ahooks";
-import { App, Button, Card, Dropdown, Form, Input, Typography } from "antd";
+import { App, Button, Card, Divider, Dropdown, Form, Input, Typography } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { nanoid } from "nanoid/non-secure";
 import { ClientResponseError } from "pocketbase";
@@ -333,6 +333,12 @@ const InternalEditDrawer = ({
 
       <Form.Item name="message" label={t("preset.form.notification_message.label")} rules={[formRule]}>
         <Input.TextArea autoSize={{ minRows: 10 }} placeholder={t("preset.form.notification_message.placeholder")} />
+      </Form.Item>
+
+      <Divider />
+
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.notify.form.template.guide") }}></span>} />
       </Form.Item>
     </DrawerForm>
   );
