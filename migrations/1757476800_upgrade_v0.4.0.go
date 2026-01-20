@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
 	"github.com/samber/lo"
@@ -18,15 +19,13 @@ import (
 
 func init() {
 	m.Register(func(app core.App) error {
-		file := "1757476800_m0.4.0_migrate.go"
-		var one int
-		err := app.DB().
-			NewQuery(`SELECT 1 FROM _migrations WHERE file = {:file} LIMIT 1`).
-			Bind(map[string]any{"file": file}).
-			Row(&one)
-		if one == 1 && err == nil {
+		if err := app.DB().
+			NewQuery("SELECT (1) FROM _migrations WHERE file={:file} LIMIT 1").
+			Bind(dbx.Params{"file": "1757476800_m0.4.0_migrate.go"}).
+			One(&struct{}{}); err == nil {
 			return nil
 		}
+
 		tracer := NewTracer("v0.4.0")
 		tracer.Printf("go ...")
 

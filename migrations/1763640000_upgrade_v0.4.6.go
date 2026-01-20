@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
 
@@ -9,13 +10,10 @@ import (
 
 func init() {
 	m.Register(func(app core.App) error {
-		file := "1763640000_m0.4.6.go"
-		var one int
-		err := app.DB().
-			NewQuery(`SELECT 1 FROM _migrations WHERE file = {:file} LIMIT 1`).
-			Bind(map[string]any{"file": file}).
-			Row(&one)
-		if one == 1 && err == nil {
+		if err := app.DB().
+			NewQuery("SELECT (1) FROM _migrations WHERE file={:file} LIMIT 1").
+			Bind(dbx.Params{"file": "1763640000_m0.4.6.go"}).
+			One(&struct{}{}); err == nil {
 			return nil
 		}
 
