@@ -1369,7 +1369,8 @@ func init() {
 			}
 
 			// normalize field `nodeId` in collection `workflow`, `workflow_run`, `workflow_output`, `workflow_logs`
-			for i := 0; i < 3; i++ {
+			const ATTEMPTS = 3
+			for i := 1; i <= ATTEMPTS; i++ {
 				app.DB().NewQuery(`UPDATE workflow SET graphDraft=REPLACE(graphDraft, '"id":"-', '"id":"')`).Execute()
 				app.DB().NewQuery(`UPDATE workflow SET graphDraft=REPLACE(graphDraft, '"id":"_', '"id":"')`).Execute()
 				app.DB().NewQuery(`UPDATE workflow SET graphContent=REPLACE(graphContent, '"id":"-', '"id":"')`).Execute()

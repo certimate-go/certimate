@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/go-viper/mapstructure/v2"
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
 
@@ -88,6 +90,82 @@ func init() {
 		// update collection `workflow_output`
 		//   - revert data for #1137
 		{
+			collection, err := app.FindCollectionByNameOrId("bqnxb95f2cooowp")
+			if err != nil {
+				return err
+			}
+
+			records, err := app.FindAllRecords(collection)
+			if err != nil {
+				return err
+			}
+
+			for _, record := range records {
+				changed := false
+
+				runRecord, _ := app.FindFirstRecordByFilter("workflow_run", "id={:runId}", dbx.Params{"runId": record.GetString("runRef")})
+				if runRecord != nil {
+					runGraph := make(map[string]any)
+					if err := runRecord.UnmarshalJSONField("graph", &runGraph); err != nil {
+						return err
+					}
+
+					if _, ok := runGraph["nodes"]; ok {
+						nodes := make([]*snaps.WorkflowNode, 0)
+						if err := mapstructure.Decode(runGraph["nodes"], &nodes); err != nil {
+							return err
+						}
+
+						nodeMaybeBrokenId := record.GetString("nodeId")
+
+						var findNode func(blocks []*snaps.WorkflowNode) *snaps.WorkflowNode
+						findNode = func(blocks []*snaps.WorkflowNode) *snaps.WorkflowNode {
+							for _, node := range blocks {
+								if node.Id == nodeMaybeBrokenId {
+									return node
+								}
+								if len(node.Blocks) > 0 {
+									if node := findNode(node.Blocks); node != nil {
+										return node
+									}
+								}
+							}
+							return nil
+						}
+						if node := findNode(nodes); node != nil {
+							continue
+						}
+
+						var findNodeEx func(blocks []*snaps.WorkflowNode) *snaps.WorkflowNode
+						findNodeEx = func(blocks []*snaps.WorkflowNode) *snaps.WorkflowNode {
+							for _, node := range blocks {
+								const TRUNCATED_LENGTH = 3 // same as `ATTEMPTS` in '1757476800_upgrade_v0.4.0.go'
+								if strings.HasSuffix(node.Id, nodeMaybeBrokenId) && (len(node.Id)-len(nodeMaybeBrokenId) == TRUNCATED_LENGTH) {
+									return node
+								}
+								if len(node.Blocks) > 0 {
+									if node := findNodeEx(node.Blocks); node != nil {
+										return node
+									}
+								}
+							}
+							return nil
+						}
+						if node := findNodeEx(nodes); node != nil {
+							record.Set("nodeId", node.Id)
+							changed = true
+						}
+					}
+				}
+
+				if changed {
+					if err := app.Save(record); err != nil {
+						return err
+					}
+
+					tracer.Printf("record #%s in collection '%s' updated", record.Id, collection.Name)
+				}
+			}
 		}
 
 		// adapt to new workflow data structure

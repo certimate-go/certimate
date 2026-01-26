@@ -27,6 +27,8 @@ func NewCertificatesHandler(router *router.RouterGroup[*core.RequestEvent], serv
 	group := router.Group("/certificates")
 	group.POST("/{certificateId}/download", handler.downloadCertificate)
 	group.POST("/{certificateId}/revoke", handler.revokeCertificate)
+
+	group.POST("/{certificateId}/archive", handler.downloadCertificate) // 兼容旧版
 }
 
 func (handler *CertificatesHandler) downloadCertificate(e *core.RequestEvent) error {
