@@ -129,7 +129,6 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	record.Set("validityInterval", certificate.ValidityInterval)
 	record.Set("acmeAcctUrl", certificate.ACMEAcctUrl)
 	record.Set("acmeCertUrl", certificate.ACMECertUrl)
-	record.Set("acmeCertStableUrl", certificate.ACMECertStableUrl)
 	record.Set("isRenewed", certificate.IsRenewed)
 	record.Set("isRevoked", certificate.IsRevoked)
 	record.Set("workflowRef", certificate.WorkflowId)
@@ -192,7 +191,6 @@ func (r *CertificateRepository) castRecordToModel(record *core.Record) (*domain.
 		ValidityInterval:  int32(record.GetInt("validityInterval")),
 		ACMEAcctUrl:       record.GetString("acmeAcctUrl"),
 		ACMECertUrl:       record.GetString("acmeCertUrl"),
-		ACMECertStableUrl: record.GetString("acmeCertStableUrl"),
 		IsRenewed:         record.GetBool("isRenewed"),
 		IsRevoked:         record.GetBool("isRevoked"),
 		WorkflowId:        record.GetString("workflowRef"),

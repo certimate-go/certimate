@@ -52,28 +52,31 @@ func GetSubjectAltNames(cert *x509.Certificate) []string {
 		// 注意，这里不直接使用 `DNSNames`、`IPAddresses` 等字段，以保证原始顺序不变
 		for _, ext := range cert.Extensions {
 			if ext.Id.Equal(oidSubjectAlternativeNameExtension) {
-				var raw asn1.RawValue
-				_, err := asn1.Unmarshal(ext.Value, &raw)
-				if err != nil {
-					continue
-				}
-
 				var seq asn1.RawValue
-				if _, err := asn1.Unmarshal(raw.Bytes, &seq); err != nil {
+				if _, err := asn1.Unmarshal(ext.Value, &seq); err != nil {
 					continue
 				}
 
-				switch seq.Tag {
-				case sanGeneralNameTagIP:
-					// IPv4 地址需要单独处理，否则直接转换为字符串会得到乱码
-					var ip net.IP = seq.Bytes
-					sans = append(sans, ip.String())
+				rest := seq.Bytes
+				for len(rest) > 0 {
+					var name asn1.RawValue
+					var err error
+					rest, err = asn1.Unmarshal(rest, &name)
+					if err != nil {
+						break
+					}
 
-				case sanGeneralNameTagEmail, sanGeneralNameTagDNS, sanGeneralNameTagURI:
-					sans = append(sans, string(seq.Bytes))
+					switch name.Tag {
+					case sanGeneralNameTagIP:
+						var ip net.IP = name.Bytes
+						sans = append(sans, ip.String())
 
-				default:
-					// 忽略其他非 Critical 的 GeneralName​
+					case sanGeneralNameTagEmail, sanGeneralNameTagDNS, sanGeneralNameTagURI:
+						sans = append(sans, string(name.Bytes))
+
+					default:
+						// 忽略其他非 Critical 的 GeneralName​
+					}
 				}
 			}
 		}

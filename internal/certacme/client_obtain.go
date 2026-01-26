@@ -64,7 +64,6 @@ type ObtainCertificateResponse struct {
 	PrivateKey           string
 	ACMEAcctUrl          string
 	ACMECertUrl          string
-	ACMECertStableUrl    string
 	ARIReplaced          bool
 }
 
@@ -198,7 +197,6 @@ func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequ
 		PrivateKey:           strings.TrimSpace(string(resp.PrivateKey)),
 		ACMEAcctUrl:          c.account.ACMEAcctUrl,
 		ACMECertUrl:          resp.CertURL,
-		ACMECertStableUrl:    resp.CertStableURL,
 		ARIReplaced:          req.ReplacesCertID != "",
 	}, nil
 }

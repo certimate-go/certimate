@@ -30,7 +30,6 @@ type Certificate struct {
 	ValidityInterval  int32                       `db:"validityInterval"  json:"validityInterval"`
 	ACMEAcctUrl       string                      `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
 	ACMECertUrl       string                      `db:"acmeCertUrl"       json:"acmeCertUrl"`
-	ACMECertStableUrl string                      `db:"acmeCertStableUrl" json:"acmeCertStableUrl"`
 	IsRenewed         bool                        `db:"isRenewed"         json:"isRenewed"`
 	IsRevoked         bool                        `db:"isRevoked"         json:"isRevoked"`
 	WorkflowId        string                      `db:"workflowRef"       json:"workflowId"`

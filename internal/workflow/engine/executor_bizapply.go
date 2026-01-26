@@ -112,7 +112,6 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		IssuerCertificate: obtainResp.IssuerCertificate,
 		ACMEAcctUrl:       obtainResp.ACMEAcctUrl,
 		ACMECertUrl:       obtainResp.ACMECertUrl,
-		ACMECertStableUrl: obtainResp.ACMECertStableUrl,
 		WorkflowId:        execCtx.WorkflowId,
 		WorkflowRunId:     execCtx.RunId,
 		WorkflowNodeId:    execCtx.Node.Id,
