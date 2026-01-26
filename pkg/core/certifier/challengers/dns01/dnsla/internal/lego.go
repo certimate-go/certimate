@@ -43,7 +43,7 @@ type DNSProvider struct {
 	config *Config
 	client *dnslasdk.Client
 
-	recordIDs   map[string]string
+	recordIDs   map[string]string // Key: ChallengeToken; Value: RecordID
 	recordIDsMu sync.Mutex
 }
 

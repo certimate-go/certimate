@@ -1,16 +1,17 @@
 package internal
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/challenge/dns01"
 	"github.com/go-acme/lego/v4/platform/config/env"
-	"github.com/libdns/dynv6"
-	"github.com/libdns/libdns"
+	"github.com/samber/lo"
+
+	dynv6sdk "github.com/certimate-go/certimate/pkg/sdk3rd/dynv6"
 )
 
 const (
@@ -21,6 +22,7 @@ const (
 	EnvTTL                = envNamespace + "TTL"
 	EnvPropagationTimeout = envNamespace + "PROPAGATION_TIMEOUT"
 	EnvPollingInterval    = envNamespace + "POLLING_INTERVAL"
+	EnvHTTPTimeout        = envNamespace + "HTTP_TIMEOUT"
 )
 
 var _ challenge.ProviderTimeout = (*DNSProvider)(nil)
@@ -31,11 +33,17 @@ type Config struct {
 	PropagationTimeout time.Duration
 	PollingInterval    time.Duration
 	TTL                int
+	HTTPTimeout        time.Duration
 }
 
 type DNSProvider struct {
 	config *Config
-	client *dynv6.Provider
+	client *dynv6sdk.Client
+
+	zoneIDs     map[string]int64 // Key: ZoneName; Value: ZoneID
+	zoneIDsMu   sync.Mutex
+	recordIDs   map[string]int64 // Key: ChallengeToken; Value: RecordID
+	recordIDsMu sync.Mutex
 }
 
 func NewDefaultConfig() *Config {
@@ -43,6 +51,7 @@ func NewDefaultConfig() *Config {
 		TTL:                env.GetOrDefaultInt(EnvTTL, dns01.DefaultTTL),
 		PropagationTimeout: env.GetOrDefaultSecond(EnvPropagationTimeout, dns01.DefaultPropagationTimeout),
 		PollingInterval:    env.GetOrDefaultSecond(EnvPollingInterval, dns01.DefaultPollingInterval),
+		HTTPTimeout:        env.GetOrDefaultSecond(EnvHTTPTimeout, 30*time.Second),
 	}
 }
 
@@ -63,11 +72,20 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, errors.New("dynv6: the configuration of the DNS provider is nil")
 	}
 
-	client := &dynv6.Provider{Token: config.HTTPToken}
+	client, err := dynv6sdk.NewClient(config.HTTPToken)
+	if err != nil {
+		return nil, fmt.Errorf("dnsexit: %w", err)
+	} else {
+		client.SetTimeout(config.HTTPTimeout)
+	}
 
 	return &DNSProvider{
-		config: config,
-		client: client,
+		config:      config,
+		client:      client,
+		zoneIDs:     make(map[string]int64),
+		zoneIDsMu:   sync.Mutex{},
+		recordIDs:   make(map[string]int64),
+		recordIDsMu: sync.Mutex{},
 	}, nil
 }
 
@@ -84,13 +102,28 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		return fmt.Errorf("dynv6: %w", err)
 	}
 
-	if _, err := d.client.AppendRecords(context.Background(), dns01.UnFqdn(authZone), []libdns.Record{&libdns.TXT{
-		Name: subDomain,
-		Text: info.Value,
-		TTL:  time.Duration(d.config.TTL),
-	}}); err != nil {
+	zone, err := d.findZone(dns01.UnFqdn(authZone))
+	if err != nil {
+		return fmt.Errorf("dynv6: error when list zones: %w", err)
+	}
+
+	// REF: https://dynv6.github.io/api-spec/#tag/records/operation/addRecord
+	response, err := d.client.AddRecord(zone.ID, &dynv6sdk.AddRecordRequest{
+		Type: lo.ToPtr("TXT"),
+		Name: lo.ToPtr(subDomain),
+		Data: lo.ToPtr(info.Value),
+	})
+	if err != nil {
 		return fmt.Errorf("dynv6: error when create record: %w", err)
 	}
+
+	d.zoneIDsMu.Lock()
+	d.zoneIDs[zone.Name] = zone.ID
+	d.zoneIDsMu.Unlock()
+
+	d.recordIDsMu.Lock()
+	d.recordIDs[token] = response.ID
+	d.recordIDsMu.Unlock()
 
 	return nil
 }
@@ -103,17 +136,21 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 		return fmt.Errorf("dynv6: could not find zone for domain %q: %w", domain, err)
 	}
 
-	subDomain, err := dns01.ExtractSubDomain(info.EffectiveFQDN, authZone)
-	if err != nil {
-		return fmt.Errorf("dynv6: %w", err)
+	d.zoneIDsMu.Lock()
+	zoneId, ok := d.zoneIDs[dns01.UnFqdn(authZone)]
+	d.zoneIDsMu.Unlock()
+	if !ok {
+		return fmt.Errorf("dynv6: unknown zone ID for '%s'", dns01.UnFqdn(authZone))
 	}
 
-	record, err := d.findDNSRecord(dns01.UnFqdn(authZone), subDomain, info.Value)
-	if err != nil {
-		return fmt.Errorf("dynv6: error when find record: %w", err)
+	d.recordIDsMu.Lock()
+	recordId, ok := d.recordIDs[token]
+	d.recordIDsMu.Unlock()
+	if !ok {
+		return fmt.Errorf("dynv6: unknown record ID for '%s'", info.EffectiveFQDN)
 	}
 
-	if _, err := d.client.DeleteRecords(context.Background(), dns01.UnFqdn(authZone), []libdns.Record{record}); err != nil {
+	if _, err := d.client.DeleteRecord(zoneId, recordId); err != nil {
 		return fmt.Errorf("dynv6: error when delete record: %w", err)
 	}
 
@@ -124,18 +161,18 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 	return d.config.PropagationTimeout, d.config.PollingInterval
 }
 
-func (d *DNSProvider) findDNSRecord(zoneName, subDomain, tokenValue string) (libdns.Record, error) {
-	records, err := d.client.GetRecords(context.Background(), zoneName)
+func (d *DNSProvider) findZone(zoneName string) (*dynv6sdk.ZoneRecord, error) {
+	// REF: https://dynv6.github.io/api-spec/#tag/zones/operation/findZones
+	zones, err := d.client.ListZones()
 	if err != nil {
 		return nil, err
 	}
 
-	for _, record := range records {
-		rr := record.RR()
-		if rr.Type == "TXT" && rr.Name == subDomain && rr.Data == tokenValue {
-			return record, nil
+	for _, zone := range *zones {
+		if zone.Name == zoneName {
+			return zone, nil
 		}
 	}
 
-	return nil, errors.New("could not find record")
+	return nil, fmt.Errorf("could not find zone: '%s'", zoneName)
 }

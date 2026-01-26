@@ -45,7 +45,7 @@ type DNSProvider struct {
 	config *Config
 	client *ecloudsdkclouddns.Client
 
-	recordIDs   map[string]string
+	recordIDs   map[string]string // Key: ChallengeToken; Value: RecordID
 	recordIDsMu sync.Mutex
 }
 

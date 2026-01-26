@@ -42,7 +42,7 @@ type DNSProvider struct {
 	client *ctyundns.Client
 	config *Config
 
-	recordIDs   map[string]int32
+	recordIDs   map[string]int32 // Key: ChallengeToken; Value: RecordID
 	recordIDsMu sync.Mutex
 }
 

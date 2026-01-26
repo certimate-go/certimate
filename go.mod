@@ -48,8 +48,6 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kong/go-kong v0.71.0
-	github.com/libdns/dynv6 v1.1.1
-	github.com/libdns/libdns v1.1.1
 	github.com/luthermonson/go-proxmox v0.3.2
 	github.com/minio/minio-go/v7 v7.0.97
 	github.com/mohuatech/mohuacloud-go-sdk v0.0.0-20251115182757-6fba4d0a4c47

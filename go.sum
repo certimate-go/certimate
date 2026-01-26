@@ -623,10 +623,6 @@ github.com/leodido/go-urn v1.2.0/go.mod h1:+8+nEpDfqqsY+g338gtMEUOtuK+4dEMhiQEgx
 github.com/leodido/go-urn v1.2.1/go.mod h1:zt4jvISO2HfUBqxjfIshjdMTYS56ZS/qv49ictyFfxY=
 github.com/leodido/go-urn v1.4.0 h1:WT9HwE9SGECu3lg4d/dIA+jxlljEa1/ffXKmRjqdmIQ=
 github.com/leodido/go-urn v1.4.0/go.mod h1:bvxc+MVxLKB4z00jd1z+Dvzr47oO32F/QSNjSBOlFxI=
-github.com/libdns/dynv6 v1.1.1 h1:X+P/5tNeBo+MLf080kyy1aJG2FPdon0/fVOd58AlfZU=
-github.com/libdns/dynv6 v1.1.1/go.mod h1:XhpjX1oZ0TdzH0nZaP5hpW3x/HCMB0T7loZw65on5Iw=
-github.com/libdns/libdns v1.1.1 h1:wPrHrXILoSHKWJKGd0EiAVmiJbFShguILTg9leS/P/U=
-github.com/libdns/libdns v1.1.1/go.mod h1:4Bj9+5CQiNMVGf87wjX4CY3HQJypUHRuLvlsfsZqLWQ=
 github.com/linode/linodego v1.64.0 h1:If6pULIwHuQytgogtpQaBdVLX7z2TTHUF5u1tj2TPiY=
 github.com/linode/linodego v1.64.0/go.mod h1:GoiwLVuLdBQcAebxAVKVL3mMYUgJZR/puOUSla04xBE=
 github.com/luthermonson/go-proxmox v0.3.2 h1:/zUg6FCl9cAABx0xU3OIgtDtClY0gVXxOCsrceDNylc=

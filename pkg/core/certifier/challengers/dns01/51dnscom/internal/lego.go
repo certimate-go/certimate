@@ -41,7 +41,7 @@ type DNSProvider struct {
 	config *Config
 	client *dnscomsdk.Client
 
-	recordCache   map[string]dnsRecordCacheEntry
+	recordCache   map[string]dnsRecordCacheEntry // Key: ChallengeToken
 	recordCacheMu sync.Mutex
 }
 

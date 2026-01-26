@@ -42,7 +42,7 @@ type DNSProvider struct {
 	config *Config
 	client *xinnetsdk.Client
 
-	recordIDs   map[string]*int64
+	recordIDs   map[string]*int64 // Key: ChallengeToken; Value: RecordID
 	recordIDsMu sync.Mutex
 }
 
