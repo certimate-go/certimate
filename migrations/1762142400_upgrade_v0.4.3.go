@@ -76,6 +76,8 @@ func init() {
 			if _, err := app.DB().NewQuery("UPDATE certificate SET validityInterval = (STRFTIME('%s', validityNotAfter) - STRFTIME('%s', validityNotBefore))").Execute(); err != nil {
 				return err
 			}
+
+			tracer.Printf("collection '%s' updated", collection.Name)
 		}
 
 		// adapt to new workflow data structure

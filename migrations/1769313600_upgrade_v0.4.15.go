@@ -1,6 +1,8 @@
 package migrations
 
 import (
+	"encoding/json"
+
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
 
@@ -11,6 +13,31 @@ func init() {
 	m.Register(func(app core.App) error {
 		tracer := NewTracer("v0.4.15")
 		tracer.Printf("go ...")
+
+		// update collection `acme_accounts`
+		//   - rebuild indexes
+		{
+			collection, err := app.FindCollectionByNameOrId("012d7abbod1hwvr")
+			if err != nil {
+				return err
+			}
+
+			if err := json.Unmarshal([]byte(`{
+				"indexes": [
+					"CREATE INDEX `+"`"+`idx_dQiYzimY7m`+"`"+` ON `+"`"+`acme_accounts`+"`"+` (`+"`"+`ca`+"`"+`)",
+					"CREATE INDEX `+"`"+`idx_TjyqY6LAGa`+"`"+` ON `+"`"+`acme_accounts`+"`"+` (\n  `+"`"+`ca`+"`"+`,\n  `+"`"+`acmeDirUrl`+"`"+`\n)",
+					"CREATE UNIQUE INDEX `+"`"+`idx_G4brUDgxzc`+"`"+` ON `+"`"+`acme_accounts`+"`"+` (\n  `+"`"+`ca`+"`"+`,\n  `+"`"+`email`+"`"+`,\n  `+"`"+`acmeAcctUrl`+"`"+`,\n  `+"`"+`acmeDirUrl`+"`"+`\n)"
+				]
+			}`), &collection); err != nil {
+				return err
+			}
+
+			if err := app.Save(collection); err != nil {
+				return err
+			}
+
+			tracer.Printf("collection '%s' updated", collection.Name)
+		}
 
 		// adapt to new workflow data structure
 		{
