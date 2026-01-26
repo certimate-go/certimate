@@ -3,7 +3,7 @@
   "certificate.page.subtitle": "SSL 证书含有网站的公钥和网站标识以及其他相关信息。它们来自于工作流的运行输出。",
 
   "certificate.nodata.title": "暂无证书",
-  "certificate.nodata.description": "当前未找到任何认证。请先运行一个工作流以生成证书。",
+  "certificate.nodata.description": "当前未找到证书。请先运行一个工作流。",
   "certificate.nodata.button": "前往工作流",
 
   "certificate.search.placeholder": "按证书名称或序列号搜索……",

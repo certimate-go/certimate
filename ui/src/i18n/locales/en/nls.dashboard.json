@@ -13,7 +13,7 @@
   "dashboard.shortcut.configure_ca": "Configure certificate authorities",
   "dashboard.shortcut.upgrade": "New version available!",
 
-  "dashboard.latest_workflow_runs": "Latest workflow runs",
-  "dashboard.latest_workflow_runs.nodata.description": "It looks like you don't have any runs. Get started by running a workflow.",
-  "dashboard.latest_workflow_runs.nodata.button": "Go to workflows"
+  "dashboard.recent_workflow_runs": "Recent workflow runs",
+  "dashboard.recent_workflow_runs.nodata.description": "It looks like you don't have any runs. Get started by running a workflow.",
+  "dashboard.recent_workflow_runs.nodata.button": "Go to workflows"
 }

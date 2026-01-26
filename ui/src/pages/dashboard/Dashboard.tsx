@@ -54,7 +54,7 @@ const Dashboard = () => {
         </div>
 
         <div className="mt-8">
-          <h3>{t("dashboard.latest_workflow_runs")}</h3>
+          <h3>{t("dashboard.recent_workflow_runs")}</h3>
           <WorkflowRunHistoryTable />
         </div>
       </div>
@@ -433,7 +433,7 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
             <Empty
               className="py-24"
               title={loadError ? t("common.text.nodata_failed") : t("common.text.nodata")}
-              description={loadError ? unwrapErrMsg(loadError) : t("dashboard.latest_workflow_runs.nodata.description")}
+              description={loadError ? unwrapErrMsg(loadError) : t("dashboard.recent_workflow_runs.nodata.description")}
               icon={<IconHistory size={24} />}
               extra={
                 loadError ? (
@@ -442,7 +442,7 @@ const WorkflowRunHistoryTable = ({ className, style }: { className?: string; sty
                   </Button>
                 ) : (
                   <Button icon={<IconExternalLink size="1.25em" />} type="primary" onClick={() => navigate("/workflows")}>
-                    {t("dashboard.latest_workflow_runs.nodata.button")}
+                    {t("dashboard.recent_workflow_runs.nodata.button")}
                   </Button>
                 )
               }
