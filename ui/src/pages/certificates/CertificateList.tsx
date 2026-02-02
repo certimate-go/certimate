@@ -66,7 +66,7 @@ const CertificateList = () => {
       sorter: true,
       sortOrder: sorter.columnKey === "validity" ? sorter.order : void 0,
       render: (_, record) => {
-        const total = dayjs(record.validityNotAfter).diff(dayjs(record.created), "d") + 1;
+        const total = dayjs(record.validityNotAfter).diff(dayjs(record.validityNotBefore), "d") + 1;
         const isRevoked = record.isRevoked;
         const isExpired = dayjs().isAfter(dayjs(record.validityNotAfter));
         const leftHours = dayjs(record.validityNotAfter).diff(dayjs(), "h");
