@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	mockSubject = "test_subject"
-	mockMessage = "test_message"
+	mockSubject     = "test_subject"
+	mockMessage     = "test_message"
+	mockHtmlMessage = "<h1>Hello Certimate！</h1><a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>"
 )
 
 var (
@@ -79,6 +80,41 @@ func TestNotify(t *testing.T) {
 		}
 
 		res, err := provider.Notify(context.Background(), mockSubject, mockMessage)
+		if err != nil {
+			t.Errorf("err: %+v", err)
+			return
+		}
+
+		t.Logf("ok: %v", res)
+	})
+
+	t.Run("HtmlNotify", func(t *testing.T) {
+		t.Log(strings.Join([]string{
+			"args:",
+			fmt.Sprintf("SMTPHOST: %v", fSmtpHost),
+			fmt.Sprintf("SMTPPORT: %v", fSmtpPort),
+			fmt.Sprintf("SMTPTLS: %v", fSmtpTLS),
+			fmt.Sprintf("USERNAME: %v", fUsername),
+			fmt.Sprintf("PASSWORD: %v", fPassword),
+			fmt.Sprintf("SENDERADDRESS: %v", fSenderAddress),
+			fmt.Sprintf("RECEIVERADDRESS: %v", fReceiverAddress),
+		}, "\n"))
+
+		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+			SmtpHost:        fSmtpHost,
+			SmtpPort:        int32(fSmtpPort),
+			SmtpTls:         fSmtpTLS,
+			Username:        fUsername,
+			Password:        fPassword,
+			SenderAddress:   fSenderAddress,
+			ReceiverAddress: fReceiverAddress,
+		})
+		if err != nil {
+			t.Errorf("err: %+v", err)
+			return
+		}
+
+		res, err := provider.Notify(context.Background(), mockSubject, mockHtmlMessage)
 		if err != nil {
 			t.Errorf("err: %+v", err)
 			return
