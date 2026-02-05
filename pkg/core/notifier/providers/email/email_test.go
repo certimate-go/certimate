@@ -88,7 +88,7 @@ func TestNotify(t *testing.T) {
 		t.Logf("ok: %v", res)
 	})
 
-	t.Run("HtmlNotify", func(t *testing.T) {
+	t.Run("Notify_Html", func(t *testing.T) {
 		t.Log(strings.Join([]string{
 			"args:",
 			fmt.Sprintf("SMTPHOST: %v", fSmtpHost),
@@ -108,6 +108,7 @@ func TestNotify(t *testing.T) {
 			Password:        fPassword,
 			SenderAddress:   fSenderAddress,
 			ReceiverAddress: fReceiverAddress,
+			MessageFormat:   provider.MESSAGE_FORMAT_HTML,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

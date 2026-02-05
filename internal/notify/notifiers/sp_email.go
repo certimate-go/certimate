@@ -25,6 +25,7 @@ func init() {
 			SenderAddress:            credentials.SenderAddress,
 			SenderName:               credentials.SenderName,
 			ReceiverAddress:          xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "receiverAddress", credentials.ReceiverAddress),
+			MessageFormat:            xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "format", email.MESSAGE_FORMAT_PLAIN),
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
 		})
 		return provider, err
