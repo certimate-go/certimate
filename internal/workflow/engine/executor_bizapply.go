@@ -211,6 +211,10 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 	}
 
 	if lastCertificate != nil {
+		if lastCertificate.IsRevoked {
+			return false, "the last requested certificate has been revoked"
+		}
+
 		renewalInterval := time.Duration(thisNodeCfg.SkipBeforeExpiryDays) * time.Hour * 24
 		expirationTime := time.Until(lastCertificate.ValidityNotAfter)
 		daysLeft := int(math.Floor(expirationTime.Hours() / 24))
