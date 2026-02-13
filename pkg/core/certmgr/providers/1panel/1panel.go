@@ -243,6 +243,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 				}
 
 				websiteSSLSearchReq := &onepanelsdk2.WebsiteSSLSearchRequest{
+					Order:    "null",
+					OrderBy:  "expire_date",
 					Page:     int32(searchWebsiteSSLPage),
 					PageSize: int32(searchWebsiteSSLPageSize),
 				}
