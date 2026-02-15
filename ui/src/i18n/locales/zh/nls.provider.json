@@ -94,6 +94,7 @@
   "provider.email": "邮件（SMTP）",
   "provider.fastly": "Fastly",
   "provider.flexcdn": "FlexCDN",
+  "provider.flyio": "Fly.io",
   "provider.gandinet": "Gandi.net",
   "provider.gcore": "G-Core",
   "provider.gcore_cdn": "G-Core - 内容分发网络 CDN",

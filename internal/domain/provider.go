@@ -53,6 +53,7 @@ const (
 	AccessProviderTypeDynv6               = AccessProviderType("dynv6")
 	AccessProviderTypeEmail               = AccessProviderType("email")
 	AccessProviderTypeFastly              = AccessProviderType("fastly") // Fastly（预留）
+	AccessProviderTypeFlyIO               = AccessProviderType("flyio")
 	AccessProviderTypeFlexCDN             = AccessProviderType("flexcdn")
 	AccessProviderTypeGandinet            = AccessProviderType("gandinet")
 	AccessProviderTypeGcore               = AccessProviderType("gcore")
@@ -302,6 +303,7 @@ const (
 	DeploymentProviderTypeCTCCCloudLVDN         = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-ldvn")
 	DeploymentProviderTypeDogeCloudCDN          = DeploymentProviderType(AccessProviderTypeDogeCloud + "-cdn")
 	DeploymentProviderTypeDokploy               = DeploymentProviderType(AccessProviderTypeDokploy)
+	DeploymentProviderTypeFlyIO                 = DeploymentProviderType(AccessProviderTypeFlyIO)
 	DeploymentProviderTypeFlexCDN               = DeploymentProviderType(AccessProviderTypeFlexCDN)
 	DeploymentProviderTypeGcoreCDN              = DeploymentProviderType(AccessProviderTypeGcore + "-cdn")
 	DeploymentProviderTypeGoEdge                = DeploymentProviderType(AccessProviderTypeGoEdge)
