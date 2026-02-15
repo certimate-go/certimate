@@ -245,6 +245,10 @@ type AccessConfigForEmail struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForFlyIO struct {
+	ApiToken string `json:"apiToken"`
+}
+
 type AccessConfigForFlexCDN struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiRole                  string `json:"apiRole"`

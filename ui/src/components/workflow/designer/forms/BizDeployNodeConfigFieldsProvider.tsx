@@ -47,6 +47,7 @@ import BizDeployNodeConfigFieldsProviderCTCCCloudICDN from "./BizDeployNodeConfi
 import BizDeployNodeConfigFieldsProviderCTCCCloudLVDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudLVDN";
 import BizDeployNodeConfigFieldsProviderDogeCloudCDN from "./BizDeployNodeConfigFieldsProviderDogeCloudCDN";
 import BizDeployNodeConfigFieldsProviderFlexCDN from "./BizDeployNodeConfigFieldsProviderFlexCDN";
+import BizDeployNodeConfigFieldsProviderFlyIO from "./BizDeployNodeConfigFieldsProviderFlyIO";
 import BizDeployNodeConfigFieldsProviderGcoreCDN from "./BizDeployNodeConfigFieldsProviderGcoreCDN";
 import BizDeployNodeConfigFieldsProviderGoEdge from "./BizDeployNodeConfigFieldsProviderGoEdge";
 import BizDeployNodeConfigFieldsProviderHuaweiCloudCDN from "./BizDeployNodeConfigFieldsProviderHuaweiCloudCDN";
@@ -163,6 +164,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_LVDN]: BizDeployNodeConfigFieldsProviderCTCCCloudLVDN,
   [DEPLOYMENT_PROVIDERS.DOGECLOUD_CDN]: BizDeployNodeConfigFieldsProviderDogeCloudCDN,
   [DEPLOYMENT_PROVIDERS.FLEXCDN]: BizDeployNodeConfigFieldsProviderFlexCDN,
+  [DEPLOYMENT_PROVIDERS.FLYIO]: BizDeployNodeConfigFieldsProviderFlyIO,
   [DEPLOYMENT_PROVIDERS.GCORE_CDN]: BizDeployNodeConfigFieldsProviderGcoreCDN,
   [DEPLOYMENT_PROVIDERS.GOEDGE]: BizDeployNodeConfigFieldsProviderGoEdge,
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_CDN]: BizDeployNodeConfigFieldsProviderHuaweiCloudCDN,
