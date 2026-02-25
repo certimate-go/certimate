@@ -32,7 +32,7 @@ const AppVersionBadge = ({ className, style, children }: AppVersionBadgeProps) =
       className={className}
       style={style}
       styles={{
-        indicator: { transform: "scale(0.75) translate(50%, -50%)" },
+        indicator: { transform: "scale(0.75) translate(50%, -85%)" },
       }}
       count={hasUpdate ? "NEW" : void 0}
     >
