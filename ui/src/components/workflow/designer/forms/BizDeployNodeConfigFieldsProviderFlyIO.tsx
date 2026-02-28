@@ -3,6 +3,8 @@ import { Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import { isDomain } from "@/utils/validator";
+
 import { useFormNestedFieldsContext } from "./_context";
 
 const BizDeployNodeConfigFieldsProviderFlyIO = () => {
@@ -27,13 +29,13 @@ const BizDeployNodeConfigFieldsProviderFlyIO = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "hostname"]}
-        initialValue={initialValues.hostname}
-        label={t("workflow_node.deploy.form.flyio_hostname.label")}
-        extra={t("workflow_node.deploy.form.flyio_hostname.help")}
+        name={[parentNamePath, "domain"]}
+        initialValue={initialValues.domain}
+        label={t("workflow_node.deploy.form.flyio_domain.label")}
+        extra={t("workflow_node.deploy.form.flyio_domain.help")}
         rules={[formRule]}
       >
-        <Input placeholder={t("workflow_node.deploy.form.flyio_hostname.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.flyio_domain.placeholder")} />
       </Form.Item>
     </>
   );
@@ -42,7 +44,7 @@ const BizDeployNodeConfigFieldsProviderFlyIO = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     appName: "",
-    hostname: "",
+    domain: "",
   };
 };
 
@@ -51,7 +53,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z.object({
     appName: z.string().nonempty(t("workflow_node.deploy.form.flyio_app_name.placeholder")),
-    hostname: z.string().nonempty(t("workflow_node.deploy.form.flyio_hostname.placeholder")),
+    domain: z.string().refine((v) => isDomain(v), t("workflow_node.deploy.form.flyio_domain.placeholder")),
   });
 };
 

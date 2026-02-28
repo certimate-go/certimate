@@ -16,7 +16,7 @@ var (
 	fInputKeyPath  string
 	fApiToken      string
 	fAppName       string
-	fHostname      string
+	fDomain        string
 )
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
 	flag.StringVar(&fApiToken, argsPrefix+"APITOKEN", "", "")
 	flag.StringVar(&fAppName, argsPrefix+"APPNAME", "", "")
-	flag.StringVar(&fHostname, argsPrefix+"HOSTNAME", "", "")
+	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
 }
 
 /*
@@ -37,7 +37,7 @@ Shell command to run this test:
 	--FLYIO_INPUTKEYPATH="/path/to/your-input-key.pem" \
 	--FLYIO_APITOKEN="your-api-token" \
 	--FLYIO_APPNAME="your-app-name" \
-	--FLYIO_HOSTNAME="example.com"
+	--FLYIO_DOMAIN="example.com"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -49,13 +49,13 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
 			fmt.Sprintf("APITOKEN: %v", fApiToken),
 			fmt.Sprintf("APPNAME: %v", fAppName),
-			fmt.Sprintf("HOSTNAME: %v", fHostname),
+			fmt.Sprintf("DOMAIN: %v", fDomain),
 		}, "\n"))
 
 		provider, err := provider.NewDeployer(&provider.DeployerConfig{
 			ApiToken: fApiToken,
 			AppName:  fAppName,
-			Hostname: fHostname,
+			Domain:   fDomain,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

@@ -19,7 +19,7 @@ func init() {
 		provider, err := flyio.NewDeployer(&flyio.DeployerConfig{
 			ApiToken: credentials.ApiToken,
 			AppName:  xmaps.GetString(options.ProviderExtendedConfig, "appName"),
-			Hostname: xmaps.GetString(options.ProviderExtendedConfig, "hostname"),
+			Domain:   xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 		})
 		return provider, err
 	})

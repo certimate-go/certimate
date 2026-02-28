@@ -15,8 +15,8 @@ type DeployerConfig struct {
 	ApiToken string `json:"apiToken"`
 	// Fly.io 应用名称。
 	AppName string `json:"appName"`
-	// 证书对应的域名。
-	Hostname string `json:"hostname"`
+	// 自定义域名（不支持泛域名）。
+	Domain string `json:"domain"`
 }
 
 type Deployer struct {
@@ -56,22 +56,22 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	if d.config.AppName == "" {
 		return nil, errors.New("config `appName` is required")
 	}
-	if d.config.Hostname == "" {
-		return nil, errors.New("config `hostname` is required")
+	if d.config.Domain == "" {
+		return nil, errors.New("config `domain` is required")
 	}
 
 	// 导入自定义证书
-	// REF: https://fly.io/docs/machines/api/certificates/
-	createCustomCertificateReq := &flyiosdk.CreateCustomCertificateRequest{
+	// REF: https://fly.io/docs/machines/api/certificates-resource/#import-custom-certificate
+	importCustomCertificateReq := &flyiosdk.ImportCustomCertificateRequest{
 		AppName:    d.config.AppName,
-		Hostname:   d.config.Hostname,
+		Hostname:   d.config.Domain,
 		Fullchain:  certPEM,
 		PrivateKey: privkeyPEM,
 	}
-	createCustomCertificateResp, err := d.sdkClient.CreateCustomCertificateWithContext(ctx, createCustomCertificateReq)
-	d.logger.Debug("sdk request 'flyio.CreateCustomCertificate'", slog.Any("request", createCustomCertificateReq), slog.Any("response", createCustomCertificateResp))
+	importCustomCertificateResp, err := d.sdkClient.ImportCustomCertificateWithContext(ctx, importCustomCertificateReq)
+	d.logger.Debug("sdk request 'flyio.ImportCustomCertificate'", slog.Any("request", importCustomCertificateReq), slog.Any("response", importCustomCertificateResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'flyio.CreateCustomCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'flyio.ImportCustomCertificate': %w", err)
 	}
 
 	return &deployer.DeployResult{}, nil
