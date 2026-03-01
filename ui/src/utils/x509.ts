@@ -123,7 +123,7 @@ export const getPrivateKeyAlgorithm = (keyPEM: string): { algorithm?: "RSA" | "E
       }
       if (key.privateKeyAlgorithm.algorithm === OLD_PUBKEY_ECDSA) {
         const ecKey = AsnParser.parse(key.privateKey, ECPrivateKey);
-        return { algorithm: "RSA", keySize: ecKey.privateKey.byteLength * 8 };
+        return { algorithm: "EC", keySize: ecKey.privateKey.byteLength * 8 };
       }
     }
 
