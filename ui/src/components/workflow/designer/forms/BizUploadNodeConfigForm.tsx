@@ -186,7 +186,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
             if (!z.string().nonempty().safeParse(values.privateKey).success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.certificate_path.placeholder"),
+                message: t("workflow_node.upload.form.private_key_path.placeholder"),
                 path: ["privateKey"],
               });
             }

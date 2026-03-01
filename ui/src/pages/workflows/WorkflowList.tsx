@@ -627,7 +627,7 @@ const InternalDuplicateDrawer = ({
       </Form.Item>
 
       <Form.Item name="description" label={t("workflow.detail.baseinfo.description.label")} rules={[formRule]}>
-        <Input placeholder={t("workflow.detail.baseinfo.name.placeholder")} />
+        <Input placeholder={t("workflow.detail.baseinfo.description.placeholder")} />
       </Form.Item>
     </DrawerForm>
   );
