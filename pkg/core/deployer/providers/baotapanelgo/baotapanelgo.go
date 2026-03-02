@@ -75,6 +75,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, errors.New("config `siteNames` is required")
 	}
 
+	if d.config.SiteType != "" {
+		if !lo.Contains(btProjectTypes, d.config.SiteType) && !lo.Contains(btProjectTypesInIIS, d.config.SiteType) {
+			return nil, fmt.Errorf("unsupported site type: '%s'", d.config.SiteType)
+		}
+	}
+
 	// 遍历更新站点证书
 	var errs []error
 	for i, siteName := range d.config.SiteNames {
@@ -82,7 +88,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
-			if err := d.updatePHPSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM); err != nil {
+			if err := d.updateSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM); err != nil {
 				errs = append(errs, err)
 			}
 			if i < len(d.config.SiteNames)-1 {
@@ -173,7 +179,7 @@ func (d *Deployer) findSiteByName(ctx context.Context, siteType, siteName string
 	return nil, fmt.Errorf("could not find site '%s'", siteName)
 }
 
-func (d *Deployer) updatePHPSiteCertificate(ctx context.Context, siteType, siteName string, certPEM, privkeyPEM string) error {
+func (d *Deployer) updateSiteCertificate(ctx context.Context, siteType, siteName string, certPEM, privkeyPEM string) error {
 	// 获取面板配置
 	panelGetConfigReq := &btsdk.PanelGetConfigRequest{}
 	panelGetConfigResp, err := d.sdkClient.PanelGetConfig(panelGetConfigReq)

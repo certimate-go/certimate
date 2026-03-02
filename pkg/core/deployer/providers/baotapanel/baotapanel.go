@@ -36,6 +36,8 @@ type Deployer struct {
 
 var _ deployer.Provider = (*Deployer)(nil)
 
+var btProjectTypes = []string{"php", "java", "nodejs", "go", "python", "proxy", "html", "general"}
+
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
 		return nil, errors.New("the configuration of the deployer provider is nil")
@@ -98,6 +100,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 	default:
 		{
+			if d.config.SiteType != "" {
+				if !lo.Contains(btProjectTypes, d.config.SiteType) {
+					return nil, fmt.Errorf("unsupported site type: '%s'", d.config.SiteType)
+				}
+			}
+
 			// 遍历更新站点证书
 			var errs []error
 			for i, siteName := range d.config.SiteNames {
@@ -105,7 +113,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				case <-ctx.Done():
 					return nil, ctx.Err()
 				default:
-					if err := d.updateSiteCertificate(ctx, siteName, certPEM, privkeyPEM); err != nil {
+					if err := d.updateSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM); err != nil {
 						errs = append(errs, err)
 					}
 					if i < len(d.config.SiteNames)-1 {
@@ -122,18 +130,38 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, certPEM, privkeyPEM string) error {
-	// 设置站点 SSL 证书
-	siteSetSSLReq := &btsdk.SiteSetSSLRequest{
-		SiteName:    siteName,
-		Type:        "0",
-		Certificate: certPEM,
-		PrivateKey:  privkeyPEM,
-	}
-	siteSetSSLResp, err := d.sdkClient.SiteSetSSL(siteSetSSLReq)
-	d.logger.Debug("sdk request 'bt.SiteSetSSL'", slog.Any("request", siteSetSSLReq), slog.Any("response", siteSetSSLResp))
-	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'bt.SiteSetSSL': %w", err)
+func (d *Deployer) updateSiteCertificate(ctx context.Context, siteType, siteName string, certPEM, privkeyPEM string) error {
+	switch siteType {
+	case "proxy":
+		{
+			// 设置代理 SSL 证书
+			modProxyComSetSSLReq := &btsdk.ModProxyComSetSSLRequest{
+				SiteName:    siteName,
+				Certificate: certPEM,
+				PrivateKey:  privkeyPEM,
+			}
+			modProxyComSetSSLResp, err := d.sdkClient.ModProxyComSetSSL(modProxyComSetSSLReq)
+			d.logger.Debug("sdk request 'bt.ModProxyComSetSSL'", slog.Any("request", modProxyComSetSSLReq), slog.Any("response", modProxyComSetSSLResp))
+			if err != nil {
+				return fmt.Errorf("failed to execute sdk request 'bt.ModProxyComSetSSL': %w", err)
+			}
+		}
+
+	default:
+		{
+			// 设置站点 SSL 证书
+			siteSetSSLReq := &btsdk.SiteSetSSLRequest{
+				Type:        "0",
+				SiteName:    siteName,
+				Certificate: certPEM,
+				PrivateKey:  privkeyPEM,
+			}
+			siteSetSSLResp, err := d.sdkClient.SiteSetSSL(siteSetSSLReq)
+			d.logger.Debug("sdk request 'bt.SiteSetSSL'", slog.Any("request", siteSetSSLReq), slog.Any("response", siteSetSSLResp))
+			if err != nil {
+				return fmt.Errorf("failed to execute sdk request 'bt.SiteSetSSL': %w", err)
+			}
+		}
 	}
 
 	return nil
