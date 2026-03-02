@@ -28,18 +28,18 @@ func (r *receiver[TIn, TOut]) Receive(infile, outfile, enckey string) error {
 
 func (r *receiver[TIn, TOut]) ReceiveWithContext(ctx context.Context, infile, outfile, enckey string) error {
 	if infile == "" {
-		return errors.New("missing or invalid input file")
+		return errors.New("mproc: missing or invalid input file")
 	}
 	if outfile == "" {
-		return errors.New("missing or invalid output file")
+		return errors.New("mproc: missing or invalid output file")
 	}
 	if enckey == "" {
-		return errors.New("missing or invalid encryption key")
+		return errors.New("mproc: missing or invalid encryption key")
 	}
 
 	aesKey, err := hex.DecodeString(enckey)
 	if err != nil {
-		return fmt.Errorf("missing or invalid encryption key: %w", err)
+		return fmt.Errorf("mproc: missing or invalid encryption key: %w", err)
 	}
 
 	aesCryptor := xcrypto.NewAESCryptor(aesKey)
@@ -47,19 +47,19 @@ func (r *receiver[TIn, TOut]) ReceiveWithContext(ctx context.Context, infile, ou
 	// 读取输入
 	inCipherData, err := os.ReadFile(infile)
 	if err != nil {
-		return fmt.Errorf("failed to read input file: %w", err)
+		return fmt.Errorf("mproc: failed to read input file: %w", err)
 	}
 
 	// 解密输入
 	inPlainData, err := aesCryptor.CBCDecrypt(inCipherData)
 	if err != nil {
-		return fmt.Errorf("failed to decrypt input data: %w", err)
+		return fmt.Errorf("mproc: failed to decrypt input data: %w", err)
 	}
 
 	// 反序列化输入
 	var inData TIn
 	if err := json.Unmarshal(inPlainData, &inData); err != nil {
-		return fmt.Errorf("failed to unmarshal input data: %w", err)
+		return fmt.Errorf("mproc: failed to unmarshal input data: %w", err)
 	}
 
 	// 处理
@@ -71,18 +71,18 @@ func (r *receiver[TIn, TOut]) ReceiveWithContext(ctx context.Context, infile, ou
 	// 序列化输出
 	outPlainData, err := json.Marshal(outData)
 	if err != nil {
-		return fmt.Errorf("failed to marshal output data: %w", err)
+		return fmt.Errorf("mproc: failed to marshal output data: %w", err)
 	}
 
 	// 加密输出
 	outCipherData, err := aesCryptor.CBCEncrypt(outPlainData)
 	if err != nil {
-		return fmt.Errorf("failed to encrypt output data: %w", err)
+		return fmt.Errorf("mproc: failed to encrypt output data: %w", err)
 	}
 
 	// 写入输出
 	if err := os.WriteFile(outfile, outCipherData, 0o644); err != nil {
-		return fmt.Errorf("failed to write output file: %w", err)
+		return fmt.Errorf("mproc: failed to write output file: %w", err)
 	}
 
 	return nil

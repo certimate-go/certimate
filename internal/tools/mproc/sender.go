@@ -35,7 +35,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	// 生成随机密钥
 	aesKey := make([]byte, 32)
 	if _, err := rand.Read(aesKey); err != nil {
-		return nil, fmt.Errorf("failed to generate aes key: %w", err)
+		return nil, fmt.Errorf("mproc: failed to generate aes key: %w", err)
 	}
 
 	aesCryptor := xcrypto.NewAESCryptor(aesKey)
@@ -43,20 +43,20 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	// 准备临时输入文件
 	tempIn, err := os.CreateTemp("", "certimate.mprocin_*.tmp")
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp input file: %w", err)
+		return nil, fmt.Errorf("mproc: failed to create temp input file: %w", err)
 	} else {
 		inPlainData, err := json.Marshal(params)
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal input data: %w", err)
+			return nil, fmt.Errorf("mproc: failed to marshal input data: %w", err)
 		}
 
 		inCipherData, err := aesCryptor.CBCEncrypt(inPlainData)
 		if err != nil {
-			return nil, fmt.Errorf("failed to encrypt input data: %w", err)
+			return nil, fmt.Errorf("mproc: failed to encrypt input data: %w", err)
 		}
 
 		if _, err := tempIn.Write(inCipherData); err != nil {
-			return nil, fmt.Errorf("failed to write input file: %w", err)
+			return nil, fmt.Errorf("mproc: failed to write input file: %w", err)
 		}
 
 		tempIn.Close()
@@ -66,7 +66,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	// 准备临时输出文件
 	tempOut, err := os.CreateTemp("", "certimate.mprocout_*.tmp")
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp output file: %w", err)
+		return nil, fmt.Errorf("mproc: failed to create temp output file: %w", err)
 	} else {
 		tempOut.Close()
 	}
@@ -75,7 +75,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	// 准备临时错误文件
 	tempErr, err := os.CreateTemp("", "certimate.mprocerr_*.tmp")
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp error file: %w", err)
+		return nil, fmt.Errorf("mproc: failed to create temp error file: %w", err)
 	} else {
 		tempErr.Close()
 	}
@@ -105,13 +105,17 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 
 					if s.logger != nil {
 						print := s.logger.Info
-						if strings.HasPrefix(line, "[WARN] ") {
-							line = strings.TrimPrefix(line, "[WARN] ")
-							print = s.logger.Warn
-						} else if strings.HasPrefix(line, "[INFO] ") {
+
+						// split log level prefix for those vendor packages:
+						// - github.com/go-acme/lego: INFO, WARN
+						if strings.HasPrefix(line, "[INFO] ") {
 							line = strings.TrimPrefix(line, "[INFO] ")
 							print = s.logger.Info
+						} else if strings.HasPrefix(line, "[WARN] ") {
+							line = strings.TrimPrefix(line, "[WARN] ")
+							print = s.logger.Warn
 						}
+
 						print(line)
 					}
 				}
@@ -124,7 +128,16 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 					}
 
 					if s.logger != nil {
-						s.logger.Error(line)
+						print := s.logger.Error
+
+						// split log level prefix for those vendor packages:
+						// - github.com/nrdcg/desec: DEBUG
+						if strings.Contains(line, "[DEBUG] ") {
+							line = strings.SplitN(line, "[DEBUG] ", 2)[1]
+							print = s.logger.Debug
+						}
+
+						print(line)
 					}
 				}
 			}
@@ -135,13 +148,13 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	<-mcmd.Start()
 	<-done
 	if err := mcmd.Status().Error; err != nil {
-		return nil, fmt.Errorf("failed to exec child process: %w", err)
+		return nil, fmt.Errorf("mproc: failed to exec child process: %w", err)
 	}
 
 	// 读取输出
 	outCipherData, err := os.ReadFile(tempOut.Name())
 	if err != nil {
-		return nil, fmt.Errorf("failed to read output file: %w", err)
+		return nil, fmt.Errorf("mproc: failed to read output file: %w", err)
 	} else {
 		errData, _ := os.ReadFile(tempErr.Name())
 		if len(errData) > 0 {
@@ -152,13 +165,13 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	// 解密输出
 	outPlainData, err := aesCryptor.CBCDecrypt(outCipherData)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decrypt output data: %w", err)
+		return nil, fmt.Errorf("mproc: failed to decrypt output data: %w", err)
 	}
 
 	// 反序列化输出
 	var outData TOut
 	if err := json.Unmarshal(outPlainData, &outData); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal output data: %w", err)
+		return nil, fmt.Errorf("mproc: failed to unmarshal output data: %w", err)
 	}
 
 	return &outData, nil
