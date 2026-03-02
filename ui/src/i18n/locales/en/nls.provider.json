@@ -21,6 +21,7 @@
   "provider.aliyun_ddospro": "Alibaba Cloud - Anti-DDoS Proxy",
   "provider.aliyun_dns": "Alibaba Cloud - DNS",
   "provider.aliyun_esa": "Alibaba Cloud - ESA (Edge Security Acceleration)",
+  "provider.aliyun_esa_saas": "Alibaba Cloud - ESA SaaS Manager (Edge Security Acceleration SaaS)",
   "provider.aliyun_fc": "Alibaba Cloud - FC (Function Compute)",
   "provider.aliyun_ga": "Alibaba Cloud - GA (Global Accelerator)",
   "provider.aliyun_live": "Alibaba Cloud - ApsaraVideo Live",

@@ -21,6 +21,7 @@
   "provider.aliyun_ddospro": "阿里云 - DDoS 高防",
   "provider.aliyun_dns": "阿里云 - 云解析 DNS",
   "provider.aliyun_esa": "阿里云 - 边缘安全加速 ESA",
+  "provider.aliyun_esa_saas": "阿里云 - 边缘安全加速 ESA SaaS 管理器",
   "provider.aliyun_fc": "阿里云 - 函数计算 FC",
   "provider.aliyun_ga": "阿里云 - 全球加速 GA",
   "provider.aliyun_live": "阿里云 - 视频直播 Live",

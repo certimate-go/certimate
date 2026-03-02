@@ -251,7 +251,7 @@ func (d *Deployer) deployToPremiumHost(ctx context.Context, certPEM, privkeyPEM 
 
 	// 查询独享模式域名列表，获取防护域名 ID
 	// REF: https://support.huaweicloud.com/api-waf/ListPremiumHost.html
-	hostId := ""
+	var hostId string
 	listPremiumHostPage := 1
 	listPremiumHostPageSize := 100
 	for {

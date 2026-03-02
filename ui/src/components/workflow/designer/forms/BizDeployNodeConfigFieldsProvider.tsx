@@ -13,6 +13,7 @@ import BizDeployNodeConfigFieldsProviderAliyunCLB from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderAliyunDCDN from "./BizDeployNodeConfigFieldsProviderAliyunDCDN";
 import BizDeployNodeConfigFieldsProviderAliyunDDoSPro from "./BizDeployNodeConfigFieldsProviderAliyunDDoSPro";
 import BizDeployNodeConfigFieldsProviderAliyunESA from "./BizDeployNodeConfigFieldsProviderAliyunESA";
+import BizDeployNodeConfigFieldsProviderAliyunESASaaS from "./BizDeployNodeConfigFieldsProviderAliyunESASaas";
 import BizDeployNodeConfigFieldsProviderAliyunFC from "./BizDeployNodeConfigFieldsProviderAliyunFC";
 import BizDeployNodeConfigFieldsProviderAliyunGA from "./BizDeployNodeConfigFieldsProviderAliyunGA";
 import BizDeployNodeConfigFieldsProviderAliyunLive from "./BizDeployNodeConfigFieldsProviderAliyunLive";
@@ -130,6 +131,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.ALIYUN_DCDN]: BizDeployNodeConfigFieldsProviderAliyunDCDN,
   [DEPLOYMENT_PROVIDERS.ALIYUN_DDOSPRO]: BizDeployNodeConfigFieldsProviderAliyunDDoSPro,
   [DEPLOYMENT_PROVIDERS.ALIYUN_ESA]: BizDeployNodeConfigFieldsProviderAliyunESA,
+  [DEPLOYMENT_PROVIDERS.ALIYUN_ESA_SAAS]: BizDeployNodeConfigFieldsProviderAliyunESASaaS,
   [DEPLOYMENT_PROVIDERS.ALIYUN_FC]: BizDeployNodeConfigFieldsProviderAliyunFC,
   [DEPLOYMENT_PROVIDERS.ALIYUN_GA]: BizDeployNodeConfigFieldsProviderAliyunGA,
   [DEPLOYMENT_PROVIDERS.ALIYUN_LIVE]: BizDeployNodeConfigFieldsProviderAliyunLive,
