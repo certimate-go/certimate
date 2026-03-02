@@ -13,7 +13,7 @@ import BizDeployNodeConfigFieldsProviderAliyunCLB from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderAliyunDCDN from "./BizDeployNodeConfigFieldsProviderAliyunDCDN";
 import BizDeployNodeConfigFieldsProviderAliyunDDoSPro from "./BizDeployNodeConfigFieldsProviderAliyunDDoSPro";
 import BizDeployNodeConfigFieldsProviderAliyunESA from "./BizDeployNodeConfigFieldsProviderAliyunESA";
-import BizDeployNodeConfigFieldsProviderAliyunESASaaS from "./BizDeployNodeConfigFieldsProviderAliyunESASaas";
+import BizDeployNodeConfigFieldsProviderAliyunESASaaS from "./BizDeployNodeConfigFieldsProviderAliyunESASaaS";
 import BizDeployNodeConfigFieldsProviderAliyunFC from "./BizDeployNodeConfigFieldsProviderAliyunFC";
 import BizDeployNodeConfigFieldsProviderAliyunGA from "./BizDeployNodeConfigFieldsProviderAliyunGA";
 import BizDeployNodeConfigFieldsProviderAliyunLive from "./BizDeployNodeConfigFieldsProviderAliyunLive";
