@@ -83,7 +83,7 @@ const Login = () => {
                   <Space.Addon>
                     <IconMail size="1.25em" />
                   </Space.Addon>
-                  <Input autoComplete="new-password" autoFocus placeholder={t("login.username.placeholder")} size="large" />
+                  <Input autoComplete="username" autoFocus placeholder={t("login.username.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
@@ -92,7 +92,7 @@ const Login = () => {
                   <Space.Addon>
                     <IconLock size="1.25em" />
                   </Space.Addon>
-                  <Input.Password autoComplete="new-password" placeholder={t("login.password.placeholder")} size="large" />
+                  <Input.Password autoComplete="current-password" placeholder={t("login.password.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
