@@ -20,7 +20,6 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	wangsucdn "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/cdnpro"
-	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -84,12 +83,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, errors.New("config `domain` is required")
 	}
 
-	// 解析证书内容
-	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
-	if err != nil {
-		return nil, err
-	}
-
 	// 查询已部署加速域名的详情
 	getHostnameDetailResp, err := d.sdkClient.GetHostnameDetail(d.config.Domain)
 	d.logger.Debug("sdk request 'cdnpro.GetHostnameDetail'", slog.String("hostname", d.config.Domain), slog.Any("response", getHostnameDetailResp))
@@ -105,10 +98,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	certificateNewVersionInfo := &wangsucdn.CertificateVersionInfo{
 		PrivateKey:  lo.ToPtr(encryptedPrivateKey),
 		Certificate: lo.ToPtr(certPEM),
-		IdentificationInfo: &wangsucdn.CertificateVersionIdentificationInfo{
-			CommonName:              lo.ToPtr(certX509.Subject.CommonName),
-			SubjectAlternativeNames: &certX509.DNSNames,
-		},
 	}
 
 	// 网宿云证书 URL 中包含证书 ID 及版本号
