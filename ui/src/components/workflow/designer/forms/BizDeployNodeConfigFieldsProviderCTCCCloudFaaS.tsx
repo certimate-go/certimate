@@ -53,7 +53,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z.object({
     regionId: z.string().nonempty(t("workflow_node.deploy.form.ctcccloud_faas_region_id.placeholder")),
-    domain: z.string().refine((v) => isDomain(v), t("workflow_node.deploy.form.ctcccloud_faas_domain.placeholder")),
+    domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };
 

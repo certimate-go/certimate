@@ -15,7 +15,7 @@ type DeployerConfig struct {
 	ApiToken string `json:"apiToken"`
 	// Fly.io 应用名称。
 	AppName string `json:"appName"`
-	// 自定义域名（不支持泛域名）。
+	// 自定义域名（支持泛域名）。
 	Domain string `json:"domain"`
 }
 
