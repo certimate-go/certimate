@@ -187,6 +187,7 @@
   "provider.tencentcloud_ssl_upload": "腾讯云 - 上传到 SSL 证书服务",
   "provider.tencentcloud_vod": "腾讯云 - 云点播 VOD",
   "provider.tencentcloud_waf": "腾讯云 - Web 应用防火墙 WAF",
+  "provider.todaynic": "时代互联",
   "provider.ucloud": "优刻得",
   "provider.ucloud_ualb": "优刻得 - 应用型负载均衡 ALB",
   "provider.ucloud_ucdn": "优刻得 - 云分发 UCDN",

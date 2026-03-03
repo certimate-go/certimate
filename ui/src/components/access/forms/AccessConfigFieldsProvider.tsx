@@ -96,6 +96,7 @@ import AccessConfigFieldsProviderSynologyDSM from "./AccessConfigFieldsProviderS
 import AccessConfigFieldsProviderTechnitiumDNS from "./AccessConfigFieldsProviderTechnitiumDNS";
 import AccessConfigFieldsProviderTelegramBot from "./AccessConfigFieldsProviderTelegramBot";
 import AccessConfigFieldsProviderTencentCloud from "./AccessConfigFieldsProviderTencentCloud";
+import AccessConfigFieldsProviderTodayNIC from "./AccessConfigFieldsProviderTodayNIC";
 import AccessConfigFieldsProviderUCloud from "./AccessConfigFieldsProviderUCloud";
 import AccessConfigFieldsProviderUniCloud from "./AccessConfigFieldsProviderUniCloud";
 import AccessConfigFieldsProviderUpyun from "./AccessConfigFieldsProviderUpyun";
@@ -208,6 +209,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.TECHNITIUMDNS]: AccessConfigFieldsProviderTechnitiumDNS,
   [ACCESS_PROVIDERS.TELEGRAMBOT]: AccessConfigFieldsProviderTelegramBot,
   [ACCESS_PROVIDERS.TENCENTCLOUD]: AccessConfigFieldsProviderTencentCloud,
+  [ACCESS_PROVIDERS.TODAYNIC]: AccessConfigFieldsProviderTodayNIC,
   [ACCESS_PROVIDERS.UCLOUD]: AccessConfigFieldsProviderUCloud,
   [ACCESS_PROVIDERS.UNICLOUD]: AccessConfigFieldsProviderUniCloud,
   [ACCESS_PROVIDERS.UPYUN]: AccessConfigFieldsProviderUpyun,

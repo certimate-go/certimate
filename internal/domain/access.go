@@ -539,6 +539,11 @@ type AccessConfigForTelegramBot struct {
 	ChatId   string `json:"chatId,omitempty"`
 }
 
+type AccessConfigForTodayNIC struct {
+	UserId string `json:"userId"`
+	ApiKey string `json:"apiKey"`
+}
+
 type AccessConfigForTencentCloud struct {
 	SecretId  string `json:"secretId"`
 	SecretKey string `json:"secretKey"`

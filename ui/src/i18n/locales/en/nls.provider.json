@@ -195,6 +195,7 @@
   "provider.ucloud_uewaf": "UCloud - UEWAF (Enterprise Web Application Firewall)",
   "provider.ucloud_upathx": "UCloud - UPathX (Global Dynamic Acceleration)",
   "provider.ucloud_us3": "UCloud - US3 (Object-based Storage)",
+  "provider.todaynic": "TodayNIC.com",
   "provider.unicloud": "uniCloud (DCloud)",
   "provider.unicloud_webhost": "uniCloud - Web Host",
   "provider.upyun": "UPYUN",
@@ -221,7 +222,7 @@
   "provider.webhook": "Webhook",
   "provider.wecombot": "WeCom Bot",
   "provider.westcn": "West.cn",
-  "provider.xinnet": "Xinnet",
+  "provider.xinnet": "Xinnet.com",
   "provider.zerossl": "ZeroSSL",
 
   "provider.category.all": "All",
