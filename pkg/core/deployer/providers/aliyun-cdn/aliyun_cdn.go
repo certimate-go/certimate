@@ -164,13 +164,20 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
 		var errs []error
 
-		certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+		certIdentifier := upres.ExtendedData["CertIdentifier"].(string)
+		certIdentifierSeps := strings.SplitN(certIdentifier, "-", 2)
+		if len(certIdentifierSeps) != 2 {
+			return nil, fmt.Errorf("received invalid certificate identifier: '%s'", certIdentifier)
+		}
+
+		certId, _ := strconv.ParseInt(certIdentifierSeps[0], 10, 64)
+		certRegion := certIdentifierSeps[1]
 		for _, domain := range domains {
 			select {
 			case <-ctx.Done():
 				return nil, ctx.Err()
 			default:
-				if err := d.updateDomainCertificate(ctx, domain, certId); err != nil {
+				if err := d.updateDomainCertificate(ctx, domain, certId, certRegion); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -232,16 +239,14 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64) error {
+func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64, certRegion string) error {
 	// 设置 CDN 域名域名证书
 	// REF: https://help.aliyun.com/zh/cdn/developer-reference/api-cdn-2018-05-10-setcdndomainsslcertificate
 	setCdnDomainSSLCertificateReq := &alicdn.SetCdnDomainSSLCertificateRequest{
-		DomainName: tea.String(domain),
-		CertType:   tea.String("cas"),
-		CertId:     tea.Int64(cloudCertId),
-		CertRegion: lo.
-			If(d.config.Region == "" || strings.HasPrefix(d.config.Region, "cn-"), tea.String("cn-hangzhou")).
-			Else(tea.String("ap-southeast-1")),
+		DomainName:  tea.String(domain),
+		CertType:    tea.String("cas"),
+		CertId:      tea.Int64(cloudCertId),
+		CertRegion:  tea.String(certRegion),
 		SSLProtocol: tea.String("on"),
 	}
 	setCdnDomainSSLCertificateResp, err := d.sdkClient.SetCdnDomainSSLCertificateWithContext(ctx, setCdnDomainSSLCertificateReq, &dara.RuntimeOptions{})

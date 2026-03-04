@@ -160,14 +160,21 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		d.logger.Info("found vod domains to deploy", slog.Any("domains", domains))
 		var errs []error
 
+		certIdentifier := upres.ExtendedData["CertIdentifier"].(string)
+		certIdentifierSeps := strings.SplitN(certIdentifier, "-", 2)
+		if len(certIdentifierSeps) != 2 {
+			return nil, fmt.Errorf("received invalid certificate identifier: '%s'", certIdentifier)
+		}
+
+		certId, _ := strconv.ParseInt(certIdentifierSeps[0], 10, 64)
+		certName := upres.CertName
+		certRegion := certIdentifierSeps[1]
 		for _, domain := range domains {
 			select {
 			case <-ctx.Done():
 				return nil, ctx.Err()
 			default:
-				certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
-				certName := upres.CertName
-				if err := d.updateDomainCertificate(ctx, domain, certId, certName); err != nil {
+				if err := d.updateDomainCertificate(ctx, domain, certId, certName, certRegion); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -224,17 +231,15 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64, cloudCertName string) error {
+func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64, cloudCertName, cloudCertRegion string) error {
 	// 设置域名证书
 	// REF: https://help.aliyun.com/zh/vod/developer-reference/api-vod-2017-03-21-setvoddomainsslcertificate
 	setVodDomainSSLCertificateReq := &alivod.SetVodDomainSSLCertificateRequest{
-		DomainName: tea.String(domain),
-		CertType:   tea.String("cas"),
-		CertId:     tea.Int64(cloudCertId),
-		CertName:   tea.String(cloudCertName),
-		CertRegion: lo.
-			If(d.config.Region == "" || strings.HasPrefix(d.config.Region, "cn-"), tea.String("cn-hangzhou")).
-			Else(tea.String("ap-southeast-1")),
+		DomainName:  tea.String(domain),
+		CertType:    tea.String("cas"),
+		CertId:      tea.Int64(cloudCertId),
+		CertName:    tea.String(cloudCertName),
+		CertRegion:  tea.String(cloudCertRegion),
 		SSLProtocol: tea.String("on"),
 	}
 	setVodDomainSSLCertificateResp, err := d.sdkClient.SetVodDomainSSLCertificateWithContext(ctx, setVodDomainSSLCertificateReq, &dara.RuntimeOptions{})
