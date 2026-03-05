@@ -36,26 +36,22 @@ func (client *CasClient) Init(config *openapiutil.Config) (_err error) {
 	return nil
 }
 
-func (client *CasClient) GetUserCertificateDetailWithContext(ctx context.Context, request *alicas.GetUserCertificateDetailRequest, runtime *dara.RuntimeOptions) (_result *alicas.GetUserCertificateDetailResponse, _err error) {
+func (client *CasClient) GetCertificateDetailWithContext(ctx context.Context, request *alicas.GetCertificateDetailRequest, runtime *dara.RuntimeOptions) (_result *alicas.GetCertificateDetailResponse, _err error) {
 	_err = request.Validate()
 	if _err != nil {
 		return _result, _err
 	}
+
 	query := map[string]interface{}{}
-
-	if !dara.IsNil(request.CertFilter) {
-		query["CertFilter"] = request.CertFilter
-	}
-
-	if !dara.IsNil(request.CertId) {
-		query["CertId"] = request.CertId
+	if !dara.IsNil(request.CertificateId) {
+		query["CertificateId"] = request.CertificateId
 	}
 
 	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
 	params := &openapiutil.Params{
-		Action:      dara.String("GetUserCertificateDetail"),
+		Action:      dara.String("GetCertificateDetail"),
 		Version:     dara.String("2020-04-07"),
 		Protocol:    dara.String("HTTPS"),
 		Pathname:    dara.String("/"),
@@ -65,7 +61,7 @@ func (client *CasClient) GetUserCertificateDetailWithContext(ctx context.Context
 		ReqBodyType: dara.String("formData"),
 		BodyType:    dara.String("json"),
 	}
-	_result = &alicas.GetUserCertificateDetailResponse{}
+	_result = &alicas.GetCertificateDetailResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
