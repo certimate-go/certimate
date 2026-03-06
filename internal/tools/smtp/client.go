@@ -60,15 +60,16 @@ func createSmtpClient(config *Config) (*mail.Client, error) {
 		mail.WithTimeout(time.Second * 30),
 	}
 
-	if config.Port == 0 {
+	// Determine the actual port to use
+	port := config.Port
+	if port == 0 {
 		if config.UseSsl {
-			clientOptions = append(clientOptions, mail.WithPort(mail.DefaultPortSSL))
+			port = mail.DefaultPortSSL // 465
 		} else {
-			clientOptions = append(clientOptions, mail.WithPort(mail.DefaultPort))
+			port = mail.DefaultPort // 25
 		}
-	} else {
-		clientOptions = append(clientOptions, mail.WithPort(config.Port))
 	}
+	clientOptions = append(clientOptions, mail.WithPort(port))
 
 	if config.UseSsl {
 		tlsConfig := xtls.NewCompatibleConfig()
@@ -78,8 +79,13 @@ func createSmtpClient(config *Config) (*mail.Client, error) {
 			tlsConfig.ServerName = config.Host
 		}
 
-		clientOptions = append(clientOptions, mail.WithSSL())
 		clientOptions = append(clientOptions, mail.WithTLSConfig(tlsConfig))
+
+		// Port 465 uses implicit TLS (SMTPS), while port 587/25 uses explicit TLS (STARTTLS).
+		// For implicit TLS, we need WithSSL(); for STARTTLS, we only need TLSMandatory policy.
+		if port == 465 {
+			clientOptions = append(clientOptions, mail.WithSSL())
+		}
 		clientOptions = append(clientOptions, mail.WithTLSPolicy(mail.TLSMandatory))
 	} else {
 		clientOptions = append(clientOptions, mail.WithTLSPolicy(mail.TLSOpportunistic))
