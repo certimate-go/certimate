@@ -160,7 +160,7 @@ func (d *Deployer) deployToWAF3WithCloudResource(ctx context.Context, cloudCertI
 	// 查询云产品实例已同步的证书列表
 	// REF: https://www.alibabacloud.com/help/zh/waf/web-application-firewall-3-0/developer-reference/api-waf-openapi-2021-10-01-describeresourceinstancecerts
 	//
-	// 注意文档中描述为分页查询，但实际调用不支持分页
+	// 注意，虽然文档中描述为分页查询，但实际调用不支持分页
 	// https://github.com/certimate-go/certimate/issues/1122
 	var wafResourceInstanceCertificates []*aliwaf.DescribeResourceInstanceCertsResponseBodyCerts
 	describeResourceInstanceCertsReq := &aliwaf.DescribeResourceInstanceCertsRequest{

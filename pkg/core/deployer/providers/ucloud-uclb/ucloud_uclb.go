@@ -5,10 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"slices"
-	"strings"
 	"sync"
-	"time"
 
 	"github.com/samber/lo"
 	"github.com/ucloud/ucloud-sdk-go/services/ulb"
@@ -19,7 +16,6 @@ import (
 	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
-	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
 type DeployerConfig struct {
@@ -228,6 +224,23 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 		return nil
 	}
 
+	// 解绑 SSL 证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/unbind_ssl
+	//
+	// 注意，虽然文档中描述为数组结构，但实际 VServer 最多只允许绑定一个证书，因此需要先解绑旧证书才能绑定新证书
+	// https://github.com/certimate-go/certimate/issues/1224
+	for _, sslItem := range vserverInfo.SSLSet {
+		unbindSSLReq := d.sdkClient.NewUnbindSSLRequest()
+		unbindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
+		unbindSSLReq.VServerId = ucloud.String(cloudVServerId)
+		unbindSSLReq.SSLId = ucloud.String(sslItem.SSLId)
+		unbindSSLResp, err := d.sdkClient.UnbindSSL(unbindSSLReq)
+		d.logger.Debug("sdk request 'ulb.UnbindSSL'", slog.Any("request", unbindSSLReq), slog.Any("response", unbindSSLResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ulb.UnbindSSL': %w", err)
+		}
+	}
+
 	// 绑定 SSL 证书
 	// REF: https://docs.ucloud.cn/api/ulb-api/bind_ssl
 	bindSSLReq := d.sdkClient.NewBindSSLRequest()
@@ -238,56 +251,6 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	d.logger.Debug("sdk request 'ulb.BindSSL'", slog.Any("request", bindSSLReq), slog.Any("response", bindSSLResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ulb.BindSSL': %w", err)
-	}
-
-	// 找出需要解绑的 SSL 证书
-	sslIdsToUnbind := make([]string, 0)
-	for _, sslItem := range vserverInfo.SSLSet {
-		if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
-			sslIdsToUnbind = append(sslIdsToUnbind, sslItem.SSLId) // 过期证书需要解绑
-			continue
-		}
-
-		d.sslId2PemMapMu.Lock()
-		certX509, err := xcert.ParseCertificateFromPEM(d.sslId2PemMap[cloudCertId])
-		d.sslId2PemMapMu.Unlock()
-		if err != nil {
-			continue
-		}
-
-		describeSSLV2Req := d.sdkClient.NewDescribeSSLV2Request()
-		describeSSLV2Req.SSLId = ucloud.String(sslItem.SSLId)
-		describeSSLV2Req.Limit = ucloud.Int(1)
-		describeSSLV2Resp, err := d.sdkClient.DescribeSSLV2(describeSSLV2Req)
-		d.logger.Debug("sdk request 'ulb.DescribeSSLV2'", slog.Any("request", describeSSLV2Req), slog.Any("response", describeSSLV2Resp))
-		if err != nil {
-			continue
-		} else if len(describeSSLV2Resp.DataSet) == 0 {
-			continue
-		}
-
-		sslItem := describeSSLV2Resp.DataSet[0]
-		if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
-			sslIdsToUnbind = append(sslIdsToUnbind, sslItem.SSLId) // 过期证书需要解绑
-			continue
-		} else if sslItem.DNSNames != "" && slices.Equal(strings.Split(sslItem.DNSNames, ","), certX509.DNSNames) {
-			sslIdsToUnbind = append(sslIdsToUnbind, sslItem.SSLId) // 同域名证书需要解绑
-			continue
-		}
-	}
-
-	// 解绑 SSL 证书
-	// REF: https://docs.ucloud.cn/api/ulb-api/unbind_ssl
-	for _, sslId := range sslIdsToUnbind {
-		unbindSSLReq := d.sdkClient.NewUnbindSSLRequest()
-		unbindSSLReq.ULBId = ucloud.String(cloudLoadbalancerId)
-		unbindSSLReq.VServerId = ucloud.String(cloudVServerId)
-		unbindSSLReq.SSLId = ucloud.String(sslId)
-		unbindSSLResp, err := d.sdkClient.UnbindSSL(unbindSSLReq)
-		d.logger.Debug("sdk request 'ulb.UnbindSSL'", slog.Any("request", unbindSSLReq), slog.Any("response", unbindSSLResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'ulb.UnbindSSL': %w", err)
-		}
 	}
 
 	return nil
