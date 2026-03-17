@@ -17,7 +17,7 @@ export interface NotificationProviderPickerInstance {
 }
 
 const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance, NotificationProviderPickerProps>(
-  ({ className, style, gap = "middle", placeholder, showAvailability = false, showSearch = false, onFilter, onSelect }, ref) => {
+  ({ className, style, gap = "medium", placeholder, showAvailability = false, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
     const { wrapperElRef, cols } = usePickerWrapperCols(320);
@@ -83,7 +83,7 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
           <div
             className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
               "gap-4": gap === "large",
-              "gap-2": gap === "middle",
+              "gap-2": gap === "medium",
               "gap-1": gap === "small",
               [`gap-${+gap || "2"}`]: typeof gap === "number",
             })}
@@ -101,7 +101,7 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
             <div
               className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
                 "gap-4": gap === "large",
-                "gap-2": gap === "middle",
+                "gap-2": gap === "medium",
                 "gap-1": gap === "small",
                 [`gap-${+gap || "2"}`]: typeof gap === "number",
               })}

@@ -17,7 +17,7 @@ export interface AccessProviderPickerInstance {
 }
 
 const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProviderPickerProps>(
-  ({ className, style, gap = "middle", placeholder, showOptionTags, showSearch = false, onFilter, onSelect }, ref) => {
+  ({ className, style, gap = "medium", placeholder, showOptionTags, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
     const showOptionTagForDNS = useMemo(() => {
@@ -136,7 +136,7 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
           <div
             className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
               "gap-4": gap === "large",
-              "gap-2": gap === "middle",
+              "gap-2": gap === "medium",
               "gap-1": gap === "small",
               [`gap-${+gap || "2"}`]: typeof gap === "number",
             })}
