@@ -68,7 +68,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Cert: certPEM,
 		Key:  privkeyPEM,
 	}
-	sslCenterCreateResp, err := c.sdkClient.SslCenterCreate(sslCenterCreateReq)
+	sslCenterCreateResp, err := c.sdkClient.SslCenterCreateWithContext(ctx, sslCenterCreateReq)
 	c.logger.Debug("sdk request 'sslcenter.Create'", slog.Any("request", sslCenterCreateReq), slog.Any("response", sslCenterCreateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'sslcenter.Create': %w", err)
@@ -96,7 +96,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		Cert: certPEM,
 		Key:  privkeyPEM,
 	}
-	sslCenterUpdateResp, err := c.sdkClient.SslCenterUpdate(certId, sslCenterUpdateReq)
+	sslCenterUpdateResp, err := c.sdkClient.SslCenterUpdateWithContext(ctx, certId, sslCenterUpdateReq)
 	c.logger.Debug("sdk request 'sslcenter.Update'", slog.Int64("certId", certId), slog.Any("request", sslCenterUpdateReq), slog.Any("response", sslCenterUpdateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'sslcenter.Update': %w", err)
@@ -131,7 +131,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			Page:    lo.ToPtr(int32(sslCenterListPage)),
 			PerPage: lo.ToPtr(int32(sslCenterListPerPage)),
 		}
-		sslCenterListResp, err := c.sdkClient.SslCenterList(sslCenterListReq)
+		sslCenterListResp, err := c.sdkClient.SslCenterListWithContext(ctx, sslCenterListReq)
 		c.logger.Debug("sdk request 'sslcenter.List'", slog.Any("request", sslCenterListReq), slog.Any("response", sslCenterListResp))
 		if err != nil {
 			return nil, false, fmt.Errorf("failed to execute sdk request 'sslcenter.List': %w", err)
@@ -153,7 +153,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			}
 
 			// 对比证书内容
-			sslCenterGetResp, err := c.sdkClient.SslCenterGet(sslItem.ID)
+			sslCenterGetResp, err := c.sdkClient.SslCenterGetWithContext(ctx, sslItem.ID)
 			if err != nil {
 				return nil, false, fmt.Errorf("failed to execute sdk request 'sslcenter.Get': %w", err)
 			} else {

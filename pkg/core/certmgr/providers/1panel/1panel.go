@@ -84,7 +84,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
-			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUpload(websiteSSLUploadReq)
+			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUploadWithContext(ctx, websiteSSLUploadReq)
 			c.logger.Debug("sdk request '1panel.WebsiteSSLUpload'", slog.Any("request", websiteSSLUploadReq), slog.Any("response", websiteSSLUploadResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLUpload': %w", err)
@@ -99,7 +99,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
-			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUpload(websiteSSLUploadReq)
+			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUploadWithContext(ctx, websiteSSLUploadReq)
 			c.logger.Debug("sdk request '1panel.WebsiteSSLUpload'", slog.Any("request", websiteSSLUploadReq), slog.Any("response", websiteSSLUploadResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLUpload': %w", err)
@@ -130,7 +130,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	case *onepanelsdk.Client:
 		{
 			// 获取证书详情
-			websiteSSLGetResp, err := sdkClient.WebsiteSSLGet(sslId)
+			websiteSSLGetResp, err := sdkClient.WebsiteSSLGetWithContext(ctx, sslId)
 			c.logger.Debug("sdk request '1panel.WebsiteSSLGet'", slog.Int64("sslId", sslId), slog.Any("response", websiteSSLGetResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLGet': %w", err)
@@ -144,7 +144,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
-			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUpload(websiteSSLUploadReq)
+			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUploadWithContext(ctx, websiteSSLUploadReq)
 			c.logger.Debug("sdk request '1panel.WebsiteSSLUpload'", slog.Any("request", websiteSSLUploadReq), slog.Any("response", websiteSSLUploadResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLUpload': %w", err)
@@ -154,7 +154,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	case *onepanelsdk2.Client:
 		{
 			// 获取证书详情
-			websiteSSLGetResp, err := sdkClient.WebsiteSSLGet(sslId)
+			websiteSSLGetResp, err := sdkClient.WebsiteSSLGetWithContext(ctx, sslId)
 			c.logger.Debug("sdk request '1panel.WebsiteSSLGet'", slog.Any("sslId", sslId), slog.Any("response", websiteSSLGetResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLGet': %w", err)
@@ -168,7 +168,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
-			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUpload(websiteSSLUploadReq)
+			websiteSSLUploadResp, err := sdkClient.WebsiteSSLUploadWithContext(ctx, websiteSSLUploadReq)
 			c.logger.Debug("sdk request '1panel.WebsiteSSLUpload'", slog.Any("request", websiteSSLUploadReq), slog.Any("response", websiteSSLUploadResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLUpload': %w", err)
@@ -199,7 +199,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 					Page:     int32(searchWebsiteSSLPage),
 					PageSize: int32(searchWebsiteSSLPageSize),
 				}
-				websiteSSLSearchResp, err := sdkClient.WebsiteSSLSearch(websiteSSLSearchReq)
+				websiteSSLSearchResp, err := sdkClient.WebsiteSSLSearchWithContext(ctx, websiteSSLSearchReq)
 				c.logger.Debug("sdk request '1panel.WebsiteSSLSearch'", slog.Any("request", websiteSSLSearchReq), slog.Any("response", websiteSSLSearchResp))
 				if err != nil {
 					return nil, false, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLSearch': %w", err)
@@ -248,7 +248,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 					Page:     int32(searchWebsiteSSLPage),
 					PageSize: int32(searchWebsiteSSLPageSize),
 				}
-				websiteSSLSearchResp, err := sdkClient.WebsiteSSLSearch(websiteSSLSearchReq)
+				websiteSSLSearchResp, err := sdkClient.WebsiteSSLSearchWithContext(ctx, websiteSSLSearchReq)
 				c.logger.Debug("sdk request '1panel.WebsiteSSLSearch'", slog.Any("request", websiteSSLSearchReq), slog.Any("response", websiteSSLSearchResp))
 				if err != nil {
 					return nil, false, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSSLSearch': %w", err)

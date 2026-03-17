@@ -56,7 +56,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Certificate: certPEM,
 		PrivateKey:  privkeyPEM,
 	}
-	uploadHttpsCertificateResp, err := c.sdkClient.UploadHttpsCertificate(uploadHttpsCertificateReq)
+	uploadHttpsCertificateResp, err := c.sdkClient.UploadHttpsCertificateWithContext(ctx, uploadHttpsCertificateReq)
 	c.logger.Debug("sdk request 'console.UploadHttpsCertificate'", slog.Any("response", uploadHttpsCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'console.UploadHttpsCertificate': %w", err)

@@ -87,7 +87,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 			Key: privkeyPEM,
 		},
 	}
-	updateCertificateResp, err := d.sdkClient.UpdateCertificate(updateCertificateReq)
+	updateCertificateResp, err := d.sdkClient.UpdateCertificateWithContext(ctx, updateCertificateReq)
 	d.logger.Debug("sdk request 'safeline.UpdateCertificate'", slog.Any("request", updateCertificateReq), slog.Any("response", updateCertificateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'safeline.UpdateCertificate': %w", err)

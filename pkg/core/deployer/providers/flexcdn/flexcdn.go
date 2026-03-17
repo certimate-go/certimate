@@ -108,7 +108,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		DNSNames:    certX509.DNSNames,
 		CommonNames: []string{certX509.Subject.CommonName},
 	}
-	updateSSLCertResp, err := d.sdkClient.UpdateSSLCert(updateSSLCertReq)
+	updateSSLCertResp, err := d.sdkClient.UpdateSSLCertWithContext(ctx, updateSSLCertReq)
 	d.logger.Debug("sdk request 'flexcdn.UpdateSSLCert'", slog.Any("request", updateSSLCertReq), slog.Any("response", updateSSLCertResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'flexcdn.UpdateSSLCert': %w", err)

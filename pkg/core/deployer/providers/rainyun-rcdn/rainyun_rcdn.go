@@ -92,7 +92,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		CertId:  certId,
 		Domains: []string{d.config.Domain},
 	}
-	rcdnInstanceSslBindResp, err := d.sdkClient.RcdnInstanceSslBind(d.config.InstanceId, rcdnInstanceSslBindReq)
+	rcdnInstanceSslBindResp, err := d.sdkClient.RcdnInstanceSslBindWithContext(ctx, d.config.InstanceId, rcdnInstanceSslBindReq)
 	d.logger.Debug("sdk request 'rcdn.InstanceSslBind'", slog.Int64("instanceId", d.config.InstanceId), slog.Any("request", rcdnInstanceSslBindReq), slog.Any("response", rcdnInstanceSslBindResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'rcdn.InstanceSslBind': %w", err)

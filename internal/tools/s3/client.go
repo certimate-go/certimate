@@ -102,7 +102,7 @@ func resolveEndpoint(endpoint string) (string, bool) {
 	var secure bool
 	var result string
 
-	reScheme := regexp.MustCompile("^([^:]+)://")
+	reScheme := regexp.MustCompile(`^([^:]+)://`)
 	if reScheme.MatchString(endpoint) {
 		temp := strings.Split(endpoint, "://")
 		scheme := temp[0]

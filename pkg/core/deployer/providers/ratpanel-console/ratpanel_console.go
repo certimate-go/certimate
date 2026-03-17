@@ -61,7 +61,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		Certificate: certPEM,
 		PrivateKey:  privkeyPEM,
 	}
-	setSettingCertResp, err := d.sdkClient.SetSettingCert(setSettingCertReq)
+	setSettingCertResp, err := d.sdkClient.SetSettingCertWithContext(ctx, setSettingCertReq)
 	d.logger.Debug("sdk request 'ratpanel.SetSettingCert'", slog.Any("request", setSettingCertReq), slog.Any("response", setSettingCertResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ratpanel.SetSettingCert': %w", err)

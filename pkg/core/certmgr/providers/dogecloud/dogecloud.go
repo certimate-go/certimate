@@ -62,7 +62,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Certificate: certPEM,
 		PrivateKey:  privkeyPEM,
 	}
-	uploadSslCertResp, err := c.sdkClient.UploadCdnCert(uploadSslCertReq)
+	uploadSslCertResp, err := c.sdkClient.UploadCdnCertWithContext(ctx, uploadSslCertReq)
 	c.logger.Debug("sdk request 'cdn.UploadCdnCert'", slog.Any("request", uploadSslCertReq), slog.Any("response", uploadSslCertResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'cdn.UploadCdnCert': %w", err)

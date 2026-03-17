@@ -111,7 +111,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 		Domains: lo.ToPtr(d.config.Domain),
 		Config:  lo.ToPtr([]string{"https"}),
 	}
-	getDomainConfigResp, err := d.sdkClient.GetDomainConfig(getDomainConfigReq)
+	getDomainConfigResp, err := d.sdkClient.GetDomainConfigWithContext(ctx, getDomainConfigReq)
 	d.logger.Debug("sdk request 'baishan.GetDomainConfig'", slog.Any("request", getDomainConfigReq), slog.Any("response", getDomainConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'baishan.GetDomainConfig': %w", err)
@@ -132,7 +132,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 			},
 		},
 	}
-	setDomainConfigResp, err := d.sdkClient.SetDomainConfig(setDomainConfigReq)
+	setDomainConfigResp, err := d.sdkClient.SetDomainConfigWithContext(ctx, setDomainConfigReq)
 	d.logger.Debug("sdk request 'baishan.SetDomainConfig'", slog.Any("request", setDomainConfigReq), slog.Any("response", setDomainConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'baishan.SetDomainConfig': %w", err)

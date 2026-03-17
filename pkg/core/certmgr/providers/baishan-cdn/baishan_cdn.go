@@ -65,7 +65,7 @@ func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Certificate: lo.ToPtr(certPEM),
 		Key:         lo.ToPtr(privkeyPEM),
 	}
-	uploadDomainCertificateResp, err := d.sdkClient.UploadDomainCertificate(uploadDomainCertificateReq)
+	uploadDomainCertificateResp, err := d.sdkClient.UploadDomainCertificateWithContext(ctx, uploadDomainCertificateReq)
 	d.logger.Debug("sdk request 'baishan.UploadDomainCertificate'", slog.Any("request", uploadDomainCertificateReq), slog.Any("response", uploadDomainCertificateResp))
 	if err != nil {
 		if uploadDomainCertificateResp != nil {
@@ -98,7 +98,7 @@ func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		Certificate:   lo.ToPtr(certPEM),
 		Key:           lo.ToPtr(privkeyPEM),
 	}
-	uploadDomainCertificateResp, err := d.sdkClient.UploadDomainCertificate(uploadDomainCertificateReq)
+	uploadDomainCertificateResp, err := d.sdkClient.UploadDomainCertificateWithContext(ctx, uploadDomainCertificateReq)
 	d.logger.Debug("sdk request 'baishan.UploadDomainCertificate'", slog.Any("request", uploadDomainCertificateReq), slog.Any("response", uploadDomainCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'baishan.UploadDomainCertificate': %w", err)

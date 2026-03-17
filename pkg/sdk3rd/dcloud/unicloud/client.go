@@ -259,9 +259,9 @@ func (c *Client) ensureServerlessJwtTokenExists() error {
 	params := map[string]string{
 		"password": "password",
 	}
-	if regexp.MustCompile("^1\\d{10}$").MatchString(c.username) {
+	if regexp.MustCompile(`^1\d{10}$`).MatchString(c.username) {
 		params["mobile"] = c.username
-	} else if regexp.MustCompile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$").MatchString(c.username) {
+	} else if regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(c.username) {
 		params["email"] = c.username
 	} else {
 		params["username"] = c.username

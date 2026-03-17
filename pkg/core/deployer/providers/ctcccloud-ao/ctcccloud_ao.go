@@ -186,7 +186,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			PageSize:    lo.ToPtr(int32(queryDomainsPageSize)),
 			ProductCode: lo.ToPtr("020"),
 		}
-		queryDomainsResp, err := d.sdkClient.QueryDomains(queryDomainsReq)
+		queryDomainsResp, err := d.sdkClient.QueryDomainsWithContext(ctx, queryDomainsReq)
 		d.logger.Debug("sdk request 'cdn.QueryDomains'", slog.Any("request", queryDomainsReq), slog.Any("response", queryDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'cdn.QueryDomains': %w", err)
@@ -222,7 +222,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 		Domain:      lo.ToPtr(domain),
 		ProductCode: lo.ToPtr("020"),
 	}
-	getDomainConfigResp, err := d.sdkClient.GetDomainConfig(getDomainConfigReq)
+	getDomainConfigResp, err := d.sdkClient.GetDomainConfigWithContext(ctx, getDomainConfigReq)
 	d.logger.Debug("sdk request 'cdn.GetDomainConfig'", slog.Any("request", getDomainConfigReq), slog.Any("response", getDomainConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.GetDomainConfig': %w", err)
@@ -247,7 +247,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 		HttpsStatus: lo.ToPtr("on"),
 		CertName:    lo.ToPtr(cloudCertName),
 	}
-	modifyDomainConfigResp, err := d.sdkClient.ModifyDomainConfig(modifyDomainConfigReq)
+	modifyDomainConfigResp, err := d.sdkClient.ModifyDomainConfigWithContext(ctx, modifyDomainConfigReq)
 	d.logger.Debug("sdk request 'cdn.ModifyDomainConfig'", slog.Any("request", modifyDomainConfigReq), slog.Any("response", modifyDomainConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.ModifyDomainConfig': %w", err)

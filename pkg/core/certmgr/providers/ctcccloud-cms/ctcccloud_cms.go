@@ -84,7 +84,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		PrivateKey:         lo.ToPtr(privkeyPEM),
 		EncryptionStandard: lo.ToPtr("INTERNATIONAL"),
 	}
-	uploadCertificateResp, err := c.sdkClient.UploadCertificate(uploadCertificateReq)
+	uploadCertificateResp, err := c.sdkClient.UploadCertificateWithContext(ctx, uploadCertificateReq)
 	c.logger.Debug("sdk request 'cms.UploadCertificate'", slog.Any("request", uploadCertificateReq), slog.Any("response", uploadCertificateResp))
 	if err != nil {
 		if uploadCertificateResp != nil && uploadCertificateResp.GetError() == "CCMS_100000067" {
@@ -139,7 +139,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			Keyword:  lo.ToPtr(certX509.Subject.CommonName),
 			Origin:   lo.ToPtr("UPLOAD"),
 		}
-		getCertificateListResp, err := c.sdkClient.GetCertificateList(getCertificateListReq)
+		getCertificateListResp, err := c.sdkClient.GetCertificateListWithContext(ctx, getCertificateListReq)
 		c.logger.Debug("sdk request 'cms.GetCertificateList'", slog.Any("request", getCertificateListReq), slog.Any("response", getCertificateListResp))
 		if err != nil {
 			return nil, false, fmt.Errorf("failed to execute sdk request 'cms.GetCertificateList': %w", err)

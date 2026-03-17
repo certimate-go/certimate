@@ -80,7 +80,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			PerPage:   lo.ToPtr(int32(listCertPerPage)),
 			UsageMode: lo.ToPtr(int32(0)),
 		}
-		listCertsResp, err := c.sdkClient.ListCerts(listCertsReq)
+		listCertsResp, err := c.sdkClient.ListCertsWithContext(ctx, listCertsReq)
 		c.logger.Debug("sdk request 'ao.ListCerts'", slog.Any("request", listCertsReq), slog.Any("response", listCertsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'ao.ListCerts': %w", err)
@@ -112,7 +112,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			queryCertReq := &ctyunao.QueryCertRequest{
 				Id: lo.ToPtr(certItem.Id),
 			}
-			queryCertResp, err := c.sdkClient.QueryCert(queryCertReq)
+			queryCertResp, err := c.sdkClient.QueryCertWithContext(ctx, queryCertReq)
 			c.logger.Debug("sdk request 'ao.QueryCert'", slog.Any("request", queryCertReq), slog.Any("response", queryCertResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request 'ao.QueryCert': %w", err)
@@ -147,7 +147,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Certs: lo.ToPtr(certPEM),
 		Key:   lo.ToPtr(privkeyPEM),
 	}
-	createCertResp, err := c.sdkClient.CreateCert(createCertReq)
+	createCertResp, err := c.sdkClient.CreateCertWithContext(ctx, createCertReq)
 	c.logger.Debug("sdk request 'ao.CreateCert'", slog.Any("request", createCertReq), slog.Any("response", createCertResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ao.CreateCert': %w", err)

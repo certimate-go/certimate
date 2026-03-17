@@ -76,7 +76,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		DomainName: lo.ToPtr(d.config.Domain),
 		CnameCheck: lo.ToPtr(false),
 	}
-	getCustomDomainResp, err := d.sdkClient.GetCustomDomain(getCustomDomainReq)
+	getCustomDomainResp, err := d.sdkClient.GetCustomDomainWithContext(ctx, getCustomDomainReq)
 	d.logger.Debug("sdk request 'faas.GetCustomDomain'", slog.Any("request", getCustomDomainReq), slog.Any("response", getCustomDomainResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'faas.GetCustomDomain': %w", err)
@@ -111,7 +111,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			updateCustomDomainReq.Protocol = lo.ToPtr(*updateCustomDomainReq.Protocol + ",HTTPS")
 		}
 	}
-	updateCustomDomainResp, err := d.sdkClient.UpdateCustomDomain(updateCustomDomainReq)
+	updateCustomDomainResp, err := d.sdkClient.UpdateCustomDomainWithContext(ctx, updateCustomDomainReq)
 	d.logger.Debug("sdk request 'faas.UpdateCustomDomain'", slog.Any("request", updateCustomDomainReq), slog.Any("response", updateCustomDomainResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'faas.UpdateCustomDomain': %w", err)

@@ -72,7 +72,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				SSLType:     "import-paste",
 				AutoRestart: strconv.FormatBool(d.config.AutoRestart),
 			}
-			settingsSSLUpdateResp, err := sdkClient.SettingsSSLUpdate(settingsSSLUpdateReq)
+			settingsSSLUpdateResp, err := sdkClient.SettingsSSLUpdateWithContext(ctx, settingsSSLUpdateReq)
 			d.logger.Debug("sdk request '1panel.SettingsSSLUpdate'", slog.Any("request", settingsSSLUpdateReq), slog.Any("response", settingsSSLUpdateResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.SettingsSSLUpdate': %w", err)
@@ -88,7 +88,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				SSLType:     "import-paste",
 				AutoRestart: strconv.FormatBool(d.config.AutoRestart),
 			}
-			coreSettingsSSLUpdateResp, err := sdkClient.CoreSettingsSSLUpdate(coreSettingsSSLUpdateReq)
+			coreSettingsSSLUpdateResp, err := sdkClient.CoreSettingsSSLUpdateWithContext(ctx, coreSettingsSSLUpdateReq)
 			d.logger.Debug("sdk request '1panel.CoreSettingsSSLUpdate'", slog.Any("request", coreSettingsSSLUpdateReq), slog.Any("response", coreSettingsSSLUpdateResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request '1panel.CoreSettingsSSLUpdate': %w", err)

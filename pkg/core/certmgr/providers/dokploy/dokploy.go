@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	
+
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
@@ -60,7 +60,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// 查询证书列表，避免重复上传
 	// REF: https://docs.dokploy.com/docs/api/certificates#certificates-all
 	certificatesAllReq := &dokploysdk.CertificatesAllRequest{}
-	certificatesAllResp, err := c.sdkClient.CertificatesAll(certificatesAllReq)
+	certificatesAllResp, err := c.sdkClient.CertificatesAllWithContext(ctx, certificatesAllReq)
 	c.logger.Debug("sdk request 'certificates.all'", slog.Any("request", certificatesAllReq), slog.Any("response", certificatesAllResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'certificates.all': %w", err)
@@ -80,7 +80,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// 获取账号信息，找到默认的组织 ID
 	// REF: https://docs.dokploy.com/docs/api/reference-user#user.get
 	userGetReq := &dokploysdk.UserGetRequest{}
-	userGetResp, err := c.sdkClient.UserGet(userGetReq)
+	userGetResp, err := c.sdkClient.UserGetWithContext(ctx, userGetReq)
 	c.logger.Debug("sdk request 'user.get'", slog.Any("request", userGetReq), slog.Any("response", userGetResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'user.get': %w", err)
@@ -94,7 +94,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		PrivateKey:      lo.ToPtr(privkeyPEM),
 		OrganizationId:  lo.ToPtr(userGetResp.OrganizationId),
 	}
-	certificatesCreateResp, err := c.sdkClient.CertificatesCreate(certificatesCreateReq)
+	certificatesCreateResp, err := c.sdkClient.CertificatesCreateWithContext(ctx, certificatesCreateReq)
 	c.logger.Debug("sdk request 'certificates.create'", slog.Any("request", certificatesCreateReq), slog.Any("response", certificatesCreateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'certificates.create': %w", err)

@@ -61,7 +61,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		CertContent: lo.ToPtr(certPEM),
 		KeyContent:  lo.ToPtr(privkeyPEM),
 	}
-	configSetCertResp, err := d.sdkClient.ConfigSetCert(configSetCertReq)
+	configSetCertResp, err := d.sdkClient.ConfigSetCertWithContext(ctx, configSetCertReq)
 	d.logger.Debug("sdk request 'bt.ConfigSetCert'", slog.Any("request", configSetCertReq), slog.Any("response", configSetCertResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'bt.ConfigSetCert': %w", err)

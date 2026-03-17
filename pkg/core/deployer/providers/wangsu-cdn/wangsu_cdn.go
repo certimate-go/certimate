@@ -106,7 +106,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		CertificateId: certId,
 		DomainNames:   domains,
 	}
-	batchUpdateCertificateConfigResp, err := d.sdkClient.BatchUpdateCertificateConfig(batchUpdateCertificateConfigReq)
+	batchUpdateCertificateConfigResp, err := d.sdkClient.BatchUpdateCertificateConfigWithContext(ctx, batchUpdateCertificateConfigReq)
 	d.logger.Debug("sdk request 'cdn.BatchUpdateCertificateConfig'", slog.Any("request", batchUpdateCertificateConfigReq), slog.Any("response", batchUpdateCertificateConfigResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'cdn.BatchUpdateCertificateConfig': %w", err)

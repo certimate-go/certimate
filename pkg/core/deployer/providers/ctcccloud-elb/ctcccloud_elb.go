@@ -117,7 +117,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 			RegionID:       lo.ToPtr(d.config.RegionId),
 			LoadBalancerID: lo.ToPtr(d.config.LoadbalancerId),
 		}
-		listListenersResp, err := d.sdkClient.ListListeners(listListenersReq)
+		listListenersResp, err := d.sdkClient.ListListenersWithContext(ctx, listListenersReq)
 		d.logger.Debug("sdk request 'elb.ListListeners'", slog.Any("request", listListenersReq), slog.Any("response", listListenersResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'elb.ListListeners': %w", err)
@@ -177,7 +177,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		ListenerID:    lo.ToPtr(cloudListenerId),
 		CertificateID: lo.ToPtr(cloudCertId),
 	}
-	setLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.UpdateListener(setLoadBalancerHTTPSListenerAttributeReq)
+	setLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.UpdateListenerWithContext(ctx, setLoadBalancerHTTPSListenerAttributeReq)
 	d.logger.Debug("sdk request 'elb.UpdateListener'", slog.Any("request", setLoadBalancerHTTPSListenerAttributeReq), slog.Any("response", setLoadBalancerHTTPSListenerAttributeResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'elb.UpdateListener': %w", err)

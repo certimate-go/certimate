@@ -127,7 +127,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		Certificate: certPEM,
 		PrivateKey:  privkeyPEM,
 	}
-	certUpdateResp, err := d.sdkClient.CertUpdate(certUpdateReq)
+	certUpdateResp, err := d.sdkClient.CertUpdateWithContext(ctx, certUpdateReq)
 	d.logger.Debug("sdk request 'ratpanel.CertUpdate'", slog.Any("request", certUpdateReq), slog.Any("response", certUpdateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ratpanel.CertUpdate': %w", err)
@@ -143,7 +143,7 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, c
 		Certificate: certPEM,
 		PrivateKey:  privkeyPEM,
 	}
-	setWebsiteCertResp, err := d.sdkClient.SetWebsiteCert(setWebsiteCertReq)
+	setWebsiteCertResp, err := d.sdkClient.SetWebsiteCertWithContext(ctx, setWebsiteCertReq)
 	d.logger.Debug("sdk request 'ratpanel.SetWebsiteCert'", slog.Any("request", setWebsiteCertReq), slog.Any("response", setWebsiteCertResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ratpanel.SetWebsiteCert': %w", err)

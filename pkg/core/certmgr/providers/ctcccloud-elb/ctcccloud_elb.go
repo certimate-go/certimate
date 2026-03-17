@@ -63,7 +63,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	listCertificatesReq := &ctyunelb.ListCertificatesRequest{
 		RegionID: lo.ToPtr(c.config.RegionId),
 	}
-	listCertificatesResp, err := c.sdkClient.ListCertificates(listCertificatesReq)
+	listCertificatesResp, err := c.sdkClient.ListCertificatesWithContext(ctx, listCertificatesReq)
 	c.logger.Debug("sdk request 'elb.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'elb.ListCertificates': %w", err)
@@ -94,7 +94,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Certificate: lo.ToPtr(certPEM),
 		PrivateKey:  lo.ToPtr(privkeyPEM),
 	}
-	createCertificateResp, err := c.sdkClient.CreateCertificate(createCertificateReq)
+	createCertificateResp, err := c.sdkClient.CreateCertificateWithContext(ctx, createCertificateReq)
 	c.logger.Debug("sdk request 'elb.CreateCertificate'", slog.Any("request", createCertificateReq), slog.Any("response", createCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'elb.CreateCertificate': %w", err)

@@ -94,7 +94,7 @@ func (d *Deployer) deployToSite(ctx context.Context, certPEM, privkeyPEM string)
 
 	// 获取单个网站详情
 	// REF: https://doc.cdnfly.cn/wangzhanguanli-v1-sites.html#%E8%8E%B7%E5%8F%96%E5%8D%95%E4%B8%AA%E7%BD%91%E7%AB%99%E8%AF%A6%E6%83%85
-	getSiteResp, err := d.sdkClient.GetSite(d.config.SiteId)
+	getSiteResp, err := d.sdkClient.GetSiteWithContext(ctx, d.config.SiteId)
 	d.logger.Debug("sdk request 'cdnfly.GetSite'", slog.String("siteId", d.config.SiteId), slog.Any("response", getSiteResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdnfly.GetSite': %w", err)
@@ -108,7 +108,7 @@ func (d *Deployer) deployToSite(ctx context.Context, certPEM, privkeyPEM string)
 		Cert: lo.ToPtr(certPEM),
 		Key:  lo.ToPtr(privkeyPEM),
 	}
-	createCertificateResp, err := d.sdkClient.CreateCert(createCertificateReq)
+	createCertificateResp, err := d.sdkClient.CreateCertWithContext(ctx, createCertificateReq)
 	d.logger.Debug("sdk request 'cdnfly.CreateCert'", slog.Any("request", createCertificateReq), slog.Any("response", createCertificateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdnfly.CreateCert': %w", err)
@@ -123,7 +123,7 @@ func (d *Deployer) deployToSite(ctx context.Context, certPEM, privkeyPEM string)
 	updateSiteReq := &cdnflysdk.UpdateSiteRequest{
 		HttpsListen: lo.ToPtr(string(updateSiteHttpsListenData)),
 	}
-	updateSiteResp, err := d.sdkClient.UpdateSite(d.config.SiteId, updateSiteReq)
+	updateSiteResp, err := d.sdkClient.UpdateSiteWithContext(ctx, d.config.SiteId, updateSiteReq)
 	d.logger.Debug("sdk request 'cdnfly.UpdateSite'", slog.String("siteId", d.config.SiteId), slog.Any("request", updateSiteReq), slog.Any("response", updateSiteResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdnfly.UpdateSite': %w", err)
@@ -144,7 +144,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		Cert: lo.ToPtr(certPEM),
 		Key:  lo.ToPtr(privkeyPEM),
 	}
-	updateCertResp, err := d.sdkClient.UpdateCert(d.config.CertificateId, updateCertReq)
+	updateCertResp, err := d.sdkClient.UpdateCertWithContext(ctx, d.config.CertificateId, updateCertReq)
 	d.logger.Debug("sdk request 'cdnfly.UpdateCert'", slog.String("certId", d.config.CertificateId), slog.Any("request", updateCertReq), slog.Any("response", updateCertResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdnfly.UpdateCert': %w", err)

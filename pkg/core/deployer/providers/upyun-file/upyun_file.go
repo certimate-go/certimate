@@ -80,7 +80,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 
 	// 获取域名证书配置
-	getHttpsServiceManagerResp, err := d.sdkClient.GetHttpsServiceManager(d.config.Domain)
+	getHttpsServiceManagerResp, err := d.sdkClient.GetHttpsServiceManagerWithContext(ctx, d.config.Domain)
 	d.logger.Debug("sdk request 'console.GetHttpsServiceManager'", slog.String("request.domain", d.config.Domain), slog.Any("response", getHttpsServiceManagerResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'console.GetHttpsServiceManager': %w", err)
@@ -98,7 +98,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			Https:         true,
 			ForceHttps:    true,
 		}
-		updateHttpsCertificateManagerResp, err := d.sdkClient.UpdateHttpsCertificateManager(updateHttpsCertificateManagerReq)
+		updateHttpsCertificateManagerResp, err := d.sdkClient.UpdateHttpsCertificateManagerWithContext(ctx, updateHttpsCertificateManagerReq)
 		d.logger.Debug("sdk request 'console.EnableDomainHttps'", slog.Any("request", updateHttpsCertificateManagerReq), slog.Any("response", updateHttpsCertificateManagerResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'console.UpdateHttpsCertificateManager': %w", err)
@@ -108,7 +108,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			CertificateId: upres.CertId,
 			Domain:        d.config.Domain,
 		}
-		migrateHttpsDomainResp, err := d.sdkClient.MigrateHttpsDomain(migrateHttpsDomainReq)
+		migrateHttpsDomainResp, err := d.sdkClient.MigrateHttpsDomainWithContext(ctx, migrateHttpsDomainReq)
 		d.logger.Debug("sdk request 'console.MigrateHttpsDomain'", slog.Any("request", migrateHttpsDomainReq), slog.Any("response", migrateHttpsDomainResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'console.MigrateHttpsDomain': %w", err)

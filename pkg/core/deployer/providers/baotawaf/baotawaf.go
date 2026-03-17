@@ -105,7 +105,7 @@ func (d *Deployer) findSiteByName(ctx context.Context, siteName string) (*btwafs
 			Page:     lo.ToPtr(int32(getSiteListPage)),
 			PageSize: lo.ToPtr(int32(getSiteListPageSize)),
 		}
-		getSiteListResp, err := d.sdkClient.GetSiteList(getSiteListReq)
+		getSiteListResp, err := d.sdkClient.GetSiteListWithContext(ctx, getSiteListReq)
 		d.logger.Debug("sdk request 'bt.GetSiteList'", slog.Any("request", getSiteListReq), slog.Any("response", getSiteListResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'bt.GetSiteList': %w", err)
@@ -155,7 +155,7 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, s
 			},
 		},
 	}
-	modifySiteResp, err := d.sdkClient.ModifySite(modifySiteReq)
+	modifySiteResp, err := d.sdkClient.ModifySiteWithContext(ctx, modifySiteReq)
 	d.logger.Debug("sdk request 'bt.ModifySite'", slog.Any("request", modifySiteReq), slog.Any("response", modifySiteResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'bt.ModifySite': %w", err)

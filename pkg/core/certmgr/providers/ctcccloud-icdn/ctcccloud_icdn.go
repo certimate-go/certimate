@@ -80,7 +80,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			PerPage:   lo.ToPtr(int32(queryCertListPerPage)),
 			UsageMode: lo.ToPtr(int32(0)),
 		}
-		queryCertListResp, err := c.sdkClient.QueryCertList(queryCertListReq)
+		queryCertListResp, err := c.sdkClient.QueryCertListWithContext(ctx, queryCertListReq)
 		c.logger.Debug("sdk request 'icdn.QueryCertList'", slog.Any("request", queryCertListReq), slog.Any("response", queryCertListResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'icdn.QueryCertList': %w", err)
@@ -112,7 +112,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			queryCertDetailReq := &ctyunicdn.QueryCertDetailRequest{
 				Id: lo.ToPtr(certItem.Id),
 			}
-			queryCertDetailResp, err := c.sdkClient.QueryCertDetail(queryCertDetailReq)
+			queryCertDetailResp, err := c.sdkClient.QueryCertDetailWithContext(ctx, queryCertDetailReq)
 			c.logger.Debug("sdk request 'icdn.QueryCertDetail'", slog.Any("request", queryCertDetailReq), slog.Any("response", queryCertDetailResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request 'icdn.QueryCertDetail': %w", err)
@@ -147,7 +147,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Certs: lo.ToPtr(certPEM),
 		Key:   lo.ToPtr(privkeyPEM),
 	}
-	createCertResp, err := c.sdkClient.CreateCert(createCertReq)
+	createCertResp, err := c.sdkClient.CreateCertWithContext(ctx, createCertReq)
 	c.logger.Debug("sdk request 'icdn.CreateCert'", slog.Any("request", createCertReq), slog.Any("response", createCertResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'icdn.CreateCert': %w", err)

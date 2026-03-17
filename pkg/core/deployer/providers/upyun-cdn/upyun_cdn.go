@@ -190,7 +190,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			Page:          int32(getBucketsPage),
 			PerPage:       int32(getBucketsPerPage),
 		}
-		getBucketsResp, err := d.sdkClient.GetBuckets(getBucketsReq)
+		getBucketsResp, err := d.sdkClient.GetBucketsWithContext(ctx, getBucketsReq)
 		d.logger.Debug("sdk request 'console.GetBuckets'", slog.Any("request", getBucketsReq), slog.Any("response", getBucketsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'console.GetBuckets': %w", err)
@@ -224,7 +224,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId string) error {
 	// 获取域名证书配置
-	getHttpsServiceManagerResp, err := d.sdkClient.GetHttpsServiceManager(domain)
+	getHttpsServiceManagerResp, err := d.sdkClient.GetHttpsServiceManagerWithContext(ctx, domain)
 	d.logger.Debug("sdk request 'console.GetHttpsServiceManager'", slog.String("request.domain", domain), slog.Any("response", getHttpsServiceManagerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'console.GetHttpsServiceManager': %w", err)
@@ -242,7 +242,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 			Https:         true,
 			ForceHttps:    true,
 		}
-		updateHttpsCertificateManagerResp, err := d.sdkClient.UpdateHttpsCertificateManager(updateHttpsCertificateManagerReq)
+		updateHttpsCertificateManagerResp, err := d.sdkClient.UpdateHttpsCertificateManagerWithContext(ctx, updateHttpsCertificateManagerReq)
 		d.logger.Debug("sdk request 'console.EnableDomainHttps'", slog.Any("request", updateHttpsCertificateManagerReq), slog.Any("response", updateHttpsCertificateManagerResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'console.UpdateHttpsCertificateManager': %w", err)
@@ -252,7 +252,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 			CertificateId: cloudCertId,
 			Domain:        domain,
 		}
-		migrateHttpsDomainResp, err := d.sdkClient.MigrateHttpsDomain(migrateHttpsDomainReq)
+		migrateHttpsDomainResp, err := d.sdkClient.MigrateHttpsDomainWithContext(ctx, migrateHttpsDomainReq)
 		d.logger.Debug("sdk request 'console.MigrateHttpsDomain'", slog.Any("request", migrateHttpsDomainReq), slog.Any("response", migrateHttpsDomainResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'console.MigrateHttpsDomain': %w", err)

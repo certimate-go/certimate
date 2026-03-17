@@ -150,7 +150,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 	// 获取域名列表
 	// REF: https://docs.dogecloud.com/cdn/api-domain-list
-	listCdnDomainResp, err := d.sdkClient.ListCdnDomain()
+	listCdnDomainResp, err := d.sdkClient.ListCdnDomainWithContext(ctx)
 	d.logger.Debug("sdk request 'cdn.ListCdnDomain'", slog.Any("response", listCdnDomainResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'cdn.ListCdnDomain': %w", err)
@@ -177,7 +177,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 		CertId: cloudCertId,
 		Domain: domain,
 	}
-	bindCdnCertResp, err := d.sdkClient.BindCdnCert(bindCdnCertReq)
+	bindCdnCertResp, err := d.sdkClient.BindCdnCertWithContext(ctx, bindCdnCertReq)
 	d.logger.Debug("sdk request 'cdn.BindCdnCert'", slog.Any("request", bindCdnCertReq), slog.Any("response", bindCdnCertResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.BindCdnCert': %w", err)
