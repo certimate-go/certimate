@@ -16,6 +16,7 @@ var acmeDirUrls = map[string]string{
 	string(domain.CAProviderTypeLetsEncrypt):         "https://acme-v02.api.letsencrypt.org/directory",
 	string(domain.CAProviderTypeLetsEncryptStaging):  "https://acme-staging-v02.api.letsencrypt.org/directory",
 	string(domain.CAProviderTypeActalisSSL):          "https://acme-api.actalis.com/acme/directory",
+	string(domain.CAProviderTypeDigiCert):            "https://acme.digicert.com/v2/acme/directory",
 	string(domain.CAProviderTypeGlobalSignAtlas):     "https://emea.acme.atlas.globalsign.com/directory",
 	string(domain.CAProviderTypeGoogleTrustServices): "https://dv.acme-v02.api.pki.goog/directory",
 	string(domain.CAProviderTypeLiteSSL):             "https://acme.litessl.com/acme/v2/directory",

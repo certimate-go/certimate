@@ -80,6 +80,7 @@
   "provider.ctcccloud_smartdns": "天翼云 - 智能 DNS",
   "provider.cucccloud": "联通云",
   "provider.desec": "deSEC",
+  "provider.digicert": "DigiCert",
   "provider.digitalocean": "DigitalOcean",
   "provider.dingtalkbot": "钉钉群机器人",
   "provider.discordbot": "Discord 机器人",

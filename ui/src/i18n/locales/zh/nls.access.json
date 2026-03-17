@@ -235,6 +235,7 @@
   "access.form.desec_token.label": "deSEC Token",
   "access.form.desec_token.placeholder": "请输入 deSEC Token",
   "access.form.desec_token.tooltip": "这是什么？请参阅 <a href=\"https://desec.readthedocs.io/en/latest/auth/tokens.html#manage-tokens\" target=\"_blank\">https://desec.readthedocs.io/en/latest/auth/tokens.html</a>",
+  "access.form.digicert_eab.guide": "点击下方链接了解如何获取 DigiCert EAB：<br><a href=\"https://docs.digicert.com/zh/certcentral/certificate-tools/certificate-lifecycle-automation-guides/third-party-acme-integration/use-legacy-certcentral-acme-credentials.html\" target=\"_blank\">https://docs.digicert.com/zh/certcentral/certificate-tools/certificate-lifecycle-automation-guides/third-party-acme-integration/use-legacy-certcentral-acme-credentials.html</a>",
   "access.form.digitalocean_access_token.label": "DigitalOcean Access Token",
   "access.form.digitalocean_access_token.placeholder": "请输入 DigitalOcean Access Token",
   "access.form.digitalocean_access_token.tooltip": "这是什么？请参阅 <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>",

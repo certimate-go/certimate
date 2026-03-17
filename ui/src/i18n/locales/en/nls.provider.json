@@ -80,6 +80,7 @@
   "provider.ctcccloud_smartdns": "China Telecom StateCloud - Smart DNS",
   "provider.cucccloud": "China Unicom Cloud",
   "provider.desec": "deSEC",
+  "provider.digicert": "DigiCert",
   "provider.digitalocean": "DigitalOcean",
   "provider.dingtalkbot": "DingTalk Bot",
   "provider.discordbot": "Discord Bot",

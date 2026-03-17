@@ -235,6 +235,7 @@
   "access.form.desec_token.label": "deSEC token",
   "access.form.desec_token.placeholder": "Please enter deSEC token",
   "access.form.desec_token.tooltip": "For more information, see <a href=\"https://desec.readthedocs.io/en/latest/auth/tokens.html#manage-tokens\" target=\"_blank\">https://desec.readthedocs.io/en/latest/auth/tokens.html</a>",
+  "access.form.digicert_eab.guide": "Learn more about using EAB key in DigiCert: <br><a href=\"https://docs.digicert.com/en/certcentral/certificate-tools/certificate-lifecycle-automation-guides/third-party-acme-integration/use-legacy-certcentral-acme-credentials.html\" target=\"_blank\">https://docs.digicert.com/en/certcentral/certificate-tools/certificate-lifecycle-automation-guides/third-party-acme-integration/use-legacy-certcentral-acme-credentials.html</a>",
   "access.form.digitalocean_access_token.label": "DigitalOcean access token",
   "access.form.digitalocean_access_token.placeholder": "Please enter DigitalOcean access token",
   "access.form.digitalocean_access_token.tooltip": "For more information, see <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>",

@@ -32,6 +32,7 @@ import AccessConfigFieldsProviderConstellix from "./AccessConfigFieldsProviderCo
 import AccessConfigFieldsProviderCPanel from "./AccessConfigFieldsProviderCPanel";
 import AccessConfigFieldsProviderCTCCCloud from "./AccessConfigFieldsProviderCTCCCloud";
 import AccessConfigFieldsProviderDeSEC from "./AccessConfigFieldsProviderDeSEC";
+import AccessConfigFieldsProviderDigiCert from "./AccessConfigFieldsProviderDigiCert";
 import AccessConfigFieldsProviderDigitalOcean from "./AccessConfigFieldsProviderDigitalOcean";
 import AccessConfigFieldsProviderDingTalkBot from "./AccessConfigFieldsProviderDingTalkBot";
 import AccessConfigFieldsProviderDiscordBot from "./AccessConfigFieldsProviderDiscordBot";
@@ -145,6 +146,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.CPANEL]: AccessConfigFieldsProviderCPanel,
   [ACCESS_PROVIDERS.CTCCCLOUD]: AccessConfigFieldsProviderCTCCCloud,
   [ACCESS_PROVIDERS.DESEC]: AccessConfigFieldsProviderDeSEC,
+  [ACCESS_PROVIDERS.DIGICERT]: AccessConfigFieldsProviderDigiCert,
   [ACCESS_PROVIDERS.DIGITALOCEAN]: AccessConfigFieldsProviderDigitalOcean,
   [ACCESS_PROVIDERS.DINGTALKBOT]: AccessConfigFieldsProviderDingTalkBot,
   [ACCESS_PROVIDERS.DISCORDBOT]: AccessConfigFieldsProviderDiscordBot,

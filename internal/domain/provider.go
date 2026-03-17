@@ -40,6 +40,7 @@ const (
 	AccessProviderTypeCTCCCloud           = AccessProviderType("ctcccloud")
 	AccessProviderTypeCUCCCloud           = AccessProviderType("cucccloud") // 联通云（预留）
 	AccessProviderTypeDeSEC               = AccessProviderType("desec")
+	AccessProviderTypeDigiCert            = AccessProviderType("digicert")
 	AccessProviderTypeDigitalOcean        = AccessProviderType("digitalocean")
 	AccessProviderTypeDingTalkBot         = AccessProviderType("dingtalkbot")
 	AccessProviderTypeDiscordBot          = AccessProviderType("discordbot")
@@ -135,6 +136,7 @@ NOTICE: If you add new constant, please keep ASCII order.
 const (
 	CAProviderTypeACMECA              = CAProviderType(AccessProviderTypeACMECA)
 	CAProviderTypeActalisSSL          = CAProviderType(AccessProviderTypeActalisSSL)
+	CAProviderTypeDigiCert            = CAProviderType(AccessProviderTypeDigiCert)
 	CAProviderTypeGlobalSignAtlas     = CAProviderType(AccessProviderTypeGlobalSignAtlas)
 	CAProviderTypeGoogleTrustServices = CAProviderType(AccessProviderTypeGoogleTrustServices)
 	CAProviderTypeLetsEncrypt         = CAProviderType(AccessProviderTypeLetsEncrypt)
