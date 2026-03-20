@@ -126,10 +126,11 @@ func (d *Deployer) deployWithCNAME(ctx context.Context, cloudCertId string) erro
 	// REF: https://www.volcengine.com/docs/6511/1214835
 	domainInfo := listDomainResp.Data[0]
 	updateDomainReq := &vewaf.UpdateDomainInput{
-		Region:     ve.String(d.config.Region),
-		Domain:     ve.String(d.config.Domain),
-		AccessMode: ve.Int32(10),
-		Protocols:  ve.StringSlice([]string{"HTTP", "HTTPS"}),
+		Region:      ve.String(d.config.Region),
+		Domain:      ve.String(d.config.Domain),
+		AccessMode:  ve.Int32(10),
+		LBAlgorithm: domainInfo.LBAlgorithm,
+		Protocols:   ve.StringSlice([]string{"HTTP", "HTTPS"}),
 		ProtocolPorts: &vewaf.ProtocolPortsForUpdateDomainInput{
 			HTTP:  ve.Int32Slice([]int32{80}),
 			HTTPS: ve.Int32Slice([]int32{443}),
