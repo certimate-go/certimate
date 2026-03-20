@@ -396,7 +396,7 @@
   "workflow_node.deploy.form.aliyun_waf_service_type.option.cname.label": "CNAME access",
   "workflow_node.deploy.form.aliyun_waf_instance_id.label": "Alibaba Cloud WAF instance ID",
   "workflow_node.deploy.form.aliyun_waf_instance_id.placeholder": "Please enter Alibaba Cloud WAF instance ID",
-  "workflow_node.deploy.form.aliyun_waf_instance_id.tooltip": "For more information, see <a href=\"https://waf.console.aliyun.com\" target=\"_blank\">https://waf.console.aliyun.com</a>",
+  "workflow_node.deploy.form.aliyun_waf_instance_id.tooltip": "For more information, see <a href=\"https://yundunnext.console.aliyun.com\" target=\"_blank\">https://yundunnext.console.aliyun.com</a>",
   "workflow_node.deploy.form.aliyun_waf_resource_product.label": "Alibaba Cloud WAF accessed resource product",
   "workflow_node.deploy.form.aliyun_waf_resource_product.placeholder": "Please enter Alibaba Cloud WAF accessed resource product",
   "workflow_node.deploy.form.aliyun_waf_resource_id.label": "Alibaba Cloud WAF accessed resource ID",
