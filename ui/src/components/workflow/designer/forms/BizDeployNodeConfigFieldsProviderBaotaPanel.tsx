@@ -72,7 +72,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    siteType: z.literal(["php", "any"], t("workflow_node.deploy.form.baotapanel_site_type.placeholder")),
+    siteType: z.string().nonempty(t("workflow_node.deploy.form.baotapanel_site_type.placeholder")),
     siteNames: z
       .string()
       .nonempty(t("workflow_node.deploy.form.baotapanel_site_names.placeholder"))
