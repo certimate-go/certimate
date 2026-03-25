@@ -420,18 +420,27 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 				return err
 			}
 
-			dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
-				ListenerId: tea.String(cloudListenerId),
-				Certificates: lo.Map(certificateIdsToDissociate, func(certificateId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {
-					return &alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates{
-						CertificateId: tea.String(certificateId),
+			const MAX_CERT_PER_REQUEST = 10
+			certIdChunks := lo.Chunk(certificateIdsToDissociate, MAX_CERT_PER_REQUEST)
+			for _, certIds := range certIdChunks {
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+					dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
+						ListenerId: tea.String(cloudListenerId),
+						Certificates: lo.Map(certIds, func(certId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {
+							return &alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates{
+								CertificateId: tea.String(certId),
+							}
+						}),
 					}
-				}),
-			}
-			dissociateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.DissociateAdditionalCertificatesFromListenerWithContext(ctx, dissociateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'alb.DissociateAdditionalCertificatesFromListener'", slog.Any("request", dissociateAdditionalCertificatesFromListenerReq), slog.Any("response", dissociateAdditionalCertificatesFromListenerResp))
-			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'alb.DissociateAdditionalCertificatesFromListener': %w", err)
+					dissociateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.DissociateAdditionalCertificatesFromListenerWithContext(ctx, dissociateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
+					d.logger.Debug("sdk request 'alb.DissociateAdditionalCertificatesFromListener'", slog.Any("request", dissociateAdditionalCertificatesFromListenerReq), slog.Any("response", dissociateAdditionalCertificatesFromListenerResp))
+					if err != nil {
+						return fmt.Errorf("failed to execute sdk request 'alb.DissociateAdditionalCertificatesFromListener': %w", err)
+					}
+				}
 			}
 		}
 	}
