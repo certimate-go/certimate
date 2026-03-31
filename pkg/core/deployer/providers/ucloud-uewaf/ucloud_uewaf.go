@@ -69,7 +69,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	// 生成优刻得所需的证书参数
 	certPEMBase64 := base64.StdEncoding.EncodeToString([]byte(certPEM))
 	privkeyPEMBase64 := base64.StdEncoding.EncodeToString([]byte(privkeyPEM))
-	certMd5 := md5.Sum([]byte(certPEMBase64))
+	certMd5 := md5.Sum([]byte(certPEMBase64 + privkeyPEMBase64))
 	certMd5Hex := hex.EncodeToString(certMd5[:])
 	certName := fmt.Sprintf("certimate_%d", time.Now().UnixMilli())
 
@@ -81,7 +81,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	addWafDomainCertificateInfoReq.SslPublicKey = ucloud.String(certPEMBase64)
 	addWafDomainCertificateInfoReq.SslPrivateKey = ucloud.String(privkeyPEMBase64)
 	addWafDomainCertificateInfoReq.SslMD = ucloud.String(certMd5Hex)
-	addWafDomainCertificateInfoReq.SslKeyLess = ucloud.String("on")
+	addWafDomainCertificateInfoReq.SslKeyLess = ucloud.String("off")
 	addWafDomainCertificateInfoResp, err := d.sdkClient.AddWafDomainCertificateInfo(addWafDomainCertificateInfoReq)
 	d.logger.Debug("sdk request 'uewaf.AddWafDomainCertificateInfo'", slog.Any("request", addWafDomainCertificateInfoReq), slog.Any("response", addWafDomainCertificateInfoResp))
 	if err != nil {
