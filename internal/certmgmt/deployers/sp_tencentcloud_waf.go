@@ -21,9 +21,9 @@ func init() {
 			SecretKey:  credentials.SecretKey,
 			Endpoint:   xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			Region:     xmaps.GetString(options.ProviderExtendedConfig, "region"),
+			InstanceId: xmaps.GetString(options.ProviderExtendedConfig, "instanceId"),
 			Domain:     xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 			DomainId:   xmaps.GetString(options.ProviderExtendedConfig, "domainId"),
-			InstanceId: xmaps.GetString(options.ProviderExtendedConfig, "instanceId"),
 		})
 		return provider, err
 	})

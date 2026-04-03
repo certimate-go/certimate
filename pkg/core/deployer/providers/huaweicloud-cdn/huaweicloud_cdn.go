@@ -258,7 +258,7 @@ func (d *Deployer) updateDomainsCertificate(ctx context.Context, domains []strin
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.CdnClient, error) {
 	if region == "" {
-		region = "cn-north-1" // CDN 服务默认区域：华北一北京
+		region = "cn-north-1" // CDN 服务默认区域：华北北京一
 	}
 
 	auth, err := global.NewCredentialsBuilder().

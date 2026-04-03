@@ -23,7 +23,7 @@ type DeployerConfig struct {
 	// 域名匹配模式。
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
-	// 直播播放域名（不支持泛域名）。
+	// 直播流域名（不支持泛域名）。
 	Domain string `json:"domain"`
 }
 

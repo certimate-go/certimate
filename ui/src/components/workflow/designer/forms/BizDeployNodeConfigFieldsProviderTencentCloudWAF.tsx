@@ -40,6 +40,16 @@ const BizDeployNodeConfigFieldsProviderTencentCloudWAF = () => {
       </Form.Item>
 
       <Form.Item
+        name={[parentNamePath, "instanceId"]}
+        initialValue={initialValues.instanceId}
+        label={t("workflow_node.deploy.form.tencentcloud_waf_instance_id.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_waf_instance_id.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "domain"]}
         initialValue={initialValues.domain}
         label={t("workflow_node.deploy.form.tencentcloud_waf_domain.label")}
@@ -57,16 +67,6 @@ const BizDeployNodeConfigFieldsProviderTencentCloudWAF = () => {
       >
         <Input placeholder={t("workflow_node.deploy.form.tencentcloud_waf_domain_id.placeholder")} />
       </Form.Item>
-
-      <Form.Item
-        name={[parentNamePath, "instanceId"]}
-        initialValue={initialValues.instanceId}
-        label={t("workflow_node.deploy.form.tencentcloud_waf_instance_id.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_waf_instance_id.tooltip") }}></span>}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder")} />
-      </Form.Item>
     </>
   );
 };
@@ -74,9 +74,9 @@ const BizDeployNodeConfigFieldsProviderTencentCloudWAF = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
+    instanceId: "",
     domain: "",
     domainId: "",
-    instanceId: "",
   };
 };
 
@@ -86,9 +86,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z.object({
     endpoint: z.string().nullish(),
     region: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_waf_region.placeholder")),
+    instanceId: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder")),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
     domainId: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_waf_domain_id.placeholder")),
-    instanceId: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_waf_instance_id.placeholder")),
   });
 };
 

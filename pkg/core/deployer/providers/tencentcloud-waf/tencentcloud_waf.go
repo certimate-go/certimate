@@ -27,12 +27,12 @@ type DeployerConfig struct {
 	Endpoint string `json:"endpoint,omitempty"`
 	// 腾讯云地域。
 	Region string `json:"region"`
+	// WAF 实例 ID。
+	InstanceId string `json:"instanceId"`
 	// 防护域名（不支持泛域名）。
 	Domain string `json:"domain"`
 	// 防护域名 ID。
 	DomainId string `json:"domainId"`
-	// 防护域名所属实例 ID。
-	InstanceId string `json:"instanceId"`
 }
 
 type Deployer struct {
@@ -84,14 +84,14 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+	if d.config.InstanceId == "" {
+		return nil, errors.New("config `instanceId` is required")
+	}
 	if d.config.Domain == "" {
 		return nil, errors.New("config `domain` is required")
 	}
 	if d.config.DomainId == "" {
 		return nil, errors.New("config `domainId` is required")
-	}
-	if d.config.InstanceId == "" {
-		return nil, errors.New("config `instanceId` is required")
 	}
 
 	// 上传证书
@@ -105,9 +105,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	// 查询单个 SaaS 型 WAF 域名详情
 	// REF: https://cloud.tencent.com/document/api/627/82938
 	describeDomainDetailsSaasReq := tcwaf.NewDescribeDomainDetailsSaasRequest()
+	describeDomainDetailsSaasReq.InstanceId = common.StringPtr(d.config.InstanceId)
 	describeDomainDetailsSaasReq.Domain = common.StringPtr(d.config.Domain)
 	describeDomainDetailsSaasReq.DomainId = common.StringPtr(d.config.DomainId)
-	describeDomainDetailsSaasReq.InstanceId = common.StringPtr(d.config.InstanceId)
 	describeDomainDetailsSaasResp, err := d.sdkClient.DescribeDomainDetailsSaas(describeDomainDetailsSaasReq)
 	d.logger.Debug("sdk request 'waf.DescribeDomainDetailsSaas'", slog.Any("request", describeDomainDetailsSaasReq), slog.Any("response", describeDomainDetailsSaasResp))
 	if err != nil {
@@ -117,9 +117,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	// 编辑 SaaS 型 WAF 域名
 	// REF: https://cloud.tencent.com/document/api/627/94309
 	modifySpartaProtectionReq := tcwaf.NewModifySpartaProtectionRequest()
+	modifySpartaProtectionReq.InstanceID = common.StringPtr(d.config.InstanceId)
 	modifySpartaProtectionReq.Domain = common.StringPtr(d.config.Domain)
 	modifySpartaProtectionReq.DomainId = common.StringPtr(d.config.DomainId)
-	modifySpartaProtectionReq.InstanceID = common.StringPtr(d.config.InstanceId)
 	modifySpartaProtectionReq.CertType = common.Int64Ptr(2)
 	modifySpartaProtectionReq.SSLId = common.StringPtr(upres.CertId)
 	modifySpartaProtectionResp, err := d.sdkClient.ModifySpartaProtection(modifySpartaProtectionReq)
