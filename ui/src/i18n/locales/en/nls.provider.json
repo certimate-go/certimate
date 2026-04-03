@@ -110,6 +110,7 @@
   "provider.hostinger": "Hostinger",
   "provider.huaweicloud": "Huawei Cloud",
   "provider.huaweicloud_aad": "Huawei Cloud - AAD (Advanced Anti-DDoS)",
+  "provider.huaweicloud_apig": "Huawei Cloud - API Gateway",
   "provider.huaweicloud_cdn": "Huawei Cloud - CDN (Content Delivery Network)",
   "provider.huaweicloud_dns": "Huawei Cloud - DNS",
   "provider.huaweicloud_elb": "Huawei Cloud - ELB (Elastic Load Balance)",

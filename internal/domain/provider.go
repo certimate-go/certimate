@@ -313,6 +313,7 @@ const (
 	DeploymentProviderTypeGcoreCDN              = DeploymentProviderType(AccessProviderTypeGcore + "-cdn")
 	DeploymentProviderTypeGoEdge                = DeploymentProviderType(AccessProviderTypeGoEdge)
 	DeploymentProviderTypeHuaweiCloudAAD        = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-aad")
+	DeploymentProviderTypeHuaweiCloudAPIG       = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-apig")
 	DeploymentProviderTypeHuaweiCloudCDN        = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-cdn")
 	DeploymentProviderTypeHuaweiCloudELB        = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-elb")
 	DeploymentProviderTypeHuaweiCloudLive       = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-live")
