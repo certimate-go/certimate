@@ -112,6 +112,7 @@
   "provider.huaweicloud_cdn": "Huawei Cloud - CDN (Content Delivery Network)",
   "provider.huaweicloud_dns": "Huawei Cloud - DNS",
   "provider.huaweicloud_elb": "Huawei Cloud - ELB (Elastic Load Balance)",
+  "provider.huaweicloud_live": "Huawei Cloud - Cloud Live",
   "provider.huaweicloud_obs": "Huawei Cloud - OBS (Object Storage Service)",
   "provider.huaweicloud_scm_upload": "Huawei Cloud - Upload to SCM (SSL Certificate Manager)",
   "provider.huaweicloud_waf": "Huawei Cloud - WAF (Web Application Firewall)",
