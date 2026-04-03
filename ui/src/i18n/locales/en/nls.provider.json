@@ -208,6 +208,7 @@
   "provider.vercel": "Vercel",
   "provider.volcengine": "Volcengine",
   "provider.volcengine_alb": "Volcengine - ALB (Application Load Balancer)",
+  "provider.volcengine_apig": "Volcengine - API Gateway",
   "provider.volcengine_cdn": "Volcengine - CDN (Content Delivery Network)",
   "provider.volcengine_certcenter_upload": "Volcengine - Upload to Certificate Center",
   "provider.volcengine_clb": "Volcengine - CLB (Cloud Load Balancer)",

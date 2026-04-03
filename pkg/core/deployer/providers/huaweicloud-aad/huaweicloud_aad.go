@@ -140,7 +140,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 
 			domains := lo.Filter(domainCandidates, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) bool {
-				return certX509.VerifyHostname(lo.FromPtr(domainItem.DomainName)) == nil
+				return certX509.VerifyHostname(lo.FromPtr(domainItem.DomainName)) == nil ||
+					strings.TrimPrefix(d.config.Domain, "*") == strings.TrimPrefix(lo.FromPtr(domainItem.DomainName), "*")
 			})
 			if len(domains) == 0 {
 				return nil, errors.New("could not find any domains matched by certificate")
@@ -229,13 +230,13 @@ func (d *Deployer) getAllDomainsByInstanceId(ctx context.Context, cloudInstanceI
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domainId string, certPEM, privkeyPEM string) error {
+func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId string, certPEM, privkeyPEM string) error {
 	// 上传域名对应证书
 	// REF: https://support.huaweicloud.com/intl/zh-cn/api-aad/SetCertForDomain.html
 	setCertForDomainReq := &hcaadmodelv1.SetCertForDomainRequest{
 		Body: &hcaadmodelv1.CertificateBody{
 			OpType:      0,
-			DomainId:    domainId,
+			DomainId:    cloudDomainId,
 			CertName:    fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
 			CertFile:    lo.ToPtr(certPEM),
 			CertKeyFile: lo.ToPtr(privkeyPEM),

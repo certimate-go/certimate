@@ -104,6 +104,7 @@ import BizDeployNodeConfigFieldsProviderUniCloudWebHost from "./BizDeployNodeCon
 import BizDeployNodeConfigFieldsProviderUpyunCDN from "./BizDeployNodeConfigFieldsProviderUpyunCDN";
 import BizDeployNodeConfigFieldsProviderUpyunFile from "./BizDeployNodeConfigFieldsProviderUpyunFile";
 import BizDeployNodeConfigFieldsProviderVolcEngineALB from "./BizDeployNodeConfigFieldsProviderVolcEngineALB";
+import BizDeployNodeConfigFieldsProviderVolcEngineAPIG from "./BizDeployNodeConfigFieldsProviderVolcEngineAPIG";
 import BizDeployNodeConfigFieldsProviderVolcEngineCDN from "./BizDeployNodeConfigFieldsProviderVolcEngineCDN";
 import BizDeployNodeConfigFieldsProviderVolcEngineCertCenter from "./BizDeployNodeConfigFieldsProviderVolcEngineCertCenter";
 import BizDeployNodeConfigFieldsProviderVolcEngineCLB from "./BizDeployNodeConfigFieldsProviderVolcEngineCLB";
@@ -225,6 +226,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.UPYUN_CDN]: BizDeployNodeConfigFieldsProviderUpyunCDN,
   [DEPLOYMENT_PROVIDERS.UPYUN_FILE]: BizDeployNodeConfigFieldsProviderUpyunFile,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_ALB]: BizDeployNodeConfigFieldsProviderVolcEngineALB,
+  [DEPLOYMENT_PROVIDERS.VOLCENGINE_APIG]: BizDeployNodeConfigFieldsProviderVolcEngineAPIG,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CDN]: BizDeployNodeConfigFieldsProviderVolcEngineCDN,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CERTCENTER]: BizDeployNodeConfigFieldsProviderVolcEngineCertCenter,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CLB]: BizDeployNodeConfigFieldsProviderVolcEngineCLB,

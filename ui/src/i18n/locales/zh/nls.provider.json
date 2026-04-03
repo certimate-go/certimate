@@ -208,6 +208,7 @@
   "provider.vercel": "Vercel",
   "provider.volcengine": "火山引擎",
   "provider.volcengine_alb": "火山引擎 - 应用型负载均衡 ALB",
+  "provider.volcengine_apig": "火山引擎 - API 网关",
   "provider.volcengine_cdn": "火山引擎 - 内容分发网络 CDN",
   "provider.volcengine_certcenter_upload": "火山引擎 - 上传到证书中心",
   "provider.volcengine_clb": "火山引擎 - 负载均衡 CLB",
