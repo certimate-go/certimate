@@ -126,6 +126,8 @@
   "provider.jdcloud_dns": "JD Cloud - DNS",
   "provider.jdcloud_live": "JD Cloud - Live Video",
   "provider.jdcloud_vod": "JD Cloud - VOD (Video on Demand)",
+  "provider.jdcloud_ssl_upload": "JD Cloud - Upload to SSL Certificate",
+  "provider.jdcloud_waf": "JD Cloud - WAF (Web Application Firewall)",
   "provider.kong": "Kong",
   "provider.kubernetes": "Kubernetes",
   "provider.kubernetes_secret": "Kubernetes - Secret",

@@ -126,6 +126,8 @@
   "provider.jdcloud_dns": "京东云 - 云解析 DNS",
   "provider.jdcloud_live": "京东云 - 视频直播 Live",
   "provider.jdcloud_vod": "京东云 - 视频点播 VOD",
+  "provider.jdcloud_ssl_upload": "京东云 - 上传到 SSL 数字证书",
+  "provider.jdcloud_waf": "京东云 - Web 应用防火墙 WAF",
   "provider.kong": "Kong",
   "provider.kubernetes": "Kubernetes",
   "provider.kubernetes_secret": "Kubernetes - Secret",

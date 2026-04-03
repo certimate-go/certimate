@@ -17,9 +17,9 @@ var (
 	fSecretId      string
 	fSecretKey     string
 	fRegion        string
+	fInstanceId    string
 	fDomain        string
 	fDomainId      string
-	fInstanceId    string
 )
 
 func init() {
@@ -30,9 +30,9 @@ func init() {
 	flag.StringVar(&fSecretId, argsPrefix+"SECRETID", "", "")
 	flag.StringVar(&fSecretKey, argsPrefix+"SECRETKEY", "", "")
 	flag.StringVar(&fRegion, argsPrefix+"REGION", "", "")
+	flag.StringVar(&fInstanceId, argsPrefix+"INSTANCEID", "", "")
 	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
 	flag.StringVar(&fDomainId, argsPrefix+"DOMAINID", "", "")
-	flag.StringVar(&fInstanceId, argsPrefix+"INSTANCEID", "", "")
 }
 
 /*
@@ -44,9 +44,9 @@ Shell command to run this test:
 	--TENCENTCLOUDWAF_SECRETID="your-secret-id" \
 	--TENCENTCLOUDWAF_SECRETKEY="your-secret-key" \
 	--TENCENTCLOUDWAF_REGION="ap-guangzhou" \
+	--TENCENTCLOUDWAF_INSTANCEID="your-instance-id" \
 	--TENCENTCLOUDWAF_DOMAIN="example.com" \
-	--TENCENTCLOUDWAF_DOMAINID="your-domain-id" \
-	--TENCENTCLOUDWAF_INSTANCEID="your-instance-id"
+	--TENCENTCLOUDWAF_DOMAINID="your-domain-id"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -59,17 +59,18 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("SECRETID: %v", fSecretId),
 			fmt.Sprintf("SECRETKEY: %v", fSecretKey),
 			fmt.Sprintf("REGION: %v", fRegion),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
 			fmt.Sprintf("INSTANCEID: %v", fInstanceId),
+			fmt.Sprintf("DOMAIN: %v", fDomain),
+			fmt.Sprintf("DOMAINID: %v", fDomainId),
 		}, "\n"))
 
 		provider, err := provider.NewDeployer(&provider.DeployerConfig{
 			SecretId:   fSecretId,
 			SecretKey:  fSecretKey,
 			Region:     fRegion,
+			InstanceId: fInstanceId,
 			Domain:     fDomain,
 			DomainId:   fDomainId,
-			InstanceId: fInstanceId,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

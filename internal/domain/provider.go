@@ -324,6 +324,8 @@ const (
 	DeploymentProviderTypeJDCloudCDN            = DeploymentProviderType(AccessProviderTypeJDCloud + "-cdn")
 	DeploymentProviderTypeJDCloudLive           = DeploymentProviderType(AccessProviderTypeJDCloud + "-live")
 	DeploymentProviderTypeJDCloudVOD            = DeploymentProviderType(AccessProviderTypeJDCloud + "-vod")
+	DeploymentProviderTypeJDCloudSSL            = DeploymentProviderType(AccessProviderTypeJDCloud + "-ssl")
+	DeploymentProviderTypeJDCloudWAF            = DeploymentProviderType(AccessProviderTypeJDCloud + "-waf")
 	DeploymentProviderTypeKong                  = DeploymentProviderType(AccessProviderTypeKong)
 	DeploymentProviderTypeKubernetesSecret      = DeploymentProviderType(AccessProviderTypeKubernetes + "-secret")
 	DeploymentProviderTypeKsyunCDN              = DeploymentProviderType(AccessProviderTypeKsyun + "-cdn")
