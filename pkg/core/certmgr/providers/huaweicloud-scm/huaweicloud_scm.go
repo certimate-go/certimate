@@ -173,7 +173,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.ScmClient, error) {
 	if region == "" {
-		region = "cn-north-4" // SCM 服务默认区域：华北四北京
+		region = "cn-north-4" // SCM 服务默认区域：华北北京四
 	}
 
 	auth, err := basic.NewCredentialsBuilder().

@@ -109,6 +109,7 @@
   "provider.hostingde": "hosting.de",
   "provider.hostinger": "Hostinger",
   "provider.huaweicloud": "华为云",
+  "provider.huaweicloud_aad": "华为云 - DDoS 高防 AAD",
   "provider.huaweicloud_cdn": "华为云 - 内容分发网络 CDN",
   "provider.huaweicloud_dns": "华为云 - 云解析 DNS",
   "provider.huaweicloud_elb": "华为云 - 弹性负载均衡 ELB",

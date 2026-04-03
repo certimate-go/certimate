@@ -357,7 +357,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Elb
 
 func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error) {
 	if region == "" {
-		region = "cn-north-4" // IAM 服务默认区域：华北四北京
+		region = "cn-north-4" // IAM 服务默认区域：华北北京四
 	}
 
 	auth, err := global.NewCredentialsBuilder().
