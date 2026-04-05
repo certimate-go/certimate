@@ -159,8 +159,8 @@
   "workflow_node.apply.form.disable_ari.tooltip": "It determines whether to disable ARI (ACME Renewal Information). If you don't understand this option, just keep it by default. <br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">Click here to learn more</a>.",
   "workflow_node.apply.form.skip_before_expiry_days.label": "Repeated application",
   "workflow_node.apply.form.skip_before_expiry_days.placeholder": "Please enter renewal interval",
-  "workflow_node.apply.form.skip_before_expiry_days.prefix": "If the last certificate expiration time exceeds",
-  "workflow_node.apply.form.skip_before_expiry_days.suffix": ", skip to re-apply.",
+  "workflow_node.apply.form.skip_before_expiry_days.prefix": "Perform renewal if the last issued certificate expires in ≤",
+  "workflow_node.apply.form.skip_before_expiry_days.suffix": ".",
   "workflow_node.apply.form.skip_before_expiry_days.unit": "days",
 
   "workflow_node.upload.label": "Upload certificate",
@@ -1191,9 +1191,9 @@
   "workflow_node.deploy.form.webhook_timeout.unit": "seconds",
   "workflow_node.deploy.form.skip_on_last_succeeded.label": "Repeated deployment",
   "workflow_node.deploy.form.skip_on_last_succeeded.prefix": "If the last deployment was successful, ",
-  "workflow_node.deploy.form.skip_on_last_succeeded.suffix": " to re-deploy.",
+  "workflow_node.deploy.form.skip_on_last_succeeded.suffix": " re-deployment.",
   "workflow_node.deploy.form.skip_on_last_succeeded.switch.on": "skip",
-  "workflow_node.deploy.form.skip_on_last_succeeded.switch.off": "not skip",
+  "workflow_node.deploy.form.skip_on_last_succeeded.switch.off": "don't skip",
 
   "workflow_node.notify.label": "Send notification",
   "workflow_node.notify.default_name": "Notification",
