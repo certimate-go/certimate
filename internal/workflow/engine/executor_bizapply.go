@@ -220,7 +220,7 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 		daysLeft := int(math.Floor(expirationTime.Hours() / 24))
 		if expirationTime > renewalInterval {
 			daysUntilRenewal := int(math.Ceil((expirationTime - renewalInterval).Hours() / 24))
-			return true, fmt.Sprintf("the last requested certificate expires in %d day(s). A renewal will be performed when the remaining validity is less than %d day(s). The next renewal will be in %d day(s)", daysLeft, thisNodeCfg.SkipBeforeExpiryDays, daysUntilRenewal)
+			return true, fmt.Sprintf("the last requested certificate expires in %d day(s), a renewal will be performed when the remaining validity is less than %d day(s), and the next renewal will be in %d day(s)", daysLeft, thisNodeCfg.SkipBeforeExpiryDays, daysUntilRenewal)
 		}
 
 		return false, fmt.Sprintf("the last requested certificate expires in %d day(s), the renewal window period has been reached", daysLeft)
