@@ -1,6 +1,7 @@
 import { getI18n, useTranslation } from "react-i18next";
 import { IconBulb, IconChevronDown } from "@tabler/icons-react";
 import { Button, Divider, Form, Input, Popover, Select, Space } from "antd";
+import { IconDice6 } from "@tabler/icons-react";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -212,6 +213,19 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
     }
   };
 
+  const PASSPHRASE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const generateRandomPassphrase = (length: number = 32): string => {
+    const randomBytes = crypto.getRandomValues(new Uint8Array(length));
+    return [...randomBytes]
+      .map(b => PASSPHRASE_ALPHABET[b % PASSPHRASE_ALPHABET.length])
+      .join("");
+  };
+
+  const handleRandomPfxPassword = () => {
+    const password = generateRandomPassphrase();
+    formInst.setFieldValue([parentNamePath, "pfxPassword"], password);
+  };
+
   return (
     <>
       <Form.Item>
@@ -281,13 +295,22 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
 
       <Show when={fieldFormat === FORMAT_PFX}>
         <Form.Item
-          name={[parentNamePath, "pfxPassword"]}
-          initialValue={initialValues.pfxPassword}
           label={t("workflow_node.deploy.form.local_pfx_password.label")}
-          rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.local_pfx_password.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.local_pfx_password.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item
+              name={[parentNamePath, "pfxPassword"]}
+              initialValue={initialValues.pfxPassword}
+              rules={[formRule]}
+              noStyle
+            >
+              <Input placeholder={t("workflow_node.deploy.form.local_pfx_password.placeholder")} />
+            </Form.Item>
+            <Button className="px-2" onClick={handleRandomPfxPassword}>
+              <IconDice6 size="1.25em" />
+            </Button>
+          </Space.Compact>
         </Form.Item>
       </Show>
 
