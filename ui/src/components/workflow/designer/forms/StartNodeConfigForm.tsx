@@ -2,7 +2,7 @@
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { IconDice6 } from "@tabler/icons-react";
-import { type AnchorProps, Button, Form, type FormInstance, Input, Radio, Space } from "antd";
+import { type AnchorProps, Button, Form, type FormInstance, Input, Radio, Space, Tooltip } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import dayjs from "dayjs";
 import { z } from "zod";
@@ -95,9 +95,11 @@ const StartNodeConfigForm = ({ node, ...props }: StartNodeConfigFormProps) => {
               <Form.Item name="triggerCron" noStyle rules={[formRule]}>
                 <Input placeholder={t("workflow_node.start.form.trigger_cron.placeholder")} />
               </Form.Item>
-              <Button className="px-2" onClick={handleRandomCronClick}>
-                <IconDice6 size="1.25em" />
-              </Button>
+              <Tooltip title={t("common.text.random_roll")}>
+                <Button className="px-2" onClick={handleRandomCronClick}>
+                  <IconDice6 size="1.25em" />
+                </Button>
+              </Tooltip>
             </Space.Compact>
           </Form.Item>
 

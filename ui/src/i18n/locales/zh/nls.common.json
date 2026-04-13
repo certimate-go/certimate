@@ -25,6 +25,7 @@
   "common.text.operation_confirm": "操作确认",
   "common.text.operation_succeeded": "操作成功",
   "common.text.operation_failed": "操作失败",
+  "common.text.random_roll": "随机生成",
   "common.text.request_error": "请求错误",
   "common.text.saved": "已保存",
   "common.text.saving": "保存中 ……",

@@ -25,6 +25,7 @@
   "common.text.operation_confirm": "Operation confirm",
   "common.text.operation_succeeded": "Operation succeeded",
   "common.text.operation_failed": "Operation failed",
+  "common.text.random_roll": "Random roll",
   "common.text.request_error": "Request error",
   "common.text.saved": "Saved successfully",
   "common.text.saving": "Saving ...",

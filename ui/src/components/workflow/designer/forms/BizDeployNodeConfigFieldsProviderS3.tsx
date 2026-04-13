@@ -1,10 +1,12 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input, Select } from "antd";
+import { IconDice6 } from "@tabler/icons-react";
+import { Button, Form, Input, Select, Space, Tooltip } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import Show from "@/components/Show";
 import { CERTIFICATE_FORMATS } from "@/domain/certificate";
+import { randomString } from "@/utils/random";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -54,6 +56,21 @@ const BizDeployNodeConfigFieldsProviderS3 = () => {
         }
         break;
     }
+  };
+
+  const handleRandomPfxPasswordClick = () => {
+    const password = randomString();
+    formInst.setFieldValue([parentNamePath, "pfxPassword"], password);
+  };
+
+  const handleRandomJksKeypassClick = () => {
+    const password = randomString();
+    formInst.setFieldValue([parentNamePath, "jksKeypass"], password);
+  };
+
+  const handleRandomJksStorepassClick = () => {
+    const password = randomString();
+    formInst.setFieldValue([parentNamePath, "jksStorepass"], password);
   };
 
   return (
@@ -137,13 +154,19 @@ const BizDeployNodeConfigFieldsProviderS3 = () => {
 
       <Show when={fieldFormat === FORMAT_PFX}>
         <Form.Item
-          name={[parentNamePath, "pfxPassword"]}
-          initialValue={initialValues.pfxPassword}
           label={t("workflow_node.deploy.form.s3_pfx_password.label")}
-          rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.s3_pfx_password.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.s3_pfx_password.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item name={[parentNamePath, "pfxPassword"]} initialValue={initialValues.pfxPassword} rules={[formRule]} noStyle>
+              <Input placeholder={t("workflow_node.deploy.form.s3_pfx_password.placeholder")} />
+            </Form.Item>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomPfxPasswordClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
       </Show>
 
@@ -159,23 +182,35 @@ const BizDeployNodeConfigFieldsProviderS3 = () => {
         </Form.Item>
 
         <Form.Item
-          name={[parentNamePath, "jksKeypass"]}
-          initialValue={initialValues.jksKeypass}
           label={t("workflow_node.deploy.form.s3_jks_keypass.label")}
-          rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.s3_jks_keypass.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.s3_jks_keypass.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item name={[parentNamePath, "jksKeypass"]} initialValue={initialValues.jksKeypass} rules={[formRule]} noStyle>
+              <Input placeholder={t("workflow_node.deploy.form.s3_jks_keypass.placeholder")} />
+            </Form.Item>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomJksKeypassClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item
-          name={[parentNamePath, "jksStorepass"]}
-          initialValue={initialValues.jksStorepass}
           label={t("workflow_node.deploy.form.s3_jks_storepass.label")}
-          rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.s3_jks_storepass.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.s3_jks_storepass.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item name={[parentNamePath, "jksStorepass"]} initialValue={initialValues.jksStorepass} rules={[formRule]} noStyle>
+              <Input placeholder={t("workflow_node.deploy.form.s3_jks_storepass.placeholder")} />
+            </Form.Item>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomJksStorepassClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
       </Show>
     </>

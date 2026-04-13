@@ -1,7 +1,6 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { IconBulb, IconChevronDown } from "@tabler/icons-react";
-import { Button, Divider, Form, Input, Popover, Select, Space } from "antd";
-import { IconDice6 } from "@tabler/icons-react";
+import { IconBulb, IconChevronDown, IconDice6 } from "@tabler/icons-react";
+import { Button, Divider, Form, Input, Popover, Select, Space, Tooltip } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -10,6 +9,7 @@ import PresetScriptTemplatesPopselect from "@/components/preset/PresetScriptTemp
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { CERTIFICATE_FORMATS } from "@/domain/certificate";
+import { randomString } from "@/utils/random";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -173,6 +173,21 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
     }
   };
 
+  const handleRandomPfxPasswordClick = () => {
+    const password = randomString();
+    formInst.setFieldValue([parentNamePath, "pfxPassword"], password);
+  };
+
+  const handleRandomJksKeypassClick = () => {
+    const password = randomString();
+    formInst.setFieldValue([parentNamePath, "jksKeypass"], password);
+  };
+
+  const handleRandomJksStorepassClick = () => {
+    const password = randomString();
+    formInst.setFieldValue([parentNamePath, "jksStorepass"], password);
+  };
+
   const handlePresetPreScriptClick = (key: string) => {
     switch (key) {
       case "sh_backup_files":
@@ -211,19 +226,6 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
         }
         break;
     }
-  };
-
-  const PASSPHRASE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  const generateRandomPassphrase = (length: number = 32): string => {
-    const randomBytes = crypto.getRandomValues(new Uint8Array(length));
-    return [...randomBytes]
-      .map(b => PASSPHRASE_ALPHABET[b % PASSPHRASE_ALPHABET.length])
-      .join("");
-  };
-
-  const handleRandomPfxPassword = () => {
-    const password = generateRandomPassphrase();
-    formInst.setFieldValue([parentNamePath, "pfxPassword"], password);
   };
 
   return (
@@ -299,17 +301,14 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.local_pfx_password.tooltip") }}></span>}
         >
           <Space.Compact className="w-full">
-            <Form.Item
-              name={[parentNamePath, "pfxPassword"]}
-              initialValue={initialValues.pfxPassword}
-              rules={[formRule]}
-              noStyle
-            >
+            <Form.Item name={[parentNamePath, "pfxPassword"]} initialValue={initialValues.pfxPassword} rules={[formRule]} noStyle>
               <Input placeholder={t("workflow_node.deploy.form.local_pfx_password.placeholder")} />
             </Form.Item>
-            <Button className="px-2" onClick={handleRandomPfxPassword}>
-              <IconDice6 size="1.25em" />
-            </Button>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomPfxPasswordClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
           </Space.Compact>
         </Form.Item>
       </Show>
@@ -326,23 +325,35 @@ const BizDeployNodeConfigFieldsProviderLocal = () => {
         </Form.Item>
 
         <Form.Item
-          name={[parentNamePath, "jksKeypass"]}
-          initialValue={initialValues.jksKeypass}
           label={t("workflow_node.deploy.form.local_jks_keypass.label")}
-          rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.local_jks_keypass.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.local_jks_keypass.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item name={[parentNamePath, "jksKeypass"]} initialValue={initialValues.jksKeypass} rules={[formRule]} noStyle>
+              <Input placeholder={t("workflow_node.deploy.form.local_jks_keypass.placeholder")} />
+            </Form.Item>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomJksKeypassClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item
-          name={[parentNamePath, "jksStorepass"]}
-          initialValue={initialValues.jksStorepass}
           label={t("workflow_node.deploy.form.local_jks_storepass.label")}
-          rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.local_jks_storepass.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.local_jks_storepass.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item name={[parentNamePath, "jksStorepass"]} initialValue={initialValues.jksStorepass} rules={[formRule]} noStyle>
+              <Input placeholder={t("workflow_node.deploy.form.local_jks_storepass.placeholder")} />
+            </Form.Item>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomJksStorepassClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
       </Show>
 
