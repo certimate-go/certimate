@@ -60,6 +60,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   EMAIL: "email",
   FLEXCDN: "flexcdn",
   FLYIO: "flyio",
+  FTP: "ftp",
   GANDINET: "gandinet",
   GCORE: "gcore",
   GLOBALSIGNATLAS: "globalsignatlas",
@@ -153,6 +154,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
     [
       [ACCESS_PROVIDERS.LOCAL, "provider.local", "/imgs/providers/local.svg", [ACCESS_USAGES.HOSTING], "builtin"],
       [ACCESS_PROVIDERS.SSH, "provider.ssh", "/imgs/providers/ssh.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.FTP, "provider.ftp", "/imgs/providers/ftp.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WEBHOOK, "provider.webhook", "/imgs/providers/webhook.svg", [ACCESS_USAGES.HOSTING, ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.KUBERNETES, "provider.kubernetes", "/imgs/providers/kubernetes.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.S3, "provider.s3", "/imgs/providers/s3.svg", [ACCESS_USAGES.HOSTING]],
@@ -517,6 +519,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
  */
 export const ACME_HTTP01_PROVIDERS = Object.freeze({
   LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
+  FTP: `${ACCESS_PROVIDERS.FTP}`,
   S3: `${ACCESS_PROVIDERS.S3}`,
   SSH: `${ACCESS_PROVIDERS.SSH}`,
 } as const);
@@ -534,6 +537,7 @@ export const acmeHttp01ProvidersMap: Map<ACMEHttp01Provider["type"] | string, AC
     [
       [ACME_HTTP01_PROVIDERS.LOCAL, "provider.local", "builtin"],
       [ACME_HTTP01_PROVIDERS.SSH, "provider.ssh"],
+      [ACME_HTTP01_PROVIDERS.FTP, "provider.ftp"],
       [ACME_HTTP01_PROVIDERS.S3, "provider.s3"],
     ] satisfies Array<[ACMEHttp01ProviderType, string, "builtin"] | [ACMEHttp01ProviderType, string]>
   ).map(([type, name, builtin]) => [

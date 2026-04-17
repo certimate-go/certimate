@@ -55,7 +55,7 @@ type provider struct {
 func (p *provider) Present(domain, token, keyAuth string) error {
 	objectKey := strings.Trim(http01.ChallengePath(token), "/")
 	if err := p.client.PutObjectString(context.Background(), p.bucket, objectKey, keyAuth); err != nil {
-		return fmt.Errorf("s3: failed to upload token to s3: %w", err)
+		return fmt.Errorf("s3: failed to upload file for HTTP challenge: %w", err)
 	}
 
 	return nil
@@ -64,7 +64,7 @@ func (p *provider) Present(domain, token, keyAuth string) error {
 func (p *provider) CleanUp(domain, token, keyAuth string) error {
 	objectKey := strings.Trim(http01.ChallengePath(token), "/")
 	if err := p.client.RemoveObject(context.Background(), p.bucket, objectKey); err != nil {
-		return fmt.Errorf("s3: could not remove file in s3 bucket after HTTP challenge: %w", err)
+		return fmt.Errorf("s3: failed to remove file after HTTP challenge: %w", err)
 	}
 
 	return nil
@@ -85,5 +85,5 @@ func createS3Client(config ChallengerConfig) (*s3.Client, error) {
 		return nil, err
 	}
 
-	return client, err
+	return client, nil
 }

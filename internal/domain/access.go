@@ -257,6 +257,13 @@ type AccessConfigForFlyIO struct {
 	ApiToken string `json:"apiToken"`
 }
 
+type AccessConfigForFTP struct {
+	Host     string `json:"host"`
+	Port     int32  `json:"port"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
 type AccessConfigForGandinet struct {
 	PersonalAccessToken string `json:"personalAccessToken"`
 }

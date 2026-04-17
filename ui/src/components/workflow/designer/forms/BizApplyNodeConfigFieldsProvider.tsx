@@ -4,6 +4,7 @@ import { type ACMEDns01ProviderType, type ACMEHttp01ProviderType, ACME_DNS01_PRO
 
 import BizApplyNodeConfigFieldsProviderAliyunESA from "./BizApplyNodeConfigFieldsProviderAliyunESA";
 import BizApplyNodeConfigFieldsProviderAWSRoute53 from "./BizApplyNodeConfigFieldsProviderAWSRoute53";
+import BizApplyNodeConfigFieldsProviderFTP from "./BizApplyNodeConfigFieldsProviderFTP";
 import BizApplyNodeConfigFieldsProviderHuaweiCloudDNS from "./BizApplyNodeConfigFieldsProviderHuaweiCloudDNS";
 import BizApplyNodeConfigFieldsProviderJDCloudDNS from "./BizApplyNodeConfigFieldsProviderJDCloudDNS";
 import BizApplyNodeConfigFieldsProviderLocal from "./BizApplyNodeConfigFieldsProviderLocal";
@@ -30,6 +31,7 @@ const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, Rea
     NOTICE: If you add new child component, please keep ASCII order.
     */
   [ACME_HTTP01_PROVIDERS.LOCAL]: BizApplyNodeConfigFieldsProviderLocal,
+  [ACME_HTTP01_PROVIDERS.FTP]: BizApplyNodeConfigFieldsProviderFTP,
   [ACME_HTTP01_PROVIDERS.S3]: BizApplyNodeConfigFieldsProviderS3,
   [ACME_HTTP01_PROVIDERS.SSH]: BizApplyNodeConfigFieldsProviderSSH,
 };

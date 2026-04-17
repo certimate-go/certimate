@@ -67,7 +67,7 @@ func (p *provider) Present(domain, token, keyAuth string) error {
 
 	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
 	if err := xssh.WriteRemoteString(client.RawClient(), challengePath, keyAuth, p.config.UseSCP); err != nil {
-		return fmt.Errorf("failed to write file in webroot for HTTP challenge: %w", err)
+		return fmt.Errorf("ssh: failed to write file for HTTP challenge: %w", err)
 	}
 
 	return nil
@@ -83,7 +83,9 @@ func (p *provider) CleanUp(domain, token, keyAuth string) error {
 
 	// 删除质询文件
 	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	xssh.RemoveRemote(client.RawClient(), challengePath, p.config.UseSCP)
+	if err := xssh.RemoveRemote(client.RawClient(), challengePath, p.config.UseSCP); err != nil {
+		return fmt.Errorf("ssh: failed to remove file after HTTP challenge: %w", err)
+	}
 
 	return nil
 }
