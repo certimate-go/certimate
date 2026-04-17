@@ -171,6 +171,7 @@
   "provider.s3": "对象存储（S3 兼容）",
   "provider.s3_upload": "上传到 S3 兼容的对象存储",
   "provider.safeline": "雷池",
+  "provider.samwaf": "SamWAF",
   "provider.sectigo": "Sectigo",
   "provider.slackbot": "Slack 机器人",
   "provider.spaceship": "Spaceship",

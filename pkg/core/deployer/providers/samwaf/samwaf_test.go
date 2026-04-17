@@ -1,4 +1,4 @@
-package safeline_test
+package samwaf_test
 
 import (
 	"context"
@@ -8,36 +8,36 @@ import (
 	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/safeline"
+	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/samwaf"
 )
 
 var (
 	fInputCertPath string
 	fInputKeyPath  string
 	fServerUrl     string
-	fApiToken      string
-	fCertificateId int64
+	fApiKey        string
+	fCertificateId string
 )
 
 func init() {
-	argsPrefix := "SAFELINE_"
+	argsPrefix := "SAMWAF_"
 
 	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
 	flag.StringVar(&fServerUrl, argsPrefix+"SERVERURL", "", "")
-	flag.StringVar(&fApiToken, argsPrefix+"APITOKEN", "", "")
-	flag.Int64Var(&fCertificateId, argsPrefix+"CERTIFICATEID", 0, "")
+	flag.StringVar(&fApiKey, argsPrefix+"APIKEY", "", "")
+	flag.StringVar(&fCertificateId, argsPrefix+"CERTIFICATEID", "", "")
 }
 
 /*
 Shell command to run this test:
 
-	go test -v ./safeline_test.go -args \
-	--SAFELINE_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--SAFELINE_INPUTKEYPATH="/path/to/your-input-key.pem" \
-	--SAFELINE_SERVERURL="http://127.0.0.1:9443" \
-	--SAFELINE_APITOKEN="your-api-token" \
-	--SAFELINE_CERTIFICATEID="your-certificate-id"
+	go test -v ./samwaf_test.go -args \
+	--SAMWAF_INPUTCERTPATH="/path/to/your-input-cert.pem" \
+	--SAMWAF_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--SAMWAF_SERVERURL="http://127.0.0.1:26666" \
+	--SAMWAF_APIKEY="your-api-key" \
+	--SAMWAF_CERTIFICATEID="your-certificate-id"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -48,13 +48,13 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
 			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
 			fmt.Sprintf("SERVERURL: %v", fServerUrl),
-			fmt.Sprintf("APITOKEN: %v", fApiToken),
+			fmt.Sprintf("APIKEY: %v", fApiKey),
 			fmt.Sprintf("CERTIFICATEID: %v", fCertificateId),
 		}, "\n"))
 
 		provider, err := provider.NewDeployer(&provider.DeployerConfig{
 			ServerUrl:                fServerUrl,
-			ApiToken:                 fApiToken,
+			ApiKey:                   fApiKey,
 			AllowInsecureConnections: true,
 			ResourceType:             provider.RESOURCE_TYPE_CERTIFICATE,
 			CertificateId:            fCertificateId,
