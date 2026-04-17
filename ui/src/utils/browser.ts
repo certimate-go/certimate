@@ -10,3 +10,11 @@
 
   return true;
 };
+
+export const isTouchSupported = () => {
+  return (
+    "ontouchstart" in window ||
+    window.navigator.maxTouchPoints > 0 ||
+    (!!(window as any)["DocumentTouch"] && document instanceof (window as any)["DocumentTouch"])
+  );
+};

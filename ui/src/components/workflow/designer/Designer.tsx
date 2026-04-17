@@ -15,6 +15,8 @@ import { createMinimapPlugin } from "@flowgram.ai/minimap-plugin";
 import "@flowgram.ai/fixed-layout-editor/index.css";
 import { theme } from "antd";
 
+import { isTouchSupported } from "@/utils/browser";
+
 import { DegisnerContextProvider } from "./_context";
 import { getAllElements } from "./elements";
 import NodeRender from "./NodeRender";
@@ -127,11 +129,8 @@ const Designer = forwardRef<DesignerInstance, DesignerProps>(
         onInit: (ctx) => {
           if (defaultEditorState != null) {
             ctx.playground.editorState.changeState(defaultEditorState);
-          } else {
-            const maybeMobile = ["android", "ios", "iphone", "ipad", "micromessenger"].some((s) => navigator.userAgent.includes(s));
-            if (maybeMobile) {
-              ctx.playground.editorState.changeState(EditorState.STATE_MOUSE_FRIENDLY_SELECT.id);
-            }
+          } else if (isTouchSupported()) {
+            ctx.playground.editorState.changeState(EditorState.STATE_MOUSE_FRIENDLY_SELECT.id);
           }
         },
 
