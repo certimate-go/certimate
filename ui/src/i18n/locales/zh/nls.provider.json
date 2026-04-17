@@ -133,6 +133,7 @@
   "provider.kubernetes_secret": "Kubernetes - Secret",
   "provider.ksyun": "金山云",
   "provider.ksyun_cdn": "金山云 - 内容分发网络 CDN",
+  "provider.ksyun_slb": "金山云 - 负载均衡 SLB",
   "provider.larkbot": "飞书群机器人",
   "provider.lecdn": "LeCDN",
   "provider.letsencrypt": "Let's Encrypt",

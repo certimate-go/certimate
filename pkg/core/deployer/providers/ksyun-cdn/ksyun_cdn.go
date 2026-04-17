@@ -181,11 +181,10 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		"ServerCertificate": certPEM,
 		"PrivateKey":        privkeyPEM,
 	}
-	setCertificateReq, setCertificateOutput := d.sdkClient.SetCertificatePostRequest(&setCertificateInput)
-	setCertificateErr := setCertificateReq.Send()
+	setCertificateOutput, err := d.sdkClient.SetCertificatePostWithContext(ctx, &setCertificateInput)
 	d.logger.Debug("sdk request 'cdn.SetCertificate'", slog.Any("request", setCertificateInput), slog.Any("response", setCertificateOutput))
-	if setCertificateErr != nil {
-		return fmt.Errorf("failed to execute sdk request 'cdn.SetCertificate': %w", setCertificateErr)
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'cdn.SetCertificate': %w", err)
 	}
 
 	return nil
@@ -209,11 +208,10 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			"PageNumber": getCdnDomainsPageNumber,
 			"PageSize":   getCdnDomainsPageSize,
 		}
-		getCdnDomainsReq, getCdnDomainsOutput := d.sdkClient.GetCdnDomainsPostRequest(&getCdnDomainsInput)
-		getCdnDomainsErr := getCdnDomainsReq.Send()
+		getCdnDomainsOutput, err := d.sdkClient.GetCdnDomainsPostWithContext(ctx, &getCdnDomainsInput)
 		d.logger.Debug("sdk request 'cdn.GetCdnDomains'", slog.Any("request", getCdnDomainsInput), slog.Any("response", getCdnDomainsOutput))
-		if getCdnDomainsErr != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'cdn.GetCdnDomains': %w", getCdnDomainsErr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute sdk request 'cdn.GetCdnDomains': %w", err)
 		}
 
 		type GetCdnDomainsResponse struct {
@@ -268,11 +266,10 @@ func (d *Deployer) findDomainIdByDomain(ctx context.Context, domain string) (str
 			"DomainName": domain,
 			"FuzzyMatch": "off",
 		}
-		getCdnDomainsReq, getCdnDomainsOutput := d.sdkClient.GetCdnDomainsPostRequest(&getCdnDomainsInput)
-		getCdnDomainsErr := getCdnDomainsReq.Send()
+		getCdnDomainsOutput, err := d.sdkClient.GetCdnDomainsPostWithContext(ctx, &getCdnDomainsInput)
 		d.logger.Debug("sdk request 'cdn.GetCdnDomains'", slog.Any("request", getCdnDomainsInput), slog.Any("response", getCdnDomainsOutput))
-		if getCdnDomainsErr != nil {
-			return "", fmt.Errorf("failed to execute sdk request 'cdn.GetCdnDomains': %w", getCdnDomainsErr)
+		if err != nil {
+			return "", fmt.Errorf("failed to execute sdk request 'cdn.GetCdnDomains': %w", err)
 		}
 
 		type GetCdnDomainsResponse struct {
@@ -327,11 +324,10 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 		"ServerCertificate": certPEM,
 		"PrivateKey":        privkeyPEM,
 	}
-	configCertificateReq, configCertificateOutput := d.sdkClient.ConfigCertificatePostRequest(&configCertificateInput)
-	configCertificateErr := configCertificateReq.Send()
+	configCertificateOutput, err := d.sdkClient.ConfigCertificatePostWithContext(ctx, &configCertificateInput)
 	d.logger.Debug("sdk request 'cdn.ConfigCertificate'", slog.Any("request", configCertificateInput), slog.Any("response", configCertificateOutput))
-	if configCertificateErr != nil {
-		return fmt.Errorf("failed to execute sdk request 'cdn.ConfigCertificate': %w", configCertificateErr)
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'cdn.ConfigCertificate': %w", err)
 	}
 
 	return nil

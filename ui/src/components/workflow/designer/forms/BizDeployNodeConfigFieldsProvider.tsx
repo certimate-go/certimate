@@ -65,6 +65,7 @@ import BizDeployNodeConfigFieldsProviderJDCloudVOD from "./BizDeployNodeConfigFi
 import BizDeployNodeConfigFieldsProviderJDCloudWAF from "./BizDeployNodeConfigFieldsProviderJDCloudWAF";
 import BizDeployNodeConfigFieldsProviderKong from "./BizDeployNodeConfigFieldsProviderKong";
 import BizDeployNodeConfigFieldsProviderKsyunCDN from "./BizDeployNodeConfigFieldsProviderKsyunCDN";
+import BizDeployNodeConfigFieldsProviderKsyunSLB from "./BizDeployNodeConfigFieldsProviderKsyunSLB";
 import BizDeployNodeConfigFieldsProviderKubernetesSecret from "./BizDeployNodeConfigFieldsProviderKubernetesSecret";
 import BizDeployNodeConfigFieldsProviderLeCDN from "./BizDeployNodeConfigFieldsProviderLeCDN";
 import BizDeployNodeConfigFieldsProviderLocal from "./BizDeployNodeConfigFieldsProviderLocal";
@@ -189,6 +190,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.KONG]: BizDeployNodeConfigFieldsProviderKong,
   [DEPLOYMENT_PROVIDERS.KUBERNETES_SECRET]: BizDeployNodeConfigFieldsProviderKubernetesSecret,
   [DEPLOYMENT_PROVIDERS.KSYUN_CDN]: BizDeployNodeConfigFieldsProviderKsyunCDN,
+  [DEPLOYMENT_PROVIDERS.KSYUN_SLB]: BizDeployNodeConfigFieldsProviderKsyunSLB,
   [DEPLOYMENT_PROVIDERS.LECDN]: BizDeployNodeConfigFieldsProviderLeCDN,
   [DEPLOYMENT_PROVIDERS.LOCAL]: BizDeployNodeConfigFieldsProviderLocal,
   [DEPLOYMENT_PROVIDERS.MOHUA_MVH]: BizDeployNodeConfigFieldsProviderMohuaMVH,

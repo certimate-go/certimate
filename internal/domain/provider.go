@@ -329,6 +329,7 @@ const (
 	DeploymentProviderTypeKong                  = DeploymentProviderType(AccessProviderTypeKong)
 	DeploymentProviderTypeKubernetesSecret      = DeploymentProviderType(AccessProviderTypeKubernetes + "-secret")
 	DeploymentProviderTypeKsyunCDN              = DeploymentProviderType(AccessProviderTypeKsyun + "-cdn")
+	DeploymentProviderTypeKsyunSLB              = DeploymentProviderType(AccessProviderTypeKsyun + "-slb")
 	DeploymentProviderTypeLeCDN                 = DeploymentProviderType(AccessProviderTypeLeCDN)
 	DeploymentProviderTypeLocal                 = DeploymentProviderType(AccessProviderTypeLocal)
 	DeploymentProviderTypeMohuaMVH              = DeploymentProviderType(AccessProviderTypeMohua + "-mvh")

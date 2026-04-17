@@ -133,6 +133,7 @@
   "provider.kubernetes_secret": "Kubernetes - Secret",
   "provider.ksyun": "Kingsoft Cloud",
   "provider.ksyun_cdn": "Kingsoft Cloud - CDN (Content Delivery Network)",
+  "provider.ksyun_slb": "Kingsoft Cloud - SLB (Server Load Balancing)",
   "provider.larkbot": "Lark Bot",
   "provider.lecdn": "LeCDN",
   "provider.letsencrypt": "Let's Encrypt",
