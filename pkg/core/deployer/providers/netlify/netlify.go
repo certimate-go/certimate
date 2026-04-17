@@ -88,9 +88,9 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 		Key:            privkeyPEM,
 	}
 	provisionSiteTLSCertificateResp, err := d.sdkClient.ProvisionSiteTLSCertificateWithContext(ctx, d.config.SiteId, provisionSiteTLSCertificateReq)
-	d.logger.Debug("sdk request 'netlify.provisionSiteTLSCertificate'", slog.String("siteId", d.config.SiteId), slog.Any("request", provisionSiteTLSCertificateReq), slog.Any("response", provisionSiteTLSCertificateResp))
+	d.logger.Debug("sdk request 'netlify.ProvisionSiteTLSCertificate'", slog.String("siteId", d.config.SiteId), slog.Any("request", provisionSiteTLSCertificateReq), slog.Any("response", provisionSiteTLSCertificateResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'netlify.provisionSiteTLSCertificate': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'netlify.ProvisionSiteTLSCertificate': %w", err)
 	}
 
 	return nil

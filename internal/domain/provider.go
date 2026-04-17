@@ -369,6 +369,7 @@ const (
 	DeploymentProviderTypeUniCloudWebHost       = DeploymentProviderType(AccessProviderTypeUniCloud + "-webhost")
 	DeploymentProviderTypeUpyunCDN              = DeploymentProviderType(AccessProviderTypeUpyun + "-cdn")
 	DeploymentProviderTypeUpyunFile             = DeploymentProviderType(AccessProviderTypeUpyun + "-file")
+	DeploymentProviderTypeVercel                = DeploymentProviderType(AccessProviderTypeVercel)
 	DeploymentProviderTypeVolcEngineALB         = DeploymentProviderType(AccessProviderTypeVolcEngine + "-alb")
 	DeploymentProviderTypeVolcEngineAPIG        = DeploymentProviderType(AccessProviderTypeVolcEngine + "-apig")
 	DeploymentProviderTypeVolcEngineCDN         = DeploymentProviderType(AccessProviderTypeVolcEngine + "-cdn")

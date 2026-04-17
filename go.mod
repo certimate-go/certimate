@@ -1,8 +1,6 @@
 module github.com/certimate-go/certimate
 
-go 1.25.7
-
-toolchain go1.25.8
+go 1.25.8
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.21.0
