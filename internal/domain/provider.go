@@ -313,6 +313,7 @@ const (
 	DeploymentProviderTypeDokploy               = DeploymentProviderType(AccessProviderTypeDokploy)
 	DeploymentProviderTypeFlexCDN               = DeploymentProviderType(AccessProviderTypeFlexCDN)
 	DeploymentProviderTypeFlyIO                 = DeploymentProviderType(AccessProviderTypeFlyIO)
+	DeploymentProviderTypeFTP                   = DeploymentProviderType(AccessProviderTypeFTP)
 	DeploymentProviderTypeGcoreCDN              = DeploymentProviderType(AccessProviderTypeGcore + "-cdn")
 	DeploymentProviderTypeGoEdge                = DeploymentProviderType(AccessProviderTypeGoEdge)
 	DeploymentProviderTypeHuaweiCloudAAD        = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-aad")

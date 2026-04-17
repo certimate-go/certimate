@@ -100,10 +100,19 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	switch d.config.OutputFormat {
 	case OUTPUT_FORMAT_PEM:
 		{
-			if err := d.s3Client.PutObjectString(ctx, d.config.Bucket, d.config.OutputCertObjectKey, certPEM); err != nil {
-				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if d.config.OutputKeyObjectKey != "" {
+				if err := d.s3Client.PutObjectString(ctx, d.config.Bucket, d.config.OutputKeyObjectKey, privkeyPEM); err != nil {
+					return nil, fmt.Errorf("failed to upload private key file: %w", err)
+				}
+				d.logger.Info("ssl private key file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputKeyObjectKey))
 			}
-			d.logger.Info("ssl certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputCertObjectKey))
+
+			if d.config.OutputCertObjectKey != "" {
+				if err := d.s3Client.PutObjectString(ctx, d.config.Bucket, d.config.OutputCertObjectKey, certPEM); err != nil {
+					return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputCertObjectKey))
+			}
 
 			if d.config.OutputServerCertObjectKey != "" {
 				if err := d.s3Client.PutObjectString(ctx, d.config.Bucket, d.config.OutputServerCertObjectKey, serverCertPEM); err != nil {
@@ -118,11 +127,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				}
 				d.logger.Info("ssl intermedia certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputIntermediaCertObjectKey))
 			}
-
-			if err := d.s3Client.PutObjectString(ctx, d.config.Bucket, d.config.OutputKeyObjectKey, privkeyPEM); err != nil {
-				return nil, fmt.Errorf("failed to upload private key file: %w", err)
-			}
-			d.logger.Info("ssl private key file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputKeyObjectKey))
 		}
 
 	case OUTPUT_FORMAT_PFX:
@@ -133,10 +137,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 			d.logger.Info("ssl certificate transformed to pfx")
 
-			if err := d.s3Client.PutObjectBytes(ctx, d.config.Bucket, d.config.OutputCertObjectKey, pfxData); err != nil {
-				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if d.config.OutputCertObjectKey != "" {
+				if err := d.s3Client.PutObjectBytes(ctx, d.config.Bucket, d.config.OutputCertObjectKey, pfxData); err != nil {
+					return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputCertObjectKey))
 			}
-			d.logger.Info("ssl certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputCertObjectKey))
 		}
 
 	case OUTPUT_FORMAT_JKS:
@@ -147,10 +153,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 			d.logger.Info("ssl certificate transformed to jks")
 
-			if err := d.s3Client.PutObjectBytes(ctx, d.config.Bucket, d.config.OutputCertObjectKey, jksData); err != nil {
-				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if d.config.OutputCertObjectKey != "" {
+				if err := d.s3Client.PutObjectBytes(ctx, d.config.Bucket, d.config.OutputCertObjectKey, jksData); err != nil {
+					return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputCertObjectKey))
 			}
-			d.logger.Info("ssl certificate file uploaded", slog.String("bucket", d.config.Bucket), slog.String("object", d.config.OutputCertObjectKey))
 		}
 
 	default:

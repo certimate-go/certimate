@@ -15,7 +15,7 @@ import (
 
 type ServerConfig struct {
 	// SSH 主机。
-	SshHost string `json:"sshHost,omitempty"`
+	SshHost string `json:"sshHost"`
 	// SSH 端口。
 	// 零值时默认值 22。
 	SshPort int32 `json:"sshPort,omitempty"`
@@ -110,6 +110,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 
 	d.logger.Info("ssh connected")
+	defer client.Close()
 
 	// 执行前置命令
 	if d.config.PreCommand != "" {
@@ -134,10 +135,19 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	switch d.config.OutputFormat {
 	case OUTPUT_FORMAT_PEM:
 		{
-			if err := xssh.WriteRemoteString(client.RawClient(), d.config.OutputCertPath, certPEM, d.config.UseSCP); err != nil {
-				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if d.config.OutputKeyPath != "" {
+				if err := xssh.WriteRemoteString(client.RawClient(), d.config.OutputKeyPath, privkeyPEM, d.config.UseSCP); err != nil {
+					return nil, fmt.Errorf("failed to upload private key file: %w", err)
+				}
+				d.logger.Info("ssl private key file uploaded", slog.String("path", d.config.OutputKeyPath))
 			}
-			d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
+
+			if d.config.OutputCertPath != "" {
+				if err := xssh.WriteRemoteString(client.RawClient(), d.config.OutputCertPath, certPEM, d.config.UseSCP); err != nil {
+					return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
+			}
 
 			if d.config.OutputServerCertPath != "" {
 				if err := xssh.WriteRemoteString(client.RawClient(), d.config.OutputServerCertPath, serverCertPEM, d.config.UseSCP); err != nil {
@@ -152,11 +162,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				}
 				d.logger.Info("ssl intermedia certificate file uploaded", slog.String("path", d.config.OutputIntermediaCertPath))
 			}
-
-			if err := xssh.WriteRemoteString(client.RawClient(), d.config.OutputKeyPath, privkeyPEM, d.config.UseSCP); err != nil {
-				return nil, fmt.Errorf("failed to upload private key file: %w", err)
-			}
-			d.logger.Info("ssl private key file uploaded", slog.String("path", d.config.OutputKeyPath))
 		}
 
 	case OUTPUT_FORMAT_PFX:
@@ -167,10 +172,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 			d.logger.Info("ssl certificate transformed to pfx")
 
-			if err := xssh.WriteRemote(client.RawClient(), d.config.OutputCertPath, pfxData, d.config.UseSCP); err != nil {
-				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if d.config.OutputCertPath != "" {
+				if err := xssh.WriteRemote(client.RawClient(), d.config.OutputCertPath, pfxData, d.config.UseSCP); err != nil {
+					return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 			}
-			d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 		}
 
 	case OUTPUT_FORMAT_JKS:
@@ -181,10 +188,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 			d.logger.Info("ssl certificate transformed to jks")
 
-			if err := xssh.WriteRemote(client.RawClient(), d.config.OutputCertPath, jksData, d.config.UseSCP); err != nil {
-				return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+			if d.config.OutputCertPath != "" {
+				if err := xssh.WriteRemote(client.RawClient(), d.config.OutputCertPath, jksData, d.config.UseSCP); err != nil {
+					return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 			}
-			d.logger.Info("ssl certificate file uploaded", slog.String("path", d.config.OutputCertPath))
 		}
 
 	default:

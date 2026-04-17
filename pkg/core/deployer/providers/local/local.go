@@ -105,10 +105,19 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	switch d.config.OutputFormat {
 	case OUTPUT_FORMAT_PEM:
 		{
-			if err := xfile.WriteString(d.config.OutputCertPath, certPEM); err != nil {
-				return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			if d.config.OutputKeyPath != "" {
+				if err := xfile.WriteString(d.config.OutputKeyPath, privkeyPEM); err != nil {
+					return nil, fmt.Errorf("failed to save private key file: %w", err)
+				}
+				d.logger.Info("ssl private key file saved", slog.String("path", d.config.OutputKeyPath))
 			}
-			d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
+
+			if d.config.OutputCertPath != "" {
+				if err := xfile.WriteString(d.config.OutputCertPath, certPEM); err != nil {
+					return nil, fmt.Errorf("failed to save certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
+			}
 
 			if d.config.OutputServerCertPath != "" {
 				if err := xfile.WriteString(d.config.OutputServerCertPath, serverCertPEM); err != nil {
@@ -123,11 +132,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				}
 				d.logger.Info("ssl intermedia certificate file saved", slog.String("path", d.config.OutputIntermediaCertPath))
 			}
-
-			if err := xfile.WriteString(d.config.OutputKeyPath, privkeyPEM); err != nil {
-				return nil, fmt.Errorf("failed to save private key file: %w", err)
-			}
-			d.logger.Info("ssl private key file saved", slog.String("path", d.config.OutputKeyPath))
 		}
 
 	case OUTPUT_FORMAT_PFX:
@@ -138,10 +142,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 			d.logger.Info("ssl certificate transformed to pfx")
 
-			if err := xfile.Write(d.config.OutputCertPath, pfxData); err != nil {
-				return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			if d.config.OutputCertPath != "" {
+				if err := xfile.Write(d.config.OutputCertPath, pfxData); err != nil {
+					return nil, fmt.Errorf("failed to save certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 			}
-			d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 		}
 
 	case OUTPUT_FORMAT_JKS:
@@ -152,10 +158,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			}
 			d.logger.Info("ssl certificate transformed to jks")
 
-			if err := xfile.Write(d.config.OutputCertPath, jksData); err != nil {
-				return nil, fmt.Errorf("failed to save certificate file: %w", err)
+			if d.config.OutputCertPath != "" {
+				if err := xfile.Write(d.config.OutputCertPath, jksData); err != nil {
+					return nil, fmt.Errorf("failed to save certificate file: %w", err)
+				}
+				d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 			}
-			d.logger.Info("ssl certificate file saved", slog.String("path", d.config.OutputCertPath))
 		}
 
 	default:

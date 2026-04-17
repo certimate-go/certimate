@@ -14,7 +14,7 @@ import (
 
 type ServerConfig struct {
 	// SSH 主机。
-	SshHost string `json:"sshHost,omitempty"`
+	SshHost string `json:"sshHost"`
 	// SSH 端口。
 	// 零值时默认值 22。
 	SshPort int32 `json:"sshPort,omitempty"`
