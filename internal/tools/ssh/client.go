@@ -31,10 +31,18 @@ func NewClient(config *Config) (*Client, error) {
 			conns[i].Close()
 		}
 
-		return nil, err
+		return nil, fmt.Errorf("ssh: %w", err)
 	}
 
 	return &Client{conns: conns, clis: clis}, nil
+}
+
+func (c *Client) RawClient() *ssh.Client {
+	if len(c.clis) == 0 {
+		return nil
+	}
+
+	return c.clis[len(c.clis)-1]
 }
 
 func (c *Client) Close() error {
@@ -57,18 +65,10 @@ func (c *Client) Close() error {
 	if len(errs) == 0 {
 		return nil
 	} else if len(errs) == 1 {
-		return errs[0]
+		return fmt.Errorf("ssh: %w", errs[0])
 	} else {
-		return errors.Join(errs...)
+		return fmt.Errorf("ssh: %w", errors.Join(errs...))
 	}
-}
-
-func (c *Client) GetClient() *ssh.Client {
-	if len(c.clis) == 0 {
-		return nil
-	}
-
-	return c.clis[len(c.clis)-1]
 }
 
 func createConnsAndSshClients(config *Config) (conns []net.Conn, clis []*ssh.Client, err error) {
@@ -134,7 +134,7 @@ func createConnsAndSshClients(config *Config) (conns []net.Conn, clis []*ssh.Cli
 
 func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, error) {
 	if conn == nil {
-		return nil, fmt.Errorf("ssh: nil conn")
+		return nil, fmt.Errorf("nil conn")
 	}
 
 	authMethodType := lo.
@@ -147,17 +147,17 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 	case AuthMethodTypeNone:
 		{
 			if config.Username == "" {
-				return nil, fmt.Errorf("ssh: unset username")
+				return nil, fmt.Errorf("missing username")
 			}
 		}
 
 	case AuthMethodTypePassword:
 		{
 			if config.Username == "" {
-				return nil, fmt.Errorf("ssh: unset username")
+				return nil, fmt.Errorf("missing username")
 			}
 			if config.Password == "" {
-				return nil, fmt.Errorf("ssh: unset password")
+				return nil, fmt.Errorf("missing password")
 			}
 
 			password := config.Password
@@ -183,10 +183,10 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 	case AuthMethodTypeKey:
 		{
 			if config.Username == "" {
-				return nil, fmt.Errorf("ssh: unset username")
+				return nil, fmt.Errorf("missing username")
 			}
 			if config.Key == "" {
-				return nil, fmt.Errorf("ssh: unset key")
+				return nil, fmt.Errorf("missing key")
 			}
 
 			key := config.Key
@@ -200,14 +200,14 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 				signer, err = ssh.ParsePrivateKey([]byte(key))
 			}
 			if err != nil {
-				return nil, fmt.Errorf("ssh: %w", err)
+				return nil, err
 			}
 
 			authMethods = append(authMethods, ssh.PublicKeys(signer))
 		}
 
 	default:
-		return nil, fmt.Errorf("ssh: unsupported auth method '%s'", authMethodType)
+		return nil, fmt.Errorf("unsupported auth method '%s'", authMethodType)
 	}
 
 	addr := resolveAddr(config.Host, config.Port)
@@ -217,7 +217,7 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("ssh: %w", err)
+		return nil, err
 	}
 
 	return ssh.NewClient(sshConn, chans, reqs), nil

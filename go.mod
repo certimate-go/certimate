@@ -45,6 +45,7 @@ require (
 	github.com/google/go-querystring v1.2.0
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.190
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
+	github.com/jlaffaye/ftp v0.2.0
 	github.com/kong/go-kong v0.73.1
 	github.com/luthermonson/go-proxmox v0.4.0
 	github.com/microcosm-cc/bluemonday v1.0.27
@@ -217,6 +218,8 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect

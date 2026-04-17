@@ -14,7 +14,6 @@ import (
 
 type ServerConfig struct {
 	// SSH 主机。
-	// 零值时默认值 "localhost"。
 	SshHost string `json:"sshHost,omitempty"`
 	// SSH 端口。
 	// 零值时默认值 22。
@@ -66,8 +65,8 @@ func (p *provider) Present(domain, token, keyAuth string) error {
 
 	defer client.Close()
 
-	challengeFilePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	if err := xssh.WriteRemoteString(client.GetClient(), challengeFilePath, keyAuth, p.config.UseSCP); err != nil {
+	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
+	if err := xssh.WriteRemoteString(client.RawClient(), challengePath, keyAuth, p.config.UseSCP); err != nil {
 		return fmt.Errorf("failed to write file in webroot for HTTP challenge: %w", err)
 	}
 
@@ -83,8 +82,8 @@ func (p *provider) CleanUp(domain, token, keyAuth string) error {
 	defer client.Close()
 
 	// 删除质询文件
-	challengeFilePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	xssh.RemoveRemote(client.GetClient(), challengeFilePath, p.config.UseSCP)
+	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
+	xssh.RemoveRemote(client.RawClient(), challengePath, p.config.UseSCP)
 
 	return nil
 }

@@ -22,14 +22,23 @@ func NewClient(config *Config) (*Client, error) {
 
 	client, err := createSmtpClient(config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("smtp: %w", err)
 	}
 
 	return &Client{cli: client}, nil
 }
 
+func (c *Client) RawClient() *mail.Client {
+	return c.cli
+}
+
 func (c *Client) Close() error {
-	return c.cli.Close()
+	err := c.cli.Close()
+	if err != nil {
+		return fmt.Errorf("smtp: %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) Send(ctx context.Context, msg *Message) error {
@@ -87,7 +96,7 @@ func createSmtpClient(config *Config) (*mail.Client, error) {
 
 	client, err := mail.NewClient(config.Host, clientOptions...)
 	if err != nil {
-		return nil, fmt.Errorf("smtp: %w", err)
+		return nil, err
 	}
 
 	client.ErrorHandlerRegistry.RegisterHandler("smtp.qq.com", "QUIT", &wQQMailQuitErrorHandler{})
