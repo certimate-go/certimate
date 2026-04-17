@@ -33,13 +33,16 @@ const preserveFilesPlugin = (filesToPreserve: string[]): Plugin => {
   };
 };
 
-export default defineConfig(() => {
+export default defineConfig(({ command }) => {
   let appVersion = undefined;
   try {
     const content = fs.readFileSync(path.resolve(__dirname, "../internal/app/app.go"), "utf-8");
     const matches = content.match(/AppVersion\s+=\s+"(.+?)"/);
     if (matches) {
       appVersion = matches[1];
+      if (command === "serve") {
+        appVersion += "-dev";
+      }
       console.info("[certimate] AppVersion is " + appVersion);
     } else {
       throw new Error("AppVersion not found in '/internal/app/app.go'");

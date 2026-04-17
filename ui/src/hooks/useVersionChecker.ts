@@ -90,11 +90,11 @@ const useVersionChecker = () => {
 
       if (releases[nIdx]) {
         localStorage.setItem(LOCAL_STORAGE_KEY, releases[nIdx].name);
+        return compareVersions(releases[nIdx].name, APP_VERSION) === 1;
       } else {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
+        return false;
       }
-
-      return !!releases[nIdx];
     },
     {
       manual: true,
