@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/go-acme/lego/v4/providers/dns/ucloud"
+
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/ucloud/internal"
 )
 
 type ChallengerConfig struct {
@@ -21,10 +22,10 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		return nil, errors.New("config is nil")
 	}
 
-	providerConfig := internal.NewDefaultConfig()
+	providerConfig := ucloud.NewDefaultConfig()
 	providerConfig.PrivateKey = config.PrivateKey
 	providerConfig.PublicKey = config.PublicKey
-	providerConfig.ProjectId = config.ProjectId
+	providerConfig.ProjectID = config.ProjectId
 	if config.DnsTTL != 0 {
 		providerConfig.TTL = config.DnsTTL
 	}
@@ -32,7 +33,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}
 
-	provider, err := internal.NewDNSProviderConfig(providerConfig)
+	provider, err := ucloud.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}
