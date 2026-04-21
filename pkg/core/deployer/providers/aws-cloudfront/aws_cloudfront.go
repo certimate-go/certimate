@@ -96,7 +96,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	if d.config.DistributionId == "" {
 		return nil, errors.New("config `distribuitionId` is required")
 	}

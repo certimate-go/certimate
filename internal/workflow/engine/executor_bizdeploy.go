@@ -96,6 +96,7 @@ func (ne *bizDeployNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 		ProviderExtendedConfig: nodeCfg.ProviderConfig,
 		Certificate:            inputCertificate.Certificate,
 		PrivateKey:             inputCertificate.PrivateKey,
+		IssuerCertificate:      inputCertificate.IssuerCertificate,
 	}
 	if _, err := deployer.DeployCertificate(execCtx.Context(), deployReq); err != nil {
 		ne.logger.Warn("could not deploy certificate")

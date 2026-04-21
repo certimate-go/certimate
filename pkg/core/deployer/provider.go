@@ -23,7 +23,7 @@ type Provider interface {
 	// 出参：
 	//   - res：部署结果。
 	//   - err: 错误。
-	Deploy(ctx context.Context, certPEM, privkeyPEM string) (_res *DeployResult, _err error)
+	Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (_res *DeployResult, _err error)
 }
 
 // 表示 SSL 证书部署结果的数据结构。

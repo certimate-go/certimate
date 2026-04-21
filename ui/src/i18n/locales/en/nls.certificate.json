@@ -33,6 +33,7 @@
   "certificate.props.source.upload": "Upload",
   "certificate.props.revoked": "Revoked",
   "certificate.props.certificate": "Certificate chain",
+  "certificate.props.issuer_certificate": "CA certificate",
   "certificate.props.private_key": "Private key",
   "certificate.props.serial_number": "Serial number",
   "certificate.props.key_algorithm": "Key algorithm",

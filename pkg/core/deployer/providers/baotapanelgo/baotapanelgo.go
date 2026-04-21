@@ -70,7 +70,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	if len(d.config.SiteNames) == 0 {
 		return nil, errors.New("config `siteNames` is required")
 	}

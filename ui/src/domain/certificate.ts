@@ -5,6 +5,7 @@ export interface CertificateModel extends BaseModel {
   subjectAltNames: string;
   serialNumber: string;
   certificate: string;
+  issuerCertificate: string;
   privateKey: string;
   issuerOrg: string;
   keyAlgorithm: string;

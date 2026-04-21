@@ -98,7 +98,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	switch d.config.ServiceType {
 	case SERVICE_TYPE_TRADITIONAL:
 		if err := d.deployToTraditional(ctx, certPEM, privkeyPEM); err != nil {

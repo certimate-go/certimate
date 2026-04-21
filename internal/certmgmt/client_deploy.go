@@ -16,8 +16,9 @@ type DeployCertificateRequest struct {
 	ProviderExtendedConfig map[string]any
 
 	// 证书相关
-	Certificate string
-	PrivateKey  string
+	Certificate       string
+	PrivateKey        string
+	IssuerCertificate string
 }
 
 type DeployCertificateResponse struct{}
@@ -41,7 +42,7 @@ func (c *Client) DeployCertificate(ctx context.Context, request *DeployCertifica
 	}
 
 	provider.SetLogger(c.logger)
-	if _, err := provider.Deploy(ctx, request.Certificate, request.PrivateKey); err != nil {
+	if _, err := provider.Deploy(ctx, request.Certificate, request.PrivateKey, request.IssuerCertificate); err != nil {
 		return nil, err
 	}
 

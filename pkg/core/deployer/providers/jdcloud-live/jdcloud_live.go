@@ -60,7 +60,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	// 获取待部署的域名列表
 	var domains []string
 	switch d.config.DomainMatchPattern {

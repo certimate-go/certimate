@@ -33,6 +33,7 @@
   "certificate.props.source.upload": "上传",
   "certificate.props.revoked": "已吊销",
   "certificate.props.certificate": "证书内容",
+  "certificate.props.issuer_certificate": "CA 证书内容",
   "certificate.props.private_key": "私钥内容",
   "certificate.props.serial_number": "证书序列号",
   "certificate.props.key_algorithm": "私钥算法",

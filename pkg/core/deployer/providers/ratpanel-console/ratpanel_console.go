@@ -55,7 +55,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	// 设置面板 SSL 证书
 	setSettingCertReq := &ratpanelsdk.SetSettingCertRequest{
 		Certificate: certPEM,

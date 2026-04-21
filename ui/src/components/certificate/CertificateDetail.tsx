@@ -76,6 +76,24 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
           <Input.TextArea value={data.certificate} variant="filled" autoSize={{ minRows: 5, maxRows: 5 }} readOnly />
         </Form.Item>
 
+        {data.issuerCertificate && (
+          <Form.Item label={t("certificate.props.issuer_certificate")}>
+            <div className="absolute -top-1.5 right-0 -translate-y-full">
+              <Tooltip title={t("common.button.copy")}>
+                <CopyToClipboard
+                  text={data.issuerCertificate}
+                  onCopy={() => {
+                    message.success(t("common.text.copied"));
+                  }}
+                >
+                  <Button size="small" type="text" icon={<IconClipboard size="1.25em" />}></Button>
+                </CopyToClipboard>
+              </Tooltip>
+            </div>
+            <Input.TextArea value={data.issuerCertificate} variant="filled" autoSize={{ minRows: 5, maxRows: 5 }} readOnly />
+          </Form.Item>
+        )}
+
         <Form.Item label={t("certificate.props.private_key")}>
           <div className="absolute -top-1.5 right-0 -translate-y-full">
             <Tooltip title={t("common.button.copy")}>

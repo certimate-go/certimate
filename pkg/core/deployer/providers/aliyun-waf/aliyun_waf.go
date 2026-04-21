@@ -98,7 +98,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	switch d.config.ServiceVersion {
 	case "3", "3.0":
 		if err := d.deployToWAF3(ctx, certPEM, privkeyPEM); err != nil {

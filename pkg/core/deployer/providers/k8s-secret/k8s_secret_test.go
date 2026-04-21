@@ -12,12 +12,14 @@ import (
 )
 
 var (
-	fInputCertPath       string
-	fInputKeyPath        string
-	fNamespace           string
-	fSecretName          string
-	fSecretDataKeyForCrt string
-	fSecretDataKeyForKey string
+	fInputCertPath          string
+	fInputKeyPath           string
+	fInputIssuerPath        string
+	fNamespace              string
+	fSecretName             string
+	fSecretDataKeyForCrt    string
+	fSecretDataKeyForKey    string
+	fSecretDataKeyForIssuer string
 )
 
 func init() {
@@ -25,10 +27,12 @@ func init() {
 
 	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
 	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
+	flag.StringVar(&fInputIssuerPath, argsPrefix+"INPUTISSUERPATH", "", "")
 	flag.StringVar(&fNamespace, argsPrefix+"NAMESPACE", "default", "")
 	flag.StringVar(&fSecretName, argsPrefix+"SECRETNAME", "", "")
 	flag.StringVar(&fSecretDataKeyForCrt, argsPrefix+"SECRETDATAKEYFORCRT", "tls.crt", "")
 	flag.StringVar(&fSecretDataKeyForKey, argsPrefix+"SECRETDATAKEYFORKEY", "tls.key", "")
+	flag.StringVar(&fSecretDataKeyForIssuer, argsPrefix+"SECRETDATAKEYFORISSUER", "issuer.crt", "")
 }
 
 /*
@@ -37,10 +41,12 @@ Shell command to run this test:
 	go test -v ./k8s_secret_test.go -args \
 	--K8SSECRET_INPUTCERTPATH="/path/to/your-input-cert.pem" \
 	--K8SSECRET_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--K8SSECRET_INPUTISSUERPATH="/path/to/your-input-issuer.pem" \
 	--K8SSECRET_NAMESPACE="default" \
 	--K8SSECRET_SECRETNAME="secret" \
 	--K8SSECRET_SECRETDATAKEYFORCRT="tls.crt" \
-	--K8SSECRET_SECRETDATAKEYFORKEY="tls.key"
+	--K8SSECRET_SECRETDATAKEYFORKEY="tls.key" \
+	--K8SSECRET_SECRETDATAKEYFORISSUER="issuer.crt"
 */
 func TestDeploy(t *testing.T) {
 	flag.Parse()
@@ -54,13 +60,15 @@ func TestDeploy(t *testing.T) {
 			fmt.Sprintf("SECRETNAME: %v", fSecretName),
 			fmt.Sprintf("SECRETDATAKEYFORCRT: %v", fSecretDataKeyForCrt),
 			fmt.Sprintf("SECRETDATAKEYFORKEY: %v", fSecretDataKeyForKey),
+			fmt.Sprintf("SECRETDATAKEYFORISSUER: %v", fSecretDataKeyForIssuer),
 		}, "\n"))
 
 		provider, err := provider.NewDeployer(&provider.DeployerConfig{
-			Namespace:           fNamespace,
-			SecretName:          fSecretName,
-			SecretDataKeyForCrt: fSecretDataKeyForCrt,
-			SecretDataKeyForKey: fSecretDataKeyForKey,
+			Namespace:              fNamespace,
+			SecretName:             fSecretName,
+			SecretDataKeyForCrt:    fSecretDataKeyForCrt,
+			SecretDataKeyForKey:    fSecretDataKeyForKey,
+			SecretDataKeyForIssuer: fSecretDataKeyForIssuer,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
@@ -69,7 +77,8 @@ func TestDeploy(t *testing.T) {
 
 		fInputCertData, _ := os.ReadFile(fInputCertPath)
 		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
+		fInputIssuerData, _ := os.ReadFile(fInputIssuerPath)
+		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData), string(fInputIssuerData))
 		if err != nil {
 			t.Errorf("err: %+v", err)
 			return

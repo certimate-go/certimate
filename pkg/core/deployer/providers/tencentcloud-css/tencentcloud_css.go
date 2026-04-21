@@ -81,7 +81,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	// 上传证书
 	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
 	if err != nil {

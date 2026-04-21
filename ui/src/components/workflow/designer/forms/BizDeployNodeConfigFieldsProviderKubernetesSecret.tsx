@@ -85,6 +85,15 @@ const BizDeployNodeConfigFieldsProviderKubernetesSecret = () => {
       </Form.Item>
 
       <Form.Item
+        name={[parentNamePath, "secretDataKeyForIssuer"]}
+        initialValue={initialValues.secretDataKeyForIssuer}
+        label={t("workflow_node.deploy.form.k8s_secret_data_key_for_issuer.label")}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.k8s_secret_data_key_for_issuer.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.k8s_secret_data_key_for_issuer.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "secretAnnotations"]}
         initialValue={initialValues.secretAnnotations}
         label={t("workflow_node.deploy.form.k8s_secret_annotations.label")}
@@ -129,6 +138,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
     secretType: "kubernetes.io/tls",
     secretDataKeyForCrt: "tls.crt",
     secretDataKeyForKey: "tls.key",
+    secretDataKeyForIssuer: "ca.crt",
   };
 };
 
@@ -141,6 +151,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     secretType: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_type.placeholder")),
     secretDataKeyForCrt: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_data_key_for_crt.placeholder")),
     secretDataKeyForKey: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_data_key_for_key.placeholder")),
+    secretDataKeyForIssuer: z.string().nullish(),
     secretAnnotations: z
       .string()
       .nullish()

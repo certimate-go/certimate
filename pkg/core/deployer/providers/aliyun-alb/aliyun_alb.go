@@ -100,7 +100,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {

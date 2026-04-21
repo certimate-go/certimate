@@ -68,7 +68,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM string, privkeyPEM string, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	// 提取服务器证书和中间证书
 	serverCertPEM, intermediateCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {

@@ -31,6 +31,8 @@ type DeployerConfig struct {
 	SecretDataKeyForCrt string `json:"secretDataKeyForCrt,omitempty"`
 	// Kubernetes Secret 中用于存放私钥的 Key。
 	SecretDataKeyForKey string `json:"secretDataKeyForKey,omitempty"`
+	// Kubernetes Secret 中用于存放CA证书。
+	SecretDataKeyForIssuer string `json:"secretDataKeyForIssuer,omitempty"`
 	// Kubernetes Secret 注解。
 	SecretAnnotations map[string]string `json:"secretAnnotations,omitempty"`
 	// Kubernetes Secret 标签。
@@ -63,7 +65,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	if d.config.Namespace == "" {
 		return nil, errors.New("config `namespace` is required")
 	}
@@ -98,6 +100,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		"certimate/subject-alt-names": strings.Join(certX509.DNSNames, ","),
 		"certimate/issuer-sn":         certX509.Issuer.SerialNumber,
 		"certimate/issuer-org":        strings.Join(certX509.Issuer.Organization, ","),
+		"certimate/not-before":        certX509.NotBefore.Format("2006-01-02T15:04:05Z"),
+		"certimate/not-after":         certX509.NotAfter.Format("2006-01-02T15:04:05Z"),
 	}
 	secretLabels := map[string]string{}
 	if d.config.SecretAnnotations != nil {
@@ -133,6 +137,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		secretPayload.Data = make(map[string][]byte)
 		secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
 		secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
+		if d.config.SecretDataKeyForIssuer != "" {
+			secretPayload.Data[d.config.SecretDataKeyForIssuer] = []byte(issuerCertificatePEM)
+		}
 
 		secretPayload, err = client.CoreV1().Secrets(d.config.Namespace).Create(ctx, secretPayload, k8smeta.CreateOptions{})
 		d.logger.Debug("kubernetes operate 'Secrets.Create'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
@@ -164,6 +171,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 	secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
 	secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
+	if d.config.SecretDataKeyForIssuer != "" {
+		secretPayload.Data[d.config.SecretDataKeyForIssuer] = []byte(issuerCertificatePEM)
+	}
 	secretPayload, err = client.CoreV1().Secrets(d.config.Namespace).Update(ctx, secretPayload, k8smeta.UpdateOptions{})
 	d.logger.Debug("kubernetes operate 'Secrets.Update'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
 	if err != nil {

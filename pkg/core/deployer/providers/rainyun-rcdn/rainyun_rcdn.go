@@ -69,7 +69,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM, issuerCertificatePEM string) (*deployer.DeployResult, error) {
 	if d.config.InstanceId == 0 {
 		return nil, fmt.Errorf("config `instanceId` is required")
 	}
