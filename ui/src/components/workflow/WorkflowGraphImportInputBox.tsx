@@ -242,4 +242,6 @@ const WorkflowGraphImportInputBox = forwardRef<WorkflowGraphImportInputBoxInstan
   );
 });
 
-export default WorkflowGraphImportInputBox;
+export default Object.assign(WorkflowGraphImportInputBox, {
+  deserialize,
+});

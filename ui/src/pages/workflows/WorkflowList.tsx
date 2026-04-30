@@ -10,9 +10,11 @@ import { ClientResponseError } from "pocketbase";
 import { z } from "zod";
 
 import { startRun as startWorkflowRun } from "@/api/workflows";
+import CodeTextInput from "@/components/CodeTextInput";
 import DrawerForm from "@/components/DrawerForm";
 import Empty from "@/components/Empty";
 import Show from "@/components/Show";
+import WorkflowGraphExportBox from "@/components/workflow/WorkflowGraphExportBox";
 import WorkflowStatus from "@/components/workflow/WorkflowStatus";
 import { WORKFLOW_TRIGGERS, type WorkflowModel, duplicateNodes } from "@/domain/workflow";
 import { useAntdForm, useAppSettings } from "@/hooks";
@@ -54,7 +56,7 @@ const WorkflowList = () => {
         <div className="flex max-w-full flex-col gap-1 truncate">
           <Typography.Text ellipsis>{record.name || "\u00A0"}</Typography.Text>
           <Typography.Text ellipsis type="secondary">
-            {record.description || "\u00A0"}
+            {record.description}
           </Typography.Text>
         </div>
       ),
@@ -628,6 +630,16 @@ const InternalDuplicateDrawer = ({
 
       <Form.Item name="description" label={t("workflow.detail.baseinfo.description.label")} rules={[formRule]}>
         <Input placeholder={t("workflow.detail.baseinfo.description.placeholder")} />
+      </Form.Item>
+
+      <Form.Item label={t("workflow.detail.baseinfo.graph.label")}>
+        <CodeTextInput
+          height="calc(min(60vh, 512px))"
+          language="yaml"
+          lineWrapping={false}
+          value={data?.graphDraft ? WorkflowGraphExportBox.serialize(data.graphDraft, "yaml") : void 0}
+          readOnly
+        />
       </Form.Item>
     </DrawerForm>
   );

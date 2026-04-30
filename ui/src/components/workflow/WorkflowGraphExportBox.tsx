@@ -136,4 +136,6 @@ const WorkflowGraphExportBox = ({ className, style, data }: WorkflowGraphExportB
   );
 };
 
-export default WorkflowGraphExportBox;
+export default Object.assign(WorkflowGraphExportBox, {
+  serialize,
+});

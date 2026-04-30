@@ -56,6 +56,7 @@
   "workflow.detail.baseinfo.name.placeholder": "请输入工作流名称",
   "workflow.detail.baseinfo.description.label": "工作流描述",
   "workflow.detail.baseinfo.description.placeholder": "请输入工作流描述",
+  "workflow.detail.baseinfo.graph.label": "工作流图（只读）",
   "workflow.detail.design.tab": "流程编排",
   "workflow.detail.design.editor.placeholder": "请完成配置",
   "workflow.detail.design.editor.add_node": "添加节点",
