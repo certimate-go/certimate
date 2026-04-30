@@ -316,11 +316,13 @@ func (wd *workflowDispatcher) tryExecuteAsync(task *taskInfo) {
 	// 执行工作流
 	wd.syslog.Info(fmt.Sprintf("workflow #%s's run #%s started", task.WorkflowId, task.RunId))
 	we.Invoke(task.ctx, engine.WorkflowExecution{
-		WorkflowId:   workflowRun.WorkflowId,
-		WorkflowName: workflow.Name,
-		RunId:        workflowRun.Id,
-		RunTrigger:   workflowRun.Trigger,
-		Graph:        workflowRun.Graph,
+		WorkflowId:          workflow.Id,
+		WorkflowName:        workflow.Name,
+		WorkflowDescription: workflow.Description,
+		RunId:               workflowRun.Id,
+		RunTrigger:          workflowRun.Trigger,
+		RunAt:               workflowRun.StartedAt,
+		Graph:               workflowRun.Graph,
 	})
 	wd.syslog.Info(fmt.Sprintf("workflow #%s's run #%s stopped", task.WorkflowId, task.RunId))
 }

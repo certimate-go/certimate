@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"runtime/debug"
 	"sync"
+	"time"
 
 	"github.com/samber/lo"
 
@@ -17,11 +18,13 @@ import (
 )
 
 type WorkflowExecution struct {
-	WorkflowId   string
-	WorkflowName string
-	RunId        string
-	RunTrigger   domain.WorkflowTriggerType
-	Graph        *Graph
+	WorkflowId          string
+	WorkflowName        string
+	WorkflowDescription string
+	RunId               string
+	RunTrigger          domain.WorkflowTriggerType
+	RunAt               time.Time
+	Graph               *Graph
 }
 
 type WorkflowEngine interface {
@@ -71,6 +74,7 @@ func (we *workflowEngine) Invoke(ctx context.Context, execution WorkflowExecutio
 	wfVars := newVariableManager()
 	wfVars.Set(stateVarKeyWorkflowId, execution.WorkflowId, stateValTypeString)
 	wfVars.Set(stateVarKeyWorkflowName, execution.WorkflowName, stateValTypeString)
+	wfVars.Set(stateVarKeyWorkflowDescription, execution.WorkflowDescription, stateValTypeString)
 	wfVars.Set(stateVarKeyRunId, execution.RunId, stateValTypeString)
 	wfVars.Set(stateVarKeyRunTrigger, execution.RunTrigger, stateValTypeString)
 	wfVars.Set(stateVarKeyErrorNodeId, "", stateValTypeString)

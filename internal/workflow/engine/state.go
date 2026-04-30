@@ -292,6 +292,7 @@ const (
 const (
 	stateVarKeyWorkflowId                 = "workflow.id"                 // ValueType: "string"
 	stateVarKeyWorkflowName               = "workflow.name"               // ValueType: "string"
+	stateVarKeyWorkflowDescription        = "workflow.description"        // ValueType: "string"
 	stateVarKeyRunId                      = "run.id"                      // ValueType: "string"
 	stateVarKeyRunTrigger                 = "run.trigger"                 // ValueType: "string"
 	stateVarKeyNodeId                     = "node.id"                     // ValueType: "string"
