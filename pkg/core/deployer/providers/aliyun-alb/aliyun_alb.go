@@ -344,20 +344,21 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 					continue
 				}
 
-				if tea.StringValue(listenerCertificate.CertificateId) == cloudCertId {
+				certIdWithRegion := tea.StringValue(listenerCertificate.CertificateId)
+				if certIdWithRegion == cloudCertId {
 					certificateIsAlreadyAssociated = true
 					break
 				}
 
-				certificateId := strings.SplitN(tea.StringValue(listenerCertificate.CertificateId), "-", 2)[0]
-				certificateIdAsInt64, err := strconv.ParseInt(certificateId, 10, 64)
+				certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
+				certIdBareAsInt64, err := strconv.ParseInt(certIdBare, 10, 64)
 				if err != nil {
 					errs = append(errs, err)
 					continue
 				}
 
 				getCertificateDetailReq := &alicas.GetCertificateDetailRequest{
-					CertificateId: tea.Int64(certificateIdAsInt64),
+					CertificateId: tea.Int64(certIdBareAsInt64),
 				}
 				getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
 				d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
@@ -374,13 +375,13 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 					certCNMatched := tea.StringValue(getCertificateDetailResp.Body.CommonName) == d.config.Domain
 					certSANDiff, _ := lo.Difference(tea.StringSliceValue(getCertificateDetailResp.Body.SubjectAlternativeNames), cloudCertSANs)
 					if certCNMatched || len(certSANDiff) == 0 {
-						certificateIdsToDissociate = append(certificateIdsToDissociate, certificateId)
+						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
 
 					certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
 					if certNotAfter.Before(time.Now()) {
-						certificateIdsToDissociate = append(certificateIdsToDissociate, certificateId)
+						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
 				}
