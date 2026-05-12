@@ -62,7 +62,7 @@ func TestDeploy(t *testing.T) {
 		provider, err := provider.NewDeployer(&provider.DeployerConfig{
 			ServerUrl:                fServerUrl,
 			ApiVersion:               fApiVersion,
-			ApiRole:                  "user",
+			ApiRole:                  "client",
 			Username:                 fUsername,
 			Password:                 fPassword,
 			AllowInsecureConnections: true,

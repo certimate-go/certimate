@@ -409,7 +409,7 @@
   "workflow_node.deploy.form.aliyun_waf_domain.label": "Alibaba Cloud WAF SNI domain (Optional)",
   "workflow_node.deploy.form.aliyun_waf_domain.placeholder": "Please enter Alibaba Cloud WAF SNI domain name",
   "workflow_node.deploy.form.aliyun_waf_domain.help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI.",
-  "workflow_node.deploy.form.apisix.guide": "Requires APISIX v2.0 or higher.",
+  "workflow_node.deploy.form.apisix.guide": "Requires APISIX v3.0 or higher.",
   "workflow_node.deploy.form.apisix_resource_type.option.certificate.label": "SSL certificate",
   "workflow_node.deploy.form.apisix_certificate_id.label": "APISIX certificate ID",
   "workflow_node.deploy.form.apisix_certificate_id.placeholder": "Please enter APISIX certificate ID",

@@ -408,7 +408,7 @@
   "workflow_node.deploy.form.aliyun_waf_domain.label": "阿里云 WAF 扩展域名（可选）",
   "workflow_node.deploy.form.aliyun_waf_domain.placeholder": "请输入阿里云 WAF 扩展域名",
   "workflow_node.deploy.form.aliyun_waf_domain.help": "提示：不填写时，将替换实例的默认证书；否则，将替换扩展域名证书。",
-  "workflow_node.deploy.form.apisix.guide": "需要 APISIX v2.0 或更高版本。",
+  "workflow_node.deploy.form.apisix.guide": "需要 APISIX v3.0 或更高版本。",
   "workflow_node.deploy.form.apisix_resource_type.option.certificate.label": "替换指定证书",
   "workflow_node.deploy.form.apisix_certificate_id.label": "APISIX 证书 ID",
   "workflow_node.deploy.form.apisix_certificate_id.placeholder": "请输入 APISIX 证书 ID",
