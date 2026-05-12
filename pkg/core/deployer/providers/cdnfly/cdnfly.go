@@ -116,12 +116,11 @@ func (d *Deployer) deployToSite(ctx context.Context, certPEM, privkeyPEM string)
 
 	// 修改单个网站
 	// REF: https://doc.cdnfly.cn/wangzhanguanli-v1-sites.html#%E4%BF%AE%E6%94%B9%E5%8D%95%E4%B8%AA%E7%BD%91%E7%AB%99
-	updateSiteHttpsListenMap := make(map[string]any)
-	_ = json.Unmarshal([]byte(getSiteResp.Data.HttpsListen), &updateSiteHttpsListenMap)
-	updateSiteHttpsListenMap["cert"] = createCertificateResp.Data
-	updateSiteHttpsListenData, _ := json.Marshal(updateSiteHttpsListenMap)
+	updateSiteReqHttpsListen := make(map[string]any)
+	_ = json.Unmarshal([]byte(getSiteResp.Data.HttpsListen), &updateSiteReqHttpsListen)
+	updateSiteReqHttpsListen["cert"] = createCertificateResp.Data
 	updateSiteReq := &cdnflysdk.UpdateSiteRequest{
-		HttpsListen: lo.ToPtr(string(updateSiteHttpsListenData)),
+		HttpsListen: lo.ToPtr(updateSiteReqHttpsListen),
 	}
 	updateSiteResp, err := d.sdkClient.UpdateSiteWithContext(ctx, d.config.SiteId, updateSiteReq)
 	d.logger.Debug("sdk request 'cdnfly.UpdateSite'", slog.String("siteId", d.config.SiteId), slog.Any("request", updateSiteReq), slog.Any("response", updateSiteResp))

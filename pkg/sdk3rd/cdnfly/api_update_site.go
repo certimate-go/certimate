@@ -8,8 +8,8 @@ import (
 )
 
 type UpdateSiteRequest struct {
-	HttpsListen *string `json:"https_listen,omitempty"`
-	Enable      *bool   `json:"enable,omitempty"`
+	HttpsListen *map[string]any `json:"https_listen,omitempty"`
+	Enable      *bool           `json:"enable,omitempty"`
 }
 
 type UpdateSiteResponse struct {
