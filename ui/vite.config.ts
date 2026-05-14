@@ -56,7 +56,7 @@ export default defineConfig(({ command }) => {
       __APP_VERSION__: JSON.stringify(appVersion),
     },
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           manualChunks(id) {
             if (id.includes("/src/i18n/")) {
