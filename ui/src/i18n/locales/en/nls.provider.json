@@ -35,6 +35,7 @@
   "provider.aws_acm": "AWS - ACM (Amazon Certificate Manager)",
   "provider.aws_cloudfront": "AWS - CloudFront",
   "provider.aws_iam": "AWS - IAM (Identity and Access Management)",
+  "provider.aws_lightsail": "AWS - Lightsail",
   "provider.aws_route53": "AWS - Route53",
   "provider.azure": "Azure",
   "provider.azure_dns": "Azure - DNS",

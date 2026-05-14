@@ -359,6 +359,7 @@ export const ACME_DNS01_PROVIDERS = Object.freeze({
   ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
   ARVANCLOUD: `${ACCESS_PROVIDERS.ARVANCLOUD}`,
   AWS: `${ACCESS_PROVIDERS.AWS}`, // 兼容旧值，等同于 `AWS_ROUTE53`
+  AWS_LIGHTSAIL: `${ACCESS_PROVIDERS.AWS}-lightsail`,
   AWS_ROUTE53: `${ACCESS_PROVIDERS.AWS}-route53`,
   AZURE: `${ACCESS_PROVIDERS.AZURE}`, // 兼容旧值，等同于 `AZURE_DNS`
   AZURE_DNS: `${ACCESS_PROVIDERS.AZURE}-dns`,
@@ -445,6 +446,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.VOLCENGINE_DNS, "provider.volcengine_dns"],
       [ACME_DNS01_PROVIDERS.JDCLOUD_DNS, "provider.jdcloud_dns"],
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws_route53"],
+      [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL, "provider.aws_lightsail"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure_dns"],
       [ACME_DNS01_PROVIDERS.AKAMAI_EDGEDNS, "provider.akamai_edgedns"],
       [ACME_DNS01_PROVIDERS.ARVANCLOUD, "provider.arvancloud"],

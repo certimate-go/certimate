@@ -36,6 +36,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/acm v1.38.0
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.61.0
 	github.com/aws/aws-sdk-go-v2/service/iam v1.53.7
+	github.com/aws/aws-sdk-go-v2/service/lightsail v1.53.0
 	github.com/baidubce/bce-sdk-go v0.9.264
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.63
 	github.com/go-acme/lego/v4 v4.34.0

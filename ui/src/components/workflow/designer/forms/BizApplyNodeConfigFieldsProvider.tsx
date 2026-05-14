@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { type ACMEDns01ProviderType, type ACMEHttp01ProviderType, ACME_DNS01_PROVIDERS, ACME_HTTP01_PROVIDERS } from "@/domain/provider";
 
 import BizApplyNodeConfigFieldsProviderAliyunESA from "./BizApplyNodeConfigFieldsProviderAliyunESA";
+import BizApplyNodeConfigFieldsProviderAWSLightsail from "./BizApplyNodeConfigFieldsProviderAWSLightsail";
 import BizApplyNodeConfigFieldsProviderAWSRoute53 from "./BizApplyNodeConfigFieldsProviderAWSRoute53";
 import BizApplyNodeConfigFieldsProviderFTP from "./BizApplyNodeConfigFieldsProviderFTP";
 import BizApplyNodeConfigFieldsProviderHuaweiCloudDNS from "./BizApplyNodeConfigFieldsProviderHuaweiCloudDNS";
@@ -18,6 +19,7 @@ const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React
     */
   [ACME_DNS01_PROVIDERS.ALIYUN_ESA]: BizApplyNodeConfigFieldsProviderAliyunESA,
   [ACME_DNS01_PROVIDERS.AWS]: BizApplyNodeConfigFieldsProviderAWSRoute53,
+  [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL]: BizApplyNodeConfigFieldsProviderAWSLightsail,
   [ACME_DNS01_PROVIDERS.AWS_ROUTE53]: BizApplyNodeConfigFieldsProviderAWSRoute53,
   [ACME_DNS01_PROVIDERS.HUAWEICLOUD]: BizApplyNodeConfigFieldsProviderHuaweiCloudDNS,
   [ACME_DNS01_PROVIDERS.HUAWEICLOUD_DNS]: BizApplyNodeConfigFieldsProviderHuaweiCloudDNS,
