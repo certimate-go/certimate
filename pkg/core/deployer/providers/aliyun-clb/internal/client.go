@@ -383,6 +383,10 @@ func (client *SlbClient) SetLoadBalancerHTTPSListenerAttributeWithContext(ctx co
 		query["Description"] = request.Description
 	}
 
+	if !dara.IsNil(request.DryRun) {
+		query["DryRun"] = request.DryRun
+	}
+
 	if !dara.IsNil(request.EnableHttp2) {
 		query["EnableHttp2"] = request.EnableHttp2
 	}
