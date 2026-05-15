@@ -235,6 +235,8 @@
   "provider.westcn": "西部数码",
   "provider.xinnet": "新网数码",
   "provider.zerossl": "ZeroSSL",
+  "provider.zenlayer": "Zenlayer",
+  "provider.zenlayer_ga": "Zenlayer - 全球网络加速器 ZGA",
 
   "provider.category.all": "全部",
   "provider.category.cdn": "CDN",

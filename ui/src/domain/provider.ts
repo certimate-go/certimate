@@ -127,6 +127,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   WECOMBOT: "wecombot",
   WESTCN: "westcn",
   XINNET: "xinnet",
+  ZENLAYER: "zenlayer",
   ZEROSSL: "zerossl",
 } as const);
 
@@ -186,6 +187,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.CACHEFLY, "provider.cachefly", "/imgs/providers/cachefly.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.MOHUA, "provider.mohua", "/imgs/providers/mohua.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.UNICLOUD, "provider.unicloud", "/imgs/providers/unicloud.png", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.ZENLAYER, "provider.zenlayer", "/imgs/providers/zenlayer.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS["1PANEL"], "provider.1panel", "/imgs/providers/1panel.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.APISIX, "provider.apisix", "/imgs/providers/apisix.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BAOTAPANEL, "provider.baotapanel", "/imgs/providers/baotapanel.svg", [ACCESS_USAGES.HOSTING]],
@@ -689,6 +691,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   WANGSU_CDNPRO: `${ACCESS_PROVIDERS.WANGSU}-cdnpro`,
   WANGSU_CERTIFICATE: `${ACCESS_PROVIDERS.WANGSU}-certificate`,
   WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
+  ZENLAYER_GA: `${ACCESS_PROVIDERS.ZENLAYER}-ga`,
 } as const);
 
 export type DeploymentProviderType = (typeof DEPLOYMENT_PROVIDERS)[keyof typeof DEPLOYMENT_PROVIDERS];
@@ -826,6 +829,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.FLYIO, "provider.flyio", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.NETLIFY, "provider.netlify", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.VERCEL, "provider.vercel", DEPLOYMENT_CATEGORIES.WEBSITE],
+      [DEPLOYMENT_PROVIDERS.ZENLAYER_GA, "provider.zenlayer_ga", DEPLOYMENT_CATEGORIES.ACCELERATOR],
       [DEPLOYMENT_PROVIDERS.CDNFLY, "provider.cdnfly", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.FLEXCDN, "provider.flexcdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.GOEDGE, "provider.goedge", DEPLOYMENT_CATEGORIES.CDN],

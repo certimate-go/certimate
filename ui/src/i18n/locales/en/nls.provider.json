@@ -235,6 +235,8 @@
   "provider.westcn": "West.cn",
   "provider.xinnet": "Xinnet.com",
   "provider.zerossl": "ZeroSSL",
+  "provider.zenlayer": "Zenlayer",
+  "provider.zenlayer_ga": "Zenlayer - ZGA (Global Accelerator)",
 
   "provider.category.all": "All",
   "provider.category.cdn": "CDN",

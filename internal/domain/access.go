@@ -621,6 +621,12 @@ type AccessConfigForXinnet struct {
 	ApiPassword string `json:"apiPassword"`
 }
 
+type AccessConfigForZenlayer struct {
+	AccessKeyId       string `json:"accessKeyId"`
+	AccessKeyPassword string `json:"accessKeyPassword"`
+	ResourceGroupId   string `json:"resourceGroupId,omitempty"`
+}
+
 type AccessConfigForZeroSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }

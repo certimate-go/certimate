@@ -747,5 +747,14 @@
   "access.form.xinnet_api_password.label": "新网数码代理商 API 密码",
   "access.form.xinnet_api_password.placeholder": "请输入新网数码代理商 API 密码",
   "access.form.xinnet_agent.guide": "新网数码 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>",
+  "access.form.zenlayer_access_key_id.label": "Zenlayer AccessKeyID",
+  "access.form.zenlayer_access_key_id.placeholder": "请输入 Zenlayer AccessKeyID",
+  "access.form.zenlayer_access_key_id.tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key</a>",
+  "access.form.zenlayer_access_key_password.label": "Zenlayer AccessKeyPassword",
+  "access.form.zenlayer_access_key_password.placeholder": "请输入 Zenlayer AccessKeyPassword",
+  "access.form.zenlayer_access_key_password.tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key</a>",
+  "access.form.zenlayer_resource_group_id.label": "Zenlayer 资源组 ID（可选）",
+  "access.form.zenlayer_resource_group_id.placeholder": "请输入 Zenlayer 资源组 ID",
+  "access.form.zenlayer_resource_group_id.tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/create-a-resource-group\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/create-a-resource-group</a>",
   "access.form.zerossl_eab.guide": "点击下方链接了解如何获取 ZeroSSL EAB：<br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
 }

@@ -256,6 +256,7 @@ require (
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/zeebo/xxh3 v1.1.0 // indirect
+	github.com/zenlayer/zenlayercloud-sdk-go v0.2.33 // indirect
 	golang.org/x/image v0.40.0 // indirect
 	golang.org/x/mod v0.35.0 // indirect
 	golang.org/x/net v0.54.0 // indirect

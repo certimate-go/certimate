@@ -122,6 +122,7 @@ import BizDeployNodeConfigFieldsProviderWangsuCDN from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderWangsuCDNPro from "./BizDeployNodeConfigFieldsProviderWangsuCDNPro";
 import BizDeployNodeConfigFieldsProviderWangsuCertificate from "./BizDeployNodeConfigFieldsProviderWangsuCertificate";
 import BizDeployNodeConfigFieldsProviderWebhook from "./BizDeployNodeConfigFieldsProviderWebhook";
+import BizDeployNodeConfigFieldsProviderZenlayerGA from "./BizDeployNodeConfigFieldsProviderZenlayerGA";
 
 const providerComponentMap: Partial<Record<DeploymentProviderType, React.ComponentType<any>>> = {
   /*
@@ -248,6 +249,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.WANGSU_CDNPRO]: BizDeployNodeConfigFieldsProviderWangsuCDNPro,
   [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE]: BizDeployNodeConfigFieldsProviderWangsuCertificate,
   [DEPLOYMENT_PROVIDERS.WEBHOOK]: BizDeployNodeConfigFieldsProviderWebhook,
+  [DEPLOYMENT_PROVIDERS.ZENLAYER_GA]: BizDeployNodeConfigFieldsProviderZenlayerGA,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {

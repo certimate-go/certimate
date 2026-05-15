@@ -748,5 +748,14 @@
   "access.form.xinnet_api_password.label": "Xinnet.com agent API password",
   "access.form.xinnet_api_password.placeholder": "Please enter Xinnet.com agent API password",
   "access.form.xinnet_agent.guide": "Xinnet.com API only supports calls from agents. Learn more about this: <br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>",
+  "access.form.zenlayer_access_key_id.label": "Zenlayer AccessKeyID",
+  "access.form.zenlayer_access_key_id.placeholder": "Please enter Zenlayer AccessKeyID",
+  "access.form.zenlayer_access_key_id.tooltip": "For more information, see <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key</a>",
+  "access.form.zenlayer_access_key_password.label": "Zenlayer AccessKeyPassword",
+  "access.form.zenlayer_access_key_password.placeholder": "Please enter Zenlayer AccessKeyPassword",
+  "access.form.zenlayer_access_key_password.tooltip": "For more information, see <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key</a>",
+  "access.form.zenlayer_resource_group_id.label": "Zenlayer resource group ID (Optional)",
+  "access.form.zenlayer_resource_group_id.placeholder": "Please enter Zenlayer resource group ID",
+  "access.form.zenlayer_resource_group_id.tooltip": "For more information, see <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/create-a-resource-group\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/create-a-resource-group</a>",
   "access.form.zerossl_eab.guide": "Learn more about using EAB key in ZeroSSL: <br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
 }

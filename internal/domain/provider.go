@@ -123,6 +123,7 @@ const (
 	AccessProviderTypeWeComBot            = AccessProviderType("wecombot")
 	AccessProviderTypeWestcn              = AccessProviderType("westcn")
 	AccessProviderTypeXinnet              = AccessProviderType("xinnet")
+	AccessProviderTypeZenlayer            = AccessProviderType("zenlayer")
 	AccessProviderTypeZeroSSL             = AccessProviderType("zerossl")
 )
 
@@ -391,6 +392,7 @@ const (
 	DeploymentProviderTypeWangsuCDNPro          = DeploymentProviderType(AccessProviderTypeWangsu + "-cdnpro")
 	DeploymentProviderTypeWangsuCertificate     = DeploymentProviderType(AccessProviderTypeWangsu + "-certificate")
 	DeploymentProviderTypeWebhook               = DeploymentProviderType(AccessProviderTypeWebhook)
+	DeploymentProviderTypeZenlayerGA            = DeploymentProviderType(AccessProviderTypeZenlayer + "-ga")
 )
 
 type NotificationProviderType string
