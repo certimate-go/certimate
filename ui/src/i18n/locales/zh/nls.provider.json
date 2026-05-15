@@ -236,6 +236,7 @@
   "provider.xinnet": "新网数码",
   "provider.zerossl": "ZeroSSL",
   "provider.zenlayer": "Zenlayer",
+  "provider.zenlayer_cdn": "Zenlayer - 内容分发网络 CDN",
   "provider.zenlayer_ga": "Zenlayer - 全球网络加速器 ZGA",
 
   "provider.category.all": "全部",

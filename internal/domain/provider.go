@@ -392,6 +392,7 @@ const (
 	DeploymentProviderTypeWangsuCDNPro          = DeploymentProviderType(AccessProviderTypeWangsu + "-cdnpro")
 	DeploymentProviderTypeWangsuCertificate     = DeploymentProviderType(AccessProviderTypeWangsu + "-certificate")
 	DeploymentProviderTypeWebhook               = DeploymentProviderType(AccessProviderTypeWebhook)
+	DeploymentProviderTypeZenlayerCDN           = DeploymentProviderType(AccessProviderTypeZenlayer + "-cdn")
 	DeploymentProviderTypeZenlayerGA            = DeploymentProviderType(AccessProviderTypeZenlayer + "-ga")
 )
 
