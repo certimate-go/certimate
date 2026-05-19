@@ -12,5 +12,6 @@ RUN go build -trimpath -ldflags="-s -w" -o certimate
 
 FROM alpine:latest
 WORKDIR /app
+RUN apk add --no-cache curl
 COPY --from=server-builder /app/certimate .
 ENTRYPOINT ["./certimate", "serve", "--http", "0.0.0.0:8090"]

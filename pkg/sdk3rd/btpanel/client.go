@@ -1,13 +1,19 @@
 package btpanel
 
 import (
+	"bytes"
+	"context"
 	"crypto/md5"
 	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log/slog"
+	"net/http"
 	"net/url"
+	"os/exec"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,7 +23,9 @@ import (
 )
 
 type Client struct {
-	apiKey string
+	apiKey            string
+	serverUrl         string
+	allowInsecureCurl bool
 
 	client *resty.Client
 }
@@ -40,8 +48,9 @@ func NewClient(serverUrl, apiKey string) (*Client, error) {
 		SetHeader("User-Agent", app.AppUserAgent)
 
 	return &Client{
-		apiKey: apiKey,
-		client: client,
+		apiKey:    apiKey,
+		serverUrl: strings.TrimSuffix(serverUrl, "/"),
+		client:    client,
 	}, nil
 }
 
@@ -52,6 +61,7 @@ func (c *Client) SetTimeout(timeout time.Duration) *Client {
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
 	c.client.SetTLSClientConfig(config)
+	c.allowInsecureCurl = config != nil && config.InsecureSkipVerify
 	return c
 }
 
@@ -131,6 +141,14 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if resp != nil {
 			json.Unmarshal(resp.Body(), &res)
 		}
+		if c.shouldRetryWithCurl(err) {
+			body, statusCode, curlErr := c.doRequestWithCurl(req)
+			if curlErr == nil {
+				slog.Warn("btpanel sdk request retried with curl fallback", slog.String("method", req.Method), slog.String("url", req.URL), slog.Any("error", err))
+				return nil, c.decodeCurlResponse(body, statusCode, res)
+			}
+			slog.Warn("btpanel sdk request curl fallback failed", slog.String("method", req.Method), slog.String("url", req.URL), slog.Any("error", err), slog.Any("fallbackError", curlErr))
+		}
 		return resp, err
 	}
 
@@ -149,6 +167,104 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	}
 
 	return resp, nil
+}
+
+func (c *Client) shouldRetryWithCurl(err error) bool {
+	if err == nil || !c.allowInsecureCurl {
+		return false
+	}
+
+	errmsg := err.Error()
+	return strings.Contains(errmsg, "tls: handshake failure") ||
+		strings.Contains(errmsg, "server gave HTTP response to HTTPS client") ||
+		strings.Contains(errmsg, "first record does not look like a TLS handshake")
+}
+
+func (c *Client) doRequestWithCurl(req *resty.Request) ([]byte, int, error) {
+	if _, err := exec.LookPath("curl"); err != nil {
+		return nil, 0, err
+	}
+
+	requestUrl := req.URL
+	if !strings.HasPrefix(requestUrl, "http://") && !strings.HasPrefix(requestUrl, "https://") {
+		requestUrl = c.serverUrl + "/" + strings.TrimPrefix(req.URL, "/")
+	}
+	if len(req.QueryParam) > 0 {
+		requestUrl += "?" + req.QueryParam.Encode()
+	}
+
+	ctx := req.Context()
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	args := []string{
+		"-sS",
+		"-k",
+		"-X", req.Method,
+		"-H", "Accept: application/json",
+		"-H", "Content-Type: application/x-www-form-urlencoded",
+		"-H", "User-Agent: " + app.AppUserAgent,
+		"--data-binary", "@-",
+		"-w", "\n%{http_code}",
+		requestUrl,
+	}
+	cmd := exec.CommandContext(ctx, "curl", args...)
+	cmd.Stdin = strings.NewReader(req.FormData.Encode())
+
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	output, err := cmd.Output()
+	if err != nil {
+		if stderr.Len() > 0 {
+			return nil, 0, fmt.Errorf("%w: %s", err, strings.TrimSpace(stderr.String()))
+		}
+		return nil, 0, err
+	}
+
+	body, statusCode, err := splitCurlOutput(output)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return body, statusCode, nil
+}
+
+func splitCurlOutput(output []byte) ([]byte, int, error) {
+	idx := bytes.LastIndexByte(output, '\n')
+	if idx < 0 {
+		return nil, 0, fmt.Errorf("sdkerr: failed to parse curl response")
+	}
+
+	statusCode, err := strconv.Atoi(strings.TrimSpace(string(output[idx+1:])))
+	if err != nil {
+		return nil, 0, fmt.Errorf("sdkerr: failed to parse curl status code: %w", err)
+	}
+
+	return output[:idx], statusCode, nil
+}
+
+func (c *Client) decodeCurlResponse(body []byte, statusCode int, res sdkResponse) error {
+	if statusCode >= http.StatusBadRequest {
+		return fmt.Errorf("sdkerr: unexpected status code: %d (resp: %s)", statusCode, string(body))
+	}
+
+	if len(body) == 0 {
+		return nil
+	}
+
+	if err := json.Unmarshal(body, &res); err != nil {
+		return fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, string(body))
+	}
+
+	if tstatus := res.GetStatus(); tstatus != nil && !*tstatus {
+		if res.GetMessage() == nil {
+			return fmt.Errorf("sdkerr: api error: unknown error")
+		}
+		return fmt.Errorf("sdkerr: api error: message='%s'", *res.GetMessage())
+	}
+
+	return nil
 }
 
 func generateSignature(timestamp string, apiKey string) string {

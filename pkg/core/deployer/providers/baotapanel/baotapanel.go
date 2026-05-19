@@ -2,7 +2,6 @@ package baotapanel
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	btsdk "github.com/certimate-go/certimate/pkg/sdk3rd/btpanel"
+	xtls "github.com/certimate-go/certimate/pkg/utils/tls"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -174,7 +174,7 @@ func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*btsdk.Clien
 	}
 
 	if skipTlsVerify {
-		client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+		client.SetTLSConfig(xtls.NewInsecureConfig())
 	}
 
 	return client, nil
