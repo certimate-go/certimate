@@ -65,7 +65,7 @@ func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Key:         lo.ToPtr(privkeyPEM),
 	}
 	uploadDomainCertificateResp, err := d.sdkClient.UploadDomainCertificateWithContext(ctx, uploadDomainCertificateReq)
-	d.logger.Debug("sdk request 'baishan.UploadDomainCertificate'", slog.Any("request", uploadDomainCertificateReq), slog.Any("response", uploadDomainCertificateResp))
+	d.logger.Debug("sdk request 'cdn.UploadDomainCertificate'", slog.Any("request", uploadDomainCertificateReq), slog.Any("response", uploadDomainCertificateResp))
 	if err != nil {
 		if uploadDomainCertificateResp != nil {
 			if uploadDomainCertificateResp.GetCode() == 400699 && strings.Contains(uploadDomainCertificateResp.GetMessage(), "this certificate is exists") {
@@ -76,7 +76,7 @@ func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		}
 
 		if certId == "" {
-			return nil, fmt.Errorf("failed to execute sdk request 'baishan.SetDomainCertificate': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'cdn.SetDomainCertificate': %w", err)
 		}
 	} else {
 		certId = uploadDomainCertificateResp.Data.CertId.String()
@@ -98,9 +98,9 @@ func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		Key:           lo.ToPtr(privkeyPEM),
 	}
 	uploadDomainCertificateResp, err := d.sdkClient.UploadDomainCertificateWithContext(ctx, uploadDomainCertificateReq)
-	d.logger.Debug("sdk request 'baishan.UploadDomainCertificate'", slog.Any("request", uploadDomainCertificateReq), slog.Any("response", uploadDomainCertificateResp))
+	d.logger.Debug("sdk request 'cdn.UploadDomainCertificate'", slog.Any("request", uploadDomainCertificateReq), slog.Any("response", uploadDomainCertificateResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'baishan.UploadDomainCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'cdn.UploadDomainCertificate': %w", err)
 	}
 
 	return &certmgr.ReplaceResult{}, nil

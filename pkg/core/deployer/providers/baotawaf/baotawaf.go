@@ -105,9 +105,9 @@ func (d *Deployer) findSiteByName(ctx context.Context, siteName string) (*btwafs
 			PageSize: lo.ToPtr(int32(getSiteListPageSize)),
 		}
 		getSiteListResp, err := d.sdkClient.GetSiteListWithContext(ctx, getSiteListReq)
-		d.logger.Debug("sdk request 'bt.GetSiteList'", slog.Any("request", getSiteListReq), slog.Any("response", getSiteListResp))
+		d.logger.Debug("sdk request 'wafmastersite.GetSiteList'", slog.Any("request", getSiteListReq), slog.Any("response", getSiteListResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'bt.GetSiteList': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'wafmastersite.GetSiteList': %w", err)
 		}
 
 		if getSiteListResp.Result == nil {
@@ -155,9 +155,9 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, s
 		},
 	}
 	modifySiteResp, err := d.sdkClient.ModifySiteWithContext(ctx, modifySiteReq)
-	d.logger.Debug("sdk request 'bt.ModifySite'", slog.Any("request", modifySiteReq), slog.Any("response", modifySiteResp))
+	d.logger.Debug("sdk request 'wafmastersite.ModifySite'", slog.Any("request", modifySiteReq), slog.Any("response", modifySiteResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'bt.ModifySite': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'wafmastersite.ModifySite': %w", err)
 	}
 
 	return nil

@@ -80,9 +80,9 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	// 获取 SSL 证书 详情
 	// REF: https://doc.samwaf.com/api/
 	sslConfigDetailResp, err := d.sdkClient.SslConfigDetailWithContext(ctx, d.config.CertificateId)
-	d.logger.Debug("sdk request 'samwaf.SslConfigDetail'", slog.Any("request.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
+	d.logger.Debug("sdk request 'sslconfig.Detail'", slog.Any("request.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'samwaf.SslConfigDetail': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'sslconfig.Detail': %w", err)
 	} else if sslConfigDetailResp.Data == nil || sslConfigDetailResp.Data.Id == "" {
 		return fmt.Errorf("could not find ssl config: '%s'", d.config.CertificateId)
 	}
@@ -95,9 +95,9 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		KeyContent:  privkeyPEM,
 	}
 	sslConfigEditResp, err := d.sdkClient.SslConfigEditWithContext(ctx, sslConfigEditReq)
-	d.logger.Debug("sdk request 'samwaf.SslConfigEdit'", slog.Any("request", sslConfigEditReq), slog.Any("response", sslConfigEditResp))
+	d.logger.Debug("sdk request 'sslconfig.Edit'", slog.Any("request", sslConfigEditReq), slog.Any("response", sslConfigEditResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'samwaf.SslConfigEdit': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'sslconfig.Edit': %w", err)
 	}
 
 	return nil

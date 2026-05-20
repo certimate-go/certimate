@@ -77,9 +77,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				PrivateKey:  privkeyPEM,
 			}
 			sslCertSaveCertResp, err := d.sdkClient.SSLCertSaveCertWithContext(ctx, sslCertSaveCertReq)
-			d.logger.Debug("sdk request 'bt.SSLCertSaveCert'", slog.Any("request", sslCertSaveCertReq), slog.Any("response", sslCertSaveCertResp))
+			d.logger.Debug("sdk request 'ssl.cert.SaveCert'", slog.Any("request", sslCertSaveCertReq), slog.Any("response", sslCertSaveCertResp))
 			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'bt.SSLCertSaveCert': %w", err)
+				return nil, fmt.Errorf("failed to execute sdk request 'ssl.cert.SaveCert': %w", err)
 			}
 
 			// 设置站点证书
@@ -92,9 +92,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				}),
 			}
 			sslSetBatchCertToSiteResp, err := d.sdkClient.SSLSetBatchCertToSiteWithContext(ctx, sslSetBatchCertToSiteReq)
-			d.logger.Debug("sdk request 'bt.SSLSetBatchCertToSite'", slog.Any("request", sslSetBatchCertToSiteReq), slog.Any("response", sslSetBatchCertToSiteResp))
+			d.logger.Debug("sdk request 'ssl.SetBatchCertToSite'", slog.Any("request", sslSetBatchCertToSiteReq), slog.Any("response", sslSetBatchCertToSiteResp))
 			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'bt.SSLSetBatchCertToSite': %w", err)
+				return nil, fmt.Errorf("failed to execute sdk request 'ssl.SetBatchCertToSite': %w", err)
 			}
 		}
 
@@ -140,9 +140,9 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteType, siteName
 				PrivateKey:  privkeyPEM,
 			}
 			modProxyComSetSSLResp, err := d.sdkClient.ModProxyComSetSSLWithContext(ctx, modProxyComSetSSLReq)
-			d.logger.Debug("sdk request 'bt.ModProxyComSetSSL'", slog.Any("request", modProxyComSetSSLReq), slog.Any("response", modProxyComSetSSLResp))
+			d.logger.Debug("sdk request 'mod.proxy.com.SetSSL'", slog.Any("request", modProxyComSetSSLReq), slog.Any("response", modProxyComSetSSLResp))
 			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'bt.ModProxyComSetSSL': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'mod.proxy.com.SetSSL': %w", err)
 			}
 		}
 
@@ -156,9 +156,9 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteType, siteName
 				PrivateKey:  privkeyPEM,
 			}
 			siteSetSSLResp, err := d.sdkClient.SiteSetSSLWithContext(ctx, siteSetSSLReq)
-			d.logger.Debug("sdk request 'bt.SiteSetSSL'", slog.Any("request", siteSetSSLReq), slog.Any("response", siteSetSSLResp))
+			d.logger.Debug("sdk request 'site.SetSSL'", slog.Any("request", siteSetSSLReq), slog.Any("response", siteSetSSLResp))
 			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'bt.SiteSetSSL': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'site.SetSSL': %w", err)
 			}
 		}
 	}

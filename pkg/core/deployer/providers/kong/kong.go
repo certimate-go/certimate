@@ -100,9 +100,9 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		SNIs: kong.StringSlice(certX509.DNSNames...),
 	}
 	updateCertificateResp, err := d.sdkClient.Certificates.Update(ctx, updateCertificateReq)
-	d.logger.Debug("sdk request 'kong.UpdateCertificate'", slog.String("sslId", d.config.CertificateId), slog.Any("request", updateCertificateReq), slog.Any("response", updateCertificateResp))
+	d.logger.Debug("sdk request 'UpdateCertificate'", slog.String("sslId", d.config.CertificateId), slog.Any("request", updateCertificateReq), slog.Any("response", updateCertificateResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'kong.UpdateCertificate': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'UpdateCertificate': %w", err)
 	}
 
 	return nil

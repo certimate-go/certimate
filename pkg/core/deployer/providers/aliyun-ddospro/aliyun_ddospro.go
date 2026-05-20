@@ -183,9 +183,9 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		ResourceGroupId: lo.EmptyableToPtr(d.config.ResourceGroupId),
 	}
 	describeDomainsResp, err := d.sdkClient.DescribeDomainsWithContext(ctx, describeDomainsReq, &dara.RuntimeOptions{})
-	d.logger.Debug("sdk request 'aliddoscoo.DescribeLiveUserDomains'", slog.Any("request", describeDomainsReq), slog.Any("response", describeDomainsResp))
+	d.logger.Debug("sdk request 'ddoscoo.DescribeLiveUserDomains'", slog.Any("request", describeDomainsReq), slog.Any("response", describeDomainsResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'aliddoscoo.DescribeDomains': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'ddoscoo.DescribeDomains': %w", err)
 	}
 
 	for _, domain := range describeDomainsResp.Body.Domains {
@@ -203,9 +203,9 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 		CertIdentifier: tea.String(cloudCertId),
 	}
 	associateWebCertResp, err := d.sdkClient.AssociateWebCertWithContext(ctx, associateWebCertReq, &dara.RuntimeOptions{})
-	d.logger.Debug("sdk request 'dcdn.AssociateWebCert'", slog.Any("request", associateWebCertReq), slog.Any("response", associateWebCertResp))
+	d.logger.Debug("sdk request 'ddoscoo.AssociateWebCert'", slog.Any("request", associateWebCertReq), slog.Any("response", associateWebCertResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'dcdn.AssociateWebCert': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'ddoscoo.AssociateWebCert': %w", err)
 	}
 
 	return nil

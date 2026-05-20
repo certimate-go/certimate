@@ -67,9 +67,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		CertificateKey: base64.StdEncoding.EncodeToString([]byte(privkeyPEM)),
 	}
 	err := d.sdkClient.AddCustomCertificateWithContext(ctx, d.config.PullZoneId, createCertificateReq)
-	d.logger.Debug("sdk request 'bunny.AddCustomCertificate'", slog.Any("request", createCertificateReq))
+	d.logger.Debug("sdk request 'cdn.AddCustomCertificate'", slog.Any("request", createCertificateReq))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'bunny.AddCustomCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'cdn.AddCustomCertificate': %w", err)
 	}
 
 	return &deployer.DeployResult{}, nil

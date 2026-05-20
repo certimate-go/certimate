@@ -66,9 +66,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		SkipValidation: true,
 	}
 	uploadCertResp, err := d.sdkClient.UploadCertWithContext(ctx, uploadCertReq)
-	d.logger.Debug("sdk request 'vercel.UploadCert'", slog.Any("request", uploadCertReq), slog.Any("response", uploadCertResp))
+	d.logger.Debug("sdk request 'UploadCert'", slog.Any("request", uploadCertReq), slog.Any("response", uploadCertResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'vercel.UploadCert': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'UploadCert': %w", err)
 	}
 
 	return &deployer.DeployResult{}, nil

@@ -68,9 +68,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		PrivateKey: privkeyPEM,
 	}
 	importCustomCertificateResp, err := d.sdkClient.ImportCustomCertificateWithContext(ctx, importCustomCertificateReq)
-	d.logger.Debug("sdk request 'flyio.ImportCustomCertificate'", slog.Any("request", importCustomCertificateReq), slog.Any("response", importCustomCertificateResp))
+	d.logger.Debug("sdk request 'ImportCustomCertificate'", slog.Any("request", importCustomCertificateReq), slog.Any("response", importCustomCertificateResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'flyio.ImportCustomCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'ImportCustomCertificate': %w", err)
 	}
 
 	return &deployer.DeployResult{}, nil

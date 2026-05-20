@@ -97,9 +97,9 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		Status:      lo.ToPtr(int32(1)),
 	}
 	sslUpdateResp, err := d.sdkClient.SslUpdateWithContext(ctx, d.config.CertificateId, sslUpdateReq)
-	d.logger.Debug("sdk request 'apisix.SslUpdate'", slog.Any("request", sslUpdateReq), slog.Any("response", sslUpdateResp))
+	d.logger.Debug("sdk request 'SslUpdate'", slog.Any("request", sslUpdateReq), slog.Any("response", sslUpdateResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'apisix.SslUpdate': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'SslUpdate': %w", err)
 	}
 
 	return nil

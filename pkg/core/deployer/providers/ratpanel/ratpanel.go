@@ -128,9 +128,9 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		PrivateKey:  privkeyPEM,
 	}
 	certUpdateResp, err := d.sdkClient.CertUpdateWithContext(ctx, certUpdateReq)
-	d.logger.Debug("sdk request 'ratpanel.CertUpdate'", slog.Any("request", certUpdateReq), slog.Any("response", certUpdateResp))
+	d.logger.Debug("sdk request 'CertUpdate'", slog.Any("request", certUpdateReq), slog.Any("response", certUpdateResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'ratpanel.CertUpdate': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'CertUpdate': %w", err)
 	}
 
 	return nil
@@ -144,9 +144,9 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, c
 		PrivateKey:  privkeyPEM,
 	}
 	setWebsiteCertResp, err := d.sdkClient.SetWebsiteCertWithContext(ctx, setWebsiteCertReq)
-	d.logger.Debug("sdk request 'ratpanel.SetWebsiteCert'", slog.Any("request", setWebsiteCertReq), slog.Any("response", setWebsiteCertResp))
+	d.logger.Debug("sdk request 'SetWebsiteCert'", slog.Any("request", setWebsiteCertReq), slog.Any("response", setWebsiteCertResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'ratpanel.SetWebsiteCert': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'SetWebsiteCert': %w", err)
 	}
 
 	return nil

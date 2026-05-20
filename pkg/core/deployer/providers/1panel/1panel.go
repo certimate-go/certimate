@@ -213,9 +213,9 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 					PageSize: int32(websiteSearchPageSize),
 				}
 				websiteSearchResp, err := sdkClient.WebsiteSearchWithContext(ctx, websiteSearchReq)
-				d.logger.Debug("sdk request '1panel.WebsiteSearch'", slog.Any("request", websiteSearchReq), slog.Any("response", websiteSearchResp))
+				d.logger.Debug("sdk request 'WebsiteSearch'", slog.Any("request", websiteSearchReq), slog.Any("response", websiteSearchResp))
 				if err != nil {
-					return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSearch': %w", err)
+					return nil, fmt.Errorf("failed to execute sdk request 'WebsiteSearch': %w", err)
 				}
 
 				if websiteSearchResp.Data == nil {
@@ -228,9 +228,9 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 					}
 
 					websiteGetResp, err := sdkClient.WebsiteGetWithContext(ctx, websiteItem.ID)
-					d.logger.Debug("sdk request '1panel.WebsiteGet'", slog.Int64("websiteId", websiteItem.ID), slog.Any("response", websiteGetResp))
+					d.logger.Debug("sdk request 'WebsiteGet'", slog.Int64("websiteId", websiteItem.ID), slog.Any("response", websiteGetResp))
 					if err != nil {
-						return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteGet': %w", err)
+						return nil, fmt.Errorf("failed to execute sdk request 'WebsiteGet': %w", err)
 					}
 
 					for _, domainInfo := range websiteGetResp.Data.Domains {
@@ -267,9 +267,9 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 					PageSize: int32(websiteSearchPageSize),
 				}
 				websiteSearchResp, err := sdkClient.WebsiteSearchWithContext(ctx, websiteSearchReq)
-				d.logger.Debug("sdk request '1panel.WebsiteSearch'", slog.Any("request", websiteSearchReq), slog.Any("response", websiteSearchResp))
+				d.logger.Debug("sdk request 'WebsiteSearch'", slog.Any("request", websiteSearchReq), slog.Any("response", websiteSearchResp))
 				if err != nil {
-					return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteSearch': %w", err)
+					return nil, fmt.Errorf("failed to execute sdk request 'WebsiteSearch': %w", err)
 				}
 
 				if websiteSearchResp.Data == nil {
@@ -282,9 +282,9 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 					}
 
 					websiteGetResp, err := sdkClient.WebsiteGetWithContext(ctx, websiteItem.ID)
-					d.logger.Debug("sdk request '1panel.WebsiteGet'", slog.Int64("websiteId", websiteItem.ID), slog.Any("response", websiteGetResp))
+					d.logger.Debug("sdk request 'WebsiteGet'", slog.Int64("websiteId", websiteItem.ID), slog.Any("response", websiteGetResp))
 					if err != nil {
-						return nil, fmt.Errorf("failed to execute sdk request '1panel.WebsiteGet': %w", err)
+						return nil, fmt.Errorf("failed to execute sdk request 'WebsiteGet': %w", err)
 					}
 
 					for _, domainInfo := range websiteGetResp.Data.Domains {
@@ -320,9 +320,9 @@ func (d *Deployer) updateWebsiteCertificate(ctx context.Context, websiteId int64
 		{
 			// 获取网站 HTTPS 配置
 			websiteHttpsGetResp, err := sdkClient.WebsiteHttpsGetWithContext(ctx, websiteId)
-			d.logger.Debug("sdk request '1panel.WebsiteHttpsGet'", slog.Int64("websiteId", websiteId), slog.Any("response", websiteHttpsGetResp))
+			d.logger.Debug("sdk request 'WebsiteHttpsGet'", slog.Int64("websiteId", websiteId), slog.Any("response", websiteHttpsGetResp))
 			if err != nil {
-				return fmt.Errorf("failed to execute sdk request '1panel.WebsiteHttpsGet': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'WebsiteHttpsGet': %w", err)
 			} else {
 				if websiteHttpsGetResp.Data.Enable && websiteHttpsGetResp.Data.WebsiteSSLID == websiteSSLId {
 					return nil
@@ -344,9 +344,9 @@ func (d *Deployer) updateWebsiteCertificate(ctx context.Context, websiteId int64
 				websiteHttpsPostReq.HttpConfig = "HTTPToHTTPS"
 			}
 			websiteHttpsPostResp, err := sdkClient.WebsiteHttpsPostWithContext(ctx, websiteId, websiteHttpsPostReq)
-			d.logger.Debug("sdk request '1panel.WebsiteHttpsPost'", slog.Int64("websiteId", websiteId), slog.Any("request", websiteHttpsPostReq), slog.Any("response", websiteHttpsPostResp))
+			d.logger.Debug("sdk request 'WebsiteHttpsPost'", slog.Int64("websiteId", websiteId), slog.Any("request", websiteHttpsPostReq), slog.Any("response", websiteHttpsPostResp))
 			if err != nil {
-				return fmt.Errorf("failed to execute sdk request '1panel.WebsiteHttpsPost': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'WebsiteHttpsPost': %w", err)
 			}
 		}
 
@@ -354,9 +354,9 @@ func (d *Deployer) updateWebsiteCertificate(ctx context.Context, websiteId int64
 		{
 			// 获取网站 HTTPS 配置
 			websiteHttpsGetResp, err := sdkClient.WebsiteHttpsGetWithContext(ctx, websiteId)
-			d.logger.Debug("sdk request '1panel.WebsiteHttpsGet'", slog.Int64("websiteId", websiteId), slog.Any("response", websiteHttpsGetResp))
+			d.logger.Debug("sdk request 'WebsiteHttpsGet'", slog.Int64("websiteId", websiteId), slog.Any("response", websiteHttpsGetResp))
 			if err != nil {
-				return fmt.Errorf("failed to execute sdk request '1panel.WebsiteHttpsGet': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'WebsiteHttpsGet': %w", err)
 			} else {
 				if websiteHttpsGetResp.Data.Enable && websiteHttpsGetResp.Data.WebsiteSSLID == websiteSSLId {
 					return nil
@@ -379,9 +379,9 @@ func (d *Deployer) updateWebsiteCertificate(ctx context.Context, websiteId int64
 				websiteHttpsPostReq.HttpConfig = "HTTPToHTTPS"
 			}
 			websiteHttpsPostResp, err := sdkClient.WebsiteHttpsPostWithContext(ctx, websiteId, websiteHttpsPostReq)
-			d.logger.Debug("sdk request '1panel.WebsiteHttpsPost'", slog.Int64("websiteId", websiteId), slog.Any("request", websiteHttpsPostReq), slog.Any("response", websiteHttpsPostResp))
+			d.logger.Debug("sdk request 'WebsiteHttpsPost'", slog.Int64("websiteId", websiteId), slog.Any("request", websiteHttpsPostReq), slog.Any("response", websiteHttpsPostResp))
 			if err != nil {
-				return fmt.Errorf("failed to execute sdk request '1panel.WebsiteHttpsPost': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'WebsiteHttpsPost': %w", err)
 			}
 		}
 

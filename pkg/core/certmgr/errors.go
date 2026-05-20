@@ -1,11 +1,10 @@
 package certmgr
 
 import (
-	"errors"
-	"fmt"
+	"github.com/certimate-go/certimate/pkg/core"
 )
 
 var (
-	ErrNotImplemented = fmt.Errorf("not implemented function")
-	ErrUnsupported    = errors.ErrUnsupported
+	ErrNotImplemented = core.ErrNotImplemented
+	ErrUnsupported    = core.ErrUnsupported
 )

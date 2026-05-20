@@ -57,9 +57,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		CertificateKey: lo.ToPtr(privkeyPEM),
 	}
 	createCertificateResp, err := d.sdkClient.CreateCertificateWithContext(ctx, createCertificateReq)
-	d.logger.Debug("sdk request 'cachefly.CreateCertificate'", slog.Any("request", createCertificateReq), slog.Any("response", createCertificateResp))
+	d.logger.Debug("sdk request 'CreateCertificate'", slog.Any("request", createCertificateReq), slog.Any("response", createCertificateResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'cachefly.CreateCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'CreateCertificate': %w", err)
 	}
 
 	return &deployer.DeployResult{}, nil

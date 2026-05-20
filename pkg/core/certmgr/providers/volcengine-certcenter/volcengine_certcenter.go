@@ -65,9 +65,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		Repeatable: ve.Bool(false),
 	}
 	importCertificateResp, err := c.sdkClient.ImportCertificateWithContext(ctx, importCertificateReq)
-	c.logger.Debug("sdk request 'certcenter.ImportCertificate'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
+	c.logger.Debug("sdk request 'certificateservice.ImportCertificate'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'certcenter.ImportCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'certificateservice.ImportCertificate': %w", err)
 	}
 
 	var sslId string
