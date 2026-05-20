@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	k8score "k8s.io/api/core/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	k8smeta "k8s.io/apimachinery/pkg/apis/meta/v1"
-	k8stypedcore "k8s.io/client-go/kubernetes/typed/core/v1"
+	k8serrs "k8s.io/apimachinery/pkg/api/errors"
+	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
+	typedcore "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/k8s.io/client-go/kubernetes/typed/core/v1"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -111,18 +111,18 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 
 	// 获取 Secret 实例，如果不存在则创建
-	secretPayload, err = client.Secrets(d.config.Namespace).Get(ctx, d.config.SecretName, k8smeta.GetOptions{})
+	secretPayload, err = client.Secrets(d.config.Namespace).Get(ctx, d.config.SecretName, meta.GetOptions{})
 	if err != nil {
-		if !k8serrors.IsNotFound(err) {
+		if !k8serrs.IsNotFound(err) {
 			return nil, fmt.Errorf("failed to get kubernetes secret: %w", err)
 		}
 
 		secretPayload = &k8score.Secret{
-			TypeMeta: k8smeta.TypeMeta{
+			TypeMeta: meta.TypeMeta{
 				Kind:       "Secret",
 				APIVersion: "v1",
 			},
-			ObjectMeta: k8smeta.ObjectMeta{
+			ObjectMeta: meta.ObjectMeta{
 				Name:        d.config.SecretName,
 				Annotations: secretAnnotations,
 				Labels:      secretLabels,
@@ -133,7 +133,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
 		secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
 
-		secretPayload, err = client.Secrets(d.config.Namespace).Create(ctx, secretPayload, k8smeta.CreateOptions{})
+		secretPayload, err = client.Secrets(d.config.Namespace).Create(ctx, secretPayload, meta.CreateOptions{})
 		d.logger.Debug("kubernetes operate 'Secrets.Create'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
 		if err != nil {
 			return nil, fmt.Errorf("failed to create kubernetes secret: %w", err)
@@ -163,7 +163,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 	secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
 	secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
-	secretPayload, err = client.Secrets(d.config.Namespace).Update(ctx, secretPayload, k8smeta.UpdateOptions{})
+	secretPayload, err = client.Secrets(d.config.Namespace).Update(ctx, secretPayload, meta.UpdateOptions{})
 	d.logger.Debug("kubernetes operate 'Secrets.Update'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
 	if err != nil {
 		return nil, fmt.Errorf("failed to update kubernetes secret: %w", err)
@@ -172,7 +172,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func createK8sClient(kubeConfig string) (*k8stypedcore.CoreV1Client, error) {
+func createK8sClient(kubeConfig string) (*typedcore.CoreV1Client, error) {
 	var config *rest.Config
 	var err error
 	if kubeConfig == "" {
@@ -188,7 +188,7 @@ func createK8sClient(kubeConfig string) (*k8stypedcore.CoreV1Client, error) {
 		return nil, err
 	}
 
-	client, err := k8stypedcore.NewForConfig(config)
+	client, err := typedcore.NewForConfig(config)
 	if err != nil {
 		return nil, err
 	}
