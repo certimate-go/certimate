@@ -8,18 +8,17 @@ import (
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
-	hciam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
-	hciamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
-	hciamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
-	hclive "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1"
-	hclivemodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1/model"
-	hcliveregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1/region"
+	hwiam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
+	hwiamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
+	hwiamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
+	hwlivemodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1/model"
+	hwliveregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1/region"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-scm"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-scm"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-live/internal"
+	hwlive "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -42,7 +41,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.LiveClient
+	sdkClient  *hwlive.LiveClient
 	sdkCertmgr certmgr.Provider
 }
 
@@ -62,7 +61,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:         config.AccessKeyId,
 		SecretAccessKey:     config.SecretAccessKey,
 		EnterpriseProjectId: config.EnterpriseProjectId,
@@ -160,7 +159,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 	// 查询直播域名
 	// REF: https://support.huaweicloud.com/api-live/ShowDomain.html
-	showDomainReq := &hclivemodel.ShowDomainRequest{
+	showDomainReq := &hwlivemodel.ShowDomainRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 	}
 	showDomainResp, err := d.sdkClient.ShowDomain(showDomainReq)
@@ -184,10 +183,10 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 func (d *Deployer) updateDomainsCertificate(ctx context.Context, domain string, cloudCertId string) error {
 	// 修改指定域名的 HTTPS 证书配置
 	// REF: https://support.huaweicloud.com/api-live/UpdateDomainHttpsCert.html
-	updateDomainHttpsCertReq := &hclivemodel.UpdateDomainHttpsCertRequest{
+	updateDomainHttpsCertReq := &hwlivemodel.UpdateDomainHttpsCertRequest{
 		Domain: domain,
-		Body: &hclivemodel.DomainHttpsCertInfo{
-			TlsCertificate: &hclivemodel.TlsCertificateInfo{
+		Body: &hwlivemodel.DomainHttpsCertInfo{
+			TlsCertificate: &hwlivemodel.TlsCertificateInfo{
 				Source: lo.ToPtr("scm"),
 				CertId: lo.ToPtr(cloudCertId),
 			},
@@ -202,7 +201,7 @@ func (d *Deployer) updateDomainsCertificate(ctx context.Context, domain string, 
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.LiveClient, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwlive.LiveClient, error) {
 	projectId, err := getSDKProjectId(accessKeyId, secretAccessKey, region)
 	if err != nil {
 		return nil, err
@@ -217,12 +216,12 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Liv
 		return nil, err
 	}
 
-	hcRegion, err := hcliveregion.SafeValueOf(region)
+	hcRegion, err := hwliveregion.SafeValueOf(region)
 	if err != nil {
 		return nil, err
 	}
 
-	hcClient, err := hclive.LiveClientBuilder().
+	hcClient, err := hwlive.LiveClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -230,7 +229,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Liv
 		return nil, err
 	}
 
-	client := internal.NewLiveClient(hcClient)
+	client := hwlive.NewLiveClient(hcClient)
 	return client, nil
 }
 
@@ -243,12 +242,12 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	hcRegion, err := hciamregion.SafeValueOf(region)
+	hcRegion, err := hwiamregion.SafeValueOf(region)
 	if err != nil {
 		return "", err
 	}
 
-	hcClient, err := hciam.IamClientBuilder().
+	hcClient, err := hwiam.IamClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -256,9 +255,9 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	client := hciam.NewIamClient(hcClient)
+	client := hwiam.NewIamClient(hcClient)
 
-	request := &hciamModel.KeystoneListProjectsRequest{
+	request := &hwiamModel.KeystoneListProjectsRequest{
 		Name: &region,
 	}
 	response, err := client.KeystoneListProjects(request)

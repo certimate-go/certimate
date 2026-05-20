@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
-	hcaad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
-	hcaadmodelv1 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1/model"
-	hcaadregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1/region"
-	hcaadmodelv2 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2/model"
+	hwaadmodelv1 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1/model"
+	hwaadregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1/region"
+	hwaadmodelv2 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2/model"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-aad/internal"
+	hwaadv1 "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
+	hwaadv2 "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -36,30 +36,32 @@ type DeployerConfig struct {
 }
 
 type Deployer struct {
-	config    *DeployerConfig
-	logger    *slog.Logger
-	sdkClient *internal.AadClient
+	config     *DeployerConfig
+	logger     *slog.Logger
+	sdkClients *wSDKClients
 }
 
 var _ deployer.Provider = (*Deployer)(nil)
+
+type wSDKClients struct {
+	AADv1 *hwaadv1.AadClient
+	AADv2 *hwaadv2.AadClient
+}
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(
-		config.AccessKeyId,
-		config.SecretAccessKey,
-	)
+	clients, err := createSDKClients(config.AccessKeyId, config.SecretAccessKey)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
 	return &Deployer{
-		config:    config,
-		logger:    slog.Default(),
-		sdkClient: client,
+		config:     config,
+		logger:     slog.Default(),
+		sdkClients: clients,
 	}, nil
 }
 
@@ -89,14 +91,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			if err != nil {
 				return nil, err
 			}
-			domains := lo.Filter(domainCandidates, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) bool {
+			domains := lo.Filter(domainCandidates, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) bool {
 				return lo.FromPtr(domainItem.DomainName) == d.config.Domain
 			})
 			if len(domains) == 0 {
 				return nil, errors.New("could not find domain")
 			}
 
-			domainIds = lo.Map(domains, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) string {
+			domainIds = lo.Map(domains, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) string {
 				return lo.FromPtr(domainItem.DomainId)
 			})
 		}
@@ -112,14 +114,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return nil, err
 			}
 
-			domains := lo.Filter(domainCandidates, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) bool {
+			domains := lo.Filter(domainCandidates, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) bool {
 				return xcerthostname.IsMatch(d.config.Domain, lo.FromPtr(domainItem.DomainName))
 			})
 			if len(domains) == 0 {
 				return nil, errors.New("could not find any domains matched by wildcard")
 			}
 
-			domainIds = lo.Map(domains, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) string {
+			domainIds = lo.Map(domains, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) string {
 				return lo.FromPtr(domainItem.DomainId)
 			})
 		}
@@ -131,14 +133,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return nil, err
 			}
 
-			domains := lo.Filter(domainCandidates, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) bool {
+			domains := lo.Filter(domainCandidates, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) bool {
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, lo.FromPtr(domainItem.DomainName))
 			})
 			if len(domains) == 0 {
 				return nil, errors.New("could not find any domains matched by certificate")
 			}
 
-			domainIds = lo.Map(domains, func(domainItem *hcaadmodelv2.InstanceDomainItem, _ int) string {
+			domainIds = lo.Map(domains, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) string {
 				return lo.FromPtr(domainItem.DomainId)
 			})
 		}
@@ -173,8 +175,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func (d *Deployer) getAllDomainsByInstanceId(ctx context.Context, cloudInstanceId string) ([]*hcaadmodelv2.InstanceDomainItem, error) {
-	domains := make([]*hcaadmodelv2.InstanceDomainItem, 0)
+func (d *Deployer) getAllDomainsByInstanceId(ctx context.Context, cloudInstanceId string) ([]*hwaadmodelv2.InstanceDomainItem, error) {
+	domains := make([]*hwaadmodelv2.InstanceDomainItem, 0)
 
 	// 查询实例关联的域名信息
 	// REF: https://support.huaweicloud.com/intl/zh-cn/api-aad/ListInstanceDomains.html
@@ -187,12 +189,12 @@ func (d *Deployer) getAllDomainsByInstanceId(ctx context.Context, cloudInstanceI
 		default:
 		}
 
-		listInstanceDomainsReq := &hcaadmodelv2.ListInstanceDomainsRequest{
+		listInstanceDomainsReq := &hwaadmodelv2.ListInstanceDomainsRequest{
 			InstanceId: cloudInstanceId,
 			Offset:     lo.ToPtr(int32(listInstanceDomainsOffset)),
 			Limit:      lo.ToPtr(int32(listInstanceDomainsLimit)),
 		}
-		listInstanceDomainsResp, err := d.sdkClient.ListInstanceDomains(listInstanceDomainsReq)
+		listInstanceDomainsResp, err := d.sdkClients.AADv2.ListInstanceDomains(listInstanceDomainsReq)
 		d.logger.Debug("sdk request 'aad.ListInstanceDomains'", slog.Any("request", listInstanceDomainsReq), slog.Any("response", listInstanceDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'aad.ListInstanceDomains': %w", err)
@@ -224,8 +226,8 @@ func (d *Deployer) getAllDomainsByInstanceId(ctx context.Context, cloudInstanceI
 func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId string, certPEM, privkeyPEM string) error {
 	// 上传域名对应证书
 	// REF: https://support.huaweicloud.com/intl/zh-cn/api-aad/SetCertForDomain.html
-	setCertForDomainReq := &hcaadmodelv1.SetCertForDomainRequest{
-		Body: &hcaadmodelv1.CertificateBody{
+	setCertForDomainReq := &hwaadmodelv1.SetCertForDomainRequest{
+		Body: &hwaadmodelv1.CertificateBody{
 			OpType:      0,
 			DomainId:    cloudDomainId,
 			CertName:    fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
@@ -233,7 +235,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 			CertKeyFile: lo.ToPtr(privkeyPEM),
 		},
 	}
-	setCertForDomainResp, err := d.sdkClient.SetCertForDomain(setCertForDomainReq)
+	setCertForDomainResp, err := d.sdkClients.AADv1.SetCertForDomain(setCertForDomainReq)
 	d.logger.Debug("sdk request 'aad.SetCertForDomain'", slog.Any("request", setCertForDomainReq), slog.Any("response", setCertForDomainResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'aad.SetCertForDomain': %w", err)
@@ -242,30 +244,64 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey string) (*internal.AadClient, error) {
-	region := "cn-north-4" // AAD 服务默认区域：华北北京四
+func createSDKClients(accessKeyId, secretAccessKey string) (*wSDKClients, error) {
+	wsdk := &wSDKClients{}
 
-	auth, err := global.NewCredentialsBuilder().
-		WithAk(accessKeyId).
-		WithSk(secretAccessKey).
-		SafeBuild()
-	if err != nil {
-		return nil, err
+	{
+		region := "cn-north-4" // AAD 服务默认区域：华北北京四
+
+		auth, err := global.NewCredentialsBuilder().
+			WithAk(accessKeyId).
+			WithSk(secretAccessKey).
+			SafeBuild()
+		if err != nil {
+			return nil, err
+		}
+
+		hcRegion, err := hwaadregion.SafeValueOf(region)
+		if err != nil {
+			return nil, err
+		}
+
+		hcClient, err := hwaadv1.AadClientBuilder().
+			WithRegion(hcRegion).
+			WithCredential(auth).
+			SafeBuild()
+		if err != nil {
+			return nil, err
+		}
+
+		client := hwaadv1.NewAadClient(hcClient)
+		wsdk.AADv1 = client
 	}
 
-	hcRegion, err := hcaadregion.SafeValueOf(region)
-	if err != nil {
-		return nil, err
+	{
+		region := "cn-north-4" // AAD 服务默认区域：华北北京四
+
+		auth, err := global.NewCredentialsBuilder().
+			WithAk(accessKeyId).
+			WithSk(secretAccessKey).
+			SafeBuild()
+		if err != nil {
+			return nil, err
+		}
+
+		hcRegion, err := hwaadregion.SafeValueOf(region)
+		if err != nil {
+			return nil, err
+		}
+
+		hcClient, err := hwaadv2.AadClientBuilder().
+			WithRegion(hcRegion).
+			WithCredential(auth).
+			SafeBuild()
+		if err != nil {
+			return nil, err
+		}
+
+		client := hwaadv2.NewAadClient(hcClient)
+		wsdk.AADv2 = client
 	}
 
-	hcClient, err := hcaad.AadClientBuilder().
-		WithRegion(hcRegion).
-		WithCredential(auth).
-		SafeBuild()
-	if err != nil {
-		return nil, err
-	}
-
-	client := internal.NewAadClient(hcClient)
-	return client, nil
+	return wsdk, nil
 }

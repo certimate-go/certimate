@@ -7,7 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/wangsu-certificate"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/wangsu-certificate"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	wangsusdk "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/certificate"
 )
@@ -41,7 +41,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 	})

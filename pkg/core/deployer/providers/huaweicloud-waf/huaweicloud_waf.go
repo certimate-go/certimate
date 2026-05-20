@@ -9,18 +9,17 @@ import (
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
-	hciam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
-	hciamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
-	hciamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
-	hcwaf "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1"
-	hcwafmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1/model"
-	hcwafregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1/region"
+	hwiam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
+	hwiamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
+	hwiamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
+	hwwafmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1/model"
+	hwwafregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1/region"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-waf"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-waf"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-waf/internal"
+	hwwaf "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1"
 )
 
 type DeployerConfig struct {
@@ -45,7 +44,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.WafClient
+	sdkClient  *hwwaf.WafClient
 	sdkCertmgr certmgr.Provider
 }
 
@@ -61,7 +60,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:         config.AccessKeyId,
 		SecretAccessKey:     config.SecretAccessKey,
 		EnterpriseProjectId: config.EnterpriseProjectId,
@@ -129,7 +128,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 	// 查询证书
 	// REF: https://support.huaweicloud.com/api-waf/ShowCertificate.html
-	showCertificateReq := &hcwafmodel.ShowCertificateRequest{
+	showCertificateReq := &hwwafmodel.ShowCertificateRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 		CertificateId:       d.config.CertificateId,
 	}
@@ -141,10 +140,10 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 	// 更新证书
 	// REF: https://support.huaweicloud.com/api-waf/UpdateCertificate.html
-	updateCertificateReq := &hcwafmodel.UpdateCertificateRequest{
+	updateCertificateReq := &hwwafmodel.UpdateCertificateRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 		CertificateId:       d.config.CertificateId,
-		Body: &hcwafmodel.UpdateCertificateRequestBody{
+		Body: &hwwafmodel.UpdateCertificateRequestBody{
 			Name:    *showCertificateResp.Name,
 			Content: lo.ToPtr(certPEM),
 			Key:     lo.ToPtr(privkeyPEM),
@@ -184,7 +183,7 @@ func (d *Deployer) deployToCloudServer(ctx context.Context, certPEM, privkeyPEM 
 		default:
 		}
 
-		listHostReq := &hcwafmodel.ListHostRequest{
+		listHostReq := &hwwafmodel.ListHostRequest{
 			EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 			Hostname:            lo.ToPtr(strings.TrimPrefix(d.config.Domain, "*")),
 			Page:                lo.ToPtr(int32(listHostPage)),
@@ -219,10 +218,10 @@ func (d *Deployer) deployToCloudServer(ctx context.Context, certPEM, privkeyPEM 
 
 	// 更新云模式防护域名的配置
 	// REF: https://support.huaweicloud.com/api-waf/UpdateHost.html
-	updateHostReq := &hcwafmodel.UpdateHostRequest{
+	updateHostReq := &hwwafmodel.UpdateHostRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 		InstanceId:          hostId,
-		Body: &hcwafmodel.UpdateHostRequestBody{
+		Body: &hwwafmodel.UpdateHostRequestBody{
 			Certificateid:   lo.ToPtr(upres.CertId),
 			Certificatename: lo.ToPtr(upres.CertName),
 		},
@@ -261,7 +260,7 @@ func (d *Deployer) deployToPremiumHost(ctx context.Context, certPEM, privkeyPEM 
 		default:
 		}
 
-		listPremiumHostReq := &hcwafmodel.ListPremiumHostRequest{
+		listPremiumHostReq := &hwwafmodel.ListPremiumHostRequest{
 			EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 			Hostname:            lo.ToPtr(strings.TrimPrefix(d.config.Domain, "*")),
 			Page:                lo.ToPtr(fmt.Sprintf("%d", listPremiumHostPage)),
@@ -296,10 +295,10 @@ func (d *Deployer) deployToPremiumHost(ctx context.Context, certPEM, privkeyPEM 
 
 	// 修改独享模式域名配置
 	// REF: https://support.huaweicloud.com/api-waf/UpdatePremiumHost.html
-	updatePremiumHostReq := &hcwafmodel.UpdatePremiumHostRequest{
+	updatePremiumHostReq := &hwwafmodel.UpdatePremiumHostRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 		HostId:              hostId,
-		Body: &hcwafmodel.UpdatePremiumHostRequestBody{
+		Body: &hwwafmodel.UpdatePremiumHostRequestBody{
 			Certificateid:   lo.ToPtr(upres.CertId),
 			Certificatename: lo.ToPtr(upres.CertName),
 		},
@@ -313,7 +312,7 @@ func (d *Deployer) deployToPremiumHost(ctx context.Context, certPEM, privkeyPEM 
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.WafClient, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwwaf.WafClient, error) {
 	projectId, err := getSDKProjectId(accessKeyId, secretAccessKey, region)
 	if err != nil {
 		return nil, err
@@ -328,12 +327,12 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Waf
 		return nil, err
 	}
 
-	hcRegion, err := hcwafregion.SafeValueOf(region)
+	hcRegion, err := hwwafregion.SafeValueOf(region)
 	if err != nil {
 		return nil, err
 	}
 
-	hcClient, err := hcwaf.WafClientBuilder().
+	hcClient, err := hwwaf.WafClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -341,7 +340,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Waf
 		return nil, err
 	}
 
-	client := internal.NewWafClient(hcClient)
+	client := hwwaf.NewWafClient(hcClient)
 	return client, nil
 }
 
@@ -354,12 +353,12 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	hcRegion, err := hciamregion.SafeValueOf(region)
+	hcRegion, err := hwiamregion.SafeValueOf(region)
 	if err != nil {
 		return "", err
 	}
 
-	hcClient, err := hciam.IamClientBuilder().
+	hcClient, err := hwiam.IamClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -367,9 +366,9 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	client := hciam.NewIamClient(hcClient)
+	client := hwiam.NewIamClient(hcClient)
 
-	request := &hciamModel.KeystoneListProjectsRequest{
+	request := &hwiamModel.KeystoneListProjectsRequest{
 		Name: &region,
 	}
 	response, err := client.KeystoneListProjects(request)

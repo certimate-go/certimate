@@ -9,14 +9,13 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	tcclb "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-clb/internal"
+	tcclb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -45,7 +44,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.ClbClient
+	sdkClient  *tcclb.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -61,7 +60,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		Endpoint: lo.
@@ -133,7 +132,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	listenerIds := make([]string, 0)
 	describeListenersReq := tcclb.NewDescribeListenersRequest()
 	describeListenersReq.LoadBalancerId = common.StringPtr(d.config.LoadbalancerId)
-	describeListenersResp, err := d.sdkClient.DescribeListeners(describeListenersReq)
+	describeListenersResp, err := d.sdkClient.DescribeListenersWithContext(ctx, describeListenersReq)
 	d.logger.Debug("sdk request 'clb.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenersResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.DescribeListeners': %w", err)
@@ -212,7 +211,7 @@ func (d *Deployer) deployToRuleDomain(ctx context.Context, cloudCertId string) e
 		SSLMode: common.StringPtr("UNIDIRECTIONAL"),
 		CertId:  common.StringPtr(cloudCertId),
 	}
-	modifyDomainAttributesResp, err := d.sdkClient.ModifyDomainAttributes(modifyDomainAttributesReq)
+	modifyDomainAttributesResp, err := d.sdkClient.ModifyDomainAttributesWithContext(ctx, modifyDomainAttributesReq)
 	d.logger.Debug("sdk request 'clb.ModifyDomainAttributes'", slog.Any("request", modifyDomainAttributesReq), slog.Any("response", modifyDomainAttributesResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.ModifyDomainAttributes': %w", err)
@@ -223,7 +222,7 @@ func (d *Deployer) deployToRuleDomain(ctx context.Context, cloudCertId string) e
 	if _, err := xwait.UntilWithContext(ctx, func(_ context.Context, _ int) (bool, error) {
 		describeTaskStatusReq := tcclb.NewDescribeTaskStatusRequest()
 		describeTaskStatusReq.TaskId = modifyDomainAttributesResp.Response.RequestId
-		describeTaskStatusResp, err := d.sdkClient.DescribeTaskStatus(describeTaskStatusReq)
+		describeTaskStatusResp, err := d.sdkClient.DescribeTaskStatusWithContext(ctx, describeTaskStatusReq)
 		d.logger.Debug("sdk request 'clb.DescribeTaskStatus'", slog.Any("request", describeTaskStatusReq), slog.Any("response", describeTaskStatusResp))
 		if err != nil {
 			return false, fmt.Errorf("failed to execute sdk request 'clb.DescribeTaskStatus': %w", err)
@@ -238,7 +237,7 @@ func (d *Deployer) deployToRuleDomain(ctx context.Context, cloudCertId string) e
 
 		d.logger.Info("waiting for tencentcloud task completion ...")
 		return false, nil
-	}, time.Second*5); err != nil {
+	}, 10*time.Second); err != nil {
 		return err
 	}
 
@@ -251,7 +250,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	describeListenersReq := tcclb.NewDescribeListenersRequest()
 	describeListenersReq.LoadBalancerId = common.StringPtr(cloudLoadbalancerId)
 	describeListenersReq.ListenerIds = common.StringPtrs([]string{cloudListenerId})
-	describeListenersResp, err := d.sdkClient.DescribeListeners(describeListenersReq)
+	describeListenersResp, err := d.sdkClient.DescribeListenersWithContext(ctx, describeListenersReq)
 	d.logger.Debug("sdk request 'clb.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenersResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.DescribeListeners': %w", err)
@@ -271,7 +270,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	} else {
 		modifyListenerReq.Certificate.SSLMode = common.StringPtr("UNIDIRECTIONAL")
 	}
-	modifyListenerResp, err := d.sdkClient.ModifyListener(modifyListenerReq)
+	modifyListenerResp, err := d.sdkClient.ModifyListenerWithContext(ctx, modifyListenerReq)
 	d.logger.Debug("sdk request 'clb.ModifyListener'", slog.Any("request", modifyListenerReq), slog.Any("response", modifyListenerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.ModifyListener': %w", err)
@@ -282,7 +281,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	if _, err := xwait.UntilWithContext(ctx, func(_ context.Context, _ int) (bool, error) {
 		describeTaskStatusReq := tcclb.NewDescribeTaskStatusRequest()
 		describeTaskStatusReq.TaskId = modifyListenerResp.Response.RequestId
-		describeTaskStatusResp, err := d.sdkClient.DescribeTaskStatus(describeTaskStatusReq)
+		describeTaskStatusResp, err := d.sdkClient.DescribeTaskStatusWithContext(ctx, describeTaskStatusReq)
 		d.logger.Debug("sdk request 'clb.DescribeTaskStatus'", slog.Any("request", describeTaskStatusReq), slog.Any("response", describeTaskStatusResp))
 		if err != nil {
 			return false, fmt.Errorf("failed to execute sdk request 'clb.DescribeTaskStatus': %w", err)
@@ -297,14 +296,14 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 
 		d.logger.Info("waiting for tencentcloud task completion ...")
 		return false, nil
-	}, time.Second*5); err != nil {
+	}, 10*time.Second); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func createSDKClient(secretId, secretKey, endpoint, region string) (*internal.ClbClient, error) {
+func createSDKClient(secretId, secretKey, endpoint, region string) (*tcclb.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -312,7 +311,7 @@ func createSDKClient(secretId, secretKey, endpoint, region string) (*internal.Cl
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewClbClient(credential, region, cpf)
+	client, err := tcclb.NewClient(credential, region, cpf)
 	if err != nil {
 		return nil, err
 	}

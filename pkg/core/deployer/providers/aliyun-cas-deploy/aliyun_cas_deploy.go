@@ -8,15 +8,14 @@ import (
 	"strings"
 	"time"
 
-	alicas "github.com/alibabacloud-go/cas-20200407/v4/client"
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-cas-deploy/internal"
+	alicas "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/cas-20200407/v4/client"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -39,7 +38,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.CasClient
+	sdkClient  *alicas.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -55,7 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -151,14 +150,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 		d.logger.Info("waiting for aliyun deployment job completion ...")
 		return false, nil
-	}, time.Second*5); err != nil {
+	}, 10*time.Second); err != nil {
 		return nil, err
 	}
 
 	return &deployer.DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.CasClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*alicas.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/cas
 	var endpoint string
 	switch region {
@@ -174,7 +173,7 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Cas
 		Endpoint:        tea.String(endpoint),
 	}
 
-	client, err := internal.NewCasClient(config)
+	client, err := alicas.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

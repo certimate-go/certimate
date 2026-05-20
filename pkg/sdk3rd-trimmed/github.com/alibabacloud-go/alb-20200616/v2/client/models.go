@@ -1,0 +1,41 @@
+﻿package client
+
+import (
+	alialb "github.com/alibabacloud-go/alb-20200616/v2/client"
+)
+
+type AssociateAdditionalCertificatesWithListenerRequest = alialb.AssociateAdditionalCertificatesWithListenerRequest
+
+type AssociateAdditionalCertificatesWithListenerRequestCertificates = alialb.AssociateAdditionalCertificatesWithListenerRequestCertificates
+
+type AssociateAdditionalCertificatesWithListenerResponse = alialb.AssociateAdditionalCertificatesWithListenerResponse
+
+type DissociateAdditionalCertificatesFromListenerRequest = alialb.DissociateAdditionalCertificatesFromListenerRequest
+
+type DissociateAdditionalCertificatesFromListenerRequestCertificates = alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates
+
+type DissociateAdditionalCertificatesFromListenerResponse = alialb.DissociateAdditionalCertificatesFromListenerResponse
+
+type GetListenerAttributeRequest = alialb.GetListenerAttributeRequest
+
+type GetListenerAttributeResponse = alialb.GetListenerAttributeResponse
+
+type GetLoadBalancerAttributeRequest = alialb.GetLoadBalancerAttributeRequest
+
+type GetLoadBalancerAttributeResponse = alialb.GetLoadBalancerAttributeResponse
+
+type ListListenerCertificatesRequest = alialb.ListListenerCertificatesRequest
+
+type ListListenerCertificatesResponse = alialb.ListListenerCertificatesResponse
+
+type ListListenerCertificatesResponseBodyCertificates = alialb.ListListenerCertificatesResponseBodyCertificates
+
+type ListListenersRequest = alialb.ListListenersRequest
+
+type ListListenersResponse = alialb.ListListenersResponse
+
+type UpdateListenerAttributeRequest = alialb.UpdateListenerAttributeRequest
+
+type UpdateListenerAttributeRequestCertificates = alialb.UpdateListenerAttributeRequestCertificates
+
+type UpdateListenerAttributeResponse = alialb.UpdateListenerAttributeResponse

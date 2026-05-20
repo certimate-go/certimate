@@ -8,15 +8,14 @@ import (
 	"strings"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	aliddoscoo "github.com/alibabacloud-go/ddoscoo-20200101/v5/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-ddospro/internal"
+	aliddoscoo "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/ddoscoo-20200101/v5/client"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -39,7 +38,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.DdoscooClient
+	sdkClient  *aliddoscoo.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -55,7 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -212,7 +211,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.DdoscooClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*aliddoscoo.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/ddoscoo
 	var endpoint string
 	switch region {
@@ -228,7 +227,7 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Ddo
 		Endpoint:        tea.String(endpoint),
 	}
 
-	client, err := internal.NewDdoscooClient(config)
+	client, err := aliddoscoo.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

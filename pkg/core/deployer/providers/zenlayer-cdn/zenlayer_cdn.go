@@ -11,7 +11,7 @@ import (
 	zcommon "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/zenlayer-cdn"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/zenlayer-cdn"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	zcdnsdk "github.com/certimate-go/certimate/pkg/sdk3rd/zenlayer/cdn"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
@@ -59,7 +59,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:       config.AccessKeyId,
 		AccessKeyPassword: config.AccessKeyPassword,
 		ResourceGroupId:   config.ResourceGroupId,
@@ -318,7 +318,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 
 		d.logger.Info("waiting for zenlayer domain deploying completion ...")
 		return false, nil
-	}, time.Second*5); err != nil {
+	}, 10*time.Second); err != nil {
 		return err
 	}
 

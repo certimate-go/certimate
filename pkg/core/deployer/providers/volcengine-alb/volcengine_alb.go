@@ -7,14 +7,13 @@ import (
 	"log/slog"
 
 	"github.com/samber/lo"
-	vealb "github.com/volcengine/volcengine-go-sdk/service/alb"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-alb/internal"
+	vealb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volcengine-go-sdk/service/alb"
 )
 
 type DeployerConfig struct {
@@ -40,7 +39,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.AlbClient
+	sdkClient  *vealb.ALB
 	sdkCertmgr certmgr.Provider
 }
 
@@ -56,7 +55,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		Region:          config.Region,
@@ -206,7 +205,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	describeListenerAttributesReq := &vealb.DescribeListenerAttributesInput{
 		ListenerId: ve.String(cloudListenerId),
 	}
-	describeListenerAttributesResp, err := d.sdkClient.DescribeListenerAttributes(describeListenerAttributesReq)
+	describeListenerAttributesResp, err := d.sdkClient.DescribeListenerAttributesWithContext(ctx, describeListenerAttributesReq)
 	d.logger.Debug("sdk request 'alb.DescribeListenerAttributes'", slog.Any("request", describeListenerAttributesReq), slog.Any("response", describeListenerAttributesResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'alb.DescribeListenerAttributes': %w", err)
@@ -222,7 +221,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 			CertificateSource:       ve.String("cert_center"),
 			CertCenterCertificateId: ve.String(cloudCertId),
 		}
-		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributes(modifyListenerAttributesReq)
+		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
 		d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
@@ -251,7 +250,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 					}
 				}),
 		}
-		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributes(modifyListenerAttributesReq)
+		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
 		d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
@@ -261,7 +260,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.AlbClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*vealb.ALB, error) {
 	config := ve.NewConfig().
 		WithAkSk(accessKeyId, accessKeySecret).
 		WithRegion(region)
@@ -271,6 +270,6 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Alb
 		return nil, err
 	}
 
-	client := internal.NewAlbClient(session)
+	client := vealb.New(session)
 	return client, nil
 }

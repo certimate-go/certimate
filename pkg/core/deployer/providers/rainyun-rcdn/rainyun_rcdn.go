@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	rainyunsdk "github.com/certimate-go/certimate/pkg/sdk3rd/rainyun"
 )
@@ -44,7 +44,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		ApiKey: config.ApiKey,
 	})
 	if err != nil {

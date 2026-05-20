@@ -12,7 +12,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/nginxproxymanager"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/nginxproxymanager"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	npmsdk "github.com/certimate-go/certimate/pkg/sdk3rd/nginxproxymanager"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -69,7 +69,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		ServerUrl:                config.ServerUrl,
 		AuthMethod:               config.AuthMethod,
 		Username:                 config.Username,
@@ -200,9 +200,8 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 			default:
 				if err := d.updateHostCertificate(ctx, d.config.HostType, hostId, certId); err != nil {
 					errs = append(errs, err)
-				}
-				if i < len(hostIds)-1 {
-					xwait.DelayWithContext(ctx, time.Second*5)
+				} else if i < len(hostIds)-1 {
+					xwait.DelayWithContext(ctx, 5*time.Second)
 				}
 			}
 		}

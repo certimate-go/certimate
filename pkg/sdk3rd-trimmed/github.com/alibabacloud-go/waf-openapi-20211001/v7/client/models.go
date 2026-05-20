@@ -1,0 +1,57 @@
+package client
+
+import (
+	aliwaf "github.com/alibabacloud-go/waf-openapi-20211001/v7/client"
+)
+
+type DescribeCloudResourceAccessPortDetailsRequest = aliwaf.DescribeCloudResourceAccessPortDetailsRequest
+
+type DescribeCloudResourceAccessPortDetailsResponse = aliwaf.DescribeCloudResourceAccessPortDetailsResponse
+
+type DescribeCloudResourceAccessPortDetailsResponseBodyAccessPortDetails = aliwaf.DescribeCloudResourceAccessPortDetailsResponseBodyAccessPortDetails
+
+type DescribeCloudResourceAccessPortDetailsResponseBodyAccessPortDetailsCertificates = aliwaf.DescribeCloudResourceAccessPortDetailsResponseBodyAccessPortDetailsCertificates
+
+type DescribeDefaultHttpsRequest = aliwaf.DescribeDefaultHttpsRequest
+
+type DescribeDefaultHttpsResponse = aliwaf.DescribeDefaultHttpsResponse
+
+type DescribeDomainDetailRequest = aliwaf.DescribeDomainDetailRequest
+
+type DescribeDomainDetailResponseBodyRedirectRequestHeaders = aliwaf.DescribeDomainDetailResponseBodyRedirectRequestHeaders
+
+type DescribeDomainDetailResponse = aliwaf.DescribeDomainDetailResponse
+
+type DescribeDomainDetailResponseBody = aliwaf.DescribeDomainDetailResponseBody
+
+type DescribeDomainDetailResponseBodyRedirectBackends = aliwaf.DescribeDomainDetailResponseBodyRedirectBackends
+
+type DescribeDomainDetailResponseBodyRedirectBackupBackends = aliwaf.DescribeDomainDetailResponseBodyRedirectBackupBackends
+
+type DescribeResourceInstanceCertsRequest = aliwaf.DescribeResourceInstanceCertsRequest
+
+type DescribeResourceInstanceCertsResponse = aliwaf.DescribeResourceInstanceCertsResponse
+
+type DescribeResourceInstanceCertsResponseBodyCerts = aliwaf.DescribeResourceInstanceCertsResponseBodyCerts
+
+type ModifyCloudResourceCertRequest = aliwaf.ModifyCloudResourceCertRequest
+
+type ModifyCloudResourceCertRequestCertificates = aliwaf.ModifyCloudResourceCertRequestCertificates
+
+type ModifyCloudResourceCertResponse = aliwaf.ModifyCloudResourceCertResponse
+
+type ModifyDefaultHttpsRequest = aliwaf.ModifyDefaultHttpsRequest
+
+type ModifyDefaultHttpsResponse = aliwaf.ModifyDefaultHttpsResponse
+
+type ModifyDomainRequest = aliwaf.ModifyDomainRequest
+
+type ModifyDomainRequestListen = aliwaf.ModifyDomainRequestListen
+
+type ModifyDomainRequestRedirect = aliwaf.ModifyDomainRequestRedirect
+
+type ModifyDomainRequestRedirectRequestHeaders = aliwaf.ModifyDomainRequestRedirectRequestHeaders
+
+type ModifyDomainResponse = aliwaf.ModifyDomainResponse
+
+type ModifyDomainShrinkRequest = aliwaf.ModifyDomainShrinkRequest

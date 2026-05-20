@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/1panel"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/1panel"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	onepanelsdk "github.com/certimate-go/certimate/pkg/sdk3rd/1panel"
 	onepanelsdk2 "github.com/certimate-go/certimate/pkg/sdk3rd/1panel/v2"
@@ -63,7 +63,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		ServerUrl:                config.ServerUrl,
 		ApiVersion:               config.ApiVersion,
 		ApiKey:                   config.ApiKey,
@@ -162,9 +162,8 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 			default:
 				if err := d.updateWebsiteCertificate(ctx, websiteId, websiteSSLId); err != nil {
 					errs = append(errs, err)
-				}
-				if i < len(websiteIds)-1 {
-					xwait.DelayWithContext(ctx, time.Second*5)
+				} else if i < len(websiteIds)-1 {
+					xwait.DelayWithContext(ctx, 5*time.Second)
 				}
 			}
 		}

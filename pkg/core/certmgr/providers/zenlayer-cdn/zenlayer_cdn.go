@@ -16,7 +16,7 @@ import (
 	zcommon "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	zcdn "github.com/certimate-go/certimate/pkg/sdk3rd/zenlayer/cdn"
+	zcdnsdk "github.com/certimate-go/certimate/pkg/sdk3rd/zenlayer/cdn"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -32,7 +32,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *zcdn.Client
+	sdkClient *zcdnsdk.Client
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -80,7 +80,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		default:
 		}
 
-		describeCertificatesReq := zcdn.NewDescribeCertificatesRequest()
+		describeCertificatesReq := zcdnsdk.NewDescribeCertificatesRequest()
 		describeCertificatesReq.ResourceGroupId = c.config.ResourceGroupId
 		describeCertificatesReq.PageNum = describeCertificatesPageNum
 		describeCertificatesReq.PageSize = describeCertificatesPageSize
@@ -156,7 +156,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 
 	// 创建证书
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/cdn/certificate/createcertificate
-	createCertificateReq := zcdn.NewCreateCertificateRequest()
+	createCertificateReq := zcdnsdk.NewCreateCertificateRequest()
 	createCertificateReq.ResourceGroupId = c.config.ResourceGroupId
 	createCertificateReq.CertificateLabel = certName
 	createCertificateReq.CertificateContent = certPEM
@@ -176,7 +176,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
 	// 更新证书
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/cdn/certificate/modifycertificate
-	modifyCertificateReq := zcdn.NewModifyCertificateRequest()
+	modifyCertificateReq := zcdnsdk.NewModifyCertificateRequest()
 	modifyCertificateReq.CertificateId = certIdOrName
 	modifyCertificateReq.CertificateContent = certPEM
 	modifyCertificateReq.CertificateKey = privkeyPEM
@@ -189,10 +189,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return &certmgr.OperateResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeyPassword string) (*zcdn.Client, error) {
+func createSDKClient(accessKeyId, accessKeyPassword string) (*zcdnsdk.Client, error) {
 	config := zcommon.NewConfig()
 
-	client, err := zcdn.NewClient(config, accessKeyId, accessKeyPassword)
+	client, err := zcdnsdk.NewClient(config, accessKeyId, accessKeyPassword)
 	if err != nil {
 		return nil, err
 	}

@@ -90,9 +90,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		default:
 			if err := d.updateSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM); err != nil {
 				errs = append(errs, err)
-			}
-			if i < len(d.config.SiteNames)-1 {
-				xwait.DelayWithContext(ctx, time.Second*5)
+			} else if i < len(d.config.SiteNames)-1 {
+				xwait.DelayWithContext(ctx, 5*time.Second)
 			}
 		}
 	}

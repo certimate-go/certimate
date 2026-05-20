@@ -8,10 +8,9 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	"github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl/internal"
+	tcssl "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
 )
 
 type CertmgrConfig struct {
@@ -26,7 +25,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *internal.SslClient
+	sdkClient *tcssl.Client
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -63,7 +62,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	uploadCertificateReq.CertificatePublicKey = common.StringPtr(certPEM)
 	uploadCertificateReq.CertificatePrivateKey = common.StringPtr(privkeyPEM)
 	uploadCertificateReq.Repeatable = common.BoolPtr(false)
-	uploadCertificateResp, err := c.sdkClient.UploadCertificate(uploadCertificateReq)
+	uploadCertificateResp, err := c.sdkClient.UploadCertificateWithContext(ctx, uploadCertificateReq)
 	c.logger.Debug("sdk request 'ssl.UploadCertificate'", slog.Any("request", uploadCertificateReq), slog.Any("response", uploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ssl.UploadCertificate': %w", err)
@@ -78,7 +77,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return nil, certmgr.ErrUnsupported
 }
 
-func createSDKClient(secretId, secretKey, endpoint string) (*internal.SslClient, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tcssl.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -86,7 +85,7 @@ func createSDKClient(secretId, secretKey, endpoint string) (*internal.SslClient,
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewSslClient(credential, "", cpf)
+	client, err := tcssl.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}

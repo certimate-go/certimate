@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 )
 
@@ -33,7 +33,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		ApiKey: config.ApiKey,
 	})
 	if err != nil {

@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"log/slog"
 
-	veclb "github.com/volcengine/volcengine-go-sdk/service/clb"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-clb/internal"
+	veclb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volcengine-go-sdk/service/clb"
 )
 
 type DeployerConfig struct {
@@ -36,7 +35,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.ClbClient
+	sdkClient  *veclb.CLB
 	sdkCertmgr certmgr.Provider
 }
 
@@ -52,7 +51,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		Region:          config.Region,
@@ -117,7 +116,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	describeLoadBalancerAttributesReq := &veclb.DescribeLoadBalancerAttributesInput{
 		LoadBalancerId: ve.String(d.config.LoadbalancerId),
 	}
-	describeLoadBalancerAttributesResp, err := d.sdkClient.DescribeLoadBalancerAttributes(describeLoadBalancerAttributesReq)
+	describeLoadBalancerAttributesResp, err := d.sdkClient.DescribeLoadBalancerAttributesWithContext(ctx, describeLoadBalancerAttributesReq)
 	d.logger.Debug("sdk request 'clb.DescribeLoadBalancerAttributes'", slog.Any("request", describeLoadBalancerAttributesReq), slog.Any("response", describeLoadBalancerAttributesResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.DescribeLoadBalancerAttributes': %w", err)
@@ -141,7 +140,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 			PageNumber:     ve.Int64(int64(describeListenersPageNumber)),
 			PageSize:       ve.Int64(int64(describeListenersPageSize)),
 		}
-		describeListenersResp, err := d.sdkClient.DescribeListeners(describeListenersReq)
+		describeListenersResp, err := d.sdkClient.DescribeListenersWithContext(ctx, describeListenersReq)
 		d.logger.Debug("sdk request 'clb.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenersResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'clb.DescribeListeners': %w", err)
@@ -204,7 +203,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		CertificateSource:       ve.String("cert_center"),
 		CertCenterCertificateId: ve.String(cloudCertId),
 	}
-	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributes(modifyListenerAttributesReq)
+	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
 	d.logger.Debug("sdk request 'clb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.ModifyListenerAttributes': %w", err)
@@ -213,7 +212,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.ClbClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*veclb.CLB, error) {
 	config := ve.NewConfig().
 		WithAkSk(accessKeyId, accessKeySecret).
 		WithRegion(region)
@@ -223,6 +222,6 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Clb
 		return nil, err
 	}
 
-	client := internal.NewClbClient(session)
+	client := veclb.New(session)
 	return client, nil
 }

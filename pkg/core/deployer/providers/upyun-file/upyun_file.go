@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/upyun-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/upyun-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	upyunsdk "github.com/certimate-go/certimate/pkg/sdk3rd/upyun/console"
 )
@@ -44,7 +44,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		Username: config.Username,
 		Password: config.Password,
 	})

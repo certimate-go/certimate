@@ -1,0 +1,3 @@
+﻿此目录下存放对依赖包的裁剪，以使构建的二进制轻量化。
+
+This directory stores the partial copy of package dependencies, to lightweight the built binary output.

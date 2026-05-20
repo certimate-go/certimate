@@ -8,14 +8,13 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	tccdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-cdn/internal"
+	tccdn "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -36,7 +35,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.CdnClient
+	sdkClient  *tccdn.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -52,7 +51,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		Endpoint: lo.
@@ -184,7 +183,7 @@ func (d *Deployer) getMatchedDomainsByWildcard(ctx context.Context, wildcardDoma
 		}
 		describeDomainsReq.Offset = common.Int64Ptr(int64(describeDomainsOffset))
 		describeDomainsReq.Limit = common.Int64Ptr(int64(describeDomainsLimit))
-		describeDomainsResp, err := d.sdkClient.DescribeDomains(describeDomainsReq)
+		describeDomainsResp, err := d.sdkClient.DescribeDomainsWithContext(ctx, describeDomainsReq)
 		d.logger.Debug("sdk request 'cdn.DescribeDomains'", slog.Any("request", describeDomainsReq), slog.Any("response", describeDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'cdn.DescribeDomains': %w", err)
@@ -216,7 +215,7 @@ func (d *Deployer) getMatchedDomainsByCertId(ctx context.Context, cloudCertId st
 	describeCertDomainsReq := tccdn.NewDescribeCertDomainsRequest()
 	describeCertDomainsReq.CertId = common.StringPtr(cloudCertId)
 	describeCertDomainsReq.Product = common.StringPtr("cdn")
-	describeCertDomainsResp, err := d.sdkClient.DescribeCertDomains(describeCertDomainsReq)
+	describeCertDomainsResp, err := d.sdkClient.DescribeCertDomainsWithContext(ctx, describeCertDomainsReq)
 	d.logger.Debug("sdk request 'cdn.DescribeCertDomains'", slog.Any("request", describeCertDomainsReq), slog.Any("response", describeCertDomainsResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'cdn.DescribeCertDomains': %w", err)
@@ -244,7 +243,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	}
 	describeDomainsConfigReq.Offset = common.Int64Ptr(0)
 	describeDomainsConfigReq.Limit = common.Int64Ptr(1)
-	describeDomainsConfigResp, err := d.sdkClient.DescribeDomainsConfig(describeDomainsConfigReq)
+	describeDomainsConfigResp, err := d.sdkClient.DescribeDomainsConfigWithContext(ctx, describeDomainsConfigReq)
 	d.logger.Debug("sdk request 'cdn.DescribeDomainsConfig'", slog.Any("request", describeDomainsConfigReq), slog.Any("response", describeDomainsConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.DescribeDomainsConfig': %w", err)
@@ -274,7 +273,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	updateDomainConfigReq.Https.CertInfo = &tccdn.ServerCert{
 		CertId: common.StringPtr(cloudCertId),
 	}
-	updateDomainConfigResp, err := d.sdkClient.UpdateDomainConfig(updateDomainConfigReq)
+	updateDomainConfigResp, err := d.sdkClient.UpdateDomainConfigWithContext(ctx, updateDomainConfigReq)
 	d.logger.Debug("sdk request 'cdn.UpdateDomainConfig'", slog.Any("request", updateDomainConfigReq), slog.Any("response", updateDomainConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.UpdateDomainConfig': %w", err)
@@ -283,7 +282,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	return nil
 }
 
-func createSDKClient(secretId, secretKey, endpoint string) (*internal.CdnClient, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tccdn.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -291,7 +290,7 @@ func createSDKClient(secretId, secretKey, endpoint string) (*internal.CdnClient,
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewCdnClient(credential, "", cpf)
+	client, err := tccdn.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}

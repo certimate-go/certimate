@@ -11,7 +11,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/qiniu-sslcert"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/qiniu-sslcert"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	qiniusdk "github.com/certimate-go/certimate/pkg/sdk3rd/qiniu"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
@@ -45,7 +45,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 
 	client := qiniusdk.NewCdnManager(auth.New(config.AccessKey, config.SecretKey))
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKey: config.AccessKey,
 		SecretKey: config.SecretKey,
 	})

@@ -13,8 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudfront/types"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgracm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
-	mcertmgriam "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-iam"
+	certmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
+	certmgrimpliam "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-iam"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 )
 
@@ -54,7 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	var pcertmgr certmgr.Provider
 	switch config.CertificateSource {
 	case CERTIFICATE_SOURCE_ACM:
-		pcertmgr, err = mcertmgracm.NewCertmgr(&mcertmgracm.CertmgrConfig{
+		pcertmgr, err = certmgrimplacm.NewCertmgr(&certmgrimplacm.CertmgrConfig{
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,
@@ -64,7 +64,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		}
 
 	case CERTIFICATE_SOURCE_IAM:
-		pcertmgr, err = mcertmgriam.NewCertmgr(&mcertmgriam.CertmgrConfig{
+		pcertmgr, err = certmgrimpliam.NewCertmgr(&certmgrimpliam.CertmgrConfig{
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,

@@ -9,14 +9,14 @@ import (
 
 	jdcore "github.com/jdcloud-api/jdcloud-sdk-go/core"
 	jdcommon "github.com/jdcloud-api/jdcloud-sdk-go/services/common/models"
-	jdlb "github.com/jdcloud-api/jdcloud-sdk-go/services/lb/apis"
-	jdlbmodel "github.com/jdcloud-api/jdcloud-sdk-go/services/lb/models"
+	jdlbapis "github.com/jdcloud-api/jdcloud-sdk-go/services/lb/apis"
+	jdlbmodels "github.com/jdcloud-api/jdcloud-sdk-go/services/lb/models"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/jdcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/jdcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-alb/internal"
+	jdlb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/jdcloud-api/jdcloud-sdk-go/services/lb/client"
 )
 
 type DeployerConfig struct {
@@ -42,7 +42,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.LbClient
+	sdkClient  *jdlb.LbClient
 	sdkCertmgr certmgr.Provider
 }
 
@@ -58,7 +58,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 	})
@@ -119,7 +119,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 
 	// 查询负载均衡器详情
 	// REF: https://docs.jdcloud.com/cn/load-balancer/api/describeloadbalancer
-	describeLoadBalancerReq := jdlb.NewDescribeLoadBalancerRequestWithoutParam()
+	describeLoadBalancerReq := jdlbapis.NewDescribeLoadBalancerRequestWithoutParam()
 	describeLoadBalancerReq.SetRegionId(d.config.RegionId)
 	describeLoadBalancerReq.SetLoadBalancerId(d.config.LoadbalancerId)
 	describeLoadBalancerResp, err := d.sdkClient.DescribeLoadBalancer(describeLoadBalancerReq)
@@ -140,7 +140,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		default:
 		}
 
-		describeListenersReq := jdlb.NewDescribeListenersRequestWithoutParam()
+		describeListenersReq := jdlbapis.NewDescribeListenersRequestWithoutParam()
 		describeListenersReq.SetRegionId(d.config.RegionId)
 		describeListenersReq.SetFilters([]jdcommon.Filter{{Name: "loadBalancerId", Values: []string{d.config.LoadbalancerId}}})
 		describeListenersReq.SetPageSize(describeListenersPageNumber)
@@ -207,7 +207,7 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
 	// 查询监听器详情
 	// REF: https://docs.jdcloud.com/cn/load-balancer/api/describelistener
-	describeListenerReq := jdlb.NewDescribeListenerRequestWithoutParam()
+	describeListenerReq := jdlbapis.NewDescribeListenerRequestWithoutParam()
 	describeListenerReq.SetRegionId(d.config.RegionId)
 	describeListenerReq.SetListenerId(cloudListenerId)
 	describeListenerResp, err := d.sdkClient.DescribeListener(describeListenerReq)
@@ -221,10 +221,10 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 
 		// 修改监听器信息
 		// REF: https://docs.jdcloud.com/cn/load-balancer/api/updatelistener
-		updateListenerReq := jdlb.NewUpdateListenerRequestWithoutParam()
+		updateListenerReq := jdlbapis.NewUpdateListenerRequestWithoutParam()
 		updateListenerReq.SetRegionId(d.config.RegionId)
 		updateListenerReq.SetListenerId(cloudListenerId)
-		updateListenerReq.SetCertificateSpecs([]jdlbmodel.CertificateSpec{{CertificateId: cloudCertId}})
+		updateListenerReq.SetCertificateSpecs([]jdlbmodels.CertificateSpec{{CertificateId: cloudCertId}})
 		updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
 		d.logger.Debug("sdk request 'lb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
 		if err != nil {
@@ -233,7 +233,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	} else {
 		// 指定 SNI，需部署到扩展证书
 
-		extCertSpecs := lo.Filter(describeListenerResp.Result.Listener.ExtensionCertificateSpecs, func(extCertSpec jdlbmodel.ExtensionCertificateSpec, _ int) bool {
+		extCertSpecs := lo.Filter(describeListenerResp.Result.Listener.ExtensionCertificateSpecs, func(extCertSpec jdlbmodels.ExtensionCertificateSpec, _ int) bool {
 			return extCertSpec.Domain == d.config.Domain
 		})
 		if len(extCertSpecs) == 0 {
@@ -242,11 +242,11 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 
 		// 批量修改扩展证书
 		// REF: https://docs.jdcloud.com/cn/load-balancer/api/updatelistenercertificates
-		updateListenerCertificatesReq := jdlb.NewUpdateListenerCertificatesRequestWithoutParam()
+		updateListenerCertificatesReq := jdlbapis.NewUpdateListenerCertificatesRequestWithoutParam()
 		updateListenerCertificatesReq.SetRegionId(d.config.RegionId)
 		updateListenerCertificatesReq.SetListenerId(cloudListenerId)
-		updateListenerCertificatesReq.SetCertificates(lo.Map(extCertSpecs, func(extCertSpec jdlbmodel.ExtensionCertificateSpec, _ int) jdlbmodel.ExtCertificateUpdateSpec {
-			return jdlbmodel.ExtCertificateUpdateSpec{
+		updateListenerCertificatesReq.SetCertificates(lo.Map(extCertSpecs, func(extCertSpec jdlbmodels.ExtensionCertificateSpec, _ int) jdlbmodels.ExtCertificateUpdateSpec {
+			return jdlbmodels.ExtCertificateUpdateSpec{
 				CertificateBindId: extCertSpec.CertificateBindId,
 				CertificateId:     &cloudCertId,
 				Domain:            &extCertSpec.Domain,
@@ -262,8 +262,9 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret string) (*internal.LbClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret string) (*jdlb.LbClient, error) {
 	clientCredentials := jdcore.NewCredentials(accessKeyId, accessKeySecret)
-	client := internal.NewLbClient(clientCredentials)
+	client := jdlb.NewLbClient(clientCredentials)
+	client.DisableLogger()
 	return client, nil
 }

@@ -1,0 +1,37 @@
+﻿package client
+
+import (
+	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
+)
+
+type DescribeDomainExtensionsRequest = alislb.DescribeDomainExtensionsRequest
+
+type DescribeDomainExtensionsResponse = alislb.DescribeDomainExtensionsResponse
+
+type DescribeLoadBalancerListenersRequest = alislb.DescribeLoadBalancerListenersRequest
+
+type DescribeLoadBalancerListenersResponse = alislb.DescribeLoadBalancerListenersResponse
+
+type DescribeLoadBalancerAttributeRequest = alislb.DescribeLoadBalancerAttributeRequest
+
+type DescribeLoadBalancerAttributeResponse = alislb.DescribeLoadBalancerAttributeResponse
+
+type DescribeLoadBalancerHTTPSListenerAttributeRequest = alislb.DescribeLoadBalancerHTTPSListenerAttributeRequest
+
+type DescribeLoadBalancerHTTPSListenerAttributeResponse = alislb.DescribeLoadBalancerHTTPSListenerAttributeResponse
+
+type DescribeServerCertificatesRequest = alislb.DescribeServerCertificatesRequest
+
+type DescribeServerCertificatesResponse = alislb.DescribeServerCertificatesResponse
+
+type SetDomainExtensionAttributeRequest = alislb.SetDomainExtensionAttributeRequest
+
+type SetDomainExtensionAttributeResponse = alislb.SetDomainExtensionAttributeResponse
+
+type SetLoadBalancerHTTPSListenerAttributeRequest = alislb.SetLoadBalancerHTTPSListenerAttributeRequest
+
+type SetLoadBalancerHTTPSListenerAttributeResponse = alislb.SetLoadBalancerHTTPSListenerAttributeResponse
+
+type UploadServerCertificateRequest = alislb.UploadServerCertificateRequest
+
+type UploadServerCertificateResponse = alislb.UploadServerCertificateResponse

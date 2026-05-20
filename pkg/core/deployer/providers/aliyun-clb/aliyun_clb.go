@@ -7,14 +7,13 @@ import (
 	"log/slog"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	alislb "github.com/alibabacloud-go/slb-20140515/v4/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-slb"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-slb"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-clb/internal"
+	alislb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/slb-20140515/v4/client"
 )
 
 type DeployerConfig struct {
@@ -42,7 +41,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.SlbClient
+	sdkClient  *alislb.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -58,7 +57,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -289,7 +288,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.SlbClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*alislb.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/Slb
 	var endpoint string
 	switch region {
@@ -309,7 +308,7 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Slb
 		Endpoint:        tea.String(endpoint),
 	}
 
-	client, err := internal.NewSlbClient(config)
+	client, err := alislb.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

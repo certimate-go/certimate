@@ -8,15 +8,14 @@ import (
 	"strings"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	alinlb "github.com/alibabacloud-go/nlb-20220430/v4/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-nlb/internal"
+	alinlb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/nlb-20220430/v4/client"
 )
 
 type DeployerConfig struct {
@@ -41,7 +40,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.NlbClient
+	sdkClient  *alinlb.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -57,7 +56,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -235,7 +234,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.NlbClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*alinlb.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/Nlb
 	var endpoint string
 	switch region {
@@ -251,7 +250,7 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Nlb
 		Endpoint:        tea.String(endpoint),
 	}
 
-	client, err := internal.NewNlbClient(config)
+	client, err := alinlb.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

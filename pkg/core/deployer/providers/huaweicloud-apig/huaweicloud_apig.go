@@ -9,16 +9,15 @@ import (
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
-	hcapig "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2"
-	hcapigmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/model"
-	hcapigregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/region"
-	hciam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
-	hciamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
-	hciamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
+	hwapigmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/model"
+	hwapigregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/region"
+	hwiam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
+	hwiamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
+	hwiamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-apig/internal"
+	hwapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2"
 )
 
 type DeployerConfig struct {
@@ -40,7 +39,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *internal.ApigClient
+	sdkClient *hwapig.ApigClient
 }
 
 var _ deployer.Provider = (*Deployer)(nil)
@@ -96,7 +95,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 	// 查询证书详情
 	// REF: https://support.huaweicloud.com/api-apig/ShowDetailsOfCertificateV2.html
-	showDetailsOfCertificateV2Req := &hcapigmodel.ShowDetailsOfCertificateV2Request{
+	showDetailsOfCertificateV2Req := &hwapigmodel.ShowDetailsOfCertificateV2Request{
 		CertificateId: d.config.CertificateId,
 	}
 	showDetailsOfCertificateV2Resp, err := d.sdkClient.ShowDetailsOfCertificateV2(showDetailsOfCertificateV2Req)
@@ -107,15 +106,15 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 	// 修改 SSL 证书
 	// REF: https://support.huaweicloud.com/api-apig/UpdateCertificateV2.html
-	updateCertificateV2Req := &hcapigmodel.UpdateCertificateV2Request{
+	updateCertificateV2Req := &hwapigmodel.UpdateCertificateV2Request{
 		CertificateId: d.config.CertificateId,
-		Body: &hcapigmodel.CertificateForm{
+		Body: &hwapigmodel.CertificateForm{
 			Name:        fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
 			CertContent: certPEM,
 			PrivateKey:  privkeyPEM,
 			Type: lo.
-				If(showDetailsOfCertificateV2Resp.Type.Value() == hcapigmodel.GetCertificateFormTypeEnum().INSTANCE.Value(), lo.ToPtr(hcapigmodel.GetCertificateFormTypeEnum().INSTANCE)).
-				Else(lo.ToPtr(hcapigmodel.GetCertificateFormTypeEnum().GLOBAL)),
+				If(showDetailsOfCertificateV2Resp.Type.Value() == hwapigmodel.GetCertificateFormTypeEnum().INSTANCE.Value(), lo.ToPtr(hwapigmodel.GetCertificateFormTypeEnum().INSTANCE)).
+				Else(lo.ToPtr(hwapigmodel.GetCertificateFormTypeEnum().GLOBAL)),
 			InstanceId: showDetailsOfCertificateV2Resp.InstanceId,
 		},
 	}
@@ -128,7 +127,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.ApigClient, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwapig.ApigClient, error) {
 	projectId, err := getSDKProjectId(accessKeyId, secretAccessKey, region)
 	if err != nil {
 		return nil, err
@@ -143,12 +142,12 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Api
 		return nil, err
 	}
 
-	hcRegion, err := hcapigregion.SafeValueOf(region)
+	hcRegion, err := hwapigregion.SafeValueOf(region)
 	if err != nil {
 		return nil, err
 	}
 
-	hcClient, err := hcapig.ApigClientBuilder().
+	hcClient, err := hwapig.ApigClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -156,7 +155,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Api
 		return nil, err
 	}
 
-	client := internal.NewApigClient(hcClient)
+	client := hwapig.NewApigClient(hcClient)
 	return client, nil
 }
 
@@ -169,12 +168,12 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	hcRegion, err := hciamregion.SafeValueOf(region)
+	hcRegion, err := hwiamregion.SafeValueOf(region)
 	if err != nil {
 		return "", err
 	}
 
-	hcClient, err := hciam.IamClientBuilder().
+	hcClient, err := hwiam.IamClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -182,9 +181,9 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	client := hciam.NewIamClient(hcClient)
+	client := hwiam.NewIamClient(hcClient)
 
-	request := &hciamModel.KeystoneListProjectsRequest{
+	request := &hwiamModel.KeystoneListProjectsRequest{
 		Name: &region,
 	}
 	response, err := client.KeystoneListProjects(request)

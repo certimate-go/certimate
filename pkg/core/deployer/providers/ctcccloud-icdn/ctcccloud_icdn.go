@@ -10,7 +10,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-icdn"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-icdn"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	ctyunicdn "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/icdn"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
@@ -47,7 +47,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		SecretAccessKey: config.SecretAccessKey,
 	})

@@ -1,3 +1,3 @@
 此目录下存放对依赖包的分叉，通常因为它们原本位于私有仓库中。
 
-This directory stores the forks of dependent packages, usually because they were originally located in private repositories.
+This directory stores the forks of package dependencies, usually because they were originally located in private repositories.

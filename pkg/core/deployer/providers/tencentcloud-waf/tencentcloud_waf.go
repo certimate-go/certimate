@@ -10,12 +10,11 @@ import (
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcwaf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf/v20180125"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-waf/internal"
+	tcwaf "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf/v20180125"
 )
 
 type DeployerConfig struct {
@@ -38,7 +37,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.WafClient
+	sdkClient  *tcwaf.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -54,7 +53,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		Endpoint: lo.
@@ -108,7 +107,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	describeDomainDetailsSaasReq.InstanceId = common.StringPtr(d.config.InstanceId)
 	describeDomainDetailsSaasReq.Domain = common.StringPtr(d.config.Domain)
 	describeDomainDetailsSaasReq.DomainId = common.StringPtr(d.config.DomainId)
-	describeDomainDetailsSaasResp, err := d.sdkClient.DescribeDomainDetailsSaas(describeDomainDetailsSaasReq)
+	describeDomainDetailsSaasResp, err := d.sdkClient.DescribeDomainDetailsSaasWithContext(ctx, describeDomainDetailsSaasReq)
 	d.logger.Debug("sdk request 'waf.DescribeDomainDetailsSaas'", slog.Any("request", describeDomainDetailsSaasReq), slog.Any("response", describeDomainDetailsSaasResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'waf.DescribeDomainDetailsSaas': %w", err)
@@ -122,7 +121,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	modifySpartaProtectionReq.DomainId = common.StringPtr(d.config.DomainId)
 	modifySpartaProtectionReq.CertType = common.Int64Ptr(2)
 	modifySpartaProtectionReq.SSLId = common.StringPtr(upres.CertId)
-	modifySpartaProtectionResp, err := d.sdkClient.ModifySpartaProtection(modifySpartaProtectionReq)
+	modifySpartaProtectionResp, err := d.sdkClient.ModifySpartaProtectionWithContext(ctx, modifySpartaProtectionReq)
 	d.logger.Debug("sdk request 'waf.ModifySpartaProtection'", slog.Any("request", modifySpartaProtectionReq), slog.Any("response", modifySpartaProtectionResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'waf.ModifySpartaProtection': %w", err)
@@ -131,7 +130,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func createSDKClient(secretId, secretKey, endpoint, region string) (*internal.WafClient, error) {
+func createSDKClient(secretId, secretKey, endpoint, region string) (*tcwaf.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -139,7 +138,7 @@ func createSDKClient(secretId, secretKey, endpoint, region string) (*internal.Wa
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewWafClient(credential, region, cpf)
+	client, err := tcwaf.NewClient(credential, region, cpf)
 	if err != nil {
 		return nil, err
 	}

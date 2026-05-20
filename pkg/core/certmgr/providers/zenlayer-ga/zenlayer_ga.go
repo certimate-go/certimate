@@ -14,10 +14,9 @@ import (
 	"time"
 
 	zcommon "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"
-	zga "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/zga20230706"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	"github.com/certimate-go/certimate/pkg/core/certmgr/providers/zenlayer-ga/internal"
+	zgasdk "github.com/certimate-go/certimate/pkg/sdk3rd/zenlayer/zga"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -33,7 +32,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *internal.ZgaClient
+	sdkClient *zgasdk.Client
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -81,7 +80,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		default:
 		}
 
-		describeCertificatesReq := zga.NewDescribeCertificatesRequest()
+		describeCertificatesReq := zgasdk.NewDescribeCertificatesRequest()
 		describeCertificatesReq.ResourceGroupId = c.config.ResourceGroupId
 		describeCertificatesReq.PageNum = describeCertificatesPageNum
 		describeCertificatesReq.PageSize = describeCertificatesPageSize
@@ -157,7 +156,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 
 	// 创建证书
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/zga/certificate/createcertificate
-	createCertificateReq := zga.NewCreateCertificateRequest()
+	createCertificateReq := zgasdk.NewCreateCertificateRequest()
 	createCertificateReq.ResourceGroupId = c.config.ResourceGroupId
 	createCertificateReq.CertificateLabel = certName
 	createCertificateReq.CertificateContent = certPEM
@@ -177,7 +176,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
 	// 更新证书
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/zga/certificate/modifycertificate
-	modifyCertificateReq := zga.NewModifyCertificateRequest()
+	modifyCertificateReq := zgasdk.NewModifyCertificateRequest()
 	modifyCertificateReq.CertificateId = certIdOrName
 	modifyCertificateReq.CertificateContent = certPEM
 	modifyCertificateReq.CertificateKey = privkeyPEM
@@ -190,10 +189,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return &certmgr.OperateResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeyPassword string) (*internal.ZgaClient, error) {
+func createSDKClient(accessKeyId, accessKeyPassword string) (*zgasdk.Client, error) {
 	config := zcommon.NewConfig()
 
-	client, err := internal.NewZgaClient(config, accessKeyId, accessKeyPassword)
+	client, err := zgasdk.NewClient(config, accessKeyId, accessKeyPassword)
 	if err != nil {
 		return nil, err
 	}

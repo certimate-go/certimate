@@ -9,13 +9,12 @@ import (
 	"time"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
-	hcscm "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
-	hcscmmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/model"
-	hcscmregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/region"
+	hwscmmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/model"
+	hwscmregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/region"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	"github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-scm/internal"
+	hwscm "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -33,7 +32,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *internal.ScmClient
+	sdkClient *hwscm.ScmClient
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -82,7 +81,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		default:
 		}
 
-		listCertificatesReq := &hcscmmodel.ListCertificatesRequest{
+		listCertificatesReq := &hwscmmodel.ListCertificatesRequest{
 			EnterpriseProjectId: lo.EmptyableToPtr(c.config.EnterpriseProjectId),
 			Limit:               lo.ToPtr(int32(listCertificatesLimit)),
 			Offset:              lo.ToPtr(int32(listCertificatesOffset)),
@@ -111,7 +110,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			}
 
 			// 对比证书内容
-			exportCertificateReq := &hcscmmodel.ExportCertificateRequest{
+			exportCertificateReq := &hwscmmodel.ExportCertificateRequest{
 				CertificateId: certItem.Id,
 			}
 			exportCertificateResp, err := c.sdkClient.ExportCertificate(exportCertificateReq)
@@ -147,8 +146,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 
 	// 上传新证书
 	// REF: https://support.huaweicloud.com/api-ccm/ImportCertificate.html
-	importCertificateReq := &hcscmmodel.ImportCertificateRequest{
-		Body: &hcscmmodel.ImportCertificateRequestBody{
+	importCertificateReq := &hwscmmodel.ImportCertificateRequest{
+		Body: &hwscmmodel.ImportCertificateRequestBody{
 			EnterpriseProjectId: lo.EmptyableToPtr(c.config.EnterpriseProjectId),
 			Name:                certName,
 			Certificate:         certPEM,
@@ -171,7 +170,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return nil, certmgr.ErrUnsupported
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.ScmClient, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwscm.ScmClient, error) {
 	if region == "" {
 		region = "cn-north-4" // SCM 服务默认区域：华北北京四
 	}
@@ -184,12 +183,12 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Scm
 		return nil, err
 	}
 
-	hcRegion, err := hcscmregion.SafeValueOf(region)
+	hcRegion, err := hwscmregion.SafeValueOf(region)
 	if err != nil {
 		return nil, err
 	}
 
-	hcClient, err := hcscm.ScmClientBuilder().
+	hcClient, err := hwscm.ScmClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -197,6 +196,6 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Scm
 		return nil, err
 	}
 
-	client := internal.NewScmClient(hcClient)
+	client := hwscm.NewScmClient(hcClient)
 	return client, nil
 }

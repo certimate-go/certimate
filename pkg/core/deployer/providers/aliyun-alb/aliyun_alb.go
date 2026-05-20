@@ -9,17 +9,16 @@ import (
 	"strings"
 	"time"
 
-	alialb "github.com/alibabacloud-go/alb-20200616/v2/client"
-	alicas "github.com/alibabacloud-go/cas-20200407/v4/client"
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-alb/internal"
+	alialb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/alb-20200616/v2/client"
+	alicas "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/cas-20200407/v4/client"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
@@ -56,8 +55,8 @@ type Deployer struct {
 var _ deployer.Provider = (*Deployer)(nil)
 
 type wSDKClients struct {
-	ALB *internal.AlbClient
-	CAS *internal.CasClient
+	ALB *alialb.Client
+	CAS *alicas.Client
 }
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
@@ -70,7 +69,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -468,7 +467,7 @@ func (d *Deployer) waitForListenerReady(ctx context.Context, cloudListenerId str
 
 		d.logger.Info("waiting for aliyun alb listener's status to not be 'Configuring' ...")
 		return false, nil
-	}, time.Second*5); err != nil {
+	}, 10*time.Second); err != nil {
 		return err
 	}
 
@@ -476,45 +475,54 @@ func (d *Deployer) waitForListenerReady(ctx context.Context, cloudListenerId str
 }
 
 func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
-	// 接入点一览 https://api.aliyun.com/product/Alb
-	var albEndpoint string
-	switch region {
-	case "", "cn-hangzhou-finance":
-		albEndpoint = "alb.cn-hangzhou.aliyuncs.com"
-	default:
-		albEndpoint = fmt.Sprintf("alb.%s.aliyuncs.com", region)
+	wsdk := &wSDKClients{}
+
+	{
+		// 接入点一览 https://api.aliyun.com/product/Alb
+		var endpoint string
+		switch region {
+		case "", "cn-hangzhou-finance":
+			endpoint = "alb.cn-hangzhou.aliyuncs.com"
+		default:
+			endpoint = fmt.Sprintf("alb.%s.aliyuncs.com", region)
+		}
+
+		config := &aliopen.Config{
+			AccessKeyId:     tea.String(accessKeyId),
+			AccessKeySecret: tea.String(accessKeySecret),
+			Endpoint:        tea.String(endpoint),
+		}
+
+		client, err := alialb.NewClient(config)
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.ALB = client
 	}
 
-	albConfig := &aliopen.Config{
-		AccessKeyId:     tea.String(accessKeyId),
-		AccessKeySecret: tea.String(accessKeySecret),
-		Endpoint:        tea.String(albEndpoint),
-	}
-	albClient, err := internal.NewAlbClient(albConfig)
-	if err != nil {
-		return nil, err
+	{
+		// 接入点一览 https://api.aliyun.com/product/cas
+		var endpoint string
+		if !strings.HasPrefix(region, "cn-") {
+			endpoint = "cas.ap-southeast-1.aliyuncs.com"
+		} else {
+			endpoint = "cas.aliyuncs.com"
+		}
+
+		config := &aliopen.Config{
+			Endpoint:        tea.String(endpoint),
+			AccessKeyId:     tea.String(accessKeyId),
+			AccessKeySecret: tea.String(accessKeySecret),
+		}
+
+		client, err := alicas.NewClient(config)
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.CAS = client
 	}
 
-	// 接入点一览 https://api.aliyun.com/product/cas
-	var casEndpoint string
-	if !strings.HasPrefix(region, "cn-") {
-		casEndpoint = "cas.ap-southeast-1.aliyuncs.com"
-	} else {
-		casEndpoint = "cas.aliyuncs.com"
-	}
-
-	casConfig := &aliopen.Config{
-		Endpoint:        tea.String(casEndpoint),
-		AccessKeyId:     tea.String(accessKeyId),
-		AccessKeySecret: tea.String(accessKeySecret),
-	}
-	casClient, err := internal.NewCasClient(casConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	return &wSDKClients{
-		ALB: albClient,
-		CAS: casClient,
-	}, nil
+	return wsdk, nil
 }

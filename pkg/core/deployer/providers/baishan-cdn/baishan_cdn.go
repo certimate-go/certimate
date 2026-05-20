@@ -10,7 +10,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/baishan-cdn"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/baishan-cdn"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	baishansdk "github.com/certimate-go/certimate/pkg/sdk3rd/baishan"
 )
@@ -49,7 +49,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		ApiToken: config.ApiToken,
 	})
 	if err != nil {

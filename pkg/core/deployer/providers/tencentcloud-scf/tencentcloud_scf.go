@@ -10,12 +10,11 @@ import (
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcscf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf/v20180416"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-scf/internal"
+	tcscf "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf/v20180416"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -38,7 +37,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.ScfClient
+	sdkClient  *tcscf.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -54,7 +53,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		Endpoint: lo.
@@ -166,7 +165,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		describeLiveDomainsReq := tcscf.NewListCustomDomainsRequest()
 		describeLiveDomainsReq.Offset = common.Uint64Ptr(uint64(listCustomDomainsOffset))
 		describeLiveDomainsReq.Limit = common.Uint64Ptr(uint64(listCustomDomainsLimit))
-		describeLiveDomainsResp, err := d.sdkClient.ListCustomDomains(describeLiveDomainsReq)
+		describeLiveDomainsResp, err := d.sdkClient.ListCustomDomainsWithContext(ctx, describeLiveDomainsReq)
 		d.logger.Debug("sdk request 'scf.DescribeLiveDomains'", slog.Any("request", describeLiveDomainsReq), slog.Any("response", describeLiveDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'scf.DescribeLiveDomains': %w", err)
@@ -195,7 +194,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	// REF: https://cloud.tencent.com/document/api/583/111924
 	getCustomDomainReq := tcscf.NewGetCustomDomainRequest()
 	getCustomDomainReq.Domain = common.StringPtr(domain)
-	getCustomDomainResp, err := d.sdkClient.GetCustomDomain(getCustomDomainReq)
+	getCustomDomainResp, err := d.sdkClient.GetCustomDomainWithContext(ctx, getCustomDomainReq)
 	d.logger.Debug("sdk request 'scf.GetCustomDomain'", slog.Any("request", getCustomDomainReq), slog.Any("response", getCustomDomainResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'scf.GetCustomDomain': %w", err)
@@ -216,7 +215,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	if updateCustomDomainReq.Protocol == nil || *updateCustomDomainReq.Protocol == "HTTP" {
 		updateCustomDomainReq.Protocol = common.StringPtr("HTTP&HTTPS")
 	}
-	updateCustomDomainResp, err := d.sdkClient.UpdateCustomDomain(updateCustomDomainReq)
+	updateCustomDomainResp, err := d.sdkClient.UpdateCustomDomainWithContext(ctx, updateCustomDomainReq)
 	d.logger.Debug("sdk request 'scf.UpdateCustomDomain'", slog.Any("request", updateCustomDomainReq), slog.Any("response", updateCustomDomainResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'scf.UpdateCustomDomain': %w", err)
@@ -225,7 +224,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	return nil
 }
 
-func createSDKClient(secretId, secretKey, endpoint, region string) (*internal.ScfClient, error) {
+func createSDKClient(secretId, secretKey, endpoint, region string) (*tcscf.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -233,7 +232,7 @@ func createSDKClient(secretId, secretKey, endpoint, region string) (*internal.Sc
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewScfClient(credential, region, cpf)
+	client, err := tcscf.NewClient(credential, region, cpf)
 	if err != nil {
 		return nil, err
 	}

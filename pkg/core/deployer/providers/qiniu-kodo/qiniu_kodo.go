@@ -9,7 +9,7 @@ import (
 	"github.com/qiniu/go-sdk/v7/auth"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/qiniu-sslcert"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/qiniu-sslcert"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	qiniusdk "github.com/certimate-go/certimate/pkg/sdk3rd/qiniu"
 )
@@ -41,7 +41,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 
 	client := qiniusdk.NewKodoManager(auth.New(config.AccessKey, config.SecretKey))
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKey: config.AccessKey,
 		SecretKey: config.SecretKey,
 	})

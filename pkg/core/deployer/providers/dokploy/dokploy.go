@@ -7,7 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/dokploy"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/dokploy"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 )
 
@@ -33,7 +33,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, errors.New("the configuration of the deployer provider is nil")
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		ServerUrl:                config.ServerUrl,
 		ApiKey:                   config.ApiKey,
 		AllowInsecureConnections: config.AllowInsecureConnections,

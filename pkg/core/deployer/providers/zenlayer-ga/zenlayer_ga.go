@@ -8,12 +8,11 @@ import (
 	"time"
 
 	zcommon "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"
-	zga "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/zga20230706"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/zenlayer-ga"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/zenlayer-ga"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/zenlayer-ga/internal"
+	zgasdk "github.com/certimate-go/certimate/pkg/sdk3rd/zenlayer/zga"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -37,7 +36,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.ZgaClient
+	sdkClient  *zgasdk.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -53,7 +52,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:       config.AccessKeyId,
 		AccessKeyPassword: config.AccessKeyPassword,
 		ResourceGroupId:   config.ResourceGroupId,
@@ -115,7 +114,7 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, certPEM, privkeyPEM 
 
 	// 查询加速器信息
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/zga/accelerator/describeaccelerators
-	describeAcceleratorsReq := zga.NewDescribeAcceleratorsRequest()
+	describeAcceleratorsReq := zgasdk.NewDescribeAcceleratorsRequest()
 	describeAcceleratorsReq.AcceleratorIds = []string{d.config.AcceleratorId}
 	describeAcceleratorsReq.PageNum = 1
 	describeAcceleratorsReq.PageSize = 1
@@ -131,7 +130,7 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, certPEM, privkeyPEM 
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/zga/accelerator/modifyacceleratorcertificate
 	acceleratorInfo := describeAcceleratorsResp.Response.DataSet[0]
 	if acceleratorInfo.Certificate == nil || acceleratorInfo.Certificate.CertificateId != upres.CertId {
-		modifyAcceleratorCertificateReq := zga.NewModifyAcceleratorCertificateRequest()
+		modifyAcceleratorCertificateReq := zgasdk.NewModifyAcceleratorCertificateRequest()
 		modifyAcceleratorCertificateReq.AcceleratorId = acceleratorInfo.AcceleratorId
 		modifyAcceleratorCertificateReq.CertificateId = upres.CertId
 		modifyAcceleratorCertificateResp, err := d.sdkClient.ModifyAcceleratorCertificate(modifyAcceleratorCertificateReq)
@@ -144,7 +143,7 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, certPEM, privkeyPEM 
 	// 查询加速器状态，等待部署状态变更
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/zga/accelerator/describeaccelerators
 	if _, err := xwait.UntilWithContext(ctx, func(_ context.Context, _ int) (bool, error) {
-		describeAcceleratorsReq := zga.NewDescribeAcceleratorsRequest()
+		describeAcceleratorsReq := zgasdk.NewDescribeAcceleratorsRequest()
 		describeAcceleratorsReq.AcceleratorIds = []string{acceleratorInfo.AcceleratorId}
 		describeAcceleratorsReq.PageNum = 1
 		describeAcceleratorsReq.PageSize = 1
@@ -165,7 +164,7 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, certPEM, privkeyPEM 
 
 		d.logger.Info("waiting for zenlayer accelerator deploying completion ...")
 		return false, nil
-	}, time.Second*5); err != nil {
+	}, 10*time.Second); err != nil {
 		return err
 	}
 
@@ -188,10 +187,10 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeyPassword string) (*internal.ZgaClient, error) {
+func createSDKClient(accessKeyId, accessKeyPassword string) (*zgasdk.Client, error) {
 	config := zcommon.NewConfig()
 
-	client, err := internal.NewZgaClient(config, accessKeyId, accessKeyPassword)
+	client, err := zgasdk.NewClient(config, accessKeyId, accessKeyPassword)
 	if err != nil {
 		return nil, err
 	}

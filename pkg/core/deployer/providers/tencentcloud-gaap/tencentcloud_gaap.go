@@ -10,12 +10,11 @@ import (
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcgaap "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-gaap/internal"
+	tcgaap "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
 )
 
 type DeployerConfig struct {
@@ -38,7 +37,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.GaapClient
+	sdkClient  *tcgaap.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -54,7 +53,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		Endpoint: lo.
@@ -126,7 +125,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudList
 	describeHTTPSListenersReq.ListenerId = common.StringPtr(cloudListenerId)
 	describeHTTPSListenersReq.Offset = common.Uint64Ptr(0)
 	describeHTTPSListenersReq.Limit = common.Uint64Ptr(1)
-	describeHTTPSListenersResp, err := d.sdkClient.DescribeHTTPSListeners(describeHTTPSListenersReq)
+	describeHTTPSListenersResp, err := d.sdkClient.DescribeHTTPSListenersWithContext(ctx, describeHTTPSListenersReq)
 	d.logger.Debug("sdk request 'gaap.DescribeHTTPSListeners'", slog.Any("request", describeHTTPSListenersReq), slog.Any("response", describeHTTPSListenersResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'gaap.DescribeHTTPSListeners': %w", err)
@@ -140,7 +139,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudList
 	modifyHTTPSListenerAttributeReq.ProxyId = lo.EmptyableToPtr(d.config.ProxyId)
 	modifyHTTPSListenerAttributeReq.ListenerId = common.StringPtr(cloudListenerId)
 	modifyHTTPSListenerAttributeReq.CertificateId = common.StringPtr(cloudCertId)
-	modifyHTTPSListenerAttributeResp, err := d.sdkClient.ModifyHTTPSListenerAttribute(modifyHTTPSListenerAttributeReq)
+	modifyHTTPSListenerAttributeResp, err := d.sdkClient.ModifyHTTPSListenerAttributeWithContext(ctx, modifyHTTPSListenerAttributeReq)
 	d.logger.Debug("sdk request 'gaap.ModifyHTTPSListenerAttribute'", slog.Any("request", modifyHTTPSListenerAttributeReq), slog.Any("response", modifyHTTPSListenerAttributeResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'gaap.ModifyHTTPSListenerAttribute': %w", err)
@@ -149,7 +148,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudList
 	return nil
 }
 
-func createSDKClients(secretId, secretKey, endpoint string) (*internal.GaapClient, error) {
+func createSDKClients(secretId, secretKey, endpoint string) (*tcgaap.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -157,7 +156,7 @@ func createSDKClients(secretId, secretKey, endpoint string) (*internal.GaapClien
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewGaapClient(credential, "", cpf)
+	client, err := tcgaap.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}

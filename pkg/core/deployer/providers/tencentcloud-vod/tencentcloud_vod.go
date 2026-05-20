@@ -10,12 +10,11 @@ import (
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcvod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-vod/internal"
+	tcvod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
 )
 
 type DeployerConfig struct {
@@ -37,7 +36,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.VodClient
+	sdkClient  *tcvod.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -53,7 +52,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		Endpoint: lo.
@@ -163,7 +162,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		if d.config.SubAppId != 0 {
 			describeVodDomainsReq.SubAppId = common.Uint64Ptr(uint64(d.config.SubAppId))
 		}
-		describeVodDomainsResp, err := d.sdkClient.DescribeVodDomains(describeVodDomainsReq)
+		describeVodDomainsResp, err := d.sdkClient.DescribeVodDomainsWithContext(ctx, describeVodDomainsReq)
 		d.logger.Debug("sdk request 'vod.DescribeVodDomains'", slog.Any("request", describeVodDomainsReq), slog.Any("response", describeVodDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'vod.DescribeVodDomains': %w", err)
@@ -202,7 +201,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	if d.config.SubAppId != 0 {
 		setVodDomainCertificateReq.SubAppId = common.Uint64Ptr(uint64(d.config.SubAppId))
 	}
-	setVodDomainCertificateResp, err := d.sdkClient.SetVodDomainCertificate(setVodDomainCertificateReq)
+	setVodDomainCertificateResp, err := d.sdkClient.SetVodDomainCertificateWithContext(ctx, setVodDomainCertificateReq)
 	d.logger.Debug("sdk request 'vod.SetVodDomainCertificate'", slog.Any("request", setVodDomainCertificateReq), slog.Any("response", setVodDomainCertificateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'vod.SetVodDomainCertificate': %w", err)
@@ -211,7 +210,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	return nil
 }
 
-func createSDKClient(secretId, secretKey, endpoint string) (*internal.VodClient, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tcvod.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()
@@ -219,7 +218,7 @@ func createSDKClient(secretId, secretKey, endpoint string) (*internal.VodClient,
 		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	client, err := internal.NewVodClient(credential, "", cpf)
+	client, err := tcvod.NewClient(credential, "", cpf)
 	if err != nil {
 		return nil, err
 	}

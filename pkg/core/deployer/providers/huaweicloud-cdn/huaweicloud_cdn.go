@@ -8,15 +8,14 @@ import (
 	"strings"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
-	hccdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
-	hccdnmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
-	hccdnregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region"
+	hwcdnmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
+	hwcdnregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-scm"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-scm"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-cdn/internal"
+	hwcdn "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -39,7 +38,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.CdnClient
+	sdkClient  *hwcdn.CdnClient
 	sdkCertmgr certmgr.Provider
 }
 
@@ -59,7 +58,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:         config.AccessKeyId,
 		SecretAccessKey:     config.SecretAccessKey,
 		EnterpriseProjectId: config.EnterpriseProjectId,
@@ -191,7 +190,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		default:
 		}
 
-		listDomainsReq := &hccdnmodel.ListDomainsRequest{
+		listDomainsReq := &hwcdnmodel.ListDomainsRequest{
 			EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
 			PageNumber:          lo.ToPtr(int32(listDomainsPageNumber)),
 			PageSize:            lo.ToPtr(int32(listDomainsPageSize)),
@@ -229,10 +228,10 @@ func (d *Deployer) updateDomainsCertificate(ctx context.Context, domains []strin
 	// 更新加速域名配置
 	// REF: https://support.huaweicloud.com/api-cdn/UpdateDomainMultiCertificates.html
 	// REF: https://support.huaweicloud.com/usermanual-cdn/cdn_01_0306.html
-	updateDomainMultiCertificatesReq := &hccdnmodel.UpdateDomainMultiCertificatesRequest{
+	updateDomainMultiCertificatesReq := &hwcdnmodel.UpdateDomainMultiCertificatesRequest{
 		EnterpriseProjectId: lo.EmptyableToPtr(d.config.EnterpriseProjectId),
-		Body: &hccdnmodel.UpdateDomainMultiCertificatesRequestBody{
-			Https: &hccdnmodel.UpdateDomainMultiCertificatesRequestBodyContent{
+		Body: &hwcdnmodel.UpdateDomainMultiCertificatesRequestBody{
+			Https: &hwcdnmodel.UpdateDomainMultiCertificatesRequestBodyContent{
 				DomainName:       strings.Join(domains, ","),
 				HttpsSwitch:      1,
 				CertificateType:  lo.ToPtr(int32(2)),
@@ -250,7 +249,7 @@ func (d *Deployer) updateDomainsCertificate(ctx context.Context, domains []strin
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.CdnClient, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwcdn.CdnClient, error) {
 	if region == "" {
 		region = "cn-north-1" // CDN 服务默认区域：华北北京一
 	}
@@ -263,12 +262,12 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Cdn
 		return nil, err
 	}
 
-	hcRegion, err := hccdnregion.SafeValueOf(region)
+	hcRegion, err := hwcdnregion.SafeValueOf(region)
 	if err != nil {
 		return nil, err
 	}
 
-	hcClient, err := hccdn.CdnClientBuilder().
+	hcClient, err := hwcdn.CdnClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -276,6 +275,6 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*internal.Cdn
 		return nil, err
 	}
 
-	client := internal.NewCdnClient(hcClient)
+	client := hwcdn.NewCdnClient(hcClient)
 	return client, nil
 }

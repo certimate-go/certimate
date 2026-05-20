@@ -9,15 +9,14 @@ import (
 	"strings"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	aliesa "github.com/alibabacloud-go/esa-20240910/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-esa/internal"
+	aliesa "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/esa-20240910/v2/client"
 )
 
 type DeployerConfig struct {
@@ -36,7 +35,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.EsaClient
+	sdkClient  *aliesa.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -52,7 +51,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -119,7 +118,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	return &deployer.DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.EsaClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*aliesa.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/ESA
 	var endpoint string
 	switch region {
@@ -135,7 +134,7 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Esa
 		Endpoint:        tea.String(endpoint),
 	}
 
-	client, err := internal.NewEsaClient(config)
+	client, err := aliesa.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

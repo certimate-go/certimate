@@ -11,7 +11,7 @@ import (
 	bp "github.com/volcengine/volcengine-go-sdk/volcengine"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-cdn"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-cdn"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
@@ -46,7 +46,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	client.Client.SetAccessKey(config.AccessKey)
 	client.Client.SetSecretKey(config.SecretKey)
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKey: config.AccessKey,
 		SecretKey: config.SecretKey,
 	})

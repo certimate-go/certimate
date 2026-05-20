@@ -8,14 +8,14 @@ import (
 	"strings"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	aliga "github.com/alibabacloud-go/ga-20191120/v4/client"
+	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-ga/internal"
+	aliga "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/ga-20191120/v4/client"
 )
 
 type DeployerConfig struct {
@@ -40,7 +40,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.GaClient
+	sdkClient  *aliga.Client
 	sdkCertmgr certmgr.Provider
 }
 
@@ -56,7 +56,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -135,7 +135,7 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, cloudCertId string) 
 			PageNumber:    tea.Int32(int32(listListenersPageNumber)),
 			PageSize:      tea.Int32(int32(listListenersPageSize)),
 		}
-		listListenersResp, err := d.sdkClient.ListListeners(listListenersReq)
+		listListenersResp, err := d.sdkClient.ListListenersWithContext(ctx, listListenersReq, &dara.RuntimeOptions{})
 		d.logger.Debug("sdk request 'ga.ListListeners'", slog.Any("request", listListenersReq), slog.Any("response", listListenersResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'ga.ListListeners': %w", err)
@@ -214,7 +214,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 			NextToken:     listListenerCertificatesNextToken,
 			MaxResults:    tea.Int32(20),
 		}
-		listListenerCertificatesResp, err := d.sdkClient.ListListenerCertificates(listListenerCertificatesReq)
+		listListenerCertificatesResp, err := d.sdkClient.ListListenerCertificatesWithContext(ctx, listListenerCertificatesReq, &dara.RuntimeOptions{})
 		d.logger.Debug("sdk request 'ga.ListListenerCertificates'", slog.Any("request", listListenerCertificatesReq), slog.Any("response", listListenerCertificatesResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'ga.ListListenerCertificates': %w", err)
@@ -255,7 +255,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 				Id: tea.String(cloudCertId),
 			}},
 		}
-		updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
+		updateListenerResp, err := d.sdkClient.UpdateListenerWithContext(ctx, updateListenerReq, &dara.RuntimeOptions{})
 		d.logger.Debug("sdk request 'ga.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
 		if err != nil {
 			return fmt.Errorf("failed to execute sdk request 'ga.UpdateListener': %w", err)
@@ -281,7 +281,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 				CertificateId: tea.String(cloudCertId),
 				Domain:        tea.String(d.config.Domain),
 			}
-			updateAdditionalCertificateWithListenerResp, err := d.sdkClient.UpdateAdditionalCertificateWithListener(updateAdditionalCertificateWithListenerReq)
+			updateAdditionalCertificateWithListenerResp, err := d.sdkClient.UpdateAdditionalCertificateWithListenerWithContext(ctx, updateAdditionalCertificateWithListenerReq, &dara.RuntimeOptions{})
 			d.logger.Debug("sdk request 'ga.UpdateAdditionalCertificateWithListener'", slog.Any("request", updateAdditionalCertificateWithListenerReq), slog.Any("response", updateAdditionalCertificateWithListenerResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'ga.UpdateAdditionalCertificateWithListener': %w", err)
@@ -298,7 +298,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 					Domain: tea.String(d.config.Domain),
 				}},
 			}
-			associateAdditionalCertificatesWithListenerResp, err := d.sdkClient.AssociateAdditionalCertificatesWithListener(associateAdditionalCertificatesWithListenerReq)
+			associateAdditionalCertificatesWithListenerResp, err := d.sdkClient.AssociateAdditionalCertificatesWithListenerWithContext(ctx, associateAdditionalCertificatesWithListenerReq, &dara.RuntimeOptions{})
 			d.logger.Debug("sdk request 'ga.AssociateAdditionalCertificatesWithListener'", slog.Any("request", associateAdditionalCertificatesWithListenerReq), slog.Any("response", associateAdditionalCertificatesWithListenerResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'ga.AssociateAdditionalCertificatesWithListener': %w", err)
@@ -309,7 +309,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret string) (*internal.GaClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret string) (*aliga.Client, error) {
 	// 接入点一览 https://api.aliyun.com/product/Ga
 	config := &aliopen.Config{
 		AccessKeyId:     tea.String(accessKeyId),
@@ -317,7 +317,7 @@ func createSDKClient(accessKeyId, accessKeySecret string) (*internal.GaClient, e
 		Endpoint:        tea.String("ga.cn-hangzhou.aliyuncs.com"),
 	}
 
-	client, err := internal.NewGaClient(config)
+	client, err := aliga.NewClient(config)
 	if err != nil {
 		return nil, err
 	}

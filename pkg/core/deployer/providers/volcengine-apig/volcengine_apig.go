@@ -7,14 +7,13 @@ import (
 	"log/slog"
 
 	"github.com/samber/lo"
-	veapig "github.com/volcengine/volcengine-go-sdk/service/apig"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-apig/internal"
+	veapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volcengine-go-sdk/service/apig"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -35,7 +34,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *internal.ApigClient
+	sdkClient  *veapig.APIG
 	sdkCertmgr certmgr.Provider
 }
 
@@ -51,7 +50,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		Region:          config.Region,
@@ -202,7 +201,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]*veapig.ItemForListCust
 			PageNumber: ve.Int64(int64(listCustomDomainsPageNumber)),
 			PageSize:   ve.Int64(int64(listCustomDomainsPageSize)),
 		}
-		listCustomDomainsResp, err := d.sdkClient.ListCustomDomains(listCustomDomainsReq)
+		listCustomDomainsResp, err := d.sdkClient.ListCustomDomainsWithContext(ctx, listCustomDomainsReq)
 		d.logger.Debug("sdk request 'apig.ListCustomDomains'", slog.Any("request", listCustomDomainsReq), slog.Any("response", listCustomDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'apig.ListCustomDomains': %w", err)
@@ -233,7 +232,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 	getCustomDomainReq := &veapig.GetCustomDomainInput{
 		Id: ve.String(cloudDomainId),
 	}
-	getCustomDomainResp, err := d.sdkClient.GetCustomDomain(getCustomDomainReq)
+	getCustomDomainResp, err := d.sdkClient.GetCustomDomainWithContext(ctx, getCustomDomainReq)
 	d.logger.Debug("sdk request 'apig.GetCustomDomain'", slog.Any("request", getCustomDomainReq), slog.Any("response", getCustomDomainResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'apig.GetCustomDomain': %w", err)
@@ -249,7 +248,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 	if !lo.Contains(ve.StringValueSlice(updateCustomDomainReq.Protocol), "HTTPS") {
 		updateCustomDomainReq.Protocol = append(updateCustomDomainReq.Protocol, ve.String("HTTPS"))
 	}
-	updateCustomDomainResp, err := d.sdkClient.UpdateCustomDomain(updateCustomDomainReq)
+	updateCustomDomainResp, err := d.sdkClient.UpdateCustomDomainWithContext(ctx, updateCustomDomainReq)
 	d.logger.Debug("sdk request 'apig.UpdateCustomDomain'", slog.Any("request", updateCustomDomainReq), slog.Any("response", updateCustomDomainResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'apig.UpdateCustomDomain': %w", err)
@@ -258,7 +257,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.ApigClient, error) {
+func createSDKClient(accessKeyId, accessKeySecret, region string) (*veapig.APIG, error) {
 	config := ve.NewConfig().
 		WithAkSk(accessKeyId, accessKeySecret).
 		WithRegion(region)
@@ -268,6 +267,6 @@ func createSDKClient(accessKeyId, accessKeySecret, region string) (*internal.Api
 		return nil, err
 	}
 
-	client := internal.NewApigClient(session)
+	client := veapig.New(session)
 	return client, nil
 }

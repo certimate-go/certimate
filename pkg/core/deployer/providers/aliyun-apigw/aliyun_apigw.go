@@ -8,17 +8,16 @@ import (
 	"strings"
 	"time"
 
-	aliapig "github.com/alibabacloud-go/apig-20240327/v6/client"
-	alicloudapi "github.com/alibabacloud-go/cloudapi-20160714/v5/client"
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	mcertmgr "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-apigw/internal"
+	aliapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/apig-20240327/v6/client"
+	alicloudapi "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/cloudapi-20160714/v5/client"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -54,8 +53,8 @@ type Deployer struct {
 }
 
 type wSDKClients struct {
-	CloudNativeAPIGateway *internal.ApigClient
-	TraditionalAPIGateway *internal.CloudapiClient
+	CloudNativeAPIGateway *aliapig.Client
+	TraditionalAPIGateway *alicloudapi.Client
 }
 
 var _ deployer.Provider = (*Deployer)(nil)
@@ -70,7 +69,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := mcertmgr.NewCertmgr(&mcertmgr.CertmgrConfig{
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -467,46 +466,55 @@ func (d *Deployer) findCloudNativeDomainIdByDomain(ctx context.Context, cloudGat
 }
 
 func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
-	// 接入点一览 https://api.aliyun.com/product/APIG
-	var cloudNativeAPIGEndpoint string
-	switch region {
-	case "":
-		cloudNativeAPIGEndpoint = "apig.cn-hangzhou.aliyuncs.com"
-	default:
-		cloudNativeAPIGEndpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
+	wsdk := &wSDKClients{}
+
+	{
+		// 接入点一览 https://api.aliyun.com/product/APIG
+		var endpoint string
+		switch region {
+		case "":
+			endpoint = "apig.cn-hangzhou.aliyuncs.com"
+		default:
+			endpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
+		}
+
+		config := &aliopen.Config{
+			AccessKeyId:     tea.String(accessKeyId),
+			AccessKeySecret: tea.String(accessKeySecret),
+			Endpoint:        tea.String(endpoint),
+		}
+
+		client, err := aliapig.NewClient(config)
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.CloudNativeAPIGateway = client
 	}
 
-	cloudNativeAPIGConfig := &aliopen.Config{
-		AccessKeyId:     tea.String(accessKeyId),
-		AccessKeySecret: tea.String(accessKeySecret),
-		Endpoint:        tea.String(cloudNativeAPIGEndpoint),
-	}
-	cloudNativeAPIGClient, err := internal.NewApigClient(cloudNativeAPIGConfig)
-	if err != nil {
-		return nil, err
+	{
+		// 接入点一览 https://api.aliyun.com/product/CloudAPI
+		var endpoint string
+		switch region {
+		case "":
+			endpoint = "apigateway.cn-hangzhou.aliyuncs.com"
+		default:
+			endpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
+		}
+
+		config := &aliopen.Config{
+			AccessKeyId:     tea.String(accessKeyId),
+			AccessKeySecret: tea.String(accessKeySecret),
+			Endpoint:        tea.String(endpoint),
+		}
+
+		client, err := alicloudapi.NewClient(config)
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.TraditionalAPIGateway = client
 	}
 
-	// 接入点一览 https://api.aliyun.com/product/CloudAPI
-	var traditionalAPIGEndpoint string
-	switch region {
-	case "":
-		traditionalAPIGEndpoint = "apigateway.cn-hangzhou.aliyuncs.com"
-	default:
-		traditionalAPIGEndpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
-	}
-
-	traditionalAPIGConfig := &aliopen.Config{
-		AccessKeyId:     tea.String(accessKeyId),
-		AccessKeySecret: tea.String(accessKeySecret),
-		Endpoint:        tea.String(traditionalAPIGEndpoint),
-	}
-	traditionalAPIGClient, err := internal.NewCloudapiClient(traditionalAPIGConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	return &wSDKClients{
-		CloudNativeAPIGateway: cloudNativeAPIGClient,
-		TraditionalAPIGateway: traditionalAPIGClient,
-	}, nil
+	return wsdk, nil
 }
