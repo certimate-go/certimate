@@ -1,59 +1,24 @@
 ﻿import "reflect-metadata";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
 import { App, ConfigProvider, type ThemeConfig, theme } from "antd";
-import { type Locale } from "antd/es/locale";
-import AntdLocaleEnUS from "antd/locale/en_US";
-import AntdLocaleZhCN from "antd/locale/zh_CN";
-import dayjs from "dayjs";
-import { z } from "zod";
-import { en as ZodLocaleEnUs, zhCN as ZodLocaleZhCN } from "zod/locales";
-import "dayjs/locale/zh-cn";
 
 import { useBrowserTheme } from "@/hooks";
-import { localeNames } from "@/i18n";
+import { useAntdLocale, useDayjsLocale, useZodLocale } from "@/i18n";
 import { router } from "@/routers";
-
-const antdLocalesMap: Record<string, Locale> = {
-  [localeNames.EN]: AntdLocaleEnUS,
-  [localeNames.ZH]: AntdLocaleZhCN,
-};
 
 const antdThemesMap: Record<string, ThemeConfig> = {
   ["light"]: { algorithm: theme.defaultAlgorithm },
   ["dark"]: { algorithm: theme.darkAlgorithm },
 };
 
-const zodLocalesMap: Record<string, typeof ZodLocaleEnUs> = {
-  [localeNames.EN]: ZodLocaleEnUs,
-  [localeNames.ZH]: ZodLocaleZhCN,
-};
-
 const RootApp = () => {
-  const { i18n } = useTranslation();
-
   const { theme: browserTheme } = useBrowserTheme();
 
-  const [antdLocale, setAntdLocale] = useState(antdLocalesMap[i18n.language]);
   const [antdTheme, setAntdTheme] = useState(antdThemesMap[browserTheme]);
-
-  const handleLanguageChanged = () => {
-    setAntdLocale(antdLocalesMap[i18n.language]);
-    dayjs.locale(i18n.language);
-    z.config(zodLocalesMap[i18n.language]?.());
-  };
-
-  i18n.on("initialized", handleLanguageChanged);
-  i18n.on("languageChanged", handleLanguageChanged);
-  useLayoutEffect(() => {
-    handleLanguageChanged();
-
-    return () => {
-      i18n.off("initialized", handleLanguageChanged);
-      i18n.off("languageChanged", handleLanguageChanged);
-    };
-  }, [i18n]);
+  const antdLocale = useAntdLocale();
+  useDayjsLocale();
+  useZodLocale();
 
   useEffect(() => {
     setAntdTheme(antdThemesMap[browserTheme]);

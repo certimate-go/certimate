@@ -2,14 +2,15 @@ import { initReactI18next } from "react-i18next";
 import i18n from "i18next";
 import i18nBrowserLanguageDetector from "i18next-browser-languagedetector";
 
-import resources, { LOCALE_EN_NAME, LOCALE_ZH_NAME } from "./locales";
+import { localeNames } from "./locales";
+import resources from "./resources";
 
 i18n
   .use(i18nBrowserLanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: LOCALE_EN_NAME,
+    fallbackLng: localeNames.EN,
     debug: true,
     interpolation: {
       escapeValue: false,
@@ -19,11 +20,11 @@ i18n
     },
   });
 
-export const localeNames = {
-  ZH: LOCALE_ZH_NAME,
-  EN: LOCALE_EN_NAME,
-};
-
+export { localeNames };
 export const localeResources = resources;
+
+export { useAntdLocale } from "./vendors/antd";
+export { useDayjsLocale } from "./vendors/dayjs";
+export { useZodLocale } from "./vendors/zod";
 
 export default i18n;
