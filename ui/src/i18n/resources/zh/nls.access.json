@@ -527,12 +527,12 @@
       }
     },
     "email_username": {
-      "label": "用户名",
-      "placeholder": "请输入用户名"
+      "label": "用户名（可选）",
+      "placeholder": "请输入 SMTP 用户名"
     },
     "email_password": {
-      "label": "密码",
-      "placeholder": "请输入密码"
+      "label": "密码（可选）",
+      "placeholder": "请输入 SMTP 密码"
     },
     "email_sender_address": {
       "label": "发件人邮箱",

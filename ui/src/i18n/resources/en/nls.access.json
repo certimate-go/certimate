@@ -529,12 +529,12 @@
       }
     },
     "email_username": {
-      "label": "Username",
-      "placeholder": "please enter username"
+      "label": "Username (Optional)",
+      "placeholder": "please enter SMTP username"
     },
     "email_password": {
-      "label": "Password",
-      "placeholder": "please enter password"
+      "label": "Password (Optional)",
+      "placeholder": "please enter SMTP password"
     },
     "email_sender_address": {
       "label": "Sender email address",

@@ -63,9 +63,6 @@ func (c *Client) Send(ctx context.Context, msg *Message) error {
 
 func createSmtpClient(config *Config) (*mail.Client, error) {
 	clientOptions := []mail.Option{
-		mail.WithSMTPAuth(mail.SMTPAuthAutoDiscover),
-		mail.WithUsername(config.Username),
-		mail.WithPassword(config.Password),
 		mail.WithTimeout(time.Second * 30),
 	}
 
@@ -87,11 +84,21 @@ func createSmtpClient(config *Config) (*mail.Client, error) {
 			tlsConfig.ServerName = config.Host
 		}
 
-		clientOptions = append(clientOptions, mail.WithSSL())
-		clientOptions = append(clientOptions, mail.WithTLSConfig(tlsConfig))
-		clientOptions = append(clientOptions, mail.WithTLSPolicy(mail.TLSMandatory))
+		clientOptions = append(clientOptions,
+			mail.WithSSL(),
+			mail.WithTLSConfig(tlsConfig),
+			mail.WithTLSPolicy(mail.TLSMandatory),
+		)
 	} else {
 		clientOptions = append(clientOptions, mail.WithTLSPolicy(mail.TLSOpportunistic))
+	}
+
+	if config.Username != "" || config.Password != "" {
+		clientOptions = append(clientOptions,
+			mail.WithSMTPAuth(mail.SMTPAuthAutoDiscover),
+			mail.WithUsername(config.Username),
+			mail.WithPassword(config.Password),
+		)
 	}
 
 	client, err := mail.NewClient(config.Host, clientOptions...)
