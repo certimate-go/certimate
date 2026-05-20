@@ -2241,6 +2241,9 @@
           "aliyun": {
             "label": "Alibaba Cloud"
           },
+          "alipay": {
+            "label": "Alipay Cloud"
+          },
           "tencent": {
             "label": "Tencent Cloud"
           }

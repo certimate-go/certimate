@@ -2237,6 +2237,9 @@
           "aliyun": {
             "label": "阿里云"
           },
+          "alipay": {
+            "label": "支付宝云"
+          },
           "tencent": {
             "label": "腾讯云"
           }

@@ -31,7 +31,7 @@ const BizDeployNodeConfigFieldsProviderUniCloudWebHost = () => {
         rules={[formRule]}
       >
         <Select
-          options={["aliyun", "tencent"].map((s) => ({
+          options={["aliyun", "alipay", "tencent"].map((s) => ({
             label: t(`workflow_node.deploy.form.unicloud_webhost_space_provider.option.${s}.label`),
             value: s,
           }))}

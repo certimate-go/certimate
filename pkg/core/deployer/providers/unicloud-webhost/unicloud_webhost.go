@@ -16,7 +16,7 @@ type DeployerConfig struct {
 	// uniCloud 控制台密码。
 	Password string `json:"password"`
 	// 服务空间提供商。
-	// 可取值 "aliyun"、"tencent"。
+	// 可取值 "aliyun"、"alipay"、"tencent"。
 	SpaceProvider string `json:"spaceProvider"`
 	// 服务空间 ID。
 	SpaceId string `json:"spaceId"`
