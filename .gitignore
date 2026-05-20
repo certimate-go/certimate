@@ -12,9 +12,10 @@
 __debug_bin*
 
 vendor
-pb_data
 build
-main
 /dist
 /docker/data
+
 /certimate
+/certimate.exe
+/pb_data
