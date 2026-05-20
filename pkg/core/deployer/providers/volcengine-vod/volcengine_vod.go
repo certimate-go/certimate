@@ -8,14 +8,14 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	vevod "github.com/volcengine/volc-sdk-golang/service/vod"
-	vevodbusiness "github.com/volcengine/volc-sdk-golang/service/vod/models/business"
-	vevodrequest "github.com/volcengine/volc-sdk-golang/service/vod/models/request"
+	vevodbiz "github.com/volcengine/volc-sdk-golang/service/vod/models/business"
+	vevodreq "github.com/volcengine/volc-sdk-golang/service/vod/models/request"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
+	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volc-sdk-golang/service/vod"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -182,7 +182,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		default:
 		}
 
-		listDomainReq := &vevodrequest.VodListDomainRequest{
+		listDomainReq := &vevodreq.VodListDomainRequest{
 			SpaceName:         d.config.SpaceName,
 			DomainType:        d.config.DomainType,
 			SourceStationType: 1,
@@ -199,7 +199,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			break
 		}
 
-		var domainInstances []*vevodbusiness.VodDomainInstanceInfo
+		var domainInstances []*vevodbiz.VodDomainInstanceInfo
 		switch d.config.DomainType {
 		case DOMAIN_TYPE_PLAY:
 			domainInstances = listDomainResp.GetResult().GetPlayInstanceInfo().GetByteInstances()
@@ -231,15 +231,15 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId string) error {
 	// 更新域名配置
 	// REF: https://www.volcengine.com/docs/4/1317310
-	updateDomainConfigReq := &vevodrequest.VodUpdateDomainConfigRequest{
+	updateDomainConfigReq := &vevodreq.VodUpdateDomainConfigRequest{
 		SpaceName:  d.config.SpaceName,
 		DomainType: d.config.DomainType,
 		Domain:     domain,
-		Config: &vevodbusiness.VodDomainConfig{
-			HTTPS: &vevodbusiness.HTTPS{
+		Config: &vevodbiz.VodDomainConfig{
+			HTTPS: &vevodbiz.HTTPS{
 				Switch: ve.Bool(true),
-				CertInfo: &vevodbusiness.CertInfo{
-					CertId: &cloudCertId,
+				CertInfo: &vevodbiz.CertInfo{
+					CertId: ve.String(cloudCertId),
 				},
 			},
 		},
