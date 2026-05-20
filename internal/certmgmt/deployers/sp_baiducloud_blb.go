@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/certimate-go/certimate/internal/domain"
-	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core"
 	baiducloudblb "github.com/certimate-go/certimate/pkg/core/deployer/providers/baiducloud-blb"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
-	Registries.MustRegister(domain.DeploymentProviderTypeBaiduCloudBLB, func(options *ProviderFactoryOptions) (deployer.Provider, error) {
+	Registries.MustRegister(domain.DeploymentProviderTypeBaiduCloudBLB, func(options *ProviderFactoryOptions) (core.Deployer, error) {
 		credentials := domain.AccessConfigForBaiduCloud{}
 		if err := xmaps.Populate(options.ProviderAccessConfig, &credentials); err != nil {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)

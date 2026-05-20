@@ -1,7 +1,7 @@
 package certifier
 
 import (
-	"github.com/go-acme/lego/v4/challenge"
+	"github.com/certimate-go/certimate/pkg/core"
 )
 
-type ACMEChallenger = challenge.Provider
+type ACMEChallenger = core.ACMEChallenger

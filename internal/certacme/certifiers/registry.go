@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/certimate-go/certimate/internal/domain"
-	"github.com/certimate-go/certimate/pkg/core/certifier"
+	"github.com/certimate-go/certimate/pkg/core"
 )
 
-type ProviderFactoryFunc func(options *ProviderFactoryOptions) (certifier.ACMEChallenger, error)
+type ProviderFactoryFunc func(options *ProviderFactoryOptions) (core.ACMEChallenger, error)
 
 type ProviderFactoryOptions struct {
 	ProviderAccessConfig   map[string]any

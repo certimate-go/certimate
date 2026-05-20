@@ -5,14 +5,14 @@ import (
 	"net/http"
 
 	"github.com/certimate-go/certimate/internal/domain"
-	"github.com/certimate-go/certimate/pkg/core/notifier"
+	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/core/notifier/providers/webhook"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
-	Registries.MustRegister(domain.NotificationProviderTypeWebhook, func(options *ProviderFactoryOptions) (notifier.Provider, error) {
+	Registries.MustRegister(domain.NotificationProviderTypeWebhook, func(options *ProviderFactoryOptions) (core.Notifier, error) {
 		credentials := domain.AccessConfigForWebhook{}
 		if err := xmaps.Populate(options.ProviderAccessConfig, &credentials); err != nil {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
