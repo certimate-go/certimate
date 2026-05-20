@@ -13,10 +13,6 @@ export const isDomain = (value: string, { allowWildcard = false }: { allowWildca
   return re.test(value);
 };
 
-export const isEmail = (value: string) => {
-  return z.email().safeParse(value).success;
-};
-
 export const isHostname = (value: string) => {
   return isDomain(value, { allowWildcard: false }) || isIPv4(value) || isIPv6(value);
 };

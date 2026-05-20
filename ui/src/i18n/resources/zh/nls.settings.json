@@ -42,7 +42,6 @@
           },
           "password": {
             "errmsg": {
-              "invalid": "密码至少 10 个字符",
               "not_matched": "两次密码不一致"
             }
           }

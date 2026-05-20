@@ -52,7 +52,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    appName: z.string().nonempty(t("workflow_node.deploy.form.flyio_app_name.placeholder")),
+    appName: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
   });
 };

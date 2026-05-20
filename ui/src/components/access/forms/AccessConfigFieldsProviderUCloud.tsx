@@ -58,11 +58,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    privateKey: z.string().nonempty(t("access.form.ucloud_private_key.placeholder")),
-    publicKey: z.string().nonempty(t("access.form.ucloud_public_key.placeholder")),
+    privateKey: z.string().nonempty(),
+    publicKey: z.string().nonempty(),
     projectId: z.string().nullish(),
   });
 };

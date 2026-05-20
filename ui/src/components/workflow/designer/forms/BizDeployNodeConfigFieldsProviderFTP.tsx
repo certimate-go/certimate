@@ -211,27 +211,15 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      format: z.literal([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS], t("workflow_node.deploy.form.ftp_format.placeholder")),
-      keyPath: z
-        .string()
-        .max(256, t("common.errmsg.string_max", { max: 256 }))
-        .nullish(),
-      certPath: z
-        .string()
-        .min(1, t("workflow_node.deploy.form.ftp_cert_path.placeholder"))
-        .max(256, t("common.errmsg.string_max", { max: 256 })),
-      certPathForServerOnly: z
-        .string()
-        .max(256, t("common.errmsg.string_max", { max: 256 }))
-        .nullish(),
-      certPathForIntermediaOnly: z
-        .string()
-        .max(256, t("common.errmsg.string_max", { max: 256 }))
-        .nullish(),
+      format: z.enum([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS]),
+      keyPath: z.string().max(256).nullish(),
+      certPath: z.string().max(256).nullish(),
+      certPathForServerOnly: z.string().max(256).nullish(),
+      certPathForIntermediaOnly: z.string().max(256).nullish(),
       pfxPassword: z.string().nullish(),
       jksAlias: z.string().nullish(),
       jksKeypass: z.string().nullish(),
@@ -239,24 +227,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     })
     .superRefine((values, ctx) => {
       switch (values.format) {
-        case FORMAT_PEM:
-          {
-            if (!values.keyPath?.trim()) {
-              ctx.addIssue({
-                code: "custom",
-                message: t("workflow_node.deploy.form.ftp_key_path.placeholder"),
-                path: ["keyPath"],
-              });
-            }
-          }
-          break;
-
         case FORMAT_PFX:
           {
-            if (!values.pfxPassword?.trim()) {
+            const scPfxPassword = z.string().nonempty();
+            const spPfxPassword = scPfxPassword.safeParse(values.pfxPassword);
+            if (!spPfxPassword.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.ftp_pfx_password.placeholder"),
+                message: z.treeifyError(spPfxPassword.error).errors.join(),
                 path: ["pfxPassword"],
               });
             }
@@ -265,26 +243,32 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case FORMAT_JKS:
           {
-            if (!values.jksAlias?.trim()) {
+            const scJksAlias = z.string().nonempty();
+            const spJksAlias = scJksAlias.safeParse(values.jksAlias);
+            if (!spJksAlias.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.ftp_jks_alias.placeholder"),
+                message: z.treeifyError(spJksAlias.error).errors.join(),
                 path: ["jksAlias"],
               });
             }
 
-            if (!values.jksKeypass?.trim()) {
+            const scJksKeypass = z.string().nonempty();
+            const spJksKeypass = scJksKeypass.safeParse(values.jksKeypass);
+            if (!spJksKeypass.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.ftp_jks_keypass.placeholder"),
+                message: z.treeifyError(spJksKeypass.error).errors.join(),
                 path: ["jksKeypass"],
               });
             }
 
-            if (!values.jksStorepass?.trim()) {
+            const scJksStorepass = z.string().nonempty();
+            const spJksStorepass = scJksStorepass.safeParse(values.jksStorepass);
+            if (!spJksStorepass.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.ftp_jks_storepass.placeholder"),
+                message: z.treeifyError(spJksStorepass.error).errors.join(),
                 path: ["jksStorepass"],
               });
             }

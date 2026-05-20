@@ -39,7 +39,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t: _ } = i18n;
 
   return z.object({
-    certificateId: z.union([z.string(), z.number().int()]).nullish(),
+    certificateId: z.union([z.string(), z.int().positive()]).nullish(),
   });
 };
 

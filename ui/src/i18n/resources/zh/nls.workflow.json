@@ -167,13 +167,13 @@
             "content": {
               "label": "内容",
               "errmsg": {
-                "invalid": "请输入有效的内容",
+                "invalid": "无效编排",
                 "first_node_start": "第一个节点必须是开始节点",
                 "last_node_end": "最后一个节点必须是结束节点",
                 "duplicate_start": "有且只能有一个开始节点",
-                "invalid_id": "节点 ID 无效：#{{nodeId}}",
-                "invalid_config": "节点配置无效：#{{nodeId}}",
-                "conflict_id": "节点 ID 冲突：#{{nodeId}}",
+                "invalid_id": "无效的节点 ID：#{{nodeId}}",
+                "invalid_config": "无效的节点配置：#{{nodeId}}",
+                "conflict_id": "重复的节点 ID：#{{nodeId}}",
                 "abnormal_condition_branch": "并行/条件分支结构异常：#{{nodeId}}",
                 "abnormal_try_catch_branch": "执行结果分支结构异常：#{{nodeId}}"
               }

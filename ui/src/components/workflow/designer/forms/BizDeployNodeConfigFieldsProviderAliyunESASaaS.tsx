@@ -90,11 +90,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.aliyun_esa_saas_region.placeholder")),
-      siteId: z.union([z.string(), z.number().int()]).refine((v) => {
-        return /^\d+$/.test(v + "") && +v > 0;
-      }, t("workflow_node.deploy.form.aliyun_esa_saas_site_id.placeholder")),
-      domainMatchPattern: z.string().nonempty(t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder")).default(DOMAIN_MATCH_PATTERN_EXACT),
+      region: z.string().nonempty(),
+      siteId: z.union([z.string().nonempty(), z.int().positive()]),
+      domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
@@ -103,10 +101,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           case DOMAIN_MATCH_PATTERN_EXACT:
           case DOMAIN_MATCH_PATTERN_WILDCARD:
             {
-              if (!isDomain(values.domain!, { allowWildcard: true })) {
+              const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+              const spDomain = scDomain.safeParse(values.domain);
+              if (!spDomain.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("common.errmsg.domain_invalid"),
+                  message: z.treeifyError(spDomain.error).errors.join(),
                   path: ["domain"],
                 });
               }

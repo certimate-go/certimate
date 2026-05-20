@@ -52,14 +52,11 @@
   },
 
   "errmsg": {
-    "string_max": "请输入不超过 {{max}} 个字符",
-    "email_invalid": "请输入正确的邮箱",
-    "domain_invalid": "请输入正确的域名",
-    "host_invalid": "请输入正确的域名或 IP 地址",
-    "port_invalid": "请输入正确的端口号",
-    "ip_invalid": "请输入正确的 IP 地址",
-    "url_invalid": "请输入正确的 URL 地址",
-    "json_invalid": "请输入有效的 JSON 格式字符串",
+    "domain_invalid": "无效域名",
+    "host_invalid": "无效域名或 IP 地址",
+    "port_invalid": "无效端口号",
+    "ip_invalid": "无效 IP 地址",
+    "json_invalid": "无效 JSON 格式字符串",
     "form_invalid": "请检查表单内容"
   }
 }

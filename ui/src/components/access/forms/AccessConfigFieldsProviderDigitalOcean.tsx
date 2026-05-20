@@ -37,10 +37,10 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    accessToken: z.string().nonempty(t("access.form.digitalocean_access_token.placeholder")),
+    accessToken: z.string().nonempty(),
   });
 };
 

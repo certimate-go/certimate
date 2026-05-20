@@ -228,29 +228,17 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.s3_region.placeholder")),
-      bucket: z.string().nonempty(t("workflow_node.deploy.form.s3_bucket.placeholder")),
-      format: z.literal([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS], t("workflow_node.deploy.form.s3_format.placeholder")),
-      keyObjectKey: z
-        .string()
-        .max(256, t("common.errmsg.string_max", { max: 256 }))
-        .nullish(),
-      certObjectKey: z
-        .string()
-        .min(1, t("workflow_node.deploy.form.s3_cert_object_key.placeholder"))
-        .max(256, t("common.errmsg.string_max", { max: 256 })),
-      certObjectKeyForServerOnly: z
-        .string()
-        .max(256, t("common.errmsg.string_max", { max: 256 }))
-        .nullish(),
-      certObjectKeyForIntermediaOnly: z
-        .string()
-        .max(256, t("common.errmsg.string_max", { max: 256 }))
-        .nullish(),
+      region: z.string().nonempty(),
+      bucket: z.string().nonempty(),
+      format: z.enum([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS]),
+      keyObjectKey: z.string().max(256).nullish(),
+      certObjectKey: z.string().max(256).nullish(),
+      certObjectKeyForServerOnly: z.string().max(256).nullish(),
+      certObjectKeyForIntermediaOnly: z.string().max(256).nullish(),
       pfxPassword: z.string().nullish(),
       jksAlias: z.string().nullish(),
       jksKeypass: z.string().nullish(),
@@ -258,24 +246,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     })
     .superRefine((values, ctx) => {
       switch (values.format) {
-        case FORMAT_PEM:
-          {
-            if (!values.keyObjectKey?.trim()) {
-              ctx.addIssue({
-                code: "custom",
-                message: t("workflow_node.deploy.form.s3_key_object_key.placeholder"),
-                path: ["keyObjectKey"],
-              });
-            }
-          }
-          break;
-
         case FORMAT_PFX:
           {
-            if (!values.pfxPassword?.trim()) {
+            const scPfxPassword = z.string().nonempty();
+            const spPfxPassword = scPfxPassword.safeParse(values.pfxPassword);
+            if (!spPfxPassword.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.s3_pfx_password.placeholder"),
+                message: z.treeifyError(spPfxPassword.error).errors.join(),
                 path: ["pfxPassword"],
               });
             }
@@ -284,26 +262,32 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case FORMAT_JKS:
           {
-            if (!values.jksAlias?.trim()) {
+            const scJksAlias = z.string().nonempty();
+            const spJksAlias = scJksAlias.safeParse(values.jksAlias);
+            if (!spJksAlias.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.s3_jks_alias.placeholder"),
+                message: z.treeifyError(spJksAlias.error).errors.join(),
                 path: ["jksAlias"],
               });
             }
 
-            if (!values.jksKeypass?.trim()) {
+            const scJksKeypass = z.string().nonempty();
+            const spJksKeypass = scJksKeypass.safeParse(values.jksKeypass);
+            if (!spJksKeypass.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.s3_jks_keypass.placeholder"),
+                message: z.treeifyError(spJksKeypass.error).errors.join(),
                 path: ["jksKeypass"],
               });
             }
 
-            if (!values.jksStorepass?.trim()) {
+            const scJksStorepass = z.string().nonempty();
+            const spJksStorepass = scJksStorepass.safeParse(values.jksStorepass);
+            if (!spJksStorepass.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.s3_jks_storepass.placeholder"),
+                message: z.treeifyError(spJksStorepass.error).errors.join(),
                 path: ["jksStorepass"],
               });
             }

@@ -48,11 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    apiKey: z.string().nonempty(t("access.form.porkbun_api_key.placeholder")),
-    secretApiKey: z.string().nonempty(t("access.form.porkbun_secret_api_key.placeholder")),
+    apiKey: z.string().nonempty(),
+    secretApiKey: z.string().nonempty(),
   });
 };
 

@@ -85,24 +85,26 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.literal([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_VSERVER], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      region: z.string().nonempty(t("workflow_node.deploy.form.ucloud_uclb_region.placeholder")),
-      loadbalancerId: z.string().nonempty(t("workflow_node.deploy.form.ucloud_uclb_loadbalancer_id.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_VSERVER]),
+      region: z.string().nonempty(),
+      loadbalancerId: z.string().nonempty(),
       vserverId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {
         case RESOURCE_TYPE_VSERVER:
           {
-            if (!values.vserverId?.trim()) {
+            const scVserverId = z.string().nonempty();
+            const spVserverId = scVserverId.safeParse(values.vserverId);
+            if (!spVserverId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.ucloud_uclb_vserver_id.placeholder"),
+                message: z.treeifyError(spVserverId.error).errors.join(),
                 path: ["vserverId"],
               });
             }

@@ -42,10 +42,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z.object({
     webRootPath: z
       .string()
-      .nonempty(t("workflow_node.apply.form.local_webroot_path.placeholder"))
-      .refine((v) => !!v && (v.endsWith("/") || v.endsWith("\\")), {
-        error: t("workflow_node.apply.form.local_webroot_path.placeholder"),
-      }),
+      .nonempty()
+      .refine((v) => !!v && (v.endsWith("/") || v.endsWith("\\")), t("workflow_node.apply.form.local_webroot_path.placeholder")),
   });
 };
 

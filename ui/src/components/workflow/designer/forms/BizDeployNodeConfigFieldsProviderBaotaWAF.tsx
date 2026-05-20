@@ -69,14 +69,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z.object({
     siteNames: z
       .string()
-      .nonempty(t("workflow_node.deploy.form.baotawaf_site_names.placeholder"))
-      .refine(
-        (v) => {
-          if (!v) return false;
-          return v.split(MULTIPLE_INPUT_SEPARATOR).every((s) => !!s.trim());
-        },
-        { error: t("workflow_node.deploy.form.baotawaf_site_names.placeholder") }
-      ),
+      .nonempty()
+      .refine((v) => {
+        return v.split(MULTIPLE_INPUT_SEPARATOR).every((s) => !!s.trim());
+      }, t("workflow_node.deploy.form.baotawaf_site_names.errmsg.invalid")),
     sitePort: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
   });
 };

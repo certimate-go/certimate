@@ -129,11 +129,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      serviceType: z.literal([SERVICE_TYPE_CLOUDNATIVE, SERVICE_TYPE_TRADITIONAL], t("workflow_node.deploy.form.aliyun_apigw_service_type.placeholder")),
-      region: z.string().nonempty(t("workflow_node.deploy.form.aliyun_apigw_region.placeholder")),
+      serviceType: z.enum([SERVICE_TYPE_CLOUDNATIVE, SERVICE_TYPE_TRADITIONAL]),
+      region: z.string().nonempty(),
       gatewayId: z.string().nullish(),
       groupId: z.string().nullish(),
-      domainMatchPattern: z.string().nonempty(t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder")).default(DOMAIN_MATCH_PATTERN_EXACT),
+      domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
@@ -141,10 +141,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         switch (values.serviceType) {
           case SERVICE_TYPE_CLOUDNATIVE:
             {
-              if (!values.gatewayId?.trim()) {
+              const scGatewayId = z.string().nonempty();
+              const spGatewayId = scGatewayId.safeParse(values.gatewayId);
+              if (!spGatewayId.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("workflow_node.deploy.form.aliyun_apigw_gateway_id.placeholder"),
+                  message: z.treeifyError(spGatewayId.error).errors.join(),
                   path: ["gatewayId"],
                 });
               }
@@ -153,10 +155,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
           case SERVICE_TYPE_TRADITIONAL:
             {
-              if (!values.groupId?.trim()) {
+              const scGroupId = z.string().nonempty();
+              const spGroupId = scGroupId.safeParse(values.groupId);
+              if (!spGroupId.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("workflow_node.deploy.form.aliyun_apigw_group_id.placeholder"),
+                  message: z.treeifyError(spGroupId.error).errors.join(),
                   path: ["groupId"],
                 });
               }
@@ -170,10 +174,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           case DOMAIN_MATCH_PATTERN_EXACT:
           case DOMAIN_MATCH_PATTERN_WILDCARD:
             {
-              if (!isDomain(values.domain!, { allowWildcard: true })) {
+              const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+              const spDomain = scDomain.safeParse(values.domain);
+              if (!spDomain.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("common.errmsg.domain_invalid"),
+                  message: z.treeifyError(spDomain.error).errors.join(),
                   path: ["domain"],
                 });
               }

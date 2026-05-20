@@ -59,8 +59,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   return z.object({
     host: z.string().refine((v) => isHostname(v), t("common.errmsg.host_invalid")),
     port: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
-    username: z.string().nonempty(t("access.form.ftp_username.placeholder")),
-    password: z.string().nonempty(t("access.form.ftp_password.placeholder")),
+    username: z.string().nonempty(),
+    password: z.string().nonempty(),
   });
 };
 

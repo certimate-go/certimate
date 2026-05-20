@@ -136,11 +136,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    namespace: z.string().nonempty(t("workflow_node.deploy.form.k8s_namespace.placeholder")),
-    secretName: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_name.placeholder")),
-    secretType: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_type.placeholder")),
-    secretDataKeyForCrt: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_data_key_for_crt.placeholder")),
-    secretDataKeyForKey: z.string().nonempty(t("workflow_node.deploy.form.k8s_secret_data_key_for_key.placeholder")),
+    namespace: z.string().nonempty(),
+    secretName: z.string().nonempty(),
+    secretType: z.string().nonempty(),
+    secretDataKeyForCrt: z.string().nonempty(),
+    secretDataKeyForKey: z.string().nonempty(),
     secretAnnotations: z
       .string()
       .nullish()

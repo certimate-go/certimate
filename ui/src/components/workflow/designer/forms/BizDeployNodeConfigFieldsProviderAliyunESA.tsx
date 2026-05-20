@@ -48,13 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    region: z.string().nonempty(t("workflow_node.deploy.form.aliyun_esa_region.placeholder")),
-    siteId: z.union([z.string(), z.number().int()]).refine((v) => {
-      return /^\d+$/.test(v + "") && +v > 0;
-    }, t("workflow_node.deploy.form.aliyun_esa_site_id.placeholder")),
+    region: z.string().nonempty(),
+    siteId: z.union([z.string().nonempty(), z.int().positive()]),
   });
 };
 

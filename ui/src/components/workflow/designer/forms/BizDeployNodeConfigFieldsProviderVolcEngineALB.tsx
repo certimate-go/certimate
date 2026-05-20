@@ -102,8 +102,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.volcengine_alb_region.placeholder")),
-      resourceType: z.literal([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
+      region: z.string().nonempty(),
+      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER]),
       loadbalancerId: z.string().nullish(),
       listenerId: z.string().nullish(),
       domain: z
@@ -118,10 +118,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LOADBALANCER:
           {
-            if (!values.loadbalancerId?.trim()) {
+            const scLoadbalancerId = z.string().nonempty();
+            const spLoadbalancerId = scLoadbalancerId.safeParse(values.loadbalancerId);
+            if (!spLoadbalancerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.volcengine_alb_loadbalancer_id.placeholder"),
+                message: z.treeifyError(spLoadbalancerId.error).errors.join(),
                 path: ["loadbalancerId"],
               });
             }
@@ -130,10 +132,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_LISTENER:
           {
-            if (!values.listenerId?.trim()) {
+            const scListenerId = z.string().nonempty();
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.volcengine_alb_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }

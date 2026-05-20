@@ -51,7 +51,7 @@
         "label": "CRON 表达式",
         "placeholder": "请输入 CRON 表达式",
         "errmsg": {
-          "invalid": "请输入正确的 CRON 表达式"
+          "invalid": "无效的 CRON 表达式"
         },
         "tooltip": "五段式表达式，使用 <em>crontab</em> 标准语法规则。<br>支持使用任意值（即 <strong>*</strong>）、值列表分隔符（即 <strong>,</strong>）、值的范围（即 <strong>-</strong>）、步骤值（即 <strong>/</strong>）等四种表达式。",
         "help": "预计最近 5 次运行时间（实际时区以服务器设置为准）：",
@@ -185,7 +185,7 @@
         "label": "私钥文件（PEM 格式）",
         "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
         "errmsg": {
-          "invalid": "请输入有效的 PEM 格式私钥文件",
+          "invalid": "无效的 PEM 格式私钥文件",
           "not_matched": "私钥内容与算法不匹配（预期：{{expected}}，实际：{{actual}}）"
         }
       },
@@ -370,7 +370,7 @@
         "label": "证书文件（PEM 格式）",
         "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
         "errmsg": {
-          "invalid": "请输入有效的 PEM 格式证书文件"
+          "invalid": "无效的 PEM 格式证书文件"
         }
       },
       "certificate_path": {
@@ -385,7 +385,7 @@
         "label": "私钥文件（PEM 格式）",
         "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
         "errmsg": {
-          "invalid": "请输入有效的 PEM 格式私钥文件"
+          "invalid": "无效的 PEM 格式私钥文件"
         }
       },
       "private_key_path": {
@@ -617,7 +617,7 @@
         "label": "阿里云云产品资源 ID",
         "placeholder": "请输入阿里云云产品资源 ID（多个值请用半角分号隔开）",
         "errmsg": {
-          "invalid": "请输入正确的阿里云云产品资源 ID"
+          "invalid": "无效的云产品资源 ID"
         },
         "help": "提示：支持多个 ID，以半角分号隔开。仅支持阿里云产品，注意与各产品本身的实例 ID 区分。",
         "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-listcloudresources\" target=\"_blank\">https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-listcloudresources</a>",
@@ -630,7 +630,7 @@
         "label": "阿里云联系人 ID（可选）",
         "placeholder": "请输入阿里云联系人 ID（多个值请用半角分号隔开）",
         "errmsg": {
-          "invalid": "请输入正确的阿里云联系人 ID"
+          "invalid": "无效的联系人 ID"
         },
         "help": "提示：支持多个 ID，以半角分号隔开。不填写时，将使用系统联系人列表中的第一个。",
         "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-listcontact\" target=\"_blank\">https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-listcontact</a>",
@@ -905,7 +905,7 @@
         "label": "AWS IAM 证书路径（可选）",
         "placeholder": "请输入 AWS IAM 证书路径",
         "errmsg": {
-          "invalid": "请输入正确的 AWS IAM 证书路径"
+          "invalid": "无效的证书路径"
         },
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html</a>"
       },
@@ -918,7 +918,7 @@
         "label": "Azure KeyVault 证书名称（可选）",
         "placeholder": "请输入 Azure KeyVault 证书名称",
         "errmsg": {
-          "invalid": "证书名称只能包含字母、数字和连字符（-），长度限制为 1 到 127 个字符"
+          "invalid": "无效的证书名称：只能包含字母、数字和连字符（-），长度限制为 1 到 127 个字符"
         },
         "help": "提示：不填写时，将由 Certimate 自动生成证书名称。"
       },
@@ -1045,7 +1045,7 @@
         "label": "宝塔面板网站名称",
         "placeholder": "请输入宝塔面板网站名称（多个值请用半角分号隔开）",
         "errmsg": {
-          "invalid": "请输入正确的宝塔面板网站名称"
+          "invalid": "无效的网站名称"
         },
         "help": "提示：支持多个网站名称，以半角分号隔开。",
         "tooltip": "请登录宝塔面板查看",
@@ -1110,7 +1110,7 @@
         "label": "堡塔云 WAF 网站名称",
         "placeholder": "请输入堡塔云 WAF 网站名称（多个值请用半角分号隔开）",
         "errmsg": {
-          "invalid": "请输入正确的堡塔云 WAF 网站名称"
+          "invalid": "无效的网站名称"
         },
         "help": "提示：支持多个网站名称，以半角分号隔开。",
         "tooltip": "请登录堡塔云 WAF 查看",
@@ -1531,7 +1531,7 @@
         "placeholder": "请输入 Kubernetes Secret 注解",
         "help": "提示：每行一个键值对，以分号分隔。",
         "errmsg": {
-          "invalid": "请输入有效的注解键值对"
+          "invalid": "无效的注解键值对"
         },
         "tooltip": "示例：<br><i>environment: production<br>app: nginx</i>"
       },
@@ -1540,7 +1540,7 @@
         "placeholder": "请输入 Kubernetes Secret 标签",
         "help": "提示：每行一个键值对，以分号分隔。",
         "errmsg": {
-          "invalid": "请输入有效的标签键值对"
+          "invalid": "无效的标签键值对"
         },
         "tooltip": "示例：<br><i>environment: production<br>app: nginx</i>"
       },
@@ -1840,7 +1840,7 @@
         "label": "耗子面板网站名称",
         "placeholder": "请输入耗子面板网站名称（多个值请用半角分号隔开）",
         "errmsg": {
-          "invalid": "请输入正确的耗子面板网站名称"
+          "invalid": "无效的网站名称"
         },
         "help": "提示：支持多个网站名称，以半角分号隔开。",
         "tooltip": "请登录耗子面板查看",
@@ -2211,7 +2211,7 @@
         "label": "腾讯云云产品资源 ID",
         "placeholder": "请输入腾讯云云产品资源 ID（多个值请用半角分号隔开）",
         "errmsg": {
-          "invalid": "请输入正确的腾讯云云产品资源 ID"
+          "invalid": "无效的云产品资源 ID"
         },
         "help": "提示：支持多个 ID，以半角分号隔开。",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/91667\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91667</a><br>注意与各产品本身的实例 ID 区分。",
@@ -2236,6 +2236,9 @@
       "tencentcloud_sslupdate_resource_products": {
         "label": "腾讯云云产品资源类型",
         "placeholder": "请输入腾讯云云产品资源类型（多个值请用半角分号隔开）",
+        "errmsg": {
+          "invalid": "无效的云产品资源类型"
+        },
         "help": "提示：支持多个类型，以半角分号隔开。",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/91649\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91649</a> 或 <a href=\"https://cloud.tencent.com/document/product/400/119791\" target=\"_blank\">https://cloud.tencent.com/document/product/400/119791</a><br>注意，这两个接口的所支持的云产品资源类型有所不同，具体请查看腾讯云官方文档。",
         "multiple_input_modal": {
@@ -2246,6 +2249,9 @@
       "tencentcloud_sslupdate_resource_regions": {
         "label": "腾讯云云产品部署地域（可选）",
         "placeholder": "请输入腾讯云云产品部署地域（多个值请用半角分号隔开）",
+        "errmsg": {
+          "invalid": "无效的云产品部署地域"
+        },
         "help": "提示：支持多个地域，以半角分号隔开。",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/91649\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91649</a> 或 <a href=\"https://cloud.tencent.com/document/product/400/119791\" target=\"_blank\">https://cloud.tencent.com/document/product/400/119791</a>",
         "multiple_input_modal": {
@@ -2811,10 +2817,10 @@
       "expression": {
         "label": "分支进入条件",
         "errmsg": {
-          "invalid": "请输入有效的条件"
+          "invalid": "无效的条件"
         },
         "logical_operator": {
-          "errmsg": "请选择条件组合方式",
+          "errmsg": "无效的条件组合方式",
           "option": {
             "and": {
               "label": "满足以下所有条件 (AND)"
@@ -2826,11 +2832,11 @@
         },
         "variable": {
           "placeholder": "请选择",
-          "errmsg": "请选择变量"
+          "errmsg": "无效的变量"
         },
         "operator": {
           "placeholder": "请选择",
-          "errmsg": "请选择运算符",
+          "errmsg": "无效的运算符",
           "option": {
             "eq": {
               "label": "等于",
@@ -2856,7 +2862,7 @@
         },
         "value": {
           "placeholder": "请输入",
-          "errmsg": "请输入值",
+          "errmsg": "无效的值",
           "option": {
             "true": {
               "label": "真"

@@ -57,7 +57,7 @@ const SettingsPersistenceAlerting = ({ className, style }: { className?: string;
   const { loading, settings, updateSettings } = useContext(InternalSettingsContext);
 
   const formSchema = z.object({
-    certificatesWarningDaysBeforeExpire: z.number().int().positive(),
+    certificatesWarningDaysBeforeExpire: z.int().positive(),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {
@@ -122,8 +122,8 @@ const SettingsPersistenceDataRetention = ({ className, style }: { className?: st
   const { loading, settings, updateSettings } = useContext(InternalSettingsContext);
 
   const formSchema = z.object({
-    certificatesRetentionMaxDays: z.number().int().nonnegative(),
-    workflowRunsRetentionMaxDays: z.number().int().nonnegative(),
+    certificatesRetentionMaxDays: z.int().nonnegative(),
+    workflowRunsRetentionMaxDays: z.int().nonnegative(),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {

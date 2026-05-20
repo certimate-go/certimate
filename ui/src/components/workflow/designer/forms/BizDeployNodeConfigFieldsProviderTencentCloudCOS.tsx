@@ -62,8 +62,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    region: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_cos_region.placeholder")),
-    bucket: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_cos_bucket.placeholder")),
+    region: z.string().nonempty(),
+    bucket: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };

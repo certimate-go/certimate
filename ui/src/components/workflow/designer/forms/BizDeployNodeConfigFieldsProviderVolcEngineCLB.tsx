@@ -85,12 +85,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.volcengine_clb_region.placeholder")),
-      resourceType: z.literal([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
+      region: z.string().nonempty(),
+      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER]),
       loadbalancerId: z.string().nullish(),
       listenerId: z.string().nullish(),
     })
@@ -99,10 +99,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         case RESOURCE_TYPE_LOADBALANCER:
           {
             const scLoadbalancerId = z.string().nonempty();
-            if (!scLoadbalancerId.safeParse(values.loadbalancerId).success) {
+            const spLoadbalancerId = scLoadbalancerId.safeParse(values.loadbalancerId);
+            if (!spLoadbalancerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.volcengine_clb_loadbalancer_id.placeholder"),
+                message: z.treeifyError(spLoadbalancerId.error).errors.join(),
                 path: ["loadbalancerId"],
               });
             }
@@ -112,10 +113,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         case RESOURCE_TYPE_LISTENER:
           {
             const scListenerId = z.string().nonempty();
-            if (!scListenerId.safeParse(values.listenerId).success) {
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.volcengine_clb_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }

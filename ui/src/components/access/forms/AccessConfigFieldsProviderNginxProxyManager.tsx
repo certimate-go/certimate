@@ -97,12 +97,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      serverUrl: z.url(t("common.errmsg.url_invalid")),
-      authMethod: z.literal([AUTH_METHOD_PASSWORD, AUTH_METHOD_TOKEN], t("access.form.nginxproxymanager_auth_method.placeholder")),
+      serverUrl: z.httpUrl(),
+      authMethod: z.enum([AUTH_METHOD_PASSWORD, AUTH_METHOD_TOKEN]),
       username: z.string().nullish(),
       password: z.string().nullish(),
       apiToken: z.string().nullish(),
@@ -112,18 +112,22 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
       switch (values.authMethod) {
         case AUTH_METHOD_PASSWORD:
           {
-            if (!values.username?.trim()) {
+            const scUsername = z.string().nonempty();
+            const spUsername = scUsername.safeParse(values.username);
+            if (!spUsername.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.nginxproxymanager_username.placeholder"),
+                message: z.treeifyError(spUsername.error).errors.join(),
                 path: ["username"],
               });
             }
 
-            if (!values.password?.trim()) {
+            const scPassword = z.string().nonempty();
+            const spPassword = scPassword.safeParse(values.password);
+            if (!spPassword.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.nginxproxymanager_password.placeholder"),
+                message: z.treeifyError(spPassword.error).errors.join(),
                 path: ["password"],
               });
             }
@@ -132,10 +136,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
         case AUTH_METHOD_TOKEN:
           {
-            if (!values.apiToken?.trim()) {
+            const scApiToken = z.string().nonempty();
+            const spApiToken = scApiToken.safeParse(values.apiToken);
+            if (!spApiToken.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.nginxproxymanager_api_token.placeholder"),
+                message: z.treeifyError(spApiToken.error).errors.join(),
                 path: ["apiToken"],
               });
             }

@@ -62,11 +62,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      resourceType: z.literal(RESOURCE_TYPE_WEBSITE, t("workflow_node.deploy.form.cpanel_resource_type.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_WEBSITE]),
       siteId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
@@ -74,10 +74,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         case RESOURCE_TYPE_WEBSITE:
           {
             const scSiteId = z.string().nonempty();
-            if (!scSiteId.safeParse(values.siteId).success) {
+            const spSiteId = scSiteId.safeParse(values.siteId);
+            if (!spSiteId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.netlify_site_id.placeholder"),
+                message: z.treeifyError(spSiteId.error).errors.join(),
                 path: ["siteId"],
               });
             }

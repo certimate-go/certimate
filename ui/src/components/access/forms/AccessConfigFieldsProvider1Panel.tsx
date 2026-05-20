@@ -67,12 +67,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    serverUrl: z.url(t("common.errmsg.url_invalid")),
-    apiVersion: z.string().nonempty(t("access.form.1panel_api_version.placeholder")),
-    apiKey: z.string().nonempty(t("access.form.1panel_api_key.placeholder")),
+    serverUrl: z.httpUrl(),
+    apiVersion: z.string().nonempty(),
+    apiKey: z.string().nonempty(),
     allowInsecureConnections: z.boolean().nullish(),
   });
 };

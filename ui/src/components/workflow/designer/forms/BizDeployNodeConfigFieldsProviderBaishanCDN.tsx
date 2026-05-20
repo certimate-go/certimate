@@ -105,19 +105,21 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.literal([RESOURCE_TYPE_DOMAIN, RESOURCE_TYPE_CERTIFICATE], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      domainMatchPattern: z.string().nonempty(t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder")).default(DOMAIN_MATCH_PATTERN_EXACT),
+      resourceType: z.enum([RESOURCE_TYPE_DOMAIN, RESOURCE_TYPE_CERTIFICATE]),
+      domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domain: z.string().nullish(),
-      certificateId: z.union([z.string(), z.number().int()]).nullish(),
+      certificateId: z.union([z.string(), z.int().positive()]).nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {
         case RESOURCE_TYPE_DOMAIN:
           {
-            if (!values.domainMatchPattern) {
+            const scDomainMatchPattern = z.string().nonempty();
+            const spDomainMatchPattern = scDomainMatchPattern.safeParse(values.domainMatchPattern);
+            if (!spDomainMatchPattern.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder"),
+                message: z.treeifyError(spDomainMatchPattern.error).errors.join(),
                 path: ["domainMatchPattern"],
               });
             }
@@ -125,10 +127,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
             switch (values.domainMatchPattern) {
               case DOMAIN_MATCH_PATTERN_EXACT:
                 {
-                  if (!isDomain(values.domain!, { allowWildcard: true })) {
+                  const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+                  const spDomain = scDomain.safeParse(values.domain);
+                  if (!spDomain.success) {
                     ctx.addIssue({
                       code: "custom",
-                      message: t("common.errmsg.domain_invalid"),
+                      message: z.treeifyError(spDomain.error).errors.join(),
                       path: ["domain"],
                     });
                   }
@@ -140,10 +144,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_CERTIFICATE:
           {
-            if (!values.certificateId) {
+            const scCertificateId = z.string().nonempty();
+            const spCertificateId = scCertificateId.safeParse(values.certificateId);
+            if (!spCertificateId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.baishan_cdn_certificate_id.placeholder"),
+                message: z.treeifyError(spCertificateId.error).errors.join(),
                 path: ["certificateId"],
               });
             }

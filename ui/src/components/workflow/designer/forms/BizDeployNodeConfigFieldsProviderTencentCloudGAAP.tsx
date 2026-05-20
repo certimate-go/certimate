@@ -81,12 +81,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.literal(RESOURCE_TYPE_LISTENER, t("workflow_node.deploy.form.shared_resource_type.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_LISTENER]),
       proxyId: z.string().nullish(),
       listenerId: z.string().nullish(),
     })
@@ -94,10 +94,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LISTENER:
           {
-            if (!values.listenerId?.trim()) {
+            const scListenerId = z.string().nonempty();
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.tencentcloud_gaap_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }

@@ -10,7 +10,6 @@ import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { type WorkflowNodeConfigForBizUpload, defaultNodeConfigForBizUpload } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
-import { isUrlWithHttpOrHttps } from "@/utils/validator";
 import { getCertificateSubjectAltNames as getX509SubjectAltNames, validatePEMCertificate, validatePEMPrivateKey } from "@/utils/x509";
 
 import { NodeFormContextProvider } from "./_context";
@@ -135,6 +134,7 @@ const getAnchorItems = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    source: UPLOAD_SOURCE_FORM,
     certificate: "",
     privateKey: "",
     ...(defaultNodeConfigForBizUpload() as Nullish<z.infer<ReturnType<typeof getSchema>>>),
@@ -146,7 +146,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      source: z.enum([UPLOAD_SOURCE_FORM, UPLOAD_SOURCE_LOCAL, UPLOAD_SOURCE_URL], t("workflow_node.upload.form.source.placeholder")),
+      source: z.enum([UPLOAD_SOURCE_FORM, UPLOAD_SOURCE_LOCAL, UPLOAD_SOURCE_URL]).default(UPLOAD_SOURCE_FORM),
       name: z.string().nullish(),
       certificate: z.string().nonempty(),
       privateKey: z.string().nonempty(),
@@ -155,18 +155,22 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.source) {
         case UPLOAD_SOURCE_FORM:
           {
-            if (!validatePEMCertificate(values.certificate)) {
+            const scCertificate = z.string().refine((v) => validatePEMCertificate(v), t("workflow_node.upload.form.certificate_pem.errmsg.invalid"));
+            const spCertificate = scCertificate.safeParse(values.certificate);
+            if (!spCertificate.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.certificate_pem.errmsg.invalid"),
+                message: z.treeifyError(spCertificate.error).errors.join(),
                 path: ["certificate"],
               });
             }
 
-            if (!validatePEMPrivateKey(values.privateKey)) {
+            const scPrivateKey = z.string().refine((v) => validatePEMPrivateKey(v), t("workflow_node.upload.form.private_key_pem.errmsg.invalid"));
+            const spPrivateKey = scPrivateKey.safeParse(values.privateKey);
+            if (!spPrivateKey.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.private_key_pem.errmsg.invalid"),
+                message: z.treeifyError(spPrivateKey.error).errors.join(),
                 path: ["privateKey"],
               });
             }
@@ -175,18 +179,22 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case UPLOAD_SOURCE_LOCAL:
           {
-            if (!z.string().nonempty().safeParse(values.certificate).success) {
+            const scCertificate = z.string().nonempty();
+            const spCertificate = scCertificate.safeParse(values.certificate);
+            if (!spCertificate.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.certificate_path.placeholder"),
+                message: z.treeifyError(spCertificate.error).errors.join(),
                 path: ["certificate"],
               });
             }
 
-            if (!z.string().nonempty().safeParse(values.privateKey).success) {
+            const scPrivateKey = z.string().nonempty();
+            const spPrivateKey = scPrivateKey.safeParse(values.privateKey);
+            if (!spPrivateKey.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.private_key_path.placeholder"),
+                message: z.treeifyError(spPrivateKey.error).errors.join(),
                 path: ["privateKey"],
               });
             }
@@ -195,31 +203,25 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case UPLOAD_SOURCE_URL:
           {
-            if (!isUrlWithHttpOrHttps(values.certificate)) {
+            const scCertificate = z.httpUrl();
+            const spCertificate = scCertificate.safeParse(values.certificate);
+            if (!spCertificate.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.certificate_url.placeholder"),
+                message: z.treeifyError(spCertificate.error).errors.join(),
                 path: ["certificate"],
               });
             }
 
-            if (!isUrlWithHttpOrHttps(values.privateKey)) {
+            const scPrivateKey = z.httpUrl();
+            const spPrivateKey = scPrivateKey.safeParse(values.privateKey);
+            if (!spPrivateKey.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.upload.form.private_key_url.placeholder"),
+                message: z.treeifyError(spPrivateKey.error).errors.join(),
                 path: ["privateKey"],
               });
             }
-          }
-          break;
-
-        default:
-          {
-            ctx.addIssue({
-              code: "custom",
-              message: t("workflow_node.upload.form.source.placeholder"),
-              path: ["source"],
-            });
           }
           break;
       }

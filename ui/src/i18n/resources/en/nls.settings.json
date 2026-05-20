@@ -42,7 +42,6 @@
           },
           "password": {
             "errmsg": {
-              "invalid": "Password should be at least 10 characters",
               "not_matched": "Passwords do not match"
             }
           }

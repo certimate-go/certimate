@@ -66,17 +66,19 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.literal(RESOURCE_TYPE_WEBSITE, t("workflow_node.deploy.form.cpanel_resource_type.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_WEBSITE]),
       domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {
         case RESOURCE_TYPE_WEBSITE:
           {
-            if (!isDomain(values.domain!)) {
+            const scDomain = z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid"));
+            const spDomain = scDomain.safeParse(values.domain);
+            if (!spDomain.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.cpanel_domain.placeholder"),
+                message: z.treeifyError(spDomain.error).errors.join(),
                 path: ["domain"],
               });
             }

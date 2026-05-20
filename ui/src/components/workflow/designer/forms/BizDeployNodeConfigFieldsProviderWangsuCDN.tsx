@@ -80,7 +80,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      domainMatchPattern: z.string().nonempty(t("workflow_node.deploy.form.shared_domain_match_pattern.placeholder")).default(DOMAIN_MATCH_PATTERN_EXACT),
+      domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domains: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
@@ -88,11 +88,15 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         switch (values.domainMatchPattern) {
           case DOMAIN_MATCH_PATTERN_EXACT:
             {
-              const valid = values.domains && values.domains.split(MULTIPLE_INPUT_SEPARATOR).every((e) => isDomain(e, { allowWildcard: true }));
-              if (!valid) {
+              const scDomains = z
+                .string()
+                .nonempty()
+                .refine((v) => v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => isDomain(e, { allowWildcard: true })), t("common.errmsg.domain_invalid"));
+              const spDomains = scDomains.safeParse(values.domains);
+              if (!spDomains.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("common.errmsg.domain_invalid"),
+                  message: z.treeifyError(spDomains.error).errors.join(),
                   path: ["domains"],
                 });
               }

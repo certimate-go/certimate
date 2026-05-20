@@ -96,12 +96,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    tenantId: z.string().nonempty(t("access.form.azure_tenant_id.placeholder")),
-    clientId: z.string().nonempty(t("access.form.azure_client_id.placeholder")),
-    clientSecret: z.string().nonempty(t("access.form.azure_client_secret.placeholder")),
+    tenantId: z.string().nonempty(),
+    clientId: z.string().nonempty(),
+    clientSecret: z.string().nonempty(),
     subscriptionId: z.string().nullish(),
     resourceGroupName: z.string().nullish(),
     cloudName: z.string().nullish(),

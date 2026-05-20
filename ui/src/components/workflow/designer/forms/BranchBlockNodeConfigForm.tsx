@@ -134,7 +134,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     expression: z
       .any()
       .nullish()
-      .refine((v) => v == null || exprSchema.safeParse(v).success, t("workflow_node.branch_block.form.expression.errmsg.invalid")),
+      .refine((v) => {
+        if (!v) return true;
+        return exprSchema.safeParse(v).success;
+      }, t("workflow_node.branch_block.form.expression.errmsg.invalid")),
   });
 };
 

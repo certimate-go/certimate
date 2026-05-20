@@ -269,15 +269,15 @@ const InternalEditDrawer = ({
 
   const formSchema = z
     .object({
-      name: z.string().nonempty(t("preset.form.name.placeholder")),
-      subject: z.string().nonempty(t("preset.form.notification_subject.placeholder")),
-      message: z.string().nonempty(t("preset.form.notification_message.placeholder")),
+      name: z.string().nonempty(),
+      subject: z.string().nonempty(),
+      message: z.string().nonempty(),
     })
     .superRefine((values, ctx) => {
       if (values.name) {
         const name = values.name.trim();
-        const duplicatedCount = templates.filter((t) => t.name.trim() === name).length;
-        if (duplicatedCount > (mode === "create" ? 0 : 1)) {
+        const count = templates.filter((t) => t.name.trim() === name).length;
+        if (count > (mode === "create" ? 0 : 1)) {
           ctx.addIssue({
             code: "custom",
             message: t("preset.form.name.errmsg.duplicated"),

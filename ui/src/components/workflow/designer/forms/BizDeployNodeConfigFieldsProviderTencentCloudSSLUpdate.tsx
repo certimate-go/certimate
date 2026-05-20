@@ -105,18 +105,20 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z.object({
     endpoint: z.string().nullish(),
-    certificateId: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_sslupdate_certificate_id.placeholder")),
-    resourceProducts: z.string().refine((v) => {
-      if (!v) return false;
-      return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => !!e.trim());
-    }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.placeholder")),
+    certificateId: z.string().nonempty(),
+    resourceProducts: z
+      .string()
+      .nonempty()
+      .refine((v) => {
+        return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => !!e.trim());
+      }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.errmsg.invalid")),
     resourceRegions: z
       .string()
       .nullish()
       .refine((v) => {
         if (!v) return true;
         return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => !!e.trim());
-      }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.placeholder")),
+      }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.errmsg.invalid")),
     isReplaced: z.boolean().nullish(),
   });
 };

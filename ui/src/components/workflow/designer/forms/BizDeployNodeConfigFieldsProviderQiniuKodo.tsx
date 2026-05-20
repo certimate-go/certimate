@@ -51,7 +51,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    bucket: z.string().nonempty(t("workflow_node.deploy.form.qiniu_kodo_domain.placeholder")),
+    bucket: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };

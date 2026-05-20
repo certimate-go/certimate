@@ -118,50 +118,54 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      resourceType: z.literal([RESOURCE_TYPE_HOST, RESOURCE_TYPE_CERTIFICATE], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_HOST, RESOURCE_TYPE_CERTIFICATE]),
       hostMatchPattern: z.string().nullish(),
       hostType: z.string().nullish(),
-      hostId: z.union([z.string(), z.number().int()]).nullish(),
-      certificateId: z.union([z.string(), z.number().int()]).nullish(),
+      hostId: z.union([z.string(), z.int().positive()]).nullish(),
+      certificateId: z.union([z.string(), z.int().positive()]).nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {
         case RESOURCE_TYPE_HOST:
           {
-            if (values.hostMatchPattern) {
-              switch (values.hostMatchPattern) {
-                case HOST_MATCH_PATTERN_SPECIFIED:
-                  {
-                    const scHostType = z.string().nonempty();
-                    if (!scHostType.safeParse(values.hostType).success) {
-                      ctx.addIssue({
-                        code: "custom",
-                        message: t("workflow_node.deploy.form.nginxproxymanager_host_type.placeholder"),
-                        path: ["hostType"],
-                      });
-                    }
-
-                    const scHostId = z.coerce.number().int().positive();
-                    if (!scHostId.safeParse(values.hostId).success) {
-                      ctx.addIssue({
-                        code: "custom",
-                        message: t("workflow_node.deploy.form.nginxproxymanager_host_id.placeholder"),
-                        path: ["hostId"],
-                      });
-                    }
-                  }
-                  break;
-              }
-            } else {
+            const scHostMatchPattern = z.coerce.number().int().positive();
+            const spHostMatchPattern = scHostMatchPattern.safeParse(values.hostMatchPattern);
+            if (!spHostMatchPattern.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.nginxproxymanager_host_match_pattern.placeholder"),
+                message: z.treeifyError(spHostMatchPattern.error).errors.join(),
                 path: ["hostMatchPattern"],
               });
+            }
+
+            switch (values.hostMatchPattern) {
+              case HOST_MATCH_PATTERN_SPECIFIED:
+                {
+                  const scHostType = z.string().nonempty();
+                  const spHostType = scHostType.safeParse(values.hostType);
+                  if (!spHostType.success) {
+                    ctx.addIssue({
+                      code: "custom",
+                      message: z.treeifyError(spHostType.error).errors.join(),
+                      path: ["hostType"],
+                    });
+                  }
+
+                  const scHostId = z.coerce.number().int().positive();
+                  const spHostId = scHostId.safeParse(values.hostId);
+                  if (!spHostId.success) {
+                    ctx.addIssue({
+                      code: "custom",
+                      message: z.treeifyError(spHostId.error).errors.join(),
+                      path: ["hostId"],
+                    });
+                  }
+                }
+                break;
             }
           }
           break;
@@ -169,11 +173,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         case RESOURCE_TYPE_CERTIFICATE:
           {
             const scCertificateId = z.coerce.number().int().positive();
-            if (!scCertificateId.safeParse(values.certificateId).success) {
+            const spCertificateId = scCertificateId.safeParse(values.certificateId);
+            if (!spCertificateId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.nginxproxymanager_certificate_id.placeholder"),
-                path: ["hostId"],
+                message: z.treeifyError(spCertificateId.error).errors.join(),
+                path: ["certificateId"],
               });
             }
           }

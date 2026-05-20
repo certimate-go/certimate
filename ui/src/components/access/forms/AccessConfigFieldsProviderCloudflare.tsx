@@ -48,10 +48,10 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    dnsApiToken: z.string().nonempty(t("access.form.cloudflare_dns_api_token.placeholder")),
+    dnsApiToken: z.string().nonempty(),
     zoneApiToken: z.string().nullish(),
   });
 };

@@ -58,11 +58,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    accessKeyId: z.string().nonempty(t("access.form.zenlayer_access_key_id.placeholder")),
-    accessKeyPassword: z.string().nonempty(t("access.form.zenlayer_access_key_password.placeholder")),
+    accessKeyId: z.string().nonempty(),
+    accessKeyPassword: z.string().nonempty(),
     resourceGroupId: z.string().nullish(),
   });
 };

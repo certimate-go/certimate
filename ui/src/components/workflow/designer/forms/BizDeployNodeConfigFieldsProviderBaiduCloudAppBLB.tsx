@@ -102,10 +102,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.baiducloud_appblb_region.placeholder")),
-      resourceType: z.literal([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      loadbalancerId: z.string().nonempty(t("workflow_node.deploy.form.baiducloud_appblb_loadbalancer_id.placeholder")),
-      listenerPort: z.preprocess((v) => (v == null || v === "" ? void 0 : Number(v)), z.number().nullish()),
+      region: z.string().nonempty(),
+      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER]),
+      loadbalancerId: z.string().nonempty(),
+      listenerPort: z.union([z.string(), z.int().positive()]).nullish(),
       domain: z
         .string()
         .nullish()
@@ -118,10 +118,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LISTENER:
           {
-            if (!isPortNumber(values.listenerPort!)) {
+            const scListenerPort = z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid"));
+            const spListenerPort = scListenerPort.safeParse(values.listenerPort);
+            if (!spListenerPort.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.baiducloud_appblb_listener_port.placeholder"),
+                message: z.treeifyError(spListenerPort.error).errors.join(),
                 path: ["listenerPort"],
               });
             }

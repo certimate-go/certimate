@@ -48,17 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    hostId: z.union([
-      z.string().nonempty(t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder")),
-      z.number().int(t("workflow_node.deploy.form.mohua_mvh_host_id.placeholder")),
-    ]),
-    domainId: z.union([
-      z.string().nonempty(t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder")),
-      z.number().int(t("workflow_node.deploy.form.mohua_mvh_domain_id.placeholder")),
-    ]),
+    hostId: z.union([z.string().nonempty(), z.int().positive()]),
+    domainId: z.union([z.string().nonempty(), z.int().positive()]),
   });
 };
 

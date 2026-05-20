@@ -82,10 +82,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         if (!v) return true;
         return isJsonObject(v);
       }, t("common.errmsg.json_invalid")),
-    timeout: z.preprocess(
-      (v) => (v == null || v === "" ? void 0 : Number(v)),
-      z.number().int().gte(1, t("workflow_node.deploy.form.webhook_timeout.placeholder")).nullish()
-    ),
+    timeout: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
   });
 };
 

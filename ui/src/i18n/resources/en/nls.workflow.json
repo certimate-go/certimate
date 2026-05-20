@@ -167,13 +167,13 @@
             "content": {
               "label": "Graph",
               "errmsg": {
-                "invalid": "Please enter a valid graph content",
+                "invalid": "Invalid graph content",
                 "first_node_start": "The first node must be a start node",
                 "last_node_end": "The last node must be an end node",
                 "duplicate_start": "The start node must be unique",
-                "invalid_id": "Node ID invalid: #{{nodeId}}",
-                "invalid_config": "Node config invalid: #{{nodeId}}",
-                "conflict_id": "Node ID conflict: #{{nodeId}}",
+                "invalid_id": "Invalid node ID: #{{nodeId}}",
+                "invalid_config": "Invalid node config: #{{nodeId}}",
+                "conflict_id": "Conflict node ID: #{{nodeId}}",
                 "abnormal_condition_branch": "Abnormal parallel/conditional branch: #{{nodeId}}",
                 "abnormal_try_catch_branch": "Abnormal execution result branch: #{{nodeId}}"
               }

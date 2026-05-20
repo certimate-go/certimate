@@ -1146,7 +1146,7 @@
     "ssh_jump_servers": {
       "label": "跳板机（可选）",
       "errmsg": {
-        "invalid": "请配置有效的跳板机信息"
+        "invalid": "无效的跳板机配置"
       },
       "item": {
         "label": "跳板机"
@@ -1302,7 +1302,7 @@
       "label": "Webhook 请求标头（可选）",
       "placeholder": "请输入 Webhook 请求标头",
       "errmsg": {
-        "invalid": "请输入有效的请求标头"
+        "invalid": "无效的请求标头"
       },
       "tooltip": "示例：<br><i>Content-Type: application/json<br>User-Agent: certimate</i>"
     },

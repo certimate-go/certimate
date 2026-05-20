@@ -103,17 +103,19 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   return z
     .object({
-      webhookUrl: z.url(t("common.errmsg.url_invalid")),
+      webhookUrl: z.httpUrl(),
       secret: z.string().nullish(),
       useCustomPayload: z.boolean().nullish(),
       customPayload: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       if (values.useCustomPayload) {
-        if (!isJsonObject(values.customPayload!)) {
+        const scCustomPayload = z.string().refine((v) => isJsonObject(v), t("common.errmsg.json_invalid"));
+        const spCustomPayload = scCustomPayload.safeParse(values.customPayload);
+        if (!spCustomPayload.success) {
           ctx.addIssue({
             code: "custom",
-            message: t("common.errmsg.json_invalid"),
+            message: z.treeifyError(spCustomPayload.error).errors.join(),
             path: ["customPayload"],
           });
         }

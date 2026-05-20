@@ -103,9 +103,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.literal([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      region: z.string().nonempty(t("workflow_node.deploy.form.ucloud_ualb_region.placeholder")),
-      loadbalancerId: z.string().nonempty(t("workflow_node.deploy.form.ucloud_ualb_loadbalancer_id.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER]),
+      region: z.string().nonempty(),
+      loadbalancerId: z.string().nonempty(),
       listenerId: z.string().nullish(),
       domain: z
         .string()
@@ -119,10 +119,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LISTENER:
           {
-            if (!values.listenerId?.trim()) {
+            const scListenerId = z.string().nonempty();
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.ucloud_ualb_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }

@@ -48,19 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    resourceId: z.union([z.string(), z.number().int()]).refine((v) => {
-      return /^\d+$/.test(v + "") && +v > 0;
-    }, t("workflow_node.deploy.form.gcore_cdn_resource_id.placeholder")),
-    certificateId: z
-      .union([z.string(), z.number().int()])
-      .nullish()
-      .refine((v) => {
-        if (!v) return true;
-        return /^\d+$/.test(v + "") && +v > 0;
-      }, t("workflow_node.deploy.form.gcore_cdn_certificate_id.placeholder")),
+    resourceId: z.union([z.string().nonempty(), z.int().positive()]),
+    certificateId: z.union([z.string(), z.int().positive()]).nullish(),
   });
 };
 

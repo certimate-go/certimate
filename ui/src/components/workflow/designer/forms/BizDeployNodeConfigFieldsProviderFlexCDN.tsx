@@ -61,22 +61,23 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      resourceType: z.literal(RESOURCE_TYPE_CERTIFICATE, t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      certificateId: z.union([z.string(), z.number().int()]).nullish(),
+      resourceType: z.literal(RESOURCE_TYPE_CERTIFICATE),
+      certificateId: z.union([z.string(), z.int().positive()]).nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.resourceType) {
         case RESOURCE_TYPE_CERTIFICATE:
           {
             const scCertificateId = z.coerce.number().int().positive();
-            if (!scCertificateId.safeParse(values.certificateId).success) {
+            const spCertificateId = scCertificateId.safeParse(values.certificateId);
+            if (!spCertificateId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.flexcdn_certificate_id.placeholder"),
+                message: z.treeifyError(spCertificateId.error).errors.join(),
                 path: ["certificateId"],
               });
             }

@@ -1148,7 +1148,7 @@
     "ssh_jump_servers": {
       "label": "Jump servers (Optional)",
       "errmsg": {
-        "invalid": "Please configure valid jump servers"
+        "invalid": "Invalid jump servers configurations"
       },
       "item": {
         "label": "Jump server"
@@ -1305,7 +1305,7 @@
       "label": "Webhook request headers (Optional)",
       "placeholder": "Please enter Webhook request headers",
       "errmsg": {
-        "invalid": "Please enter a valid request headers"
+        "invalid": "Invalid request headers"
       },
       "tooltip": "Example: <br><i>Content-Type: application/json<br>User-Agent: certimate</i>"
     },

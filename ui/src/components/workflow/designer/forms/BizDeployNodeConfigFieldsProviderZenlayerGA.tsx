@@ -75,11 +75,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      resourceType: z.literal([RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_CERTIFICATE], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_CERTIFICATE]),
       acceleratorId: z.string().nullish(),
       certificateId: z.string().nullish(),
     })
@@ -87,10 +87,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_ACCELERATOR:
           {
-            if (!values.acceleratorId?.trim()) {
+            const scAcceleratorId = z.string().nonempty();
+            const spAcceleratorId = scAcceleratorId.safeParse(values.acceleratorId);
+            if (!spAcceleratorId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.zenlayer_ga_accelerator_id.placeholder"),
+                message: z.treeifyError(spAcceleratorId.error).errors.join(),
                 path: ["acceleratorId"],
               });
             }
@@ -99,10 +101,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_CERTIFICATE:
           {
-            if (!values.certificateId?.trim()) {
+            const scCertificateId = z.string().nonempty();
+            const spCertificateId = scCertificateId.safeParse(values.certificateId);
+            if (!spCertificateId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.zenlayer_ga_certificate_id.placeholder"),
+                message: z.treeifyError(spCertificateId.error).errors.join(),
                 path: ["certificateId"],
               });
             }

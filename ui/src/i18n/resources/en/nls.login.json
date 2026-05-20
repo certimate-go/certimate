@@ -4,17 +4,11 @@
   "form": {
     "username": {
       "label": "Username",
-      "placeholder": "Username/Email",
-      "errmsg": {
-        "invalid": "Please enter a valid email address"
-      }
+      "placeholder": "Username/Email"
     },
     "password": {
       "label": "Password",
-      "placeholder": "Password",
-      "errmsg": {
-        "invalid": "Password should be at least 10 characters"
-      }
+      "placeholder": "Password"
     },
     "submit": {
       "button": "Log-in"

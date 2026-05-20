@@ -1049,24 +1049,21 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           if (!v) return true;
           return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => isIPv4(e) || isIPv6(e));
         }, t("common.errmsg.ip_invalid")),
-      contactEmail: z.email(t("common.errmsg.email_invalid")),
-      challengeType: z.enum([CHALLENGE_TYPE_DNS01, CHALLENGE_TYPE_HTTP01], t("workflow_node.apply.form.challenge_type.placeholder")),
-      provider: z.string().nonempty(t("workflow_node.apply.form.provider.placeholder")),
+      contactEmail: z.email(),
+      challengeType: z.enum([CHALLENGE_TYPE_DNS01, CHALLENGE_TYPE_HTTP01]),
+      provider: z.string().nonempty(),
       providerAccessId: z.string().nullish(),
       providerConfig: z.any().nullish(),
       caProvider: z.string().nullish(),
       caProviderAccessId: z.string().nullish(),
       caProviderConfig: z.any().nullish(),
-      keySource: z.enum([KEY_SOURCE_AUTO, KEY_SOURCE_REUSE, KEY_SOURCE_CUSTOM], t("workflow_node.apply.form.key_source.placeholder")),
-      keyAlgorithm: z.string().nonempty(t("workflow_node.apply.form.key_algorithm.placeholder")),
+      keySource: z.enum([KEY_SOURCE_AUTO, KEY_SOURCE_REUSE, KEY_SOURCE_CUSTOM]),
+      keyAlgorithm: z.string().nonempty(),
       keyContent: z.string().nullish(),
       validityLifetime: z
-        .string()
-        .nullish()
-        .refine((v) => {
-          if (!v) return true;
-          return /^\d+[d|h]$/.test(v) && parseInt(v) > 0;
-        }, t("workflow_node.apply.form.validity_lifetime.placeholder")),
+        .templateLiteral([z.nullish(z.number().positive()), z.enum(["h", "d"])])
+        .or(z.literal(""))
+        .nullish(),
       preferredChain: z.string().nullish(),
       acmeProfile: z.string().nullish(),
       nameservers: z
@@ -1076,22 +1073,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           if (!v) return true;
           return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => isHostname(e) || isDomain(e));
         }, t("common.errmsg.host_invalid")),
-      dnsPropagationWait: z.preprocess(
-        (v) => (v == null || v === "" ? void 0 : Number(v)),
-        z.number().int().gte(0, t("workflow_node.apply.form.dns_propagation_wait.placeholder")).nullish()
-      ),
-      dnsPropagationTimeout: z.preprocess(
-        (v) => (v == null || v === "" ? void 0 : Number(v)),
-        z.number().int().gte(1, t("workflow_node.apply.form.dns_propagation_timeout.placeholder")).nullish()
-      ),
-      dnsTTL: z.preprocess(
-        (v) => (v == null || v === "" ? void 0 : Number(v)),
-        z.number().int().gte(1, t("workflow_node.apply.form.dns_ttl.placeholder")).nullish()
-      ),
-      httpDelayWait: z.preprocess(
-        (v) => (v == null || v === "" ? void 0 : Number(v)),
-        z.number().int().gte(0, t("workflow_node.apply.form.http_delay_wait.placeholder")).nullish()
-      ),
+      dnsPropagationWait: z.coerce.number().int().gte(0).or(z.literal("")).nullish(),
+      dnsPropagationTimeout: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
+      dnsTTL: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
+      httpDelayWait: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
       disableCommonName: z.boolean().nullish(),
       disableFollowCNAME: z.boolean().nullish(),
       disableARI: z.boolean().nullish(),
@@ -1102,21 +1087,26 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         switch (values.identifier) {
           case IDENTIFIER_DOMAIN:
             {
-              if (!values.domains) {
+              const scDomains = z.string().nonempty();
+              const spDomains = scDomains.safeParse(values.domains);
+              if (!spDomains.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("common.errmsg.domain_invalid"),
+                  message: z.treeifyError(spDomains.error).errors.join(),
                   path: ["domains"],
                 });
               }
             }
             break;
+
           case IDENTIFIER_IP:
             {
-              if (!values.ipaddrs) {
+              const scIpAddrs = z.string().nonempty();
+              const spIpAddrs = scIpAddrs.safeParse(values.ipaddrs);
+              if (!spIpAddrs.success) {
                 ctx.addIssue({
                   code: "custom",
-                  message: t("common.errmsg.ip_invalid"),
+                  message: z.treeifyError(spIpAddrs.error).errors.join(),
                   path: ["ipaddrs"],
                 });
               }

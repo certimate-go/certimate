@@ -38,7 +38,7 @@ const SettingsAccountUsername = ({ className, style }: { className?: string; sty
   const { message, notification } = App.useApp();
 
   const formSchema = z.object({
-    username: z.email(t("common.errmsg.email_invalid")).max(256, t("common.errmsg.string_max", { max: 256 })),
+    username: z.email(),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {
@@ -127,19 +127,16 @@ const SettingsAccountPassword = ({ className, style }: { className?: string; sty
 
   const { message, notification } = App.useApp();
 
-  const formSchema = z.object({
-    oldPassword: z
-      .string()
-      .min(10, t("settings.account.password.form.email.password.errmsg.invalid"))
-      .max(256, t("common.errmsg.string_max", { max: 256 })),
-    newPassword: z
-      .string()
-      .min(10, t("settings.account.password.form.email.password.errmsg.invalid"))
-      .max(256, t("common.errmsg.string_max", { max: 256 })),
-    confirmPassword: z.string().refine((v) => v === formInst.getFieldValue("newPassword"), {
+  const formSchema = z
+    .object({
+      oldPassword: z.string().min(10).max(256),
+      newPassword: z.string().min(10).max(256),
+      confirmPassword: z.string().min(10).max(256),
+    })
+    .refine((values) => values.newPassword === values.confirmPassword, {
       error: t("settings.account.password.form.email.password.errmsg.not_matched"),
-    }),
-  });
+      path: ["confirmPassword"],
+    });
   const formRule = createSchemaFieldRule(formSchema);
   const {
     form: formInst,

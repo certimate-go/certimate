@@ -4,17 +4,11 @@
   "form": {
     "username": {
       "label": "用户名/邮箱",
-      "placeholder": "请输入用户名/邮箱",
-      "errmsg": {
-        "invalid": "请输入正确的用户名/邮箱"
-      }
+      "placeholder": "请输入用户名/邮箱"
     },
     "password": {
       "label": "密码",
-      "placeholder": "请输入密码",
-      "errmsg": {
-        "invalid": "密码至少 10 个字符"
-      }
+      "placeholder": "请输入密码"
     },
     "submit": {
       "button": "登录"

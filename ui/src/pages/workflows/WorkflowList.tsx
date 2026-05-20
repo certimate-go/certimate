@@ -594,7 +594,7 @@ const InternalDuplicateDrawer = ({
   };
 
   const formSchema = z.object({
-    name: z.string().nonempty(t("workflow.detail.baseinfo.name.placeholder")),
+    name: z.string().nonempty(),
     description: z.string().nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);

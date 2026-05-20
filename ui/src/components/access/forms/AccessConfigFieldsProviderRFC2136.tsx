@@ -83,7 +83,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   return z.object({
     host: z.string().refine((v) => isHostname(v), t("common.errmsg.host_invalid")),
     port: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
-    tsigAlgorithm: z.string().nonempty(t("access.form.rfc2136_tsig_algorithm.placeholder")),
+    tsigAlgorithm: z.string().nonempty(),
     tsigKey: z.string().nullish(),
     tsigSecret: z.string().nullish(),
   });

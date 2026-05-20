@@ -52,15 +52,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    pullZoneId: z.union([z.string(), z.number().int()]).refine((v) => {
-      return /^\d+$/.test(v + "") && +v! > 0;
-    }, t("workflow_node.deploy.form.bunny_cdn_pull_zone_id.placeholder")),
-    hostname: z
-      .string()
-      .nonempty(t("workflow_node.deploy.form.bunny_cdn_hostname.placeholder"))
-      .refine((v) => {
-        return isDomain(v!, { allowWildcard: true });
-      }, t("common.errmsg.domain_invalid")),
+    pullZoneId: z.union([z.string().nonempty(), z.int().positive()]),
+    hostname: z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid")),
   });
 };
 

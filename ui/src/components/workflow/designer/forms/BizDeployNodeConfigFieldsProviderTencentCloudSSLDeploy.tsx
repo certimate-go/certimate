@@ -96,12 +96,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z.object({
     endpoint: z.string().nullish(),
-    region: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_ssldeploy_region.placeholder")),
-    resourceProduct: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_ssldeploy_resource_product.placeholder")),
-    resourceIds: z.string().refine((v) => {
-      if (!v) return false;
-      return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => /^[A-Za-z0-9*._\-|]+$/.test(e));
-    }, t("workflow_node.deploy.form.tencentcloud_ssldeploy_resource_ids.errmsg.invalid")),
+    region: z.string().nonempty(),
+    resourceProduct: z.string().nonempty(),
+    resourceIds: z
+      .string()
+      .nonempty()
+      .refine((v) => {
+        return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => /^[A-Za-z0-9*._\-|]+$/.test(e));
+      }, t("workflow_node.deploy.form.tencentcloud_ssldeploy_resource_ids.errmsg.invalid")),
   });
 };
 

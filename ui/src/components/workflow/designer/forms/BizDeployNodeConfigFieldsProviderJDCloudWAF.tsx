@@ -63,8 +63,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    regionId: z.string().nonempty(t("workflow_node.deploy.form.jdcloud_waf_region_id.placeholder")),
-    instanceId: z.string().nonempty(t("workflow_node.deploy.form.jdcloud_waf_instance_id.placeholder")),
+    regionId: z.string().nonempty(),
+    instanceId: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };

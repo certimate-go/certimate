@@ -36,11 +36,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    region: z.string().nonempty(t("workflow_node.apply.form.s3_region.placeholder")),
-    bucket: z.string().nonempty(t("workflow_node.apply.form.s3_bucket.placeholder")),
+    region: z.string().nonempty(),
+    bucket: z.string().nonempty(),
   });
 };
 

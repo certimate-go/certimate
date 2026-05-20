@@ -81,9 +81,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    endpoint: z.string().refine((v) => isHostname(v) || isUrlWithHttpOrHttps(v), t("access.form.s3_endpoint.placeholder")),
-    accessKey: z.string().nonempty(t("access.form.s3_access_key.placeholder")),
-    secretKey: z.string().nonempty(t("access.form.s3_secret_key.placeholder")),
+    endpoint: z.string().refine((v) => isHostname(v) || isUrlWithHttpOrHttps(v), t("common.errmsg.host_invalid")),
+    accessKey: z.string().nonempty(),
+    secretKey: z.string().nonempty(),
     signatureVersion: z.enum(["v2", "v4"]),
     usePathStyle: z.boolean().nullish(),
     allowInsecureConnections: z.boolean().nullish(),

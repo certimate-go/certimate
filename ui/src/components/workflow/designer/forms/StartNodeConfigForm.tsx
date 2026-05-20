@@ -136,15 +136,17 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      trigger: z.string().nonempty(t("workflow_node.start.form.trigger.placeholder")),
+      trigger: z.string().nonempty(),
       triggerCron: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       if (values.trigger === WORKFLOW_TRIGGERS.SCHEDULED) {
-        if (!validateCronExpression(values.triggerCron!)) {
+        const scTriggerCron = z.string().refine((v) => validateCronExpression(v), t("workflow_node.start.form.trigger_cron.errmsg.invalid"));
+        const spTriggerCron = scTriggerCron.safeParse(values.triggerCron);
+        if (!spTriggerCron.success) {
           ctx.addIssue({
             code: "custom",
-            message: t("workflow_node.start.form.trigger_cron.errmsg.invalid"),
+            message: z.treeifyError(spTriggerCron.error).errors.join(),
             path: ["triggerCron"],
           });
         }

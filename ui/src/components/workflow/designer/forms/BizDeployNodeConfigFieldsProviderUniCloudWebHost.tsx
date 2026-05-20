@@ -73,8 +73,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    spaceProvider: z.string().nonempty(t("workflow_node.deploy.form.unicloud_webhost_space_provider.placeholder")),
-    spaceId: z.string().nonempty(t("workflow_node.deploy.form.unicloud_webhost_space_id.placeholder")),
+    spaceProvider: z.string().nonempty(),
+    spaceId: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };

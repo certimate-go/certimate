@@ -41,8 +41,8 @@ const Login = () => {
   }, [browserTheme]);
 
   const formSchema = z.object({
-    username: z.email(t("login.form.username.errmsg.invalid")),
-    password: z.string().min(10, t("login.form.password.errmsg.invalid")),
+    username: z.email(),
+    password: z.string().min(10).max(256),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {

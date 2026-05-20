@@ -70,13 +70,13 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    host: z.string().nonempty(t("access.form.akamai_host.placeholder")),
-    clientToken: z.string().nonempty(t("access.form.akamai_client_token.placeholder")),
-    clientSecret: z.string().nonempty(t("access.form.akamai_client_secret.placeholder")),
-    accessToken: z.string().nonempty(t("access.form.akamai_access_token.placeholder")),
+    host: z.string().nonempty(),
+    clientToken: z.string().nonempty(),
+    clientSecret: z.string().nonempty(),
+    accessToken: z.string().nonempty(),
   });
 };
 

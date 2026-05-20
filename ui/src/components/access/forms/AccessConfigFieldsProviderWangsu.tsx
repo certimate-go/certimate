@@ -59,12 +59,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    accessKeyId: z.string().nonempty(t("access.form.wangsu_access_key_id.placeholder")),
-    accessKeySecret: z.string().nonempty(t("access.form.wangsu_access_key_secret.placeholder")),
-    apiKey: z.string().nonempty(t("access.form.wangsu_api_key.placeholder")),
+    accessKeyId: z.string().nonempty(),
+    accessKeySecret: z.string().nonempty(),
+    apiKey: z.string().nonempty(),
   });
 };
 

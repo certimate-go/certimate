@@ -48,11 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    apiKeyPublicPrefix: z.string().nonempty(t("access.form.ionos_api_key_public_prefix.placeholder")),
-    apiKeySecret: z.string().nonempty(t("access.form.ionos_api_key_secret.placeholder")),
+    apiKeyPublicPrefix: z.string().nonempty(),
+    apiKeySecret: z.string().nonempty(),
   });
 };
 

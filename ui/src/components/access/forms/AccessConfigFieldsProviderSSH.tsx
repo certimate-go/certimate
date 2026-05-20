@@ -250,23 +250,22 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
     .object({
       host: z.string().refine((v) => isHostname(v), t("common.errmsg.host_invalid")),
       port: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
-      authMethod: z.literal([AUTH_METHOD_NONE, AUTH_METHOD_PASSWORD, AUTH_METHOD_KEY], t("access.form.ssh_auth_method.placeholder")),
-      username: z.string().nonempty(t("access.form.ssh_username.placeholder")),
+      authMethod: z.enum([AUTH_METHOD_NONE, AUTH_METHOD_PASSWORD, AUTH_METHOD_KEY]),
+      username: z.string().nonempty(),
       password: z.string().nullish(),
-      key: z
-        .string()
-        .max(20480, t("common.errmsg.string_max", { max: 20480 }))
-        .nullish(),
+      key: z.string().max(20480).nullish(),
       keyPassphrase: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.authMethod) {
         case AUTH_METHOD_PASSWORD:
           {
-            if (!values.password?.trim()) {
+            const scPassword = z.string().nonempty();
+            const spPassword = scPassword.safeParse(values.password);
+            if (!spPassword.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ssh_password.placeholder"),
+                message: z.treeifyError(spPassword.error).errors.join(),
                 path: ["password"],
               });
             }
@@ -275,10 +274,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
         case AUTH_METHOD_KEY:
           {
-            if (!values.key?.trim()) {
+            const scKey = z.string().nonempty();
+            const spKey = scKey.safeParse(values.key);
+            if (!spKey.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ssh_key.placeholder"),
+                message: z.treeifyError(spKey.error).errors.join(),
                 path: ["key"],
               });
             }
@@ -292,7 +293,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
       .array(baseSchema, t("access.form.ssh_jump_servers.errmsg.invalid"))
       .nullish()
       .refine((v) => {
-        if (v == null) return true;
+        if (!v) return true;
         return v.every((item) => baseSchema.safeParse(item).success);
       }, t("access.form.ssh_jump_servers.errmsg.invalid")),
   });

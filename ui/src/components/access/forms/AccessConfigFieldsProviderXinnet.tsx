@@ -47,11 +47,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    agentId: z.string().nonempty(t("access.form.xinnet_agent_id.placeholder")),
-    apiPassword: z.string().nonempty(t("access.form.xinnet_api_password.placeholder")),
+    agentId: z.string().nonempty(),
+    apiPassword: z.string().nonempty(),
   });
 };
 

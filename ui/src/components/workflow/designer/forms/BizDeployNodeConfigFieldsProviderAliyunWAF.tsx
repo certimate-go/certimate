@@ -139,13 +139,13 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.aliyun_waf_region.placeholder")),
-      serviceVersion: z.literal("3.0", t("workflow_node.deploy.form.aliyun_waf_service_version.placeholder")),
-      serviceType: z.literal([SERVICE_TYPE_CLOUDRESOURCE, SERVICE_TYPE_CNAME], t("workflow_node.deploy.form.aliyun_waf_service_type.placeholder")),
-      instanceId: z.string().nonempty(t("workflow_node.deploy.form.aliyun_waf_instance_id.placeholder")),
+      region: z.string().nonempty(),
+      serviceVersion: z.enum(["3.0"]),
+      serviceType: z.enum([SERVICE_TYPE_CLOUDRESOURCE, SERVICE_TYPE_CNAME]),
+      instanceId: z.string().nonempty(),
       resourceProduct: z.string().nullish(),
       resourceId: z.string().nullish(),
-      resourcePort: z.preprocess((v) => (v == null || v === "" ? void 0 : Number(v)), z.number().nullish()),
+      resourcePort: z.union([z.string(), z.int().positive()]).nullish(),
       domain: z
         .string()
         .nullish()
@@ -158,26 +158,32 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.serviceType) {
         case SERVICE_TYPE_CLOUDRESOURCE:
           {
-            if (!values.resourceProduct) {
+            const scResourceProduct = z.string().nonempty();
+            const spResourceProduct = scResourceProduct.safeParse(values.resourceProduct);
+            if (!spResourceProduct.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.aliyun_waf_resource_product.placeholder"),
+                message: z.treeifyError(spResourceProduct.error).errors.join(),
                 path: ["resourceProduct"],
               });
             }
 
-            if (!values.resourceId) {
+            const scResourceId = z.string().nonempty();
+            const spResourceId = scResourceId.safeParse(values.resourceId);
+            if (!spResourceId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.aliyun_waf_resource_id.placeholder"),
+                message: z.treeifyError(spResourceId.error).errors.join(),
                 path: ["resourceId"],
               });
             }
 
-            if (!isPortNumber(values.resourcePort!)) {
+            const scResourcePort = z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid"));
+            const spResourcePort = scResourcePort.safeParse(values.resourcePort);
+            if (!spResourcePort.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.aliyun_waf_resource_port.placeholder"),
+                message: z.treeifyError(spResourcePort.error).errors.join(),
                 path: ["resourcePort"],
               });
             }

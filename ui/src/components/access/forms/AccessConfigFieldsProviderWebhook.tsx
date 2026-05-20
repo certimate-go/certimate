@@ -398,8 +398,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    url: z.url(t("common.errmsg.url_invalid")),
-    method: z.literal(["GET", "POST", "PUT", "PATCH", "DELETE"], t("access.form.webhook_method.placeholder")),
+    url: z.httpUrl(),
+    method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     headers: z
       .string()
       .nullish()

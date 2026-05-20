@@ -166,7 +166,7 @@ const SettingsSSLProviderOthers = ({ className, style }: { className?: string; s
   const { loading, settings, updateSettings } = useContext(InternalSettingsContext);
 
   const formSchema = z.object({
-    timeout: z.union([z.string(), z.number().int().positive()]).nullish(),
+    timeout: z.union([z.string(), z.int().positive()]).nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const { form: formInst, formProps } = useAntdForm<z.infer<typeof formSchema>>({
@@ -286,9 +286,9 @@ const InternalCASharedFormEabFields = ({ i18nKey }: { i18nKey: string }) => {
   const hasGuide = i18n.exists(`access.form.${i18nKey}_eab.guide`);
 
   const formSchema = z.object({
-    endpoint: z.url(t("common.errmsg.url_invalid")),
-    eabKid: z.string(t("access.form.shared_acme_eab_kid.label")).nonempty(t("access.form.shared_acme_eab_kid.placeholder")),
-    eabHmacKey: z.string(t("access.form.shared_acme_eab_hmac_key.label")).nonempty(t("access.form.shared_acme_eab_hmac_key.placeholder")),
+    endpoint: z.httpUrl(),
+    eabKid: z.string().nonempty(),
+    eabHmacKey: z.string().nonempty(),
   });
   const formRule = createSchemaFieldRule(formSchema);
 
@@ -369,7 +369,7 @@ const InternalCASettingsFormProviderSectigo = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    validationType: z.string().nonempty(t("access.form.sectigo_validation_type.placeholder")),
+    validationType: z.string().nonempty(),
   });
   const formRule = createSchemaFieldRule(formSchema);
 
@@ -411,9 +411,9 @@ const InternalCASettingsFormProviderACMECA = () => {
   const { t } = useTranslation();
 
   const formSchema = z.object({
-    endpoint: z.url(t("common.errmsg.url_invalid")),
-    eabKid: z.string(t("access.form.acmeca_eab_kid.placeholder")).nullish(),
-    eabHmacKey: z.string(t("access.form.acmeca_eab_hmac_key.placeholder")).nullish(),
+    endpoint: z.httpUrl(),
+    eabKid: z.string().nullish(),
+    eabHmacKey: z.string().nullish(),
   });
   const formRule = createSchemaFieldRule(formSchema);
 

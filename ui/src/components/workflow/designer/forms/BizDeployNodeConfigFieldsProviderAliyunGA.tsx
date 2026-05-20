@@ -90,8 +90,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.literal([RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_LISTENER], t("workflow_node.deploy.form.shared_resource_type.placeholder")),
-      acceleratorId: z.string().nonempty(t("workflow_node.deploy.form.aliyun_ga_accelerator_id.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_LISTENER]),
+      acceleratorId: z.string().nonempty(),
       listenerId: z.string().nullish(),
       domain: z
         .string()
@@ -105,10 +105,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LISTENER:
           {
-            if (!values.listenerId?.trim()) {
+            const scListenerId = z.string().nonempty();
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.aliyun_ga_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }

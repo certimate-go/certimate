@@ -89,11 +89,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().nonempty(t("workflow_node.deploy.form.huaweicloud_waf_region.placeholder")),
-      resourceType: z.literal(
-        [RESOURCE_TYPE_CLOUDSERVER, RESOURCE_TYPE_PREMIUMHOST, RESOURCE_TYPE_CERTIFICATE],
-        t("workflow_node.deploy.form.shared_resource_type.placeholder")
-      ),
+      region: z.string().nonempty(),
+      resourceType: z.enum([RESOURCE_TYPE_CLOUDSERVER, RESOURCE_TYPE_PREMIUMHOST, RESOURCE_TYPE_CERTIFICATE]),
       certificateId: z.string().nullish(),
       domain: z.string().nullish(),
     })
@@ -102,10 +99,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         case RESOURCE_TYPE_CLOUDSERVER:
         case RESOURCE_TYPE_PREMIUMHOST:
           {
-            if (!isDomain(values.domain!, { allowWildcard: true })) {
+            const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+            const spDomain = scDomain.safeParse(values.domain);
+            if (!spDomain.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.huaweicloud_waf_domain.placeholder"),
+                message: z.treeifyError(spDomain.error).errors.join(),
                 path: ["domain"],
               });
             }
@@ -114,10 +113,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_CERTIFICATE:
           {
-            if (!values.certificateId?.trim()) {
+            const scCertificateId = z.string().nonempty();
+            const spCertificateId = scCertificateId.safeParse(values.certificateId);
+            if (!spCertificateId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.huaweicloud_waf_certificate_id.placeholder"),
+                message: z.treeifyError(spCertificateId.error).errors.join(),
                 path: ["certificateId"],
               });
             }

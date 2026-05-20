@@ -63,8 +63,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
-    region: z.string().nonempty(t("workflow_node.deploy.form.volcengine_imagex_region.placeholder")),
-    serviceId: z.string().nonempty(t("workflow_node.deploy.form.volcengine_imagex_service_id.placeholder")),
+    region: z.string().nonempty(),
+    serviceId: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };

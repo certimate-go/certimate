@@ -32,11 +32,8 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
   const providerFilter = useProviderFilterByUsage(usage);
 
   const formSchema = z.object({
-    name: z
-      .string(t("access.form.name.placeholder"))
-      .min(1, t("access.form.name.placeholder"))
-      .max(64, t("common.errmsg.string_max", { max: 64 })),
-    provider: z.enum(ACCESS_PROVIDERS, t("access.form.provider.placeholder")),
+    name: z.string().nonempty().max(64),
+    provider: z.enum(ACCESS_PROVIDERS),
     config: z.any(),
     reserve: z.string().nullish(),
   });

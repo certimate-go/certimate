@@ -236,13 +236,13 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    subject: z.string().nonempty(t("workflow_node.notify.form.subject.placeholder")),
-    message: z.string().nonempty(t("workflow_node.notify.form.message.placeholder")),
-    provider: z.string().nonempty(t("workflow_node.notify.form.provider.placeholder")),
-    providerAccessId: z.string().nonempty(t("workflow_node.notify.form.provider_access.placeholder")),
+    subject: z.string().nonempty(),
+    message: z.string().nonempty(),
+    provider: z.string().nonempty(),
+    providerAccessId: z.string().nonempty(),
     providerConfig: z.any().nullish(),
     skipOnAllPrevSkipped: z.boolean().nullish(),
   });

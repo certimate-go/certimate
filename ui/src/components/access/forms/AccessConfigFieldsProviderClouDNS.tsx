@@ -48,11 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    authId: z.string().nonempty(t("access.form.cloudns_auth_id.placeholder")),
-    authPassword: z.string().nonempty(t("access.form.cloudns_auth_password.placeholder")),
+    authId: z.string().nonempty(),
+    authPassword: z.string().nonempty(),
   });
 };
 

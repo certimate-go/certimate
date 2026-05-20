@@ -48,18 +48,11 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    botToken: z.string().nonempty(t("access.form.telegrambot_token.placeholder")),
-    chatId: z
-      .preprocess(
-        (v) => (v == null || v === "" ? void 0 : Number(v)),
-        z.number().refine((v) => {
-          return !Number.isNaN(+v!) && +v! !== 0;
-        }, t("access.form.telegrambot_chat_id.placeholder"))
-      )
-      .nullish(),
+    botToken: z.string().nonempty(),
+    chatId: z.union([z.string(), z.int()]),
   });
 };
 

@@ -52,14 +52,11 @@
   },
 
   "errmsg": {
-    "string_max": "Please enter no more than {{max}} characters",
-    "email_invalid": "Please enter a valid email address",
-    "domain_invalid": "Please enter a valid domain name",
-    "host_invalid": "Please enter a valid domain name or IP address",
-    "port_invalid": "Please enter a valid port",
-    "ip_invalid": "Please enter a valid IP address",
-    "url_invalid": "Please enter a valid URL",
-    "json_invalid": "Please enter a valid JSON string",
-    "form_invalid": "Please check the form content"
+    "domain_invalid": "Invalid domain name",
+    "host_invalid": "Invalid domain name or IP address",
+    "port_invalid": "Invalid port",
+    "ip_invalid": "Invalid IP address",
+    "json_invalid": "Invalid JSON string",
+    "form_invalid": "Invalid form content"
   }
 }

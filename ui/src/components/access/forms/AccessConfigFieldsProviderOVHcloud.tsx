@@ -113,12 +113,12 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z
     .object({
-      endpoint: z.string().nonempty(t("access.form.ovhcloud_endpoint.placeholder")),
-      authMethod: z.literal([AUTH_METHOD_APPLICATION, AUTH_METHOD_OAUTH2], t("access.form.ovhcloud_auth_method.placeholder")),
+      endpoint: z.string().nonempty(),
+      authMethod: z.enum([AUTH_METHOD_APPLICATION, AUTH_METHOD_OAUTH2]),
       applicationKey: z.string().nullish(),
       applicationSecret: z.string().nullish(),
       consumerKey: z.string().nullish(),
@@ -129,26 +129,32 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
       switch (values.authMethod) {
         case AUTH_METHOD_APPLICATION:
           {
-            if (!values.applicationKey?.trim()) {
+            const scApplicationKey = z.string().nonempty();
+            const spApplicationKey = scApplicationKey.safeParse(values.applicationKey);
+            if (!spApplicationKey.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ovhcloud_application_key.placeholder"),
+                message: z.treeifyError(spApplicationKey.error).errors.join(),
                 path: ["applicationKey"],
               });
             }
 
-            if (!values.applicationSecret?.trim()) {
+            const scApplicationSecret = z.string().nonempty();
+            const spApplicationSecret = scApplicationSecret.safeParse(values.applicationSecret);
+            if (!spApplicationSecret.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ovhcloud_application_secret.placeholder"),
+                message: z.treeifyError(spApplicationSecret.error).errors.join(),
                 path: ["applicationSecret"],
               });
             }
 
-            if (!values.consumerKey?.trim()) {
+            const scConsumerKey = z.string().nonempty();
+            const spConsumerKey = scConsumerKey.safeParse(values.consumerKey);
+            if (!spConsumerKey.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ovhcloud_consumer_key.placeholder"),
+                message: z.treeifyError(spConsumerKey.error).errors.join(),
                 path: ["consumerKey"],
               });
             }
@@ -157,18 +163,22 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
         case AUTH_METHOD_OAUTH2:
           {
-            if (!values.clientId?.trim()) {
+            const scClientId = z.string().nonempty();
+            const spClientId = scClientId.safeParse(values.clientId);
+            if (!spClientId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ovhcloud_client_id.placeholder"),
+                message: z.treeifyError(spClientId.error).errors.join(),
                 path: ["clientId"],
               });
             }
 
-            if (!values.clientSecret?.trim()) {
+            const scClientSecret = z.string().nonempty();
+            const spClientSecret = scClientSecret.safeParse(values.clientSecret);
+            if (!spClientSecret.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ovhcloud_client_secret.placeholder"),
+                message: z.treeifyError(spClientSecret.error).errors.join(),
                 path: ["clientSecret"],
               });
             }

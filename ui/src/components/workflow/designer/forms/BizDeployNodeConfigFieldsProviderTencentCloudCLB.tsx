@@ -112,12 +112,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.literal(
-        [RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER, RESOURCE_TYPE_RULEDOMAIN],
-        t("workflow_node.deploy.form.shared_resource_type.placeholder")
-      ),
-      region: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_clb_region.placeholder")),
-      loadbalancerId: z.string().nonempty(t("workflow_node.deploy.form.tencentcloud_clb_loadbalancer_id.placeholder")),
+      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER, RESOURCE_TYPE_RULEDOMAIN]),
+      region: z.string().nonempty(),
+      loadbalancerId: z.string().nonempty(),
       listenerId: z.string().nullish(),
       domain: z.string().nullish(),
     })
@@ -125,10 +122,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.resourceType) {
         case RESOURCE_TYPE_LISTENER:
           {
-            if (!values.listenerId?.trim()) {
+            const scListenerId = z.string().nonempty();
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.tencentcloud_clb_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }
@@ -137,18 +136,22 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case RESOURCE_TYPE_RULEDOMAIN:
           {
-            if (!values.listenerId?.trim()) {
+            const scListenerId = z.string().nonempty();
+            const spListenerId = scListenerId.safeParse(values.listenerId);
+            if (!spListenerId.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("workflow_node.deploy.form.tencentcloud_clb_listener_id.placeholder"),
+                message: z.treeifyError(spListenerId.error).errors.join(),
                 path: ["listenerId"],
               });
             }
 
-            if (!isDomain(values.domain!, { allowWildcard: true })) {
+            const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+            const spDomain = scDomain.safeParse(values.domain);
+            if (!spDomain.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("common.errmsg.domain_invalid"),
+                message: z.treeifyError(spDomain.error).errors.join(),
                 path: ["domain"],
               });
             }

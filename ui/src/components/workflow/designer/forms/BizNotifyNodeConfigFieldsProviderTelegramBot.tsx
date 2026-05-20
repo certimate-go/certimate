@@ -35,21 +35,10 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t } = i18n;
+  const { t: _ } = i18n;
 
   return z.object({
-    chatId: z
-      .preprocess(
-        (v) => (v == null || v === "" ? void 0 : Number(v)),
-        z
-          .number()
-          .nullish()
-          .refine((v) => {
-            if (v == null || v + "" === "") return true;
-            return !Number.isNaN(+v!) && +v! !== 0;
-          }, t("workflow_node.notify.form.telegrambot_chat_id.placeholder"))
-      )
-      .nullish(),
+    chatId: z.union([z.string(), z.int()]).nullish(),
   });
 };
 
