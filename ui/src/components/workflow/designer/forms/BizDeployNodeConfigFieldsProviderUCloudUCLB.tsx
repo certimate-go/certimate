@@ -7,8 +7,8 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_LOADBALANCER = "loadbalancer" as const;
-const RESOURCE_TYPE_VSERVER = "vserver" as const;
+const DEPLOY_TARGET_LOADBALANCER = "loadbalancer" as const;
+const DEPLOY_TARGET_VSERVER = "vserver" as const;
 
 const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
   const { i18n, t } = useTranslation();
@@ -21,7 +21,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
@@ -36,17 +36,17 @@ const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_VSERVER].map((s) => ({
+          options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_VSERVER].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.ucloud_uclb_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.ucloud_uclb_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
@@ -60,7 +60,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
         <Input placeholder={t("workflow_node.deploy.form.ucloud_uclb_loadbalancer_id.placeholder")} />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_VSERVER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_VSERVER}>
         <Form.Item
           name={[parentNamePath, "vserverId"]}
           initialValue={initialValues.vserverId}
@@ -78,7 +78,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
-    resourceType: RESOURCE_TYPE_VSERVER,
+    deployTarget: DEPLOY_TARGET_VSERVER,
     loadbalancerId: "",
     vserverId: "",
   };
@@ -90,14 +90,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_VSERVER]),
+      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_VSERVER]),
       region: z.string().nonempty(),
       loadbalancerId: z.string().nonempty(),
       vserverId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_VSERVER:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_VSERVER:
           {
             const scVserverId = z.string().nonempty();
             const spVserverId = scVserverId.safeParse(values.vserverId);

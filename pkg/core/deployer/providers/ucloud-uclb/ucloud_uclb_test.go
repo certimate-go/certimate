@@ -48,7 +48,7 @@ func TestProvider(t *testing.T) {
 			PrivateKey:     fPrivateKey,
 			PublicKey:      fPublicKey,
 			Region:         fRegion,
-			ResourceType:   impl.RESOURCE_TYPE_VSERVER,
+			DeployTarget:   impl.DEPLOY_TARGET_VSERVER,
 			LoadbalancerId: fLoadbalancerId,
 			VServerId:      fVServerId,
 		})

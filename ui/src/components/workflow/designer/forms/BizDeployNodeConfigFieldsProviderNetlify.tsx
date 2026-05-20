@@ -7,7 +7,7 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_WEBSITE = "website" as const;
+const DEPLOY_TARGET_WEBSITE = "website" as const;
 
 const BizDeployNodeConfigFieldsProviderNetlify = () => {
   const { i18n, t } = useTranslation();
@@ -20,26 +20,26 @@ const BizDeployNodeConfigFieldsProviderNetlify = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_WEBSITE].map((s) => ({
+          options={[DEPLOY_TARGET_WEBSITE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.netlify_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.netlify_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_WEBSITE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_WEBSITE}>
         <Form.Item
           name={[parentNamePath, "siteId"]}
           initialValue={initialValues.siteId}
@@ -56,7 +56,7 @@ const BizDeployNodeConfigFieldsProviderNetlify = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_WEBSITE,
+    deployTarget: DEPLOY_TARGET_WEBSITE,
     siteId: "",
   };
 };
@@ -66,12 +66,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.enum([RESOURCE_TYPE_WEBSITE]),
+      deployTarget: z.enum([DEPLOY_TARGET_WEBSITE]),
       siteId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_WEBSITE:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_WEBSITE:
           {
             const scSiteId = z.string().nonempty();
             const spSiteId = scSiteId.safeParse(values.siteId);

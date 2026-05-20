@@ -8,8 +8,8 @@ import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_DOMAIN = "domain" as const;
-const RESOURCE_TYPE_CERTIFICATE = "certificate" as const;
+const DEPLOY_TARGET_DOMAIN = "domain" as const;
+const DEPLOY_TARGET_CERTIFICATE = "certificate" as const;
 
 const DOMAIN_MATCH_PATTERN_EXACT = "exact" as const;
 const DOMAIN_MATCH_PATTERN_WILDCARD = "wildcard" as const;
@@ -26,27 +26,27 @@ const BizDeployNodeConfigFieldsProviderZenlayerCDN = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
   const fieldDomainMatchPattern = Form.useWatch([parentNamePath, "domainMatchPattern"], { form: formInst, preserve: true });
 
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_DOMAIN, RESOURCE_TYPE_CERTIFICATE].map((s) => ({
+          options={[DEPLOY_TARGET_DOMAIN, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.zenlayer_cdn_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.zenlayer_cdn_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_DOMAIN}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_DOMAIN}>
         <Form.Item
           name={[parentNamePath, "domainMatchPattern"]}
           initialValue={initialValues.domainMatchPattern}
@@ -79,7 +79,7 @@ const BizDeployNodeConfigFieldsProviderZenlayerCDN = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
         <Form.Item
           name={[parentNamePath, "certificateId"]}
           initialValue={initialValues.certificateId}
@@ -96,7 +96,7 @@ const BizDeployNodeConfigFieldsProviderZenlayerCDN = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_DOMAIN,
+    deployTarget: DEPLOY_TARGET_DOMAIN,
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domain: "",
   };
@@ -107,14 +107,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.enum([RESOURCE_TYPE_DOMAIN, RESOURCE_TYPE_CERTIFICATE]),
+      deployTarget: z.enum([DEPLOY_TARGET_DOMAIN, DEPLOY_TARGET_CERTIFICATE]),
       domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domain: z.string().nullish(),
       certificateId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_DOMAIN:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_DOMAIN:
           {
             const scDomainMatchPattern = z.string().nonempty();
             const spDomainMatchPattern = scDomainMatchPattern.safeParse(values.domainMatchPattern);
@@ -145,7 +145,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           }
           break;
 
-        case RESOURCE_TYPE_CERTIFICATE:
+        case DEPLOY_TARGET_CERTIFICATE:
           {
             const scCertificateId = z.string().nonempty();
             const spCertificateId = scCertificateId.safeParse(values.certificateId);

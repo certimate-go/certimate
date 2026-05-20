@@ -30,14 +30,14 @@ type DeployerConfig struct {
 	EnterpriseProjectId string `json:"enterpriseProjectId,omitempty"`
 	// 华为云区域。
 	Region string `json:"region"`
-	// 部署资源类型。
-	ResourceType string `json:"resourceType"`
-	// 证书 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_CERTIFICATE] 时必填。
-	CertificateId string `json:"certificateId,omitempty"`
+	// 部署目标。
+	DeployTarget string `json:"deployTarget"`
 	// 防护域名（支持泛域名）。
-	// 部署资源类型为 [RESOURCE_TYPE_CLOUDSERVER]、[RESOURCE_TYPE_PREMIUMHOST] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_CLOUDSERVER]、[DEPLOY_TARGET_PREMIUMHOST] 时必填。
 	Domain string `json:"domain,omitempty"`
+	// 证书 ID。
+	// 部署目标为 [DEPLOY_TARGET_CERTIFICATE] 时必填。
+	CertificateId string `json:"certificateId,omitempty"`
 }
 
 type Deployer struct {
@@ -96,25 +96,25 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// 根据部署资源类型决定部署方式
-	switch d.config.ResourceType {
-	case RESOURCE_TYPE_CLOUDSERVER:
+	// 根据部署目标决定业务流程
+	switch d.config.DeployTarget {
+	case DEPLOY_TARGET_CLOUDSERVER:
 		if err := d.deployToCloudServer(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
-	case RESOURCE_TYPE_PREMIUMHOST:
+	case DEPLOY_TARGET_PREMIUMHOST:
 		if err := d.deployToPremiumHost(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
-	case RESOURCE_TYPE_CERTIFICATE:
+	case DEPLOY_TARGET_CERTIFICATE:
 		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("unsupported resource type '%s'", d.config.ResourceType)
+		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)
 	}
 
 	return &deployer.DeployResult{}, nil

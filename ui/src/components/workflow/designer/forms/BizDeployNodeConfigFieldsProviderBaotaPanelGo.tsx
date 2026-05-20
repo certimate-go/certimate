@@ -32,7 +32,7 @@ const BizDeployNodeConfigFieldsProviderBaotaPanelGo = () => {
             value: s,
             label: t(`workflow_node.deploy.form.baotapanelgo_site_type.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 

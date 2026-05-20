@@ -34,19 +34,19 @@ type DeployerConfig struct {
 	ApiToken string `json:"apiToken,omitempty"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
-	// 部署资源类型。
-	ResourceType string `json:"resourceType"`
+	// 部署目标。
+	DeployTarget string `json:"deployTarget"`
 	// 域名匹配模式。
 	// 零值时默认值 [HOST_MATCH_PATTERN_SPECIFIED]。
 	HostMatchPattern string `json:"hostMatchPattern,omitempty"`
 	// 主机类型。
-	// 部署资源类型为 [RESOURCE_TYPE_HOST] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_HOST] 时必填。
 	HostType string `json:"hostType,omitempty"`
 	// 主机 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_HOST]、且匹配模式非 [HOST_MATCH_PATTERN_CERTSAN] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_HOST]、且匹配模式非 [HOST_MATCH_PATTERN_CERTSAN] 时必填。
 	HostId int64 `json:"hostId,omitempty"`
 	// 证书 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_CERTIFICATE] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_CERTIFICATE] 时必填。
 	CertificateId int64 `json:"certificateId,omitempty"`
 }
 
@@ -100,20 +100,20 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
-	// 根据部署资源类型决定部署方式
-	switch d.config.ResourceType {
-	case RESOURCE_TYPE_HOST:
+	// 根据部署目标决定业务流程
+	switch d.config.DeployTarget {
+	case DEPLOY_TARGET_HOST:
 		if err := d.deployToHost(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
-	case RESOURCE_TYPE_CERTIFICATE:
+	case DEPLOY_TARGET_CERTIFICATE:
 		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("unsupported resource type '%s'", d.config.ResourceType)
+		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)
 	}
 
 	return &deployer.DeployResult{}, nil

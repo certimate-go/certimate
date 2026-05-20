@@ -7,8 +7,8 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_HOST = "host" as const;
-const RESOURCE_TYPE_CERTIFICATE = "certificate" as const;
+const DEPLOY_TARGET_HOST = "host" as const;
+const DEPLOY_TARGET_CERTIFICATE = "certificate" as const;
 
 const HOST_MATCH_PATTERN_SPECIFIED = "specified" as const;
 const HOST_MATCH_PATTERN_CERTSAN = "certsan" as const;
@@ -29,27 +29,27 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
   const fieldHostMatchPattern = Form.useWatch([parentNamePath, "hostMatchPattern"], { form: formInst, preserve: true });
 
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_HOST, RESOURCE_TYPE_CERTIFICATE].map((s) => ({
+          options={[DEPLOY_TARGET_HOST, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.nginxproxymanager_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.nginxproxymanager_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_HOST}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_HOST}>
         <Form.Item
           name={[parentNamePath, "hostMatchPattern"]}
           initialValue={initialValues.hostMatchPattern}
@@ -93,7 +93,7 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
         </Show>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
         <Form.Item
           name={[parentNamePath, "certificateId"]}
           initialValue={initialValues.certificateId}
@@ -110,7 +110,7 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_HOST,
+    deployTarget: DEPLOY_TARGET_HOST,
     hostMatchPattern: HOST_MATCH_PATTERN_SPECIFIED,
     hostType: HOST_TYPE_PROXY,
     hostId: "",
@@ -122,15 +122,15 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.enum([RESOURCE_TYPE_HOST, RESOURCE_TYPE_CERTIFICATE]),
+      deployTarget: z.enum([DEPLOY_TARGET_HOST, DEPLOY_TARGET_CERTIFICATE]),
       hostMatchPattern: z.string().nullish(),
       hostType: z.string().nullish(),
       hostId: z.union([z.string(), z.int().positive()]).nullish(),
       certificateId: z.union([z.string(), z.int().positive()]).nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_HOST:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_HOST:
           {
             const scHostMatchPattern = z.coerce.number().int().positive();
             const spHostMatchPattern = scHostMatchPattern.safeParse(values.hostMatchPattern);
@@ -170,7 +170,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           }
           break;
 
-        case RESOURCE_TYPE_CERTIFICATE:
+        case DEPLOY_TARGET_CERTIFICATE:
           {
             const scCertificateId = z.coerce.number().int().positive();
             const spCertificateId = scCertificateId.safeParse(values.certificateId);

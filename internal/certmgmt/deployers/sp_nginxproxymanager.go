@@ -23,7 +23,7 @@ func init() {
 			Password:                 credentials.Password,
 			ApiToken:                 credentials.ApiToken,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			ResourceType:             xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:             xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			HostType:                 xmaps.GetString(options.ProviderExtendedConfig, "hostType"),
 			HostMatchPattern:         xmaps.GetString(options.ProviderExtendedConfig, "hostMatchPattern"),
 			HostId:                   xmaps.GetInt64(options.ProviderExtendedConfig, "hostId"),

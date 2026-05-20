@@ -44,7 +44,7 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:        fAccessKeyId,
 			AccessKeyPassword:  fAccessKeyPassword,
-			ResourceType:       impl.RESOURCE_TYPE_DOMAIN,
+			DeployTarget:       impl.DEPLOY_TARGET_DOMAIN,
 			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			Domain:             fDomain,
 		})
@@ -60,7 +60,7 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:       fAccessKeyId,
 			AccessKeyPassword: fAccessKeyPassword,
-			ResourceType:      impl.RESOURCE_TYPE_CERTIFICATE,
+			DeployTarget:      impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:     fCertificateId,
 		})
 		if err != nil {

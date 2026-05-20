@@ -20,7 +20,7 @@ func init() {
 			AccessKeyId:     credentials.AccessKeyId,
 			AccessKeySecret: credentials.SecretAccessKey,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
-			ResourceType:    xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:    xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			LoadbalancerId:  xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),
 			ListenerId:      xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
 		})

@@ -38,11 +38,10 @@ func TestProvider(t *testing.T) {
 	fp.Parse()
 
 	t.Run("Deploy_ToCertificate", func(t *testing.T) {
-
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
-			ResourceType:    impl.RESOURCE_TYPE_CERTIFICATE,
+			DeployTarget:    impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:   fCertificateId,
 		})
 		if err != nil {

@@ -37,7 +37,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ApiToken:     fApiToken,
-			ResourceType: impl.RESOURCE_TYPE_WEBSITE,
+			DeployTarget: impl.DEPLOY_TARGET_WEBSITE,
 			SiteId:       fSiteId,
 		})
 		if err != nil {

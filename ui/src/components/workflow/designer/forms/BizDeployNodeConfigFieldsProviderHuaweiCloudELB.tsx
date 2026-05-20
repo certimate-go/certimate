@@ -7,9 +7,9 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_LOADBALANCER = "loadbalancer" as const;
-const RESOURCE_TYPE_LISTENER = "listener" as const;
-const RESOURCE_TYPE_CERTIFICATE = "certificate" as const;
+const DEPLOY_TARGET_LOADBALANCER = "loadbalancer" as const;
+const DEPLOY_TARGET_LISTENER = "listener" as const;
+const DEPLOY_TARGET_CERTIFICATE = "certificate" as const;
 
 const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
   const { i18n, t } = useTranslation();
@@ -22,7 +22,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
@@ -37,21 +37,21 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER, RESOURCE_TYPE_CERTIFICATE].map((s) => ({
+          options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.huaweicloud_elb_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.huaweicloud_elb_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
         <Form.Item
           name={[parentNamePath, "certificateId"]}
           initialValue={initialValues.certificateId}
@@ -63,7 +63,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_LOADBALANCER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_LOADBALANCER}>
         <Form.Item
           name={[parentNamePath, "loadbalancerId"]}
           initialValue={initialValues.loadbalancerId}
@@ -75,7 +75,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_LISTENER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_LISTENER}>
         <Form.Item
           name={[parentNamePath, "listenerId"]}
           initialValue={initialValues.listenerId}
@@ -93,7 +93,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
-    resourceType: RESOURCE_TYPE_LISTENER,
+    deployTarget: DEPLOY_TARGET_LISTENER,
   };
 };
 
@@ -103,14 +103,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       region: z.string().nonempty(),
-      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER, RESOURCE_TYPE_CERTIFICATE]),
+      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_CERTIFICATE]),
       loadbalancerId: z.string().nullish(),
       listenerId: z.string().nullish(),
       certificateId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_LOADBALANCER:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_LOADBALANCER:
           {
             const scLoadbalancerId = z.string().nonempty();
             const spLoadbalancerId = scLoadbalancerId.safeParse(values.loadbalancerId);
@@ -124,7 +124,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           }
           break;
 
-        case RESOURCE_TYPE_LISTENER:
+        case DEPLOY_TARGET_LISTENER:
           {
             const scListenerId = z.string().nonempty();
             const spListenerId = scListenerId.safeParse(values.listenerId);
@@ -138,7 +138,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           }
           break;
 
-        case RESOURCE_TYPE_CERTIFICATE:
+        case DEPLOY_TARGET_CERTIFICATE:
           {
             const scCertificateId = z.string().nonempty();
             const spCertificateId = scCertificateId.safeParse(values.certificateId);

@@ -46,7 +46,7 @@ func TestProvider(t *testing.T) {
 			Username:                 fUsername,
 			ApiToken:                 fApiToken,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_WEBSITE,
+			DeployTarget:             impl.DEPLOY_TARGET_WEBSITE,
 			Domain:                   fDomain,
 		})
 		if err != nil {

@@ -473,7 +473,7 @@
         }
       },
 
-      "shared_resource_type": {
+      "shared_deploy_target": {
         "label": "证书部署方式",
         "placeholder": "请选择证书部署方式"
       },
@@ -503,7 +503,7 @@
         "help": "提示：仅 1Panel v2+ 需要填写。不填写时，将替换主控节点证书；否则，将替换被控节点证书。",
         "tooltip": "请登录 1Panel 面板查看"
       },
-      "1panel_resource_type": {
+      "1panel_deploy_target": {
         "option": {
           "website": {
             "label": "部署到指定网站"
@@ -544,7 +544,7 @@
         "placeholder": "请输入阿里云 ALB 服务地域（例如：cn-hangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/slb/application-load-balancer/product-overview/supported-regions-and-zones\" target=\"_blank\">https://help.aliyun.com/zh/slb/application-load-balancer/product-overview/supported-regions-and-zones</a>"
       },
-      "aliyun_alb_resource_type": {
+      "aliyun_alb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS/QUIC 监听器"
@@ -644,7 +644,7 @@
         "placeholder": "请输入阿里云 CLB 服务地域（例如：cn-hangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://help.aliyun.com/zh/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
       },
-      "aliyun_clb_resource_type": {
+      "aliyun_clb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
@@ -733,7 +733,7 @@
         "label": "阿里云 FC 自定义域名",
         "placeholder": "请输入阿里云 FC 自定义域名"
       },
-      "aliyun_ga_resource_type": {
+      "aliyun_ga_deploy_target": {
         "option": {
           "accelerator": {
             "label": "部署到指定全球加速器下的全部 HTTPS 监听"
@@ -772,7 +772,7 @@
         "placeholder": "请输入阿里云 NLB 服务地域（例如：cn-hangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/slb/network-load-balancer/product-overview/regions-that-support-nlb\" target=\"_blank\">https://help.aliyun.com/zh/slb/network-load-balancer/product-overview/regions-that-support-nlb</a>"
       },
-      "aliyun_nlb_resource_type": {
+      "aliyun_nlb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS/QUIC 监听器"
@@ -860,7 +860,7 @@
       "apisix": {
         "guide": "需要 APISIX v3.0 或更高版本。"
       },
-      "apisix_resource_type": {
+      "apisix_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -927,7 +927,7 @@
         "placeholder": "请输入百度智能云 BLB 服务地域（例如：bj）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
       },
-      "baiducloud_appblb_resource_type": {
+      "baiducloud_appblb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS/SSL 监听"
@@ -957,7 +957,7 @@
         "placeholder": "请输入百度智能云 BLB 服务地域（例如：bj）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
       },
-      "baiducloud_blb_resource_type": {
+      "baiducloud_blb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS/SSL 监听"
@@ -986,7 +986,7 @@
         "label": "百度智能云 CDN 加速域名",
         "placeholder": "请输入百度智能云 CDN 加速域名"
       },
-      "baishan_cdn_resource_type": {
+      "baishan_cdn_deploy_target": {
         "option": {
           "domain": {
             "label": "部署到指定加速域名"
@@ -1140,7 +1140,7 @@
         "label": "BytePlus CDN 域名",
         "placeholder": "请输入 BytePlus CDN 域名"
       },
-      "cdnfly_resource_type": {
+      "cdnfly_deploy_target": {
         "option": {
           "website": {
             "label": "部署到指定网站"
@@ -1160,7 +1160,7 @@
         "placeholder": "请输入 Cdnfly 证书 ID",
         "tooltip": "请登录 Cdnfly 控制台查看"
       },
-      "cpanel_resource_type": {
+      "cpanel_deploy_target": {
         "option": {
           "website": {
             "label": "部署到指定网站"
@@ -1184,7 +1184,7 @@
         "placeholder": "请输入天翼云 ELB 资源池 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>"
       },
-      "ctcccloud_elb_resource_type": {
+      "ctcccloud_elb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
@@ -1225,7 +1225,7 @@
         "label": "多吉云 CDN 加速域名",
         "placeholder": "请输入多吉云 CDN 加速域名"
       },
-      "flexcdn_resource_type": {
+      "flexcdn_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1316,7 +1316,7 @@
         "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
         "tooltip": "这是什么？请参阅 <a href=\"https://cdn.gcore.com/ssl\" target=\"_blank\">https://cdn.gcore.com/ssl</a>"
       },
-      "goedge_resource_type": {
+      "goedge_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1342,7 +1342,7 @@
         "placeholder": "请输入华为云 API 网关服务区域（例如：cn-north-1）",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
-      "huaweicloud_apig_resource_type": {
+      "huaweicloud_apig_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1381,7 +1381,7 @@
         "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
-      "huaweicloud_elb_resource_type": {
+      "huaweicloud_elb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
@@ -1423,7 +1423,7 @@
         "placeholder": "请输入华为云 WAF 服务区域（例如：cn-north-1）",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
-      "huaweicloud_waf_resource_type": {
+      "huaweicloud_waf_deploy_target": {
         "option": {
           "cloudserver": {
             "label": "部署到指定云模式防护网站"
@@ -1450,7 +1450,7 @@
         "placeholder": "请输入京东云 ALB 服务地域 ID（例如：cn-north-1）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.jdcloud.com/cn/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/cn/common-declaration/api/introduction</a>"
       },
-      "jdcloud_alb_resource_type": {
+      "jdcloud_alb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS/TLS 监听"
@@ -1547,7 +1547,7 @@
       "kong": {
         "guide": "需要 Kong v2.0 或更高版本。"
       },
-      "kong_resource_type": {
+      "kong_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1564,7 +1564,7 @@
         "placeholder": "请输入 Kong 证书 ID",
         "tooltip": "请登录 Kong 控制台查看"
       },
-      "ksyun_cdn_resource_type": {
+      "ksyun_cdn_deploy_target": {
         "option": {
           "domain": {
             "label": "部署到指定加速域名"
@@ -1583,7 +1583,7 @@
         "placeholder": "请输入金山云 CDN 证书 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
-      "ksyun_slb_resource_type": {
+      "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1595,7 +1595,7 @@
         "placeholder": "请输入金山云 SLB 证书 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://network.console.ksyun.com/index.html#!/slb/slbIndex\" target=\"_blank\">https://network.console.ksyun.com/index.html#!/slb/slbIndex</a>"
       },
-      "lecdn_resource_type": {
+      "lecdn_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1715,7 +1715,7 @@
         "placeholder": "请输入嘿华云虚拟主机域名 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.mhjz1.cn/service?groupid=328\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328</a>"
       },
-      "netlify_resource_type": {
+      "netlify_deploy_target": {
         "option": {
           "website": {
             "label": "部署到指定网站"
@@ -1727,7 +1727,7 @@
         "placeholder": "请输入 netlify 网站 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.netlify.com/api/get-started/#get-site\" target=\"_blank\">https://docs.netlify.com/api/get-started/#get-site</a>"
       },
-      "nginxproxymanager_resource_type": {
+      "nginxproxymanager_deploy_target": {
         "option": {
           "host": {
             "label": "部署到指定主机"
@@ -1826,7 +1826,7 @@
       "ratpanel": {
         "guide": "需要耗子面板 v2.5 或更高版本。"
       },
-      "ratpanel_resource_type": {
+      "ratpanel_deploy_target": {
         "option": {
           "website": {
             "label": "部署到指定网站"
@@ -1922,7 +1922,7 @@
       "safeline": {
         "guide": "需要雷池 v6.6 或更高版本。"
       },
-      "safeline_resource_type": {
+      "safeline_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -1937,7 +1937,7 @@
       "samwaf": {
         "guide": "需要 SamWAF v1.3.20 或更高版本。"
       },
-      "samwaf_resource_type": {
+      "samwaf_deploy_target": {
         "option": {
           "certificate": {
             "label": "替换指定证书"
@@ -2062,7 +2062,7 @@
         "placeholder": "请输入腾讯云 CLB 服务地域（例如：ap-guangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/214/33415\" target=\"_blank\">https://cloud.tencent.com/document/product/214/33415</a>"
       },
-      "tencentcloud_clb_resource_type": {
+      "tencentcloud_clb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定实例下的全部 HTTPS/TCPSSL/QUIC 监听器"
@@ -2153,7 +2153,7 @@
         "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/608/36934\" target=\"_blank\">https://cloud.tencent.com/document/product/608/36934</a><br>国际站用户请填写 <em>gaap.intl.tencentcloudapi.com</em>。"
       },
-      "tencentcloud_gaap_resource_type": {
+      "tencentcloud_gaap_deploy_target": {
         "option": {
           "listener": {
             "label": "部署到指定监听器"
@@ -2306,7 +2306,7 @@
         "placeholder": "优刻得 UALB 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
-      "ucloud_ualb_resource_type": {
+      "ucloud_ualb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
@@ -2341,7 +2341,7 @@
         "placeholder": "优刻得 UCLB 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
-      "ucloud_uclb_resource_type": {
+      "ucloud_uclb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS VServer"
@@ -2430,7 +2430,7 @@
         "label": "又拍云云存储自定义域名",
         "placeholder": "请输入又拍云云存储自定义域名"
       },
-      "volcengine_alb_resource_type": {
+      "volcengine_alb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
@@ -2477,7 +2477,7 @@
         "label": "火山引擎服务地域",
         "placeholder": "请输入火山引擎证书中心服务地域（例如：cn-beijing）"
       },
-      "volcengine_clb_resource_type": {
+      "volcengine_clb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
@@ -2629,7 +2629,7 @@
         "placeholder": "请输入 Webhook 超时时间",
         "unit": "秒"
       },
-      "zenlayer_cdn_resource_type": {
+      "zenlayer_cdn_deploy_target": {
         "option": {
           "domain": {
             "label": "部署到指定加速域名"
@@ -2648,7 +2648,7 @@
         "placeholder": "请输入 Zenlayer CDN 证书 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
       },
-      "zenlayer_ga_resource_type": {
+      "zenlayer_ga_deploy_target": {
         "option": {
           "accelerator": {
             "label": "部署到指定全球网络加速器"

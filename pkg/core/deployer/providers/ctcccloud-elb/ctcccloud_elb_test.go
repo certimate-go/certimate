@@ -48,7 +48,7 @@ func TestProvider(t *testing.T) {
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
 			RegionId:        fRegionId,
-			ResourceType:    impl.RESOURCE_TYPE_LOADBALANCER,
+			DeployTarget:    impl.DEPLOY_TARGET_LOADBALANCER,
 			LoadbalancerId:  fLoadbalancerId,
 		})
 		if err != nil {
@@ -64,7 +64,7 @@ func TestProvider(t *testing.T) {
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
 			RegionId:        fRegionId,
-			ResourceType:    impl.RESOURCE_TYPE_LISTENER,
+			DeployTarget:    impl.DEPLOY_TARGET_LISTENER,
 			ListenerId:      fListenerId,
 		})
 		if err != nil {

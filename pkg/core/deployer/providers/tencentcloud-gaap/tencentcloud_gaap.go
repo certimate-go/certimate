@@ -23,13 +23,13 @@ type DeployerConfig struct {
 	SecretKey string `json:"secretKey"`
 	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
-	// 部署资源类型。
-	ResourceType string `json:"resourceType"`
+	// 部署目标。
+	DeployTarget string `json:"deployTarget"`
 	// 通道 ID。
 	// 选填。
 	ProxyId string `json:"proxyId,omitempty"`
 	// 负载均衡监听 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_LISTENER] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
 }
 
@@ -90,15 +90,15 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// 根据部署资源类型决定部署方式
-	switch d.config.ResourceType {
-	case RESOURCE_TYPE_LISTENER:
+	// 根据部署目标决定业务流程
+	switch d.config.DeployTarget {
+	case DEPLOY_TARGET_LISTENER:
 		if err := d.deployToListener(ctx, upres.CertId); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("unsupported resource type '%s'", d.config.ResourceType)
+		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)
 	}
 
 	return &deployer.DeployResult{}, nil

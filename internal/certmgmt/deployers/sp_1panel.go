@@ -22,7 +22,7 @@ func init() {
 			ApiKey:                   credentials.ApiKey,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
 			NodeName:                 xmaps.GetString(options.ProviderExtendedConfig, "nodeName"),
-			ResourceType:             xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:             xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			WebsiteMatchPattern:      xmaps.GetString(options.ProviderExtendedConfig, "websiteMatchPattern"),
 			WebsiteId:                xmaps.GetInt64(options.ProviderExtendedConfig, "websiteId"),
 			CertificateId:            xmaps.GetInt64(options.ProviderExtendedConfig, "certificateId"),

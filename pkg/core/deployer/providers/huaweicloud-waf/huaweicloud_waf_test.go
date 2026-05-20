@@ -14,7 +14,6 @@ var (
 	fAccessKeyId     string
 	fSecretAccessKey string
 	fRegion          string
-	fResourceType    string
 	fDomain          string
 )
 
@@ -24,7 +23,6 @@ func init() {
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
 	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
-	fp.DefineString(&fResourceType, "RESOURCETYPE")
 	fp.DefineString(&fDomain, "DOMAIN")
 }
 
@@ -37,18 +35,17 @@ Shell command to run this test:
 	--HUAWEICLOUDWAF_ACCESSKEYID="your-access-key-id" \
 	--HUAWEICLOUDWAF_SECRETACCESSKEY="your-secret-access-key" \
 	--HUAWEICLOUDWAF_REGION="cn-north-1" \
-	--HUAWEICLOUDWAF_RESOURCETYPE="premium" \
 	--HUAWEICLOUDWAF_DOMAIN="example.com"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
 
-	t.Run("Deploy", func(t *testing.T) {
+	t.Run("Deploy_ToPremium", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
 			Region:          fRegion,
-			ResourceType:    fResourceType,
+			DeployTarget:    impl.DEPLOY_TARGET_PREMIUMHOST,
 			Domain:          fDomain,
 		})
 		if err != nil {

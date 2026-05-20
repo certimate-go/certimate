@@ -23,7 +23,7 @@ func init() {
 			Username:                 credentials.Username,
 			Password:                 credentials.Password,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			ResourceType:             xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:             xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			CertificateId:            xmaps.GetInt64(options.ProviderExtendedConfig, "certificateId"),
 			ClientId:                 xmaps.GetInt64(options.ProviderExtendedConfig, "clientId"),
 		})

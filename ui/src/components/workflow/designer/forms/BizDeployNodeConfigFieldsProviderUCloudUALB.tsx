@@ -8,8 +8,8 @@ import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_LOADBALANCER = "loadbalancer" as const;
-const RESOURCE_TYPE_LISTENER = "listener" as const;
+const DEPLOY_TARGET_LOADBALANCER = "loadbalancer" as const;
+const DEPLOY_TARGET_LISTENER = "listener" as const;
 
 const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
   const { i18n, t } = useTranslation();
@@ -22,7 +22,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
@@ -37,17 +37,17 @@ const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER].map((s) => ({
+          options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.ucloud_ualb_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.ucloud_ualb_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
@@ -61,7 +61,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
         <Input placeholder={t("workflow_node.deploy.form.ucloud_ualb_loadbalancer_id.placeholder")} />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_LISTENER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_LISTENER}>
         <Form.Item
           name={[parentNamePath, "listenerId"]}
           initialValue={initialValues.listenerId}
@@ -73,7 +73,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_LOADBALANCER || fieldResourceType === RESOURCE_TYPE_LISTENER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_LOADBALANCER || fieldResourceType === DEPLOY_TARGET_LISTENER}>
         <Form.Item
           name={[parentNamePath, "domain"]}
           initialValue={initialValues.domain}
@@ -91,7 +91,7 @@ const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
-    resourceType: RESOURCE_TYPE_LISTENER,
+    deployTarget: DEPLOY_TARGET_LISTENER,
     loadbalancerId: "",
     listenerId: "",
   };
@@ -103,7 +103,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.enum([RESOURCE_TYPE_LOADBALANCER, RESOURCE_TYPE_LISTENER]),
+      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER]),
       region: z.string().nonempty(),
       loadbalancerId: z.string().nonempty(),
       listenerId: z.string().nullish(),
@@ -116,8 +116,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         }, t("common.errmsg.domain_invalid")),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_LISTENER:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_LISTENER:
           {
             const scListenerId = z.string().nonempty();
             const spListenerId = scListenerId.safeParse(values.listenerId);

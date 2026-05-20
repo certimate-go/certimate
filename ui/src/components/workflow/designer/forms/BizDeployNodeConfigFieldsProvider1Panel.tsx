@@ -7,8 +7,8 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_WEBSITE = "website" as const;
-const RESOURCE_TYPE_CERTIFICATE = "certificate" as const;
+const DEPLOY_TARGET_WEBSITE = "website" as const;
+const DEPLOY_TARGET_CERTIFICATE = "certificate" as const;
 
 const WEBSITE_MATCH_PATTERN_SPECIFIED = "specified" as const;
 const WEBSITE_MATCH_PATTERN_CERTSAN = "certsan" as const;
@@ -24,7 +24,7 @@ const BizDeployNodeConfigFieldsProvider1Panel = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
   const fieldWebsiteMatchPattern = Form.useWatch([parentNamePath, "websiteMatchPattern"], { form: formInst, preserve: true });
 
   return (
@@ -41,21 +41,21 @@ const BizDeployNodeConfigFieldsProvider1Panel = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_WEBSITE, RESOURCE_TYPE_CERTIFICATE].map((s) => ({
+          options={[DEPLOY_TARGET_WEBSITE, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.1panel_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.1panel_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_WEBSITE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_WEBSITE}>
         <Form.Item
           name={[parentNamePath, "websiteMatchPattern"]}
           initialValue={initialValues.websiteMatchPattern}
@@ -91,7 +91,7 @@ const BizDeployNodeConfigFieldsProvider1Panel = () => {
         </Show>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
         <Form.Item
           name={[parentNamePath, "certificateId"]}
           initialValue={initialValues.certificateId}
@@ -108,7 +108,7 @@ const BizDeployNodeConfigFieldsProvider1Panel = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_WEBSITE,
+    deployTarget: DEPLOY_TARGET_WEBSITE,
     websiteMatchPattern: WEBSITE_MATCH_PATTERN_SPECIFIED,
     websiteId: "",
   };
@@ -120,14 +120,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       nodeName: z.string().nullish(),
-      resourceType: z.enum([RESOURCE_TYPE_WEBSITE, RESOURCE_TYPE_CERTIFICATE]),
+      deployTarget: z.enum([DEPLOY_TARGET_WEBSITE, DEPLOY_TARGET_CERTIFICATE]),
       websiteMatchPattern: z.string().nullish().default(WEBSITE_MATCH_PATTERN_SPECIFIED),
       websiteId: z.union([z.string(), z.int().positive()]).nullish(),
       certificateId: z.union([z.string(), z.int().positive()]).nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_WEBSITE:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_WEBSITE:
           {
             const scWebsiteMatchPattern = z.string().nonempty();
             const spWebsiteMatchPattern = scWebsiteMatchPattern.safeParse(values.websiteMatchPattern);
@@ -157,7 +157,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           }
           break;
 
-        case RESOURCE_TYPE_CERTIFICATE:
+        case DEPLOY_TARGET_CERTIFICATE:
           {
             const scCertificateId = z.coerce.number().int().positive();
             const spCertificateId = scCertificateId.safeParse(values.certificateId);

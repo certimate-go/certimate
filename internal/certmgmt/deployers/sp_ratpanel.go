@@ -24,7 +24,7 @@ func init() {
 			AccessTokenId:            credentials.AccessTokenId,
 			AccessToken:              credentials.AccessToken,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			ResourceType:             xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:             xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			SiteNames:                lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "siteNames"), ";"), func(s string, _ int) bool { return s != "" }),
 			CertificateId:            xmaps.GetInt64(options.ProviderExtendedConfig, "certificateId"),
 		})

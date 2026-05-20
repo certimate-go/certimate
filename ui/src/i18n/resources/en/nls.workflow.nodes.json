@@ -474,9 +474,9 @@
         }
       },
 
-      "shared_resource_type": {
-        "label": "Resource type",
-        "placeholder": "Please select resource type"
+      "shared_deploy_target": {
+        "label": "Certificate deploy target",
+        "placeholder": "Please select certificate deploy target"
       },
       "shared_domain_match_pattern": {
         "label": "Domain match pattern",
@@ -504,7 +504,7 @@
         "help": "Notes: Only used for 1Panel v2+.",
         "tooltip": "You can find it on 1Panel dashboard."
       },
-      "1panel_resource_type": {
+      "1panel_deploy_target": {
         "option": {
           "website": {
             "label": "Website"
@@ -545,7 +545,7 @@
         "placeholder": "Please enter Alibaba Cloud ALB region (e.g. cn-hangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/application-load-balancer/product-overview/supported-regions-and-zones\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/application-load-balancer/product-overview/supported-regions-and-zones</a>"
       },
-      "aliyun_alb_resource_type": {
+      "aliyun_alb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "ALB load balancer"
@@ -645,7 +645,7 @@
         "placeholder": "Please enter Alibaba Cloud CLB region (e.g. cn-hangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
       },
-      "aliyun_clb_resource_type": {
+      "aliyun_clb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "CLB load balancer"
@@ -734,7 +734,7 @@
         "label": "Alibaba Cloud FC domain",
         "placeholder": "Please enter Alibaba Cloud FC domain name"
       },
-      "aliyun_ga_resource_type": {
+      "aliyun_ga_deploy_target": {
         "option": {
           "accelerator": {
             "label": "GA accelerator"
@@ -773,7 +773,7 @@
         "placeholder": "Please enter Alibaba Cloud NLB region (e.g. cn-hangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/network-load-balancer/product-overview/regions-that-support-nlb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/network-load-balancer/product-overview/regions-that-support-nlb</a>"
       },
-      "aliyun_nlb_resource_type": {
+      "aliyun_nlb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "NLB load balancer"
@@ -861,7 +861,7 @@
       "apisix": {
         "guide": "Requires APISIX v3.0 or higher."
       },
-      "apisix_resource_type": {
+      "apisix_deploy_target": {
         "option": {
           "certificate": {
             "label": "SSL certificate"
@@ -928,7 +928,7 @@
         "placeholder": "Please enter Baidu Cloud BLB region (e.g. bj)",
         "tooltip": "For more information, see <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
       },
-      "baiducloud_appblb_resource_type": {
+      "baiducloud_appblb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "BLB load balancer"
@@ -958,7 +958,7 @@
         "placeholder": "Please enter Baidu Cloud BLB region (e.g. bj)",
         "tooltip": "For more information, see <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
       },
-      "baiducloud_blb_resource_type": {
+      "baiducloud_blb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "BLB load balancer"
@@ -987,7 +987,7 @@
         "label": "Baidu Cloud CDN domain",
         "placeholder": "Please enter Baidu Cloud CDN domain name"
       },
-      "baishan_cdn_resource_type": {
+      "baishan_cdn_deploy_target": {
         "option": {
           "domain": {
             "label": "Domain"
@@ -1141,7 +1141,7 @@
         "label": "BytePlus CDN domain",
         "placeholder": "Please enter BytePlus CDN domain name"
       },
-      "cdnfly_resource_type": {
+      "cdnfly_deploy_target": {
         "option": {
           "website": {
             "label": "Website"
@@ -1161,7 +1161,7 @@
         "placeholder": "Please enter Cdnfly certificate ID",
         "tooltip": "You can find it on Cdnfly dashboard."
       },
-      "cpanel_resource_type": {
+      "cpanel_deploy_target": {
         "option": {
           "website": {
             "label": "Website"
@@ -1185,7 +1185,7 @@
         "placeholder": "Please enter CTCC StateCloud ELB region ID",
         "tooltip": "For more information, see <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>"
       },
-      "ctcccloud_elb_resource_type": {
+      "ctcccloud_elb_deploy_target": {
         "option": {
           "certificate": {
             "label": "ELB certificate"
@@ -1229,7 +1229,7 @@
         "label": "Doge Cloud CDN domain",
         "placeholder": "Please enter Doge Cloud CDN domain name"
       },
-      "flexcdn_resource_type": {
+      "flexcdn_deploy_target": {
         "option": {
           "certificate": {
             "label": "Certificate"
@@ -1320,7 +1320,7 @@
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
         "tooltip": "For more information, see <a href=\"https://cdn.gcore.com/ssl\" target=\"_blank\">https://cdn.gcore.com/ssl</a>"
       },
-      "goedge_resource_type": {
+      "goedge_deploy_target": {
         "option": {
           "certificate": {
             "label": "Certificate"
@@ -1346,7 +1346,7 @@
         "placeholder": "Please enter Huawei Cloud API gateway region (e.g. cn-north-1)",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
-      "huaweicloud_apig_resource_type": {
+      "huaweicloud_apig_deploy_target": {
         "option": {
           "certificate": {
             "label": "API gateway certificate"
@@ -1385,7 +1385,7 @@
         "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
-      "huaweicloud_elb_resource_type": {
+      "huaweicloud_elb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "ELB load balancer"
@@ -1427,7 +1427,7 @@
         "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
-      "huaweicloud_waf_resource_type": {
+      "huaweicloud_waf_deploy_target": {
         "option": {
           "cloudserver": {
             "label": "WAF cloud server"
@@ -1454,7 +1454,7 @@
         "placeholder": "Please enter JD Cloud ALB region ID (e.g. cn-north-1)",
         "tooltip": "For more information, see <a href=\"https://docs.jdcloud.com/en/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/en/common-declaration/api/introduction</a>"
       },
-      "jdcloud_alb_resource_type": {
+      "jdcloud_alb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "ALB load balancer"
@@ -1551,7 +1551,7 @@
       "kong": {
         "guide": "Requires Kong v2.0 or higher."
       },
-      "kong_resource_type": {
+      "kong_deploy_target": {
         "option": {
           "certificate": {
             "label": "SSL certificate"
@@ -1568,7 +1568,7 @@
         "placeholder": "Please enter Kong certificate ID",
         "tooltip": "You can find it on Kong dashboard."
       },
-      "ksyun_cdn_resource_type": {
+      "ksyun_cdn_deploy_target": {
         "option": {
           "domain": {
             "label": "Domain"
@@ -1587,7 +1587,7 @@
         "placeholder": "Please enter Kingsoft Cloud CDN certificate ID",
         "tooltip": "For more information, see <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
-      "ksyun_slb_resource_type": {
+      "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {
             "label": "Certificate"
@@ -1599,7 +1599,7 @@
         "placeholder": "Please enter Kingsoft Cloud SLB certificate ID",
         "tooltip": "For more information, see <a href=\"https://network.console.ksyun.com/index.html#!/slb/slbIndex\" target=\"_blank\">https://network.console.ksyun.com/index.html#!/slb/slbIndex</a>"
       },
-      "lecdn_resource_type": {
+      "lecdn_deploy_target": {
         "option": {
           "certificate": {
             "label": "Certificate"
@@ -1719,7 +1719,7 @@
         "placeholder": "Please enter Mohua Cloud virtual host domain ID",
         "tooltip": "For more information, see <a href=\"https://cloud.mhjz1.cn/service?groupid=328&language=english\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328&language=english</a>"
       },
-      "netlify_resource_type": {
+      "netlify_deploy_target": {
         "option": {
           "website": {
             "label": "Website"
@@ -1731,7 +1731,7 @@
         "placeholder": "Please enter Netlify website ID",
         "tooltip": "For more information, see <a href=\"https://docs.netlify.com/api/get-started/#get-site\" target=\"_blank\">https://docs.netlify.com/api/get-started/#get-site</a>"
       },
-      "nginxproxymanager_resource_type": {
+      "nginxproxymanager_deploy_target": {
         "option": {
           "host": {
             "label": "Host"
@@ -1830,7 +1830,7 @@
       "ratpanel": {
         "guide": "Requires AcePanel v2.5 or higher."
       },
-      "ratpanel_resource_type": {
+      "ratpanel_deploy_target": {
         "option": {
           "website": {
             "label": "Website"
@@ -1926,7 +1926,7 @@
       "safeline": {
         "guide": "Requires SafeLine v6.6 or higher."
       },
-      "safeline_resource_type": {
+      "safeline_deploy_target": {
         "option": {
           "certificate": {
             "label": "Certificate"
@@ -1941,7 +1941,7 @@
       "samwaf": {
         "guide": "Requires SamWAF v1.3.20 or higher."
       },
-      "samwaf_resource_type": {
+      "samwaf_deploy_target": {
         "option": {
           "certificate": {
             "label": "Certificate"
@@ -2066,7 +2066,7 @@
         "placeholder": "Please enter Tencent Cloud CLB region (e.g. ap-guangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/214/13629\" target=\"_blank\">https://www.tencentcloud.com/document/product/214/13629</a>"
       },
-      "tencentcloud_clb_resource_type": {
+      "tencentcloud_clb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "CLB instance"
@@ -2157,7 +2157,7 @@
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
         "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
       },
-      "tencentcloud_gaap_resource_type": {
+      "tencentcloud_gaap_deploy_target": {
         "option": {
           "listener": {
             "label": "GAAP listener"
@@ -2310,7 +2310,7 @@
         "placeholder": "Please enter UCloud ALB region (e.g. cn-bj2)",
         "tooltip": "For more information, see <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>"
       },
-      "ucloud_ualb_resource_type": {
+      "ucloud_ualb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "UALB load balancer"
@@ -2345,7 +2345,7 @@
         "placeholder": "Please enter UCloud UCLB region (e.g. cn-bj2)",
         "tooltip": "For more information, see <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>"
       },
-      "ucloud_uclb_resource_type": {
+      "ucloud_uclb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "UCLB load balancer"
@@ -2439,7 +2439,7 @@
         "placeholder": "Please enter VolcEngine ALB region (e.g. cn-beijing)",
         "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
       },
-      "volcengine_alb_resource_type": {
+      "volcengine_alb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "ALB load balancer"
@@ -2486,7 +2486,7 @@
         "placeholder": "Please enter VolcEngine CLB region (e.g. cn-beijing)",
         "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
       },
-      "volcengine_clb_resource_type": {
+      "volcengine_clb_deploy_target": {
         "option": {
           "loadbalancer": {
             "label": "CLB load balancer"
@@ -2633,7 +2633,7 @@
         "placeholder": "Please enter Webhook timeout",
         "unit": "seconds"
       },
-      "zenlayer_cdn_resource_type": {
+      "zenlayer_cdn_deploy_target": {
         "option": {
           "domain": {
             "label": "Domain"
@@ -2652,7 +2652,7 @@
         "placeholder": "Please enter Zenlayer CDN certificate ID",
         "tooltip": "For more information, <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
       },
-      "zenlayer_ga_resource_type": {
+      "zenlayer_ga_deploy_target": {
         "option": {
           "accelerator": {
             "label": "Accelerator"

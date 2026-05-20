@@ -20,7 +20,7 @@ func init() {
 			ServerUrl:                credentials.ServerUrl,
 			ApiToken:                 credentials.ApiToken,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			ResourceType:             xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:             xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			Workspace:                xmaps.GetString(options.ProviderExtendedConfig, "workspace"),
 			CertificateId:            xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 		})

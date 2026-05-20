@@ -46,7 +46,7 @@ func TestProvider(t *testing.T) {
 			ApiKey:                   fApiKey,
 			ApiSecret:                fApiSecret,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_CERTIFICATE,
+			DeployTarget:             impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:            fCertificateId,
 		})
 		if err != nil {

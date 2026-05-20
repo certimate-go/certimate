@@ -8,9 +8,9 @@ import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_CLOUDSERVER = "cloudserver" as const;
-const RESOURCE_TYPE_PREMIUMHOST = "premiumhost" as const;
-const RESOURCE_TYPE_CERTIFICATE = "certificate" as const;
+const DEPLOY_TARGET_CLOUDSERVER = "cloudserver" as const;
+const DEPLOY_TARGET_PREMIUMHOST = "premiumhost" as const;
+const DEPLOY_TARGET_CERTIFICATE = "certificate" as const;
 
 const BizDeployNodeConfigFieldsProviderHuaweiCloudWAF = () => {
   const { i18n, t } = useTranslation();
@@ -23,7 +23,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudWAF = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
@@ -38,21 +38,21 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudWAF = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_CLOUDSERVER, RESOURCE_TYPE_PREMIUMHOST, RESOURCE_TYPE_CERTIFICATE].map((s) => ({
+          options={[DEPLOY_TARGET_CLOUDSERVER, DEPLOY_TARGET_PREMIUMHOST, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.huaweicloud_waf_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.huaweicloud_waf_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_CLOUDSERVER || fieldResourceType === RESOURCE_TYPE_PREMIUMHOST}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_CLOUDSERVER || fieldResourceType === DEPLOY_TARGET_PREMIUMHOST}>
         <Form.Item
           name={[parentNamePath, "domain"]}
           initialValue={initialValues.domain}
@@ -63,7 +63,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudWAF = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_CERTIFICATE}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
         <Form.Item
           name={[parentNamePath, "certificateId"]}
           initialValue={initialValues.certificateId}
@@ -90,14 +90,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       region: z.string().nonempty(),
-      resourceType: z.enum([RESOURCE_TYPE_CLOUDSERVER, RESOURCE_TYPE_PREMIUMHOST, RESOURCE_TYPE_CERTIFICATE]),
+      deployTarget: z.enum([DEPLOY_TARGET_CLOUDSERVER, DEPLOY_TARGET_PREMIUMHOST, DEPLOY_TARGET_CERTIFICATE]),
       certificateId: z.string().nullish(),
       domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_CLOUDSERVER:
-        case RESOURCE_TYPE_PREMIUMHOST:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_CLOUDSERVER:
+        case DEPLOY_TARGET_PREMIUMHOST:
           {
             const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
             const spDomain = scDomain.safeParse(values.domain);
@@ -111,7 +111,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           }
           break;
 
-        case RESOURCE_TYPE_CERTIFICATE:
+        case DEPLOY_TARGET_CERTIFICATE:
           {
             const scCertificateId = z.string().nonempty();
             const spCertificateId = scCertificateId.safeParse(values.certificateId);

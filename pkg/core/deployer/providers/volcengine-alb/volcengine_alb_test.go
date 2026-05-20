@@ -45,7 +45,7 @@ func TestProvider(t *testing.T) {
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			Region:          fRegion,
-			ResourceType:    impl.RESOURCE_TYPE_LISTENER,
+			DeployTarget:    impl.DEPLOY_TARGET_LISTENER,
 			ListenerId:      fListenerId,
 		})
 		if err != nil {

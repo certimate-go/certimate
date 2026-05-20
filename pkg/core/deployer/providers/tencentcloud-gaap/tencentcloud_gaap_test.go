@@ -44,7 +44,7 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			SecretId:     fSecretId,
 			SecretKey:    fSecretKey,
-			ResourceType: impl.RESOURCE_TYPE_LISTENER,
+			DeployTarget: impl.DEPLOY_TARGET_LISTENER,
 			ProxyId:      fProxyId,
 			ListenerId:   fListenerId,
 		})

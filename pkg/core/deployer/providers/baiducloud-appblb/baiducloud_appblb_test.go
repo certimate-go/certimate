@@ -47,7 +47,7 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
-			ResourceType:    impl.RESOURCE_TYPE_LOADBALANCER,
+			DeployTarget:    impl.DEPLOY_TARGET_LOADBALANCER,
 			Region:          fRegion,
 			LoadbalancerId:  fLoadbalancerId,
 			Domain:          fDomain,

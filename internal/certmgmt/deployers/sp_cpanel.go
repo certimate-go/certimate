@@ -21,7 +21,7 @@ func init() {
 			Username:                 credentials.Username,
 			ApiToken:                 credentials.ApiToken,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			ResourceType:             xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:             xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			Domain:                   xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 		})
 		return provider, err

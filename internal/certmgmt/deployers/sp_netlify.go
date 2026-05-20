@@ -18,7 +18,7 @@ func init() {
 
 		provider, err := netlify.NewDeployer(&netlify.DeployerConfig{
 			ApiToken:     credentials.ApiToken,
-			ResourceType: xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget: xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			SiteId:       xmaps.GetString(options.ProviderExtendedConfig, "siteId"),
 		})
 		return provider, err

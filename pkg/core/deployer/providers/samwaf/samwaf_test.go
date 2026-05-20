@@ -42,7 +42,7 @@ func TestProvider(t *testing.T) {
 			ServerUrl:                fServerUrl,
 			ApiKey:                   fApiKey,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_CERTIFICATE,
+			DeployTarget:             impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:            fCertificateId,
 		})
 		if err != nil {

@@ -19,7 +19,7 @@ func init() {
 		provider, err := ksyunslb.NewDeployer(&ksyunslb.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
 			SecretAccessKey: credentials.SecretAccessKey,
-			ResourceType:    xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:    xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			CertificateId:   xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 		})
 		return provider, err

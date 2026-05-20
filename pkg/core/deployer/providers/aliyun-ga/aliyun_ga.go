@@ -25,15 +25,15 @@ type DeployerConfig struct {
 	AccessKeySecret string `json:"accessKeySecret"`
 	// 阿里云资源组 ID。
 	ResourceGroupId string `json:"resourceGroupId,omitempty"`
-	// 部署资源类型。
-	ResourceType string `json:"resourceType"`
+	// 部署目标。
+	DeployTarget string `json:"deployTarget"`
 	// 全球加速实例 ID。
 	AcceleratorId string `json:"acceleratorId"`
 	// 全球加速监听 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_LISTENER] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
 	// SNI 域名（不支持泛域名）。
-	// 部署资源类型为 [RESOURCE_TYPE_ACCELERATOR]、[RESOURCE_TYPE_LISTENER] 时选填。
+	// 部署目标为 [DEPLOY_TARGET_ACCELERATOR]、[DEPLOY_TARGET_LISTENER] 时选填。
 	Domain string `json:"domain,omitempty"`
 }
 
@@ -93,20 +93,20 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// 根据部署资源类型决定部署方式
-	switch d.config.ResourceType {
-	case RESOURCE_TYPE_ACCELERATOR:
+	// 根据部署目标决定业务流程
+	switch d.config.DeployTarget {
+	case DEPLOY_TARGET_ACCELERATOR:
 		if err := d.deployToAccelerator(ctx, upres.ExtendedData["CertIdentifier"].(string)); err != nil {
 			return nil, err
 		}
 
-	case RESOURCE_TYPE_LISTENER:
+	case DEPLOY_TARGET_LISTENER:
 		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdentifier"].(string)); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("unsupported resource type '%s'", d.config.ResourceType)
+		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)
 	}
 
 	return &deployer.DeployResult{}, nil

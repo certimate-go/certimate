@@ -1,10 +1,10 @@
 package onepanel
 
 const (
-	// 资源类型：替换指定网站的证书。
-	RESOURCE_TYPE_WEBSITE = "website"
-	// 资源类型：替换指定证书。
-	RESOURCE_TYPE_CERTIFICATE = "certificate"
+	// 部署目标：替换指定网站的证书。
+	DEPLOY_TARGET_WEBSITE = "website"
+	// 部署目标：替换指定证书。
+	DEPLOY_TARGET_CERTIFICATE = "certificate"
 )
 
 const (

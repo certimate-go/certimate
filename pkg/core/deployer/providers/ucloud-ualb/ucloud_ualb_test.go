@@ -48,7 +48,7 @@ func TestProvider(t *testing.T) {
 			PrivateKey:     fPrivateKey,
 			PublicKey:      fPublicKey,
 			Region:         fRegion,
-			ResourceType:   impl.RESOURCE_TYPE_LISTENER,
+			DeployTarget:   impl.DEPLOY_TARGET_LISTENER,
 			LoadbalancerId: fLoadbalancerId,
 			ListenerId:     fListenerId,
 		})

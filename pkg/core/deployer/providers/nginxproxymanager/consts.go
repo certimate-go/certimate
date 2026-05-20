@@ -6,10 +6,10 @@ const (
 )
 
 const (
-	// 资源类型：替换指定主机的证书。
-	RESOURCE_TYPE_HOST = "host"
-	// 资源类型：替换指定证书。
-	RESOURCE_TYPE_CERTIFICATE = "certificate"
+	// 部署目标：替换指定主机的证书。
+	DEPLOY_TARGET_HOST = "host"
+	// 部署目标：替换指定证书。
+	DEPLOY_TARGET_CERTIFICATE = "certificate"
 )
 
 const (

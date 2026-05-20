@@ -22,15 +22,15 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 金山云 SecretAccessKey。
 	SecretAccessKey string `json:"secretAccessKey"`
-	// 部署资源类型。
-	ResourceType string `json:"resourceType"`
+	// 部署目标。
+	DeployTarget string `json:"deployTarget"`
 	// 域名匹配模式。
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
 	// 加速域名（支持泛域名）。
 	Domain string `json:"domain"`
 	// 证书 ID。
-	// 部署资源类型为 [RESOURCE_TYPE_CERTIFICATE] 时必填。
+	// 部署目标为 [DEPLOY_TARGET_CERTIFICATE] 时必填。
 	CertificateId string `json:"certificateId,omitempty"`
 }
 
@@ -68,20 +68,20 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
-	// 根据部署资源类型决定部署方式
-	switch d.config.ResourceType {
-	case RESOURCE_TYPE_DOMAIN:
+	// 根据部署目标决定业务流程
+	switch d.config.DeployTarget {
+	case DEPLOY_TARGET_DOMAIN:
 		if err := d.deployToDomain(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
-	case RESOURCE_TYPE_CERTIFICATE:
+	case DEPLOY_TARGET_CERTIFICATE:
 		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("unsupported resource type '%s'", d.config.ResourceType)
+		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)
 	}
 
 	return &deployer.DeployResult{}, nil

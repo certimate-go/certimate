@@ -49,7 +49,7 @@ func TestProvider(t *testing.T) {
 			ApiVersion:               fApiVersion,
 			ApiKey:                   fApiKey,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_WEBSITE,
+			DeployTarget:             impl.DEPLOY_TARGET_WEBSITE,
 			WebsiteMatchPattern:      impl.WEBSITE_MATCH_PATTERN_SPECIFIED,
 			WebsiteId:                fWebsiteId,
 		})
@@ -67,7 +67,7 @@ func TestProvider(t *testing.T) {
 			ApiVersion:               fApiVersion,
 			ApiKey:                   fApiKey,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_CERTIFICATE,
+			DeployTarget:             impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:            fCertificateId,
 		})
 		if err != nil {

@@ -1,10 +1,10 @@
 package tencentcloudclb
 
 const (
-	// 资源类型：部署到指定负载均衡器。
-	RESOURCE_TYPE_LOADBALANCER = "loadbalancer"
-	// 资源类型：部署到指定监听器。
-	RESOURCE_TYPE_LISTENER = "listener"
-	// 资源类型：部署到指定转发规则域名。
-	RESOURCE_TYPE_RULEDOMAIN = "ruledomain"
+	// 部署目标：部署到指定负载均衡器。
+	DEPLOY_TARGET_LOADBALANCER = "loadbalancer"
+	// 部署目标：部署到指定监听器。
+	DEPLOY_TARGET_LISTENER = "listener"
+	// 部署目标：部署到指定转发规则域名。
+	DEPLOY_TARGET_RULEDOMAIN = "ruledomain"
 )

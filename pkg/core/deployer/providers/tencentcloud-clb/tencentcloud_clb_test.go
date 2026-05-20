@@ -51,7 +51,7 @@ func TestProvider(t *testing.T) {
 			SecretId:       fSecretId,
 			SecretKey:      fSecretKey,
 			Region:         fRegion,
-			ResourceType:   impl.RESOURCE_TYPE_LOADBALANCER,
+			DeployTarget:   impl.DEPLOY_TARGET_LOADBALANCER,
 			LoadbalancerId: fLoadbalancerId,
 		})
 		if err != nil {
@@ -67,7 +67,7 @@ func TestProvider(t *testing.T) {
 			SecretId:       fSecretId,
 			SecretKey:      fSecretKey,
 			Region:         fRegion,
-			ResourceType:   impl.RESOURCE_TYPE_LISTENER,
+			DeployTarget:   impl.DEPLOY_TARGET_LISTENER,
 			LoadbalancerId: fLoadbalancerId,
 			ListenerId:     fListenerId,
 		})
@@ -84,7 +84,7 @@ func TestProvider(t *testing.T) {
 			SecretId:       fSecretId,
 			SecretKey:      fSecretKey,
 			Region:         fRegion,
-			ResourceType:   impl.RESOURCE_TYPE_RULEDOMAIN,
+			DeployTarget:   impl.DEPLOY_TARGET_RULEDOMAIN,
 			LoadbalancerId: fLoadbalancerId,
 			ListenerId:     fListenerId,
 			Domain:         fDomain,

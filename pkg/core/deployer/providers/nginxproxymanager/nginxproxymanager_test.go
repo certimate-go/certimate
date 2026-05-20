@@ -49,7 +49,7 @@ func TestProvider(t *testing.T) {
 			Username:                 fUsername,
 			Password:                 fPassword,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_HOST,
+			DeployTarget:             impl.DEPLOY_TARGET_HOST,
 			HostType:                 fHostType,
 			HostMatchPattern:         impl.HOST_MATCH_PATTERN_SPECIFIED,
 			HostId:                   fHostId,

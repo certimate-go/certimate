@@ -45,7 +45,7 @@ func TestProvider(t *testing.T) {
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
 			Region:          fRegion,
-			ResourceType:    impl.RESOURCE_TYPE_CERTIFICATE,
+			DeployTarget:    impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:   fCertificateId,
 		})
 		if err != nil {

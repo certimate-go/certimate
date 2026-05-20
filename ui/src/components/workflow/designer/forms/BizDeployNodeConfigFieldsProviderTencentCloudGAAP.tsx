@@ -7,7 +7,7 @@ import Show from "@/components/Show";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_LISTENER = "listener" as const;
+const DEPLOY_TARGET_LISTENER = "listener" as const;
 
 const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
   const { i18n, t } = useTranslation();
@@ -20,7 +20,7 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
@@ -35,17 +35,17 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_LISTENER].map((s) => ({
+          options={[DEPLOY_TARGET_LISTENER].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.tencentcloud_gaap_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.tencentcloud_gaap_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
@@ -59,7 +59,7 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
         <Input placeholder={t("workflow_node.deploy.form.tencentcloud_gaap_proxy_id.placeholder")} />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_LISTENER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_LISTENER}>
         <Form.Item
           name={[parentNamePath, "listenerId"]}
           initialValue={initialValues.listenerId}
@@ -76,7 +76,7 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_LISTENER,
+    deployTarget: DEPLOY_TARGET_LISTENER,
   };
 };
 
@@ -86,13 +86,13 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      resourceType: z.enum([RESOURCE_TYPE_LISTENER]),
+      deployTarget: z.enum([DEPLOY_TARGET_LISTENER]),
       proxyId: z.string().nullish(),
       listenerId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_LISTENER:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_LISTENER:
           {
             const scListenerId = z.string().nonempty();
             const spListenerId = scListenerId.safeParse(values.listenerId);

@@ -20,7 +20,7 @@ func init() {
 			AccessKeyId:     credentials.AccessKeyId,
 			AccessKeySecret: credentials.AccessKeySecret,
 			ResourceGroupId: credentials.ResourceGroupId,
-			ResourceType:    xmaps.GetString(options.ProviderExtendedConfig, "resourceType"),
+			DeployTarget:    xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			AcceleratorId:   xmaps.GetString(options.ProviderExtendedConfig, "acceleratorId"),
 			ListenerId:      xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
 			Domain:          xmaps.GetString(options.ProviderExtendedConfig, "domain"),

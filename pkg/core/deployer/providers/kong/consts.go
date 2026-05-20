@@ -1,6 +1,6 @@
 package kong
 
 const (
-	// 资源类型：替换指定证书。
-	RESOURCE_TYPE_CERTIFICATE = "certificate"
+	// 部署目标：替换指定证书。
+	DEPLOY_TARGET_CERTIFICATE = "certificate"
 )

@@ -8,8 +8,8 @@ import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const RESOURCE_TYPE_ACCELERATOR = "accelerator" as const;
-const RESOURCE_TYPE_LISTENER = "listener" as const;
+const DEPLOY_TARGET_ACCELERATOR = "accelerator" as const;
+const DEPLOY_TARGET_LISTENER = "listener" as const;
 
 const BizDeployNodeConfigFieldsProviderAliyunGA = () => {
   const { i18n, t } = useTranslation();
@@ -22,22 +22,22 @@ const BizDeployNodeConfigFieldsProviderAliyunGA = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldResourceType = Form.useWatch([parentNamePath, "resourceType"], formInst);
+  const fieldResourceType = Form.useWatch([parentNamePath, "deployTarget"], formInst);
 
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "resourceType"]}
-        initialValue={initialValues.resourceType}
-        label={t("workflow_node.deploy.form.shared_resource_type.label")}
+        name={[parentNamePath, "deployTarget"]}
+        initialValue={initialValues.deployTarget}
+        label={t("workflow_node.deploy.form.shared_deploy_target.label")}
         rules={[formRule]}
       >
         <Select
-          options={[RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_LISTENER].map((s) => ({
+          options={[DEPLOY_TARGET_ACCELERATOR, DEPLOY_TARGET_LISTENER].map((s) => ({
             value: s,
-            label: t(`workflow_node.deploy.form.aliyun_ga_resource_type.option.${s}.label`),
+            label: t(`workflow_node.deploy.form.aliyun_ga_deploy_target.option.${s}.label`),
           }))}
-          placeholder={t("workflow_node.deploy.form.shared_resource_type.placeholder")}
+          placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
       </Form.Item>
 
@@ -51,7 +51,7 @@ const BizDeployNodeConfigFieldsProviderAliyunGA = () => {
         <Input placeholder={t("workflow_node.deploy.form.aliyun_ga_accelerator_id.placeholder")} />
       </Form.Item>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_LISTENER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_LISTENER}>
         <Form.Item
           name={[parentNamePath, "listenerId"]}
           initialValue={initialValues.listenerId}
@@ -63,7 +63,7 @@ const BizDeployNodeConfigFieldsProviderAliyunGA = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldResourceType === RESOURCE_TYPE_ACCELERATOR || fieldResourceType === RESOURCE_TYPE_LISTENER}>
+      <Show when={fieldResourceType === DEPLOY_TARGET_ACCELERATOR || fieldResourceType === DEPLOY_TARGET_LISTENER}>
         <Form.Item
           name={[parentNamePath, "domain"]}
           initialValue={initialValues.domain}
@@ -80,7 +80,7 @@ const BizDeployNodeConfigFieldsProviderAliyunGA = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    resourceType: RESOURCE_TYPE_LISTENER,
+    deployTarget: DEPLOY_TARGET_LISTENER,
     acceleratorId: "",
   };
 };
@@ -90,7 +90,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      resourceType: z.enum([RESOURCE_TYPE_ACCELERATOR, RESOURCE_TYPE_LISTENER]),
+      deployTarget: z.enum([DEPLOY_TARGET_ACCELERATOR, DEPLOY_TARGET_LISTENER]),
       acceleratorId: z.string().nonempty(),
       listenerId: z.string().nullish(),
       domain: z
@@ -102,8 +102,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         }, t("common.errmsg.domain_invalid")),
     })
     .superRefine((values, ctx) => {
-      switch (values.resourceType) {
-        case RESOURCE_TYPE_LISTENER:
+      switch (values.deployTarget) {
+        case DEPLOY_TARGET_LISTENER:
           {
             const scListenerId = z.string().nonempty();
             const spListenerId = scListenerId.safeParse(values.listenerId);

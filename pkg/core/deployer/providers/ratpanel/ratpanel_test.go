@@ -46,7 +46,7 @@ func TestProvider(t *testing.T) {
 			AccessTokenId:            fAccessTokenId,
 			AccessToken:              fAccessToken,
 			AllowInsecureConnections: true,
-			ResourceType:             impl.RESOURCE_TYPE_WEBSITE,
+			DeployTarget:             impl.DEPLOY_TARGET_WEBSITE,
 			SiteNames:                []string{fSiteName},
 		})
 		if err != nil {
