@@ -1,26 +1,19 @@
 package wecombot_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/notifier/providers/wecombot"
+	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/wecombot"
 )
 
-const (
-	mockSubject = "test_subject"
-	mockMessage = "test_message"
+var (
+	fp          = tester.Args("WECOMBOT_")
+	fWebhookUrl string
 )
-
-var fWebhookUrl string
 
 func init() {
-	argsPrefix := "WECOMBOT_"
-
-	flag.StringVar(&fWebhookUrl, argsPrefix+"WEBHOOKURL", "", "")
+	fp.DefineString(&fWebhookUrl, "WEBHOOKURL")
 }
 
 /*
@@ -29,16 +22,11 @@ Shell command to run this test:
 	go test -v ./wecombot_test.go -args \
 	--WECOMBOT_WEBHOOKURL="https://example.com/your-webhook-url" \
 */
-func TestNotify(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Notify", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("WEBHOOKURL: %v", fWebhookUrl),
-		}, "\n"))
-
-		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			WebhookUrl: fWebhookUrl,
 		})
 		if err != nil {
@@ -46,12 +34,6 @@ func TestNotify(t *testing.T) {
 			return
 		}
 
-		res, err := provider.Notify(context.Background(), mockSubject, mockMessage)
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
 	})
 }

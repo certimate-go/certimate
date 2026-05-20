@@ -6,7 +6,7 @@ import (
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
-func TestCertHostnameUtil_IsMatch(t *testing.T) {
+func TestUtil(t *testing.T) {
 	t.Run("IsMatch", func(t *testing.T) {
 		testCases := []struct {
 			pattern  string

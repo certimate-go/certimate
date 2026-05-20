@@ -1,30 +1,21 @@
 package telegrambot_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/notifier/providers/telegrambot"
-)
-
-const (
-	mockSubject = "test_subject"
-	mockMessage = "test_message"
+	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/telegrambot"
 )
 
 var (
+	fp        = tester.Args("TELEGRAMBOT_")
 	fApiToken string
 	fChatId   string
 )
 
 func init() {
-	argsPrefix := "TELEGRAMBOT_"
-
-	flag.StringVar(&fApiToken, argsPrefix+"APITOKEN", "", "")
-	flag.StringVar(&fChatId, argsPrefix+"CHATID", "", "")
+	fp.DefineString(&fApiToken, "APITOKEN")
+	fp.DefineString(&fChatId, "CHATID")
 }
 
 /*
@@ -34,17 +25,11 @@ Shell command to run this test:
 	--TELEGRAMBOT_APITOKEN="your-api-token" \
 	--TELEGRAMBOT_CHATID="your-chat-id"
 */
-func TestNotify(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Notify", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("APITOKEN: %v", fApiToken),
-			fmt.Sprintf("CHATID: %v", fChatId),
-		}, "\n"))
-
-		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			BotToken: fApiToken,
 			ChatId:   fChatId,
 		})
@@ -53,12 +38,6 @@ func TestNotify(t *testing.T) {
 			return
 		}
 
-		res, err := provider.Notify(context.Background(), mockSubject, mockMessage)
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
 	})
 }

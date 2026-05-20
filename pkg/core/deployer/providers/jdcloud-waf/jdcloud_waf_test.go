@@ -1,19 +1,16 @@
 package jdcloudwaf_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-waf"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-waf"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("JDCLOUDWAF_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fAccessKeySecret string
 	fInstanceId      string
@@ -21,42 +18,30 @@ var (
 )
 
 func init() {
-	argsPrefix := "JDCLOUDWAF_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fInstanceId, argsPrefix+"INSTANCEID", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fInstanceId, "INSTANCEID")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./jdcloud_waf_test.go -args \
-	--JDCLOUDWAF_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--JDCLOUDWAF_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--JDCLOUDWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--JDCLOUDWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDWAF_ACCESSKEYID="your-access-key-id" \
 	--JDCLOUDWAF_ACCESSKEYSECRET="your-secret-access-key" \
 	--JDCLOUDWAF_INSTANCEID="your-instance-id" \
 	--JDCLOUDWAF_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("INSTANCEID: %v", fInstanceId),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			InstanceId:      fInstanceId,
@@ -67,14 +52,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -1,19 +1,16 @@
 package aliyunclb_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-clb"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-clb"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("ALIYUNCLB_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fAccessKeySecret string
 	fRegion          string
@@ -23,24 +20,22 @@ var (
 )
 
 func init() {
-	argsPrefix := "ALIYUNCLB_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fRegion, argsPrefix+"REGION", "", "")
-	flag.StringVar(&fLoadbalancerId, argsPrefix+"LOADBALANCERID", "", "")
-	flag.Int64Var(&fListenerPort, argsPrefix+"LISTENERPORT", 443, "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fRegion, "REGION")
+	fp.DefineString(&fLoadbalancerId, "LOADBALANCERID")
+	fp.DefineInt64(&fListenerPort, "LISTENERPORT", 443)
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./aliyun_clb_test.go -args \
-	--ALIYUNCLB_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--ALIYUNCLB_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--ALIYUNCLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--ALIYUNCLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNCLB_ACCESSKEYID="your-access-key-id" \
 	--ALIYUNCLB_ACCESSKEYSECRET="your-access-key-secret" \
 	--ALIYUNCLB_REGION="cn-hangzhou" \
@@ -48,26 +43,15 @@ Shell command to run this test:
 	--ALIYUNCLB_LISTENERPORT=443 \
 	--ALIYUNCLB_DOMAIN="your-clb-sni-domain"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy_ToLoadbalancer", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("REGION: %v", fRegion),
-			fmt.Sprintf("LOADBALANCERID: %v", fLoadbalancerId),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			Region:          fRegion,
-			ResourceType:    provider.RESOURCE_TYPE_LOADBALANCER,
+			ResourceType:    impl.RESOURCE_TYPE_LOADBALANCER,
 			LoadbalancerId:  fLoadbalancerId,
 			Domain:          fDomain,
 		})
@@ -76,34 +60,15 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_ToListener", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("REGION: %v", fRegion),
-			fmt.Sprintf("LOADBALANCERID: %v", fLoadbalancerId),
-			fmt.Sprintf("LISTENERPORT: %v", fListenerPort),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			Region:          fRegion,
-			ResourceType:    provider.RESOURCE_TYPE_LISTENER,
+			ResourceType:    impl.RESOURCE_TYPE_LISTENER,
 			LoadbalancerId:  fLoadbalancerId,
 			ListenerPort:    int32(fListenerPort),
 			Domain:          fDomain,
@@ -113,14 +78,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

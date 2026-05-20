@@ -1,55 +1,41 @@
 package baiducloudcert_test
 
 import (
-	"context"
-	"encoding/json"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/certmgr/providers/baiducloud-cert"
+	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/baiducloud-cert"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("BAIDUCLOUDCERT_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fSecretAccessKey string
 )
 
 func init() {
-	argsPrefix := "BAIDUCLOUDCERT_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fSecretAccessKey, argsPrefix+"SECRETACCESSKEY", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./baiducloud_cert_test.go -args \
-	--BAIDUCLOUDCERT_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--BAIDUCLOUDCERT_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--BAIDUCLOUDCERT_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--BAIDUCLOUDCERT_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAIDUCLOUDCERT_ACCESSKEYID="your-access-key-id" \
 	--BAIDUCLOUDCERT_SECRETACCESSKEY="your-access-key-secret"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
-	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("SECRETACCESSKEY: %v", fSecretAccessKey),
-		}, "\n"))
-
-		provider, err := provider.NewCertmgr(&provider.CertmgrConfig{
+	t.Run("Upload", func(t *testing.T) {
+		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
 		})
@@ -58,15 +44,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Upload(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		sres, _ := json.Marshal(res)
-		t.Logf("ok: %s", string(sres))
+		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

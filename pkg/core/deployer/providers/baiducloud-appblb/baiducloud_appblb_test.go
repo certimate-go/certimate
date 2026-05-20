@@ -1,19 +1,16 @@
 package baiducloudappblb_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/baiducloud-appblb"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/baiducloud-appblb"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("BAIDUCLOUDAPPBLB_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fSecretAccessKey string
 	fRegion          string
@@ -22,48 +19,35 @@ var (
 )
 
 func init() {
-	argsPrefix := "BAIDUCLOUDAPPBLB_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fSecretAccessKey, argsPrefix+"SECRETACCESSKEY", "", "")
-	flag.StringVar(&fRegion, argsPrefix+"REGION", "", "")
-	flag.StringVar(&fLoadbalancerId, argsPrefix+"LOADBALANCERID", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
+	fp.DefineString(&fRegion, "REGION")
+	fp.DefineString(&fLoadbalancerId, "LOADBALANCERID")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./baiducloud_appblb_test.go -args \
-	--BAIDUCLOUDAPPBLB_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--BAIDUCLOUDAPPBLB_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--BAIDUCLOUDAPPBLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--BAIDUCLOUDAPPBLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAIDUCLOUDAPPBLB_ACCESSKEYID="your-access-key-id" \
 	--BAIDUCLOUDAPPBLB_SECRETACCESSKEY="your-secret-access-key" \
 	--BAIDUCLOUDAPPBLB_REGION="bj" \
 	--BAIDUCLOUDAPPBLB_LOADBALANCERID="your-blb-loadbalancer-id" \
 	--BAIDUCLOUDAPPBLB_DOMAIN="your-blb-sni-domain"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("SECRETACCESSKEY: %v", fSecretAccessKey),
-			fmt.Sprintf("REGION: %v", fRegion),
-			fmt.Sprintf("LOADBALANCERID: %v", fLoadbalancerId),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
-			ResourceType:    provider.RESOURCE_TYPE_LOADBALANCER,
+			ResourceType:    impl.RESOURCE_TYPE_LOADBALANCER,
 			Region:          fRegion,
 			LoadbalancerId:  fLoadbalancerId,
 			Domain:          fDomain,
@@ -73,14 +57,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

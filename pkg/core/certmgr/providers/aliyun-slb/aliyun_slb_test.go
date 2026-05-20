@@ -1,59 +1,55 @@
 package aliyunslb_test
 
 import (
-	"context"
-	"encoding/json"
-	"flag"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-slb"
+	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-slb"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("ALIYUNSLB_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fAccessKeySecret string
 	fRegion          string
 )
 
 func init() {
-	argsPrefix := "ALIYUNSLB_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fRegion, argsPrefix+"REGION", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fRegion, "REGION")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./aliyun_slb_test.go -args \
-	--ALIYUNSLB_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--ALIYUNSLB_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--ALIYUNSLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--ALIYUNSLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNSLB_ACCESSKEYID="your-access-key-id" \
 	--ALIYUNSLB_ACCESSKEYSECRET="your-access-key-secret" \
 	--ALIYUNSLB_REGION="cn-hangzhou"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
-	t.Run("Deploy", func(t *testing.T) {
+	t.Run("Upload", func(t *testing.T) {
 		t.Log(strings.Join([]string{
 			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
+			fmt.Sprintf("TESTCERTPATH: %v", fTestCertPath),
+			fmt.Sprintf("TESTKEYPATH: %v", fTestKeyPath),
 			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
 			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
 			fmt.Sprintf("REGION: %v", fRegion),
 		}, "\n"))
 
-		provider, err := provider.NewCertmgr(&provider.CertmgrConfig{
+		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			Region:          fRegion,
@@ -63,15 +59,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Upload(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		sres, _ := json.Marshal(res)
-		t.Logf("ok: %s", string(sres))
+		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

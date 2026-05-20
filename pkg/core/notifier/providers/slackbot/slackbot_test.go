@@ -1,30 +1,21 @@
 package discordbot_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/notifier/providers/slackbot"
-)
-
-const (
-	mockSubject = "test_subject"
-	mockMessage = "test_message"
+	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/slackbot"
 )
 
 var (
+	fp         = tester.Args("SLACKBOT_")
 	fApiToken  string
 	fChannelId string
 )
 
 func init() {
-	argsPrefix := "SLACKBOT_"
-
-	flag.StringVar(&fApiToken, argsPrefix+"APITOKEN", "", "")
-	flag.StringVar(&fChannelId, argsPrefix+"CHANNELID", "", "")
+	fp.DefineString(&fApiToken, "APITOKEN")
+	fp.DefineString(&fChannelId, "CHANNELID")
 }
 
 /*
@@ -34,17 +25,11 @@ Shell command to run this test:
 	--SLACKBOT_APITOKEN="your-bot-token" \
 	--SLACKBOT_CHANNELID="your-channel-id"
 */
-func TestNotify(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Notify", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("APITOKEN: %v", fApiToken),
-			fmt.Sprintf("CHANNELID: %v", fChannelId),
-		}, "\n"))
-
-		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			BotToken:  fApiToken,
 			ChannelId: fChannelId,
 		})
@@ -53,12 +38,6 @@ func TestNotify(t *testing.T) {
 			return
 		}
 
-		res, err := provider.Notify(context.Background(), mockSubject, mockMessage)
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
 	})
 }

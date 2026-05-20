@@ -1,30 +1,21 @@
 package larkbot_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/notifier/providers/larkbot"
-)
-
-const (
-	mockSubject = "test_subject"
-	mockMessage = "test_message"
+	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/larkbot"
 )
 
 var (
+	fp          = tester.Args("LARKBOT_")
 	fWebhookUrl string
 	fSecret     string
 )
 
 func init() {
-	argsPrefix := "LARKBOT_"
-
-	flag.StringVar(&fWebhookUrl, argsPrefix+"WEBHOOKURL", "", "")
-	flag.StringVar(&fSecret, argsPrefix+"SECRET", "", "")
+	fp.DefineString(&fWebhookUrl, "WEBHOOKURL")
+	fp.DefineString(&fSecret, "SECRET")
 }
 
 /*
@@ -34,17 +25,11 @@ Shell command to run this test:
 	--LARKBOT_WEBHOOKURL="https://example.com/your-webhook-url" \
 	--LARKBOT_SECRET="your-secret"
 */
-func TestNotify(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Notify", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("WEBHOOKURL: %v", fWebhookUrl),
-			fmt.Sprintf("SECRET: %v", fSecret),
-		}, "\n"))
-
-		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			WebhookUrl: fWebhookUrl,
 			Secret:     fSecret,
 		})
@@ -53,12 +38,6 @@ func TestNotify(t *testing.T) {
 			return
 		}
 
-		res, err := provider.Notify(context.Background(), mockSubject, mockMessage)
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
 	})
 }

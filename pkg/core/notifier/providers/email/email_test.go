@@ -1,22 +1,14 @@
 package email_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/notifier/providers/email"
-)
-
-const (
-	mockSubject     = "test_subject"
-	mockMessage     = "test_message"
-	mockHtmlMessage = "<h1>Hello Certimate！</h1><a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>"
+	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/email"
 )
 
 var (
+	fp               = tester.Args("EMAIL_")
 	fSmtpHost        string
 	fSmtpPort        int64
 	fSmtpTLS         bool
@@ -27,15 +19,13 @@ var (
 )
 
 func init() {
-	argsPrefix := "EMAIL_"
-
-	flag.StringVar(&fSmtpHost, argsPrefix+"SMTPHOST", "", "")
-	flag.Int64Var(&fSmtpPort, argsPrefix+"SMTPPORT", 0, "")
-	flag.BoolVar(&fSmtpTLS, argsPrefix+"SMTPTLS", false, "")
-	flag.StringVar(&fUsername, argsPrefix+"USERNAME", "", "")
-	flag.StringVar(&fPassword, argsPrefix+"PASSWORD", "", "")
-	flag.StringVar(&fSenderAddress, argsPrefix+"SENDERADDRESS", "", "")
-	flag.StringVar(&fReceiverAddress, argsPrefix+"RECEIVERADDRESS", "", "")
+	fp.DefineString(&fSmtpHost, "SMTPHOST")
+	fp.DefineInt64(&fSmtpPort, "SMTPPORT", 25)
+	fp.DefineBool(&fSmtpTLS, "SMTPTLS", false)
+	fp.DefineString(&fUsername, "USERNAME")
+	fp.DefineString(&fPassword, "PASSWORD")
+	fp.DefineString(&fSenderAddress, "SENDERADDRESS")
+	fp.DefineString(&fReceiverAddress, "RECEIVERADDRESS")
 }
 
 /*
@@ -50,22 +40,11 @@ Shell command to run this test:
 	--EMAIL_SENDERADDRESS="sender@example.com" \
 	--EMAIL_RECEIVERADDRESS="receiver@example.com"
 */
-func TestNotify(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
-	t.Run("Notify", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("SMTPHOST: %v", fSmtpHost),
-			fmt.Sprintf("SMTPPORT: %v", fSmtpPort),
-			fmt.Sprintf("SMTPTLS: %v", fSmtpTLS),
-			fmt.Sprintf("USERNAME: %v", fUsername),
-			fmt.Sprintf("PASSWORD: %v", fPassword),
-			fmt.Sprintf("SENDERADDRESS: %v", fSenderAddress),
-			fmt.Sprintf("RECEIVERADDRESS: %v", fReceiverAddress),
-		}, "\n"))
-
-		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+	t.Run("Notify_Plain", func(t *testing.T) {
+		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			SmtpHost:        fSmtpHost,
 			SmtpPort:        int32(fSmtpPort),
 			SmtpTls:         fSmtpTLS,
@@ -79,28 +58,11 @@ func TestNotify(t *testing.T) {
 			return
 		}
 
-		res, err := provider.Notify(context.Background(), mockSubject, mockMessage)
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
 	})
 
 	t.Run("Notify_Html", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("SMTPHOST: %v", fSmtpHost),
-			fmt.Sprintf("SMTPPORT: %v", fSmtpPort),
-			fmt.Sprintf("SMTPTLS: %v", fSmtpTLS),
-			fmt.Sprintf("USERNAME: %v", fUsername),
-			fmt.Sprintf("PASSWORD: %v", fPassword),
-			fmt.Sprintf("SENDERADDRESS: %v", fSenderAddress),
-			fmt.Sprintf("RECEIVERADDRESS: %v", fReceiverAddress),
-		}, "\n"))
-
-		provider, err := provider.NewNotifier(&provider.NotifierConfig{
+		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			SmtpHost:        fSmtpHost,
 			SmtpPort:        int32(fSmtpPort),
 			SmtpTls:         fSmtpTLS,
@@ -108,19 +70,14 @@ func TestNotify(t *testing.T) {
 			Password:        fPassword,
 			SenderAddress:   fSenderAddress,
 			ReceiverAddress: fReceiverAddress,
-			MessageFormat:   provider.MESSAGE_FORMAT_HTML,
+			MessageFormat:   impl.MESSAGE_FORMAT_HTML,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
 			return
 		}
 
-		res, err := provider.Notify(context.Background(), mockSubject, mockHtmlMessage)
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		const mockHtml = "<h1>Hello Certimate！</h1><a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>"
+		tester.TestNotify(t, provider, tester.TestNotifyArgs{Message: mockHtml})
 	})
 }

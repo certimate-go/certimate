@@ -1,61 +1,47 @@
 package jdcloudlive_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-live"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-live"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("JDCLOUDLIVE_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fAccessKeySecret string
 	fDomain          string
 )
 
 func init() {
-	argsPrefix := "JDCLOUDLIVE_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./jdcloud_live_test.go -args \
-	--JDCLOUDLIVE_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--JDCLOUDLIVE_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--JDCLOUDLIVE_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--JDCLOUDLIVE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDLIVE_ACCESSKEYID="your-access-key-id" \
 	--JDCLOUDLIVE_ACCESSKEYSECRET="your-secret-access-key" \
 	--JDCLOUDLIVE_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:        fAccessKeyId,
 			AccessKeySecret:    fAccessKeySecret,
-			DomainMatchPattern: provider.DOMAIN_MATCH_PATTERN_EXACT,
+			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			Domain:             fDomain,
 		})
 		if err != nil {
@@ -63,14 +49,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

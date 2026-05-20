@@ -1,19 +1,16 @@
 package cdnfly_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/cdnfly"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/cdnfly"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
+	fp             = tester.Args("CDNFLY_")
+	fTestCertPath  string
+	fTestKeyPath   string
 	fServerUrl     string
 	fApiKey        string
 	fApiSecret     string
@@ -21,47 +18,35 @@ var (
 )
 
 func init() {
-	argsPrefix := "CDNFLY_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fServerUrl, argsPrefix+"SERVERURL", "", "")
-	flag.StringVar(&fApiKey, argsPrefix+"APIKEY", "", "")
-	flag.StringVar(&fApiSecret, argsPrefix+"APISECRET", "", "")
-	flag.StringVar(&fCertificateId, argsPrefix+"CERTIFICATEID", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fServerUrl, "SERVERURL")
+	fp.DefineString(&fApiKey, "APIKEY")
+	fp.DefineString(&fApiSecret, "APISECRET")
+	fp.DefineString(&fCertificateId, "CERTIFICATEID")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./cdnfly_test.go -args \
-	--CDNFLY_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--CDNFLY_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--CDNFLY_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--CDNFLY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CDNFLY_SERVERURL="http://127.0.0.1:88" \
 	--CDNFLY_APIKEY="your-api-key" \
 	--CDNFLY_APISECRET="your-api-secret" \
 	--CDNFLY_CERTIFICATEID="your-cert-id"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
-	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SERVERURL: %v", fServerUrl),
-			fmt.Sprintf("APIKEY: %v", fApiKey),
-			fmt.Sprintf("APISECRET: %v", fApiSecret),
-			fmt.Sprintf("CERTIFICATEID: %v", fCertificateId),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+	t.Run("Deploy_ToCertificate", func(t *testing.T) {
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ServerUrl:                fServerUrl,
 			ApiKey:                   fApiKey,
 			ApiSecret:                fApiSecret,
 			AllowInsecureConnections: true,
-			ResourceType:             provider.RESOURCE_TYPE_CERTIFICATE,
+			ResourceType:             impl.RESOURCE_TYPE_CERTIFICATE,
 			CertificateId:            fCertificateId,
 		})
 		if err != nil {
@@ -69,14 +54,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

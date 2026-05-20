@@ -1,19 +1,16 @@
 package zenlayerga_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/zenlayer-ga"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/zenlayer-ga"
 )
 
 var (
-	fInputCertPath     string
-	fInputKeyPath      string
+	fp                 = tester.Args("ZENLAYERGA_")
+	fTestCertPath      string
+	fTestKeyPath       string
 	fAccessKeyId       string
 	fAccessKeyPassword string
 	fAcceleratorId     string
@@ -21,44 +18,33 @@ var (
 )
 
 func init() {
-	argsPrefix := "ZENLAYERGA_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeyPassword, argsPrefix+"ACCESSKEYPASSWORD", "", "")
-	flag.StringVar(&fAcceleratorId, argsPrefix+"ACCELERATORID", "", "")
-	flag.StringVar(&fCertificateId, argsPrefix+"CERTIFICATEID", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeyPassword, "ACCESSKEYPASSWORD")
+	fp.DefineString(&fAcceleratorId, "ACCELERATORID")
+	fp.DefineString(&fCertificateId, "CERTIFICATEID")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./zenlayer_ga_test.go -args \
-	--ZENLAYERGA_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--ZENLAYERGA_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--ZENLAYERGA_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--ZENLAYERGA_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ZENLAYERGA_ACCESSKEYID="your-access-key-id" \
 	--ZENLAYERGA_ACCESSKEYPASSWORD="your-access-key-password" \
 	--ZENLAYERGA_ACCELERATORID="your-ga-accelerator-id" \
 	--ZENLAYERGA_CERTIFICATEID="your-ga-certificate-id"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy_ToAccelerator", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYPASSWORD: %v", fAccessKeyPassword),
-			fmt.Sprintf("ACCELERATORID: %v", fAcceleratorId),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:       fAccessKeyId,
 			AccessKeyPassword: fAccessKeyPassword,
-			ResourceType:      provider.RESOURCE_TYPE_ACCELERATOR,
+			ResourceType:      impl.RESOURCE_TYPE_ACCELERATOR,
 			AcceleratorId:     fAcceleratorId,
 		})
 		if err != nil {
@@ -66,31 +52,14 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_ToCertificate", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYPASSWORD: %v", fAccessKeyPassword),
-			fmt.Sprintf("CERTIFICATEID: %v", fCertificateId),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:       fAccessKeyId,
 			AccessKeyPassword: fAccessKeyPassword,
-			ResourceType:      provider.RESOURCE_TYPE_CERTIFICATE,
+			ResourceType:      impl.RESOURCE_TYPE_CERTIFICATE,
 			CertificateId:     fCertificateId,
 		})
 		if err != nil {
@@ -98,14 +67,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

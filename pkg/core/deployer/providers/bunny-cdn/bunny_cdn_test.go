@@ -1,58 +1,44 @@
 package bunnycdn_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/bunny-cdn"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/bunny-cdn"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fApiKey        string
-	fPullZoneId    string
-	fHostName      string
+	fp            = tester.Args("BUNNYCDN_")
+	fTestCertPath string
+	fTestKeyPath  string
+	fApiKey       string
+	fPullZoneId   string
+	fHostName     string
 )
 
 func init() {
-	argsPrefix := "BUNNYCDN_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fApiKey, argsPrefix+"APIKEY", "", "")
-	flag.StringVar(&fPullZoneId, argsPrefix+"PULLZONEID", "", "")
-	flag.StringVar(&fHostName, argsPrefix+"HOSTNAME", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fApiKey, "APIKEY")
+	fp.DefineString(&fPullZoneId, "PULLZONEID")
+	fp.DefineString(&fHostName, "HOSTNAME")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./bunny_cdn_test.go -args \
-	--BUNNYCDN_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--BUNNYCDN_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--BUNNYCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--BUNNYCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BUNNYCDN_APITOKEN="your-api-token" \
 	--BUNNYCDN_PULLZONEID="your-pull-zone-id" \
 	--BUNNYCDN_HOSTNAME="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("APIKEY: %v", fApiKey),
-			fmt.Sprintf("PULLZONEID: %v", fPullZoneId),
-			fmt.Sprintf("HOSTNAME: %v", fHostName),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ApiKey:     fApiKey,
 			PullZoneId: fPullZoneId,
 			Hostname:   fHostName,
@@ -62,14 +48,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

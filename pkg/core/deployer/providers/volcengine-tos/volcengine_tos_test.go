@@ -1,19 +1,16 @@
 package volcenginetos_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-tos"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-tos"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("VOLCENGINETOS_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fAccessKeySecret string
 	fRegion          string
@@ -22,45 +19,32 @@ var (
 )
 
 func init() {
-	argsPrefix := "VOLCENGINETOS_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fRegion, argsPrefix+"REGION", "", "")
-	flag.StringVar(&fBucket, argsPrefix+"BUCKET", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fRegion, "REGION")
+	fp.DefineString(&fBucket, "BUCKET")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./volcengine_tos_test.go -args \
-	--VOLCENGINETOS_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--VOLCENGINETOS_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--VOLCENGINETOS_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--VOLCENGINETOS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINETOS_ACCESSKEYID="your-access-key-id" \
 	--VOLCENGINETOS_ACCESSKEYSECRET="your-access-key-secret" \
 	--VOLCENGINETOS_REGION="cn-beijing" \
 	--VOLCENGINETOS_BUCKET="your-tos-bucket" \
 	--VOLCENGINETOS_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("REGION: %v", fRegion),
-			fmt.Sprintf("BUCKET: %v", fBucket),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			Region:          fRegion,
@@ -72,14 +56,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

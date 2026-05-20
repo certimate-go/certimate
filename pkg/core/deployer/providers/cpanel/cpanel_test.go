@@ -1,67 +1,52 @@
 package cpanel_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/cpanel"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/cpanel"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fServerUrl     string
-	fUsername      string
-	fApiToken      string
-	fDomain        string
+	fp            = tester.Args("CPANEL_")
+	fTestCertPath string
+	fTestKeyPath  string
+	fServerUrl    string
+	fUsername     string
+	fApiToken     string
+	fDomain       string
 )
 
 func init() {
-	argsPrefix := "CPANEL_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fServerUrl, argsPrefix+"SERVERURL", "", "")
-	flag.StringVar(&fUsername, argsPrefix+"USERNAME", "", "")
-	flag.StringVar(&fApiToken, argsPrefix+"APITOKEN", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fServerUrl, "SERVERURL")
+	fp.DefineString(&fUsername, "USERNAME")
+	fp.DefineString(&fApiToken, "APITOKEN")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./cpanel_test.go -args \
-	--CPANEL_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--CPANEL_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--CPANEL_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--CPANEL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CPANEL_SERVERURL="http://127.0.0.1:2082" \
 	--CPANEL_USERNAME="your-username" \
 	--CPANEL_APITOKEN="your-api-token" \
 	--CPANEL_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
-	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SERVERURL: %v", fServerUrl),
-			fmt.Sprintf("USERNAME: %v", fUsername),
-			fmt.Sprintf("APITOKEN: %v", fApiToken),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+	t.Run("Deploy_ToWebsite", func(t *testing.T) {
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ServerUrl:                fServerUrl,
 			Username:                 fUsername,
 			ApiToken:                 fApiToken,
 			AllowInsecureConnections: true,
-			ResourceType:             provider.RESOURCE_TYPE_WEBSITE,
+			ResourceType:             impl.RESOURCE_TYPE_WEBSITE,
 			Domain:                   fDomain,
 		})
 		if err != nil {
@@ -69,14 +54,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

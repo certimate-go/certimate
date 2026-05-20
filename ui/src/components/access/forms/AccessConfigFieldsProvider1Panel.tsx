@@ -61,7 +61,7 @@ const AccessConfigFormFieldsProvider1Panel = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     serverUrl: "http://<your-host-addr>:20410/",
-    apiVersion: "v1",
+    apiVersion: "v2",
     apiKey: "",
   };
 };

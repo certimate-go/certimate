@@ -1,19 +1,16 @@
 package wangsucdnpro_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/wangsu-cdnpro"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/wangsu-cdnpro"
 )
 
 var (
-	fInputCertPath   string
-	fInputKeyPath    string
+	fp               = tester.Args("WANGSUCDNPRO_")
+	fTestCertPath    string
+	fTestKeyPath     string
 	fAccessKeyId     string
 	fAccessKeySecret string
 	fApiKey          string
@@ -24,25 +21,23 @@ var (
 )
 
 func init() {
-	argsPrefix := "WANGSUCDNPRO_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fAccessKeyId, argsPrefix+"ACCESSKEYID", "", "")
-	flag.StringVar(&fAccessKeySecret, argsPrefix+"ACCESSKEYSECRET", "", "")
-	flag.StringVar(&fApiKey, argsPrefix+"APIKEY", "", "")
-	flag.StringVar(&fEnvironment, argsPrefix+"ENVIRONMENT", "production", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
-	flag.StringVar(&fCertificateId, argsPrefix+"CERTIFICATEID", "", "")
-	flag.StringVar(&fWebhookId, argsPrefix+"WEBHOOKID", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fApiKey, "APIKEY")
+	fp.DefineString(&fEnvironment, "ENVIRONMENT", "production")
+	fp.DefineString(&fDomain, "DOMAIN")
+	fp.DefineString(&fCertificateId, "CERTIFICATEID")
+	fp.DefineString(&fWebhookId, "WEBHOOKID")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./wangsu_cdnpro_test.go -args \
-	--WANGSUCDNPRO_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--WANGSUCDNPRO_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--WANGSUCDNPRO_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--WANGSUCDNPRO_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--WANGSUCDNPRO_ACCESSKEYID="your-access-key-id" \
 	--WANGSUCDNPRO_ACCESSKEYSECRET="your-access-key-secret" \
 	--WANGSUCDNPRO_APIKEY="your-api-key" \
@@ -51,24 +46,11 @@ Shell command to run this test:
 	--WANGSUCDNPRO_CERTIFICATEID="your-certificate-id" \
 	--WANGSUCDNPRO_WEBHOOKID="your-webhook-id"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("APIKEY: %v", fApiKey),
-			fmt.Sprintf("ENVIRONMENT: %v", fEnvironment),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-			fmt.Sprintf("CERTIFICATEID: %v", fCertificateId),
-			fmt.Sprintf("WEBHOOKID: %v", fWebhookId),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			ApiKey:          fApiKey,
@@ -82,14 +64,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

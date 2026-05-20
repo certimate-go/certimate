@@ -1,68 +1,53 @@
 package tencentcloudvod_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-vod"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-vod"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fSecretId      string
-	fSecretKey     string
-	fDomain        string
-	fSubAppId      int64
-	fInstanceId    string
+	fp            = tester.Args("TENCENTCLOUDVOD_")
+	fTestCertPath string
+	fTestKeyPath  string
+	fSecretId     string
+	fSecretKey    string
+	fDomain       string
+	fSubAppId     int64
+	fInstanceId   string
 )
 
 func init() {
-	argsPrefix := "TENCENTCLOUDVOD_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fSecretId, argsPrefix+"SECRETID", "", "")
-	flag.StringVar(&fSecretKey, argsPrefix+"SECRETKEY", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
-	flag.Int64Var(&fSubAppId, argsPrefix+"SUBAPPID", 0, "")
-	flag.StringVar(&fInstanceId, argsPrefix+"INSTANCEID", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fSecretId, "SECRETID")
+	fp.DefineString(&fSecretKey, "SECRETKEY")
+	fp.DefineString(&fDomain, "DOMAIN")
+	fp.DefineInt64(&fSubAppId, "SUBAPPID")
+	fp.DefineString(&fInstanceId, "INSTANCEID")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./tencentcloud_vod_test.go -args \
-	--TENCENTCLOUDVOD_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--TENCENTCLOUDVOD_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--TENCENTCLOUDVOD_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--TENCENTCLOUDVOD_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDVOD_SECRETID="your-secret-id" \
 	--TENCENTCLOUDVOD_SECRETKEY="your-secret-key" \
 	--TENCENTCLOUDVOD_SUBAPPID="your-app-id" \
 	--TENCENTCLOUDVOD_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SECRETID: %v", fSecretId),
-			fmt.Sprintf("SECRETKEY: %v", fSecretKey),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-			fmt.Sprintf("INSTANCEID: %v", fInstanceId),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			SecretId:           fSecretId,
 			SecretKey:          fSecretKey,
 			SubAppId:           fSubAppId,
-			DomainMatchPattern: provider.DOMAIN_MATCH_PATTERN_EXACT,
+			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			Domain:             fDomain,
 		})
 		if err != nil {
@@ -70,14 +55,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

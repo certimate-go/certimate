@@ -1,19 +1,16 @@
 package unicloudwebhost_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/unicloud-webhost"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/unicloud-webhost"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
+	fp             = tester.Args("UNICLOUDWEBHOST_")
+	fTestCertPath  string
+	fTestKeyPath   string
 	fUsername      string
 	fPassword      string
 	fSpaceProvider string
@@ -22,45 +19,32 @@ var (
 )
 
 func init() {
-	argsPrefix := "UNICLOUDWEBHOST_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fUsername, argsPrefix+"USERNAME", "", "")
-	flag.StringVar(&fPassword, argsPrefix+"PASSWORD", "", "")
-	flag.StringVar(&fSpaceProvider, argsPrefix+"SPACEPROVIDER", "", "")
-	flag.StringVar(&fSpaceId, argsPrefix+"SPACEID", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fUsername, "USERNAME")
+	fp.DefineString(&fPassword, "PASSWORD")
+	fp.DefineString(&fSpaceProvider, "SPACEPROVIDER")
+	fp.DefineString(&fSpaceId, "SPACEID")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./unicloud_webhost_test.go -args \
-	--UNICLOUDWEBHOST_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--UNICLOUDWEBHOST_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--UNICLOUDWEBHOST_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--UNICLOUDWEBHOST_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UNICLOUDWEBHOST_USERNAME="your-username" \
 	--UNICLOUDWEBHOST_PASSWORD="your-password" \
 	--UNICLOUDWEBHOST_SPACEPROVIDER="aliyun/tencent" \
 	--UNICLOUDWEBHOST_SPACEID="your-space-id" \
 	--UNICLOUDWEBHOST_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("USERNAME: %v", fUsername),
-			fmt.Sprintf("PASSWORD: %v", fPassword),
-			fmt.Sprintf("SPACEPROVIDER: %v", fSpaceProvider),
-			fmt.Sprintf("SPACEID: %v", fSpaceId),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			Username:      fUsername,
 			Password:      fPassword,
 			SpaceProvider: fSpaceProvider,
@@ -72,14 +56,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

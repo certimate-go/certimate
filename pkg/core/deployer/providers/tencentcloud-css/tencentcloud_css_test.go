@@ -1,58 +1,44 @@
 package tencentcloudcss_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-css"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-css"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fSecretId      string
-	fSecretKey     string
-	fDomain        string
+	fp            = tester.Args("TENCENTCLOUDCSS_")
+	fTestCertPath string
+	fTestKeyPath  string
+	fSecretId     string
+	fSecretKey    string
+	fDomain       string
 )
 
 func init() {
-	argsPrefix := "TENCENTCLOUDCSS_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fSecretId, argsPrefix+"SECRETID", "", "")
-	flag.StringVar(&fSecretKey, argsPrefix+"SECRETKEY", "", "")
-	flag.StringVar(&fDomain, argsPrefix+"DOMAIN", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fSecretId, "SECRETID")
+	fp.DefineString(&fSecretKey, "SECRETKEY")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./tencentcloud_css_test.go -args \
-	--TENCENTCLOUDCSS_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--TENCENTCLOUDCSS_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--TENCENTCLOUDCSS_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--TENCENTCLOUDCSS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDCSS_SECRETID="your-secret-id" \
 	--TENCENTCLOUDCSS_SECRETKEY="your-secret-key" \
 	--TENCENTCLOUDCSS_DOMAIN="example.com"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SECRETID: %v", fSecretId),
-			fmt.Sprintf("SECRETKEY: %v", fSecretKey),
-			fmt.Sprintf("DOMAIN: %v", fDomain),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			SecretId:  fSecretId,
 			SecretKey: fSecretKey,
 			Domain:    fDomain,
@@ -62,14 +48,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

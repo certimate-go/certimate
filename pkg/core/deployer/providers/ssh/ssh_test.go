@@ -1,19 +1,16 @@
 package ssh_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/ssh"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ssh"
 )
 
 var (
-	fInputCertPath  string
-	fInputKeyPath   string
+	fp              = tester.Args("SSH_")
+	fTestCertPath   string
+	fTestKeyPath    string
 	fSshHost        string
 	fSshPort        int64
 	fSshUsername    string
@@ -23,24 +20,22 @@ var (
 )
 
 func init() {
-	argsPrefix := "SSH_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fSshHost, argsPrefix+"SSHHOST", "", "")
-	flag.Int64Var(&fSshPort, argsPrefix+"SSHPORT", 0, "")
-	flag.StringVar(&fSshUsername, argsPrefix+"SSHUSERNAME", "", "")
-	flag.StringVar(&fSshPassword, argsPrefix+"SSHPASSWORD", "", "")
-	flag.StringVar(&fOutputCertPath, argsPrefix+"OUTPUTCERTPATH", "", "")
-	flag.StringVar(&fOutputKeyPath, argsPrefix+"OUTPUTKEYPATH", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fSshHost, "SSHHOST")
+	fp.DefineInt64(&fSshPort, "SSHPORT")
+	fp.DefineString(&fSshUsername, "SSHUSERNAME")
+	fp.DefineString(&fSshPassword, "SSHPASSWORD")
+	fp.DefineString(&fOutputCertPath, "OUTPUTCERTPATH")
+	fp.DefineString(&fOutputKeyPath, "OUTPUTKEYPATH")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./ssh_test.go -args \
-	--SSH_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--SSH_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--SSH_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--SSH_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--SSH_SSHHOST="localhost" \
 	--SSH_SSHPORT=22 \
 	--SSH_SSHUSERNAME="root" \
@@ -48,44 +43,26 @@ Shell command to run this test:
 	--SSH_OUTPUTCERTPATH="/path/to/your-output-cert.pem" \
 	--SSH_OUTPUTKEYPATH="/path/to/your-output-key.pem"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
-	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SSHHOST: %v", fSshHost),
-			fmt.Sprintf("SSHPORT: %v", fSshPort),
-			fmt.Sprintf("SSHUSERNAME: %v", fSshUsername),
-			fmt.Sprintf("SSHPASSWORD: %v", fSshPassword),
-			fmt.Sprintf("OUTPUTCERTPATH: %v", fOutputCertPath),
-			fmt.Sprintf("OUTPUTKEYPATH: %v", fOutputKeyPath),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
-			ServerConfig: provider.ServerConfig{
+	t.Run("Deploy_PEM", func(t *testing.T) {
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
+			ServerConfig: impl.ServerConfig{
 				SshHost:     fSshHost,
 				SshPort:     int32(fSshPort),
 				SshUsername: fSshUsername,
 				SshPassword: fSshPassword,
 			},
-			OutputFormat:   provider.OUTPUT_FORMAT_PEM,
-			OutputCertPath: fOutputCertPath,
-			OutputKeyPath:  fOutputKeyPath,
+			OutputFormat:   impl.OUTPUT_FORMAT_PEM,
+			OutputCertPath: fOutputCertPath + ".pem",
+			OutputKeyPath:  fOutputKeyPath + ".pem",
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
+			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -1,58 +1,44 @@
 package webhook_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/webhook"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/webhook"
 )
 
 var (
-	fInputCertPath      string
-	fInputKeyPath       string
+	fp                  = tester.Args("WEBHOOK_")
+	fTestCertPath       string
+	fTestKeyPath        string
 	fWebhookUrl         string
 	fWebhookContentType string
 	fWebhookData        string
 )
 
 func init() {
-	argsPrefix := "WEBHOOK_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fWebhookUrl, argsPrefix+"URL", "", "")
-	flag.StringVar(&fWebhookContentType, argsPrefix+"CONTENTTYPE", "application/json", "")
-	flag.StringVar(&fWebhookData, argsPrefix+"DATA", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fWebhookUrl, "URL")
+	fp.DefineString(&fWebhookContentType, "CONTENTTYPE", "application/json")
+	fp.DefineString(&fWebhookData, "DATA")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./webhook_test.go -args \
-	--WEBHOOK_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--WEBHOOK_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--WEBHOOK_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--WEBHOOK_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--WEBHOOK_URL="https://example.com/your-webhook-url" \
 	--WEBHOOK_CONTENTTYPE="application/json" \
 	--WEBHOOK_DATA="{\"certificate\":\"${CERTIFICATE}\",\"privateKey\":\"${PRIVATE_KEY}\"}"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("WEBHOOKURL: %v", fWebhookUrl),
-			fmt.Sprintf("WEBHOOKCONTENTTYPE: %v", fWebhookContentType),
-			fmt.Sprintf("WEBHOOKDATA: %v", fWebhookData),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			WebhookUrl:  fWebhookUrl,
 			WebhookData: fWebhookData,
 			Method:      "POST",
@@ -66,14 +52,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

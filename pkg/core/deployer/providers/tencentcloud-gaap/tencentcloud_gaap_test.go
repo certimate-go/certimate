@@ -1,65 +1,50 @@
 package tencentcloudgaap_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-gaap"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-gaap"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fSecretId      string
-	fSecretKey     string
-	fProxyId       string
-	fListenerId    string
+	fp            = tester.Args("TENCENTCLOUDCDN_")
+	fTestCertPath string
+	fTestKeyPath  string
+	fSecretId     string
+	fSecretKey    string
+	fProxyId      string
+	fListenerId   string
 )
 
 func init() {
-	argsPrefix := "TENCENTCLOUDCDN_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fSecretId, argsPrefix+"SECRETID", "", "")
-	flag.StringVar(&fSecretKey, argsPrefix+"SECRETKEY", "", "")
-	flag.StringVar(&fProxyId, argsPrefix+"PROXYID", "", "")
-	flag.StringVar(&fListenerId, argsPrefix+"LISTENERID", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fSecretId, "SECRETID")
+	fp.DefineString(&fSecretKey, "SECRETKEY")
+	fp.DefineString(&fProxyId, "PROXYID")
+	fp.DefineString(&fListenerId, "LISTENERID")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./tencentcloud_gaap_test.go -args \
-	--TENCENTCLOUDGAAP_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--TENCENTCLOUDGAAP_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--TENCENTCLOUDGAAP_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--TENCENTCLOUDGAAP_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDGAAP_SECRETID="your-secret-id" \
 	--TENCENTCLOUDGAAP_SECRETKEY="your-secret-key" \
 	--TENCENTCLOUDGAAP_PROXYID="your-gaap-group-id" \
 	--TENCENTCLOUDGAAP_LISTENERID="your-clb-listener-id"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy_ToListener", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SECRETID: %v", fSecretId),
-			fmt.Sprintf("SECRETKEY: %v", fSecretKey),
-			fmt.Sprintf("PROXYID: %v", fProxyId),
-			fmt.Sprintf("LISTENERID: %v", fListenerId),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			SecretId:     fSecretId,
 			SecretKey:    fSecretKey,
-			ResourceType: provider.RESOURCE_TYPE_LISTENER,
+			ResourceType: impl.RESOURCE_TYPE_LISTENER,
 			ProxyId:      fProxyId,
 			ListenerId:   fListenerId,
 		})
@@ -68,14 +53,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

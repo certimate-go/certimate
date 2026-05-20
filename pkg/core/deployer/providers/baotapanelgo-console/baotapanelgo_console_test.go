@@ -1,54 +1,41 @@
 package baotapanelgoconsole_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/baotapanelgo-console"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/baotapanelgo-console"
 )
 
 var (
-	fInputCertPath string
-	fInputKeyPath  string
-	fServerUrl     string
-	fApiKey        string
+	fp            = tester.Args("BAOTAPANELGOCONSOLE_")
+	fTestCertPath string
+	fTestKeyPath  string
+	fServerUrl    string
+	fApiKey       string
 )
 
 func init() {
-	argsPrefix := "BAOTAPANELGOCONSOLE_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fServerUrl, argsPrefix+"SERVERURL", "", "")
-	flag.StringVar(&fApiKey, argsPrefix+"APIKEY", "", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fServerUrl, "SERVERURL")
+	fp.DefineString(&fApiKey, "APIKEY")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./baotapanelgo_console_test.go -args \
-	--BAOTAPANELGOCONSOLE_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--BAOTAPANELGOCONSOLE_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--BAOTAPANELGOCONSOLE_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--BAOTAPANELGOCONSOLE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAOTAPANELGOCONSOLE_SERVERURL="http://127.0.0.1:8888" \
 	--BAOTAPANELGOCONSOLE_APIKEY="your-api-key"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("SERVERURL: %v", fServerUrl),
-			fmt.Sprintf("APIKEY: %v", fApiKey),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ServerUrl:                fServerUrl,
 			ApiKey:                   fApiKey,
 			AllowInsecureConnections: true,
@@ -58,14 +45,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

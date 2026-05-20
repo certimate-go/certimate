@@ -1,19 +1,16 @@
 package k8ssecret_test
 
 import (
-	"context"
-	"flag"
-	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	provider "github.com/certimate-go/certimate/pkg/core/deployer/providers/k8s-secret"
+	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/k8s-secret"
 )
 
 var (
-	fInputCertPath       string
-	fInputKeyPath        string
+	fp                   = tester.Args("K8SSECRET_")
+	fTestCertPath        string
+	fTestKeyPath         string
 	fNamespace           string
 	fSecretName          string
 	fSecretDataKeyForCrt string
@@ -21,42 +18,30 @@ var (
 )
 
 func init() {
-	argsPrefix := "K8SSECRET_"
-
-	flag.StringVar(&fInputCertPath, argsPrefix+"INPUTCERTPATH", "", "")
-	flag.StringVar(&fInputKeyPath, argsPrefix+"INPUTKEYPATH", "", "")
-	flag.StringVar(&fNamespace, argsPrefix+"NAMESPACE", "default", "")
-	flag.StringVar(&fSecretName, argsPrefix+"SECRETNAME", "", "")
-	flag.StringVar(&fSecretDataKeyForCrt, argsPrefix+"SECRETDATAKEYFORCRT", "tls.crt", "")
-	flag.StringVar(&fSecretDataKeyForKey, argsPrefix+"SECRETDATAKEYFORKEY", "tls.key", "")
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fNamespace, "NAMESPACE", "default")
+	fp.DefineString(&fSecretName, "SECRETNAME")
+	fp.DefineString(&fSecretDataKeyForCrt, "SECRETDATAKEYFORCRT", "tls.crt")
+	fp.DefineString(&fSecretDataKeyForKey, "SECRETDATAKEYFORKEY", "tls.key")
 }
 
 /*
 Shell command to run this test:
 
 	go test -v ./k8s_secret_test.go -args \
-	--K8SSECRET_INPUTCERTPATH="/path/to/your-input-cert.pem" \
-	--K8SSECRET_INPUTKEYPATH="/path/to/your-input-key.pem" \
+	--K8SSECRET_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--K8SSECRET_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--K8SSECRET_NAMESPACE="default" \
 	--K8SSECRET_SECRETNAME="secret" \
 	--K8SSECRET_SECRETDATAKEYFORCRT="tls.crt" \
 	--K8SSECRET_SECRETDATAKEYFORKEY="tls.key"
 */
-func TestDeploy(t *testing.T) {
-	flag.Parse()
+func TestProvider(t *testing.T) {
+	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("INPUTCERTPATH: %v", fInputCertPath),
-			fmt.Sprintf("INPUTKEYPATH: %v", fInputKeyPath),
-			fmt.Sprintf("NAMESPACE: %v", fNamespace),
-			fmt.Sprintf("SECRETNAME: %v", fSecretName),
-			fmt.Sprintf("SECRETDATAKEYFORCRT: %v", fSecretDataKeyForCrt),
-			fmt.Sprintf("SECRETDATAKEYFORKEY: %v", fSecretDataKeyForKey),
-		}, "\n"))
-
-		provider, err := provider.NewDeployer(&provider.DeployerConfig{
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			Namespace:           fNamespace,
 			SecretName:          fSecretName,
 			SecretDataKeyForCrt: fSecretDataKeyForCrt,
@@ -67,14 +52,6 @@ func TestDeploy(t *testing.T) {
 			return
 		}
 
-		fInputCertData, _ := os.ReadFile(fInputCertPath)
-		fInputKeyData, _ := os.ReadFile(fInputKeyPath)
-		res, err := provider.Deploy(context.Background(), string(fInputCertData), string(fInputKeyData))
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
-
-		t.Logf("ok: %v", res)
+		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }
