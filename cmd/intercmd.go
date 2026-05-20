@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -50,10 +49,10 @@ func internalCertApplyCommand(_ core.App) *cobra.Command {
 
 			mreceiver := mproc.NewReceiver(func(ctx context.Context, params *InData) (*OutData, error) {
 				if params.Account == nil {
-					return nil, errors.New("illegal params")
+					return nil, fmt.Errorf("illegal params")
 				}
 				if params.Request == nil {
-					return nil, errors.New("illegal params")
+					return nil, fmt.Errorf("illegal params")
 				}
 
 				// redirect to stdout, remove datetime prefix

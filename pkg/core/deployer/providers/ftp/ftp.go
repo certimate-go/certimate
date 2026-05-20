@@ -2,7 +2,6 @@ package ftp
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"path/filepath"
@@ -57,7 +56,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	return &Deployer{

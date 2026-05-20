@@ -3,7 +3,6 @@ package synologydsm
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -45,7 +44,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.ServerUrl, config.AllowInsecureConnections)

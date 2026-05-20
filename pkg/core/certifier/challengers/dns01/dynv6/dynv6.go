@@ -1,7 +1,7 @@
 package dynv6
 
 import (
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
@@ -16,7 +16,7 @@ type ChallengerConfig struct {
 
 func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the acme challenge provider is nil")
+		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
 	providerConfig := internal.NewDefaultConfig()

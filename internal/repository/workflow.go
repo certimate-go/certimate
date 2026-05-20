@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -97,17 +98,17 @@ func (r *WorkflowRepository) Save(ctx context.Context, workflow *domain.Workflow
 
 func (r *WorkflowRepository) castRecordToModel(record *core.Record) (*domain.Workflow, error) {
 	if record == nil {
-		return nil, errors.New("the record is nil")
+		return nil, fmt.Errorf("the record is nil")
 	}
 
 	graphDraft := &domain.WorkflowGraph{}
 	if err := record.UnmarshalJSONField("graphDraft", graphDraft); err != nil {
-		return nil, errors.New("field 'graphDraft' is malformed")
+		return nil, fmt.Errorf("field 'graphDraft' is malformed")
 	}
 
 	graphContent := &domain.WorkflowGraph{}
 	if err := record.UnmarshalJSONField("graphContent", graphContent); err != nil {
-		return nil, errors.New("field 'graphContent' is malformed")
+		return nil, fmt.Errorf("field 'graphContent' is malformed")
 	}
 
 	workflow := &domain.Workflow{

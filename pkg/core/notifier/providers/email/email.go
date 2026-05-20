@@ -2,7 +2,6 @@ package email
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -47,7 +46,7 @@ var _ notifier.Provider = (*Notifier)(nil)
 
 func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the notifier provider is nil")
+		return nil, fmt.Errorf("the configuration of the notifier provider is nil")
 	}
 
 	return &Notifier{

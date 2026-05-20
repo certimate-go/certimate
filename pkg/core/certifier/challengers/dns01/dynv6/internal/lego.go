@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -69,7 +68,7 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	if config == nil {
-		return nil, errors.New("dynv6: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("dynv6: the configuration of the DNS provider is nil")
 	}
 
 	client, err := dynv6sdk.NewClient(config.HTTPToken)

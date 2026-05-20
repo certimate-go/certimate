@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/pocketbase/pocketbase/core"
 
@@ -35,12 +36,12 @@ func (r *AccessRepository) GetById(ctx context.Context, id string) (*domain.Acce
 
 func (r *AccessRepository) castRecordToModel(record *core.Record) (*domain.Access, error) {
 	if record == nil {
-		return nil, errors.New("the record is nil")
+		return nil, fmt.Errorf("the record is nil")
 	}
 
 	config := make(map[string]any)
 	if err := record.UnmarshalJSONField("config", &config); err != nil {
-		return nil, errors.New("field 'config' is malformed")
+		return nil, fmt.Errorf("field 'config' is malformed")
 	}
 
 	access := &domain.Access{

@@ -3,6 +3,7 @@ package certacme
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/certimate-go/certimate/internal/domain"
@@ -38,7 +39,7 @@ func NewACMEClientWithAccount(account *ACMEAccount, configures ...func(*lego.Con
 
 func newACMEClientWithAccount(account *ACMEAccount, configures ...func(*lego.Config) error) (*ACMEClient, error) {
 	if account == nil {
-		return nil, errors.New("the acme account is nil")
+		return nil, fmt.Errorf("the acme account is nil")
 	}
 
 	legoCfg := lego.NewConfig(account)

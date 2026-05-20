@@ -2,7 +2,6 @@ package notify
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/certimate-go/certimate/internal/domain"
@@ -24,7 +23,7 @@ type SendNotificationResponse struct{}
 
 func (c *Client) SendNotification(ctx context.Context, request *SendNotificationRequest) (*SendNotificationResponse, error) {
 	if request == nil {
-		return nil, errors.New("the request is nil")
+		return nil, fmt.Errorf("the request is nil")
 	}
 
 	providerFactory, err := notifiers.Registries.Get(domain.NotificationProviderType(request.Provider))

@@ -51,7 +51,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.AccessKeyPassword)
@@ -108,7 +108,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.Domain == "" {
-		return errors.New("config `domain` is required")
+		return fmt.Errorf("config `domain` is required")
 	}
 
 	// 上传证书
@@ -125,7 +125,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
 			if d.config.Domain == "" {
-				return errors.New("config `domain` is required")
+				return fmt.Errorf("config `domain` is required")
 			}
 
 			domainCandidates, err := d.getAllDomains(ctx)
@@ -136,7 +136,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return domainItem.DomainName == d.config.Domain
 			})
 			if len(domains) == 0 {
-				return errors.New("could not find domain")
+				return fmt.Errorf("could not find domain")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *zcdnsdk.DomainInfo, _ int) string {
@@ -147,7 +147,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	case DOMAIN_MATCH_PATTERN_WILDCARD:
 		{
 			if d.config.Domain == "" {
-				return errors.New("config `domain` is required")
+				return fmt.Errorf("config `domain` is required")
 			}
 
 			domainCandidates, err := d.getAllDomains(ctx)
@@ -159,7 +159,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return xcerthostname.IsMatch(d.config.Domain, domainItem.DomainName)
 			})
 			if len(domains) == 0 {
-				return errors.New("could not find any domains matched by wildcard")
+				return fmt.Errorf("could not find any domains matched by wildcard")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *zcdnsdk.DomainInfo, _ int) string {
@@ -178,7 +178,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, domainItem.DomainName)
 			})
 			if len(domains) == 0 {
-				return errors.New("could not find any domains matched by certificate")
+				return fmt.Errorf("could not find any domains matched by certificate")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *zcdnsdk.DomainInfo, _ int) string {
@@ -218,7 +218,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.CertificateId == "" {
-		return errors.New("config `certificateId` is required")
+		return fmt.Errorf("config `certificateId` is required")
 	}
 
 	// 替换证书

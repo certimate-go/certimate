@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -71,7 +70,7 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	if config == nil {
-		return nil, errors.New("dnsla: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("dnsla: the configuration of the DNS provider is nil")
 	}
 
 	client, err := dnslasdk.NewClient(config.APIId, config.APISecret)

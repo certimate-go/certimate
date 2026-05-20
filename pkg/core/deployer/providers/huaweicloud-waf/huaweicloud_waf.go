@@ -2,7 +2,6 @@ package huaweicloudwaf
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -52,7 +51,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
@@ -123,7 +122,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.CertificateId == "" {
-		return errors.New("config `certificateId` is required")
+		return fmt.Errorf("config `certificateId` is required")
 	}
 
 	// 查询证书
@@ -160,7 +159,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 func (d *Deployer) deployToCloudServer(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.Domain == "" {
-		return errors.New("config `domain` is required")
+		return fmt.Errorf("config `domain` is required")
 	}
 
 	// 上传证书
@@ -237,7 +236,7 @@ func (d *Deployer) deployToCloudServer(ctx context.Context, certPEM, privkeyPEM 
 
 func (d *Deployer) deployToPremiumHost(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.Domain == "" {
-		return errors.New("config `domain` is required")
+		return fmt.Errorf("config `domain` is required")
 	}
 
 	// 上传证书
@@ -375,7 +374,7 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 	if err != nil {
 		return "", err
 	} else if response.Projects == nil || len(*response.Projects) == 0 {
-		return "", errors.New("huaweicloud: no project found")
+		return "", fmt.Errorf("huaweicloud: no project found")
 	}
 
 	return (*response.Projects)[0].Id, nil

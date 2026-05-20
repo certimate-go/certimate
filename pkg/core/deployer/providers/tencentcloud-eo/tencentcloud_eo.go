@@ -51,7 +51,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)
@@ -90,7 +90,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	if d.config.ZoneId == "" {
-		return nil, errors.New("config `zoneId` is required")
+		return nil, fmt.Errorf("config `zoneId` is required")
 	}
 
 	// 上传证书
@@ -113,7 +113,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
 			if len(d.config.Domains) == 0 {
-				return nil, errors.New("config `domains` is required")
+				return nil, fmt.Errorf("config `domains` is required")
 			}
 
 			domains = d.config.Domains
@@ -122,7 +122,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case DOMAIN_MATCH_PATTERN_WILDCARD:
 		{
 			if len(d.config.Domains) == 0 {
-				return nil, errors.New("config `domains` is required")
+				return nil, fmt.Errorf("config `domains` is required")
 			}
 
 			domainCandidates := lo.Map(domainsInZone, func(domainInfo *tceo.AccelerationDomain, _ int) string {
@@ -137,7 +137,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return false
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by wildcard")
+				return nil, fmt.Errorf("could not find any domains matched by wildcard")
 			}
 		}
 
@@ -150,7 +150,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, domain)
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by certificate")
+				return nil, fmt.Errorf("could not find any domains matched by certificate")
 			}
 		}
 

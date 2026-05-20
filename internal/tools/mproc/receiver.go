@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 
@@ -28,13 +27,13 @@ func (r *receiver[TIn, TOut]) Receive(infile, outfile, enckey string) error {
 
 func (r *receiver[TIn, TOut]) ReceiveWithContext(ctx context.Context, infile, outfile, enckey string) error {
 	if infile == "" {
-		return errors.New("mproc: missing or invalid input file")
+		return fmt.Errorf("mproc: missing or invalid input file")
 	}
 	if outfile == "" {
-		return errors.New("mproc: missing or invalid output file")
+		return fmt.Errorf("mproc: missing or invalid output file")
 	}
 	if enckey == "" {
-		return errors.New("mproc: missing or invalid encryption key")
+		return fmt.Errorf("mproc: missing or invalid encryption key")
 	}
 
 	aesKey, err := hex.DecodeString(enckey)

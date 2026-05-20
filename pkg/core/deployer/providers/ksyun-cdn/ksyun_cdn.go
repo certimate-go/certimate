@@ -44,7 +44,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
@@ -94,7 +94,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
 			if d.config.Domain == "" {
-				return errors.New("config `domain` is required")
+				return fmt.Errorf("config `domain` is required")
 			}
 
 			domains = []string{d.config.Domain}
@@ -103,7 +103,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	case DOMAIN_MATCH_PATTERN_WILDCARD:
 		{
 			if d.config.Domain == "" {
-				return errors.New("config `domain` is required")
+				return fmt.Errorf("config `domain` is required")
 			}
 
 			if strings.HasPrefix(d.config.Domain, "*.") {
@@ -116,7 +116,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 					return xcerthostname.IsMatch(d.config.Domain, domain)
 				})
 				if len(domains) == 0 {
-					return errors.New("could not find any domains matched by wildcard")
+					return fmt.Errorf("could not find any domains matched by wildcard")
 				}
 			} else {
 				domains = []string{d.config.Domain}
@@ -134,7 +134,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, domain)
 			})
 			if len(domains) == 0 {
-				return errors.New("could not find any domains matched by certificate")
+				return fmt.Errorf("could not find any domains matched by certificate")
 			}
 		}
 
@@ -170,7 +170,7 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.CertificateId == "" {
-		return errors.New("config `certificateId` is required")
+		return fmt.Errorf("config `certificateId` is required")
 	}
 
 	// 更新证书

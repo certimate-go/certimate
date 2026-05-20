@@ -2,7 +2,7 @@ package certacme
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/go-acme/lego/v4/certcrypto"
@@ -47,7 +47,7 @@ type ACMEConfig struct {
 
 func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 	if options == nil {
-		return nil, errors.New("the options is nil")
+		return nil, fmt.Errorf("the options is nil")
 	}
 
 	caProvider := options.CAProvider
@@ -102,14 +102,14 @@ func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 		if err := xmaps.Populate(caAccessConfig, &credentials); err != nil {
 			return nil, err
 		} else if credentials.Endpoint == "" {
-			return nil, errors.New("the endpoint of custom ACME CA is empty")
+			return nil, fmt.Errorf("the endpoint of custom ACME CA is empty")
 		}
 		ca.CADirUrl = credentials.Endpoint
 
 	default:
 		endpoint := acmeDirUrls[string(ca.CAProvider)]
 		if endpoint == "" {
-			return nil, errors.New("the endpoint of the ACME CA provider is empty")
+			return nil, fmt.Errorf("the endpoint of the ACME CA provider is empty")
 		}
 		ca.CADirUrl = endpoint
 	}

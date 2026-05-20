@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -74,7 +73,7 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(cfg *Config) (*DNSProvider, error) {
 	if cfg == nil {
-		return nil, errors.New("cmccecloud: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("cmccecloud: the configuration of the DNS provider is nil")
 	}
 
 	client := ecloudsdkclouddns.NewClient(&config.Config{

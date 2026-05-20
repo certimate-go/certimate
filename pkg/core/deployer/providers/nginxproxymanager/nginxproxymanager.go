@@ -61,7 +61,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.ServerUrl, config.AuthMethod, config.Username, config.Password, config.ApiToken, config.AllowInsecureConnections)
@@ -140,7 +140,7 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 	case "", HOST_MATCH_PATTERN_SPECIFIED:
 		{
 			if d.config.HostId == 0 {
-				return errors.New("config `hostId` is required")
+				return fmt.Errorf("config `hostId` is required")
 			}
 
 			hostIds = []int64{d.config.HostId}
@@ -165,7 +165,7 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 				},
 			)
 			if len(hostIds) == 0 {
-				return errors.New("could not find any hosts matched by certificate")
+				return fmt.Errorf("could not find any hosts matched by certificate")
 			}
 
 			// 跳过已部署过的主机
@@ -216,7 +216,7 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.CertificateId == 0 {
-		return errors.New("config `certificateId` is required")
+		return fmt.Errorf("config `certificateId` is required")
 	}
 
 	// 替换证书

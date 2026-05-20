@@ -45,7 +45,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
@@ -97,7 +97,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
 			if d.config.Domain == "" {
-				return nil, errors.New("config `domain` is required")
+				return nil, fmt.Errorf("config `domain` is required")
 			}
 
 			domains = []string{d.config.Domain}
@@ -114,7 +114,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, domain)
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by certificate")
+				return nil, fmt.Errorf("could not find any domains matched by certificate")
 			}
 		}
 

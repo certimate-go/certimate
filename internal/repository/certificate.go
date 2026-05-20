@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -169,7 +170,7 @@ func (r *CertificateRepository) DeleteWhere(ctx context.Context, exprs ...dbx.Ex
 
 func (r *CertificateRepository) castRecordToModel(record *core.Record) (*domain.Certificate, error) {
 	if record == nil {
-		return nil, errors.New("the record is nil")
+		return nil, fmt.Errorf("the record is nil")
 	}
 
 	certificate := &domain.Certificate{

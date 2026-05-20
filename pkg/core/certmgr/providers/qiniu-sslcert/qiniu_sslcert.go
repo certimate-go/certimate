@@ -3,7 +3,6 @@ package qiniusslcert
 import (
 	"context"
 	"crypto/x509"
-	"errors"
 	"fmt"
 	"log/slog"
 	"slices"
@@ -34,7 +33,7 @@ var _ certmgr.Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the certmgr provider is nil")
+		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKey, config.SecretKey)
@@ -152,10 +151,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 func createSDKClient(accessKey, secretKey string) (*qiniusdk.SslCertManager, error) {
 	if secretKey == "" {
-		return nil, errors.New("qiniu: invalid access key")
+		return nil, fmt.Errorf("qiniu: invalid access key")
 	}
 	if secretKey == "" {
-		return nil, errors.New("qiniu: invalid secret key")
+		return nil, fmt.Errorf("qiniu: invalid secret key")
 	}
 
 	credential := auth.New(accessKey, secretKey)

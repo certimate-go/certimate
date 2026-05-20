@@ -48,7 +48,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
@@ -110,7 +110,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string) error {
 	if d.config.LoadbalancerId == "" {
-		return errors.New("config `loadbalancerId` is required")
+		return fmt.Errorf("config `loadbalancerId` is required")
 	}
 
 	// 查询 BLB 实例详情
@@ -172,10 +172,10 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 
 func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) error {
 	if d.config.LoadbalancerId == "" {
-		return errors.New("config `loadbalancerId` is required")
+		return fmt.Errorf("config `loadbalancerId` is required")
 	}
 	if d.config.ListenerPort == 0 {
-		return errors.New("config `listenerPort` is required")
+		return fmt.Errorf("config `listenerPort` is required")
 	}
 
 	// 查询监听

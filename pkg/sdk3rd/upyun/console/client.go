@@ -2,7 +2,6 @@ package console
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -149,7 +148,7 @@ func (c *Client) ensureCookieExists() error {
 	if err != nil {
 		return err
 	} else if !result.Data.Result {
-		return errors.New("sdkerr: failed to signin upyun console")
+		return fmt.Errorf("sdkerr: failed to signin upyun console")
 	} else {
 		c.loginCookie = httpresp.Header().Get("Set-Cookie")
 	}

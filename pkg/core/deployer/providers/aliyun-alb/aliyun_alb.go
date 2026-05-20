@@ -61,7 +61,7 @@ type wSDKClients struct {
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	clients, err := createSDKClients(config.AccessKeyId, config.AccessKeySecret, config.Region)
@@ -135,7 +135,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string, cloudCertSANs []string) error {
 	if d.config.LoadbalancerId == "" {
-		return errors.New("config `loadbalancerId` is required")
+		return fmt.Errorf("config `loadbalancerId` is required")
 	}
 
 	// 查询负载均衡实例的详细信息
@@ -252,7 +252,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string,
 
 func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string, cloudCertSANs []string) error {
 	if d.config.ListenerId == "" {
-		return errors.New("config `listenerId` is required")
+		return fmt.Errorf("config `listenerId` is required")
 	}
 
 	// 更新监听

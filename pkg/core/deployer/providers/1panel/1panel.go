@@ -55,7 +55,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.ServerUrl, config.ApiVersion, config.ApiKey, config.AllowInsecureConnections, config.NodeName)
@@ -127,7 +127,7 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 	case "", WEBSITE_MATCH_PATTERN_SPECIFIED:
 		{
 			if d.config.WebsiteId == 0 {
-				return errors.New("config `websiteId` is required")
+				return fmt.Errorf("config `websiteId` is required")
 			}
 
 			websiteIds = []int64{d.config.WebsiteId}
@@ -178,7 +178,7 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.CertificateId == 0 {
-		return errors.New("config `certificateId` is required")
+		return fmt.Errorf("config `certificateId` is required")
 	}
 
 	// 替换证书
@@ -308,7 +308,7 @@ func (d *Deployer) getMatchedWebsiteIdsByCertificate(ctx context.Context, certPE
 	}
 
 	if len(websiteIds) == 0 {
-		return nil, errors.New("could not find any websites matched by certificate")
+		return nil, fmt.Errorf("could not find any websites matched by certificate")
 	}
 
 	return websiteIds, nil
@@ -429,5 +429,5 @@ func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool, n
 		return client, nil
 	}
 
-	return nil, errors.New("1panel: invalid api version")
+	return nil, fmt.Errorf("1panel: invalid api version")
 }

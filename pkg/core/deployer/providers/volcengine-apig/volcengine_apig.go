@@ -42,7 +42,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret, config.Region)
@@ -92,7 +92,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
 			if d.config.Domain == "" {
-				return nil, errors.New("config `domain` is required")
+				return nil, fmt.Errorf("config `domain` is required")
 			}
 
 			domainCandidates, err := d.getAllDomains(ctx)
@@ -103,7 +103,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return lo.FromPtr(domainItem.Domain) == d.config.Domain
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find domain")
+				return nil, fmt.Errorf("could not find domain")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *veapig.ItemForListCustomDomainsOutput, _ int) string {
@@ -114,7 +114,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case DOMAIN_MATCH_PATTERN_WILDCARD:
 		{
 			if d.config.Domain == "" {
-				return nil, errors.New("config `domain` is required")
+				return nil, fmt.Errorf("config `domain` is required")
 			}
 
 			domainCandidates, err := d.getAllDomains(ctx)
@@ -126,7 +126,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return xcerthostname.IsMatch(d.config.Domain, lo.FromPtr(domainItem.Domain))
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by wildcard")
+				return nil, fmt.Errorf("could not find any domains matched by wildcard")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *veapig.ItemForListCustomDomainsOutput, _ int) string {
@@ -145,7 +145,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, lo.FromPtr(domainItem.Domain))
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by certificate")
+				return nil, fmt.Errorf("could not find any domains matched by certificate")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *veapig.ItemForListCustomDomainsOutput, _ int) string {

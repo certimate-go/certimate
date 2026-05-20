@@ -3,7 +3,6 @@ package proxmoxve
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -41,7 +40,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.ServerUrl, config.ApiToken, config.ApiTokenSecret, config.AllowInsecureConnections)
@@ -66,7 +65,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	if d.config.NodeName == "" {
-		return nil, errors.New("config `nodeName` is required")
+		return nil, fmt.Errorf("config `nodeName` is required")
 	}
 
 	// 获取节点信息
@@ -93,11 +92,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify bool) (*proxmox.Client, error) {
 	if _, err := url.Parse(serverUrl); err != nil {
-		return nil, errors.New("pve: invalid server url")
+		return nil, fmt.Errorf("pve: invalid server url")
 	}
 
 	if apiToken == "" {
-		return nil, errors.New("pve: invalid api token")
+		return nil, fmt.Errorf("pve: invalid api token")
 	}
 
 	httpClient := &http.Client{

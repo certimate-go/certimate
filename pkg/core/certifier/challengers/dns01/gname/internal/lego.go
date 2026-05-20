@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -70,7 +69,7 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	if config == nil {
-		return nil, errors.New("gname: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("gname: the configuration of the DNS provider is nil")
 	}
 
 	client, err := gnamesdk.NewClient(config.AppID, config.AppKey)

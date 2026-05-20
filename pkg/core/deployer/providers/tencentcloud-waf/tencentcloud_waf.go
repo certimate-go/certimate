@@ -2,7 +2,6 @@ package tencentcloudwaf
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -45,7 +44,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
@@ -84,13 +83,13 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	if d.config.InstanceId == "" {
-		return nil, errors.New("config `instanceId` is required")
+		return nil, fmt.Errorf("config `instanceId` is required")
 	}
 	if d.config.Domain == "" {
-		return nil, errors.New("config `domain` is required")
+		return nil, fmt.Errorf("config `domain` is required")
 	}
 	if d.config.DomainId == "" {
-		return nil, errors.New("config `domainId` is required")
+		return nil, fmt.Errorf("config `domainId` is required")
 	}
 
 	// 上传证书

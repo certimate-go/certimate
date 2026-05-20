@@ -2,7 +2,7 @@ package certacme
 
 import (
 	"context"
-	"errors"
+	"fmt"
 )
 
 type RevokeCertificateRequest struct {
@@ -34,7 +34,7 @@ func (c *ACMEClient) RevokeCertificate(ctx context.Context, request *RevokeCerti
 
 func (c *ACMEClient) sendRevokeCertificateRequest(request *RevokeCertificateRequest) (*RevokeCertificateResponse, error) {
 	if request == nil {
-		return nil, errors.New("the request is nil")
+		return nil, fmt.Errorf("the request is nil")
 	}
 
 	err := c.client.Certificate.Revoke([]byte(request.Certificate))

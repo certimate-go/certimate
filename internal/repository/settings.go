@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -31,7 +32,7 @@ func (r *SettingsRepository) GetByName(ctx context.Context, name string) (*domai
 
 	content := make(map[string]any)
 	if err := record.UnmarshalJSONField("content", &content); err != nil {
-		return nil, errors.New("field 'content' is malformed")
+		return nil, fmt.Errorf("field 'content' is malformed")
 	}
 
 	settings := &domain.Settings{

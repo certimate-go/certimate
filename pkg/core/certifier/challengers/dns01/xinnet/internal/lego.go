@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -70,7 +69,7 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	if config == nil {
-		return nil, errors.New("xinnet: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("xinnet: the configuration of the DNS provider is nil")
 	}
 
 	client, err := xinnetsdk.NewClient(config.AgentID, config.AppSecret)

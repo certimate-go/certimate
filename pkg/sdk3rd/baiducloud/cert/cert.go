@@ -1,7 +1,6 @@
 package cert
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/baidubce/bce-sdk-go/bce"
@@ -11,7 +10,7 @@ import (
 
 func (c *Client) CreateCert(args *CreateCertArgs) (*CreateCertResult, error) {
 	if args == nil {
-		return nil, errors.New("unset args")
+		return nil, fmt.Errorf("unset args")
 	}
 
 	result, err := c.Client.CreateCert(&args.CreateCertArgs)
@@ -71,7 +70,7 @@ func (c *Client) GetCertRawData(id string) (*CertificateRawData, error) {
 
 func (c *Client) UpdateCertName(id string, args *UpdateCertNameArgs) error {
 	if args == nil {
-		return errors.New("unset args")
+		return fmt.Errorf("unset args")
 	}
 
 	err := c.Client.UpdateCertName(id, &args.UpdateCertNameArgs)

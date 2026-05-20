@@ -2,7 +2,6 @@ package volcenginecertcenter
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -32,7 +31,7 @@ var _ certmgr.Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the certmgr provider is nil")
+		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret, config.Region)
@@ -80,7 +79,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}
 
 	if sslId == "" {
-		return nil, errors.New("received empty certificate id, both `InstanceId` and `RepeatId` are empty")
+		return nil, fmt.Errorf("received empty certificate id, both `InstanceId` and `RepeatId` are empty")
 	}
 
 	return &certmgr.UploadResult{

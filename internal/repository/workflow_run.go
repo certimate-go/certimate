@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -158,12 +159,12 @@ func (r *WorkflowRunRepository) DeleteWhere(ctx context.Context, exprs ...dbx.Ex
 
 func (r *WorkflowRunRepository) castRecordToModel(record *core.Record) (*domain.WorkflowRun, error) {
 	if record == nil {
-		return nil, errors.New("the record is nil")
+		return nil, fmt.Errorf("the record is nil")
 	}
 
 	graph := &domain.WorkflowGraph{}
 	if err := record.UnmarshalJSONField("graph", &graph); err != nil {
-		return nil, errors.New("field 'graph' is malformed")
+		return nil, fmt.Errorf("field 'graph' is malformed")
 	}
 
 	workflowRun := &domain.WorkflowRun{

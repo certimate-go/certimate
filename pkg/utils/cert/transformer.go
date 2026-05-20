@@ -3,7 +3,6 @@ package cert
 import (
 	"bytes"
 	"crypto/x509"
-	"errors"
 	"fmt"
 	"time"
 
@@ -44,7 +43,7 @@ func TransformCertificateFromPEMToPFX(certPEM string, privkeyPEM string, pfxPass
 
 	var pfxData []byte
 	if len(certs) == 0 {
-		return nil, errors.New("failed to decode certificate PEM")
+		return nil, fmt.Errorf("failed to decode certificate PEM")
 	} else if len(certs) == 1 {
 		pfxData, err = pkcs12.Legacy.Encode(privkey, certs[0], nil, pfxPassword)
 	} else {
@@ -69,12 +68,12 @@ func TransformCertificateFromPEMToPFX(certPEM string, privkeyPEM string, pfxPass
 func TransformCertificateFromPEMToJKS(certPEM string, privkeyPEM string, jksAlias string, jksKeypass string, jksStorepass string) ([]byte, error) {
 	certBlocks := decodePEMBlocks([]byte(certPEM))
 	if len(certBlocks) == 0 {
-		return nil, errors.New("failed to decode certificate PEM")
+		return nil, fmt.Errorf("failed to decode certificate PEM")
 	}
 
 	privkeyBlocks := decodePEMBlocks([]byte(privkeyPEM))
 	if len(privkeyBlocks) == 0 {
-		return nil, errors.New("failed to decode private key PEM")
+		return nil, fmt.Errorf("failed to decode private key PEM")
 	}
 
 	entry := keystore.PrivateKeyEntry{

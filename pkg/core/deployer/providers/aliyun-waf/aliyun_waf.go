@@ -2,7 +2,6 @@ package aliyunwaf
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -59,7 +58,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret, config.Region)
@@ -113,7 +112,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToWAF3(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.InstanceId == "" {
-		return errors.New("config `instanceId` is required")
+		return fmt.Errorf("config `instanceId` is required")
 	}
 
 	// 上传证书
@@ -147,13 +146,13 @@ func (d *Deployer) deployToWAF3(ctx context.Context, certPEM, privkeyPEM string)
 
 func (d *Deployer) deployToWAF3WithCloudResource(ctx context.Context, cloudCertId string) error {
 	if d.config.ResourceProduct == "" {
-		return errors.New("config `resourceProduct` is required")
+		return fmt.Errorf("config `resourceProduct` is required")
 	}
 	if d.config.ResourceId == "" {
-		return errors.New("config `resourceId` is required")
+		return fmt.Errorf("config `resourceId` is required")
 	}
 	if d.config.ResourcePort == 0 {
-		return errors.New("config `resourcePort` is required")
+		return fmt.Errorf("config `resourcePort` is required")
 	}
 
 	// 查询云产品实例已同步的证书列表

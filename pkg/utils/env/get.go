@@ -1,7 +1,7 @@
 package env
 
 import (
-	"errors"
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -86,7 +86,7 @@ func getOrDefault[T any](envVar string, defaultValue T, parser func(string) (T, 
 
 func parseString(s string) (string, error) {
 	if s == "" {
-		return "", errors.New("empty string")
+		return "", fmt.Errorf("empty string")
 	}
 
 	return s, nil

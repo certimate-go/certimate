@@ -2,7 +2,6 @@ package certmgmt
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
@@ -24,7 +23,7 @@ type DeployCertificateResponse struct{}
 
 func (c *Client) DeployCertificate(ctx context.Context, request *DeployCertificateRequest) (*DeployCertificateResponse, error) {
 	if request == nil {
-		return nil, errors.New("the request is nil")
+		return nil, fmt.Errorf("the request is nil")
 	}
 
 	providerFactory, err := deployers.Registries.Get(domain.DeploymentProviderType(request.Provider))

@@ -2,7 +2,6 @@ package k8ssecret
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -46,7 +45,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	return &Deployer{
@@ -65,19 +64,19 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	if d.config.Namespace == "" {
-		return nil, errors.New("config `namespace` is required")
+		return nil, fmt.Errorf("config `namespace` is required")
 	}
 	if d.config.SecretName == "" {
-		return nil, errors.New("config `secretName` is required")
+		return nil, fmt.Errorf("config `secretName` is required")
 	}
 	if d.config.SecretType == "" {
-		return nil, errors.New("config `secretType` is required")
+		return nil, fmt.Errorf("config `secretType` is required")
 	}
 	if d.config.SecretDataKeyForCrt == "" {
-		return nil, errors.New("config `secretDataKeyForCrt` is required")
+		return nil, fmt.Errorf("config `secretDataKeyForCrt` is required")
 	}
 	if d.config.SecretDataKeyForKey == "" {
-		return nil, errors.New("config `secretDataKeyForKey` is required")
+		return nil, fmt.Errorf("config `secretDataKeyForKey` is required")
 	}
 
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)

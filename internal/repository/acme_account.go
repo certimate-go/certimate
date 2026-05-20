@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/go-acme/lego/v4/acme"
 	"github.com/pocketbase/dbx"
@@ -88,12 +89,12 @@ func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.AC
 
 func (r *ACMEAccountRepository) castRecordToModel(record *core.Record) (*domain.ACMEAccount, error) {
 	if record == nil {
-		return nil, errors.New("the record is nil")
+		return nil, fmt.Errorf("the record is nil")
 	}
 
 	account := &acme.Account{}
 	if err := record.UnmarshalJSONField("acmeAccount", account); err != nil {
-		return nil, errors.New("field 'acmeAccount' is malformed")
+		return nil, fmt.Errorf("field 'acmeAccount' is malformed")
 	}
 
 	acmeAccount := &domain.ACMEAccount{

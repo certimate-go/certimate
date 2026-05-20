@@ -5,7 +5,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -24,10 +23,10 @@ type ACMEAccount = domain.ACMEAccount
 
 func NewACMEAccount(config *ACMEConfig, email string, register bool) (*ACMEAccount, error) {
 	if config == nil {
-		return nil, errors.New("the acme config is nil")
+		return nil, fmt.Errorf("the acme config is nil")
 	}
 	if email == "" {
-		return nil, errors.New("the email is empty")
+		return nil, fmt.Errorf("the email is empty")
 	}
 
 	ctx := context.Background()
@@ -42,7 +41,7 @@ func NewACMEAccount(config *ACMEConfig, email string, register bool) (*ACMEAccou
 	// register new acme account if not exists
 	if account == nil {
 		if !register {
-			return nil, errors.New("the acme account does not exist")
+			return nil, fmt.Errorf("the acme account does not exist")
 		}
 
 		key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
@@ -72,10 +71,10 @@ func NewACMEAccount(config *ACMEConfig, email string, register bool) (*ACMEAccou
 		var regerr error
 		if legoClient.GetExternalAccountRequired() {
 			if config.EABKid == "" {
-				return nil, errors.New("missing or invalid eab kid")
+				return nil, fmt.Errorf("missing or invalid eab kid")
 			}
 			if config.EABHmacKey == "" {
-				return nil, errors.New("missing or invalid eab hmac key")
+				return nil, fmt.Errorf("missing or invalid eab hmac key")
 			}
 
 			// patch, see https://github.com/go-acme/lego/issues/2634
@@ -111,10 +110,10 @@ func NewACMEAccount(config *ACMEConfig, email string, register bool) (*ACMEAccou
 
 func NewACMEAccountWithSingleFlight(config *ACMEConfig, email string) (*ACMEAccount, error) {
 	if config == nil {
-		return nil, errors.New("the acme config is nil")
+		return nil, fmt.Errorf("the acme config is nil")
 	}
 	if email == "" {
-		return nil, errors.New("the email is empty")
+		return nil, fmt.Errorf("the email is empty")
 	}
 
 	resp, err, _ := registrationSg.Do(fmt.Sprintf("%s|%s|%s", string(config.CAProvider), config.CADirUrl, email), func() (any, error) {

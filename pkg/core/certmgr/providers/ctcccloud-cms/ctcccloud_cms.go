@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -34,7 +33,7 @@ var _ certmgr.Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the certmgr provider is nil")
+		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
@@ -91,7 +90,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			if upres, upok, err := c.tryGetResultIfCertExists(ctx, certPEM); err != nil {
 				return nil, err
 			} else if !upok {
-				return nil, errors.New("ctyun cms: no certificate found")
+				return nil, fmt.Errorf("ctyun cms: no certificate found")
 			} else {
 				c.logger.Info("ssl certificate already exists")
 				return upres, nil

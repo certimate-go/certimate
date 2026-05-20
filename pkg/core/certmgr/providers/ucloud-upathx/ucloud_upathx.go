@@ -2,7 +2,6 @@ package ucloudulb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -36,7 +35,7 @@ var _ certmgr.Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the certmgr provider is nil")
+		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
 	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
@@ -173,10 +172,10 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 
 func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathXClient, error) {
 	if privateKey == "" {
-		return nil, errors.New("ucloud: invalid private key")
+		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
 	if publicKey == "" {
-		return nil, errors.New("ucloud: invalid public key")
+		return nil, fmt.Errorf("ucloud: invalid public key")
 	}
 
 	cfg := ucloud.NewConfig()
@@ -221,5 +220,5 @@ func getSDKDefaultProjectId(privateKey, publicKey string) (string, error) {
 		}
 	}
 
-	return "", errors.New("ucloud: no default project found")
+	return "", fmt.Errorf("ucloud: no default project found")
 }

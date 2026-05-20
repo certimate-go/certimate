@@ -50,7 +50,7 @@ type wSDKClients struct {
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	clients, err := createSDKClients(config.AccessKeyId, config.SecretAccessKey)
@@ -75,7 +75,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	if d.config.InstanceId == "" {
-		return nil, errors.New("config `instanceId` is required")
+		return nil, fmt.Errorf("config `instanceId` is required")
 	}
 
 	// 获取待部署的域名列表
@@ -84,7 +84,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
 			if d.config.Domain == "" {
-				return nil, errors.New("config `domain` is required")
+				return nil, fmt.Errorf("config `domain` is required")
 			}
 
 			domainCandidates, err := d.getAllDomainsByInstanceId(ctx, d.config.InstanceId)
@@ -95,7 +95,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return lo.FromPtr(domainItem.DomainName) == d.config.Domain
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find domain")
+				return nil, fmt.Errorf("could not find domain")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) string {
@@ -106,7 +106,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	case DOMAIN_MATCH_PATTERN_WILDCARD:
 		{
 			if d.config.Domain == "" {
-				return nil, errors.New("config `domain` is required")
+				return nil, fmt.Errorf("config `domain` is required")
 			}
 
 			domainCandidates, err := d.getAllDomainsByInstanceId(ctx, d.config.InstanceId)
@@ -118,7 +118,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return xcerthostname.IsMatch(d.config.Domain, lo.FromPtr(domainItem.DomainName))
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by wildcard")
+				return nil, fmt.Errorf("could not find any domains matched by wildcard")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) string {
@@ -137,7 +137,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, lo.FromPtr(domainItem.DomainName))
 			})
 			if len(domains) == 0 {
-				return nil, errors.New("could not find any domains matched by certificate")
+				return nil, fmt.Errorf("could not find any domains matched by certificate")
 			}
 
 			domainIds = lo.Map(domains, func(domainItem *hwaadmodelv2.InstanceDomainItem, _ int) string {

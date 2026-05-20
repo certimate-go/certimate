@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -38,7 +37,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
@@ -63,7 +62,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	if d.config.Domain == "" {
-		return nil, errors.New("config `domain` is required")
+		return nil, fmt.Errorf("config `domain` is required")
 	}
 
 	// 生成优刻得所需的证书参数

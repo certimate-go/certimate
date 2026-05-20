@@ -2,7 +2,6 @@ package cert
 
 import (
 	"encoding/pem"
-	"errors"
 	"fmt"
 )
 
@@ -27,7 +26,7 @@ func ExtractCertificatesFromPEM(certPEM string) (_serverCertPEM string, _interme
 	intermediaCertPEM := ""
 
 	if len(blocks) == 0 {
-		return "", "", errors.New("failed to decode PEM block")
+		return "", "", fmt.Errorf("failed to decode PEM block")
 	}
 
 	if len(blocks) > 0 {

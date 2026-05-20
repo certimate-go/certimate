@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
@@ -50,7 +50,7 @@ func (handler *WorkflowsHandler) startRun(e *core.RequestEvent) error {
 		return resp.Err(e, err)
 	}
 	if req.RunTrigger != domain.WorkflowTriggerTypeManual {
-		return resp.Err(e, errors.New("invalid parameters: the value of 'trigger' must be 'manual'"))
+		return resp.Err(e, fmt.Errorf("invalid parameters: the value of 'trigger' must be 'manual'"))
 	}
 
 	res, err := handler.service.StartRun(e.Request.Context(), req)

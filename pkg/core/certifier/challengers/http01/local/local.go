@@ -1,7 +1,7 @@
 package local
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/go-acme/lego/v4/providers/http/webroot"
 
@@ -15,7 +15,7 @@ type ChallengerConfig struct {
 
 func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the acme challenge provider is nil")
+		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
 	provider, err := webroot.NewHTTPProvider(config.WebRootPath)

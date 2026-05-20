@@ -83,7 +83,7 @@ func (wd *workflowDispatcher) GetStatistics() Statistics {
 
 func (wd *workflowDispatcher) Bootup(ctx context.Context) error {
 	if wd.booted {
-		return errors.New("could not re-bootup")
+		return fmt.Errorf("could not re-bootup")
 	}
 
 	wd.taskMtx.Lock()
@@ -103,7 +103,7 @@ func (wd *workflowDispatcher) Bootup(ctx context.Context) error {
 
 func (wd *workflowDispatcher) Shutdown(ctx context.Context) error {
 	if !wd.booted {
-		return errors.New("could not re-shutdown")
+		return fmt.Errorf("could not re-shutdown")
 	}
 
 	wd.taskMtx.Lock()

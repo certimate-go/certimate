@@ -90,7 +90,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 
 func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequest) (*ObtainCertificateResponse, error) {
 	if request == nil {
-		return nil, errors.New("the request is nil")
+		return nil, fmt.Errorf("the request is nil")
 	}
 
 	os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))

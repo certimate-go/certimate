@@ -55,7 +55,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
@@ -118,7 +118,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToLoadbalancer(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.LoadbalancerId == "" {
-		return errors.New("config `loadbalancerId` is required")
+		return fmt.Errorf("config `loadbalancerId` is required")
 	}
 
 	// 查询负载均衡器详情
@@ -209,7 +209,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, certPEM, privkeyPEM
 
 func (d *Deployer) deployToListener(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.ListenerId == "" {
-		return errors.New("config `listenerId` is required")
+		return fmt.Errorf("config `listenerId` is required")
 	}
 
 	// 上传证书
@@ -230,7 +230,7 @@ func (d *Deployer) deployToListener(ctx context.Context, certPEM, privkeyPEM str
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
 	if d.config.CertificateId == "" {
-		return errors.New("config `certificateId` is required")
+		return fmt.Errorf("config `certificateId` is required")
 	}
 
 	// 替换证书
@@ -389,7 +389,7 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 	if err != nil {
 		return "", err
 	} else if response.Projects == nil || len(*response.Projects) == 0 {
-		return "", errors.New("huaweicloud: no project found")
+		return "", fmt.Errorf("huaweicloud: no project found")
 	}
 
 	return (*response.Projects)[0].Id, nil

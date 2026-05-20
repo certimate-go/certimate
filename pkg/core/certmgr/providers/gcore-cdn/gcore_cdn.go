@@ -2,7 +2,6 @@ package gcorecdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -29,7 +28,7 @@ var _ certmgr.Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the certmgr provider is nil")
+		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
 	client, err := createSDKClient(config.ApiToken)
@@ -80,7 +79,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 func createSDKClient(apiToken string) (*sslcerts.Service, error) {
 	if apiToken == "" {
-		return nil, errors.New("gcore: invalid api token")
+		return nil, fmt.Errorf("gcore: invalid api token")
 	}
 
 	requester := gcore.NewClient(

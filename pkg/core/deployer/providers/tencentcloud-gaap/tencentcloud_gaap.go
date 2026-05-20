@@ -2,7 +2,6 @@ package tencentcloudgaap
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -45,7 +44,7 @@ var _ deployer.Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
-		return nil, errors.New("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
 	client, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint)
@@ -107,7 +106,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) error {
 	if d.config.ListenerId == "" {
-		return errors.New("config `listenerId` is required")
+		return fmt.Errorf("config `listenerId` is required")
 	}
 
 	// 更新监听器证书

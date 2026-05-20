@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -158,7 +157,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	} else {
 		errData, _ := os.ReadFile(tempErr.Name())
 		if len(errData) > 0 {
-			return nil, errors.New(string(errData))
+			return nil, fmt.Errorf(string(errData))
 		}
 	}
 

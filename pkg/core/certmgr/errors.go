@@ -2,9 +2,10 @@ package certmgr
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
-	ErrNotImplemented = errors.New("not implemented function")
+	ErrNotImplemented = fmt.Errorf("not implemented function")
 	ErrUnsupported    = errors.ErrUnsupported
 )
