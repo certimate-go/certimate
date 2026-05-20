@@ -143,7 +143,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
 	// 更新证书
 	// REF: https://support.huaweicloud.com/api-elb/UpdateCertificate.html
 	updateCertificateReq := &hwelbmodel.UpdateCertificateRequest{
@@ -161,7 +161,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'elb.UpdateCertificate': %w", err)
 	}
 
-	return &certmgr.OperateResult{}, nil
+	return &certmgr.ReplaceResult{}, nil
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwelb.ElbClient, error) {

@@ -122,7 +122,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
 	certId, err := strconv.ParseInt(certIdOrName, 10, 64)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'nginx.UploadCertificate': %w", err)
 	}
 
-	return &certmgr.OperateResult{}, nil
+	return &certmgr.ReplaceResult{}, nil
 }
 
 func createSDKClient(serverUrl, authMethod, username, password, apiToken string, skipTlsVerify bool) (*npmsdk.Client, error) {

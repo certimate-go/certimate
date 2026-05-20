@@ -172,7 +172,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
 	// 更新证书
 	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/cdn/certificate/modifycertificate
 	modifyCertificateReq := zcdnsdk.NewModifyCertificateRequest()
@@ -185,7 +185,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'cdn.ModifyCertificate': %w", err)
 	}
 
-	return &certmgr.OperateResult{}, nil
+	return &certmgr.ReplaceResult{}, nil
 }
 
 func createSDKClient(accessKeyId, accessKeyPassword string) (*zcdnsdk.Client, error) {

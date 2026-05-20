@@ -88,7 +88,7 @@ func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}, nil
 }
 
-func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
+func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
 	// 替换证书
 	// REF: https://portal.baishancloud.com/track/document/downloadPdf/1441
 	uploadDomainCertificateReq := &baishansdk.UploadDomainCertificateRequest{
@@ -103,7 +103,7 @@ func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'baishan.UploadDomainCertificate': %w", err)
 	}
 
-	return &certmgr.OperateResult{}, nil
+	return &certmgr.ReplaceResult{}, nil
 }
 
 func createSDKClient(apiToken string) (*baishansdk.Client, error) {

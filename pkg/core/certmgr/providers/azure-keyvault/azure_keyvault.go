@@ -167,7 +167,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.OperateResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {
@@ -192,7 +192,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	} else {
 		// 如果已存在相同证书，直接返回
 		if xcert.EqualCertificatesFromPEM(certPEM, string(getCertificateResp.CER)) {
-			return &certmgr.OperateResult{}, nil
+			return &certmgr.ReplaceResult{}, nil
 		}
 	}
 
@@ -216,7 +216,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'keyvault.ImportCertificate': %w", err)
 	}
 
-	return &certmgr.OperateResult{}, nil
+	return &certmgr.ReplaceResult{}, nil
 }
 
 const (

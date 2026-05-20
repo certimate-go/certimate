@@ -75,11 +75,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		}
 	} else {
 		// 替换证书
-		opres, err := d.sdkCertmgr.Replace(ctx, d.config.CertificateId, certPEM, privkeyPEM)
+		rplres, err := d.sdkCertmgr.Replace(ctx, d.config.CertificateId, certPEM, privkeyPEM)
 		if err != nil {
 			return nil, fmt.Errorf("failed to replace certificate file: %w", err)
 		} else {
-			d.logger.Info("ssl certificate replaced", slog.Any("result", opres))
+			d.logger.Info("ssl certificate replaced", slog.Any("result", rplres))
 		}
 	}
 
