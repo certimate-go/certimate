@@ -2040,9 +2040,9 @@
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
         "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
       },
-      "tencentcloud_ssldeploy_region": {
-        "label": "Tencent Cloud region",
-        "placeholder": "Please enter Tencent Cloud service region (e.g. ap-guangzhou)",
+      "tencentcloud_ssldeploy_resource_region": {
+        "label": "Tencent Cloud resource region (Optional)",
+        "placeholder": "Please enter Tencent Cloud resource region (e.g. ap-guangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1007/36573\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/36573</a>"
       },
       "tencentcloud_ssldeploy_resource_product": {
@@ -2076,19 +2076,6 @@
         "placeholder": "Please enter Tencent Cloud SSL certificate ID",
         "tooltip": "For more information, see <a href=\"https://console.cloud.tencent.com/certoverview\" target=\"_blank\">https://console.cloud.tencent.com/certoverview</a>"
       },
-      "tencentcloud_sslupdate_resource_products": {
-        "label": "Tencent Cloud resource products",
-        "placeholder": "Please enter Tencent Cloud resource products (separated by semicolons)",
-        "errmsg": {
-          "invalid": "Invalid resource products"
-        },
-        "help": "Notes: Multiple values should be separated by semicolons.",
-        "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1007/57981\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/57981</a> or <a href=\"https://www.tencentcloud.com/document/product/1007/70503\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/70503</a>",
-        "multiple_input_modal": {
-          "title": "Change Tencent Cloud resource products",
-          "placeholder": "Please enter Tencent Cloud resource product"
-        }
-      },
       "tencentcloud_sslupdate_resource_regions": {
         "label": "Tencent Cloud resource regions (Optional)",
         "placeholder": "Please enter Tencent Cloud resource regions (separated by semicolons)",
@@ -2100,6 +2087,19 @@
         "multiple_input_modal": {
           "title": "Change Tencent Cloud resource regions",
           "placeholder": "Please enter Tencent Cloud resource region"
+        }
+      },
+      "tencentcloud_sslupdate_resource_products": {
+        "label": "Tencent Cloud resource products",
+        "placeholder": "Please enter Tencent Cloud resource products (separated by semicolons)",
+        "errmsg": {
+          "invalid": "Invalid resource products"
+        },
+        "help": "Notes: Multiple values should be separated by semicolons.",
+        "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1007/57981\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/57981</a> or <a href=\"https://www.tencentcloud.com/document/product/1007/70503\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/70503</a>",
+        "multiple_input_modal": {
+          "title": "Change Tencent Cloud resource products",
+          "placeholder": "Please enter Tencent Cloud resource product"
         }
       },
       "tencentcloud_sslupdate_is_replaced": {

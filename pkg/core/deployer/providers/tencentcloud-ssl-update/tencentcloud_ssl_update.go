@@ -27,12 +27,12 @@ type DeployerConfig struct {
 	Endpoint string `json:"endpoint,omitempty"`
 	// 原证书 ID。
 	CertificateId string `json:"certificateId"`
-	// 是否替换原有证书（即保持原证书 ID 不变）。
-	IsReplaced bool `json:"isReplaced,omitempty"`
+	// 云产品地域数组。
+	ResourceRegions []string `json:"resourceRegions,omitempty"`
 	// 云产品类型数组。
 	ResourceProducts []string `json:"resourceProducts"`
-	// 云产品地域数组。
-	ResourceRegions []string `json:"resourceRegions"`
+	// 是否替换原有证书（即保持原证书 ID 不变）。
+	IsReplaced bool `json:"isReplaced,omitempty"`
 }
 
 type Deployer struct {

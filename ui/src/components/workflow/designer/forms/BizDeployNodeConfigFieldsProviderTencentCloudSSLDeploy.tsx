@@ -38,13 +38,13 @@ const BizDeployNodeConfigFieldsProviderTencentCloudSSLDeploy = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "region"]}
-        initialValue={initialValues.region}
-        label={t("workflow_node.deploy.form.tencentcloud_ssldeploy_region.label")}
+        name={[parentNamePath, "resourceRegion"]}
+        initialValue={initialValues.resourceRegion}
+        label={t("workflow_node.deploy.form.tencentcloud_ssldeploy_resource_region.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssldeploy_region.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_ssldeploy_resource_region.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_ssldeploy_region.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_ssldeploy_resource_region.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -85,7 +85,7 @@ const BizDeployNodeConfigFieldsProviderTencentCloudSSLDeploy = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    region: "",
+    resourceRegion: "",
     resourceProduct: "",
     resourceIds: "",
   };
@@ -96,7 +96,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z.object({
     endpoint: z.string().nullish(),
-    region: z.string().nonempty(),
+    resourceRegion: z.string().nullish(),
     resourceProduct: z.string().nonempty(),
     resourceIds: z
       .string()

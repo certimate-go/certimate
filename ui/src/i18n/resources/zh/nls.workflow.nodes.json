@@ -2036,9 +2036,9 @@
         "placeholder": "请输入腾讯云 SSL 接口端点（例如：ssl.tencentcloudapi.com）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/41659\" target=\"_blank\">https://cloud.tencent.com/document/product/400/41659</a><br>国际站用户请填写 <em>ssl.intl.tencentcloudapi.com</em>。"
       },
-      "tencentcloud_ssldeploy_region": {
-        "label": "腾讯云服务地域",
-        "placeholder": "请输入腾讯云云产品服务地域（例如：ap-guangzhou）",
+      "tencentcloud_ssldeploy_resource_region": {
+        "label": "腾讯云云产品部署地域（可选）",
+        "placeholder": "请输入腾讯云云产品部署地域（例如：ap-guangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/41659\" target=\"_blank\">https://cloud.tencent.com/document/product/400/41659</a>"
       },
       "tencentcloud_ssldeploy_resource_product": {
@@ -2072,19 +2072,6 @@
         "placeholder": "请输入腾讯云原证书 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/certoverview\" target=\"_blank\">https://console.cloud.tencent.com/certoverview</a>"
       },
-      "tencentcloud_sslupdate_resource_products": {
-        "label": "腾讯云云产品资源类型",
-        "placeholder": "请输入腾讯云云产品资源类型（多个值请用半角分号隔开）",
-        "errmsg": {
-          "invalid": "无效的云产品资源类型"
-        },
-        "help": "提示：支持多个类型，以半角分号隔开。",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/91649\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91649</a> 或 <a href=\"https://cloud.tencent.com/document/product/400/119791\" target=\"_blank\">https://cloud.tencent.com/document/product/400/119791</a><br>注意，这两个接口的所支持的云产品资源类型有所不同，具体请查看腾讯云官方文档。",
-        "multiple_input_modal": {
-          "title": "修改腾讯云云产品资源类型",
-          "placeholder": "请输入腾讯云云产品资源类型"
-        }
-      },
       "tencentcloud_sslupdate_resource_regions": {
         "label": "腾讯云云产品部署地域（可选）",
         "placeholder": "请输入腾讯云云产品部署地域（多个值请用半角分号隔开）",
@@ -2096,6 +2083,19 @@
         "multiple_input_modal": {
           "title": "修改腾讯云云产品部署地域",
           "placeholder": "请输入腾讯云云产品部署地域"
+        }
+      },
+      "tencentcloud_sslupdate_resource_products": {
+        "label": "腾讯云云产品资源类型",
+        "placeholder": "请输入腾讯云云产品资源类型（多个值请用半角分号隔开）",
+        "errmsg": {
+          "invalid": "无效的云产品资源类型"
+        },
+        "help": "提示：支持多个类型，以半角分号隔开。",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/91649\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91649</a> 或 <a href=\"https://cloud.tencent.com/document/product/400/119791\" target=\"_blank\">https://cloud.tencent.com/document/product/400/119791</a><br>注意，这两个接口的所支持的云产品资源类型有所不同，具体请查看腾讯云官方文档。",
+        "multiple_input_modal": {
+          "title": "修改腾讯云云产品资源类型",
+          "placeholder": "请输入腾讯云云产品资源类型"
         }
       },
       "tencentcloud_sslupdate_is_replaced": {

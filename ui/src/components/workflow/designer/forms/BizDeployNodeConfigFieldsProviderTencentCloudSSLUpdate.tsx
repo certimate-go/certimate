@@ -47,23 +47,6 @@ const BizDeployNodeConfigFieldsProviderTencentCloudSSLUpdate = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "resourceProducts"]}
-        initialValue={initialValues.resourceProducts}
-        label={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.label")}
-        extra={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.help")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.tooltip") }}></span>}
-      >
-        <MultipleSplitValueInput
-          modalTitle={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.multiple_input_modal.title")}
-          placeholder={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.placeholder")}
-          placeholderInModal={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.multiple_input_modal.placeholder")}
-          separator={MULTIPLE_INPUT_SEPARATOR}
-          splitOptions={{ removeEmpty: true, trimSpace: true }}
-        />
-      </Form.Item>
-
-      <Form.Item
         name={[parentNamePath, "resourceRegions"]}
         initialValue={initialValues.resourceRegions}
         label={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.label")}
@@ -75,6 +58,23 @@ const BizDeployNodeConfigFieldsProviderTencentCloudSSLUpdate = () => {
           modalTitle={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.multiple_input_modal.title")}
           placeholder={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.placeholder")}
           placeholderInModal={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.multiple_input_modal.placeholder")}
+          separator={MULTIPLE_INPUT_SEPARATOR}
+          splitOptions={{ removeEmpty: true, trimSpace: true }}
+        />
+      </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "resourceProducts"]}
+        initialValue={initialValues.resourceProducts}
+        label={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.label")}
+        extra={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.help")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.tooltip") }}></span>}
+      >
+        <MultipleSplitValueInput
+          modalTitle={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.multiple_input_modal.title")}
+          placeholder={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.placeholder")}
+          placeholderInModal={t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.multiple_input_modal.placeholder")}
           separator={MULTIPLE_INPUT_SEPARATOR}
           splitOptions={{ removeEmpty: true, trimSpace: true }}
         />
@@ -106,12 +106,6 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z.object({
     endpoint: z.string().nullish(),
     certificateId: z.string().nonempty(),
-    resourceProducts: z
-      .string()
-      .nonempty()
-      .refine((v) => {
-        return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => !!e.trim());
-      }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.errmsg.invalid")),
     resourceRegions: z
       .string()
       .nullish()
@@ -119,6 +113,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         if (!v) return true;
         return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => !!e.trim());
       }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_regions.errmsg.invalid")),
+    resourceProducts: z
+      .string()
+      .nonempty()
+      .refine((v) => {
+        return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => !!e.trim());
+      }, t("workflow_node.deploy.form.tencentcloud_sslupdate_resource_products.errmsg.invalid")),
     isReplaced: z.boolean().nullish(),
   });
 };

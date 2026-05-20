@@ -23,7 +23,7 @@ func init() {
 			SecretId:        credentials.SecretId,
 			SecretKey:       credentials.SecretKey,
 			Endpoint:        xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
-			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
+			ResourceRegion:  xmaps.GetString(options.ProviderExtendedConfig, "resourceRegion"),
 			ResourceProduct: xmaps.GetString(options.ProviderExtendedConfig, "resourceProduct"),
 			ResourceIds:     lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceIds"), ";"), func(s string, _ int) bool { return s != "" }),
 		})

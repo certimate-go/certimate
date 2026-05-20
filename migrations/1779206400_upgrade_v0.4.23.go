@@ -26,19 +26,6 @@ func init() {
 				nodeCfg := node.Data.Config
 
 				switch nodeCfg["provider"] {
-				case "1panel", "aliyun-alb", "aliyun-clb", "aliyun-ga", "aliyun-nlb", "apisix", "baiducloud-appblb", "baiducloud-blb", "baishan-cdn", "cdnfly", "cpanel", "ctcccloud-elb", "flexcdn", "goedge", "huaweicloud-apig", "huaweicloud-elb", "huaweicloud-waf", "jdcloud-alb", "kong", "ksyun-cdn", "ksyun-slb", "lecdn", "netlify", "nginxproxymanager", "ratpanel", "safeline", "samwaf", "tencentcloud-clb", "tencentcloud-gaap", "ucloud-uclb", "volcengine-alb", "volcengine-clb", "zenlayer-cdn", "zenlayer-ga":
-					{
-						if providerCfg, ok := nodeCfg["providerConfig"].(map[string]any); ok {
-							if providerCfg["resourceType"] != nil && providerCfg["resourceType"].(string) != "" {
-								providerCfg["deployTarget"] = providerCfg["resourceType"]
-								delete(providerCfg, "resourceType")
-								nodeCfg["providerConfig"] = providerCfg
-
-								_changed = true
-								return
-							}
-						}
-					}
 				case "ftp", "local", "ssh":
 					{
 						if providerCfg, ok := nodeCfg["providerConfig"].(map[string]any); ok {
@@ -60,6 +47,7 @@ func init() {
 							}
 						}
 					}
+
 				case "s3":
 					{
 						if providerCfg, ok := nodeCfg["providerConfig"].(map[string]any); ok {
@@ -74,6 +62,34 @@ func init() {
 								delete(providerCfg, "certObjectKey")
 								delete(providerCfg, "certObjectKeyForServerOnly")
 								delete(providerCfg, "certObjectKeyForIntermediaOnly")
+								nodeCfg["providerConfig"] = providerCfg
+
+								_changed = true
+								return
+							}
+						}
+					}
+
+				case "1panel", "aliyun-alb", "aliyun-clb", "aliyun-ga", "aliyun-nlb", "apisix", "baiducloud-appblb", "baiducloud-blb", "baishan-cdn", "cdnfly", "cpanel", "ctcccloud-elb", "flexcdn", "goedge", "huaweicloud-apig", "huaweicloud-elb", "huaweicloud-waf", "jdcloud-alb", "kong", "ksyun-cdn", "ksyun-slb", "lecdn", "netlify", "nginxproxymanager", "ratpanel", "safeline", "samwaf", "tencentcloud-clb", "tencentcloud-gaap", "ucloud-uclb", "volcengine-alb", "volcengine-clb", "zenlayer-cdn", "zenlayer-ga":
+					{
+						if providerCfg, ok := nodeCfg["providerConfig"].(map[string]any); ok {
+							if providerCfg["resourceType"] != nil && providerCfg["resourceType"].(string) != "" {
+								providerCfg["deployTarget"] = providerCfg["resourceType"]
+								delete(providerCfg, "resourceType")
+								nodeCfg["providerConfig"] = providerCfg
+
+								_changed = true
+								return
+							}
+						}
+					}
+
+				case "tencentcloud-ssldeploy":
+					{
+						if providerCfg, ok := nodeCfg["providerConfig"].(map[string]any); ok {
+							if providerCfg["region"] != nil && providerCfg["region"].(string) != "" {
+								providerCfg["resourceRegion"] = providerCfg["region"]
+								delete(providerCfg, "region")
 								nodeCfg["providerConfig"] = providerCfg
 
 								_changed = true

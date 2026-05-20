@@ -24,9 +24,9 @@ func init() {
 			SecretKey:        credentials.SecretKey,
 			Endpoint:         xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			CertificateId:    xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
-			IsReplaced:       xmaps.GetBool(options.ProviderExtendedConfig, "isReplaced"),
-			ResourceProducts: lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceProducts"), ";"), func(s string, _ int) bool { return s != "" }),
 			ResourceRegions:  lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceRegions"), ";"), func(s string, _ int) bool { return s != "" }),
+			ResourceProducts: lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceProducts"), ";"), func(s string, _ int) bool { return s != "" }),
+			IsReplaced:       xmaps.GetBool(options.ProviderExtendedConfig, "isReplaced"),
 		})
 		return provider, err
 	})

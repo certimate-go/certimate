@@ -24,8 +24,8 @@ type DeployerConfig struct {
 	SecretKey string `json:"secretKey"`
 	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
-	// 腾讯云地域。
-	Region string `json:"region"`
+	// 云产品地域。
+	ResourceRegion string `json:"resourceRegion,omitempty"`
 	// 云产品类型。
 	ResourceProduct string `json:"resourceProduct"`
 	// 云产品资源 ID 数组。
@@ -46,7 +46,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
+	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint, config.ResourceRegion)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
