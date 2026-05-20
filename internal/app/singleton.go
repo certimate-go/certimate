@@ -23,25 +23,6 @@ func GetApp() core.App {
 		pb.RootCmd.Flags().MarkHidden("encryptionEnv")
 		pb.RootCmd.Flags().MarkHidden("queryTimeout")
 
-		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
-			err := e.Next()
-			if err != nil {
-				return err
-			}
-
-			settings := pb.Settings()
-			if !settings.Batch.Enabled {
-				settings.Batch.Enabled = true
-				settings.Batch.MaxRequests = 1000
-				settings.Batch.Timeout = 30
-				if err := pb.Save(settings); err != nil {
-					return err
-				}
-			}
-
-			return nil
-		})
-
 		instance = pb
 	})
 

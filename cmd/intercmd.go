@@ -35,7 +35,7 @@ func internalCertApplyCommand(_ core.App) *cobra.Command {
 
 	command := &cobra.Command{
 		Use:          "certapply",
-		Example:      "internal certapply --in ./in.file --out ./out.file --enckey aeskey",
+		Example:      "internal certapply --mprocIn ./in.file --mprocOut ./out.file --mprocSecret aeskey",
 		SilenceUsage: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			type InData struct {
@@ -85,10 +85,10 @@ func internalCertApplyCommand(_ core.App) *cobra.Command {
 		},
 	}
 
-	command.PersistentFlags().StringVar(&flagInput, "in", "", "")
-	command.PersistentFlags().StringVar(&flagOutput, "out", "", "")
-	command.PersistentFlags().StringVar(&flagError, "err", "", "")
-	command.PersistentFlags().StringVar(&flagEncryptionKey, "enckey", "", "")
+	command.PersistentFlags().StringVar(&flagInput, "mprocIn", "", "")
+	command.PersistentFlags().StringVar(&flagOutput, "mprocOut", "", "")
+	command.PersistentFlags().StringVar(&flagError, "mprocErr", "", "")
+	command.PersistentFlags().StringVar(&flagEncryptionKey, "mprocSecret", "", "")
 
 	return command
 }

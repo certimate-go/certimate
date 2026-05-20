@@ -46,34 +46,65 @@ func main() {
 	pb.RootCmd.AddCommand(cmd.NewInternalCommand(pb))
 	pb.RootCmd.AddCommand(cmd.NewWinscCommand(pb))
 
-	pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
-		scheduler.Setup()
-		workflow.Setup()
-		routes.BindRouter(e.Router)
-		return e.Next()
-	})
+	switch os.Args[1] {
+	case "serve":
+		{
+			pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
+				scheduler.Setup()
+				workflow.Setup()
+				routes.BindRouter(e.Router)
+				return e.Next()
+			})
 
-	pb.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
-		Func: func(e *core.ServeEvent) error {
-			e.Router.
-				GET("/{path...}", apis.Static(ui.DistDirFS, false)).
-				Bind(apis.Gzip())
-			return e.Next()
-		},
-		Priority: 999,
-	})
+			pb.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
+				Func: func(e *core.ServeEvent) error {
+					e.Router.
+						GET("/{path...}", apis.Static(ui.DistDirFS, false)).
+						Bind(apis.Gzip())
+					return e.Next()
+				},
+				Priority: 999,
+			})
 
-	pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
-		slog.Info("[CERTIMATE] Visit the website: http://" + flagHttp)
-		return e.Next()
-	})
+			pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
+				slog.Info("[CERTIMATE] Visit the website: http://" + flagHttp)
+				return e.Next()
+			})
 
-	pb.OnTerminate().BindFunc(func(e *core.TerminateEvent) error {
-		workflow.Teardown()
-		return e.Next()
-	})
+			pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
+				err := e.Next()
+				if err != nil {
+					return err
+				}
 
-	if err := cmd.Serve(pb); err != nil {
-		slog.Error("[CERTIMATE] Start failed.", slog.Any("error", err))
+				settings := pb.Settings()
+				if !settings.Batch.Enabled {
+					settings.Batch.Enabled = true
+					settings.Batch.MaxRequests = 1000
+					settings.Batch.Timeout = 30
+					if err := pb.Save(settings); err != nil {
+						return err
+					}
+				}
+
+				return nil
+			})
+
+			pb.OnTerminate().BindFunc(func(e *core.TerminateEvent) error {
+				workflow.Teardown()
+				return e.Next()
+			})
+
+			if err := cmd.Serve(pb); err != nil {
+				slog.Error("[CERTIMATE] Serve failed.", slog.Any("error", err))
+			}
+		}
+
+	default:
+		{
+			if err := pb.Execute(); err != nil {
+				slog.Error("[CERTIMATE] Start failed.", slog.Any("error", err))
+			}
+		}
 	}
 }

@@ -89,6 +89,7 @@ func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 		}
 
 	case domain.CAProviderTypeSSLCom:
+		// TODO: fix this after migrate lego to v5
 		if strings.HasPrefix(string(options.CertifierKeyType), "RSA") {
 			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSSLCom)+"RSA"]
 		} else if strings.HasPrefix(string(options.CertifierKeyType), "EC") {

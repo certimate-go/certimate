@@ -14,8 +14,8 @@ import (
 type bizNotifyNodeExecutor struct {
 	nodeExecutor
 
-	accessRepo   accessRepository
 	settingsRepo settingsRepository
+	accessRepo   accessRepository
 }
 
 func (ne *bizNotifyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
@@ -108,7 +108,7 @@ func (ne *bizNotifyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext) (_s
 func newBizNotifyNodeExecutor() NodeExecutor {
 	return &bizNotifyNodeExecutor{
 		nodeExecutor: nodeExecutor{logger: slog.Default()},
-		accessRepo:   repository.NewAccessRepository(),
 		settingsRepo: repository.NewSettingsRepository(),
+		accessRepo:   repository.NewAccessRepository(),
 	}
 }

@@ -45,6 +45,7 @@ func newACMEClientWithAccount(account *ACMEAccount, configures ...func(*lego.Con
 	legoCfg := lego.NewConfig(account)
 	legoCfg.CADirURL = account.ACMEDirUrl
 
+	// TODO: fix this after migrate lego to v5
 	settingsRepo := repository.NewSettingsRepository()
 	settings, _ := settingsRepo.GetByName(context.Background(), domain.SettingsNameSSLProvider)
 	if settings != nil {

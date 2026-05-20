@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-cmd/cmd"
 
+	"github.com/certimate-go/certimate/internal/app"
 	xcrypto "github.com/certimate-go/certimate/pkg/utils/crypto"
 )
 
@@ -78,7 +79,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	} else {
 		tempErr.Close()
 	}
-	defer os.Remove(tempOut.Name())
+	defer os.Remove(tempErr.Name())
 
 	// 初始化子进程
 	done := make(chan struct{})
@@ -86,10 +87,12 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 		s.getEntrypoint(),
 		"intercmd",
 		s.command,
-		"--in", tempIn.Name(),
-		"--out", tempOut.Name(),
-		"--err", tempErr.Name(),
-		"--enckey", hex.EncodeToString(aesKey),
+		"--dir", app.GetApp().DataDir(), // inject `--dir` of Pocketbase
+		"--encryptionEnv", app.GetApp().EncryptionEnv(), // inject `--encryptionEnv` of Pocketbase
+		"--mprocIn", tempIn.Name(),
+		"--mprocOut", tempOut.Name(),
+		"--mprocErr", tempErr.Name(),
+		"--mprocSecret", hex.EncodeToString(aesKey),
 	)
 	go func() {
 		defer close(done)
