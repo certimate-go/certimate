@@ -8,6 +8,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/tools/ssh"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core/deployer/providers/local/shared"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xssh "github.com/certimate-go/certimate/pkg/utils/ssh"
 )
@@ -59,6 +60,9 @@ type DeployerConfig struct {
 	// PFX 导出密码。
 	// 证书格式为 [FILE_FORMAT_PFX] 时必填。
 	PfxPassword string `json:"pfxPassword,omitempty"`
+	// PFX 编码器。
+	// 证书格式为 [FILE_FORMAT_PFX] 时可选。
+	PfxEncoder string `json:"pfxEncoder,omitempty"`
 	// JKS 别名。
 	// 证书格式为 [FILE_FORMAT_JKS] 时必填。
 	JksAlias string `json:"jksAlias,omitempty"`
@@ -134,10 +138,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	switch d.config.FileFormat {
 	case FILE_FORMAT_PEM:
 		{
-			if d.config.PfxPassword == "" {
-				return nil, fmt.Errorf("config `pfxPassword` is required")
-			}
-
 			if d.config.FilePathForKey != "" {
 				if err := xssh.WriteRemoteString(sshClient.RawClient(), d.config.FilePathForKey, privkeyPEM, d.config.UseSCP); err != nil {
 					return nil, fmt.Errorf("failed to upload private key file: %w", err)
@@ -169,7 +169,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 	case FILE_FORMAT_PFX:
 		{
-			pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword)
+			if d.config.PfxPassword == "" {
+				return nil, fmt.Errorf("config `pfxPassword` is required")
+			}
+
+			pfxEncoder, err := shared.ResolvePfxEncoder(d.config.PfxEncoder)
+			if err != nil {
+				return nil, fmt.Errorf("config `pfxEncoder` is invalid: %w", err)
+			}
+
+			pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword, pfxEncoder)
 			if err != nil {
 				return nil, fmt.Errorf("failed to transform certificate to PFX: %w", err)
 			}

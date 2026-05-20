@@ -26,8 +26,8 @@ func init() {
 	fp.DefineInt64(&fSshPort, "SSHPORT")
 	fp.DefineString(&fSshUsername, "SSHUSERNAME")
 	fp.DefineString(&fSshPassword, "SSHPASSWORD")
-	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
-	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "FILEPATHFORCRT")
+	fp.DefineString(&fFilePathForKey, "FILEPATHFORKEY")
 }
 
 /*
@@ -40,8 +40,8 @@ Shell command to run this test:
 	--SSH_SSHPORT=22 \
 	--SSH_SSHUSERNAME="root" \
 	--SSH_SSHPASSWORD="password" \
-	--SSH_OUTPUTCERTPATH="/path/to/your-output-cert.pem" \
-	--SSH_OUTPUTKEYPATH="/path/to/your-output-key.pem"
+	--SSH_FILEPATHFORCRT="/path/to/your-output-cert.pem" \
+	--SSH_FILEPATHFORKEY="/path/to/your-output-key.pem"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()

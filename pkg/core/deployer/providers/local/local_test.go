@@ -14,6 +14,7 @@ var (
 	fFilePathForCrt string
 	fFilePathForKey string
 	fPfxPassword    string
+	fPfxEncoder     string
 	fJksAlias       string
 	fJksKeypass     string
 	fJksStorepass   string
@@ -25,9 +26,10 @@ var (
 func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
-	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
-	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "FILEPATHFORCRT")
+	fp.DefineString(&fFilePathForKey, "FILEPATHFORKEY")
 	fp.DefineString(&fPfxPassword, "PFXPASSWORD")
+	fp.DefineString(&fPfxEncoder, "PFXENCODER")
 	fp.DefineString(&fJksAlias, "JKSALIAS")
 	fp.DefineString(&fJksKeypass, "JKSKEYPASS")
 	fp.DefineString(&fJksStorepass, "JKSSTOREPASS")
@@ -42,9 +44,10 @@ Shell command to run this test:
 	go test -v ./local_test.go -args \
 	--LOCAL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--LOCAL_TESTKEYPATH="/path/to/your-test-key.pem" \
-	--LOCAL_OUTPUTCERTPATH="/path/to/your-output-cert" \
-	--LOCAL_OUTPUTKEYPATH="/path/to/your-output-key" \
+	--LOCAL_FILEPATHFORCRT="/path/to/your-output-cert" \
+	--LOCAL_FILEPATHFORKEY="/path/to/your-output-key" \
 	--LOCAL_PFXPASSWORD="your-pfx-password" \
+	--LOCAL_PFXENCODER="modern2023" \
 	--LOCAL_JKSALIAS="your-jks-alias" \
 	--LOCAL_JKSKEYPASS="your-jks-keypass" \
 	--LOCAL_JKSSTOREPASS="your-jks-storepass" \
@@ -77,6 +80,7 @@ func TestProvider(t *testing.T) {
 			FileFormat:     impl.FILE_FORMAT_PFX,
 			FilePathForCrt: fFilePathForCrt + ".pfx",
 			PfxPassword:    fPfxPassword,
+			PfxEncoder:     fPfxEncoder,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

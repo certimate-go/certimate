@@ -118,7 +118,7 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 		{
 			const pfxPassword = "certimate"
 
-			certPFX, err := xcert.TransformCertificateFromPEMToPFX(certificate.Certificate, certificate.PrivateKey, pfxPassword)
+			certPFX, err := xcert.TransformCertificateFromPEMToPFX(certificate.Certificate, certificate.PrivateKey, pfxPassword, nil)
 			if err != nil {
 				return nil, err
 			}

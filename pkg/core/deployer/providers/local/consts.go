@@ -15,3 +15,10 @@ const (
 	FILE_FORMAT_PFX = string(domain.CertificateFormatTypePFX)
 	FILE_FORMAT_JKS = string(domain.CertificateFormatTypeJKS)
 )
+
+const (
+	PFX_ENCODER_LEGACYRC2  = "LegacyRC2"
+	PFX_ENCODER_LEGACYDES  = "LegacyDES"
+	PFX_ENCODER_MODERN2023 = "Modern2023"
+	PFX_ENCODER_MODERN2026 = "Modern2026"
+)

@@ -198,7 +198,7 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteType, siteName
 	if pfxRequried {
 		// 转换证书格式
 		certPFXPassword := "certimate"
-		certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, certPFXPassword)
+		certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, certPFXPassword, nil)
 		if err != nil {
 			return fmt.Errorf("failed to transform certificate from PEM to PFX: %w", err)
 		}

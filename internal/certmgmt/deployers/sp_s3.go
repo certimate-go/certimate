@@ -31,6 +31,7 @@ func init() {
 			ObjectKeyForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "objectKeyForCrtOnlyServer"),
 			ObjectKeyForCrtOnlyIntermedia: xmaps.GetString(options.ProviderExtendedConfig, "objectKeyForCrtOnlyIntermedia"),
 			PfxPassword:                   xmaps.GetString(options.ProviderExtendedConfig, "pfxPassword"),
+			PfxEncoder:                    xmaps.GetString(options.ProviderExtendedConfig, "pfxEncoder"),
 			JksAlias:                      xmaps.GetString(options.ProviderExtendedConfig, "jksAlias"),
 			JksKeypass:                    xmaps.GetString(options.ProviderExtendedConfig, "jksKeypass"),
 			JksStorepass:                  xmaps.GetString(options.ProviderExtendedConfig, "jksStorepass"),

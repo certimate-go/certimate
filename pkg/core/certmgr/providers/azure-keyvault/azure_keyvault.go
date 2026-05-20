@@ -136,7 +136,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// Azure Key Vault 不支持导入带有 Certificate Chain 的 PEM 证书。
 	// Issue Link: https://github.com/Azure/azure-cli/issues/19017
 	// 暂时的解决方法是，将 PEM 证书转换成 PFX 格式，然后再导入。
-	certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, "")
+	certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, "", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to transform certificate from PEM to PFX: %w", err)
 	}
@@ -175,7 +175,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	}
 
 	// 转换证书格式
-	certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, "")
+	certPFX, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, "", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to transform certificate from PEM to PFX: %w", err)
 	}

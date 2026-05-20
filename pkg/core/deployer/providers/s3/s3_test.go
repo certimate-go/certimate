@@ -8,16 +8,16 @@ import (
 )
 
 var (
-	fp              = tester.Args("S3_")
-	fTestCertPath   string
-	fTestKeyPath    string
-	fSshHost        string
-	fAccessKey      string
-	fSecretKey      string
-	fRegion         string
-	fBucket         string
-	fFilePathForCrt string
-	fFilePathForKey string
+	fp               = tester.Args("S3_")
+	fTestCertPath    string
+	fTestKeyPath     string
+	fSshHost         string
+	fAccessKey       string
+	fSecretKey       string
+	fRegion          string
+	fBucket          string
+	fObjectKeyForCrt string
+	fObjectKeyForKey string
 )
 
 func init() {
@@ -28,8 +28,8 @@ func init() {
 	fp.DefineString(&fSecretKey, "SECRETKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fBucket, "BUCKET")
-	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
-	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
+	fp.DefineString(&fObjectKeyForCrt, "OBJECTKEYFORCRT")
+	fp.DefineString(&fObjectKeyForKey, "OBJECTKEYFORKEY")
 }
 
 /*
@@ -43,8 +43,8 @@ Shell command to run this test:
 	--S3_SECRETKEY="your-secret-key" \
 	--S3_REGION="your-region" \
 	--S3_BUCKET="your-bucket" \
-	--S3_OUTPUTCERTPATH="/path/to/your-output-cert.pem" \
-	--S3_OUTPUTKEYPATH="/path/to/your-output-key.pem"
+	--S3_OBJECTKEYFORCRT="/path/to/your-output-cert.pem" \
+	--S3_OBJECTKEYFORKEY="/path/to/your-output-key.pem"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -57,8 +57,8 @@ func TestProvider(t *testing.T) {
 			Region:          fRegion,
 			Bucket:          fBucket,
 			FileFormat:      impl.FILE_FORMAT_PEM,
-			ObjectKeyForCrt: fFilePathForCrt + ".pem",
-			ObjectKeyForKey: fFilePathForKey + ".pem",
+			ObjectKeyForCrt: fObjectKeyForCrt + ".pem",
+			ObjectKeyForKey: fObjectKeyForKey + ".pem",
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

@@ -533,8 +533,25 @@
       },
       "shared_pfx_password": {
         "label": "PFX 导出密码",
-        "placeholder": "请输入 PFX 导出密码",
-        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
+        "placeholder": "请输入 PFX 导出密码"
+      },
+      "shared_pfx_encoder": {
+        "label": "PFX 编码器（可选）",
+        "placeholder": "请选择 PFX 编码器",
+        "option": {
+          "legacyrc2": {
+            "label": "LegacyRC2（RC2，兼容旧系统，但安全性较低）"
+          },
+          "legacydes": {
+            "label": "LegacyDES（3DES + SHA-1，默认值）"
+          },
+          "modern2023": {
+            "label": "Modern2023（AES-256-CBC + SHA-256 MAC，适配 OpenSSL v1.1.1+）"
+          },
+          "modern2026": {
+            "label": "Modern2026（AES-256-CBC + PBMAC1 MAC，适配 OpenSSL v3.4.0+）"
+          }
+        }
       },
       "shared_jks_alias": {
         "label": "JKS 别名",

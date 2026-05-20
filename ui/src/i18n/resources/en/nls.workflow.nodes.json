@@ -534,8 +534,25 @@
       },
       "shared_pfx_password": {
         "label": "PFX password",
-        "placeholder": "Please enter PFX password",
-        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
+        "placeholder": "Please enter PFX password"
+      },
+      "shared_pfx_encoder": {
+        "label": "PFX encoder (Optional)",
+        "placeholder": "Please select PFX encoder",
+        "option": {
+          "legacyrc2": {
+            "label": "LegacyRC2 (RC2, compatible with older systems, but less secure)"
+          },
+          "legacydes": {
+            "label": "LegacyDES (3DES + SHA-1, default)"
+          },
+          "modern2023": {
+            "label": "Modern2023 (AES-256-CBC + SHA-256 MAC, compatible with OpenSSL v1.1.1+)"
+          },
+          "modern2026": {
+            "label": "Modern2026 (AES-256-CBC + PBMAC1 MAC, compatible with OpenSSL v3.4.0+)"
+          }
+        }
       },
       "shared_jks_alias": {
         "label": "JKS alias",

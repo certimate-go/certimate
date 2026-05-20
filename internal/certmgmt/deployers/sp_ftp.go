@@ -27,6 +27,7 @@ func init() {
 			FilePathForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyServer"),
 			FilePathForCrtOnlyIntermedia: xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyIntermedia"),
 			PfxPassword:                  xmaps.GetString(options.ProviderExtendedConfig, "pfxPassword"),
+			PfxEncoder:                   xmaps.GetString(options.ProviderExtendedConfig, "pfxEncoder"),
 			JksAlias:                     xmaps.GetString(options.ProviderExtendedConfig, "jksAlias"),
 			JksKeypass:                   xmaps.GetString(options.ProviderExtendedConfig, "jksKeypass"),
 			JksStorepass:                 xmaps.GetString(options.ProviderExtendedConfig, "jksStorepass"),

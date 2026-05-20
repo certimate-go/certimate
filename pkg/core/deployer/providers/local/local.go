@@ -37,6 +37,9 @@ type DeployerConfig struct {
 	// PFX 导出密码。
 	// 证书格式为 [FILE_FORMAT_PFX] 时必填。
 	PfxPassword string `json:"pfxPassword,omitempty"`
+	// PFX 编码器。
+	// 证书格式为 [FILE_FORMAT_PFX] 时可选。
+	PfxEncoder string `json:"pfxEncoder,omitempty"`
 	// JKS 别名。
 	// 证书格式为 [FILE_FORMAT_JKS] 时必填。
 	JksAlias string `json:"jksAlias,omitempty"`
@@ -139,7 +142,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return nil, fmt.Errorf("config `pfxPassword` is required")
 			}
 
-			pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword)
+			pfxEncoder, err := ResolvePfxEncoder(d.config.PfxEncoder)
+			if err != nil {
+				return nil, fmt.Errorf("config `pfxEncoder` is invalid: %w", err)
+			}
+
+			pfxData, err := xcert.TransformCertificateFromPEMToPFX(certPEM, privkeyPEM, d.config.PfxPassword, pfxEncoder)
 			if err != nil {
 				return nil, fmt.Errorf("failed to transform certificate to PFX: %w", err)
 			}

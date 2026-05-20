@@ -98,10 +98,7 @@ const BizDeployNodeConfigFieldsProviderFTP = () => {
       </Show>
 
       <Show when={fieldFileFormat === FORMAT_PFX}>
-        <Form.Item
-          label={t("workflow_node.deploy.form.shared_pfx_password.label")}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_pfx_password.tooltip") }}></span>}
-        >
+        <Form.Item label={t("workflow_node.deploy.form.shared_pfx_password.label")}>
           <Space.Compact className="w-full">
             <Form.Item name={[parentNamePath, "pfxPassword"]} initialValue={initialValues.pfxPassword} rules={[formRule]} noStyle>
               <Input placeholder={t("workflow_node.deploy.form.shared_pfx_password.placeholder")} />
@@ -112,6 +109,22 @@ const BizDeployNodeConfigFieldsProviderFTP = () => {
               </Button>
             </Tooltip>
           </Space.Compact>
+        </Form.Item>
+
+        <Form.Item
+          name={[parentNamePath, "pfxEncoder"]}
+          initialValue={initialValues.pfxEncoder}
+          label={t("workflow_node.deploy.form.shared_pfx_encoder.label")}
+          rules={[formRule]}
+        >
+          <Select
+            options={["LegacyRC2", "LegacyDES", "Modern2023", "Modern2026"].map((s) => ({
+              key: s,
+              label: t(`workflow_node.deploy.form.shared_pfx_encoder.option.${s.toLowerCase()}.label`),
+              value: s,
+            }))}
+            placeholder={t("workflow_node.deploy.form.shared_pfx_encoder.placeholder")}
+          />
         </Form.Item>
       </Show>
 
@@ -187,6 +200,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       filePathForCrtOnlyServer: z.string().max(256).nullish(),
       filePathForCrtOnlyIntermedia: z.string().max(256).nullish(),
       pfxPassword: z.string().nullish(),
+      pfxEncoder: z.string().nullish(),
       jksAlias: z.string().nullish(),
       jksKeypass: z.string().nullish(),
       jksStorepass: z.string().nullish(),

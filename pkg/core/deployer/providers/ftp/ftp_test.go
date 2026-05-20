@@ -26,8 +26,8 @@ func init() {
 	fp.DefineInt64(&fFtpPort, "FTPPORT")
 	fp.DefineString(&fFtpUsername, "FTPUSERNAME")
 	fp.DefineString(&fFtpPassword, "FTPPASSWORD")
-	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
-	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "FILEPATHFORCRT")
+	fp.DefineString(&fFilePathForKey, "FILEPATHFORKEY")
 }
 
 /*
@@ -40,8 +40,8 @@ Shell command to run this test:
 	--FTP_FTPPORT=21 \
 	--FTP_FTPUSERNAME="USER" \
 	--FTP_FTPPASSWORD="PASS" \
-	--FTP_OUTPUTCERTPATH="/path/to/your-output-cert.pem" \
-	--FTP_OUTPUTKEYPATH="/path/to/your-output-key.pem"
+	--FTP_FILEPATHFORCRT="/path/to/your-output-cert.pem" \
+	--FTP_FILEPATHFORKEY="/path/to/your-output-key.pem"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
