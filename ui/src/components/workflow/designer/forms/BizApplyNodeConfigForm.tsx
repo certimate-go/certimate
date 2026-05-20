@@ -493,9 +493,9 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
               label={t("workflow_node.apply.form.key_algorithm.label")}
               extra={
                 fieldKeySource === KEY_SOURCE_REUSE ? (
-                  <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_algorithm.help_reuse") }}></span>
+                  <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_source.option.reuse.help") }}></span>
                 ) : fieldKeySource === KEY_SOURCE_CUSTOM ? (
-                  <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_algorithm.help_custom") }}></span>
+                  <span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.key_source.option.custom.help") }}></span>
                 ) : (
                   void 0
                 )

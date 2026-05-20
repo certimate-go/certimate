@@ -104,7 +104,7 @@
       "form": {
         "provider": {
           "label": "ACME 提供商",
-          "help": "注意：不同服务商所支持的证书有效期、私钥算法、多域名数量上限、是否允许泛域名等可能不同，切换服务商后请注意检查已有工作流的配置是否需要调整。"
+          "help": "提示：不同服务商所支持的证书有效期、私钥算法、多域名数量上限、是否允许泛域名等可能不同，切换服务商后请注意检查已有工作流的配置是否需要调整。"
         },
         "letsencryptstaging_alert": "测试环境比生产环境有更宽松的速率限制，可进行测试性部署。<br><br>点击下方链接了解更多：<br><a href=\"https://letsencrypt.org/zh-cn/docs/staging-environment/\" target=\"_blank\">https://letsencrypt.org/zh-cn/docs/staging-environment/</a>"
       }

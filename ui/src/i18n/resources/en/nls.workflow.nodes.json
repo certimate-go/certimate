@@ -168,18 +168,18 @@
             "label": "Auto"
           },
           "reuse": {
-            "label": "Reuse"
+            "label": "Reuse",
+            "help": "Notes: If there is an existing certificate, the original key algorithm will be used."
           },
           "custom": {
-            "label": "Custom"
+            "label": "Custom",
+            "help": "Notes: Please ensure that the algorithm matches the private key."
           }
         }
       },
       "key_algorithm": {
         "label": "Key algorithm",
-        "placeholder": "Please select key algorithm",
-        "help_reuse": "Notes: If there is an existing certificate, the original key algorithm will be used.",
-        "help_custom": "Notes: Please ensure that the algorithm matches the private key."
+        "placeholder": "Please select key algorithm"
       },
       "key_content": {
         "label": "Private key (PEM format)",
@@ -514,22 +514,22 @@
       },
       "shared_file_path_for_key": {
         "label": "Private key file path",
-        "placeholder": "Please enter the output file path for private key file",
+        "placeholder": "Please enter output file path for private key file",
         "help": "Notes: It should include the full file path, not just the directory."
       },
       "shared_file_path_for_crt": {
         "label": "Certificate file path",
-        "placeholder": "Please enter the output file path for certificate",
+        "placeholder": "Please enter output file path for certificate",
         "help": "Notes: It should include the full file path, not just the directory."
       },
       "shared_file_path_for_servercrt": {
         "label": "Certificate file (includes the end-entity parts only) path (Optional)",
-        "placeholder": "Please enter the output file path for server certificate file",
+        "placeholder": "Please enter output file path for server certificate file",
         "help": "Notes: It should include the full file path, not just the directory."
       },
       "shared_file_path_for_intermediacrt": {
         "label": "Certificate file (includes the CA parts only) path (Optional)",
-        "placeholder": "Please enter the output file path for intermediate certificate file",
+        "placeholder": "Please enter output file path for intermediate certificate file",
         "help": "Notes: It should include the full file path, not just the directory."
       },
       "shared_pfx_password": {
@@ -577,10 +577,10 @@
             "label": "Specified ID"
           },
           "certsan": {
-            "label": "via Certificate"
+            "label": "via Certificate",
+            "help": "Notes: The website name should be a domain name and include SSL configurations."
           }
-        },
-        "help_certsan": "Notes: The website name should be a domain name and include SSL configurations."
+        }
       },
       "1panel_website_id": {
         "label": "1Panel website ID",
@@ -1516,15 +1516,25 @@
         "placeholder": "Please enter Kubernetes Secret type",
         "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
       },
+      "k8s_secret_data_key_for_key": {
+        "label": "Kubernetes Secret data key for private key",
+        "placeholder": "Please enter Kubernetes Secret data key for private key",
+        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
+      },
       "k8s_secret_data_key_for_crt": {
         "label": "Kubernetes Secret data key for certificate",
         "placeholder": "Please enter Kubernetes Secret data key for certificate",
         "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
       },
-      "k8s_secret_data_key_for_key": {
-        "label": "Kubernetes Secret data key for private key",
-        "placeholder": "Please enter Kubernetes Secret data key for private key",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
+      "k8s_secret_data_key_for_servercrt": {
+        "label": "Kubernetes Secret data key for certificate (includes the end-entity parts only) (Optional)",
+        "placeholder": "Please enter Kubernetes Secret data key for server certificate",
+        "help": ""
+      },
+      "k8s_secret_data_key_for_intermediacrt": {
+        "label": "Kubernetes Secret data key for certificate (includes the CA parts only) (Optional)",
+        "placeholder": "Please enter Kubernetes Secret data key for intermediate certificate",
+        "help": ""
       },
       "k8s_secret_annotations": {
         "label": "Kubernetes Secret annotations (Optional)",
@@ -1805,20 +1815,20 @@
       },
       "s3_object_key_for_key": {
         "label": "Private key file object key",
-        "placeholder": "Please enter the object key for private key file"
+        "placeholder": "Please enter object key for private key file"
       },
       "s3_object_key_for_crt": {
         "label": "Certificate file object key",
-        "placeholder": "Please enter the object key for certificate"
+        "placeholder": "Please enter object key for certificate"
       },
       "s3_object_key_for_servercrt": {
         "label": "Certificate file (includes the end-entity parts only) object key (Optional)",
-        "placeholder": "Please enter the object key for server certificate file",
+        "placeholder": "Please enter object key for server certificate file",
         "help": ""
       },
       "s3_object_key_for_intermediacrt": {
         "label": "Certificate file (includes the CA parts only) object key (Optional)",
-        "placeholder": "Please enter the object key for intermediate certificate file",
+        "placeholder": "Please enter object key for intermediate certificate file",
         "help": ""
       },
       "safeline": {

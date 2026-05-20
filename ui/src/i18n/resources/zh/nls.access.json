@@ -1029,7 +1029,7 @@
     "s3_endpoint": {
       "label": "终端节点",
       "placeholder": "请输入终端节点",
-      "help": "注意：如果不指定协议，则默认使用 <em>https://</em>。"
+      "help": "提示：如果不指定协议，则默认使用 <em>https://</em>。"
     },
     "s3_access_key": {
       "label": "AccessKey",

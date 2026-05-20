@@ -168,18 +168,18 @@
             "label": "随机生成"
           },
           "reuse": {
-            "label": "复用私钥"
+            "label": "复用私钥",
+            "help": "提示：如果存在之前申请的证书，将以原私钥算法为准；否则才使用此选项。"
           },
           "custom": {
-            "label": "自定义"
+            "label": "自定义",
+            "help": "提示：请确保算法与私钥相匹配。"
           }
         }
       },
       "key_algorithm": {
         "label": "私钥算法",
-        "placeholder": "请选择证书的私钥算法",
-        "help_reuse": "提示：如果存在之前申请的证书，将以原私钥算法为准；否则才使用此选项。",
-        "help_custom": "注意：请确保算法与私钥相匹配。"
+        "placeholder": "请选择证书的私钥算法"
       },
       "key_content": {
         "label": "私钥文件（PEM 格式）",
@@ -202,7 +202,7 @@
       "validity_lifetime": {
         "label": "有效期（可选）",
         "placeholder": "请输入证书的有效期",
-        "help": "注意：并非所有证书颁发机构都支持此特性。",
+        "help": "提示：并非所有证书颁发机构都支持此特性。",
         "tooltip": "表示证书的有效期。如果你不了解该选项的用途，保持默认即可。",
         "units": {
           "h": "小时",
@@ -212,13 +212,13 @@
       "preferred_chain": {
         "label": "首选链（可选）",
         "placeholder": "请输入证书首选链",
-        "help": "注意：并非所有证书颁发机构都支持此特性。",
+        "help": "提示：并非所有证书颁发机构都支持此特性。",
         "tooltip": "表示证书颁发时使用的首选证书链。如果你不了解该选项的用途，保持默认即可。<br><a href=\"https://letsencrypt.org/zh-cn/certificates/\" target=\"_blank\">点此了解更多</a>。"
       },
       "acme_profile": {
         "label": "ACME 配置文件（可选）",
         "placeholder": "请输入 ACME 配置文件",
-        "help": "注意：并非所有证书颁发机构都支持此特性。",
+        "help": "提示：并非所有证书颁发机构都支持此特性。",
         "tooltip": "表示证书颁发时使用的 ACME 证书配置文件。如果你不了解该选项的用途，保持默认即可。<br><a href=\"https://letsencrypt.org/zh-cn/docs/profiles/#%E6%88%91%E4%BB%AC%E6%8F%90%E4%BE%9B%E7%9A%84%E9%85%8D%E7%BD%AE\" target=\"_blank\">点此了解更多</a>。"
       },
       "disable_cn": {
@@ -273,7 +273,7 @@
         "prefix": "当上次申请的证书剩余时长大于",
         "suffix": "，再次运行工作流时跳过此节点。",
         "unit": "天",
-        "help": "注意：证书实际续期间隔还取决于触发运行的 CRON 表达式。"
+        "help": "提示：证书实际续期间隔还取决于触发运行的 CRON 表达式。"
       },
 
       "aliyun_esa_region": {
@@ -483,7 +483,7 @@
         "option": {
           "exact": {
             "label": "精确匹配",
-            "help.wildcard": "注意：对于支持泛解析的站点，<strong>精确匹配</strong>一个泛域名仅包含该站点本身、不包括相关子域名站点。"
+            "help.wildcard": "提示：对于支持泛解析的站点，<strong>精确匹配</strong>一个泛域名仅包含该站点本身、不包括相关子域名站点。"
           },
           "wildcard": {
             "label": "通配符匹配（泛域名）"
@@ -514,22 +514,22 @@
       "shared_file_path_for_key": {
         "label": "私钥文件输出路径",
         "placeholder": "请输入私钥文件输出路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
+        "help": "提示：路径需包含完整的文件名，而不是只有目录。"
       },
       "shared_file_path_for_crt": {
         "label": "证书文件输出路径",
         "placeholder": "请输入证书文件输出路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
+        "help": "提示：路径需包含完整的文件名，而不是只有目录。"
       },
       "shared_file_path_for_servercrt": {
         "label": "证书文件（仅含服务器证书）输出路径（可选）",
         "placeholder": "请输入服务器证书文件输出路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不输出服务器证书。"
+        "help": "提示：路径需包含完整的文件名，而不是只有目录。不填写时将不会保存服务器证书。"
       },
       "shared_file_path_for_intermediacrt": {
         "label": "证书文件（仅含中间证书）输出路径（可选）",
         "placeholder": "请输入中间证书文件输出路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不输出中间证书。"
+        "help": "提示：路径需包含完整的文件名，而不是只有目录。不填写时将不会保存中间证书。"
       },
       "shared_pfx_password": {
         "label": "PFX 导出密码",
@@ -576,10 +576,10 @@
             "label": "指定 ID"
           },
           "certsan": {
-            "label": "根据证书自动匹配"
+            "label": "根据证书自动匹配",
+            "help": "提示：网站名称需要是域名、且包含开启了 SSL 的域名配置。"
           }
-        },
-        "help_certsan": "注意：网站名称需要为域名、且包含开启了 SSL 的域名配置。"
+        }
       },
       "1panel_website_id": {
         "label": "1Panel 网站 ID",
@@ -1299,7 +1299,7 @@
       "flyio_domain": {
         "label": "Fly.io 自定义域名",
         "placeholder": "请输入 Fly.io 自定义域名",
-        "help": "注意：首次导入自定义证书后，请登录 Fly.io 控制台完成域名所有权验证。"
+        "help": "提示：首次导入自定义证书后，请登录 Fly.io 控制台完成域名所有权验证。"
       },
       "gcore_cdn_resource_id": {
         "label": "G-Core CDN 资源 ID",
@@ -1512,15 +1512,25 @@
         "placeholder": "请输入 Kubernetes Secret 类型",
         "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
       },
-      "k8s_secret_data_key_for_crt": {
-        "label": "Kubernetes Secret 数据键（用于存放证书的字段）",
-        "placeholder": "请输入 Kubernetes Secret 中用于存放证书的数据键",
-        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
-      },
       "k8s_secret_data_key_for_key": {
         "label": "Kubernetes Secret 数据键（用于存放私钥的字段）",
         "placeholder": "请输入 Kubernetes Secret 中用于存放私钥的数据键",
         "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
+      },
+      "k8s_secret_data_key_for_crt": {
+        "label": "Kubernetes Secret 数据键之存放证书的字段",
+        "placeholder": "请输入 Kubernetes Secret 中用于存放证书的数据键",
+        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
+      },
+      "k8s_secret_data_key_for_servercrt": {
+        "label": "Kubernetes Secret 数据键之存放仅服务器证书的字段（可选）",
+        "placeholder": "请输入 Kubernetes Secret 中用于存放服务器证书的数据键",
+        "help": "提示：不填写时将不会保存服务器证书。"
+      },
+      "k8s_secret_data_key_for_intermediacrt": {
+        "label": "Kubernetes Secret 数据键之存放仅中间证书的字段（可选）",
+        "placeholder": "请输入 Kubernetes Secret 中用于存放中间证书的数据键",
+        "help": "提示：不填写时将不会保存中间证书。"
       },
       "k8s_secret_annotations": {
         "label": "Kubernetes Secret 注解（可选）",
@@ -1810,12 +1820,12 @@
       "s3_object_key_for_servercrt": {
         "label": "证书文件（仅含服务器证书）对象键（可选）",
         "placeholder": "请输入服务器证书文件对象键",
-        "help": "注意：不填写时将不会上传服务器证书。"
+        "help": "提示：不填写时将不会保存服务器证书。"
       },
       "s3_object_key_for_intermediacrt": {
         "label": "证书文件（仅含中间证书）对象键（可选）",
         "placeholder": "请输入中间证书文件对象键",
-        "help": "注意：不填写时将不会上传中间证书。"
+        "help": "提示：不填写时将不会保存中间证书。"
       },
       "safeline": {
         "guide": "需要雷池 v6.6 或更高版本。"

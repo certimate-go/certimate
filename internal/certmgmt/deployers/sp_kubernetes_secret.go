@@ -62,14 +62,16 @@ func init() {
 		}
 
 		provider, err := k8ssecret.NewDeployer(&k8ssecret.DeployerConfig{
-			KubeConfig:          credentials.KubeConfig,
-			Namespace:           xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "namespace", "default"),
-			SecretName:          xmaps.GetString(options.ProviderExtendedConfig, "secretName"),
-			SecretType:          xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretType", "kubernetes.io/tls"),
-			SecretDataKeyForKey: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForKey", "tls.key"),
-			SecretDataKeyForCrt: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForCrt", "tls.crt"),
-			SecretAnnotations:   secretAnnotations,
-			SecretLabels:        secretLabels,
+			KubeConfig:                        credentials.KubeConfig,
+			Namespace:                         xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "namespace", "default"),
+			SecretName:                        xmaps.GetString(options.ProviderExtendedConfig, "secretName"),
+			SecretType:                        xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretType", "kubernetes.io/tls"),
+			SecretDataKeyForKey:               xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForKey", "tls.key"),
+			SecretDataKeyForCrt:               xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForCrt", "tls.crt"),
+			SecretDataKeyForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "secretDataKeyForCrtOnlyServer"),
+			SecretDataKeyForCrtOnlyIntermedia: xmaps.GetString(options.ProviderExtendedConfig, "secretDataKeyForCrtOnlyIntermedia"),
+			SecretAnnotations:                 secretAnnotations,
+			SecretLabels:                      secretLabels,
 		})
 		return provider, err
 	})

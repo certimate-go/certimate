@@ -62,7 +62,7 @@ const BizDeployNodeConfigFieldsProvider1Panel = () => {
           label={t("workflow_node.deploy.form.1panel_website_match_pattern.label")}
           extra={
             fieldWebsiteMatchPattern === WEBSITE_MATCH_PATTERN_CERTSAN ? (
-              <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.1panel_website_match_pattern.help_certsan") }}></span>
+              <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.1panel_website_match_pattern.option.certsan.help") }}></span>
             ) : (
               void 0
             )
