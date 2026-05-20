@@ -412,8 +412,8 @@ const CertificateList = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("certificate.page.title")}</h1>
-        <p className="text-base text-gray-500">{t("certificate.page.subtitle")}</p>
+        <h1>{t("certificate.page.heading")}</h1>
+        <p className="text-base text-gray-500">{t("certificate.page.subheading")}</p>
       </div>
 
       <div className="container">
@@ -439,7 +439,7 @@ const CertificateList = () => {
                 className="text-sm placeholder:text-sm"
                 allowClear
                 defaultValue={filters["keyword"] as string}
-                placeholder={t("certificate.search.placeholder")}
+                placeholder={t("certificate.action.search.input.placeholder")}
                 size="large"
                 onSearch={handleSearch}
               />
@@ -462,8 +462,8 @@ const CertificateList = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={loadError ? t("common.text.nodata_failed") : t("certificate.nodata.title")}
-                  description={loadError ? unwrapErrMsg(loadError) : t("certificate.nodata.description")}
+                  title={loadError ? t("common.text.nodata_failed") : t("certificate.text.nodata")}
+                  description={loadError ? unwrapErrMsg(loadError) : t("certificate.text.nodata_description")}
                   icon={<IconCertificate size={24} />}
                   extra={
                     loadError ? (
@@ -472,7 +472,7 @@ const CertificateList = () => {
                       </Button>
                     ) : (
                       <Button icon={<IconExternalLink size="1.25em" />} type="primary" onClick={() => navigate("/workflows")}>
-                        {t("certificate.nodata.button")}
+                        {t("certificate.text.nodata_button")}
                       </Button>
                     )
                   }

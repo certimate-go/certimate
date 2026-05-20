@@ -41,8 +41,8 @@ const Login = () => {
   }, [browserTheme]);
 
   const formSchema = z.object({
-    username: z.email(t("login.username.errmsg.invalid")),
-    password: z.string().min(10, t("login.password.errmsg.invalid")),
+    username: z.email(t("login.form.username.errmsg.invalid")),
+    password: z.string().min(10, t("login.form.password.errmsg.invalid")),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {
@@ -71,34 +71,34 @@ const Login = () => {
       <div className="pointer-events-none fixed min-h-screen w-full" style={bgStyle}></div>
 
       <div className="flex h-screen w-full flex-col items-center justify-center">
-        <Card className="w-120 max-w-full rounded-md shadow-md max-sm:h-full max-sm:w-full max-sm:rounded-none">
+        <Card className="w-120 max-w-full rounded-md shadow-md max-sm:size-full max-sm:rounded-none">
           <div className="px-4 py-8">
             <div className="mb-12 flex items-center justify-center">
               <img src="/logo.svg" className="w-16" />
             </div>
 
             <Form {...formProps} form={formInst} disabled={formPending} layout="vertical" validateTrigger="onBlur">
-              <Form.Item name="username" label={t("login.username.label")} rules={[formRule]}>
+              <Form.Item name="username" label={t("login.form.username.label")} rules={[formRule]}>
                 <Space.Compact block>
                   <Space.Addon>
                     <IconMail size="1.25em" />
                   </Space.Addon>
-                  <Input autoComplete="new-password" autoFocus placeholder={t("login.username.placeholder")} size="large" />
+                  <Input autoComplete="new-password" autoFocus placeholder={t("login.form.username.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
-              <Form.Item name="password" label={t("login.password.label")} rules={[formRule]}>
+              <Form.Item name="password" label={t("login.form.password.label")} rules={[formRule]}>
                 <Space.Compact block>
                   <Space.Addon>
                     <IconLock size="1.25em" />
                   </Space.Addon>
-                  <Input.Password autoComplete="new-password" placeholder={t("login.password.placeholder")} size="large" />
+                  <Input.Password autoComplete="new-password" placeholder={t("login.form.password.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
               <Form.Item className="mt-8 mb-0">
                 <Button block type="primary" htmlType="submit" icon={<IconArrowRight size="1.25em" />} iconPlacement="end" loading={formPending} size="large">
-                  {t("login.submit")}
+                  {t("login.form.submit.button")}
                 </Button>
               </Form.Item>
             </Form>

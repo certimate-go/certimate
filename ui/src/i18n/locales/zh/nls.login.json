@@ -1,9 +1,23 @@
-﻿{
-  "login.username.label": "用户名/邮箱",
-  "login.username.placeholder": "请输入用户名/邮箱",
-  "login.username.errmsg.invalid": "请输入正确的用户名/邮箱",
-  "login.password.label": "密码",
-  "login.password.placeholder": "请输入密码",
-  "login.password.errmsg.invalid": "密码至少 10 个字符",
-  "login.submit": "登录"
+{
+  "$ns": "login",
+
+  "form": {
+    "username": {
+      "label": "用户名/邮箱",
+      "placeholder": "请输入用户名/邮箱",
+      "errmsg": {
+        "invalid": "请输入正确的用户名/邮箱"
+      }
+    },
+    "password": {
+      "label": "密码",
+      "placeholder": "请输入密码",
+      "errmsg": {
+        "invalid": "密码至少 10 个字符"
+      }
+    },
+    "submit": {
+      "button": "登录"
+    }
+  }
 }

@@ -30,8 +30,8 @@ const PresetList = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("preset.page.title")}</h1>
-        <p className="text-base text-gray-500">{t("preset.page.subtitle")}</p>
+        <h1>{t("preset.page.heading")}</h1>
+        <p className="text-base text-gray-500">{t("preset.page.subheading")}</p>
       </div>
 
       <div className="container">

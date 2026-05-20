@@ -38,7 +38,7 @@ const BizDeployNodeConfigFieldsProviderUpyunCDN = () => {
         label={t("workflow_node.deploy.form.shared_domain_match_pattern.label")}
         extra={
           fieldDomainMatchPattern === DOMAIN_MATCH_PATTERN_EXACT ? (
-            <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.help_wildcard") }}></span>
+            <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.option.exact.help.wildcard") }}></span>
           ) : (
             void 0
           )

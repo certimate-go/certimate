@@ -1,49 +1,84 @@
 {
-  "workflow_run.action.view.menu": "查看详情",
-  "workflow_run.action.cancel.menu": "取消运行",
-  "workflow_run.action.cancel.modal.title": "取消运行",
-  "workflow_run.action.cancel.modal.content": "确定要取消此运行吗？取消后仅会中止流程，但不会回滚已执行的节点。",
-  "workflow_run.action.delete.menu": "删除运行",
-  "workflow_run.action.delete.modal.title": "删除运行「{{name}}」",
-  "workflow_run.action.delete.modal.content": "确定要删除该工作流运行历史吗？删除后仅会清除日志历史，但不会影响签发的证书。<br>注意此操作不可撤销，请谨慎操作。",
-  "workflow_run.action.batch_delete.modal.title": "删除运行历史",
-  "workflow_run.action.batch_delete.modal.content": "确定要删除这 {{count}} 个被选中的工作流运行历史吗？删除后仅会清除日志历史，但不会影响签发的证书。<br>注意此操作不可撤销，请谨慎操作。",
+  "$ns": "workflow_run",
 
-  "workflow_run.deletion.alert": "运行历史中包含工作流各节点的运行结果，删除后可能导致因找不到前次运行结果而触发重新申请或部署证书。如无必要请勿提前删除，建议保留至少 180 天。",
-  "workflow_run.cancellation.alert": "如遇进程意外中止、服务器超时等原因，你可以手动取消长时间挂起的运行，避免阻塞后续运行。",
+  "text": {
+    "nodata": "暂无工作流运行",
+    "nodata_description": "当前未找到任何运行历史。请先运行此工作流。",
+    "deletion_warning": "运行历史中包含工作流各节点的运行结果，删除后可能导致因找不到前次运行结果而触发重新申请或部署证书。如无必要请勿提前删除，建议保留至少 180 天。",
+    "cancellation_warning": "如遇进程意外中止、服务器超时等原因，你可以手动取消长时间挂起的运行，避免阻塞后续运行。"
+  },
 
-  "workflow_run.nodata.title": "暂无工作流运行",
-  "workflow_run.nodata.description": "当前未找到任何运行历史。请先运行此工作流。",
+  "action": {
+    "view.menu": "查看详情",
+    "cancel.menu": "取消运行",
+    "cancel.modal": {
+      "title": "取消运行",
+      "content": "确定要取消此运行吗？取消后仅会中止流程，但不会回滚已执行的节点。"
+    },
+    "delete.menu": "删除运行",
+    "delete.modal": {
+      "title": "删除运行「{{name}}」",
+      "content": "确定要删除该工作流运行历史吗？删除后仅会清除日志历史，但不会影响签发的证书。<br>注意此操作不可撤销，请谨慎操作。"
+    },
+    "batch_delete.modal": {
+      "title": "删除运行历史",
+      "content": "确定要删除这 {{count}} 个被选中的工作流运行历史吗？删除后仅会清除日志历史，但不会影响签发的证书。<br>注意此操作不可撤销，请谨慎操作。"
+    }
+  },
 
-  "workflow_run.props.workflow": "工作流",
-  "workflow_run.props.status": "状态",
-  "workflow_run.props.status.pending": "等待运行",
-  "workflow_run.props.status.processing": "运行中",
-  "workflow_run.props.status.succeeded": "已成功",
-  "workflow_run.props.status.failed": "已失败",
-  "workflow_run.props.status.canceled": "已取消",
-  "workflow_run.props.trigger": "触发方式",
-  "workflow_run.props.trigger.scheduled": "定时",
-  "workflow_run.props.trigger.manual": "手动",
-  "workflow_run.props.started_at": "开始时间",
-  "workflow_run.props.ended_at": "完成时间",
-  "workflow_run.props.artifacts": "输出产物",
+  "props": {
+    "workflow": "工作流",
+    "status": {
+      "": "状态",
+      "pending": "等待运行",
+      "processing": "运行中",
+      "succeeded": "已成功",
+      "failed": "已失败",
+      "canceled": "已取消"
+    },
+    "trigger": {
+      "": "触发方式",
+      "scheduled": "定时",
+      "manual": "手动"
+    },
+    "started_at": "开始时间",
+    "ended_at": "完成时间",
+    "artifacts": "输出产物"
+  },
 
-  "workflow_run.base.description": "{{trigger}}触发于 {{startedAt}}",
-  "workflow_run.base.description_with_time_cost": "{{trigger}}触发于 {{startedAt}}，总计用时 {{timeCost}}。",
-  "workflow_run.base.trigger.scheduled": "定时",
-  "workflow_run.base.trigger.manual": "手动",
+  "base": {
+    "description": "{{trigger}}触发于 {{startedAt}}",
+    "description_with_time_cost": "{{trigger}}触发于 {{startedAt}}，总计用时 {{timeCost}}。",
+    "trigger": {
+      "scheduled": "定时",
+      "manual": "手动"
+    }
+  },
 
-  "workflow_run.process": "流程",
-  "workflow_run.process.menu.export": "导出",
+  "process": {
+    "": "流程",
+    "menu": {
+      "export": "导出"
+    }
+  },
 
-  "workflow_run.logs": "日志",
-  "workflow_run.logs.menu.show_timestamps": "显示日期时间",
-  "workflow_run.logs.menu.show_whitespaces": "显示转义换行符",
-  "workflow_run.logs.menu.download_logs": "下载日志",
+  "logs": {
+    "": "日志",
+    "menu": {
+      "show_timestamps": "显示日期时间",
+      "show_whitespaces": "显示转义换行符",
+      "download_logs": "下载日志"
+    }
+  },
 
-  "workflow_run.artifacts": "输出产物",
-  "workflow_run_artifact.props.type": "类型",
-  "workflow_run_artifact.props.type.certificate": "证书",
-  "workflow_run_artifact.props.name": "名称"
+  "artifacts": {
+    "": "输出产物",
+    "props": {
+      "name": "名称",
+      "type": {
+        "": "类型",
+        "certificate": "证书"
+      }
+    }
+  }
 }

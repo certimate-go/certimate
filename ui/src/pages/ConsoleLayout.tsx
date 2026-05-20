@@ -129,14 +129,14 @@ const ConsoleLayout = () => {
           >
             <div className="absolute inset-0 z-0">
               <div
-                className="h-full w-full"
+                className="size-full"
                 style={{
                   backgroundImage:
                     "linear-gradient(rgba(255, 255, 255, 0.063) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.063) 1px, transparent 1px)",
                   backgroundSize: "20px 20px",
                 }}
               >
-                <div className="h-full w-full backdrop-blur-[1px]"></div>
+                <div className="size-full backdrop-blur-[1px]"></div>
               </div>
             </div>
             <div className="flex size-full items-center justify-between overflow-hidden px-4">
@@ -181,12 +181,12 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
   const MENU_KEY_SETTINGS = "/settings";
   const menuItems: Required<MenuProps>["items"] = (
     [
-      [MENU_KEY_HOME, "dashboard.page.title", <IconHome size="1em" />],
-      [MENU_KEY_WORKFLOWS, "workflow.page.title", <IconHierarchy3 size="1em" />],
-      [MENU_KEY_CERTIFICATES, "certificate.page.title", <IconCertificate size="1em" />],
-      [MENU_KEY_ACCESSES, "access.page.title", <IconFingerprint size="1em" />],
-      [MENU_KEY_PRESETS, "preset.page.title", <IconCodeDots size="1em" />],
-      [MENU_KEY_SETTINGS, "settings.page.title", <IconSettings size="1em" />],
+      [MENU_KEY_HOME, "dashboard.page.heading", <IconHome size="1em" />],
+      [MENU_KEY_WORKFLOWS, "workflow.page.heading", <IconHierarchy3 size="1em" />],
+      [MENU_KEY_CERTIFICATES, "certificate.page.heading", <IconCertificate size="1em" />],
+      [MENU_KEY_ACCESSES, "access.page.heading", <IconFingerprint size="1em" />],
+      [MENU_KEY_PRESETS, "preset.page.heading", <IconCodeDots size="1em" />],
+      [MENU_KEY_SETTINGS, "settings.page.heading", <IconSettings size="1em" />],
     ] satisfies Array<[string, string, React.ReactNode]>
   ).map(([key, label, icon]) => {
     return {

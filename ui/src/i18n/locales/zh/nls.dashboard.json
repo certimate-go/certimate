@@ -1,19 +1,31 @@
-﻿{
-  "dashboard.page.title": "仪表盘",
+{
+  "$ns": "dashboard",
 
-  "dashboard.statistics.all_certificates": "所有证书",
-  "dashboard.statistics.expiring_soon_certificates": "即将过期证书",
-  "dashboard.statistics.expired_certificates": "已过期证书",
-  "dashboard.statistics.all_workflows": "所有工作流",
-  "dashboard.statistics.enabled_workflows": "已启用工作流",
+  "page": {
+    "heading": "仪表盘"
+  },
 
-  "dashboard.shortcut": "快捷操作",
-  "dashboard.shortcut.create_workflow": "创建新的工作流",
-  "dashboard.shortcut.change_account": "修改登录账号密码",
-  "dashboard.shortcut.configure_ca": "配置证书颁发机构",
-  "dashboard.shortcut.upgrade": "新版本可升级！",
+  "statistics": {
+    "all_certificates": "所有证书",
+    "expiring_soon_certificates": "即将过期证书",
+    "expired_certificates": "已过期证书",
+    "all_workflows": "所有工作流",
+    "enabled_workflows": "已启用工作流"
+  },
 
-  "dashboard.recent_workflow_runs": "最近的工作流运行",
-  "dashboard.recent_workflow_runs.nodata.description": "当前未找到工作流运行历史。请先运行一个工作流。",
-  "dashboard.recent_workflow_runs.nodata.button": "前往工作流"
+  "shortcut": {
+    "": "快捷操作",
+    "create_workflow": "创建新的工作流",
+    "change_account": "修改登录账号密码",
+    "configure_ca": "配置证书颁发机构",
+    "upgrade": "新版本可升级！"
+  },
+
+  "recent_workflow_runs": {
+    "": "最近的工作流运行",
+    "nodata": {
+      "description": "当前未找到工作流运行历史。请先运行一个工作流。",
+      "button": "前往工作流"
+    }
+  }
 }

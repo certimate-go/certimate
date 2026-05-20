@@ -1,19 +1,31 @@
-﻿{
-  "dashboard.page.title": "Dashboard",
+{
+  "$ns": "dashboard",
 
-  "dashboard.statistics.all_certificates": "All certificates",
-  "dashboard.statistics.expiring_soon_certificates": "Expiring soon certificates",
-  "dashboard.statistics.expired_certificates": "Expired certificates",
-  "dashboard.statistics.all_workflows": "All workflows",
-  "dashboard.statistics.enabled_workflows": "Active workflows",
+  "page": {
+    "heading": "Dashboard"
+  },
 
-  "dashboard.shortcut": "Shortcuts",
-  "dashboard.shortcut.create_workflow": "Create new workflow",
-  "dashboard.shortcut.change_account": "Change username or password",
-  "dashboard.shortcut.configure_ca": "Configure certificate authorities",
-  "dashboard.shortcut.upgrade": "New version available!",
+  "statistics": {
+    "all_certificates": "All certificates",
+    "expiring_soon_certificates": "Expiring soon certificates",
+    "expired_certificates": "Expired certificates",
+    "all_workflows": "All workflows",
+    "enabled_workflows": "Active workflows"
+  },
 
-  "dashboard.recent_workflow_runs": "Recent workflow runs",
-  "dashboard.recent_workflow_runs.nodata.description": "It looks like you don't have any runs. Get started by running a workflow.",
-  "dashboard.recent_workflow_runs.nodata.button": "Go to workflows"
+  "shortcut": {
+    "": "Shortcuts",
+    "create_workflow": "Create new workflow",
+    "change_account": "Change username or password",
+    "configure_ca": "Configure certificate authorities",
+    "upgrade": "New version available!"
+  },
+
+  "recent_workflow_runs": {
+    "": "Recent workflow runs",
+    "nodata": {
+      "description": "It looks like you don't have any runs. Get started by running a workflow.",
+      "button": "Go to workflows"
+    }
+  }
 }

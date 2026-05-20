@@ -278,8 +278,8 @@ const WorkflowNew = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("workflow.new.title")}</h1>
-        <p className="text-base text-gray-500">{t("workflow.new.subtitle")}</p>
+        <h1>{t("workflow.new.heading")}</h1>
+        <p className="text-base text-gray-500">{t("workflow.new.subheading")}</p>
       </div>
 
       <div className="container">

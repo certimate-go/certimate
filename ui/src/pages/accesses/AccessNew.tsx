@@ -74,8 +74,8 @@ const AccessNew = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("access.new.title")}</h1>
-        <p className="text-base text-gray-500">{t("access.new.subtitle")}</p>
+        <h1>{t("access.new.heading")}</h1>
+        <p className="text-base text-gray-500">{t("access.new.subheading")}</p>
       </div>
 
       <div className="container">

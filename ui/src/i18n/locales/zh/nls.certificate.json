@@ -1,42 +1,65 @@
 {
-  "certificate.page.title": "SSL 证书",
-  "certificate.page.subtitle": "SSL 证书含有网站的公钥和网站标识以及其他相关信息。它们来自于工作流的运行输出。",
+  "$ns": "certificate",
 
-  "certificate.nodata.title": "暂无证书",
-  "certificate.nodata.description": "当前未找到证书。请先运行一个工作流。",
-  "certificate.nodata.button": "前往工作流",
+  "text": {
+    "nodata": "暂无证书",
+    "nodata_description": "当前未找到证书。请先运行一个工作流。",
+    "nodata_button": "前往工作流"
+  },
 
-  "certificate.search.placeholder": "按证书名称或序列号搜索……",
+  "page": {
+    "heading": "SSL 证书",
+    "subheading": "SSL 证书含有网站的公钥和网站标识以及其他相关信息。它们来自于工作流的运行输出。"
+  },
 
-  "certificate.action.view.menu": "查看详情",
-  "certificate.action.revoke.menu": "吊销证书",
-  "certificate.action.revoke.modal.title": "吊销「{{name}}」",
-  "certificate.action.revoke.modal.content": "确定要吊销该证书吗？<br>注意此操作不可撤销，请谨慎操作。",
-  "certificate.action.delete.menu": "删除证书",
-  "certificate.action.delete.modal.title": "删除「{{name}}」",
-  "certificate.action.delete.modal.content": "确定要删除该证书吗？<br>注意此操作不可撤销，请谨慎操作。",
-  "certificate.action.batch_delete.modal.title": "删除证书",
-  "certificate.action.batch_delete.modal.content": "确定要删除这 {{count}} 个被选中的证书吗？<br>注意此操作不可撤销，请谨慎操作。",
+  "action": {
+    "search.input": {
+      "placeholder": "按证书名称或序列号搜索……"
+    },
+    "view.menu": "查看详情",
+    "revoke.menu": "吊销证书",
+    "revoke.modal": {
+      "title": "吊销「{{name}}」",
+      "content": "确定要吊销该证书吗？<br>注意此操作不可撤销，请谨慎操作。"
+    },
+    "delete.menu": "删除证书",
+    "delete.modal": {
+      "title": "删除「{{name}}」",
+      "content": "确定要删除该证书吗？<br>注意此操作不可撤销，请谨慎操作。"
+    },
+    "batch_delete.modal": {
+      "title": "删除证书",
+      "content": "确定要删除这 {{count}} 个被选中的证书吗？<br>注意此操作不可撤销，请谨慎操作。"
+    }
+  },
 
-  "certificate.props.subject_alt_names": "名称",
-  "certificate.props.validity": "有效期限",
-  "certificate.props.validity.left_days": "{{left}} / {{total}} 天",
-  "certificate.props.validity.less_than_a_day": "≤1 / {{total}} 天",
-  "certificate.props.validity.expired": "已过期",
-  "certificate.props.validity.expiration": "{{date}} 过期",
-  "certificate.props.validity.filter.all": "全部",
-  "certificate.props.validity.filter.expiring_soon": "即将过期",
-  "certificate.props.validity.filter.expired": "已过期",
-  "certificate.props.brand": "证书品牌",
-  "certificate.props.source": "来源",
-  "certificate.props.source.request": "申请",
-  "certificate.props.source.upload": "上传",
-  "certificate.props.revoked": "已吊销",
-  "certificate.props.certificate": "证书内容",
-  "certificate.props.private_key": "私钥内容",
-  "certificate.props.serial_number": "证书序列号",
-  "certificate.props.key_algorithm": "私钥算法",
-  "certificate.props.issuer": "颁发者",
-  "certificate.props.created_at": "创建时间",
-  "certificate.props.updated_at": "更新时间"
+  "props": {
+    "subject_alt_names": "名称",
+    "validity": {
+      "": "有效期限",
+      "left_days": "{{left}} / {{total}} 天",
+      "less_than_a_day": "≤1 / {{total}} 天",
+      "expired": "已过期",
+      "expiration": "{{date}} 过期",
+      "filter": {
+        "all": "全部",
+        "expiring_soon": "即将过期",
+        "expired": "已过期"
+      }
+    },
+    "brand": "证书品牌",
+    "source": {
+      "": "来源",
+      "request": "申请",
+      "upload": "上传"
+    },
+    "revoked": "已吊销",
+    "certificate": "证书内容",
+    "private_key": "私钥内容",
+    "serial_number": "证书序列号",
+    "key_algorithm": "私钥算法",
+    "issuer": "颁发者",
+    "created_at": "创建时间",
+    "updated_at": "更新时间"
+  }
 }

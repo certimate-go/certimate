@@ -1,9 +1,23 @@
-﻿{
-  "login.username.label": "Username",
-  "login.username.placeholder": "Username/Email",
-  "login.username.errmsg.invalid": "Please enter a valid email address",
-  "login.password.label": "Password",
-  "login.password.placeholder": "Password",
-  "login.password.errmsg.invalid": "Password should be at least 10 characters",
-  "login.submit": "Log-in"
+{
+  "$ns": "login",
+
+  "form": {
+    "username": {
+      "label": "Username",
+      "placeholder": "Username/Email",
+      "errmsg": {
+        "invalid": "Please enter a valid email address"
+      }
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Password",
+      "errmsg": {
+        "invalid": "Password should be at least 10 characters"
+      }
+    },
+    "submit": {
+      "button": "Log-in"
+    }
+  }
 }

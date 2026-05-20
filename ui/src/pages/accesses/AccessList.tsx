@@ -358,8 +358,8 @@ const AccessList = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("access.page.title")}</h1>
-        <p className="text-base text-gray-500">{t("access.page.subtitle")}</p>
+        <h1>{t("access.page.heading")}</h1>
+        <p className="text-base text-gray-500">{t("access.page.subheading")}</p>
       </div>
 
       <div className="container">
@@ -370,7 +370,7 @@ const AccessList = () => {
                 className="text-sm placeholder:text-sm"
                 allowClear
                 defaultValue={filters["keyword"] as string}
-                placeholder={t("access.search.placeholder")}
+                placeholder={t("access.action.search.input.placeholder")}
                 size="large"
                 onSearch={handleSearch}
               />
@@ -418,8 +418,8 @@ const AccessList = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={loadError ? t("common.text.nodata_failed") : t("access.nodata.title")}
-                  description={loadError ? unwrapErrMsg(loadError) : t("access.nodata.description")}
+                  title={loadError ? t("common.text.nodata_failed") : t("access.text.nodata")}
+                  description={loadError ? unwrapErrMsg(loadError) : t("access.text.nodata_description")}
                   icon={<IconFingerprint size={24} />}
                   extra={
                     loadError ? (
@@ -428,7 +428,7 @@ const AccessList = () => {
                       </Button>
                     ) : (
                       <Button icon={<IconCirclePlus size="1.25em" />} type="primary" onClick={handleCreateClick}>
-                        {t("access.nodata.button")}
+                        {t("access.text.nodata_button")}
                       </Button>
                     )
                   }

@@ -1,88 +1,208 @@
-﻿{
-  "settings.page.title": "系统设置",
+{
+  "$ns": "settings",
 
-  "settings.account.tab": "账号",
-  "settings.account.username.title": "登录用户名",
-  "settings.account.username.tips": "使用电子邮箱登录你的账号。",
-  "settings.account.username.button.label": "修改邮箱",
-  "settings.account.username.form.email.label": "邮箱",
-  "settings.account.username.form.email.placeholder": "请输入邮箱",
-  "settings.account.password.title": "登录密码",
-  "settings.account.password.tips": "建议定期修改密码，以保护你的数据安全。",
-  "settings.account.password.button.label": "修改密码",
-  "settings.account.password.form.email.old_password.label": "当前密码",
-  "settings.account.password.form.email.old_password.placeholder": "请输入旧密码",
-  "settings.account.password.form.email.new_password.label": "新密码",
-  "settings.account.password.form.email.new_password.placeholder": "请输入新密码",
-  "settings.account.password.form.email.confirm_password.label": "确认密码",
-  "settings.account.password.form.email.confirm_password.placeholder": "请再次输入新密码",
-  "settings.account.password.form.email.password.errmsg.invalid": "密码至少 10 个字符",
-  "settings.account.password.form.email.password.errmsg.not_matched": "两次密码不一致",
-  "settings.account.2fa.title": "双因子认证（2FA）",
+  "page": {
+    "heading": "系统设置"
+  },
 
-  "settings.appearance.tab": "外观",
-  "settings.appearance.theme.title": "主题",
-  "settings.appearance.theme.form.value.extra": "重新加载页面生效。",
-  "settings.appearance.language.title": "语言",
-  "settings.appearance.language.form.value.extra": "重新加载页面生效。",
-  "settings.appearance.pagination.title": "分页",
-  "settings.appearance.pagination.form.default_per_page.label": "列表页默认显示数量",
-  "settings.appearance.pagination.form.default_per_page.placeholder": "请输入列表页默认显示数量",
-  "settings.appearance.pagination.form.default_per_page.unit": "条每页",
-  "settings.appearance.workflow.title": "工作流",
-  "settings.appearance.workflow.form.default_designer_layout.label": "编辑器默认布局",
-  "settings.appearance.workflow.form.default_designer_layout.placeholder": "请选择编辑器默认布局",
-  "settings.appearance.workflow.form.default_designer_layout.option.horizontal": "水平布局",
-  "settings.appearance.workflow.form.default_designer_layout.option.vertical": "垂直布局",
+  "account": {
+    "tab": "账号",
+    "username": {
+      "title": "登录用户名",
+      "tips": "使用电子邮箱登录你的账号。",
+      "button": {
+        "label": "修改邮箱"
+      },
+      "form": {
+        "email": {
+          "label": "邮箱",
+          "placeholder": "请输入邮箱"
+        }
+      }
+    },
+    "password": {
+      "title": "登录密码",
+      "tips": "建议定期修改密码，以保护你的数据安全。",
+      "button": {
+        "label": "修改密码"
+      },
+      "form": {
+        "email": {
+          "old_password": {
+            "label": "当前密码",
+            "placeholder": "请输入旧密码"
+          },
+          "new_password": {
+            "label": "新密码",
+            "placeholder": "请输入新密码"
+          },
+          "confirm_password": {
+            "label": "确认密码",
+            "placeholder": "请再次输入新密码"
+          },
+          "password": {
+            "errmsg": {
+              "invalid": "密码至少 10 个字符",
+              "not_matched": "两次密码不一致"
+            }
+          }
+        }
+      }
+    },
+    "2fa": {
+      "title": "双因子认证（2FA）"
+    }
+  },
 
-  "settings.sslprovider.tab": "证书颁发机构",
-  "settings.sslprovider.ca.title": "全局证书颁发机构",
-  "settings.sslprovider.ca.tips": "如果你希望在每个工作流中选择不同的证书颁发机构，请前往授权凭据页面。",
-  "settings.sslprovider.ca.form.provider.label": "ACME 提供商",
-  "settings.sslprovider.ca.form.provider.help": "注意：不同服务商所支持的证书有效期、私钥算法、多域名数量上限、是否允许泛域名等可能不同，切换服务商后请注意检查已有工作流的配置是否需要调整。",
-  "settings.sslprovider.ca.form.letsencryptstaging_alert": "测试环境比生产环境有更宽松的速率限制，可进行测试性部署。<br><br>点击下方链接了解更多：<br><a href=\"https://letsencrypt.org/zh-cn/docs/staging-environment/\" target=\"_blank\">https://letsencrypt.org/zh-cn/docs/staging-environment/</a>",
-  "settings.sslprovider.others.title": "其他参数",
-  "settings.sslprovider.others.form.timeout.label": "证书订单超时时间",
-  "settings.sslprovider.others.form.timeout.placeholder": "请输入证书订单超时时间",
-  "settings.sslprovider.others.form.timeout.unit": "秒",
-  "settings.sslprovider.others.form.timeout.tooltip": "表示等待证书订单就绪的超时时间。如果你不了解该选项的用途，保持默认即可。",
+  "appearance": {
+    "tab": "外观",
+    "theme": {
+      "title": "主题",
+      "form": {
+        "value": {
+          "extra": "重新加载页面生效。"
+        }
+      }
+    },
+    "language": {
+      "title": "语言",
+      "form": {
+        "value": {
+          "extra": "重新加载页面生效。"
+        }
+      }
+    },
+    "pagination": {
+      "title": "分页",
+      "form": {
+        "default_per_page": {
+          "label": "列表页默认显示数量",
+          "placeholder": "请输入列表页默认显示数量",
+          "unit": "条每页"
+        }
+      }
+    },
+    "workflow": {
+      "title": "工作流",
+      "form": {
+        "default_designer_layout": {
+          "label": "编辑器默认布局",
+          "placeholder": "请选择编辑器默认布局",
+          "option": {
+            "horizontal": "水平布局",
+            "vertical": "垂直布局"
+          }
+        }
+      }
+    }
+  },
 
-  "settings.persistence.tab": "数据持久化",
-  "settings.persistence.alerting.title": "警报策略",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.label": "证书即将过期预警阈值",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.placeholder": "请输入证书即将过期预警阈值",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.unit": "天",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.help": "提示：该选项将决定将证书过期前多久视为「即将过期」。",
-  "settings.persistence.data_retention.title": "数据保留策略",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.label": "工作流运行历史保留期限",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.placeholder": "请输入运行历史保留期限",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.unit": "天",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.help": "提示：设置为 <b>0</b> 表示永久保留，不会自动清理。建议设置为 <b>180</b> 天以上。",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.label": "证书过期后保留期限",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.placeholder": "请输入过期证书保留期限",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.unit": "天",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.help": "提示：设置为 <b>0</b> 表示永久保留，不会自动清理。",
+  "sslprovider": {
+    "tab": "证书颁发机构",
+    "ca": {
+      "title": "全局证书颁发机构",
+      "tips": "如果你希望在每个工作流中选择不同的证书颁发机构，请前往授权凭据页面。",
+      "form": {
+        "provider": {
+          "label": "ACME 提供商",
+          "help": "注意：不同服务商所支持的证书有效期、私钥算法、多域名数量上限、是否允许泛域名等可能不同，切换服务商后请注意检查已有工作流的配置是否需要调整。"
+        },
+        "letsencryptstaging_alert": "测试环境比生产环境有更宽松的速率限制，可进行测试性部署。<br><br>点击下方链接了解更多：<br><a href=\"https://letsencrypt.org/zh-cn/docs/staging-environment/\" target=\"_blank\">https://letsencrypt.org/zh-cn/docs/staging-environment/</a>"
+      }
+    },
+    "others": {
+      "title": "其他参数",
+      "form": {
+        "timeout": {
+          "label": "证书订单超时时间",
+          "placeholder": "请输入证书订单超时时间",
+          "unit": "秒",
+          "tooltip": "表示等待证书订单就绪的超时时间。如果你不了解该选项的用途，保持默认即可。"
+        }
+      }
+    }
+  },
 
-  "settings.diagnostics.tab": "系统诊断",
-  "settings.diagnostics.logs.title": "系统日志",
-  "settings.diagnostics.logs.button.refresh.label": "刷新日志",
-  "settings.diagnostics.logs.button.load_more.label": "加载更多",
-  "settings.diagnostics.crons.title": "后台任务",
-  "settings.diagnostics.crons.props.next_trigger_time": "预计下次运行时间：",
-  "settings.diagnostics.workflow_dispatcher.title": "工作流调度器",
-  "settings.diagnostics.workflow_dispatcher.statistics.concurrency": "最大并发",
-  "settings.diagnostics.workflow_dispatcher.statistics.pending": "等待运行",
-  "settings.diagnostics.workflow_dispatcher.statistics.processing": "运行中",
+  "persistence": {
+    "tab": "数据持久化",
+    "alerting": {
+      "title": "警报策略",
+      "form": {
+        "certificates_warning_days_before_expire": {
+          "label": "证书即将过期预警阈值",
+          "placeholder": "请输入证书即将过期预警阈值",
+          "unit": "天",
+          "help": "提示：该选项将决定将证书过期前多久视为「即将过期」。"
+        }
+      }
+    },
+    "data_retention": {
+      "title": "数据保留策略",
+      "form": {
+        "workflow_runs_retention_max_days": {
+          "label": "工作流运行历史保留期限",
+          "placeholder": "请输入运行历史保留期限",
+          "unit": "天",
+          "help": "提示：设置为 <b>0</b> 表示永久保留，不会自动清理。建议设置为 <b>180</b> 天以上。"
+        },
+        "certificates_retention_max_days": {
+          "label": "证书过期后保留期限",
+          "placeholder": "请输入过期证书保留期限",
+          "unit": "天",
+          "help": "提示：设置为 <b>0</b> 表示永久保留，不会自动清理。"
+        }
+      }
+    }
+  },
 
-  "settings.about.tab": "关于",
-  "settings.about.version.new": "新版本可升级",
-  "settings.about.socials.document": "文档",
-  "settings.about.socials.github": "GitHub",
-  "settings.about.socials.telegram": "Telegram",
-  "settings.about.socials.donate": "捐赠",
-  "settings.about.feedback.title": "帮助我们改进 Certimate",
-  "settings.about.feedback.subtitle": "告诉我们如何让 Certimate 为你更好地服务。",
-  "settings.about.feedback.button": "意见反馈",
-  "settings.about.contributors.title": "贡献者",
-  "settings.about.contributors.tips": "感谢所有贡献者对本项目做出的贡献。"
+  "diagnostics": {
+    "tab": "系统诊断",
+    "logs": {
+      "title": "系统日志",
+      "button": {
+        "refresh": {
+          "label": "刷新日志"
+        },
+        "load_more": {
+          "label": "加载更多"
+        }
+      }
+    },
+    "crons": {
+      "title": "后台任务",
+      "props": {
+        "next_trigger_time": "预计下次运行时间："
+      }
+    },
+    "workflow_dispatcher": {
+      "title": "工作流调度器",
+      "statistics": {
+        "concurrency": "最大并发",
+        "pending": "等待运行",
+        "processing": "运行中"
+      }
+    }
+  },
+
+  "about": {
+    "tab": "关于",
+    "version": {
+      "new": "新版本可升级"
+    },
+    "socials": {
+      "document": "文档",
+      "github": "GitHub",
+      "telegram": "Telegram",
+      "donate": "捐赠"
+    },
+    "feedback": {
+      "title": "帮助我们改进 Certimate",
+      "subtitle": "告诉我们如何让 Certimate 为你更好地服务。",
+      "button": "意见反馈"
+    },
+    "contributors": {
+      "title": "贡献者",
+      "tips": "感谢所有贡献者对本项目做出的贡献。"
+    }
+  }
 }

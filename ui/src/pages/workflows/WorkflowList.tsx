@@ -322,7 +322,7 @@ const WorkflowList = () => {
   const handleRecordActiveChange = async (workflow: WorkflowModel) => {
     try {
       if (!workflow.enabled && !workflow.hasContent) {
-        message.warning(t("workflow.action.enable.errmsg.unpublished"));
+        message.warning(t("workflow.text.unpublished_warning"));
         return;
       }
 
@@ -351,7 +351,7 @@ const WorkflowList = () => {
     try {
       await startWorkflowRun(workflow.id);
 
-      message.info(t("workflow.action.execute.prompt"));
+      message.info(t("workflow.text.running_prompt"));
     } catch (err) {
       console.error(err);
       notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
@@ -444,8 +444,8 @@ const WorkflowList = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("workflow.page.title")}</h1>
-        <p className="text-base text-gray-500">{t("workflow.page.subtitle")}</p>
+        <h1>{t("workflow.page.heading")}</h1>
+        <p className="text-base text-gray-500">{t("workflow.page.subheading")}</p>
       </div>
 
       <div className="container">
@@ -471,7 +471,7 @@ const WorkflowList = () => {
                 className="text-sm placeholder:text-sm"
                 allowClear
                 defaultValue={filters["keyword"] as string}
-                placeholder={t("workflow.search.placeholder")}
+                placeholder={t("workflow.action.search.input.placeholder")}
                 size="large"
                 onSearch={handleSearch}
               />
@@ -498,8 +498,8 @@ const WorkflowList = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={loadError ? t("common.text.nodata_failed") : t("workflow.nodata.title")}
-                  description={loadError ? unwrapErrMsg(loadError) : t("workflow.nodata.description")}
+                  title={loadError ? t("common.text.nodata_failed") : t("workflow.text.nodata")}
+                  description={loadError ? unwrapErrMsg(loadError) : t("workflow.text.nodata_description")}
                   icon={<IconHierarchy3 size={24} />}
                   extra={
                     loadError ? (
@@ -508,7 +508,7 @@ const WorkflowList = () => {
                       </Button>
                     ) : (
                       <Button icon={<IconCirclePlus size="1.25em" />} type="primary" onClick={handleCreateClick}>
-                        {t("workflow.nodata.button")}
+                        {t("workflow.text.nodata_button")}
                       </Button>
                     )
                   }

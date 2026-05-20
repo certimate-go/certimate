@@ -1,49 +1,84 @@
 {
-  "workflow_run.action.view.menu": "View details",
-  "workflow_run.action.cancel.menu": "Cancel",
-  "workflow_run.action.cancel.modal.title": "Cancel workflow run",
-  "workflow_run.action.cancel.modal.content": "Are you sure to cancel this run?",
-  "workflow_run.action.delete.menu": "Delete",
-  "workflow_run.action.delete.modal.title": "Delete \"{{name}}\"",
-  "workflow_run.action.delete.modal.content": "Are you sure want to delete this workflow run? <br>This action cannot be undone.",
-  "workflow_run.action.batch_delete.modal.title": "Delete workflow runs",
-  "workflow_run.action.batch_delete.modal.content": "Are you sure want to delete these {{count}} selected workflow runs? <br>This action cannot be undone.",
+  "$ns": "workflow_run",
 
-  "workflow_run.deletion.alert": "The workflow run contains the execution results of each node. Deleting it may trigger re-application or re-deployment of certificates due to the inability to find the previous execution result. Please do not delete unless necessary. Recommend keeping it for at least 180 days. ",
-  "workflow_run.cancellation.alert": "If the process is unexpectedly terminated or the server times out, you can manually cancel long-hanging runs to prevent blocking subsequent executions.",
+  "text": {
+    "nodata": "This workflow has no runs yet",
+    "nodata_description": "It looks like you don't have any runs. Get started by running this workflow.",
+    "deletion_warning": "The workflow run contains the execution results of each node. Deleting it may trigger re-application or re-deployment of certificates due to the inability to find the previous execution result. Please do not delete unless necessary. Recommend keeping it for at least 180 days. ",
+    "cancellation_warning": "If the process is unexpectedly terminated or the server times out, you can manually cancel long-hanging runs to prevent blocking subsequent executions."
+  },
 
-  "workflow_run.nodata.title": "This workflow has no runs yet",
-  "workflow_run.nodata.description": "It looks like you don't have any runs. Get started by running this workflow.",
+  "action": {
+    "view.menu": "View details",
+    "cancel.menu": "Cancel",
+    "cancel.modal": {
+      "title": "Cancel workflow run",
+      "content": "Are you sure to cancel this run?"
+    },
+    "delete.menu": "Delete",
+    "delete.modal": {
+      "title": "Delete \"{{name}}\"",
+      "content": "Are you sure want to delete this workflow run? <br>This action cannot be undone."
+    },
+    "batch_delete.modal": {
+      "title": "Delete workflow runs",
+      "content": "Are you sure want to delete these {{count}} selected workflow runs? <br>This action cannot be undone."
+    }
+  },
 
-  "workflow_run.props.workflow": "Workflow",
-  "workflow_run.props.status": "Status",
-  "workflow_run.props.status.pending": "Pending",
-  "workflow_run.props.status.processing": "Processing",
-  "workflow_run.props.status.succeeded": "Succeeded",
-  "workflow_run.props.status.failed": "Failed",
-  "workflow_run.props.status.canceled": "Canceled",
-  "workflow_run.props.trigger": "Trigger",
-  "workflow_run.props.trigger.scheduled": "Scheduled",
-  "workflow_run.props.trigger.manual": "Manual",
-  "workflow_run.props.started_at": "Started at",
-  "workflow_run.props.ended_at": "Ended at",
-  "workflow_run.props.artifacts": "Artifacts",
+  "props": {
+    "workflow": "Workflow",
+    "status": {
+      "": "Status",
+      "pending": "Pending",
+      "processing": "Processing",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "canceled": "Canceled"
+    },
+    "trigger": {
+      "": "Trigger",
+      "scheduled": "Scheduled",
+      "manual": "Manual"
+    },
+    "started_at": "Started at",
+    "ended_at": "Ended at",
+    "artifacts": "Artifacts"
+  },
 
-  "workflow_run.base.description": "Triggered {{trigger}} at {{startedAt}}",
-  "workflow_run.base.description_with_time_cost": "Triggered {{trigger}} at {{startedAt}}. Time cost: {{timeCost}}.",
-  "workflow_run.base.trigger.scheduled": "scheduledly",
-  "workflow_run.base.trigger.manual": "manually",
+  "base": {
+    "description": "Triggered {{trigger}} at {{startedAt}}",
+    "description_with_time_cost": "Triggered {{trigger}} at {{startedAt}}. Time cost: {{timeCost}}.",
+    "trigger": {
+      "scheduled": "scheduledly",
+      "manual": "manually"
+    }
+  },
 
-  "workflow_run.process": "Process",
-  "workflow_run.process.menu.export": "Export",
+  "process": {
+    "": "Process",
+    "menu": {
+      "export": "Export"
+    }
+  },
 
-  "workflow_run.logs": "Logs",
-  "workflow_run.logs.menu.show_timestamps": "Show timestamps",
-  "workflow_run.logs.menu.show_whitespaces": "Show whitespaces",
-  "workflow_run.logs.menu.download_logs": "Download logs",
+  "logs": {
+    "": "Logs",
+    "menu": {
+      "show_timestamps": "Show timestamps",
+      "show_whitespaces": "Show whitespaces",
+      "download_logs": "Download logs"
+    }
+  },
 
-  "workflow_run.artifacts": "Artifacts",
-  "workflow_run_artifact.props.type": "Type",
-  "workflow_run_artifact.props.type.certificate": "Certificate",
-  "workflow_run_artifact.props.name": "Name"
+  "artifacts": {
+    "": "Artifacts",
+    "props": {
+      "name": "Name",
+      "type": {
+        "": "Type",
+        "certificate": "Certificate"
+      }
+    }
+  }
 }

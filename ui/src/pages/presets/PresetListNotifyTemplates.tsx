@@ -48,7 +48,7 @@ const PresetListNotifyTemplates = () => {
     if (!loadedAtOnce) return;
 
     if (templates.length >= MAX_TEMPLATE_COUNT) {
-      message.warning(t("preset.warning.excceeded"));
+      message.warning(t("preset.text.excceeded_warning"));
       return;
     }
 
@@ -133,7 +133,7 @@ const PresetListNotifyTemplates = () => {
         </div>
 
         {templates.map((template, index) => (
-          <div className="h-40">
+          <div key={index} className="h-40">
             <Card
               key={template.name}
               className="size-full"

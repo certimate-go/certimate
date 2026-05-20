@@ -40,7 +40,7 @@ const Dashboard = () => {
   return (
     <div className="px-6 py-4">
       <div className="container">
-        <h1>{t("dashboard.page.title")}</h1>
+        <h1>{t("dashboard.page.heading")}</h1>
       </div>
 
       <div className="container">

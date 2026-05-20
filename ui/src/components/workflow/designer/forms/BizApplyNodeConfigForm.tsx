@@ -769,7 +769,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
               </Typography.Text>
             </Divider>
 
-            <Form.Item label={t("workflow_node.apply.form.skip_before_expiry_days.label")}>
+            <Form.Item label={t("workflow_node.apply.form.skip_before_expiry_days.label")} extra={t("workflow_node.apply.form.skip_before_expiry_days.help")}>
               <span className="me-2 inline-block">{t("workflow_node.apply.form.skip_before_expiry_days.prefix")}</span>
               <span className="inline-block">
                 <Form.Item name="skipBeforeExpiryDays" noStyle rules={[formRule]}>

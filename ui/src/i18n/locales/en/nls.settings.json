@@ -1,88 +1,208 @@
-﻿{
-  "settings.page.title": "Settings",
+{
+  "$ns": "settings",
 
-  "settings.account.tab": "Account",
-  "settings.account.username.title": "Username",
-  "settings.account.username.tips": "Email you can use to sign in to your account.",
-  "settings.account.username.button.label": "Change email",
-  "settings.account.username.form.email.label": "Email",
-  "settings.account.username.form.email.placeholder": "Please enter email",
-  "settings.account.password.title": "Password",
-  "settings.account.password.tips": "It's recommended to change your password regularly, or sooner if you suspect any issues.",
-  "settings.account.password.button.label": "Change password",
-  "settings.account.password.form.email.old_password.label": "Current password",
-  "settings.account.password.form.email.old_password.placeholder": "Please enter the current password",
-  "settings.account.password.form.email.new_password.label": "New password",
-  "settings.account.password.form.email.new_password.placeholder": "Please enter the new password",
-  "settings.account.password.form.email.confirm_password.label": "Confirm password",
-  "settings.account.password.form.email.confirm_password.placeholder": "Please enter the new password again",
-  "settings.account.password.form.email.password.errmsg.invalid": "Password should be at least 10 characters",
-  "settings.account.password.form.email.password.errmsg.not_matched": "Passwords do not match",
-  "settings.account.2fa.title": "Two-factor authentication",
+  "page": {
+    "heading": "Settings"
+  },
 
-  "settings.appearance.tab": "Appearance",
-  "settings.appearance.theme.title": "Theme",
-  "settings.appearance.theme.form.value.extra": "Reload the page for the change to take effect.",
-  "settings.appearance.language.title": "Language",
-  "settings.appearance.language.form.value.extra": "Reload the page for the change to take effect.",
-  "settings.appearance.pagination.title": "Pagination",
-  "settings.appearance.pagination.form.default_per_page.label": "Default items per page",
-  "settings.appearance.pagination.form.default_per_page.placeholder": "Please enter default items per page",
-  "settings.appearance.pagination.form.default_per_page.unit": "items per page",
-  "settings.appearance.workflow.title": "Workflow",
-  "settings.appearance.workflow.form.default_designer_layout.label": "Default designer layout",
-  "settings.appearance.workflow.form.default_designer_layout.placeholder": "Please select default designer layout",
-  "settings.appearance.workflow.form.default_designer_layout.option.horizontal": "Horizontal layout",
-  "settings.appearance.workflow.form.default_designer_layout.option.vertical": "Vertical layout",
+  "account": {
+    "tab": "Account",
+    "username": {
+      "title": "Username",
+      "tips": "Email you can use to sign in to your account.",
+      "button": {
+        "label": "Change email"
+      },
+      "form": {
+        "email": {
+          "label": "Email",
+          "placeholder": "Please enter email"
+        }
+      }
+    },
+    "password": {
+      "title": "Password",
+      "tips": "It's recommended to change your password regularly, or sooner if you suspect any issues.",
+      "button": {
+        "label": "Change password"
+      },
+      "form": {
+        "email": {
+          "old_password": {
+            "label": "Current password",
+            "placeholder": "Please enter the current password"
+          },
+          "new_password": {
+            "label": "New password",
+            "placeholder": "Please enter the new password"
+          },
+          "confirm_password": {
+            "label": "Confirm password",
+            "placeholder": "Please enter the new password again"
+          },
+          "password": {
+            "errmsg": {
+              "invalid": "Password should be at least 10 characters",
+              "not_matched": "Passwords do not match"
+            }
+          }
+        }
+      }
+    },
+    "2fa": {
+      "title": "Two-factor authentication"
+    }
+  },
 
-  "settings.sslprovider.tab": "Certificate authority",
-  "settings.sslprovider.ca.title": "System-wide CA",
-  "settings.sslprovider.ca.tips": "You can use different CAs for each workflow as well. If you want to do this, please visit the credentials page.",
-  "settings.sslprovider.ca.form.provider.label": "ACME CA provider",
-  "settings.sslprovider.ca.form.provider.help": "Notes: The certificate validity lifetime, certificate algorithm, domain names count, and support for wildcard domain names are allowed may vary among different providers. After switching service providers, please check whether the configuration of the workflows needs to be adjusted.",
-  "settings.sslprovider.ca.form.letsencryptstaging_alert": "The staging environment can reduce the chance of your running up against rate limits. <br><br>Learn more:<br><a href=\"https://letsencrypt.org/docs/staging-environment/\" target=\"_blank\">https://letsencrypt.org/docs/staging-environment/</a>",
-  "settings.sslprovider.others.title": "Others",
-  "settings.sslprovider.others.form.timeout.label": "Certificate obtaining timeout",
-  "settings.sslprovider.others.form.timeout.placeholder": "Please enter certificate obtaining timeout",
-  "settings.sslprovider.others.form.timeout.unit": "seconds",
-  "settings.sslprovider.others.form.timeout.tooltip": "If you don't understand this option, just keep it by default.",
+  "appearance": {
+    "tab": "Appearance",
+    "theme": {
+      "title": "Theme",
+      "form": {
+        "value": {
+          "extra": "Reload the page for the change to take effect."
+        }
+      }
+    },
+    "language": {
+      "title": "Language",
+      "form": {
+        "value": {
+          "extra": "Reload the page for the change to take effect."
+        }
+      }
+    },
+    "pagination": {
+      "title": "Pagination",
+      "form": {
+        "default_per_page": {
+          "label": "Default items per page",
+          "placeholder": "Please enter default items per page",
+          "unit": "items per page"
+        }
+      }
+    },
+    "workflow": {
+      "title": "Workflow",
+      "form": {
+        "default_designer_layout": {
+          "label": "Default designer layout",
+          "placeholder": "Please select default designer layout",
+          "option": {
+            "horizontal": "Horizontal layout",
+            "vertical": "Vertical layout"
+          }
+        }
+      }
+    }
+  },
 
-  "settings.persistence.tab": "Persistence",
-  "settings.persistence.alerting.title": "Alerting",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.label": "Certificate expiration warning threshold",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.placeholder": "Please enter the certificate expiration warning threshold",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.unit": "days",
-  "settings.persistence.alerting.form.certificates_warning_days_before_expire.help": "Notes: It determines when the certificate will be marked as \"Expiring-Soon\".",
-  "settings.persistence.data_retention.title": "Data retention",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.label": "Workflow runs retention max days",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.placeholder": "Please enter the maximum number of retention days for workflow history runs",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.unit": "days",
-  "settings.persistence.data_retention.form.workflow_runs_retention_max_days.help": "Notes: Set to <b>0</b> to disable cleanup workflow history runs. Recommend setting to <b>180</b> days or more.",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.label": "Expired certificates retention max days",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.placeholder": "Please enter the maximum number of retention days for expired certificates",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.unit": "days",
-  "settings.persistence.data_retention.form.certificates_retention_max_days.help": "Notes: Set to <b>0</emb> to disable cleanup expired certificates.",
+  "sslprovider": {
+    "tab": "Certificate authority",
+    "ca": {
+      "title": "System-wide CA",
+      "tips": "You can use different CAs for each workflow as well. If you want to do this, please visit the credentials page.",
+      "form": {
+        "provider": {
+          "label": "ACME CA provider",
+          "help": "Notes: The certificate validity lifetime, certificate algorithm, domain names count, and support for wildcard domain names are allowed may vary among different providers. After switching service providers, please check whether the configuration of the workflows needs to be adjusted."
+        },
+        "letsencryptstaging_alert": "The staging environment can reduce the chance of your running up against rate limits. <br><br>Learn more:<br><a href=\"https://letsencrypt.org/docs/staging-environment/\" target=\"_blank\">https://letsencrypt.org/docs/staging-environment/</a>"
+      }
+    },
+    "others": {
+      "title": "Others",
+      "form": {
+        "timeout": {
+          "label": "Certificate obtaining timeout",
+          "placeholder": "Please enter certificate obtaining timeout",
+          "unit": "seconds",
+          "tooltip": "If you don't understand this option, just keep it by default."
+        }
+      }
+    }
+  },
 
-  "settings.diagnostics.tab": "Diagnostics",
-  "settings.diagnostics.logs.title": "System logs",
-  "settings.diagnostics.logs.button.refresh.label": "Refresh",
-  "settings.diagnostics.logs.button.load_more.label": "Load more",
-  "settings.diagnostics.crons.title": "CRON jobs",
-  "settings.diagnostics.crons.props.next_trigger_time": "Expected next execution time: ",
-  "settings.diagnostics.workflow_dispatcher.title": "Workflow dispatcher",
-  "settings.diagnostics.workflow_dispatcher.statistics.concurrency": "Concurrency",
-  "settings.diagnostics.workflow_dispatcher.statistics.pending": "Pending",
-  "settings.diagnostics.workflow_dispatcher.statistics.processing": "Processing",
+  "persistence": {
+    "tab": "Persistence",
+    "alerting": {
+      "title": "Alerting",
+      "form": {
+        "certificates_warning_days_before_expire": {
+          "label": "Certificate expiration warning threshold",
+          "placeholder": "Please enter the certificate expiration warning threshold",
+          "unit": "days",
+          "help": "Notes: It determines when the certificate will be marked as \"Expiring-Soon\"."
+        }
+      }
+    },
+    "data_retention": {
+      "title": "Data retention",
+      "form": {
+        "workflow_runs_retention_max_days": {
+          "label": "Workflow runs retention max days",
+          "placeholder": "Please enter the maximum number of retention days for workflow history runs",
+          "unit": "days",
+          "help": "Notes: Set to <b>0</b> to disable cleanup workflow history runs. Recommend setting to <b>180</b> days or more."
+        },
+        "certificates_retention_max_days": {
+          "label": "Expired certificates retention max days",
+          "placeholder": "Please enter the maximum number of retention days for expired certificates",
+          "unit": "days",
+          "help": "Notes: Set to <b>0</emb> to disable cleanup expired certificates."
+        }
+      }
+    }
+  },
 
-  "settings.about.tab": "About",
-  "settings.about.version.new": "New version available",
-  "settings.about.socials.document": "Documentation",
-  "settings.about.socials.github": "GitHub",
-  "settings.about.socials.telegram": "Telegram",
-  "settings.about.socials.donate": "Donate",
-  "settings.about.feedback.title": "Help us improve Certimate",
-  "settings.about.feedback.subtitle": "Tell us how to make Certimate work better for you.",
-  "settings.about.feedback.button": "Give feedback",
-  "settings.about.contributors.title": "Contributors",
-  "settings.about.contributors.tips": "Thanks to all the people who have contributed to this project."
+  "diagnostics": {
+    "tab": "Diagnostics",
+    "logs": {
+      "title": "System logs",
+      "button": {
+        "refresh": {
+          "label": "Refresh"
+        },
+        "load_more": {
+          "label": "Load more"
+        }
+      }
+    },
+    "crons": {
+      "title": "CRON jobs",
+      "props": {
+        "next_trigger_time": "Expected next execution time: "
+      }
+    },
+    "workflow_dispatcher": {
+      "title": "Workflow dispatcher",
+      "statistics": {
+        "concurrency": "Concurrency",
+        "pending": "Pending",
+        "processing": "Processing"
+      }
+    }
+  },
+
+  "about": {
+    "tab": "About",
+    "version": {
+      "new": "New version available"
+    },
+    "socials": {
+      "document": "Documentation",
+      "github": "GitHub",
+      "telegram": "Telegram",
+      "donate": "Donate"
+    },
+    "feedback": {
+      "title": "Help us improve Certimate",
+      "subtitle": "Tell us how to make Certimate work better for you.",
+      "button": "Give feedback"
+    },
+    "contributors": {
+      "title": "Contributors",
+      "tips": "Thanks to all the people who have contributed to this project."
+    }
+  }
 }

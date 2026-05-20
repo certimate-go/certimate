@@ -1,109 +1,212 @@
 {
-  "workflow.page.title": "Workflows",
-  "workflow.page.subtitle": "Workflows are collections of nodes that automate a process. Workflows begin execution when a trigger condition occurs and execute sequentially to achieve complex tasks.",
+  "$ns": "workflow",
 
-  "workflow.nodata.title": "No workflows",
-  "workflow.nodata.description": "It looks like you don't have any workflows. Get started by adding one.",
-  "workflow.nodata.button": "Create workflow",
+  "text": {
+    "nodata": "No workflows",
+    "nodata_description": "It looks like you don't have any workflows. Get started by adding one.",
+    "nodata_button": "Create workflow",
+    "unpublished_warning": "Please complete the orchestration and publish the changes first",
+    "running_prompt": "Running... Please check the history later"
+  },
 
-  "workflow.search.placeholder": "Search by workflow name ...",
+  "page": {
+    "heading": "Workflows",
+    "subheading": "Workflows are collections of nodes that automate a process. Workflows begin execution when a trigger condition occurs and execute sequentially to achieve complex tasks."
+  },
 
-  "workflow.action.create.button": "Create workflow",
-  "workflow.action.create.modal.title": "Create workflow",
-  "workflow.action.modify.menu": "Edit",
-  "workflow.action.duplicate.menu": "Duplicate",
-  "workflow.action.delete.menu": "Delete",
-  "workflow.action.delete.modal.title": "Delete \"{{name}}\"",
-  "workflow.action.delete.modal.content": "Are you sure want to delete this workflow? <br>This action cannot be undone.",
-  "workflow.action.batch_delete.modal.title": "Delete workflows",
-  "workflow.action.batch_delete.modal.content": "Are you sure want to delete these {{count}} selected workflows? <br>This action cannot be undone.",
-  "workflow.action.enable.button": "Activate",
-  "workflow.action.enable.errmsg.unpublished": "Please complete the orchestration and publish the changes first",
-  "workflow.action.disable.button": "Deactivate",
-  "workflow.action.execute.button": "Execute",
-  "workflow.action.execute.menu": "Execute",
-  "workflow.action.execute.modal.title": "Execute workflow",
-  "workflow.action.execute.modal.content": "You have unpublished changes. Do you really want to execute this workflow based on the last published version?",
-  "workflow.action.execute.prompt": "Running... Please check the history later",
+  "action": {
+    "search.input": {
+      "placeholder": "Search by workflow name ..."
+    },
+    "create.button": "Create workflow",
+    "create.modal": {
+      "title": "Create workflow"
+    },
+    "modify.menu": "Edit",
+    "duplicate.menu": "Duplicate",
+    "delete.menu": "Delete",
+    "delete.modal": {
+      "title": "Delete \"{{name}}\"",
+      "content": "Are you sure want to delete this workflow? <br>This action cannot be undone."
+    },
+    "batch_delete.modal": {
+      "title": "Delete workflows",
+      "content": "Are you sure want to delete these {{count}} selected workflows? <br>This action cannot be undone."
+    },
+    "enable.button": "Activate",
+    "disable.button": "Deactivate",
+    "execute.button": "Execute",
+    "execute.menu": "Execute",
+    "execute.modal": {
+      "title": "Execute workflow",
+      "content": "You have unpublished changes. Do you really want to execute this workflow based on the last published version?"
+    }
+  },
 
-  "workflow.props.name": "Name",
-  "workflow.props.description": "Description",
-  "workflow.props.trigger": "Trigger",
-  "workflow.props.trigger.scheduled": "Scheduled",
-  "workflow.props.trigger.manual": "Manual",
-  "workflow.props.last_run_at": "Last run at",
-  "workflow.props.state": "Active",
-  "workflow.props.state.filter.all": "All",
-  "workflow.props.state.filter.enabled": "Active",
-  "workflow.props.state.filter.disabled": "Inactive",
-  "workflow.props.created_at": "Created at",
-  "workflow.props.updated_at": "Updated at",
+  "props": {
+    "name": "Name",
+    "description": "Description",
+    "trigger": {
+      "": "Trigger",
+      "scheduled": "Scheduled",
+      "manual": "Manual"
+    },
+    "last_run_at": "Last run at",
+    "state": {
+      "": "Active",
+      "filter": {
+        "all": "All",
+        "enabled": "Active",
+        "disabled": "Inactive"
+      }
+    },
+    "created_at": "Created at",
+    "updated_at": "Updated at"
+  },
 
-  "workflow.new.title": "Create Workflow",
-  "workflow.new.subtitle": "Using a workflow to monitor, apply, deploy and notify.",
-  "workflow.new.button.create": "Create from blank",
-  "workflow.new.button.import": "Import from file",
-  "workflow.new.templates.title": "Choose a Template",
-  "workflow.new.templates.subtitle": "Use these template workflows to quickly initialize your automated certificate management workflow.",
-  "workflow.new.templates.template.standard.title": "Standard template",
-  "workflow.new.templates.template.standard.description": "A standard operating procedure that includes application, deployment, and notification steps.",
-  "workflow.new.templates.template.certtest.title": "Monitoring template",
-  "workflow.new.templates.template.certtest.description": "A monitoring operating procedure that includes monitoring, and notification steps.",
-  "workflow.new.templates.default_name": "Untitled workflow",
-  "workflow.new.templates.default_description": "",
+  "new": {
+    "heading": "Create Workflow",
+    "subheading": "Using a workflow to monitor, apply, deploy and notify.",
+    "button": {
+      "create": "Create from blank",
+      "import": "Import from file"
+    },
+    "templates": {
+      "title": "Choose a Template",
+      "subtitle": "Use these template workflows to quickly initialize your automated certificate management workflow.",
+      "template": {
+        "standard": {
+          "title": "Standard template",
+          "description": "A standard operating procedure that includes application, deployment, and notification steps."
+        },
+        "certtest": {
+          "title": "Monitoring template",
+          "description": "A monitoring operating procedure that includes monitoring, and notification steps."
+        }
+      },
+      "default_name": "Untitled workflow",
+      "default_description": ""
+    }
+  },
 
-  "workflow.detail.baseinfo.name.label": "Workflow name",
-  "workflow.detail.baseinfo.name.placeholder": "Please enter workflow name",
-  "workflow.detail.baseinfo.description.label": "Workflow description",
-  "workflow.detail.baseinfo.description.placeholder": "Please enter workflow description",
-  "workflow.detail.baseinfo.graph.label": "Workflow graph (Read-only)",
-  "workflow.detail.design.tab": "Orchestration",
-  "workflow.detail.design.editor.placeholder": "Please configure",
-  "workflow.detail.design.editor.add_node": "Add node",
-  "workflow.detail.design.editor.rename_node": "Rename node",
-  "workflow.detail.design.editor.duplicate_node": "Duplicate node",
-  "workflow.detail.design.editor.remove_node": "Delete node",
-  "workflow.detail.design.editor.add_branch": "Add branch",
-  "workflow.detail.design.editor.rename_branch": "Rename branch",
-  "workflow.detail.design.editor.duplicate_branch": "Duplicate branch",
-  "workflow.detail.design.editor.remove_branch": "Delete branch",
-  "workflow.detail.design.toolbar.zoomin": "Zoom in",
-  "workflow.detail.design.toolbar.zoomout": "Zoom out",
-  "workflow.detail.design.toolbar.auto_fit": "Auto fit view",
-  "workflow.detail.design.toolbar.horizontal_layout": "Horizontal Layout",
-  "workflow.detail.design.toolbar.vertical_layout": "Vertical Layout",
-  "workflow.detail.design.toolbar.minimap": "Minimap",
-  "workflow.detail.design.toolbar.drag_mode": "Drag mode",
-  "workflow.detail.design.toolbar.pointer_mode": "Pointer mode",
-  "workflow.detail.design.drawer.node_id.label": "Node ID: ",
-  "workflow.detail.design.drawer.disabled.on.tooltip": "Disable",
-  "workflow.detail.design.drawer.disabled.off.tooltip": "Enable",
-  "workflow.detail.design.action.publish.button": "Publish",
-  "workflow.detail.design.action.publish.modal.title": "Publish changes",
-  "workflow.detail.design.action.publish.modal.content": "Are you sure to publish your changes?",
-  "workflow.detail.design.action.rollback.button": "Rollback",
-  "workflow.detail.design.action.rollback.modal.title": "Rollback changes",
-  "workflow.detail.design.action.rollback.modal.content": "Are you sure to rollback your changes to the last published version?",
-  "workflow.detail.design.action.import.button": "Import",
-  "workflow.detail.design.action.import.modal.title": "Import workflow",
-  "workflow.detail.design.action.import.modal.ok_button": "Import",
-  "workflow.detail.design.action.import.form.format.label": "Format",
-  "workflow.detail.design.action.import.form.content.label": "Graph",
-  "workflow.detail.design.action.import.form.content.errmsg.invalid": "Please enter a valid graph content",
-  "workflow.detail.design.action.import.form.content.errmsg.first_node_start": "The first node must be a start node",
-  "workflow.detail.design.action.import.form.content.errmsg.last_node_end": "The last node must be an end node",
-  "workflow.detail.design.action.import.form.content.errmsg.duplicate_start": "The start node must be unique",
-  "workflow.detail.design.action.import.form.content.errmsg.invalid_id": "Node ID invalid: #{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.invalid_config": "Node config invalid: #{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.conflict_id": "Node ID conflict: #{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.abnormal_condition_branch": "Abnormal parallel/conditional branch: #{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.abnormal_try_catch_branch": "Abnormal execution result branch: #{{nodeId}}",
-  "workflow.detail.design.action.export.button": "Export",
-  "workflow.detail.design.action.export.modal.title": "Export workflow",
-  "workflow.detail.design.action.export.form.format.label": "Format",
-  "workflow.detail.design.action.export.form.content.label": "Graph",
-  "workflow.detail.design.uncompleted_design.alert": "The orchestration is not ready. Please check if there are any nodes not configured.",
-  "workflow.detail.design.unpublished_draft.alert": "The orchestration is not released yet.",
-  "workflow.detail.design.unsaved_changes.confirm": "You have unsaved changes. Do you really want to close the panel and drop those changes?",
-  "workflow.detail.runs.tab": "History runs"
+  "detail": {
+    "baseinfo": {
+      "name": {
+        "label": "Workflow name",
+        "placeholder": "Please enter workflow name"
+      },
+      "description": {
+        "label": "Workflow description",
+        "placeholder": "Please enter workflow description"
+      },
+      "graph": {
+        "label": "Workflow graph (Read-only)"
+      }
+    },
+    "design": {
+      "tab": "Orchestration",
+      "editor": {
+        "placeholder": "Please configure",
+        "add_node": "Add node",
+        "rename_node": "Rename node",
+        "duplicate_node": "Duplicate node",
+        "remove_node": "Delete node",
+        "add_branch": "Add branch",
+        "rename_branch": "Rename branch",
+        "duplicate_branch": "Duplicate branch",
+        "remove_branch": "Delete branch"
+      },
+      "toolbar": {
+        "zoomin": "Zoom in",
+        "zoomout": "Zoom out",
+        "auto_fit": "Auto fit view",
+        "horizontal_layout": "Horizontal Layout",
+        "vertical_layout": "Vertical Layout",
+        "minimap": "Minimap",
+        "drag_mode": "Drag mode",
+        "pointer_mode": "Pointer mode"
+      },
+      "drawer": {
+        "node_id": {
+          "label": "Node ID: "
+        },
+        "disabled": {
+          "on": {
+            "tooltip": "Disable"
+          },
+          "off": {
+            "tooltip": "Enable"
+          }
+        }
+      },
+      "action": {
+        "publish": {
+          "button": "Publish",
+          "modal": {
+            "title": "Publish changes",
+            "content": "Are you sure to publish your changes?"
+          }
+        },
+        "rollback": {
+          "button": "Rollback",
+          "modal": {
+            "title": "Rollback changes",
+            "content": "Are you sure to rollback your changes to the last published version?"
+          }
+        },
+        "import": {
+          "button": "Import",
+          "modal": {
+            "title": "Import workflow",
+            "ok_button": "Import"
+          },
+          "form": {
+            "format": {
+              "label": "Format"
+            },
+            "content": {
+              "label": "Graph",
+              "errmsg": {
+                "invalid": "Please enter a valid graph content",
+                "first_node_start": "The first node must be a start node",
+                "last_node_end": "The last node must be an end node",
+                "duplicate_start": "The start node must be unique",
+                "invalid_id": "Node ID invalid: #{{nodeId}}",
+                "invalid_config": "Node config invalid: #{{nodeId}}",
+                "conflict_id": "Node ID conflict: #{{nodeId}}",
+                "abnormal_condition_branch": "Abnormal parallel/conditional branch: #{{nodeId}}",
+                "abnormal_try_catch_branch": "Abnormal execution result branch: #{{nodeId}}"
+              }
+            }
+          }
+        },
+        "export": {
+          "button": "Export",
+          "modal": {
+            "title": "Export workflow"
+          },
+          "form": {
+            "format": {
+              "label": "Format"
+            },
+            "content": {
+              "label": "Graph"
+            }
+          }
+        }
+      },
+      "uncompleted_design": {
+        "alert": "The orchestration is not ready. Please check if there are any nodes not configured."
+      },
+      "unpublished_draft": {
+        "alert": "The orchestration is not released yet."
+      },
+      "unsaved_changes": {
+        "confirm": "You have unsaved changes. Do you really want to close the panel and drop those changes?"
+      }
+    },
+    "runs": {
+      "tab": "History runs"
+    }
+  }
 }

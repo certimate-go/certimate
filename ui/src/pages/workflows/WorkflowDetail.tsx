@@ -82,7 +82,7 @@ const WorkflowDetail = () => {
 
         await startWorkflowRun(workflow.id);
 
-        message.info(t("workflow.action.execute.prompt"));
+        message.info(t("workflow.text.running_prompt"));
       } catch (err) {
         setRunButtonLoading(false);
 
@@ -95,7 +95,7 @@ const WorkflowDetail = () => {
   const handleActiveClick = async () => {
     try {
       if (!workflow.enabled && !workflow.graphContent) {
-        message.warning(t("workflow.action.enable.errmsg.unpublished"));
+        message.warning(t("workflow.text.unpublished_warning"));
         return;
       }
 
@@ -109,7 +109,7 @@ const WorkflowDetail = () => {
   return (
     <div className="flex size-full flex-col">
       <div className="px-6 py-4" ref={divHeaderRef}>
-        <div className="container relative z-11 flex justify-between gap-4 not-md:flex-wrap">
+        <div className="relative z-11 container flex justify-between gap-4 not-md:flex-wrap">
           <div className="flex-1 not-md:w-full not-md:flex-none">
             <WorkflowDetailBaseName />
             <WorkflowDetailBaseDescription />

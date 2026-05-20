@@ -374,8 +374,8 @@ const WorkflowDetailRuns = () => {
   return (
     <div className="container">
       <div className="pt-9">
-        <Tips className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.deletion.alert") }}></span>} />
-        <Tips className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.cancellation.alert") }}></span>} />
+        <Tips className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.text.deletion_warning") }}></span>} />
+        <Tips className="mb-4" message={<span dangerouslySetInnerHTML={{ __html: t("workflow_run.text.cancellation_warning") }}></span>} />
 
         <div className="relative">
           <Table<WorkflowRunModel>
@@ -388,8 +388,8 @@ const WorkflowDetailRuns = () => {
               ) : (
                 <Empty
                   className="py-24"
-                  title={loadError ? t("common.text.nodata_failed") : t("workflow_run.nodata.title")}
-                  description={loadError ? unwrapErrMsg(loadError) : t("workflow_run.nodata.description")}
+                  title={loadError ? t("common.text.nodata_failed") : t("workflow_run.text.nodata")}
+                  description={loadError ? unwrapErrMsg(loadError) : t("workflow_run.text.nodata_description")}
                   icon={<IconHistory size={24} />}
                 />
               ),

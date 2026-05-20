@@ -1,42 +1,65 @@
 {
-  "certificate.page.title": "Certificates",
-  "certificate.page.subtitle": "SSL certificates contain the website's public key and the website's identity, along with related information. They are generated from the execution output of workflows.",
+  "$ns": "certificate",
 
-  "certificate.nodata.title": "No Certificates",
-  "certificate.nodata.description": "It looks like you don't have any certificates. Get started by running a workflow.",
-  "certificate.nodata.button": "Go to workflows",
+  "text": {
+    "nodata": "No Certificates",
+    "nodata_description": "It looks like you don't have any certificates. Get started by running a workflow.",
+    "nodata_button": "Go to workflows"
+  },
 
-  "certificate.search.placeholder": "Search by certificate name or serial number ...",
+  "page": {
+    "heading": "Certificates",
+    "subheading": "SSL certificates contain the website's public key and the website's identity, along with related information. They are generated from the execution output of workflows."
+  },
 
-  "certificate.action.view.menu": "View details",
-  "certificate.action.revoke.menu": "Revoke",
-  "certificate.action.revoke.modal.title": "Revoke \"{{name}}\"",
-  "certificate.action.revoke.modal.content": "Are you sure want to revoke this certificate? <br>This action cannot be undone.",
-  "certificate.action.delete.menu": "Delete",
-  "certificate.action.delete.modal.title": "Delete \"{{name}}\"",
-  "certificate.action.delete.modal.content": "Are you sure want to delete this certificate? <br>This action cannot be undone.",
-  "certificate.action.batch_delete.modal.title": "Delete certificates",
-  "certificate.action.batch_delete.modal.content": "Are you sure want to delete these {{count}} selected certificates? <br>This action cannot be undone.",
+  "action": {
+    "search.input": {
+      "placeholder": "Search by certificate name or serial number ..."
+    },
+    "view.menu": "View details",
+    "revoke.menu": "Revoke",
+    "revoke.modal": {
+      "title": "Revoke \"{{name}}\"",
+      "content": "Are you sure want to revoke this certificate? <br>This action cannot be undone."
+    },
+    "delete.menu": "Delete",
+    "delete.modal": {
+      "title": "Delete \"{{name}}\"",
+      "content": "Are you sure want to delete this certificate? <br>This action cannot be undone."
+    },
+    "batch_delete.modal": {
+      "title": "Delete certificates",
+      "content": "Are you sure want to delete these {{count}} selected certificates? <br>This action cannot be undone."
+    }
+  },
 
-  "certificate.props.subject_alt_names": "Name",
-  "certificate.props.validity": "Expiry",
-  "certificate.props.validity.left_days": "{{left}} / {{total}} days left",
-  "certificate.props.validity.less_than_a_day": "≤1 / {{total}} days left",
-  "certificate.props.validity.expired": "Expired",
-  "certificate.props.validity.expiration": "Expire on {{date}}",
-  "certificate.props.validity.filter.all": "All",
-  "certificate.props.validity.filter.expiring_soon": "Expiring soon",
-  "certificate.props.validity.filter.expired": "Expired",
-  "certificate.props.brand": "Brand",
-  "certificate.props.source": "Source",
-  "certificate.props.source.request": "Request",
-  "certificate.props.source.upload": "Upload",
-  "certificate.props.revoked": "Revoked",
-  "certificate.props.certificate": "Certificate chain",
-  "certificate.props.private_key": "Private key",
-  "certificate.props.serial_number": "Serial number",
-  "certificate.props.key_algorithm": "Key algorithm",
-  "certificate.props.issuer": "Issuer",
-  "certificate.props.created_at": "Created at",
-  "certificate.props.updated_at": "Updated at"
+  "props": {
+    "subject_alt_names": "Name",
+    "validity": {
+      "": "Expiry",
+      "left_days": "{{left}} / {{total}} days left",
+      "less_than_a_day": "≤1 / {{total}} days left",
+      "expired": "Expired",
+      "expiration": "Expire on {{date}}",
+      "filter": {
+        "all": "All",
+        "expiring_soon": "Expiring soon",
+        "expired": "Expired"
+      }
+    },
+    "brand": "Brand",
+    "source": {
+      "": "Source",
+      "request": "Request",
+      "upload": "Upload"
+    },
+    "revoked": "Revoked",
+    "certificate": "Certificate chain",
+    "private_key": "Private key",
+    "serial_number": "Serial number",
+    "key_algorithm": "Key algorithm",
+    "issuer": "Issuer",
+    "created_at": "Created at",
+    "updated_at": "Updated at"
+  }
 }

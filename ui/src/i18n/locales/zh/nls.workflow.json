@@ -1,109 +1,212 @@
 {
-  "workflow.page.title": "工作流",
-  "workflow.page.subtitle": "工作流是自动化流程的节点集合。当满足触发条件时，工作流开始顺序运行各节点以完成复杂的任务。",
+  "$ns": "workflow",
 
-  "workflow.nodata.title": "暂无工作流",
-  "workflow.nodata.description": "当前未找到工作流。请先创建。",
-  "workflow.nodata.button": "新建工作流",
+  "text": {
+    "nodata": "暂无工作流",
+    "nodata_description": "当前未找到工作流。请先创建。",
+    "nodata_button": "新建工作流",
+    "unpublished_warning": "请先完成流程编排并发布更改",
+    "runnning_prompt": "运行中……请稍后查看运行历史"
+  },
 
-  "workflow.search.placeholder": "按工作流名称搜索……",
+  "page": {
+    "heading": "工作流",
+    "subheading": "工作流是自动化流程的节点集合。当满足触发条件时，工作流开始顺序运行各节点以完成复杂的任务。"
+  },
 
-  "workflow.action.create.button": "新建工作流",
-  "workflow.action.create.modal.title": "新建工作流",
-  "workflow.action.modify.menu": "编辑工作流",
-  "workflow.action.duplicate.menu": "复制工作流",
-  "workflow.action.delete.menu": "删除工作流",
-  "workflow.action.delete.modal.title": "删除「{{name}}」",
-  "workflow.action.delete.modal.content": "确定要删除该工作流吗？<br>注意此操作不可撤销，请谨慎操作。",
-  "workflow.action.batch_delete.modal.title": "删除工作流",
-  "workflow.action.batch_delete.modal.content": "确定要删除这 {{count}} 个被选中的工作流吗？<br>注意此操作不可撤销，请谨慎操作。",
-  "workflow.action.enable.button": "启用",
-  "workflow.action.enable.errmsg.unpublished": "请先完成流程编排并发布更改",
-  "workflow.action.disable.button": "停用",
-  "workflow.action.execute.button": "运行",
-  "workflow.action.execute.menu": "运行工作流",
-  "workflow.action.execute.modal.title": "运行工作流",
-  "workflow.action.execute.modal.content": "你有尚未发布的更改。确定要以最近一次发布的版本继续运行吗？",
-  "workflow.action.execute.prompt": "运行中……请稍后查看运行历史",
+  "action": {
+    "search.input": {
+      "placeholder": "按工作流名称搜索……"
+    },
+    "create.button": "新建工作流",
+    "create.modal": {
+      "title": "新建工作流"
+    },
+    "modify.menu": "编辑工作流",
+    "duplicate.menu": "复制工作流",
+    "delete.menu": "删除工作流",
+    "delete.modal": {
+      "title": "删除「{{name}}」",
+      "content": "确定要删除该工作流吗？<br>注意此操作不可撤销，请谨慎操作。"
+    },
+    "batch_delete.modal": {
+      "title": "删除工作流",
+      "content": "确定要删除这 {{count}} 个被选中的工作流吗？<br>注意此操作不可撤销，请谨慎操作。"
+    },
+    "enable.button": "启用",
+    "disable.button": "停用",
+    "execute.button": "运行",
+    "execute.menu": "运行工作流",
+    "execute.modal": {
+      "title": "运行工作流",
+      "content": "你有尚未发布的更改。确定要以最近一次发布的版本继续运行吗？"
+    }
+  },
 
-  "workflow.props.name": "名称",
-  "workflow.props.description": "描述",
-  "workflow.props.trigger": "触发方式",
-  "workflow.props.trigger.scheduled": "定时",
-  "workflow.props.trigger.manual": "手动",
-  "workflow.props.last_run_at": "最近运行时间",
-  "workflow.props.state": "是否启用",
-  "workflow.props.state.filter.all": "全部",
-  "workflow.props.state.filter.enabled": "启用",
-  "workflow.props.state.filter.disabled": "未启用",
-  "workflow.props.created_at": "创建时间",
-  "workflow.props.updated_at": "更新时间",
+  "props": {
+    "name": "名称",
+    "description": "描述",
+    "trigger": {
+      "": "触发方式",
+      "scheduled": "定时",
+      "manual": "手动"
+    },
+    "last_run_at": "最近运行时间",
+    "state": {
+      "": "是否启用",
+      "filter": {
+        "all": "全部",
+        "enabled": "启用",
+        "disabled": "未启用"
+      }
+    },
+    "created_at": "创建时间",
+    "updated_at": "更新时间"
+  },
 
-  "workflow.new.title": "新建工作流",
-  "workflow.new.subtitle": "使用工作流来监控域名、申请证书、部署上传和发送通知。",
-  "workflow.new.button.create": "创建空白工作流",
-  "workflow.new.button.import": "从文件导入……",
-  "workflow.new.templates.title": "选择模板",
-  "workflow.new.templates.subtitle": "使用这些模板快速初始化你的自动化证书管理工作流。",
-  "workflow.new.templates.template.standard.title": "标准业务流程",
-  "workflow.new.templates.template.standard.description": "一个包含证书申请 + 证书部署 + 消息通知步骤的工作流程，可适用于绝大多数业务场景。",
-  "workflow.new.templates.template.certtest.title": "域名证书监控",
-  "workflow.new.templates.template.certtest.description": "一个包含证书监控 + 消息通知步骤的工作流程，可在线上证书到期前或已过期时发出告警。",
-  "workflow.new.templates.default_name": "未命名工作流",
-  "workflow.new.templates.default_description": "",
+  "new": {
+    "heading": "新建工作流",
+    "subheading": "使用工作流来监控域名、申请证书、部署上传和发送通知。",
+    "button": {
+      "create": "创建空白工作流",
+      "import": "从文件导入……"
+    },
+    "templates": {
+      "title": "选择模板",
+      "subtitle": "使用这些模板快速初始化你的自动化证书管理工作流。",
+      "template": {
+        "standard": {
+          "title": "标准业务流程",
+          "description": "一个包含证书申请 + 证书部署 + 消息通知步骤的工作流程，可适用于绝大多数业务场景。"
+        },
+        "certtest": {
+          "title": "域名证书监控",
+          "description": "一个包含证书监控 + 消息通知步骤的工作流程，可在线上证书到期前或已过期时发出告警。"
+        }
+      },
+      "default_name": "未命名工作流",
+      "default_description": ""
+    }
+  },
 
-  "workflow.detail.baseinfo.name.label": "工作流名称",
-  "workflow.detail.baseinfo.name.placeholder": "请输入工作流名称",
-  "workflow.detail.baseinfo.description.label": "工作流描述",
-  "workflow.detail.baseinfo.description.placeholder": "请输入工作流描述",
-  "workflow.detail.baseinfo.graph.label": "工作流图（只读）",
-  "workflow.detail.design.tab": "流程编排",
-  "workflow.detail.design.editor.placeholder": "请完成配置",
-  "workflow.detail.design.editor.add_node": "添加节点",
-  "workflow.detail.design.editor.rename_node": "重命名",
-  "workflow.detail.design.editor.duplicate_node": "复制节点",
-  "workflow.detail.design.editor.remove_node": "删除节点",
-  "workflow.detail.design.editor.add_branch": "添加分支",
-  "workflow.detail.design.editor.rename_branch": "重命名",
-  "workflow.detail.design.editor.duplicate_branch": "复制分支",
-  "workflow.detail.design.editor.remove_branch": "删除分支",
-  "workflow.detail.design.toolbar.zoomin": "放大",
-  "workflow.detail.design.toolbar.zoomout": "缩小",
-  "workflow.detail.design.toolbar.auto_fit": "自适应视图",
-  "workflow.detail.design.toolbar.horizontal_layout": "横向布局",
-  "workflow.detail.design.toolbar.vertical_layout": "竖向布局",
-  "workflow.detail.design.toolbar.minimap": "小地图",
-  "workflow.detail.design.toolbar.drag_mode": "触摸模式",
-  "workflow.detail.design.toolbar.pointer_mode": "指针模式",
-  "workflow.detail.design.drawer.node_id.label": "节点 ID：",
-  "workflow.detail.design.drawer.disabled.on.tooltip": "禁用",
-  "workflow.detail.design.drawer.disabled.off.tooltip": "启用",
-  "workflow.detail.design.action.publish.button": "发布更改",
-  "workflow.detail.design.action.publish.modal.title": "发布更改",
-  "workflow.detail.design.action.publish.modal.content": "确定要发布更改吗？",
-  "workflow.detail.design.action.rollback.button": "回退更改",
-  "workflow.detail.design.action.rollback.modal.title": "回退更改",
-  "workflow.detail.design.action.rollback.modal.content": "确定要回退到最近一次发布的版本吗？",
-  "workflow.detail.design.action.import.button": "导入",
-  "workflow.detail.design.action.import.modal.title": "导入工作流",
-  "workflow.detail.design.action.import.modal.ok_button": "导入",
-  "workflow.detail.design.action.import.form.format.label": "格式",
-  "workflow.detail.design.action.import.form.content.label": "内容",
-  "workflow.detail.design.action.import.form.content.errmsg.invalid": "请输入有效的内容",
-  "workflow.detail.design.action.import.form.content.errmsg.first_node_start": "第一个节点必须是开始节点",
-  "workflow.detail.design.action.import.form.content.errmsg.last_node_end": "最后一个节点必须是结束节点",
-  "workflow.detail.design.action.import.form.content.errmsg.duplicate_start": "有且只能有一个开始节点",
-  "workflow.detail.design.action.import.form.content.errmsg.invalid_id": "节点 ID 无效：#{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.invalid_config": "节点配置无效：#{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.conflict_id": "节点 ID 冲突：#{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.abnormal_condition_branch": "并行/条件分支结构异常：#{{nodeId}}",
-  "workflow.detail.design.action.import.form.content.errmsg.abnormal_try_catch_branch": "执行结果分支结构异常：#{{nodeId}}",
-  "workflow.detail.design.action.export.button": "导出",
-  "workflow.detail.design.action.export.modal.title": "导出工作流",
-  "workflow.detail.design.action.export.form.format.label": "格式",
-  "workflow.detail.design.action.export.form.content.label": "内容",
-  "workflow.detail.design.uncompleted_design.alert": "流程编排未就绪，请检查是否有节点未完成配置。",
-  "workflow.detail.design.unpublished_draft.alert": "当前编排有尚未发布的更改。",
-  "workflow.detail.design.unsaved_changes.confirm": "你有尚未保存的更改。确定要关闭面板吗？",
-  "workflow.detail.runs.tab": "运行历史"
+  "detail": {
+    "baseinfo": {
+      "name": {
+        "label": "工作流名称",
+        "placeholder": "请输入工作流名称"
+      },
+      "description": {
+        "label": "工作流描述",
+        "placeholder": "请输入工作流描述"
+      },
+      "graph": {
+        "label": "工作流图（只读）"
+      }
+    },
+    "design": {
+      "tab": "流程编排",
+      "editor": {
+        "placeholder": "请完成配置",
+        "add_node": "添加节点",
+        "rename_node": "重命名",
+        "duplicate_node": "复制节点",
+        "remove_node": "删除节点",
+        "add_branch": "添加分支",
+        "rename_branch": "重命名",
+        "duplicate_branch": "复制分支",
+        "remove_branch": "删除分支"
+      },
+      "toolbar": {
+        "zoomin": "放大",
+        "zoomout": "缩小",
+        "auto_fit": "自适应视图",
+        "horizontal_layout": "横向布局",
+        "vertical_layout": "竖向布局",
+        "minimap": "小地图",
+        "drag_mode": "触摸模式",
+        "pointer_mode": "指针模式"
+      },
+      "drawer": {
+        "node_id": {
+          "label": "节点 ID："
+        },
+        "disabled": {
+          "on": {
+            "tooltip": "禁用"
+          },
+          "off": {
+            "tooltip": "启用"
+          }
+        }
+      },
+      "action": {
+        "publish": {
+          "button": "发布更改",
+          "modal": {
+            "title": "发布更改",
+            "content": "确定要发布更改吗？"
+          }
+        },
+        "rollback": {
+          "button": "回退更改",
+          "modal": {
+            "title": "回退更改",
+            "content": "确定要回退到最近一次发布的版本吗？"
+          }
+        },
+        "import": {
+          "button": "导入",
+          "modal": {
+            "title": "导入工作流",
+            "ok_button": "导入"
+          },
+          "form": {
+            "format": {
+              "label": "格式"
+            },
+            "content": {
+              "label": "内容",
+              "errmsg": {
+                "invalid": "请输入有效的内容",
+                "first_node_start": "第一个节点必须是开始节点",
+                "last_node_end": "最后一个节点必须是结束节点",
+                "duplicate_start": "有且只能有一个开始节点",
+                "invalid_id": "节点 ID 无效：#{{nodeId}}",
+                "invalid_config": "节点配置无效：#{{nodeId}}",
+                "conflict_id": "节点 ID 冲突：#{{nodeId}}",
+                "abnormal_condition_branch": "并行/条件分支结构异常：#{{nodeId}}",
+                "abnormal_try_catch_branch": "执行结果分支结构异常：#{{nodeId}}"
+              }
+            }
+          }
+        },
+        "export": {
+          "button": "导出",
+          "modal": {
+            "title": "导出工作流"
+          },
+          "form": {
+            "format": {
+              "label": "格式"
+            },
+            "content": {
+              "label": "内容"
+            }
+          }
+        }
+      },
+      "uncompleted_design": {
+        "alert": "流程编排未就绪，请检查是否有节点未完成配置。"
+      },
+      "unpublished_draft": {
+        "alert": "当前编排有尚未发布的更改。"
+      },
+      "unsaved_changes": {
+        "confirm": "你有尚未保存的更改。确定要关闭面板吗？"
+      }
+    },
+    "runs": {
+      "tab": "运行历史"
+    }
+  }
 }
