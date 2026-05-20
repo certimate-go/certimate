@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	OUTPUT_FORMAT_PEM = string(domain.CertificateFormatTypePEM)
-	OUTPUT_FORMAT_PFX = string(domain.CertificateFormatTypePFX)
-	OUTPUT_FORMAT_JKS = string(domain.CertificateFormatTypeJKS)
+	FILE_FORMAT_PEM = string(domain.CertificateFormatTypePEM)
+	FILE_FORMAT_PFX = string(domain.CertificateFormatTypePFX)
+	FILE_FORMAT_JKS = string(domain.CertificateFormatTypeJKS)
 )

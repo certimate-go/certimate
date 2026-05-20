@@ -8,16 +8,18 @@ import CodeTextInput from "@/components/CodeTextInput";
 import PresetScriptTemplatesPopselect from "@/components/preset/PresetScriptTemplatesPopselect";
 import Show from "@/components/Show";
 import { CERTIFICATE_FORMATS } from "@/domain/certificate";
-import { randomString } from "@/utils/random";
 
 import { useFormNestedFieldsContext } from "./_context";
-import { initPresetScript as _initPresetScript } from "./BizDeployNodeConfigFieldsProviderLocal";
+import {
+  initPresetScript as _initPresetScript,
+  useSharedFormFieldsAndHandlers as _useSharedFormFieldsAndHandlers,
+} from "./BizDeployNodeConfigFieldsProviderLocal";
 
 const FORMAT_PEM = CERTIFICATE_FORMATS.PEM;
 const FORMAT_PFX = CERTIFICATE_FORMATS.PFX;
 const FORMAT_JKS = CERTIFICATE_FORMATS.JKS;
 
-const initPresetScript = (
+export const initPresetScript = (
   key: Parameters<typeof _initPresetScript>[0] | "sh_replace_synologydsm_ssl" | "sh_replace_fnos_ssl" | "sh_replace_qnap_ssl",
   params?: Parameters<typeof _initPresetScript>[1]
 ) => {
@@ -173,53 +175,14 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
 
-  const fieldFormat = Form.useWatch([parentNamePath, "format"], formInst);
-  const fieldCertPath = Form.useWatch([parentNamePath, "certPath"], formInst);
-
-  const handleFormatSelect = (value: string) => {
-    if (fieldFormat === value) return;
-
-    switch (value) {
-      case FORMAT_PEM:
-        {
-          if (/(.pfx|.jks)$/.test(fieldCertPath)) {
-            formInst.setFieldValue([parentNamePath, "certPath"], fieldCertPath.replace(/(.pfx|.jks)$/, ".crt"));
-          }
-        }
-        break;
-
-      case FORMAT_PFX:
-        {
-          if (/(.crt|.jks)$/.test(fieldCertPath)) {
-            formInst.setFieldValue([parentNamePath, "certPath"], fieldCertPath.replace(/(.crt|.jks)$/, ".pfx"));
-          }
-        }
-        break;
-
-      case FORMAT_JKS:
-        {
-          if (/(.crt|.pfx)$/.test(fieldCertPath)) {
-            formInst.setFieldValue([parentNamePath, "certPath"], fieldCertPath.replace(/(.crt|.pfx)$/, ".jks"));
-          }
-        }
-        break;
-    }
-  };
-
-  const handleRandomPfxPasswordClick = () => {
-    const password = randomString();
-    formInst.setFieldValue([parentNamePath, "pfxPassword"], password);
-  };
-
-  const handleRandomJksKeypassClick = () => {
-    const password = randomString();
-    formInst.setFieldValue([parentNamePath, "jksKeypass"], password);
-  };
-
-  const handleRandomJksStorepassClick = () => {
-    const password = randomString();
-    formInst.setFieldValue([parentNamePath, "jksStorepass"], password);
-  };
+  const {
+    fieldFormat: fieldFileFormat,
+    handleChangeFormat: handleFileFormatSelect,
+    handleRandomPfxPassword: handleRandomPfxPasswordClick,
+    handleRandomJksAlias: handleRandomJksAliasClick,
+    handleRandomJksKeypass: handleRandomJksKeypassClick,
+    handleRandomJksStorepass: handleRandomJksStorepassClick,
+  } = _useSharedFormFieldsAndHandlers(formInst, {});
 
   const handlePresetPreScriptClick = (key: string) => {
     switch (key) {
@@ -227,8 +190,8 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
       case "ps_backup_files":
         {
           const presetScriptParams = {
-            certPath: formInst.getFieldValue([parentNamePath, "certPath"]),
-            keyPath: formInst.getFieldValue([parentNamePath, "keyPath"]),
+            certPath: formInst.getFieldValue([parentNamePath, "filePathForCrt"]),
+            keyPath: formInst.getFieldValue([parentNamePath, "filePathForKey"]),
           };
           formInst.setFieldValue([parentNamePath, "preCommand"], initPresetScript(key, presetScriptParams));
         }
@@ -249,10 +212,10 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
       case "sh_replace_qnap_ssl":
         {
           const presetScriptParams = {
-            certPath: formInst.getFieldValue([parentNamePath, "certPath"]),
-            certPathForServerOnly: formInst.getFieldValue([parentNamePath, "certPathForServerOnly"]),
-            certPathForIntermediaOnly: formInst.getFieldValue([parentNamePath, "certPathForIntermediaOnly"]),
-            keyPath: formInst.getFieldValue([parentNamePath, "keyPath"]),
+            certPath: formInst.getFieldValue([parentNamePath, "filePathForCrt"]),
+            certPathForServerOnly: formInst.getFieldValue([parentNamePath, "filePathForCrtOnlyServer"]),
+            certPathForIntermediaOnly: formInst.getFieldValue([parentNamePath, "filePathForCrtOnlyIntermedia"]),
+            keyPath: formInst.getFieldValue([parentNamePath, "filePathForKey"]),
           };
           formInst.setFieldValue([parentNamePath, "postCommand"], initPresetScript(key, presetScriptParams));
         }
@@ -263,7 +226,7 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
       case "ps_binding_rdp":
         {
           const presetScriptParams = {
-            certPath: formInst.getFieldValue([parentNamePath, "certPath"]),
+            certPath: formInst.getFieldValue([parentNamePath, "filePathForCrt"]),
             pfxPassword: formInst.getFieldValue([parentNamePath, "pfxPassword"]),
           };
           formInst.setFieldValue([parentNamePath, "postCommand"], initPresetScript(key, presetScriptParams));
@@ -285,74 +248,74 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "format"]}
-        initialValue={initialValues.format}
-        label={t("workflow_node.deploy.form.ssh_format.label")}
+        name={[parentNamePath, "fileFormat"]}
+        initialValue={initialValues.fileFormat}
+        label={t("workflow_node.deploy.form.shared_file_format.label")}
         rules={[formRule]}
       >
         <Select
           options={[FORMAT_PEM, FORMAT_PFX, FORMAT_JKS].map((s) => ({
             key: s,
-            label: t(`workflow_node.deploy.form.ssh_format.option.${s.toLowerCase()}.label`),
+            label: t(`workflow_node.deploy.form.shared_file_format.option.${s.toLowerCase()}.label`),
             value: s,
           }))}
-          placeholder={t("workflow_node.deploy.form.ssh_format.placeholder")}
-          onSelect={handleFormatSelect}
+          placeholder={t("workflow_node.deploy.form.shared_file_format.placeholder")}
+          onSelect={handleFileFormatSelect}
         />
       </Form.Item>
 
-      <Show when={fieldFormat === FORMAT_PEM}>
+      <Show when={fieldFileFormat === FORMAT_PEM}>
         <Form.Item
-          name={[parentNamePath, "keyPath"]}
-          initialValue={initialValues.keyPath}
-          label={t("workflow_node.deploy.form.ssh_key_path.label")}
-          extra={t("workflow_node.deploy.form.ssh_key_path.help")}
+          name={[parentNamePath, "filePathForKey"]}
+          initialValue={initialValues.filePathForKey}
+          label={t("workflow_node.deploy.form.shared_file_path_for_key.label")}
+          extra={t("workflow_node.deploy.form.shared_file_path_for_key.help")}
           rules={[formRule]}
         >
-          <Input placeholder={t("workflow_node.deploy.form.ssh_key_path.placeholder")} />
+          <Input placeholder={t("workflow_node.deploy.form.shared_file_path_for_key.placeholder")} />
         </Form.Item>
       </Show>
 
       <Form.Item
-        name={[parentNamePath, "certPath"]}
-        initialValue={initialValues.certPath}
-        label={t(`workflow_node.deploy.form.ssh_${fieldFormat === FORMAT_PEM ? "fullchaincert" : "cert"}_path.label`)}
-        extra={t("workflow_node.deploy.form.ssh_cert_path.help")}
+        name={[parentNamePath, "filePathForCrt"]}
+        initialValue={initialValues.filePathForCrt}
+        label={t(`workflow_node.deploy.form.shared_file_path_for_crt.label`)}
+        extra={t("workflow_node.deploy.form.shared_file_path_for_crt.help")}
         rules={[formRule]}
       >
-        <Input placeholder={t(`workflow_node.deploy.form.ssh_${fieldFormat === FORMAT_PEM ? "fullchaincert" : "cert"}_path.placeholder`)} />
+        <Input placeholder={t(`workflow_node.deploy.form.shared_file_path_for_crt.placeholder`)} />
       </Form.Item>
 
-      <Show when={fieldFormat === FORMAT_PEM}>
+      <Show when={fieldFileFormat === FORMAT_PEM}>
         <Form.Item
-          name={[parentNamePath, "certPathForServerOnly"]}
-          initialValue={initialValues.certPathForServerOnly}
-          label={t("workflow_node.deploy.form.ssh_servercert_path.label")}
-          extra={t("workflow_node.deploy.form.ssh_servercert_path.help")}
+          name={[parentNamePath, "filePathForCrtOnlyServer"]}
+          initialValue={initialValues.filePathForCrtOnlyServer}
+          label={t("workflow_node.deploy.form.shared_file_path_for_servercrt.label")}
+          extra={t("workflow_node.deploy.form.shared_file_path_for_servercrt.help")}
           rules={[formRule]}
         >
-          <Input allowClear placeholder={t("workflow_node.deploy.form.ssh_servercert_path.placeholder")} />
+          <Input allowClear placeholder={t("workflow_node.deploy.form.shared_file_path_for_servercrt.placeholder")} />
         </Form.Item>
 
         <Form.Item
-          name={[parentNamePath, "certPathForIntermediaOnly"]}
-          initialValue={initialValues.certPathForIntermediaOnly}
-          label={t("workflow_node.deploy.form.ssh_intermediacert_path.label")}
-          extra={t("workflow_node.deploy.form.ssh_intermediacert_path.help")}
+          name={[parentNamePath, "filePathForCrtOnlyIntermedia"]}
+          initialValue={initialValues.filePathForCrtOnlyIntermedia}
+          label={t("workflow_node.deploy.form.shared_file_path_for_intermediacrt.label")}
+          extra={t("workflow_node.deploy.form.shared_file_path_for_intermediacrt.help")}
           rules={[formRule]}
         >
-          <Input allowClear placeholder={t("workflow_node.deploy.form.ssh_intermediacert_path.placeholder")} />
+          <Input allowClear placeholder={t("workflow_node.deploy.form.shared_file_path_for_intermediacrt.placeholder")} />
         </Form.Item>
       </Show>
 
-      <Show when={fieldFormat === FORMAT_PFX}>
+      <Show when={fieldFileFormat === FORMAT_PFX}>
         <Form.Item
-          label={t("workflow_node.deploy.form.ssh_pfx_password.label")}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ssh_pfx_password.tooltip") }}></span>}
+          label={t("workflow_node.deploy.form.shared_pfx_password.label")}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_pfx_password.tooltip") }}></span>}
         >
           <Space.Compact className="w-full">
             <Form.Item name={[parentNamePath, "pfxPassword"]} initialValue={initialValues.pfxPassword} rules={[formRule]} noStyle>
-              <Input placeholder={t("workflow_node.deploy.form.ssh_pfx_password.placeholder")} />
+              <Input placeholder={t("workflow_node.deploy.form.shared_pfx_password.placeholder")} />
             </Form.Item>
             <Tooltip title={t("common.text.random_roll")}>
               <Button className="px-2" onClick={handleRandomPfxPasswordClick}>
@@ -363,24 +326,30 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
         </Form.Item>
       </Show>
 
-      <Show when={fieldFormat === FORMAT_JKS}>
+      <Show when={fieldFileFormat === FORMAT_JKS}>
         <Form.Item
-          name={[parentNamePath, "jksAlias"]}
-          initialValue={initialValues.jksAlias}
-          label={t("workflow_node.deploy.form.ssh_jks_alias.label")}
-          rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ssh_jks_alias.tooltip") }}></span>}
+          label={t("workflow_node.deploy.form.shared_jks_alias.label")}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_jks_alias.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.ssh_jks_alias.placeholder")} />
+          <Space.Compact className="w-full">
+            <Form.Item name={[parentNamePath, "jksAlias"]} initialValue={initialValues.jksAlias} rules={[formRule]} noStyle>
+              <Input placeholder={t("workflow_node.deploy.form.shared_jks_alias.placeholder")} />
+            </Form.Item>
+            <Tooltip title={t("common.text.random_roll")}>
+              <Button className="px-2" onClick={handleRandomJksAliasClick}>
+                <IconDice6 size="1.25em" />
+              </Button>
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item
-          label={t("workflow_node.deploy.form.ssh_jks_keypass.label")}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ssh_jks_keypass.tooltip") }}></span>}
+          label={t("workflow_node.deploy.form.shared_jks_keypass.label")}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_jks_keypass.tooltip") }}></span>}
         >
           <Space.Compact className="w-full">
             <Form.Item name={[parentNamePath, "jksKeypass"]} initialValue={initialValues.jksKeypass} rules={[formRule]} noStyle>
-              <Input placeholder={t("workflow_node.deploy.form.ssh_jks_keypass.placeholder")} />
+              <Input placeholder={t("workflow_node.deploy.form.shared_jks_keypass.placeholder")} />
             </Form.Item>
             <Tooltip title={t("common.text.random_roll")}>
               <Button className="px-2" onClick={handleRandomJksKeypassClick}>
@@ -391,12 +360,12 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
         </Form.Item>
 
         <Form.Item
-          label={t("workflow_node.deploy.form.ssh_jks_storepass.label")}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ssh_jks_storepass.tooltip") }}></span>}
+          label={t("workflow_node.deploy.form.shared_jks_storepass.label")}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_jks_storepass.tooltip") }}></span>}
         >
           <Space.Compact className="w-full">
             <Form.Item name={[parentNamePath, "jksStorepass"]} initialValue={initialValues.jksStorepass} rules={[formRule]} noStyle>
-              <Input placeholder={t("workflow_node.deploy.form.ssh_jks_storepass.placeholder")} />
+              <Input placeholder={t("workflow_node.deploy.form.shared_jks_storepass.placeholder")} />
             </Form.Item>
             <Tooltip title={t("common.text.random_roll")}>
               <Button className="px-2" onClick={handleRandomJksStorepassClick}>
@@ -493,9 +462,9 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    format: FORMAT_PEM,
-    keyPath: "/etc/ssl/certimate/cert.key",
-    certPath: "/etc/ssl/certimate/cert.crt",
+    fileFormat: FORMAT_PEM,
+    filePathForKey: "/etc/ssl/certimate/cert.key",
+    filePathForCrt: "/etc/ssl/certimate/cert.crt",
   };
 };
 
@@ -505,11 +474,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       useSCP: z.boolean().nullish(),
-      format: z.enum([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS]),
-      keyPath: z.string().max(256).nullish(),
-      certPath: z.string().max(256).nullish(),
-      certPathForServerOnly: z.string().max(256).nullish(),
-      certPathForIntermediaOnly: z.string().max(256).nullish(),
+      fileFormat: z.enum([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS]),
+      filePathForKey: z.string().max(256).nullish(),
+      filePathForCrt: z.string().max(256).nullish(),
+      filePathForCrtOnlyServer: z.string().max(256).nullish(),
+      filePathForCrtOnlyIntermedia: z.string().max(256).nullish(),
       pfxPassword: z.string().nullish(),
       jksAlias: z.string().nullish(),
       jksKeypass: z.string().nullish(),
@@ -518,7 +487,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       postCommand: z.string().max(20480).nullish(),
     })
     .superRefine((values, ctx) => {
-      switch (values.format) {
+      switch (values.fileFormat) {
         case FORMAT_PFX:
           {
             const scPfxPassword = z.string().nonempty();

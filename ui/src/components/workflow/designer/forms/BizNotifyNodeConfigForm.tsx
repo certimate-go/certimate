@@ -83,7 +83,7 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
   };
 
   const handleProviderSelect = (value?: string | undefined) => {
-    // 切换通知渠道时重置表单，避免其他通知渠道的配置字段影响当前通知渠道
+    // 切换通知渠道时重置表单，避免其他通知渠道的配置字段残留
     if (initialValues?.provider === value) {
       formInst.setFieldValue("providerAccessId", void 0);
       formInst.resetFields(["providerConfig"]);

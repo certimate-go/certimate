@@ -262,7 +262,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   };
 
   const handleProviderSelect = (value?: string | undefined) => {
-    // 切换质询提供商时重置表单，避免其他提供商的配置字段影响当前提供商
+    // 切换质询提供商时重置表单，避免其他提供商的配置字段残留
     if (initialValues?.provider === value) {
       formInst.setFieldValue("providerAccessId", void 0);
       formInst.resetFields(["providerConfig"]);

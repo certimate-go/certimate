@@ -26,10 +26,10 @@ type DeployerConfig struct {
 	SecretName string `json:"secretName"`
 	// Kubernetes Secret 类型。
 	SecretType string `json:"secretType"`
-	// Kubernetes Secret 中用于存放证书的 Key。
-	SecretDataKeyForCrt string `json:"secretDataKeyForCrt,omitempty"`
-	// Kubernetes Secret 中用于存放私钥的 Key。
+	// Kubernetes Secret 中用于存放私钥的键。
 	SecretDataKeyForKey string `json:"secretDataKeyForKey,omitempty"`
+	// Kubernetes Secret 中用于存放证书的键。
+	SecretDataKeyForCrt string `json:"secretDataKeyForCrt,omitempty"`
 	// Kubernetes Secret 注解。
 	SecretAnnotations map[string]string `json:"secretAnnotations,omitempty"`
 	// Kubernetes Secret 标签。
@@ -71,12 +71,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	}
 	if d.config.SecretType == "" {
 		return nil, fmt.Errorf("config `secretType` is required")
-	}
-	if d.config.SecretDataKeyForCrt == "" {
-		return nil, fmt.Errorf("config `secretDataKeyForCrt` is required")
-	}
-	if d.config.SecretDataKeyForKey == "" {
-		return nil, fmt.Errorf("config `secretDataKeyForKey` is required")
 	}
 
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
@@ -130,8 +124,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 			Type: k8score.SecretType(d.config.SecretType),
 		}
 		secretPayload.Data = make(map[string][]byte)
-		secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
-		secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
+		if d.config.SecretDataKeyForKey != "" {
+			secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
+		}
+		if d.config.SecretDataKeyForCrt != "" {
+			secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
+		}
 
 		secretPayload, err = client.Secrets(d.config.Namespace).Create(ctx, secretPayload, meta.CreateOptions{})
 		d.logger.Debug("kubernetes operate 'Secrets.Create'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
@@ -161,8 +159,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 	if secretPayload.Data == nil {
 		secretPayload.Data = make(map[string][]byte)
 	}
-	secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
-	secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
+	if d.config.SecretDataKeyForKey != "" {
+		secretPayload.Data[d.config.SecretDataKeyForKey] = []byte(privkeyPEM)
+	}
+	if d.config.SecretDataKeyForCrt != "" {
+		secretPayload.Data[d.config.SecretDataKeyForCrt] = []byte(certPEM)
+	}
 	secretPayload, err = client.Secrets(d.config.Namespace).Update(ctx, secretPayload, meta.UpdateOptions{})
 	d.logger.Debug("kubernetes operate 'Secrets.Update'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
 	if err != nil {

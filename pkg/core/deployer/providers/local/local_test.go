@@ -11,8 +11,8 @@ var (
 	fp              = tester.Args("LOCAL_")
 	fTestCertPath   string
 	fTestKeyPath    string
-	fOutputCertPath string
-	fOutputKeyPath  string
+	fFilePathForCrt string
+	fFilePathForKey string
 	fPfxPassword    string
 	fJksAlias       string
 	fJksKeypass     string
@@ -25,8 +25,8 @@ var (
 func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
-	fp.DefineString(&fOutputCertPath, "OUTPUTCERTPATH")
-	fp.DefineString(&fOutputKeyPath, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
+	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
 	fp.DefineString(&fPfxPassword, "PFXPASSWORD")
 	fp.DefineString(&fJksAlias, "JKSALIAS")
 	fp.DefineString(&fJksKeypass, "JKSKEYPASS")
@@ -57,9 +57,9 @@ func TestProvider(t *testing.T) {
 
 	t.Run("Deploy_PEM", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
-			OutputFormat:   impl.OUTPUT_FORMAT_PEM,
-			OutputCertPath: fOutputCertPath + ".pem",
-			OutputKeyPath:  fOutputKeyPath + ".pem",
+			FileFormat:     impl.FILE_FORMAT_PEM,
+			FilePathForCrt: fFilePathForCrt + ".pem",
+			FilePathForKey: fFilePathForKey + ".pem",
 			ShellEnv:       fShellEnv,
 			PreCommand:     fPreCommand,
 			PostCommand:    fPostCommand,
@@ -74,8 +74,8 @@ func TestProvider(t *testing.T) {
 
 	t.Run("Deploy_PFX", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
-			OutputFormat:   impl.OUTPUT_FORMAT_PFX,
-			OutputCertPath: fOutputCertPath + ".pfx",
+			FileFormat:     impl.FILE_FORMAT_PFX,
+			FilePathForCrt: fFilePathForCrt + ".pfx",
 			PfxPassword:    fPfxPassword,
 		})
 		if err != nil {
@@ -88,8 +88,8 @@ func TestProvider(t *testing.T) {
 
 	t.Run("Deploy_JKS", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
-			OutputFormat:   impl.OUTPUT_FORMAT_JKS,
-			OutputCertPath: fOutputCertPath + ".jks",
+			FileFormat:     impl.FILE_FORMAT_JKS,
+			FilePathForCrt: fFilePathForCrt + ".jks",
 			JksAlias:       fJksAlias,
 			JksKeypass:     fJksKeypass,
 			JksStorepass:   fJksStorepass,

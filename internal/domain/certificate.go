@@ -95,7 +95,7 @@ const (
 	CertificateKeyAlgorithmTypeEC512   = CertificateKeyAlgorithmType("EC512")
 )
 
-func (t CertificateKeyAlgorithmType) KeyType() (certcrypto.KeyType, error) {
+func (t CertificateKeyAlgorithmType) ToLegoKeyType() (certcrypto.KeyType, error) {
 	keyTypeMap := map[CertificateKeyAlgorithmType]certcrypto.KeyType{
 		CertificateKeyAlgorithmTypeRSA2048: certcrypto.RSA2048,
 		CertificateKeyAlgorithmTypeRSA3072: certcrypto.RSA3072,

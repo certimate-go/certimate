@@ -17,19 +17,19 @@ func init() {
 		}
 
 		provider, err := ftp.NewDeployer(&ftp.DeployerConfig{
-			FtpHost:                  credentials.Host,
-			FtpPort:                  credentials.Port,
-			FtpUsername:              credentials.Username,
-			FtpPassword:              credentials.Password,
-			OutputFormat:             xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "format", ftp.OUTPUT_FORMAT_PEM),
-			OutputKeyPath:            xmaps.GetString(options.ProviderExtendedConfig, "keyPath"),
-			OutputCertPath:           xmaps.GetString(options.ProviderExtendedConfig, "certPath"),
-			OutputServerCertPath:     xmaps.GetString(options.ProviderExtendedConfig, "certPathForServerOnly"),
-			OutputIntermediaCertPath: xmaps.GetString(options.ProviderExtendedConfig, "certPathForIntermediaOnly"),
-			PfxPassword:              xmaps.GetString(options.ProviderExtendedConfig, "pfxPassword"),
-			JksAlias:                 xmaps.GetString(options.ProviderExtendedConfig, "jksAlias"),
-			JksKeypass:               xmaps.GetString(options.ProviderExtendedConfig, "jksKeypass"),
-			JksStorepass:             xmaps.GetString(options.ProviderExtendedConfig, "jksStorepass"),
+			FtpHost:                      credentials.Host,
+			FtpPort:                      credentials.Port,
+			FtpUsername:                  credentials.Username,
+			FtpPassword:                  credentials.Password,
+			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", ftp.FILE_FORMAT_PEM),
+			FilePathForKey:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForKey"),
+			FilePathForCrt:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrt"),
+			FilePathForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyServer"),
+			FilePathForCrtOnlyIntermedia: xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyIntermedia"),
+			PfxPassword:                  xmaps.GetString(options.ProviderExtendedConfig, "pfxPassword"),
+			JksAlias:                     xmaps.GetString(options.ProviderExtendedConfig, "jksAlias"),
+			JksKeypass:                   xmaps.GetString(options.ProviderExtendedConfig, "jksKeypass"),
+			JksStorepass:                 xmaps.GetString(options.ProviderExtendedConfig, "jksStorepass"),
 		})
 		return provider, err
 	})

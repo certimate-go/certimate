@@ -452,15 +452,15 @@
         "help": "提示：待部署证书来自之前的申请或上传节点，如果选项为空请先检查前序节点。"
       },
       "provider": {
-        "label": "部署目标",
-        "placeholder": "请选择部署目标",
+        "label": "提供商",
+        "placeholder": "请选择提供商",
         "search": {
-          "placeholder": "搜索部署目标……"
+          "placeholder": "搜索提供商……"
         }
       },
       "provider_access": {
-        "label": "主机提供商授权",
-        "placeholder": "请选择主机提供商授权",
+        "label": "提供商授权",
+        "placeholder": "请选择提供商授权",
         "button": "新建"
       },
       "skip_on_last_succeeded": {
@@ -495,6 +495,61 @@
       },
       "shared_script_command": {
         "vartips": "支持的变量：<br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}</strong>：<br>证书文件路径，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}</strong>：<br>证书文件（仅含服务器证书）路径，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}</strong>：<br>证书文件（仅含中间证书）路径，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}</strong>：<br>私钥文件路径，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}</strong>：<br>PFX 导出密码，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}</strong>：<br>JKS 别名，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}</strong>：<br>JKS 私钥访问口令，等同于表单中相应字段的值。</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}</strong>：<br>JKS 密钥库存储口令，等同于表单中相应字段的值。</li></ol>"
+      },
+      "shared_file_format": {
+        "label": "文件格式",
+        "placeholder": "请选择文件格式",
+        "option": {
+          "pem": {
+            "label": "PEM 格式（*.pem, *.crt, *.key）"
+          },
+          "pfx": {
+            "label": "PFX 格式（*.pfx, *.p12）"
+          },
+          "jks": {
+            "label": "JKS 格式（*.jks）"
+          }
+        }
+      },
+      "shared_file_path_for_key": {
+        "label": "私钥文件输出路径",
+        "placeholder": "请输入私钥文件输出路径",
+        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
+      },
+      "shared_file_path_for_crt": {
+        "label": "证书文件输出路径",
+        "placeholder": "请输入证书文件输出路径",
+        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
+      },
+      "shared_file_path_for_servercrt": {
+        "label": "证书文件（仅含服务器证书）输出路径（可选）",
+        "placeholder": "请输入服务器证书文件输出路径",
+        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不输出服务器证书。"
+      },
+      "shared_file_path_for_intermediacrt": {
+        "label": "证书文件（仅含中间证书）输出路径（可选）",
+        "placeholder": "请输入中间证书文件输出路径",
+        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不输出中间证书。"
+      },
+      "shared_pfx_password": {
+        "label": "PFX 导出密码",
+        "placeholder": "请输入 PFX 导出密码",
+        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
+      },
+      "shared_jks_alias": {
+        "label": "JKS 别名",
+        "placeholder": "请输入 JKS 别名",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
+      },
+      "shared_jks_keypass": {
+        "label": "JKS 私钥访问口令",
+        "placeholder": "请输入 JKS 私钥访问口令",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
+      },
+      "shared_jks_storepass": {
+        "label": "JKS 密钥库存储口令",
+        "placeholder": "请输入 JKS 密钥库存储口令",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
 
       "1panel_node_name": {
@@ -606,7 +661,7 @@
         "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://help.aliyun.com/zh/ssl-certificate/developer-reference/endpoints</a>"
       },
       "aliyun_casdeploy": {
-        "guide": "将通过阿里云 OpenAPI <em>CreateDeploymentJob</em> 接口创建异步部署任务。此部署目标若执行成功仅代表已创建部署任务，实际部署结果需要你自行前往阿里云控制台查询。"
+        "guide": "将通过阿里云 OpenAPI <em>CreateDeploymentJob</em> 接口创建异步部署任务。"
       },
       "aliyun_casdeploy_region": {
         "label": "阿里云服务地域",
@@ -1246,65 +1301,6 @@
         "placeholder": "请输入 Fly.io 自定义域名",
         "help": "注意：首次导入自定义证书后，请登录 Fly.io 控制台完成域名所有权验证。"
       },
-      "ftp_format": {
-        "label": "文件格式",
-        "placeholder": "请选择文件格式",
-        "option": {
-          "pem": {
-            "label": "PEM 格式（*.pem, *.crt, *.key）"
-          },
-          "pfx": {
-            "label": "PFX 格式（*.pfx, *.p12）"
-          },
-          "jks": {
-            "label": "JKS 格式（*.jks）"
-          }
-        }
-      },
-      "ftp_key_path": {
-        "label": "私钥文件保存路径",
-        "placeholder": "请输入私钥文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
-      },
-      "ftp_cert_path": {
-        "label": "证书文件保存路径",
-        "placeholder": "请输入证书文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
-      },
-      "ftp_fullchaincert_path": {
-        "label": "证书链文件保存路径",
-        "placeholder": "请输入证书链文件远程路径"
-      },
-      "ftp_servercert_path": {
-        "label": "服务器证书文件保存路径（可选）",
-        "placeholder": "请输入服务器证书文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不上传服务器证书。"
-      },
-      "ftp_intermediacert_path": {
-        "label": "中间证书文件保存路径（可选）",
-        "placeholder": "请输入中间证书文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不上传中间证书。"
-      },
-      "ftp_pfx_password": {
-        "label": "PFX 导出密码",
-        "placeholder": "请输入 PFX 导出密码",
-        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "ftp_jks_alias": {
-        "label": "JKS 别名",
-        "placeholder": "请输入 JKS 别名",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ftp_jks_keypass": {
-        "label": "JKS 私钥访问口令",
-        "placeholder": "请输入 JKS 私钥访问口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ftp_jks_storepass": {
-        "label": "JKS 密钥库存储口令",
-        "placeholder": "请输入 JKS 密钥库存储口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
       "gcore_cdn_resource_id": {
         "label": "G-Core CDN 资源 ID",
         "placeholder": "请输入 G-Core CDN 资源 ID",
@@ -1615,65 +1611,6 @@
       "local": {
         "guide": "如果你正在使用 Docker 运行 Certimate，「本地」指的是容器内而非宿主机。"
       },
-      "local_format": {
-        "label": "文件格式",
-        "placeholder": "请选择文件格式",
-        "option": {
-          "pem": {
-            "label": "PEM 格式（*.pem, *.crt, *.key）"
-          },
-          "pfx": {
-            "label": "PFX 格式（*.pfx, *.p12）"
-          },
-          "jks": {
-            "label": "JKS 格式（*.jks）"
-          }
-        }
-      },
-      "local_key_path": {
-        "label": "私钥文件保存路径",
-        "placeholder": "请输入私钥文件本地路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
-      },
-      "local_cert_path": {
-        "label": "证书文件保存路径",
-        "placeholder": "请输入证书文件本地路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
-      },
-      "local_fullchaincert_path": {
-        "label": "证书链文件保存路径",
-        "placeholder": "请输入证书链文件本地路径"
-      },
-      "local_servercert_path": {
-        "label": "服务器证书文件保存路径（可选）",
-        "placeholder": "请输入服务器证书文件本地路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不会保存服务器证书。"
-      },
-      "local_intermediacert_path": {
-        "label": "中间证书文件保存路径（可选）",
-        "placeholder": "请输入中间证书文件本地路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不会保存中间证书。"
-      },
-      "local_pfx_password": {
-        "label": "PFX 导出密码",
-        "placeholder": "请输入 PFX 导出密码",
-        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "local_jks_alias": {
-        "label": "JKS 别名",
-        "placeholder": "请输入 JKS 别名",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "local_jks_keypass": {
-        "label": "JKS 私钥访问口令",
-        "placeholder": "请输入 JKS 私钥访问口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "local_jks_storepass": {
-        "label": "JKS 密钥库存储口令",
-        "placeholder": "请输入 JKS 密钥库存储口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
       "local_shell_env": {
         "label": "命令执行环境",
         "placeholder": "请选择命令执行环境",
@@ -1862,62 +1799,23 @@
         "label": "对象存储桶名",
         "placeholder": "请输入对象存储桶名"
       },
-      "s3_format": {
-        "label": "文件格式",
-        "placeholder": "请选择文件格式",
-        "option": {
-          "pem": {
-            "label": "PEM 格式（*.pem, *.crt, *.key）"
-          },
-          "pfx": {
-            "label": "PFX 格式（*.pfx, *.p12）"
-          },
-          "jks": {
-            "label": "JKS 格式（*.jks）"
-          }
-        }
-      },
-      "s3_key_object_key": {
+      "s3_object_key_for_key": {
         "label": "私钥文件对象键",
         "placeholder": "请输入私钥文件对象键"
       },
-      "s3_cert_object_key": {
+      "s3_object_key_for_crt": {
         "label": "证书文件对象键",
         "placeholder": "请输入证书文件对象键"
       },
-      "s3_fullchaincert_object_key": {
-        "label": "证书链文件对象键",
-        "placeholder": "请输入证书链文件对象键"
-      },
-      "s3_servercert_object_key": {
-        "label": "服务器证书文件对象键（可选）",
+      "s3_object_key_for_servercrt": {
+        "label": "证书文件（仅含服务器证书）对象键（可选）",
         "placeholder": "请输入服务器证书文件对象键",
         "help": "注意：不填写时将不会上传服务器证书。"
       },
-      "s3_intermediacert_object_key": {
-        "label": "中间证书文件对象键（可选）",
+      "s3_object_key_for_intermediacrt": {
+        "label": "证书文件（仅含中间证书）对象键（可选）",
         "placeholder": "请输入中间证书文件对象键",
         "help": "注意：不填写时将不会上传中间证书。"
-      },
-      "s3_pfx_password": {
-        "label": "PFX 导出密码",
-        "placeholder": "请输入 PFX 导出密码",
-        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "s3_jks_alias": {
-        "label": "JKS 别名",
-        "placeholder": "请输入 JKS 别名",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "s3_jks_keypass": {
-        "label": "JKS 私钥访问口令",
-        "placeholder": "请输入 JKS 私钥访问口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "s3_jks_storepass": {
-        "label": "JKS 密钥库存储口令",
-        "placeholder": "请输入 JKS 密钥库存储口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
       "safeline": {
         "guide": "需要雷池 v6.6 或更高版本。"
@@ -1948,65 +1846,6 @@
         "label": "SamWAF 证书 ID",
         "placeholder": "请输入 SamWAF 证书 ID",
         "tooltip": "请登录 SamWAF 控制台查看"
-      },
-      "ssh_format": {
-        "label": "文件格式",
-        "placeholder": "请选择文件格式",
-        "option": {
-          "pem": {
-            "label": "PEM 格式（*.pem, *.crt, *.key）"
-          },
-          "pfx": {
-            "label": "PFX 格式（*.pfx, *.p12）"
-          },
-          "jks": {
-            "label": "JKS 格式（*.jks）"
-          }
-        }
-      },
-      "ssh_key_path": {
-        "label": "私钥文件保存路径",
-        "placeholder": "请输入私钥文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
-      },
-      "ssh_cert_path": {
-        "label": "证书文件保存路径",
-        "placeholder": "请输入证书文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。"
-      },
-      "ssh_fullchaincert_path": {
-        "label": "证书链文件保存路径",
-        "placeholder": "请输入证书链文件远程路径"
-      },
-      "ssh_servercert_path": {
-        "label": "服务器证书文件保存路径（可选）",
-        "placeholder": "请输入服务器证书文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不上传服务器证书。"
-      },
-      "ssh_intermediacert_path": {
-        "label": "中间证书文件保存路径（可选）",
-        "placeholder": "请输入中间证书文件远程路径",
-        "help": "注意：路径需包含完整的文件名，而不是只有目录。不填写时将不上传中间证书。"
-      },
-      "ssh_pfx_password": {
-        "label": "PFX 导出密码",
-        "placeholder": "请输入 PFX 导出密码",
-        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "ssh_jks_alias": {
-        "label": "JKS 别名",
-        "placeholder": "请输入 JKS 别名",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ssh_jks_keypass": {
-        "label": "JKS 私钥访问口令",
-        "placeholder": "请输入 JKS 私钥访问口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ssh_jks_storepass": {
-        "label": "JKS 密钥库存储口令",
-        "placeholder": "请输入 JKS 密钥库存储口令",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
       "ssh_pre_command": {
         "label": "前置命令（可选）",
@@ -2190,7 +2029,7 @@
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/41659\" target=\"_blank\">https://cloud.tencent.com/document/product/400/41659</a><br>国际站用户请填写 <em>ssl.intl.tencentcloudapi.com</em>。"
       },
       "tencentcloud_ssldeploy": {
-        "guide": "将通过腾讯云 OpenAPI <em>DeployCertificateInstance</em> 接口创建异步部署任务。此部署目标若执行成功仅代表已创建部署任务，实际部署结果需要你自行前往腾讯云控制台查询。"
+        "guide": "将通过腾讯云 OpenAPI <em>DeployCertificateInstance</em> 接口创建异步部署任务。"
       },
       "tencentcloud_ssldeploy_endpoint": {
         "label": "腾讯云接口端点（可选）",
@@ -2221,7 +2060,7 @@
         }
       },
       "tencentcloud_sslupdate": {
-        "guide": "将通过腾讯云 OpenAPI <em>UpdateCertificateInstance</em> 或 <em>UploadUpdateCertificateInstance</em> 接口创建异步部署任务。此部署目标若执行成功仅代表已创建部署任务，实际部署结果需要你自行前往腾讯云控制台查询。"
+        "guide": "将通过腾讯云 OpenAPI <em>UpdateCertificateInstance</em> 或 <em>UploadUpdateCertificateInstance</em> 接口创建异步部署任务。"
       },
       "tencentcloud_sslupdate_endpoint": {
         "label": "腾讯云接口端点（可选）",
@@ -2621,7 +2460,7 @@
       "webhook_data": {
         "label": "Webhook 回调数据（可选）",
         "placeholder": "请输入 Webhook 回调数据以覆盖默认值",
-        "help": "提示：不填写时，将使用所选部署目标授权的默认 Webhook 回调数据。",
+        "help": "提示：不填写时，将使用所选提供商授权的默认 Webhook 回调数据。",
         "vartips": "支持的变量：<br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>：<br>证书的主域名或 IP。</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>：<br>证书的多域名或 IP，以半角分号隔开。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>：<br>证书文件 PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>：<br>证书文件（仅含服务器证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>：<br>证书文件（仅含中间证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>：<br>私钥文件 PEM 格式内容。</li></ol>"
       },
       "webhook_timeout": {

@@ -66,8 +66,8 @@ func init() {
 			Namespace:           xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "namespace", "default"),
 			SecretName:          xmaps.GetString(options.ProviderExtendedConfig, "secretName"),
 			SecretType:          xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretType", "kubernetes.io/tls"),
-			SecretDataKeyForCrt: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForCrt", "tls.crt"),
 			SecretDataKeyForKey: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForKey", "tls.key"),
+			SecretDataKeyForCrt: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "secretDataKeyForCrt", "tls.crt"),
 			SecretAnnotations:   secretAnnotations,
 			SecretLabels:        secretLabels,
 		})

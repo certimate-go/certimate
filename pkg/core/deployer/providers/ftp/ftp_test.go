@@ -15,8 +15,8 @@ var (
 	fFtpPort        int64
 	fFtpUsername    string
 	fFtpPassword    string
-	fOutputCertPath string
-	fOutputKeyPath  string
+	fFilePathForCrt string
+	fFilePathForKey string
 )
 
 func init() {
@@ -26,8 +26,8 @@ func init() {
 	fp.DefineInt64(&fFtpPort, "FTPPORT")
 	fp.DefineString(&fFtpUsername, "FTPUSERNAME")
 	fp.DefineString(&fFtpPassword, "FTPPASSWORD")
-	fp.DefineString(&fOutputCertPath, "OUTPUTCERTPATH")
-	fp.DefineString(&fOutputKeyPath, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
+	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
 }
 
 /*
@@ -52,9 +52,9 @@ func TestProvider(t *testing.T) {
 			FtpPort:        int32(fFtpPort),
 			FtpUsername:    fFtpUsername,
 			FtpPassword:    fFtpPassword,
-			OutputFormat:   impl.OUTPUT_FORMAT_PEM,
-			OutputCertPath: fOutputCertPath + ".pem",
-			OutputKeyPath:  fOutputKeyPath + ".pem",
+			FileFormat:     impl.FILE_FORMAT_PEM,
+			FilePathForCrt: fFilePathForCrt + ".pem",
+			FilePathForKey: fFilePathForKey + ".pem",
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

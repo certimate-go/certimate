@@ -91,13 +91,13 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
   }, [fieldProvider]);
 
   useEffect(() => {
-    // 如果未选择部署目标，则清空授权信息
+    // 如果未选择提供商，则清空授权信息
     if (!fieldProvider && fieldProviderAccessId) {
       formInst.setFieldValue("providerAccessId", void 0);
       return;
     }
 
-    // 如果已选择部署目标只有一个授权信息，则自动选择该授权信息
+    // 如果已选择提供商只有一个授权信息，则自动选择该授权信息
     if (fieldProvider && !fieldProviderAccessId) {
       const availableAccesses = accesses
         .filter((access) => accessOptionFilter(access.provider, access))
@@ -115,7 +115,7 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
   };
 
   const handleProviderSelect = (value?: string | undefined) => {
-    // 切换部署目标时重置表单，避免其他部署目标的配置字段影响当前部署目标
+    // 切换提供商时重置表单，避免其他提供商的配置字段残留
     if (initialValues?.provider === value) {
       formInst.setFieldValue("providerAccessId", void 0);
       formInst.resetFields(["providerConfig"]);

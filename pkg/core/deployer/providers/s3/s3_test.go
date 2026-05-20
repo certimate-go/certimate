@@ -16,8 +16,8 @@ var (
 	fSecretKey      string
 	fRegion         string
 	fBucket         string
-	fOutputCertPath string
-	fOutputKeyPath  string
+	fFilePathForCrt string
+	fFilePathForKey string
 )
 
 func init() {
@@ -28,8 +28,8 @@ func init() {
 	fp.DefineString(&fSecretKey, "SECRETKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fBucket, "BUCKET")
-	fp.DefineString(&fOutputCertPath, "OUTPUTCERTPATH")
-	fp.DefineString(&fOutputKeyPath, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
+	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
 }
 
 /*
@@ -51,14 +51,14 @@ func TestProvider(t *testing.T) {
 
 	t.Run("Deploy_PEM", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
-			Endpoint:            fSshHost,
-			AccessKey:           fAccessKey,
-			SecretKey:           fSecretKey,
-			Region:              fRegion,
-			Bucket:              fBucket,
-			OutputFormat:        impl.OUTPUT_FORMAT_PEM,
-			OutputCertObjectKey: fOutputCertPath + ".pem",
-			OutputKeyObjectKey:  fOutputKeyPath + ".pem",
+			Endpoint:        fSshHost,
+			AccessKey:       fAccessKey,
+			SecretKey:       fSecretKey,
+			Region:          fRegion,
+			Bucket:          fBucket,
+			FileFormat:      impl.FILE_FORMAT_PEM,
+			ObjectKeyForCrt: fFilePathForCrt + ".pem",
+			ObjectKeyForKey: fFilePathForKey + ".pem",
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

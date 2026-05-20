@@ -149,16 +149,16 @@
       },
       "provider_access": {
         "label": "Provider credential",
-        "placeholder": "Please select an credential of provider",
+        "placeholder": "Please select an credential of the provider",
         "button": "Create"
       },
       "provider_access_dns01": {
         "label": "DNS provider credential",
-        "placeholder": "Please select an credential of DNS provider"
+        "placeholder": "Please select an credential of the DNS provider"
       },
       "provider_access_http01": {
         "label": "Hosting provider credential",
-        "placeholder": "Please select an credential of hosting provider"
+        "placeholder": "Please select an credential of the hosting provider"
       },
       "key_source": {
         "label": "Key source",
@@ -453,15 +453,15 @@
         "help": "Notes: The certificate to be deployed comes from the previous nodes of application or upload."
       },
       "provider": {
-        "label": "Deployment target",
-        "placeholder": "Please select deployment target",
+        "label": "Provider",
+        "placeholder": "Please select provider",
         "search": {
-          "placeholder": "Search deployment target ..."
+          "placeholder": "Search provider ..."
         }
       },
       "provider_access": {
-        "label": "Hosting provider credential",
-        "placeholder": "Please select an credential of hosting provider",
+        "label": "Provider credential",
+        "placeholder": "Please select an credential of the provider",
         "button": "Create"
       },
       "skip_on_last_succeeded": {
@@ -496,6 +496,61 @@
       },
       "shared_script_command": {
         "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}</strong>: <br>The path of the certificate file, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}</strong>: <br>The path of the server certificate file, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}</strong>: <br>The path of the intermediate CA certificate file, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}</strong>: <br>The path of the private key file, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}</strong>: <br>The PFX password, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}</strong>: <br>The JKS alias, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}</strong>: <br>The JKS key password, same as the value of the form related field.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}</strong>: <br>The JKS store password, same as the value of the form related field.</li></ol>"
+      },
+      "shared_file_format": {
+        "label": "File format",
+        "placeholder": "Please select file format",
+        "option": {
+          "pem": {
+            "label": "PEM (*.pem, *.crt, *.key)"
+          },
+          "pfx": {
+            "label": "PFX (*.pfx, *.p12)"
+          },
+          "jks": {
+            "label": "JKS (*.jks)"
+          }
+        }
+      },
+      "shared_file_path_for_key": {
+        "label": "Private key file path",
+        "placeholder": "Please enter the output file path for private key file",
+        "help": "Notes: It should include the full file path, not just the directory."
+      },
+      "shared_file_path_for_crt": {
+        "label": "Certificate file path",
+        "placeholder": "Please enter the output file path for certificate",
+        "help": "Notes: It should include the full file path, not just the directory."
+      },
+      "shared_file_path_for_servercrt": {
+        "label": "Certificate file (includes the end-entity parts only) path (Optional)",
+        "placeholder": "Please enter the output file path for server certificate file",
+        "help": "Notes: It should include the full file path, not just the directory."
+      },
+      "shared_file_path_for_intermediacrt": {
+        "label": "Certificate file (includes the CA parts only) path (Optional)",
+        "placeholder": "Please enter the output file path for intermediate certificate file",
+        "help": "Notes: It should include the full file path, not just the directory."
+      },
+      "shared_pfx_password": {
+        "label": "PFX password",
+        "placeholder": "Please enter PFX password",
+        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
+      },
+      "shared_jks_alias": {
+        "label": "JKS alias",
+        "placeholder": "Please enter JKS alias",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
+      },
+      "shared_jks_keypass": {
+        "label": "JKS key password",
+        "placeholder": "Please enter JKS key password",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
+      },
+      "shared_jks_storepass": {
+        "label": "JKS store password",
+        "placeholder": "Please enter JKS store password",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
 
       "1panel_node_name": {
@@ -607,7 +662,7 @@
         "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>"
       },
       "aliyun_casdeploy": {
-        "guide": "TIPS: This will invoke Alibaba Cloud OpenAPI <em>CreateDeploymentJob</em> to create an asynchronously deployment task. You need to go to the Alibaba Cloud console to check the actual deployment results by yourself."
+        "guide": "TIPS: This will invoke Alibaba Cloud OpenAPI <em>CreateDeploymentJob</em> to create an asynchronously deployment task."
       },
       "aliyun_casdeploy_region": {
         "label": "Alibaba Cloud region",
@@ -1250,65 +1305,6 @@
         "placeholder": "Please enter Fly.io custom domain name",
         "help": "Notes: After importing the custom certificate for the first time, you need to complete domain ownership verification on Fly.io dashboard."
       },
-      "ftp_format": {
-        "label": "File format",
-        "placeholder": "Please select file format",
-        "option": {
-          "pem": {
-            "label": "PEM (*.pem, *.crt, *.key)"
-          },
-          "pfx": {
-            "label": "PFX (*.pfx, *.p12)"
-          },
-          "jks": {
-            "label": "JKS (*.jks)"
-          }
-        }
-      },
-      "ftp_key_path": {
-        "label": "Private key file path",
-        "placeholder": "Please enter the remote path for private key file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ftp_cert_path": {
-        "label": "Certificate file path",
-        "placeholder": "Please enter the remote path for certificate",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ftp_fullchaincert_path": {
-        "label": "Bundled fullchain certificate file path",
-        "placeholder": "Please enter the remote path for bundled fullchain certificate"
-      },
-      "ftp_servercert_path": {
-        "label": "Server certificate file path (Optional)",
-        "placeholder": "Please enter the remote path for server certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ftp_intermediacert_path": {
-        "label": "Intermediate CA certificate file path (Optional)",
-        "placeholder": "Please enter the remote path for intermediate CA certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ftp_pfx_password": {
-        "label": "PFX password",
-        "placeholder": "Please enter PFX password",
-        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "ftp_jks_alias": {
-        "label": "JKS alias",
-        "placeholder": "Please enter JKS alias",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ftp_jks_keypass": {
-        "label": "JKS key password",
-        "placeholder": "Please enter JKS key password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ftp_jks_storepass": {
-        "label": "JKS store password",
-        "placeholder": "Please enter JKS store password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
       "gcore_cdn_resource_id": {
         "label": "G-Core CDN resource ID",
         "placeholder": "Please enter G-Core CDN resource ID",
@@ -1619,65 +1615,6 @@
       "local": {
         "guide": "If you are running Certimate in Docker, the \"Local\" refers to the container rather than the host."
       },
-      "local_format": {
-        "label": "File format",
-        "placeholder": "Please select file format",
-        "option": {
-          "pem": {
-            "label": "PEM (*.pem, *.crt, *.key)"
-          },
-          "pfx": {
-            "label": "PFX (*.pfx, *.p12)"
-          },
-          "jks": {
-            "label": "JKS (*.jks)"
-          }
-        }
-      },
-      "local_key_path": {
-        "label": "Private key file path",
-        "placeholder": "Please enter the local path for private key file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "local_cert_path": {
-        "label": "Certificate file path",
-        "placeholder": "Please enter the local path for certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "local_fullchaincert_path": {
-        "label": "Bundled fullchain certificate file path",
-        "placeholder": "Please enter the local path for bundled fullchain certificate"
-      },
-      "local_servercert_path": {
-        "label": "Server certificate file path (Optional)",
-        "placeholder": "Please enter the local path for server certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "local_intermediacert_path": {
-        "label": "Intermediate CA certificate file path (Optional)",
-        "placeholder": "Please enter the local path for intermediate CA certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "local_pfx_password": {
-        "label": "PFX password",
-        "placeholder": "Please enter PFX password",
-        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "local_jks_alias": {
-        "label": "JKS alias",
-        "placeholder": "Please enter JKS alias",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "local_jks_keypass": {
-        "label": "JKS key password",
-        "placeholder": "Please enter JKS key password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "local_jks_storepass": {
-        "label": "JKS store password",
-        "placeholder": "Please enter JKS store password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
       "local_shell_env": {
         "label": "Shell",
         "placeholder": "Please select shell environment",
@@ -1866,62 +1803,23 @@
         "label": "Object storage (S3-compatible) bucket",
         "placeholder": "Please enter bucket name"
       },
-      "s3_format": {
-        "label": "File format",
-        "placeholder": "Please select file format",
-        "option": {
-          "pem": {
-            "label": "PEM (*.pem, *.crt, *.key)"
-          },
-          "pfx": {
-            "label": "PFX (*.pfx, *.p12)"
-          },
-          "jks": {
-            "label": "JKS (*.jks)"
-          }
-        }
-      },
-      "s3_key_object_key": {
+      "s3_object_key_for_key": {
         "label": "Private key file object key",
         "placeholder": "Please enter the object key for private key file"
       },
-      "s3_cert_object_key": {
+      "s3_object_key_for_crt": {
         "label": "Certificate file object key",
         "placeholder": "Please enter the object key for certificate"
       },
-      "s3_fullchaincert_object_key": {
-        "label": "Bundled fullchain certificate object key",
-        "placeholder": "Please enter the remote path for bundled fullchain certificate"
-      },
-      "s3_servercert_object_key": {
-        "label": "Server certificate object key (Optional)",
+      "s3_object_key_for_servercrt": {
+        "label": "Certificate file (includes the end-entity parts only) object key (Optional)",
         "placeholder": "Please enter the object key for server certificate file",
         "help": ""
       },
-      "s3_intermediacert_object_key": {
-        "label": "Intermediate CA certificate object key (Optional)",
-        "placeholder": "Please enter the object key for intermediate CA certificate file",
+      "s3_object_key_for_intermediacrt": {
+        "label": "Certificate file (includes the CA parts only) object key (Optional)",
+        "placeholder": "Please enter the object key for intermediate certificate file",
         "help": ""
-      },
-      "s3_pfx_password": {
-        "label": "PFX password",
-        "placeholder": "Please enter PFX password",
-        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "s3_jks_alias": {
-        "label": "JKS alias",
-        "placeholder": "Please enter JKS alias",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "s3_jks_keypass": {
-        "label": "JKS key password",
-        "placeholder": "Please enter JKS key password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "s3_jks_storepass": {
-        "label": "JKS store password",
-        "placeholder": "Please enter JKS store password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
       "safeline": {
         "guide": "Requires SafeLine v6.6 or higher."
@@ -1952,65 +1850,6 @@
         "label": "SamWAF certificate ID",
         "placeholder": "Please enter SamWAF certificate ID",
         "tooltip": "You can find it on SamWAF dashboard."
-      },
-      "ssh_format": {
-        "label": "File format",
-        "placeholder": "Please select file format",
-        "option": {
-          "pem": {
-            "label": "PEM (*.pem, *.crt, *.key)"
-          },
-          "pfx": {
-            "label": "PFX (*.pfx, *.p12)"
-          },
-          "jks": {
-            "label": "JKS (*.jks)"
-          }
-        }
-      },
-      "ssh_key_path": {
-        "label": "Private key file path",
-        "placeholder": "Please enter the remote path for private key file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ssh_cert_path": {
-        "label": "Certificate file path",
-        "placeholder": "Please enter the remote path for certificate",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ssh_fullchaincert_path": {
-        "label": "Bundled fullchain certificate file path",
-        "placeholder": "Please enter the remote path for bundled fullchain certificate"
-      },
-      "ssh_servercert_path": {
-        "label": "Server certificate file path (Optional)",
-        "placeholder": "Please enter the remote path for server certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ssh_intermediacert_path": {
-        "label": "Intermediate CA certificate file path (Optional)",
-        "placeholder": "Please enter the remote path for intermediate CA certificate file",
-        "help": "Notes: It should include the full file path, not just the directory."
-      },
-      "ssh_pfx_password": {
-        "label": "PFX password",
-        "placeholder": "Please enter PFX password",
-        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files\" target=\"_blank\">https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files</a>"
-      },
-      "ssh_jks_alias": {
-        "label": "JKS alias",
-        "placeholder": "Please enter JKS alias",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ssh_jks_keypass": {
-        "label": "JKS key password",
-        "placeholder": "Please enter JKS key password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-      "ssh_jks_storepass": {
-        "label": "JKS store password",
-        "placeholder": "Please enter JKS store password",
-        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
       "ssh_pre_command": {
         "label": "Pre-command (Optional)",
@@ -2194,7 +2033,7 @@
         "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
       },
       "tencentcloud_ssldeploy": {
-        "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>DeployCertificateInstance</em> to create an asynchronously deployment task. You need to go to the Tencent Cloud console to check the actual deployment results by yourself."
+        "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>DeployCertificateInstance</em> to create an asynchronously deployment task."
       },
       "tencentcloud_ssldeploy_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
@@ -2225,7 +2064,7 @@
         }
       },
       "tencentcloud_sslupdate": {
-        "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>UpdateCertificateInstance</em> or <em>UploadUpdateCertificateInstance</em> to create an asynchronously deployment task. You need to go to the Tencent Cloud console to check the actual deployment results by yourself."
+        "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>UpdateCertificateInstance</em> or <em>UploadUpdateCertificateInstance</em> to create an asynchronously deployment task."
       },
       "tencentcloud_sslupdate_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
@@ -2712,7 +2551,7 @@
       },
       "provider_access": {
         "label": "Notification provider credential",
-        "placeholder": "Please select an credential of notification provider",
+        "placeholder": "Please select an credential of the notification provider",
         "button": "Create"
       },
       "params_config": {

@@ -46,7 +46,7 @@ func (p *provider) Present(domain, token, keyAuth string) error {
 		return fmt.Errorf("ftp: failed to create FTP client: %w", err)
 	}
 
-	defer client.Quit(ctx)
+	defer client.Quit()
 
 	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
 	challengeDir := filepath.Dir(challengePath)
@@ -72,7 +72,7 @@ func (p *provider) CleanUp(domain, token, keyAuth string) error {
 		return fmt.Errorf("ftp: failed to create FTP client: %w", err)
 	}
 
-	defer client.Quit(ctx)
+	defer client.Quit()
 
 	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
 	challengeDir := filepath.Dir(challengePath)

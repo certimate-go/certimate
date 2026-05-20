@@ -15,8 +15,8 @@ var (
 	fSshPort        int64
 	fSshUsername    string
 	fSshPassword    string
-	fOutputCertPath string
-	fOutputKeyPath  string
+	fFilePathForCrt string
+	fFilePathForKey string
 )
 
 func init() {
@@ -26,8 +26,8 @@ func init() {
 	fp.DefineInt64(&fSshPort, "SSHPORT")
 	fp.DefineString(&fSshUsername, "SSHUSERNAME")
 	fp.DefineString(&fSshPassword, "SSHPASSWORD")
-	fp.DefineString(&fOutputCertPath, "OUTPUTCERTPATH")
-	fp.DefineString(&fOutputKeyPath, "OUTPUTKEYPATH")
+	fp.DefineString(&fFilePathForCrt, "OUTPUTCERTPATH")
+	fp.DefineString(&fFilePathForKey, "OUTPUTKEYPATH")
 }
 
 /*
@@ -54,9 +54,9 @@ func TestProvider(t *testing.T) {
 				SshUsername: fSshUsername,
 				SshPassword: fSshPassword,
 			},
-			OutputFormat:   impl.OUTPUT_FORMAT_PEM,
-			OutputCertPath: fOutputCertPath + ".pem",
-			OutputKeyPath:  fOutputKeyPath + ".pem",
+			FileFormat:     impl.FILE_FORMAT_PEM,
+			FilePathForCrt: fFilePathForCrt + ".pem",
+			FilePathForKey: fFilePathForKey + ".pem",
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

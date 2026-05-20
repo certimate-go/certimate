@@ -240,11 +240,9 @@ func (c *Client) StoreBytes(ctx context.Context, path string, data []byte) error
 	return c.Store(ctx, path, reader, 0)
 }
 
-func (c *Client) Quit(ctx context.Context) error {
-	_, err := wrapFuncCtx(ctx, func() (struct{}, error) {
-		c.cli.Logout()
-		return struct{}{}, c.cli.Quit()
-	})
+func (c *Client) Quit() error {
+	c.cli.Logout()
+	err := c.cli.Quit()
 	if err != nil {
 		return fmt.Errorf("ftp: failed to quit: %w", err)
 	}
