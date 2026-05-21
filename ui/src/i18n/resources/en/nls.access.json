@@ -498,6 +498,16 @@
       "placeholder": "Please enter DuckDNS token",
       "tooltip": "For more information, see <a href=\"https://www.duckdns.org/spec.jsp\" target=\"_blank\">https://www.duckdns.org/spec.jsp</a>"
     },
+    "dynadot_api_key": {
+      "label": "Dynadot API key",
+      "placeholder": "Please enter Dynadot API key",
+      "tooltip": "For more information, see <a href=\"https://www.dynadot.com/domain/api-document\" target=\"_blank\">https://www.dynadot.com/domain/api-document</a><br><br>Before using, make sure the domain is set to \"Dynadot DNS\" on Dynadot, with at least one main domain record configured (e.g. A, MX)."
+    },
+    "dynadot_api_secret": {
+      "label": "Dynadot API secret",
+      "placeholder": "Please enter Dynadot API secret",
+      "tooltip": "For more information, see <a href=\"https://www.dynadot.com/domain/api-document\" target=\"_blank\">https://www.dynadot.com/domain/api-document</a>"
+    },
     "dynu_api_key": {
       "label": "Dynu API key",
       "placeholder": "Please enter Dynu API key",

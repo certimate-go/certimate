@@ -225,6 +225,11 @@ type AccessConfigForDuckDNS struct {
 	Token string `json:"token"`
 }
 
+type AccessConfigForDynadot struct {
+	ApiKey    string `json:"apiKey"`
+	ApiSecret string `json:"apiSecret"`
+}
+
 type AccessConfigForDynu struct {
 	ApiKey string `json:"apiKey"`
 }
