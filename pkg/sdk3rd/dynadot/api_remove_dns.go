@@ -15,11 +15,6 @@ type RemoveDnsResponse struct {
 	sdkResponseBase
 }
 
-// RemoveDns removes DNS records for the specified domain.
-// Records are only removed if all fields in the request exactly match
-// existing records.
-//
-// REF: https://www.dynadot.com/domain/api-document (remove_dns)
 func (c *Client) RemoveDns(domain string, req *RemoveDnsRequest) (*RemoveDnsResponse, error) {
 	return c.RemoveDnsWithContext(context.Background(), domain, req)
 }

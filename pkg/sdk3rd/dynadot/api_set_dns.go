@@ -17,9 +17,6 @@ type SetDnsResponse struct {
 	sdkResponseBase
 }
 
-// SetDns adds or replaces DNS records for the specified domain.
-//
-// REF: https://www.dynadot.com/domain/api-document (set_dns)
 func (c *Client) SetDns(domain string, req *SetDnsRequest) (*SetDnsResponse, error) {
 	return c.SetDnsWithContext(context.Background(), domain, req)
 }
