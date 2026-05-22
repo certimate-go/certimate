@@ -30,6 +30,65 @@
     "batch_delete.modal": {
       "title": "Delete certificates",
       "content": "Are you sure want to delete these {{count}} selected certificates? <br>This action cannot be undone."
+    },
+    "download.modal": {
+      "title": "Download certificate",
+      "form": {
+        "format": {
+          "label": "Format",
+          "option": {
+            "pem": {
+              "label": "PEM (*.pem, *.crt, *.key)",
+              "description": "Suitable for most scenarios. Supported by servers like Apache, Nginx."
+            },
+            "pfx": {
+              "label": "PFX (*.pfx, *.p12)",
+              "description": "Supported by servers like IIS."
+            },
+            "jks": {
+              "label": "JKS (*.jks)",
+              "description": "Supported by servers like Tomcat."
+            }
+          }
+        },
+        "pfx_password": {
+          "label": "PFX Password (Optional)",
+          "placeholder": "Please enter PFX password"
+        },
+        "pfx_encoder": {
+          "label": "PFX Encoder (Optional)",
+          "placeholder": "Please select PFX encoder",
+          "option": {
+            "legacyrc2": {
+              "label": "LegacyRC2 (RC2, compatible with older systems, but less secure)"
+            },
+            "legacydes": {
+              "label": "LegacyDES (3DES + SHA-1, default)"
+            },
+            "modern2023": {
+              "label": "Modern2023 (AES-256-CBC + SHA-256 MAC, compatible with OpenSSL v1.1.1+)"
+            },
+            "modern2026": {
+              "label": "Modern2026 (AES-256-CBC + PBMAC1 MAC, compatible with OpenSSL v3.4.0+)"
+            }
+          }
+        },
+        "jks_alias": {
+          "label": "JKS Alias (Optional)",
+          "placeholder": "Please enter JKS alias"
+        },
+        "jks_keypass": {
+          "label": "JKS Key password (Optional)",
+          "placeholder": "Please enter JKS key password"
+        },
+        "jks_storepass": {
+          "label": "JKS Store password (Optional)",
+          "placeholder": "Please enter JKS store password"
+        }
+      },
+      "action": {
+        "advanced.button": "Advanced"
+      }
     }
   },
 

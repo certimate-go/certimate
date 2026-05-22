@@ -1,12 +1,12 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
-import { IconClipboard, IconDownload, IconThumbUp } from "@tabler/icons-react";
-import { App, Button, Dropdown, Form, Input, Tag, Tooltip } from "antd";
+import { IconClipboard, IconDownload } from "@tabler/icons-react";
+import { App, Button, Form, Input, Tag, Tooltip } from "antd";
 import dayjs from "dayjs";
-import { saveAs } from "file-saver";
 
-import { download as downloadCertificate } from "@/api/certificates";
-import { CERTIFICATE_FORMATS, type CertificateFormatType, type CertificateModel } from "@/domain/certificate";
+import { type CertificateModel } from "@/domain/certificate";
+
+import CertificateDownloadModal from "./CertificateDownloadModal";
 
 export interface CertificateDetailProps {
   className?: string;
@@ -18,19 +18,6 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
   const { t } = useTranslation();
 
   const { message } = App.useApp();
-
-  const handleDownloadClick = async (format: CertificateFormatType) => {
-    try {
-      const res = await downloadCertificate(data.id, format);
-      const bstr = atob(res.data.zipBytes);
-      const u8arr = Uint8Array.from(bstr, (ch) => ch.charCodeAt(0));
-      const blob = new Blob([u8arr], { type: "application/zip" });
-      saveAs(blob, `${data.id}-${data.subjectAltNames}.zip`);
-    } catch (err) {
-      console.error(err);
-      message.warning(t("common.text.operation_failed"));
-    }
-  };
 
   return (
     <div {...props}>
@@ -94,33 +81,14 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
       </Form>
 
       <div className="flex items-center justify-end">
-        <Dropdown
-          menu={{
-            items: [
-              {
-                key: "PEM",
-                label: "PEM",
-                extra: <IconThumbUp size="1.25em" />,
-                onClick: () => handleDownloadClick(CERTIFICATE_FORMATS.PEM),
-              },
-              {
-                key: "PFX",
-                label: "PFX",
-                onClick: () => handleDownloadClick(CERTIFICATE_FORMATS.PFX),
-              },
-              {
-                key: "JKS",
-                label: "JKS",
-                onClick: () => handleDownloadClick(CERTIFICATE_FORMATS.JKS),
-              },
-            ],
-          }}
-          trigger={["click", "hover"]}
-        >
-          <Button icon={<IconDownload size="1.25em" />} type="primary">
-            {t("common.button.download")}
-          </Button>
-        </Dropdown>
+        <CertificateDownloadModal
+          data={data}
+          trigger={
+            <Button icon={<IconDownload size="1.25em" />} type="primary">
+              {t("common.button.download")}
+            </Button>
+          }
+        />
       </div>
     </div>
   );

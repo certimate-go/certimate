@@ -412,7 +412,7 @@ const WorkflowRunArtifacts = ({ runData }: { runData: WorkflowRunModel }) => {
     {
       key: "$action",
       align: "end",
-      width: 32,
+      width: 64,
       render: (_, record) => (
         <div className="flex items-center justify-end">
           <CertificateDetailDrawer
@@ -461,7 +461,7 @@ const WorkflowRunArtifacts = ({ runData }: { runData: WorkflowRunModel }) => {
       }}
       pagination={false}
       rowKey={(record) => record.id}
-      size="small"
+      size="medium"
     />
   );
 };

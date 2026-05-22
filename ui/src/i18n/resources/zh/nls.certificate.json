@@ -30,6 +30,65 @@
     "batch_delete.modal": {
       "title": "删除证书",
       "content": "确定要删除这 {{count}} 个被选中的证书吗？<br>注意此操作不可撤销，请谨慎操作。"
+    },
+    "download.modal": {
+      "title": "下载证书",
+      "form": {
+        "format": {
+          "label": "格式",
+          "option": {
+            "pem": {
+              "label": "PEM 格式（*.pem, *.crt, *.key）",
+              "description": "适用于大部分场景。Apache、Nginx 等服务器支持此格式。"
+            },
+            "pfx": {
+              "label": "PFX 格式（*.pfx, *.p12）",
+              "description": "IIS 等服务器支持此格式。"
+            },
+            "jks": {
+              "label": "JKS 格式（*.jks）",
+              "description": "Tomcat 等服务器支持此格式。"
+            }
+          }
+        },
+        "pfx_password": {
+          "label": "PFX 密码（可选）",
+          "placeholder": "请输入 PFX 导出密码"
+        },
+        "pfx_encoder": {
+          "label": "PFX 编码器（可选）",
+          "placeholder": "请选择 PFX 编码器",
+          "option": {
+            "legacyrc2": {
+              "label": "LegacyRC2（RC2，兼容旧系统，但安全性较低）"
+            },
+            "legacydes": {
+              "label": "LegacyDES（3DES + SHA-1，默认值）"
+            },
+            "modern2023": {
+              "label": "Modern2023（AES-256-CBC + SHA-256 MAC，适配 OpenSSL v1.1.1+）"
+            },
+            "modern2026": {
+              "label": "Modern2026（AES-256-CBC + PBMAC1 MAC，适配 OpenSSL v3.4.0+）"
+            }
+          }
+        },
+        "jks_alias": {
+          "label": "JKS 别名（可选）",
+          "placeholder": "请输入 JKS 别名"
+        },
+        "jks_keypass": {
+          "label": "JKS 私钥访问口令（可选）",
+          "placeholder": "请输入 JKS 私钥访问口令"
+        },
+        "jks_storepass": {
+          "label": "JKS 密钥库存储口令（可选）",
+          "placeholder": "请输入 JKS 密钥库存储口令"
+        }
+      },
+      "action": {
+        "advanced.button": "高级"
+      }
     }
   },
 
