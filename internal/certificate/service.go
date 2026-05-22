@@ -16,6 +16,7 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/domain/dtos"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcertpfx "github.com/certimate-go/certimate/pkg/utils/cert/pfx"
 )
 
 type CertificateService struct {
@@ -116,9 +117,17 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 
 	case domain.CertificateFormatTypePFX:
 		{
-			const pfxPassword = "certimate"
+			pfxPassword := "certimate"
+			if req.PfxPassword != "" {
+				pfxPassword = req.PfxPassword
+			}
 
-			certPFX, err := xcert.TransformCertificateFromPEMToPFX(certificate.Certificate, certificate.PrivateKey, pfxPassword, nil)
+			pfxEncoder, err := xcertpfx.ResolvePfxEncoder(req.PfxEncoder)
+			if err != nil {
+				return nil, err
+			}
+
+			certPFX, err := xcert.TransformCertificateFromPEMToPFX(certificate.Certificate, certificate.PrivateKey, pfxPassword, pfxEncoder)
 			if err != nil {
 				return nil, err
 			}
@@ -133,11 +142,12 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 				}
 			}
 
-			keyWriter, err := zipWriter.Create("pfx-password.txt")
+			readmeWriter, err := zipWriter.Create("README.txt")
 			if err != nil {
 				return nil, err
 			} else {
-				_, err = keyWriter.Write([]byte(pfxPassword))
+				readme := fmt.Sprintf("[PFX Password]\n%s\n", pfxPassword)
+				_, err = readmeWriter.Write([]byte(readme))
 				if err != nil {
 					return nil, err
 				}
@@ -153,9 +163,22 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 
 	case domain.CertificateFormatTypeJKS:
 		{
-			const jksPassword = "certimate"
+			jksAlias := "certimate"
+			if req.JksAlias != "" {
+				jksAlias = req.JksAlias
+			}
 
-			certJKS, err := xcert.TransformCertificateFromPEMToJKS(certificate.Certificate, certificate.PrivateKey, jksPassword, jksPassword, jksPassword)
+			jksKeypass := "certimate"
+			if req.JksKeypass != "" {
+				jksKeypass = req.JksKeypass
+			}
+
+			jksStorepass := "certimate"
+			if req.JksStorepass != "" {
+				jksStorepass = req.JksStorepass
+			}
+
+			certJKS, err := xcert.TransformCertificateFromPEMToJKS(certificate.Certificate, certificate.PrivateKey, jksAlias, jksKeypass, jksStorepass)
 			if err != nil {
 				return nil, err
 			}
@@ -170,11 +193,12 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 				}
 			}
 
-			keyWriter, err := zipWriter.Create("jks-password.txt")
+			readmeWriter, err := zipWriter.Create("README.txt")
 			if err != nil {
 				return nil, err
 			} else {
-				_, err = keyWriter.Write([]byte(jksPassword))
+				readme := fmt.Sprintf("[JKS Alias]\n%s\n\n[JKS Key Password]\n%s\n\n[JKS Store Password]\n%s\n", jksAlias, jksKeypass, jksStorepass)
+				_, err = readmeWriter.Write([]byte(readme))
 				if err != nil {
 					return nil, err
 				}
