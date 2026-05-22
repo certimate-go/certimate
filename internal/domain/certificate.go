@@ -46,7 +46,7 @@ func (c *Certificate) PopulateFromX509(certX509 *x509.Certificate) *Certificate 
 	c.ValidityNotAfter = certX509.NotAfter
 	c.ValidityInterval = int32(certX509.NotAfter.Sub(certX509.NotBefore).Seconds())
 
-	keyAlgorithm, keySize, _ := xcertkey.GetPublicKeyAlgorithm(certX509.PublicKey)
+	keyAlgorithm, keySize, _ := xcertkey.DetectPublicKeyAlgorithm(certX509.PublicKey)
 	switch keyAlgorithm {
 	case x509.RSA:
 		c.KeyAlgorithm = CertificateKeyAlgorithmType(fmt.Sprintf("RSA%d", keySize))

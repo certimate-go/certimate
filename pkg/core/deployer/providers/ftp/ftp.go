@@ -8,8 +8,8 @@ import (
 
 	"github.com/certimate-go/certimate/internal/tools/ftp"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	shared "github.com/certimate-go/certimate/pkg/core/deployer/providers/local/shared"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcertpfx "github.com/certimate-go/certimate/pkg/utils/cert/pfx"
 )
 
 type DeployerConfig struct {
@@ -155,7 +155,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return nil, fmt.Errorf("config `pfxPassword` is required")
 			}
 
-			pfxEncoder, err := shared.ResolvePfxEncoder(d.config.PfxEncoder)
+			pfxEncoder, err := xcertpfx.ResolvePfxEncoder(d.config.PfxEncoder)
 			if err != nil {
 				return nil, fmt.Errorf("config `pfxEncoder` is invalid: %w", err)
 			}

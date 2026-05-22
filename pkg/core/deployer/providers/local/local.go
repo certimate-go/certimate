@@ -11,6 +11,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core/deployer"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcertpfx "github.com/certimate-go/certimate/pkg/utils/cert/pfx"
 	xfile "github.com/certimate-go/certimate/pkg/utils/file"
 )
 
@@ -142,7 +143,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 				return nil, fmt.Errorf("config `pfxPassword` is required")
 			}
 
-			pfxEncoder, err := ResolvePfxEncoder(d.config.PfxEncoder)
+			pfxEncoder, err := xcertpfx.ResolvePfxEncoder(d.config.PfxEncoder)
 			if err != nil {
 				return nil, fmt.Errorf("config `pfxEncoder` is invalid: %w", err)
 			}
