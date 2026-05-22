@@ -78,6 +78,10 @@ func (c *Certificate) PopulateFromPEM(certPEM, privkeyPEM string) *Certificate {
 
 type CertificateSourceType string
 
+func (t CertificateSourceType) String() string {
+	return string(t)
+}
+
 const (
 	CertificateSourceTypeRequest = CertificateSourceType("request")
 	CertificateSourceTypeUpload  = CertificateSourceType("upload")
@@ -85,15 +89,9 @@ const (
 
 type CertificateKeyAlgorithmType string
 
-const (
-	CertificateKeyAlgorithmTypeRSA2048 = CertificateKeyAlgorithmType("RSA2048")
-	CertificateKeyAlgorithmTypeRSA3072 = CertificateKeyAlgorithmType("RSA3072")
-	CertificateKeyAlgorithmTypeRSA4096 = CertificateKeyAlgorithmType("RSA4096")
-	CertificateKeyAlgorithmTypeRSA8192 = CertificateKeyAlgorithmType("RSA8192")
-	CertificateKeyAlgorithmTypeEC256   = CertificateKeyAlgorithmType("EC256")
-	CertificateKeyAlgorithmTypeEC384   = CertificateKeyAlgorithmType("EC384")
-	CertificateKeyAlgorithmTypeEC512   = CertificateKeyAlgorithmType("EC512")
-)
+func (t CertificateKeyAlgorithmType) String() string {
+	return string(t)
+}
 
 func (t CertificateKeyAlgorithmType) ToLegoKeyType() (certcrypto.KeyType, error) {
 	keyTypeMap := map[CertificateKeyAlgorithmType]certcrypto.KeyType{
@@ -112,7 +110,21 @@ func (t CertificateKeyAlgorithmType) ToLegoKeyType() (certcrypto.KeyType, error)
 	return certcrypto.RSA2048, fmt.Errorf("unsupported key algorithm type: '%s'", t)
 }
 
+const (
+	CertificateKeyAlgorithmTypeRSA2048 = CertificateKeyAlgorithmType("RSA2048")
+	CertificateKeyAlgorithmTypeRSA3072 = CertificateKeyAlgorithmType("RSA3072")
+	CertificateKeyAlgorithmTypeRSA4096 = CertificateKeyAlgorithmType("RSA4096")
+	CertificateKeyAlgorithmTypeRSA8192 = CertificateKeyAlgorithmType("RSA8192")
+	CertificateKeyAlgorithmTypeEC256   = CertificateKeyAlgorithmType("EC256")
+	CertificateKeyAlgorithmTypeEC384   = CertificateKeyAlgorithmType("EC384")
+	CertificateKeyAlgorithmTypeEC512   = CertificateKeyAlgorithmType("EC512")
+)
+
 type CertificateFormatType string
+
+func (t CertificateFormatType) String() string {
+	return string(t)
+}
 
 const (
 	CertificateFormatTypePEM CertificateFormatType = "PEM"

@@ -1,8 +1,12 @@
 package dtos
 
+import (
+	"github.com/certimate-go/certimate/internal/domain"
+)
+
 type NotifyTestPushReq struct {
-	Provider string `json:"provider"`
-	AccessId string `json:"accessId"`
+	Provider domain.NotificationProviderType `json:"provider"`
+	AccessId string                          `json:"accessId"`
 }
 
 type NotifyTestPushResp struct{}

@@ -74,6 +74,10 @@ func (g *WorkflowGraph) Clone() *WorkflowGraph {
 
 type WorkflowTriggerType string
 
+func (t WorkflowTriggerType) String() string {
+	return string(t)
+}
+
 const (
 	WorkflowTriggerTypeScheduled = WorkflowTriggerType("scheduled")
 	WorkflowTriggerTypeManual    = WorkflowTriggerType("manual")
@@ -87,6 +91,10 @@ type WorkflowNode struct {
 }
 
 type WorkflowNodeType string
+
+func (t WorkflowNodeType) String() string {
+	return string(t)
+}
 
 const (
 	WorkflowNodeTypeStart       = WorkflowNodeType("start")
@@ -149,7 +157,7 @@ func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
 		ProviderAccessId:      xmaps.GetString(c, "providerAccessId"),
 		ProviderConfig:        xmaps.GetKVMapAny(c, "providerConfig"),
 		KeySource:             xmaps.GetOrDefaultString(c, "keySource", "auto"),
-		KeyAlgorithm:          xmaps.GetOrDefaultString(c, "keyAlgorithm", string(CertificateKeyAlgorithmTypeRSA2048)),
+		KeyAlgorithm:          xmaps.GetOrDefaultString(c, "keyAlgorithm", CertificateKeyAlgorithmTypeRSA2048.String()),
 		KeyContent:            xmaps.GetString(c, "keyContent"),
 		CAProvider:            xmaps.GetString(c, "caProvider"),
 		CAProviderAccessId:    xmaps.GetString(c, "caProviderAccessId"),

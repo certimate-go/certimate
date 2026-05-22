@@ -50,8 +50,8 @@ func (r *WorkflowRunRepository) Save(ctx context.Context, workflowRun *domain.Wo
 	}
 
 	record.Set("workflowRef", workflowRun.WorkflowId)
-	record.Set("trigger", string(workflowRun.Trigger))
-	record.Set("status", string(workflowRun.Status))
+	record.Set("trigger", workflowRun.Trigger.String())
+	record.Set("status", workflowRun.Status.String())
 	record.Set("startedAt", workflowRun.StartedAt)
 	record.Set("endedAt", workflowRun.EndedAt)
 	record.Set("graph", workflowRun.Graph)
@@ -88,8 +88,8 @@ func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowR
 
 	err = app.GetApp().RunInTransaction(func(txApp core.App) error {
 		record.Set("workflowRef", workflowRun.WorkflowId)
-		record.Set("trigger", string(workflowRun.Trigger))
-		record.Set("status", string(workflowRun.Status))
+		record.Set("trigger", workflowRun.Trigger.String())
+		record.Set("status", workflowRun.Status.String())
 		record.Set("startedAt", workflowRun.StartedAt)
 		record.Set("endedAt", workflowRun.EndedAt)
 		record.Set("graph", workflowRun.Graph)

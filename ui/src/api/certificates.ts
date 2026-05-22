@@ -1,44 +1,22 @@
-import { ClientResponseError } from "pocketbase";
-
 import { type CertificateFormatType } from "@/domain/certificate";
-import { getPocketBase } from "@/repository/_pocketbase";
 
-export const download = async (certificateId: string, format?: CertificateFormatType) => {
-  const pb = getPocketBase();
+import { post as httpPost } from "./_api";
 
+export const download = (certificateId: string, format?: CertificateFormatType) => {
   type RespData = {
-    fileBytes: string;
+    zipBytes: string;
   };
-  const resp = await pb.send<BaseResponse<RespData>>(`/api/certificates/${encodeURIComponent(certificateId)}/download`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+
+  return httpPost<RespData>({
+    url: `/api/certificates/${encodeURIComponent(certificateId)}/download`,
     body: {
-      format: format,
+      fileFormat: format,
     },
   });
-
-  if (resp.code != 0) {
-    throw new ClientResponseError({ status: resp.code, response: resp, data: {} });
-  }
-
-  return resp;
 };
 
-export const revoke = async (certificateId: string) => {
-  const pb = getPocketBase();
-
-  const resp = await pb.send<BaseResponse>(`/api/certificates/${encodeURIComponent(certificateId)}/revoke`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+export const revoke = (certificateId: string) => {
+  return httpPost({
+    url: `/api/certificates/${encodeURIComponent(certificateId)}/revoke`,
   });
-
-  if (resp.code != 0) {
-    throw new ClientResponseError({ status: resp.code, response: resp, data: {} });
-  }
-
-  return resp;
 };

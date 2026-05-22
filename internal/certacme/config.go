@@ -58,14 +58,14 @@ func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 		settings, _ := settingsRepo.GetByName(context.Background(), domain.SettingsNameSSLProvider)
 		if settings != nil {
 			sslProviderSettings := settings.Content.AsSSLProvider()
-			caProvider = string(sslProviderSettings.Provider)
+			caProvider = sslProviderSettings.Provider.String()
 			caAccessConfig = sslProviderSettings.Configs[sslProviderSettings.Provider]
 		}
 	}
 
 	if caProvider == "" {
 		// default CA: Let's Encrypt
-		caProvider = string(domain.AccessProviderTypeLetsEncrypt)
+		caProvider = domain.AccessProviderTypeLetsEncrypt.String()
 	}
 
 	if caAccessConfig == nil {
@@ -79,23 +79,23 @@ func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 		if err := xmaps.Populate(caAccessConfig, &credentials); err != nil {
 			return nil, err
 		} else if strings.EqualFold(credentials.ValidationType, "DV") {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSectigo)+"DV"]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()+"DV"]
 		} else if strings.EqualFold(credentials.ValidationType, "OV") {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSectigo)+"OV"]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()+"OV"]
 		} else if strings.EqualFold(credentials.ValidationType, "EV") {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSectigo)+"EV"]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()+"EV"]
 		} else {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSectigo)]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()]
 		}
 
 	case domain.CAProviderTypeSSLCom:
 		// TODO: fix this after migrate lego to v5
 		if strings.HasPrefix(string(options.CertifierKeyType), "RSA") {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSSLCom)+"RSA"]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSSLCom.String()+"RSA"]
 		} else if strings.HasPrefix(string(options.CertifierKeyType), "EC") {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSSLCom)+"ECC"]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSSLCom.String()+"ECC"]
 		} else {
-			ca.CADirUrl = acmeDirUrls[string(domain.CAProviderTypeSSLCom)]
+			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSSLCom.String()]
 		}
 
 	case domain.CAProviderTypeACMECA:
@@ -108,7 +108,7 @@ func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
 		ca.CADirUrl = credentials.Endpoint
 
 	default:
-		endpoint := acmeDirUrls[string(ca.CAProvider)]
+		endpoint := acmeDirUrls[ca.CAProvider.String()]
 		if endpoint == "" {
 			return nil, fmt.Errorf("the endpoint of the ACME CA provider is empty")
 		}

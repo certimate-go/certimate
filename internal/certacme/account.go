@@ -31,7 +31,7 @@ func NewACMEAccount(config *ACMEConfig, email string, register bool) (*ACMEAccou
 
 	ctx := context.Background()
 	accountRepo := repository.NewACMEAccountRepository()
-	account, err := accountRepo.GetByCAAndEmail(ctx, string(config.CAProvider), config.CADirUrl, email)
+	account, err := accountRepo.GetByCAAndEmail(ctx, config.CAProvider.String(), config.CADirUrl, email)
 	if err != nil {
 		if !domain.IsRecordNotFoundError(err) {
 			return nil, fmt.Errorf("failed to get acme account record: %w", err)
@@ -55,7 +55,7 @@ func NewACMEAccount(config *ACMEConfig, email string, register bool) (*ACMEAccou
 		}
 
 		account = &ACMEAccount{
-			CA:         string(config.CAProvider),
+			CA:         config.CAProvider.String(),
 			Email:      email,
 			PrivateKey: keyPEM,
 			ACMEDirUrl: config.CADirUrl,
@@ -116,7 +116,7 @@ func NewACMEAccountWithSingleFlight(config *ACMEConfig, email string) (*ACMEAcco
 		return nil, fmt.Errorf("the email is empty")
 	}
 
-	resp, err, _ := registrationSg.Do(fmt.Sprintf("%s|%s|%s", string(config.CAProvider), config.CADirUrl, email), func() (any, error) {
+	resp, err, _ := registrationSg.Do(fmt.Sprintf("%s|%s|%s", config.CAProvider, config.CADirUrl, email), func() (any, error) {
 		return NewACMEAccount(config, email, true)
 	})
 	if err != nil {

@@ -19,6 +19,10 @@ type WorkflowRun struct {
 
 type WorkflowRunStatusType string
 
+func (t WorkflowRunStatusType) String() string {
+	return string(t)
+}
+
 const (
 	WorkflowRunStatusTypePending    WorkflowRunStatusType = "pending"
 	WorkflowRunStatusTypeProcessing WorkflowRunStatusType = "processing"

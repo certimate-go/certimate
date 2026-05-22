@@ -36,7 +36,7 @@ func (n *NotifyService) TestPush(ctx context.Context, req *dtos.NotifyTestPushRe
 
 	notifier := NewClient()
 	notifyReq := &SendNotificationRequest{
-		Provider:               req.Provider,
+		Provider:               req.Provider.String(),
 		ProviderAccessConfig:   accessConfig,
 		ProviderExtendedConfig: make(map[string]any),
 		Subject:                testSubject,

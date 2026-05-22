@@ -57,16 +57,26 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 	zipWriter := zip.NewWriter(&buf)
 	defer zipWriter.Close()
 
-	var bytes []byte
-	switch strings.ToUpper(req.CertificateFormat) {
-	case "", string(domain.CertificateFormatTypePEM):
+	var zipBytes []byte
+	switch req.FileFormat {
+	case "", domain.CertificateFormatTypePEM:
 		{
 			serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certificate.Certificate)
 			if err != nil {
 				return nil, fmt.Errorf("failed to extract certs: %w", err)
 			}
 
-			certWriter, err := zipWriter.Create(fmt.Sprintf("%s.pem", canonicalName))
+			keyWriter, err := zipWriter.Create(fmt.Sprintf("%s.key", canonicalName))
+			if err != nil {
+				return nil, err
+			} else {
+				_, err = keyWriter.Write([]byte(certificate.PrivateKey))
+				if err != nil {
+					return nil, err
+				}
+			}
+
+			certWriter, err := zipWriter.Create(fmt.Sprintf("%s.crt", canonicalName))
 			if err != nil {
 				return nil, err
 			} else {
@@ -96,25 +106,15 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 				}
 			}
 
-			keyWriter, err := zipWriter.Create(fmt.Sprintf("%s.key", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = keyWriter.Write([]byte(certificate.PrivateKey))
-				if err != nil {
-					return nil, err
-				}
-			}
-
 			err = zipWriter.Close()
 			if err != nil {
 				return nil, err
 			}
 
-			bytes = buf.Bytes()
+			zipBytes = buf.Bytes()
 		}
 
-	case string(domain.CertificateFormatTypePFX):
+	case domain.CertificateFormatTypePFX:
 		{
 			const pfxPassword = "certimate"
 
@@ -148,10 +148,10 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 				return nil, err
 			}
 
-			bytes = buf.Bytes()
+			zipBytes = buf.Bytes()
 		}
 
-	case string(domain.CertificateFormatTypeJKS):
+	case domain.CertificateFormatTypeJKS:
 		{
 			const jksPassword = "certimate"
 
@@ -185,7 +185,7 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 				return nil, err
 			}
 
-			bytes = buf.Bytes()
+			zipBytes = buf.Bytes()
 		}
 
 	default:
@@ -193,8 +193,7 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 	}
 
 	resp := &dtos.CertificateDownloadResp{
-		FileFormat: "zip",
-		FileBytes:  bytes,
+		ZipBytes: zipBytes,
 	}
 	return resp, nil
 }

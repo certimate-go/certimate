@@ -22,7 +22,7 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
   const handleDownloadClick = async (format: CertificateFormatType) => {
     try {
       const res = await downloadCertificate(data.id, format);
-      const bstr = atob(res.data.fileBytes);
+      const bstr = atob(res.data.zipBytes);
       const u8arr = Uint8Array.from(bstr, (ch) => ch.charCodeAt(0));
       const blob = new Blob([u8arr], { type: "application/zip" });
       saveAs(blob, `${data.id}-${data.subjectAltNames}.zip`);

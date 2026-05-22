@@ -1,18 +1,11 @@
-import { ClientResponseError } from "pocketbase";
-
 import { type Statistics } from "@/domain/statistics";
-import { getPocketBase } from "@/repository/_pocketbase";
+
+import { get as httpGet } from "./_api";
 
 export const get = async () => {
-  const pb = getPocketBase();
+  type RespData = Statistics;
 
-  const resp = await pb.send<BaseResponse<Statistics>>("/api/statistics", {
-    method: "GET",
+  return httpGet<RespData>({
+    url: `/api/statistics`,
   });
-
-  if (resp.code != 0) {
-    throw new ClientResponseError({ status: resp.code, response: resp, data: {} });
-  }
-
-  return resp;
 };

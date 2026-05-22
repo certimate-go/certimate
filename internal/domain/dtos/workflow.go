@@ -1,6 +1,8 @@
 package dtos
 
-import "github.com/certimate-go/certimate/internal/domain"
+import (
+	"github.com/certimate-go/certimate/internal/domain"
+)
 
 type WorkflowStartRunReq struct {
 	WorkflowId string                     `json:"-"`
@@ -12,8 +14,8 @@ type WorkflowStartRunResp struct {
 }
 
 type WorkflowCancelRunReq struct {
-	WorkflowId string `json:"-"`
-	RunId      string `json:"-"`
+	WorkflowId string `bind:"path" json:"-"`
+	RunId      string `bind:"path" json:"-"`
 }
 
 type WorkflowCancelRunResp struct{}

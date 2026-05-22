@@ -59,7 +59,7 @@ func onWorkflowRecordCreateOrUpdate(_ context.Context, record *core.Record) erro
 	triggerCron := record.GetString("triggerCron")
 
 	// 如果非定时触发或未启用，移除定时任务
-	if !enabled || trigger != string(domain.WorkflowTriggerTypeScheduled) {
+	if !enabled || trigger != domain.WorkflowTriggerTypeScheduled.String() {
 		scheduler.Remove(fmt.Sprintf("workflow#%s", record.Id))
 		return nil
 	}

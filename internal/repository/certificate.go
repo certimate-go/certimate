@@ -117,14 +117,14 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 		}
 	}
 
-	record.Set("source", string(certificate.Source))
+	record.Set("source", certificate.Source.String())
 	record.Set("subjectAltNames", certificate.SubjectAltNames)
 	record.Set("serialNumber", certificate.SerialNumber)
 	record.Set("certificate", certificate.Certificate)
 	record.Set("privateKey", certificate.PrivateKey)
 	record.Set("issuerOrg", certificate.IssuerOrg)
 	record.Set("issuerCertificate", certificate.IssuerCertificate)
-	record.Set("keyAlgorithm", string(certificate.KeyAlgorithm))
+	record.Set("keyAlgorithm", certificate.KeyAlgorithm.String())
 	record.Set("validityNotBefore", certificate.ValidityNotBefore)
 	record.Set("validityNotAfter", certificate.ValidityNotAfter)
 	record.Set("validityInterval", certificate.ValidityInterval)
