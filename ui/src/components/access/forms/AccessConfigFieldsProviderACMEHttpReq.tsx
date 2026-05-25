@@ -1,7 +1,7 @@
 import { getI18n, useTranslation } from "react-i18next";
 import { Form, Input, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { core, z } from "zod";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -77,7 +77,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t: _ } = i18n;
 
   return z.object({
-    endpoint: z.httpUrl(),
+    endpoint: z.url({ protocol: core.regexes.httpProtocol }),
     mode: z.string().nullish(),
     username: z.string().nullish(),
     password: z.string().nullish(),

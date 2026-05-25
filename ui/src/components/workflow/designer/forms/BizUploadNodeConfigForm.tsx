@@ -3,7 +3,7 @@ import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { type AnchorProps, Form, type FormInstance, Input, Radio } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { core, z } from "zod";
 
 import FileTextInput from "@/components/FileTextInput";
 import Show from "@/components/Show";
@@ -203,7 +203,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
         case UPLOAD_SOURCE_URL:
           {
-            const scCertificate = z.httpUrl();
+            const scCertificate = z.url({ protocol: core.regexes.httpProtocol });
             const spCertificate = scCertificate.safeParse(values.certificate);
             if (!spCertificate.success) {
               ctx.addIssue({
@@ -213,7 +213,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
               });
             }
 
-            const scPrivateKey = z.httpUrl();
+            const scPrivateKey = z.url({ protocol: core.regexes.httpProtocol });
             const spPrivateKey = scPrivateKey.safeParse(values.privateKey);
             if (!spPrivateKey.success) {
               ctx.addIssue({

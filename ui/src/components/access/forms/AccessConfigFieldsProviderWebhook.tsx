@@ -2,7 +2,7 @@ import { getI18n, useTranslation } from "react-i18next";
 import { IconChevronDown } from "@tabler/icons-react";
 import { Button, Dropdown, Form, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
+import { core, z } from "zod";
 
 import CodeTextInput from "@/components/CodeTextInput";
 import Show from "@/components/Show";
@@ -398,7 +398,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    url: z.httpUrl(),
+    url: z.url({ protocol: core.regexes.httpProtocol }),
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     headers: z
       .string()
