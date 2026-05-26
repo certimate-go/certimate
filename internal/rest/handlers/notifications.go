@@ -25,6 +25,8 @@ func NewNotificationsHandler(router *router.RouterGroup[*core.RequestEvent], ser
 
 	group := router.Group("/notifications")
 	group.POST("/test", handler.test)
+	group.POST("/matrix/verify", handler.verifyMatrix)
+	group.POST("/matrix/test-send", handler.sendTestMatrix)
 }
 
 func (handler *NotificationsHandler) test(e *core.RequestEvent) error {

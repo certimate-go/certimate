@@ -1,12 +1,10 @@
 {
   "$ns": "workflow_node",
-
   "kind": {
     "basis": "基础",
     "business": "业务",
     "logic": "逻辑"
   },
-
   "variables": {
     "type": {
       "certificate": {
@@ -25,7 +23,6 @@
       }
     }
   },
-
   "start": {
     "label": "开始",
     "default_name": "开始",
@@ -59,7 +56,6 @@
       }
     }
   },
-
   "apply": {
     "label": "申请签发证书",
     "default_name": "申请",
@@ -275,7 +271,6 @@
         "unit": "天",
         "help": "提示：证书实际续期间隔还取决于触发运行的 CRON 表达式。"
       },
-
       "aliyun_esa_region": {
         "label": "阿里云服务地域",
         "placeholder": "请输入阿里云 ESA 服务地域（例如：cn-hangzhou）",
@@ -336,7 +331,6 @@
       }
     }
   },
-
   "upload": {
     "label": "上传自有证书",
     "default_name": "上传",
@@ -398,7 +392,6 @@
       }
     }
   },
-
   "monitor": {
     "label": "监控网站证书",
     "default_name": "监控",
@@ -428,7 +421,6 @@
       }
     }
   },
-
   "deploy": {
     "label": "部署证书到 ...",
     "default_name": "部署",
@@ -472,7 +464,6 @@
           "off": "不跳过"
         }
       },
-
       "shared_deploy_target": {
         "label": "证书部署方式",
         "placeholder": "请选择证书部署方式"
@@ -568,7 +559,6 @@
         "placeholder": "请输入 JKS 密钥库存储口令",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
-
       "1panel_node_name": {
         "label": "1Panel 子节点名称（可选）",
         "placeholder": "请输入 1Panel 子节点名称",
@@ -2624,7 +2614,6 @@
       }
     }
   },
-
   "notify": {
     "label": "推送通知",
     "default_name": "通知",
@@ -2724,10 +2713,14 @@
           "on": "跳过",
           "off": "不跳过"
         }
+      },
+      "matrix_room_id": {
+        "label": "房间 ID（覆盖）",
+        "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
+        "help": "<strong>发送通知</strong>须在本字段或关联的<a href=\"#/accesses\">通知凭据</a>（默认房间）中至少填写一处。此处留空则使用凭据中的默认房间。<br><br><strong>两处都留空</strong>时无法发送（<code>matrix: room id is required</code>）。凭据上的连接测试可在不填房间时进行，仅验证登录，不验证投递。"
       }
     }
   },
-
   "delay": {
     "label": "延迟等待",
     "default_name": "延迟",
@@ -2744,7 +2737,6 @@
       }
     }
   },
-
   "condition": {
     "label": "并行/条件分支",
     "default_name": {
@@ -2753,7 +2745,6 @@
       "template_certtest_on_expired": "若网站证书已过期…"
     }
   },
-
   "branch_block": {
     "label": "分支",
     "default_name": "分支",
@@ -2832,17 +2823,14 @@
       }
     }
   },
-
   "try_catch": {
     "label": "执行结果分支",
     "default_name": "尝试执行…"
   },
-
   "catch_block": {
     "label": "执行失败分支",
     "default_name": "若执行失败…"
   },
-
   "end": {
     "label": "结束",
     "default_name": "结束"

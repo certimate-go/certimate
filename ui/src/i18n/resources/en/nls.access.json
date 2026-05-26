@@ -1,17 +1,14 @@
 {
   "$ns": "access",
-
   "text": {
     "nodata": "No credentials",
     "nodata_description": "It looks like you don't have any credentials. Get started by adding one.",
     "nodata_button": "Create credential"
   },
-
   "page": {
     "heading": "Credentials",
     "subheading": "Credentials store authentication information (username and password, API key, tokens, etc.) to connect with specific third-party apps and services."
   },
-
   "action": {
     "search.input": {
       "placeholder": "Search by credential name ..."
@@ -39,7 +36,6 @@
     },
     "test_notify.button": "Test notify"
   },
-
   "props": {
     "name": "Name",
     "provider": {
@@ -59,12 +55,10 @@
     "created_at": "Created at",
     "updated_at": "Updated at"
   },
-
   "new": {
     "heading": "Create Credential",
     "subheading": "Use this credential to connect with specific third-party apps and services."
   },
-
   "form": {
     "name": {
       "label": "Name",
@@ -78,7 +72,6 @@
         "placeholder": "Search provider ..."
       }
     },
-
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "Please enter ACME EAB KID"
@@ -90,7 +83,6 @@
     "shared_allow_insecure_conns": {
       "label": "Allow insecure SSL/TLS connections"
     },
-
     "1panel_server_url": {
       "label": "1Panel server URL",
       "placeholder": "Please enter 1Panel server URL",
@@ -1511,6 +1503,69 @@
     },
     "zerossl_eab": {
       "guide": "Learn more about using EAB key in ZeroSSL: <br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
+    },
+    "matrix_homeserver_url": {
+      "label": "Homeserver URL",
+      "placeholder": "https://matrix.example.org",
+      "tooltip": "Element web URL or Matrix homeserver base URL (Client-Server API). Example: <code>https://matrix.example.org</code>"
+    },
+    "matrix_auth_mode": {
+      "label": "Authentication",
+      "option": {
+        "token": "Access token (bot recommended)",
+        "password": "Password (user account)"
+      }
+    },
+    "matrix_access_token": {
+      "label": "Access token",
+      "placeholder": "syt_…",
+      "help": "Bot or user access token from your Matrix homeserver (Element → Settings → Help & About → Advanced, or integration manager)."
+    },
+    "matrix_user_id": {
+      "label": "User ID",
+      "placeholder": "@user:matrix.example.org",
+      "help": "Full MXID or localpart only (e.g. <code>bot</code> → <code>@bot:matrix.example.org</code>)."
+    },
+    "matrix_password": {
+      "label": "Password",
+      "placeholder": "Account password",
+      "help": "On first login confirm MFA in Element. The session is saved — you will not be prompted again."
+    },
+    "matrix_session": {
+      "active": "Saved session is active (no re-login required).",
+      "saved_auto": "Session saved to credentials.",
+      "saved_form": "Session obtained — click Save to store it in credentials."
+    },
+    "matrix_room_id": {
+      "label": "Room ID (default for sending)",
+      "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
+      "help": "<strong>If empty:</strong> <em>Test connection</em> only checks the homeserver and login (token or password). <strong>No notification is sent.</strong><br><br><strong>To send messages</strong> from workflow notify nodes, set a Room ID <strong>here</strong> (default for this credential) <strong>or</strong> in each <a href=\"#/workflows\">workflow</a> notify node (overrides this field). If <strong>both</strong> are empty, sending fails with <code>matrix: room id is required</code>.<br><br>Format: <code>!localpart:server.name</code>. Invite the bot to the room first.",
+      "tooltip": "In Element: room Settings → Advanced → Room ID (starts with <code>!</code>). If set, <em>Test connection</em> also checks that the account is already in this room."
+    },
+    "matrix_verify": {
+      "hint": "Without a Room ID above, <em>Test connection</em> does not send any message — it only verifies the homeserver and authentication.",
+      "button": "Test connection",
+      "success": "Matrix connection successful",
+      "failed": "Connection check failed — see steps below",
+      "step": {
+        "homeserver": "Homeserver",
+        "auth": "Authentication",
+        "room": "Room"
+      },
+      "err": {
+        "M_LIMIT_EXCEEDED": "Too many login attempts. Wait about {{seconds}} s and try again, or use an access token instead of a password.",
+        "M_LIMIT_EXCEEDED_generic": "Too many login attempts. Wait a minute and try again, or use an access token instead of a password.",
+        "M_FORBIDDEN": "Invalid username or password.",
+        "M_USER_DEACTIVATED": "Account is deactivated on the homeserver.",
+        "M_UIA_TIMEOUT": "Timed out waiting for MFA approval in Element — confirm the login and try again."
+      }
+    },
+    "matrix_test_send": {
+      "button": "Send test message",
+      "hint": "Sends a short test message to the Room ID above. Available after a successful connection test.",
+      "success": "Test message sent to the room.",
+      "subject": "Certimate test notification",
+      "body": "This is a test message from credential settings."
     }
   }
 }

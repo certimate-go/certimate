@@ -79,6 +79,12 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       scrollToFirstError
       onValuesChange={onFormValuesChange}
     >
+      {mode === "modify" && initialValues?.id ? (
+        <Form.Item name="id" hidden initialValue={initialValues.id}>
+          <Input />
+        </Form.Item>
+      ) : null}
+
       <Form.Item name="name" label={t("access.form.name.label")} rules={[formRule]}>
         <Input placeholder={t("access.form.name.placeholder")} />
       </Form.Item>

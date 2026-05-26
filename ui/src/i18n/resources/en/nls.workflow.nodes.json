@@ -1,12 +1,10 @@
 {
   "$ns": "workflow_node",
-
   "kind": {
     "basis": "Basis",
     "business": "Business",
     "logic": "Logic"
   },
-
   "variables": {
     "type": {
       "certificate": {
@@ -25,7 +23,6 @@
       }
     }
   },
-
   "start": {
     "label": "Start",
     "default_name": "Start",
@@ -59,7 +56,6 @@
       }
     }
   },
-
   "apply": {
     "label": "Request certificate",
     "default_name": "Application",
@@ -276,7 +272,6 @@
         "unit": "days",
         "help": "Notes: The actual renewal interval also depends on the CRON expression that triggers the workflow."
       },
-
       "aliyun_esa_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
@@ -337,7 +332,6 @@
       }
     }
   },
-
   "upload": {
     "label": "Upload certificate",
     "default_name": "Uploading",
@@ -399,7 +393,6 @@
       }
     }
   },
-
   "monitor": {
     "label": "Monitor certificate",
     "default_name": "Monitoring",
@@ -429,7 +422,6 @@
       }
     }
   },
-
   "deploy": {
     "label": "Deploy certificate",
     "default_name": "Deployment",
@@ -473,7 +465,6 @@
           "off": "don't skip"
         }
       },
-
       "shared_deploy_target": {
         "label": "Certificate deploy target",
         "placeholder": "Please select certificate deploy target"
@@ -569,7 +560,6 @@
         "placeholder": "Please enter JKS store password",
         "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
-
       "1panel_node_name": {
         "label": "1Panel node name (Optional)",
         "placeholder": "Please enter 1Panel node name",
@@ -2628,7 +2618,6 @@
       }
     }
   },
-
   "notify": {
     "label": "Send notification",
     "default_name": "Notification",
@@ -2681,7 +2670,6 @@
           "off": "not skip"
         }
       },
-
       "discordbot_channel_id": {
         "label": "Discord channel ID (Optional)",
         "placeholder": "Please enter Discord channel ID",
@@ -2729,10 +2717,14 @@
         "label": "Webhook timeout (Optional)",
         "placeholder": "Please enter Webhook timeout",
         "unit": "seconds"
+      },
+      "matrix_room_id": {
+        "label": "Room ID (override)",
+        "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
+        "help": "<strong>Sending requires a Room ID</strong> in this field <strong>or</strong> in the linked <a href=\"#/accesses\">notification credential</a> (default room). Leave blank here to use the credential default.<br><br>If <strong>both</strong> are empty, the notify node cannot send (<code>matrix: room id is required</code>). Connection test on the credential works without a room — it only checks server login, not delivery."
       }
     }
   },
-
   "delay": {
     "label": "Delay",
     "default_name": "Delay",
@@ -2749,7 +2741,6 @@
       }
     }
   },
-
   "condition": {
     "label": "Parallel/Conditional branch",
     "default_name": {
@@ -2758,7 +2749,6 @@
       "template_certtest_on_expired": "If the certificate has expired ..."
     }
   },
-
   "branch_block": {
     "label": "Branch",
     "default_name": "Branch",
@@ -2837,17 +2827,14 @@
       }
     }
   },
-
   "try_catch": {
     "label": "Execution result branch",
     "default_name": "Try to ..."
   },
-
   "catch_block": {
     "label": "Execution failure branch",
     "default_name": "On failed ..."
   },
-
   "end": {
     "label": "End",
     "default_name": "End"

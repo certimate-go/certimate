@@ -1,6 +1,5 @@
 {
   "$ns": "provider",
-
   "text": {
     "nodata": "No providers available",
     "default_ca": "(Default) Follow global settings",
@@ -10,7 +9,6 @@
     "unavailable_group": "Unavailable (without added credentials)",
     "unavailable_divider": "The following providers are not available (without added credentials)"
   },
-
   "category": {
     "all": "All",
     "cdn": "CDN",
@@ -25,7 +23,6 @@
     "ssl": "SSL",
     "other": "Other"
   },
-
   "1panel": "1Panel",
   "1panel_console": "1Panel - Console itself",
   "35cn": "35.cn",
@@ -181,6 +178,7 @@
   "litessl": "LiteSSL",
   "local": "Local host",
   "mattermost": "Mattermost",
+  "matrix": "Matrix",
   "mohua": "Mohua",
   "mohua_mvh": "Mohua - MVH (Virtual Host)",
   "namecheap": "Namecheap",

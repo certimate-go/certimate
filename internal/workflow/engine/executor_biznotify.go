@@ -75,9 +75,11 @@ func (ne *bizNotifyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 		Message:                message,
 	}
 	if _, err := notifier.SendNotification(execCtx.Context(), notifyReq); err != nil {
-		ne.logger.Warn("could not send notification")
+		ne.logger.Warn("could not send notification", slog.String("error", err.Error()))
 		return execRes, err
 	}
+
+	ne.persistMatrixSessionIfNeeded(execCtx, nodeCfg.Provider, providerAccessConfig)
 
 	ne.logger.Info("notification completed")
 	return execRes, nil

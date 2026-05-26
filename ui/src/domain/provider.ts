@@ -88,6 +88,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   LINODE: "linode",
   LITESSL: "litessl",
   LOCAL: "local",
+  MATRIX: "matrix",
   MATTERMOST: "mattermost",
   MOHUA: "mohua",
   NAMECHEAP: "namecheap",
@@ -281,6 +282,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.DISCORDBOT, "provider.discordbot", "/imgs/providers/discord.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.SLACKBOT, "provider.slackbot", "/imgs/providers/slack.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.TELEGRAMBOT, "provider.telegrambot", "/imgs/providers/telegram.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.MATRIX, "provider.matrix", "/imgs/providers/matrix.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.MATTERMOST, "provider.mattermost", "/imgs/providers/mattermost.svg", [ACCESS_USAGES.NOTIFICATION]],
     ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[], "builtin"] | [AccessProviderType, string, string, AccessUsageType[]]>
   ).map(([type, name, icon, usages, builtin]) => [
@@ -914,6 +916,7 @@ export const NOTIFICATION_PROVIDERS = Object.freeze({
   DISCORDBOT: `${ACCESS_PROVIDERS.DISCORDBOT}`,
   EMAIL: `${ACCESS_PROVIDERS.EMAIL}`,
   LARKBOT: `${ACCESS_PROVIDERS.LARKBOT}`,
+  MATRIX: `${ACCESS_PROVIDERS.MATRIX}`,
   MATTERMOST: `${ACCESS_PROVIDERS.MATTERMOST}`,
   SLACKBOT: `${ACCESS_PROVIDERS.SLACKBOT}`,
   TELEGRAMBOT: `${ACCESS_PROVIDERS.TELEGRAMBOT}`,
@@ -940,6 +943,7 @@ export const notificationProvidersMap: Map<NotificationProvider["type"] | string
       [NOTIFICATION_PROVIDERS.DISCORDBOT],
       [NOTIFICATION_PROVIDERS.SLACKBOT],
       [NOTIFICATION_PROVIDERS.TELEGRAMBOT],
+      [NOTIFICATION_PROVIDERS.MATRIX],
       [NOTIFICATION_PROVIDERS.MATTERMOST],
     ] satisfies Array<[NotificationProviderType]>
   ).map(([type]) => [
