@@ -148,7 +148,7 @@ func (s *WorkflowService) cleanupHistoryRuns(ctx context.Context) error {
 
 	persistenceSettings := settings.Content.AsPersistence()
 	if persistenceSettings.WorkflowRunsRetentionMaxDays != 0 {
-		ret, err := s.workflowRunRepo.DeleteWhere(
+		ret, err := s.workflowRunRepo.DeleteWithExprs(
 			ctx,
 			dbx.NewExp(fmt.Sprintf("status!='%s'", domain.WorkflowRunStatusTypePending)),
 			dbx.NewExp(fmt.Sprintf("status!='%s'", domain.WorkflowRunStatusTypeProcessing)),

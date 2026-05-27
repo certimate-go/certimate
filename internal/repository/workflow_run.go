@@ -134,7 +134,7 @@ func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowR
 	return workflowRun, nil
 }
 
-func (r *WorkflowRunRepository) DeleteWhere(ctx context.Context, exprs ...dbx.Expression) (int, error) {
+func (r *WorkflowRunRepository) DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error) {
 	records, err := app.GetApp().FindAllRecords(domain.CollectionNameWorkflowRun, exprs...)
 	if err != nil {
 		return 0, nil

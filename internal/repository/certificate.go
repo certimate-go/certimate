@@ -18,30 +18,6 @@ func NewCertificateRepository() *CertificateRepository {
 	return &CertificateRepository{}
 }
 
-func (r *CertificateRepository) ListExpiringSoon(ctx context.Context) ([]*domain.Certificate, error) {
-	records, err := app.GetApp().FindAllRecords(
-		domain.CollectionNameCertificate,
-		dbx.NewExp("validityNotAfter>DATETIME('now')"),
-		dbx.NewExp("validityNotAfter<DATETIME('now', '+20 days')"),
-		dbx.NewExp("deleted=null"),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	certificates := make([]*domain.Certificate, 0)
-	for _, record := range records {
-		certificate, err := r.castRecordToModel(record)
-		if err != nil {
-			return nil, err
-		}
-
-		certificates = append(certificates, certificate)
-	}
-
-	return certificates, nil
-}
-
 func (r *CertificateRepository) GetById(ctx context.Context, id string) (*domain.Certificate, error) {
 	record, err := app.GetApp().FindRecordById(domain.CollectionNameCertificate, id)
 	if err != nil {
@@ -145,7 +121,7 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	return certificate, nil
 }
 
-func (r *CertificateRepository) DeleteWhere(ctx context.Context, exprs ...dbx.Expression) (int, error) {
+func (r *CertificateRepository) DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error) {
 	records, err := app.GetApp().FindAllRecords(domain.CollectionNameCertificate, exprs...)
 	if err != nil {
 		return 0, nil

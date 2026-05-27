@@ -18,7 +18,7 @@ type workflowRunRepository interface {
 	GetById(ctx context.Context, id string) (*domain.WorkflowRun, error)
 	Save(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
 	SaveWithCascading(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
-	DeleteWhere(ctx context.Context, exprs ...dbx.Expression) (int, error)
+	DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error)
 }
 
 type settingsRepository interface {
