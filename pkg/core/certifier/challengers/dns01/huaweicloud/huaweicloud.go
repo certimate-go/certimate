@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	hwc "github.com/go-acme/lego/v4/providers/dns/huaweicloud"
+	hwc "github.com/go-acme/lego/v5/providers/dns/huaweicloud"
 )
 
 type ChallengerConfig struct {

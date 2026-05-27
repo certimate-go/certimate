@@ -1,12 +1,13 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 
 	dynadotsdk "github.com/certimate-go/certimate/pkg/sdk3rd/dynadot"
@@ -87,10 +88,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("dynadot: could not find zone for domain %q: %w", domain, err)
 	}
@@ -112,17 +113,17 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		TTL:                    lo.ToPtr(int64(d.config.TTL)),
 		AddDnsToCurrentSetting: lo.ToPtr(true),
 	}
-	if _, err := d.client.SetDns(dns01.UnFqdn(authZone), request); err != nil {
+	if _, err := d.client.SetDnsWithContext(ctx, dns01.UnFqdn(authZone), request); err != nil {
 		return fmt.Errorf("dynadot: error when create record: %w", err)
 	}
 
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("dynadot: could not find zone for domain %q: %w", domain, err)
 	}
@@ -142,7 +143,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 			},
 		},
 	}
-	if _, err := d.client.RemoveDns(dns01.UnFqdn(authZone), request); err != nil {
+	if _, err := d.client.RemoveDnsWithContext(ctx, dns01.UnFqdn(authZone), request); err != nil {
 		return fmt.Errorf("dynadot: error when delete record: %w", err)
 	}
 

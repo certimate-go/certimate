@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
-	"github.com/certimate-go/certimate/internal/domain"
-	"github.com/certimate-go/certimate/internal/repository"
-	"github.com/go-acme/lego/v4/lego"
+	"github.com/go-acme/lego/v5/lego"
+
+	"github.com/certimate-go/certimate/internal/app"
 )
 
 type ACMEClient struct {
@@ -16,8 +15,9 @@ type ACMEClient struct {
 	account *ACMEAccount
 }
 
+// Deprecated: use [NewACMEClientWithAccount] instead.
 func NewACMEClient(config *ACMEConfig, email string, configures ...func(*lego.Config) error) (*ACMEClient, error) {
-	account, err := NewACMEAccountWithSingleFlight(config, email)
+	account, err := CreateACMEAccountWithSingleFlight(context.Background(), config, email)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,6 @@ func NewACMEClient(config *ACMEConfig, email string, configures ...func(*lego.Co
 	mergedConfigures := []func(*lego.Config) error{
 		func(legoCfg *lego.Config) error {
 			legoCfg.CADirURL = config.CADirUrl
-			legoCfg.Certificate.KeyType = config.CertifierKeyType
 			return nil
 		},
 	}
@@ -43,17 +42,8 @@ func newACMEClientWithAccount(account *ACMEAccount, configures ...func(*lego.Con
 	}
 
 	legoCfg := lego.NewConfig(account)
+	legoCfg.UserAgent = app.AppUserAgent
 	legoCfg.CADirURL = account.ACMEDirUrl
-
-	// TODO: fix this after migrate lego to v5
-	settingsRepo := repository.NewSettingsRepository()
-	settings, _ := settingsRepo.GetByName(context.Background(), domain.SettingsNameSSLProvider)
-	if settings != nil {
-		sslProviderSettings := settings.Content.AsSSLProvider()
-		if sslProviderSettings.Timeout > 0 {
-			legoCfg.Certificate.Timeout = time.Duration(sslProviderSettings.Timeout) * time.Second
-		}
-	}
 
 	errs := make([]error, 0)
 	for _, configure := range configures {

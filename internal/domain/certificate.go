@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-acme/lego/v4/certcrypto"
+	"github.com/go-acme/lego/v5/certcrypto"
 
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
@@ -87,37 +87,23 @@ const (
 	CertificateSourceTypeUpload  = CertificateSourceType("upload")
 )
 
-type CertificateKeyAlgorithmType string
+type CertificateKeyAlgorithmType certcrypto.KeyType
 
 func (t CertificateKeyAlgorithmType) String() string {
 	return string(t)
 }
 
-func (t CertificateKeyAlgorithmType) ToLegoKeyType() (certcrypto.KeyType, error) {
-	keyTypeMap := map[CertificateKeyAlgorithmType]certcrypto.KeyType{
-		CertificateKeyAlgorithmTypeRSA2048: certcrypto.RSA2048,
-		CertificateKeyAlgorithmTypeRSA3072: certcrypto.RSA3072,
-		CertificateKeyAlgorithmTypeRSA4096: certcrypto.RSA4096,
-		CertificateKeyAlgorithmTypeRSA8192: certcrypto.RSA8192,
-		CertificateKeyAlgorithmTypeEC256:   certcrypto.EC256,
-		CertificateKeyAlgorithmTypeEC384:   certcrypto.EC384,
-	}
-
-	if keyType, ok := keyTypeMap[t]; ok {
-		return keyType, nil
-	}
-
-	return certcrypto.RSA2048, fmt.Errorf("unsupported key algorithm type: '%s'", t)
+func (t CertificateKeyAlgorithmType) LegoKeyType() certcrypto.KeyType {
+	return certcrypto.KeyType(t)
 }
 
 const (
-	CertificateKeyAlgorithmTypeRSA2048 = CertificateKeyAlgorithmType("RSA2048")
-	CertificateKeyAlgorithmTypeRSA3072 = CertificateKeyAlgorithmType("RSA3072")
-	CertificateKeyAlgorithmTypeRSA4096 = CertificateKeyAlgorithmType("RSA4096")
-	CertificateKeyAlgorithmTypeRSA8192 = CertificateKeyAlgorithmType("RSA8192")
-	CertificateKeyAlgorithmTypeEC256   = CertificateKeyAlgorithmType("EC256")
-	CertificateKeyAlgorithmTypeEC384   = CertificateKeyAlgorithmType("EC384")
-	CertificateKeyAlgorithmTypeEC512   = CertificateKeyAlgorithmType("EC512")
+	CertificateKeyAlgorithmTypeRSA2048 = CertificateKeyAlgorithmType(certcrypto.RSA2048)
+	CertificateKeyAlgorithmTypeRSA3072 = CertificateKeyAlgorithmType(certcrypto.RSA3072)
+	CertificateKeyAlgorithmTypeRSA4096 = CertificateKeyAlgorithmType(certcrypto.RSA4096)
+	CertificateKeyAlgorithmTypeRSA8192 = CertificateKeyAlgorithmType(certcrypto.RSA8192)
+	CertificateKeyAlgorithmTypeEC256   = CertificateKeyAlgorithmType(certcrypto.EC256)
+	CertificateKeyAlgorithmTypeEC384   = CertificateKeyAlgorithmType(certcrypto.EC384)
 )
 
 type CertificateFormatType string

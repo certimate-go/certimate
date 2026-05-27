@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 
 	dnscomsdk "github.com/certimate-go/certimate/pkg/sdk3rd/51dnscom"
@@ -86,10 +87,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("51dnscom: could not find zone for domain %q: %w", domain, err)
 	}
@@ -99,7 +100,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		return fmt.Errorf("51dnscom: %w", err)
 	}
 
-	zone, err := d.findZone(dns01.UnFqdn(authZone))
+	zone, err := d.findZone(ctx, dns01.UnFqdn(authZone))
 	if err != nil {
 		return fmt.Errorf("51dnscom: error when list zones: %w", err)
 	}
@@ -112,7 +113,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		Value:    lo.ToPtr(info.Value),
 		TTL:      lo.ToPtr(int32(d.config.TTL)),
 	}
-	response, err := d.client.RecordCreate(request)
+	response, err := d.client.RecordCreateWithContext(ctx, request)
 	if err != nil {
 		return fmt.Errorf("51dnscom: error when create record: %w", err)
 	}
@@ -124,8 +125,8 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
 	d.recordCacheMu.Lock()
 	record, ok := d.recordCache[token]
@@ -139,7 +140,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 		DomainID: lo.ToPtr(record.DomainID),
 		RecordID: lo.ToPtr(record.RecordID),
 	}
-	if _, err := d.client.RecordRemove(request); err != nil {
+	if _, err := d.client.RecordRemoveWithContext(ctx, request); err != nil {
 		return fmt.Errorf("51dnscom: error when delete record: %w", err)
 	}
 
@@ -155,7 +156,7 @@ type dnsRecordCacheEntry struct {
 	RecordID string
 }
 
-func (d *DNSProvider) findZone(zoneName string) (*dnscomsdk.DomainRecord, error) {
+func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*dnscomsdk.DomainRecord, error) {
 	page := 1
 	pageSize := 10
 	for {
@@ -164,7 +165,7 @@ func (d *DNSProvider) findZone(zoneName string) (*dnscomsdk.DomainRecord, error)
 			Page:     lo.ToPtr(int32(page)),
 			PageSize: lo.ToPtr(int32(pageSize)),
 		}
-		response, err := d.client.DomainList(request)
+		response, err := d.client.DomainListWithContext(ctx, request)
 		if err != nil {
 			return nil, err
 		}

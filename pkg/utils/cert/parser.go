@@ -4,7 +4,7 @@ import (
 	"crypto"
 	"crypto/x509"
 
-	"github.com/go-acme/lego/v4/certcrypto"
+	"github.com/go-acme/lego/v5/certcrypto"
 )
 
 // 从 PEM 编码的证书字符串解析并返回一个 x509.Certificate 对象。

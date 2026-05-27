@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/go-cmd/cmd"
 
@@ -106,19 +105,33 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 					}
 
 					if s.logger != nil {
-						print := s.logger.Info
+						logFn := s.logger.Info
 
-						// split log level prefix for those vendor packages:
-						// - github.com/go-acme/lego: INFO, WARN
-						if strings.HasPrefix(line, "[INFO] ") {
-							line = strings.TrimPrefix(line, "[INFO] ")
-							print = s.logger.Info
-						} else if strings.HasPrefix(line, "[WARN] ") {
-							line = strings.TrimPrefix(line, "[WARN] ")
-							print = s.logger.Warn
+						logRec, err := stdLogUnmarshal([]byte(line))
+						logAttrs := make([]any, 0)
+						if err == nil {
+							switch logRec.Level {
+							case slog.LevelDebug:
+								logFn = s.logger.Debug
+								line = logRec.Message
+							case slog.LevelWarn:
+								logFn = s.logger.Warn
+								line = logRec.Message
+							case slog.LevelError:
+								logFn = s.logger.Error
+								line = logRec.Message
+							default:
+								logFn = s.logger.Info
+								line = logRec.Message
+							}
+
+							logRec.Attrs(func(a slog.Attr) bool {
+								logAttrs = append(logAttrs, a)
+								return true
+							})
 						}
 
-						print(line)
+						logFn(line, logAttrs...)
 					}
 				}
 
@@ -130,16 +143,8 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 					}
 
 					if s.logger != nil {
-						print := s.logger.Error
-
-						// split log level prefix for those vendor packages:
-						// - github.com/nrdcg/desec: DEBUG
-						if strings.Contains(line, "[DEBUG] ") {
-							line = strings.SplitN(line, "[DEBUG] ", 2)[1]
-							print = s.logger.Debug
-						}
-
-						print(line)
+						logFn := s.logger.Error
+						logFn(line)
 					}
 				}
 			}

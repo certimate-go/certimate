@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-acme/lego/v4/providers/dns/acmedns"
+	"github.com/go-acme/lego/v5/providers/dns/acmedns"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 )

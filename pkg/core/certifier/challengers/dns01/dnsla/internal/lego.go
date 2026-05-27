@@ -1,14 +1,15 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 
 	dnslasdk "github.com/certimate-go/certimate/pkg/sdk3rd/dnsla"
@@ -88,10 +89,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("dnsla: could not find zone for domain %q: %w", domain, err)
 	}
@@ -101,7 +102,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		return fmt.Errorf("dnsla: %w", err)
 	}
 
-	zone, err := d.findZone(dns01.UnFqdn(authZone))
+	zone, err := d.findZone(ctx, dns01.UnFqdn(authZone))
 	if err != nil {
 		return fmt.Errorf("dnsla: error when list zones: %w", err)
 	}
@@ -114,7 +115,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		Data:     lo.ToPtr(info.Value),
 		Ttl:      lo.ToPtr(int32(d.config.TTL)),
 	}
-	response, err := d.client.CreateRecord(request)
+	response, err := d.client.CreateRecordWithContext(ctx, request)
 	if err != nil {
 		return fmt.Errorf("dnsla: error when create record: %w", err)
 	}
@@ -126,8 +127,8 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
 	d.recordIDsMu.Lock()
 	recordID, ok := d.recordIDs[token]
@@ -137,7 +138,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 	}
 
 	// REF: https://www.dnsla.cn/docs/ApiDoc
-	if _, err := d.client.DeleteRecord(recordID); err != nil {
+	if _, err := d.client.DeleteRecordWithContext(ctx, recordID); err != nil {
 		return fmt.Errorf("dnsla: error when delete record: %w", err)
 	}
 
@@ -148,7 +149,7 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 	return d.config.PropagationTimeout, d.config.PollingInterval
 }
 
-func (d *DNSProvider) findZone(zoneName string) (*dnslasdk.DomainRecord, error) {
+func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*dnslasdk.DomainRecord, error) {
 	pageIndex := 1
 	pageSize := 100
 	for {
@@ -157,7 +158,7 @@ func (d *DNSProvider) findZone(zoneName string) (*dnslasdk.DomainRecord, error) 
 			PageIndex: lo.ToPtr(int32(pageIndex)),
 			PageSize:  lo.ToPtr(int32(pageSize)),
 		}
-		response, err := d.client.ListDomains(request)
+		response, err := d.client.ListDomainsWithContext(ctx, request)
 		if err != nil {
 			return nil, err
 		}

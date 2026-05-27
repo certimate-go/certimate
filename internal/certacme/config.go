@@ -3,124 +3,65 @@ package certacme
 import (
 	"context"
 	"fmt"
-	"strings"
-
-	"github.com/go-acme/lego/v4/certcrypto"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/repository"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
-var acmeDirUrls = map[string]string{
-	string(domain.CAProviderTypeLetsEncrypt):         "https://acme-v02.api.letsencrypt.org/directory",
-	string(domain.CAProviderTypeLetsEncryptStaging):  "https://acme-staging-v02.api.letsencrypt.org/directory",
-	string(domain.CAProviderTypeActalisSSL):          "https://acme-api.actalis.com/acme/directory",
-	string(domain.CAProviderTypeDigiCert):            "https://acme.digicert.com/v2/acme/directory",
-	string(domain.CAProviderTypeGlobalSignAtlas):     "https://emea.acme.atlas.globalsign.com/directory",
-	string(domain.CAProviderTypeGoogleTrustServices): "https://dv.acme-v02.api.pki.goog/directory",
-	string(domain.CAProviderTypeLiteSSL):             "https://acme.litessl.com/acme/v2/directory",
-	string(domain.CAProviderTypeSSLCom):              "https://acme.ssl.com/sslcom-dv-rsa",
-	string(domain.CAProviderTypeSSLCom) + "RSA":      "https://acme.ssl.com/sslcom-dv-rsa",
-	string(domain.CAProviderTypeSSLCom) + "ECC":      "https://acme.ssl.com/sslcom-dv-ecc",
-	string(domain.CAProviderTypeSectigo):             "https://acme.sectigo.com/v2/DV",
-	string(domain.CAProviderTypeSectigo) + "DV":      "https://acme.sectigo.com/v2/DV",
-	string(domain.CAProviderTypeSectigo) + "OV":      "https://acme.sectigo.com/v2/OV",
-	string(domain.CAProviderTypeSectigo) + "EV":      "https://acme.sectigo.com/v2/EV",
-	string(domain.CAProviderTypeZeroSSL):             "https://acme.zerossl.com/v2/DV90",
-}
-
 type ACMEConfigOptions struct {
-	CAProvider       string
-	CAAccessConfig   map[string]any
-	CAProviderConfig map[string]any
-	CertifierKeyType certcrypto.KeyType
+	CAProvider               domain.CAProviderType
+	CAProviderAccessConfig   map[string]any
+	CAProviderExtendedConfig map[string]any
+	CertifierKeyAlgorithm    domain.CertificateKeyAlgorithmType
 }
 
 type ACMEConfig struct {
-	CAProvider       domain.CAProviderType
-	CADirUrl         string
-	EABKid           string
-	EABHmacKey       string
-	CertifierKeyType certcrypto.KeyType
+	CAProvider domain.CAProviderType
+	CADirUrl   string
+	EABKid     string
+	EABHmacKey string
 }
 
-func NewACMEConfig(options *ACMEConfigOptions) (*ACMEConfig, error) {
+func CreateACMEConfig(ctx context.Context, options *ACMEConfigOptions) (*ACMEConfig, error) {
 	if options == nil {
 		return nil, fmt.Errorf("the options is nil")
 	}
 
-	caProvider := options.CAProvider
-	caAccessConfig := options.CAAccessConfig
+	provider := options.CAProvider
+	providerAccessCfg := options.CAProviderAccessConfig
 
-	if options.CAProvider == "" {
+	if provider.String() == "" {
+		// follow global settings
+		// TODO: decoupling from the repository layer
 		settingsRepo := repository.NewSettingsRepository()
-		settings, _ := settingsRepo.GetByName(context.Background(), domain.SettingsNameSSLProvider)
+		settings, _ := settingsRepo.GetByName(ctx, domain.SettingsNameSSLProvider)
 		if settings != nil {
 			sslProviderSettings := settings.Content.AsSSLProvider()
-			caProvider = sslProviderSettings.Provider.String()
-			caAccessConfig = sslProviderSettings.Configs[sslProviderSettings.Provider]
+			provider = sslProviderSettings.Provider
+			providerAccessCfg = sslProviderSettings.Configs[sslProviderSettings.Provider]
 		}
 	}
 
-	if caProvider == "" {
+	if provider.String() == "" {
 		// default CA: Let's Encrypt
-		caProvider = domain.AccessProviderTypeLetsEncrypt.String()
+		provider = domain.CAProviderTypeLetsEncrypt
 	}
 
-	if caAccessConfig == nil {
-		caAccessConfig = make(map[string]any)
-	}
-
-	ca := &ACMEConfig{CAProvider: domain.CAProviderType(caProvider), CertifierKeyType: options.CertifierKeyType}
-	switch ca.CAProvider {
-	case domain.CAProviderTypeSectigo:
-		credentials := &domain.AccessConfigForGlobalSectigo{}
-		if err := xmaps.Populate(caAccessConfig, &credentials); err != nil {
-			return nil, err
-		} else if strings.EqualFold(credentials.ValidationType, "DV") {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()+"DV"]
-		} else if strings.EqualFold(credentials.ValidationType, "OV") {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()+"OV"]
-		} else if strings.EqualFold(credentials.ValidationType, "EV") {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()+"EV"]
-		} else {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSectigo.String()]
-		}
-
-	case domain.CAProviderTypeSSLCom:
-		// TODO: fix this after migrate lego to v5
-		if strings.HasPrefix(string(options.CertifierKeyType), "RSA") {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSSLCom.String()+"RSA"]
-		} else if strings.HasPrefix(string(options.CertifierKeyType), "EC") {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSSLCom.String()+"ECC"]
-		} else {
-			ca.CADirUrl = acmeDirUrls[domain.CAProviderTypeSSLCom.String()]
-		}
-
-	case domain.CAProviderTypeACMECA:
-		credentials := &domain.AccessConfigForACMECA{}
-		if err := xmaps.Populate(caAccessConfig, &credentials); err != nil {
-			return nil, err
-		} else if credentials.Endpoint == "" {
-			return nil, fmt.Errorf("the endpoint of custom ACME CA is empty")
-		}
-		ca.CADirUrl = credentials.Endpoint
-
-	default:
-		endpoint := acmeDirUrls[ca.CAProvider.String()]
-		if endpoint == "" {
-			return nil, fmt.Errorf("the endpoint of the ACME CA provider is empty")
-		}
-		ca.CADirUrl = endpoint
-	}
-
-	eab := domain.AccessConfigForACMEExternalAccountBinding{}
-	if err := xmaps.Populate(caAccessConfig, &eab); err != nil {
+	acmeDirUrl, err := getCADirUrl(provider, providerAccessCfg, options.CertifierKeyAlgorithm)
+	if err != nil {
 		return nil, err
 	}
-	ca.EABKid = eab.EabKid
-	ca.EABHmacKey = eab.EabHmacKey
 
-	return ca, nil
+	acmeEab := domain.AccessConfigForACMEExternalAccountBinding{}
+	if err := xmaps.Populate(providerAccessCfg, &acmeEab); err != nil {
+		return nil, err
+	}
+
+	return &ACMEConfig{
+		CAProvider: provider,
+		CADirUrl:   acmeDirUrl,
+		EABKid:     acmeEab.EabKid,
+		EABHmacKey: acmeEab.EabHmacKey,
+	}, nil
 }

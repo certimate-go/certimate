@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/cpanel"
+	"github.com/go-acme/lego/v5/providers/dns/cpanel"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"

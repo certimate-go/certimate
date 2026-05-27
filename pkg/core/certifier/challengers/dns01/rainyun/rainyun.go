@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/rainyun"
+	"github.com/go-acme/lego/v5/providers/dns/rainyun"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 )

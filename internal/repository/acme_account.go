@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/go-acme/lego/v4/acme"
+	"github.com/go-acme/lego/v5/acme"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 
@@ -74,9 +74,9 @@ func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.AC
 	record.Set("ca", acmeAccount.CA)
 	record.Set("email", acmeAccount.Email)
 	record.Set("privateKey", acmeAccount.PrivateKey)
-	record.Set("acmeAccount", acmeAccount.ACMEAccount)
-	record.Set("acmeAcctUrl", acmeAccount.ACMEAcctUrl)
 	record.Set("acmeDirUrl", acmeAccount.ACMEDirUrl)
+	record.Set("acmeAcctUrl", acmeAccount.ACMEAcctUrl)
+	record.Set("acmeAccount", acmeAccount.ACMEAccount)
 	if err := app.GetApp().Save(record); err != nil {
 		return acmeAccount, err
 	}
@@ -106,9 +106,9 @@ func (r *ACMEAccountRepository) castRecordToModel(record *core.Record) (*domain.
 		CA:          record.GetString("ca"),
 		Email:       record.GetString("email"),
 		PrivateKey:  record.GetString("privateKey"),
-		ACMEAccount: account,
-		ACMEAcctUrl: record.GetString("acmeAcctUrl"),
 		ACMEDirUrl:  record.GetString("acmeDirUrl"),
+		ACMEAcctUrl: record.GetString("acmeAcctUrl"),
+		ACMEAccount: account,
 	}
 	return acmeAccount, nil
 }

@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/pdns"
+	"github.com/go-acme/lego/v5/providers/dns/pdns"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"

@@ -91,11 +91,11 @@ func (ne *bizDeployNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	// 部署证书
 	deployer := certmgmt.NewClient(certmgmt.WithLogger(ne.logger))
 	deployReq := &certmgmt.DeployCertificateRequest{
-		Provider:               nodeCfg.Provider,
+		Provider:               domain.DeploymentProviderType(nodeCfg.Provider),
 		ProviderAccessConfig:   providerAccessConfig,
 		ProviderExtendedConfig: nodeCfg.ProviderConfig,
-		Certificate:            inputCertificate.Certificate,
-		PrivateKey:             inputCertificate.PrivateKey,
+		CertificatePEM:         inputCertificate.Certificate,
+		PrivateKeyPEM:          inputCertificate.PrivateKey,
 	}
 	if _, err := deployer.DeployCertificate(execCtx.Context(), deployReq); err != nil {
 		ne.logger.Warn("could not deploy certificate")

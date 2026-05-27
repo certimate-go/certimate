@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-acme/lego/v4/challenge/http01"
+	"github.com/go-acme/lego/v5/challenge/http01"
 
 	"github.com/certimate-go/certimate/internal/tools/s3"
 	"github.com/certimate-go/certimate/pkg/core/certifier"
@@ -51,18 +51,18 @@ type provider struct {
 	bucket string
 }
 
-func (p *provider) Present(domain, token, keyAuth string) error {
+func (p *provider) Present(ctx context.Context, domain, token, keyAuth string) error {
 	objectKey := strings.Trim(http01.ChallengePath(token), "/")
-	if err := p.client.PutObjectString(context.Background(), p.bucket, objectKey, keyAuth); err != nil {
+	if err := p.client.PutObjectString(ctx, p.bucket, objectKey, keyAuth); err != nil {
 		return fmt.Errorf("s3: failed to upload file for HTTP challenge: %w", err)
 	}
 
 	return nil
 }
 
-func (p *provider) CleanUp(domain, token, keyAuth string) error {
+func (p *provider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
 	objectKey := strings.Trim(http01.ChallengePath(token), "/")
-	if err := p.client.RemoveObject(context.Background(), p.bucket, objectKey); err != nil {
+	if err := p.client.RemoveObject(ctx, p.bucket, objectKey); err != nil {
 		return fmt.Errorf("s3: failed to remove file after HTTP challenge: %w", err)
 	}
 

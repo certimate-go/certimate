@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 
 	xinnetsdk "github.com/certimate-go/certimate/pkg/sdk3rd/xinnet"
@@ -87,10 +88,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("xinnet: could not find zone for domain %q: %w", domain, err)
 	}
@@ -104,7 +105,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		Line:       lo.ToPtr("默认"),
 		Ttl:        lo.ToPtr(int32(d.config.TTL)),
 	}
-	response, err := d.client.DnsCreate(request)
+	response, err := d.client.DnsCreateWithContext(ctx, request)
 	if err != nil {
 		return fmt.Errorf("xinnet: error when create record: %w", err)
 	}
@@ -116,10 +117,10 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("xinnet: could not find zone for domain %q: %w", domain, err)
 	}
@@ -136,7 +137,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 		DomainName: lo.ToPtr(dns01.UnFqdn(authZone)),
 		RecordId:   recordID,
 	}
-	if _, err := d.client.DnsDelete(request); err != nil {
+	if _, err := d.client.DnsDeleteWithContext(ctx, request); err != nil {
 		return fmt.Errorf("xinnet: error when delete record: %w", err)
 	}
 

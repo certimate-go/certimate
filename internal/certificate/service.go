@@ -240,7 +240,7 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 		return nil, fmt.Errorf("failed to revoke certificate: could not find acme account: %w", err)
 	}
 
-	legoClient, err := certacme.NewACMEClientWithAccount(acmeAccount)
+	acmeClient, err := certacme.NewACMEClientWithAccount(acmeAccount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to revoke certificate: could not initialize acme config: %w", err)
 	}
@@ -248,7 +248,7 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 	revokeReq := &certacme.RevokeCertificateRequest{
 		Certificate: certificate.Certificate,
 	}
-	_, err = legoClient.RevokeCertificate(ctx, revokeReq)
+	_, err = acmeClient.RevokeCertificate(ctx, revokeReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to revoke certificate: %w", err)
 	}

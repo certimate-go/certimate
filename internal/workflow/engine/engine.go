@@ -147,7 +147,7 @@ func (we *workflowEngine) executeNode(wfCtx *WorkflowContext, node *Node) error 
 		err := fmt.Errorf("workflow engine: no executor registered for node type: '%s'", node.Type)
 		return err
 	} else {
-		logger := slog.New(logging.NewHookHandler(&logging.HookHandlerOptions{
+		logger := slog.New(logging.NewHookHandler(nil, &logging.HookHandlerOptions{
 			Level: slog.LevelDebug,
 			WriteFunc: func(ctx context.Context, record logging.Record) error {
 				we.fireOnNodeLoggingHooks(ctx, node, record)

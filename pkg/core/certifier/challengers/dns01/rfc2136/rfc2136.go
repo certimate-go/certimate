@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/rfc2136"
+	"github.com/go-acme/lego/v5/providers/dns/dnsupdate"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 )
@@ -34,7 +34,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		config.TsigAlgorithm = "hmac-sha1."
 	}
 
-	providerConfig := rfc2136.NewDefaultConfig()
+	providerConfig := dnsupdate.NewDefaultConfig()
 	providerConfig.Nameserver = net.JoinHostPort(config.Host, strconv.Itoa(int(config.Port)))
 	providerConfig.TSIGAlgorithm = config.TsigAlgorithm
 	providerConfig.TSIGKey = config.TsigKey
@@ -46,7 +46,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = config.DnsTTL
 	}
 
-	provider, err := rfc2136.NewDNSProviderConfig(providerConfig)
+	provider, err := dnsupdate.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}

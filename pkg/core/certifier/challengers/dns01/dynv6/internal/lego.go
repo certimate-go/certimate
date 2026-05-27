@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 
 	dynv6sdk "github.com/certimate-go/certimate/pkg/sdk3rd/dynv6"
@@ -88,10 +89,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("dynv6: could not find zone for domain %q: %w", domain, err)
 	}
@@ -101,13 +102,13 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		return fmt.Errorf("dynv6: %w", err)
 	}
 
-	zone, err := d.findZone(dns01.UnFqdn(authZone))
+	zone, err := d.findZone(ctx, dns01.UnFqdn(authZone))
 	if err != nil {
 		return fmt.Errorf("dynv6: error when list zones: %w", err)
 	}
 
 	// REF: https://dynv6.github.io/api-spec/#tag/records/operation/addRecord
-	response, err := d.client.AddRecord(zone.ID, &dynv6sdk.AddRecordRequest{
+	response, err := d.client.AddRecordWithContext(ctx, zone.ID, &dynv6sdk.AddRecordRequest{
 		Type: lo.ToPtr("TXT"),
 		Name: lo.ToPtr(subDomain),
 		Data: lo.ToPtr(info.Value),
@@ -127,10 +128,10 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("dynv6: could not find zone for domain %q: %w", domain, err)
 	}
@@ -160,9 +161,9 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 	return d.config.PropagationTimeout, d.config.PollingInterval
 }
 
-func (d *DNSProvider) findZone(zoneName string) (*dynv6sdk.ZoneRecord, error) {
+func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*dynv6sdk.ZoneRecord, error) {
 	// REF: https://dynv6.github.io/api-spec/#tag/zones/operation/findZones
-	zones, err := d.client.ListZones()
+	zones, err := d.client.ListZonesWithContext(ctx)
 	if err != nil {
 		return nil, err
 	}

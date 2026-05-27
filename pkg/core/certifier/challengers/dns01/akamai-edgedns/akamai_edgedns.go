@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/providers/dns/edgedns"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/providers/dns/edgedns"
 )
 
 type ChallengerConfig struct {

@@ -15,19 +15,21 @@ var _ slog.Handler = (*HookHandler)(nil)
 
 type HookHandler struct {
 	mutex   *sync.Mutex
+	base    slog.Handler
 	parent  *HookHandler
 	options *HookHandlerOptions
 	group   string
 	attrs   []slog.Attr
 }
 
-func NewHookHandler(opts *HookHandlerOptions) *HookHandler {
+func NewHookHandler(handler slog.Handler, opts *HookHandlerOptions) *HookHandler {
 	if opts == nil {
 		opts = &HookHandlerOptions{}
 	}
 
 	h := &HookHandler{
 		mutex:   &sync.Mutex{},
+		base:    handler,
 		options: opts,
 	}
 
@@ -98,6 +100,10 @@ func (h *HookHandler) Handle(ctx context.Context, r slog.Record) error {
 
 	if h.parent != nil {
 		return h.parent.Handle(ctx, r)
+	}
+
+	if h.base != nil {
+		h.base.Handle(ctx, r)
 	}
 
 	if err := h.writeRecord(ctx, Record{Record: r}); err != nil {

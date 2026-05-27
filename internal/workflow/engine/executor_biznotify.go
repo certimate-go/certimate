@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/notify"
 	"github.com/certimate-go/certimate/internal/repository"
 )
@@ -14,8 +15,7 @@ import (
 type bizNotifyNodeExecutor struct {
 	nodeExecutor
 
-	settingsRepo settingsRepository
-	accessRepo   accessRepository
+	accessRepo accessRepository
 }
 
 func (ne *bizNotifyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
@@ -68,7 +68,7 @@ func (ne *bizNotifyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	// 推送通知
 	notifier := notify.NewClient(notify.WithLogger(ne.logger))
 	notifyReq := &notify.SendNotificationRequest{
-		Provider:               nodeCfg.Provider,
+		Provider:               domain.NotificationProviderType(nodeCfg.Provider),
 		ProviderAccessConfig:   providerAccessConfig,
 		ProviderExtendedConfig: nodeCfg.ProviderConfig,
 		Subject:                subject,
@@ -108,7 +108,6 @@ func (ne *bizNotifyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext) (_s
 func newBizNotifyNodeExecutor() NodeExecutor {
 	return &bizNotifyNodeExecutor{
 		nodeExecutor: nodeExecutor{logger: slog.Default()},
-		settingsRepo: repository.NewSettingsRepository(),
 		accessRepo:   repository.NewAccessRepository(),
 	}
 }

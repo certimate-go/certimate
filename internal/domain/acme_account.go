@@ -3,8 +3,7 @@ package domain
 import (
 	"crypto"
 
-	"github.com/go-acme/lego/v4/acme"
-	"github.com/go-acme/lego/v4/registration"
+	"github.com/go-acme/lego/v5/acme"
 
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
@@ -16,31 +15,31 @@ type ACMEAccount struct {
 	CA          string        `db:"ca"          json:"ca"`
 	Email       string        `db:"email"       json:"email"`
 	PrivateKey  string        `db:"privateKey"  json:"privateKey"`
-	ACMEAccount *acme.Account `db:"acmeAccount" json:"acmeAccount"`
-	ACMEAcctUrl string        `db:"acmeAcctUrl" json:"acmeAcctUrl"`
 	ACMEDirUrl  string        `db:"acmeDirUrl"  json:"acmeDirUrl"`
+	ACMEAcctUrl string        `db:"acmeAcctUrl" json:"acmeAcctUrl"`
+	ACMEAccount *acme.Account `db:"acmeAccount" json:"acmeAccount"`
 }
 
 func (a *ACMEAccount) GetEmail() string {
 	return a.Email
 }
 
-func (a *ACMEAccount) GetRegistration() *registration.Resource {
+func (a *ACMEAccount) GetRegistration() *acme.ExtendedAccount {
 	if a.ACMEAccount == nil {
 		return nil
 	}
 
-	return &registration.Resource{
-		Body: *a.ACMEAccount,
-		URI:  a.ACMEAcctUrl,
+	return &acme.ExtendedAccount{
+		Account:  *a.ACMEAccount,
+		Location: a.ACMEAcctUrl,
 	}
 }
 
-func (a *ACMEAccount) GetPrivateKey() crypto.PrivateKey {
+func (a *ACMEAccount) GetPrivateKey() crypto.Signer {
 	if a.PrivateKey == "" {
 		return nil
 	}
 
 	rs, _ := xcert.ParsePrivateKeyFromPEM(a.PrivateKey)
-	return rs
+	return rs.(crypto.Signer)
 }

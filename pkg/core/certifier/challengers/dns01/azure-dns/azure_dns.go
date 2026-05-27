@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/azuredns"
+	"github.com/go-acme/lego/v5/providers/dns/azuredns"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 	azenv "github.com/certimate-go/certimate/pkg/sdk3rd/azure/env"

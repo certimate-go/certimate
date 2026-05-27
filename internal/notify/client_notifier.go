@@ -10,7 +10,7 @@ import (
 
 type SendNotificationRequest struct {
 	// 提供商相关
-	Provider               string
+	Provider               domain.NotificationProviderType
 	ProviderAccessConfig   map[string]any
 	ProviderExtendedConfig map[string]any
 
@@ -26,7 +26,7 @@ func (c *Client) SendNotification(ctx context.Context, request *SendNotification
 		return nil, fmt.Errorf("the request is nil")
 	}
 
-	providerFactory, err := notifiers.Registries.Get(domain.NotificationProviderType(request.Provider))
+	providerFactory, err := notifiers.Registries.Get(request.Provider)
 	if err != nil {
 		return nil, err
 	}

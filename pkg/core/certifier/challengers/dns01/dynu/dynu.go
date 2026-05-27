@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/dynu"
+	"github.com/go-acme/lego/v5/providers/dns/dynu"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 )

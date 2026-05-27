@@ -10,13 +10,11 @@ import (
 	"strings"
 	"time"
 
-	legocertifier "github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/lego"
-	legolog "github.com/go-acme/lego/v4/log"
+	"github.com/go-acme/lego/v5/acme/api"
+	"github.com/go-acme/lego/v5/lego"
 	"github.com/samber/lo"
 	"github.com/xhit/go-str2duration/v2"
 
-	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/repository"
@@ -55,6 +53,7 @@ const (
 type bizApplyNodeExecutor struct {
 	nodeExecutor
 
+	settingsRepo    settingsRepository
 	accessRepo      accessRepository
 	certificateRepo certificateRepository
 	wfoutputRepo    workflowOutputRepository
@@ -232,35 +231,31 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nodeCfg *domain.WorkflowNodeConfigForBizApply, lastCertificate *domain.Certificate) (*certacme.ObtainCertificateResponse, error) {
 	// 读取私钥算法
 	// 如果复用私钥，则保持算法一致
-	legoKeyType, err := domain.CertificateKeyAlgorithmType(nodeCfg.KeyAlgorithm).ToLegoKeyType()
-	if err != nil {
-		return nil, err
-	} else {
-		switch nodeCfg.KeySource {
-		case BizApplyKeySourceAuto:
-			break
-		case BizApplyKeySourceReuse:
-			if lastCertificate != nil {
-				legoKeyType, _ = lastCertificate.KeyAlgorithm.ToLegoKeyType()
-			}
-		case BizApplyKeySourceCustom:
-			privkey, err := xcert.ParsePrivateKeyFromPEM(nodeCfg.KeyContent)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse custom private key: %w", err)
-			} else {
-				privkeyAlg, privkeySize, _ := xcertkey.DetectPrivateKeyAlgorithm(privkey)
-				switch privkeyAlg {
-				case x509.RSA:
-					if nodeCfg.KeyAlgorithm != fmt.Sprintf("RSA%d", privkeySize) {
-						return nil, fmt.Errorf("could not parse custom private key: unsupported algorithm or key size")
-					}
-				case x509.ECDSA:
-					if nodeCfg.KeyAlgorithm != fmt.Sprintf("EC%d", privkeySize) {
-						return nil, fmt.Errorf("could not parse custom private key: unsupported algorithm or key size")
-					}
-				default:
-					return nil, fmt.Errorf("could not parse custom private key: unsupported algorithm")
+	keyAlgorithm := domain.CertificateKeyAlgorithmType(nodeCfg.KeyAlgorithm)
+	switch nodeCfg.KeySource {
+	case BizApplyKeySourceAuto:
+		break
+	case BizApplyKeySourceReuse:
+		if lastCertificate != nil {
+			keyAlgorithm = lastCertificate.KeyAlgorithm
+		}
+	case BizApplyKeySourceCustom:
+		privkey, err := xcert.ParsePrivateKeyFromPEM(nodeCfg.KeyContent)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse custom private key: %w", err)
+		} else {
+			privkeyAlg, privkeySize, _ := xcertkey.DetectPrivateKeyAlgorithm(privkey)
+			switch privkeyAlg {
+			case x509.RSA:
+				if nodeCfg.KeyAlgorithm != fmt.Sprintf("RSA%d", privkeySize) {
+					return nil, fmt.Errorf("could not parse custom private key: unsupported algorithm or key size")
 				}
+			case x509.ECDSA:
+				if nodeCfg.KeyAlgorithm != fmt.Sprintf("EC%d", privkeySize) {
+					return nil, fmt.Errorf("could not parse custom private key: unsupported algorithm or key size")
+				}
+			default:
+				return nil, fmt.Errorf("could not parse custom private key: unsupported algorithm")
 			}
 		}
 	}
@@ -286,37 +281,34 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 	}
 
 	// 初始化 ACME 配置项
-	legoOptions := &certacme.ACMEConfigOptions{
-		CAProvider:       nodeCfg.CAProvider,
-		CAAccessConfig:   caAccessConfig,
-		CAProviderConfig: nodeCfg.CAProviderConfig,
-		CertifierKeyType: legoKeyType,
+	acmeOpts := &certacme.ACMEConfigOptions{
+		CAProvider:               domain.CAProviderType(nodeCfg.CAProvider),
+		CAProviderAccessConfig:   caAccessConfig,
+		CAProviderExtendedConfig: nodeCfg.CAProviderConfig,
+		CertifierKeyAlgorithm:    keyAlgorithm,
 	}
-	legoConfig, err := certacme.NewACMEConfig(legoOptions)
+	acmeCfg, err := certacme.CreateACMEConfig(execCtx.Context(), acmeOpts)
 	if err != nil {
 		ne.logger.Warn("could not initialize acme config")
 		return nil, err
 	} else {
-		ne.logger.Info("acme config initialized", slog.String("acmeDirUrl", legoConfig.CADirUrl))
+		ne.logger.Info("acme config initialized", slog.String("acmeDirUrl", acmeCfg.CADirUrl))
 	}
 
 	// 初始化 ACME 账户
 	// 注意此步骤仍需在主进程中进行，以保证并发安全
-	legoUser, err := certacme.NewACMEAccountWithSingleFlight(legoConfig, nodeCfg.ContactEmail)
+	acmeAcct, err := certacme.CreateACMEAccountWithSingleFlight(execCtx.Context(), acmeCfg, nodeCfg.ContactEmail)
 	if err != nil {
 		ne.logger.Warn("could not initialize acme account")
 		return nil, err
 	} else {
-		ne.logger.Info("acme account initialized", slog.String("acmeAcctUrl", legoUser.ACMEAcctUrl))
+		ne.logger.Info("acme account initialized", slog.String("acmeAcctUrl", acmeAcct.ACMEAcctUrl))
 	}
 
 	// 构造证书申请请求
-	legoDomains := make([]string, 0)
-	legoDomains = append(legoDomains, nodeCfg.Domains...)
-	legoDomains = append(legoDomains, nodeCfg.IPAddrs...)
 	obtainReq := &certacme.ObtainCertificateRequest{
-		DomainOrIPs:    legoDomains,
-		PrivateKeyType: legoKeyType,
+		DomainOrIPs:    lo.Concat(nodeCfg.Domains, nodeCfg.IPAddrs),
+		PrivateKeyType: keyAlgorithm.LegoKeyType(),
 		PrivateKeyPEM: lo.
 			If(nodeCfg.KeySource == BizApplyKeySourceAuto, "").
 			ElseF(func() string {
@@ -341,7 +333,7 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 			}),
 		NoCommonName:           nodeCfg.DisableCommonName,
 		ChallengeType:          nodeCfg.ChallengeType,
-		Provider:               nodeCfg.Provider,
+		Provider:               domain.ACMEChallengeProviderType(nodeCfg.Provider),
 		ProviderAccessConfig:   providerAccessConfig,
 		ProviderExtendedConfig: nodeCfg.ProviderConfig,
 		DisableFollowCNAME:     nodeCfg.DisableFollowCNAME,
@@ -380,16 +372,28 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 					return ""
 				}
 
-				oldARICertId, _ := legocertifier.MakeARICertID(oldCertX509)
+				oldARICertId, _ := api.MakeARICertID(oldCertX509)
 				return oldARICertId
 			}),
+	}
+
+	// 构造证书申请时所需的 lego 配置项
+	legoCertifierCfg := &lego.NewConfig(nil).Certificate
+	settings, _ := ne.settingsRepo.GetByName(execCtx.Context(), domain.SettingsNameSSLProvider)
+	if settings != nil {
+		sslProviderSettings := settings.Content.AsSSLProvider()
+		if sslProviderSettings.Timeout > 0 {
+			legoCertifierCfg.Timeout = time.Duration(sslProviderSettings.Timeout) * time.Second
+		}
 	}
 
 	// 如果启用多进程模式，发送指令
 	if envMultiProc {
 		type InData struct {
-			Account *certacme.ACMEAccount              `json:"account,omitempty"`
 			Request *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+
+			LegoAccount         *certacme.ACMEAccount   `json:"legoAccount,omitempty"`
+			LegoCertifierConfig *lego.CertificateConfig `json:"legoCertifierConfig,omitempty"`
 		}
 
 		type OutData struct {
@@ -398,8 +402,10 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 
 		msender := mproc.NewSender[InData, OutData]("certapply", ne.logger)
 		moutput, err := msender.SendWithContext(execCtx.Context(), &InData{
-			Account: legoUser,
 			Request: obtainReq,
+
+			LegoAccount:         acmeAcct,
+			LegoCertifierConfig: legoCertifierCfg,
 		})
 		if err != nil {
 			ne.logger.Warn("could not obtain certificate")
@@ -414,11 +420,8 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 	}
 
 	// 初始化 ACME 客户端
-	legolog.Logger = certacme.NewLegoLogger(app.GetLogger())
-	legoClient, err := certacme.NewACMEClientWithAccount(legoUser, func(c *lego.Config) error {
-		c.UserAgent = app.AppUserAgent
-		c.Certificate.KeyType = legoKeyType
-		c.Certificate.DisableCommonName = obtainReq.NoCommonName
+	acmeClient, err := certacme.NewACMEClientWithAccount(acmeAcct, func(legoCfg *lego.Config) error {
+		legoCfg.Certificate = *legoCertifierCfg
 		return nil
 	})
 	if err != nil {
@@ -427,7 +430,7 @@ func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nod
 	}
 
 	// 执行申请证书请求
-	obtainResp, err := legoClient.ObtainCertificate(execCtx.Context(), obtainReq)
+	obtainResp, err := acmeClient.ObtainCertificate(execCtx.Context(), obtainReq)
 	if err != nil {
 		ne.logger.Warn("could not obtain certificate")
 		return nil, err
@@ -490,6 +493,7 @@ func (ne *bizApplyNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionConte
 func newBizApplyNodeExecutor() NodeExecutor {
 	return &bizApplyNodeExecutor{
 		nodeExecutor:    nodeExecutor{logger: slog.Default()},
+		settingsRepo:    repository.NewSettingsRepository(),
 		accessRepo:      repository.NewAccessRepository(),
 		certificateRepo: repository.NewCertificateRepository(),
 		wfoutputRepo:    repository.NewWorkflowOutputRepository(),

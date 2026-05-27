@@ -3,7 +3,7 @@ package local
 import (
 	"fmt"
 
-	"github.com/go-acme/lego/v4/providers/http/webroot"
+	"github.com/go-acme/lego/v5/providers/http/webroot"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 )

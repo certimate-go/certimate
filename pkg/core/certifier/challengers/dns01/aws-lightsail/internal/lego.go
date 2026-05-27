@@ -13,9 +13,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/lightsail"
 	awstypes "github.com/aws/aws-sdk-go-v2/service/lightsail/types"
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 )
 
 const (
@@ -90,10 +90,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, _, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, _, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("lightsail: could not find zone for domain %q: %w", domain, err)
 	}
@@ -103,7 +103,7 @@ func (d *DNSProvider) Present(domain, _, keyAuth string) error {
 		return fmt.Errorf("lightsail: %w", err)
 	}
 
-	if _, err := d.client.CreateDomainEntry(context.Background(), &lightsail.CreateDomainEntryInput{
+	if _, err := d.client.CreateDomainEntry(ctx, &lightsail.CreateDomainEntryInput{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
 		DomainEntry: &awstypes.DomainEntry{
 			Type:   aws.String("TXT"),
@@ -117,10 +117,10 @@ func (d *DNSProvider) Present(domain, _, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, _, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, _, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("lightsail: could not find zone for domain %q: %w", domain, err)
 	}
@@ -130,7 +130,7 @@ func (d *DNSProvider) CleanUp(domain, _, keyAuth string) error {
 		return fmt.Errorf("lightsail: %w", err)
 	}
 
-	if _, err := d.client.DeleteDomainEntry(context.Background(), &lightsail.DeleteDomainEntryInput{
+	if _, err := d.client.DeleteDomainEntry(ctx, &lightsail.DeleteDomainEntryInput{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
 		DomainEntry: &awstypes.DomainEntry{
 			Type:   aws.String("TXT"),

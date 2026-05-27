@@ -1,10 +1,11 @@
 package ssh
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 
-	"github.com/go-acme/lego/v4/challenge/http01"
+	"github.com/go-acme/lego/v5/challenge/http01"
 
 	"github.com/certimate-go/certimate/internal/tools/ssh"
 	"github.com/certimate-go/certimate/pkg/core/certifier"
@@ -56,7 +57,7 @@ type provider struct {
 	config *ChallengerConfig
 }
 
-func (p *provider) Present(domain, token, keyAuth string) error {
+func (p *provider) Present(ctx context.Context, domain, token, keyAuth string) error {
 	client, err := createSshClient(*p.config)
 	if err != nil {
 		return fmt.Errorf("ssh: failed to create SSH client: %w", err)
@@ -72,7 +73,7 @@ func (p *provider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (p *provider) CleanUp(domain, token, keyAuth string) error {
+func (p *provider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
 	client, err := createSshClient(*p.config)
 	if err != nil {
 		return fmt.Errorf("ssh: failed to create SSH client: %w", err)

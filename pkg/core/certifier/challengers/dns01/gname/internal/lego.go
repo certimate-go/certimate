@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 
 	gnamesdk "github.com/certimate-go/certimate/pkg/sdk3rd/gname"
@@ -87,10 +88,10 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("gname: could not find zone for domain %q: %w", domain, err)
 	}
@@ -108,7 +109,7 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 		RecordValue: lo.ToPtr(info.Value),
 		TTL:         lo.ToPtr(int32(d.config.TTL)),
 	}
-	response, err := d.client.AddDomainResolution(request)
+	response, err := d.client.AddDomainResolutionWithContext(ctx, request)
 	if err != nil {
 		return fmt.Errorf("gname: error when create record: %w", err)
 	}
@@ -120,10 +121,10 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	authZone, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	authZone, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("gname: could not find zone for domain %q: %w", domain, err)
 	}
@@ -140,7 +141,7 @@ func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
 		ZoneName: lo.ToPtr(dns01.UnFqdn(authZone)),
 		RecordID: lo.ToPtr(recordID),
 	}
-	_, err = d.client.DeleteDomainResolution(request)
+	_, err = d.client.DeleteDomainResolutionWithContext(ctx, request)
 	if err != nil {
 		return fmt.Errorf("gname: error when delete record: %w", err)
 	}

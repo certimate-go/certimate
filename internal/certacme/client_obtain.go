@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-acme/lego/v4/acme"
-	"github.com/go-acme/lego/v4/certcrypto"
-	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/challenge/http01"
-	"github.com/go-acme/lego/v4/log"
+	"github.com/go-acme/lego/v5/acme"
+	"github.com/go-acme/lego/v5/certcrypto"
+	"github.com/go-acme/lego/v5/certificate"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/challenge/http01"
+	"github.com/go-acme/lego/v5/log"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
@@ -32,7 +32,7 @@ type ObtainCertificateRequest struct {
 
 	// 提供商相关
 	ChallengeType          string
-	Provider               string
+	Provider               domain.ACMEChallengeProviderType
 	ProviderAccessConfig   map[string]any
 	ProviderExtendedConfig map[string]any
 
@@ -68,35 +68,16 @@ type ObtainCertificateResponse struct {
 }
 
 func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCertificateRequest) (*ObtainCertificateResponse, error) {
-	type result struct {
-		res *ObtainCertificateResponse
-		err error
-	}
-
-	done := make(chan result, 1)
-
-	go func() {
-		res, err := c.sendObtainCertificateRequest(request)
-		done <- result{res, err}
-	}()
-
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case r := <-done:
-		return r.res, r.err
-	}
-}
-
-func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequest) (*ObtainCertificateResponse, error) {
 	if request == nil {
 		return nil, fmt.Errorf("the request is nil")
 	}
 
 	os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
 
-	switch request.ChallengeType {
-	case "dns-01":
+	const CHALLENGE_TYPE_DNS01 = "dns-01"
+	const CHALLENGE_TYPE_HTTP01 = "http-01"
+	switch strings.ToLower(request.ChallengeType) {
+	case CHALLENGE_TYPE_DNS01:
 		{
 			providerFactory, err := certifiers.ACMEDns01Registries.Get(domain.ACMEDns01ProviderType(request.Provider))
 			if err != nil {
@@ -113,23 +94,22 @@ func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequ
 				return nil, fmt.Errorf("failed to initialize dns-01 provider '%s': %w", request.Provider, err)
 			}
 
+			opts := &dns01.Options{}
+			opts.RecursiveNameservers = request.Nameservers
+			dns01.SetDefaultClient(dns01.NewClient(opts))
 			c.client.Challenge.SetDNS01Provider(provider,
-				dns01.CondOption(
-					len(request.Nameservers) > 0,
-					dns01.AddRecursiveNameservers(dns01.ParseNameservers(request.Nameservers)),
-				),
-				dns01.CondOption(
+				dns01.CondOptions(
 					request.DnsPropagationWait > 0,
 					dns01.PropagationWait(time.Duration(request.DnsPropagationWait)*time.Second, true),
 				),
-				dns01.CondOption(
+				dns01.CondOptions(
 					len(request.Nameservers) > 0 || request.DnsPropagationWait > 0,
 					dns01.DisableAuthoritativeNssPropagationRequirement(),
 				),
 			)
 		}
 
-	case "http-01":
+	case CHALLENGE_TYPE_HTTP01:
 		{
 			providerFactory, err := certifiers.ACMEHttp01Registries.Get(domain.ACMEHttp01ProviderType(request.Provider))
 			if err != nil {
@@ -153,7 +133,7 @@ func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequ
 		return nil, fmt.Errorf("unsupported challenge type: '%s'", request.ChallengeType)
 	}
 
-	var privkey crypto.PrivateKey
+	var privkey crypto.Signer
 	if request.PrivateKeyPEM != "" {
 		pk, err := certcrypto.ParsePEMPrivateKey([]byte(request.PrivateKeyPEM))
 		if err != nil {
@@ -164,27 +144,29 @@ func (c *ACMEClient) sendObtainCertificateRequest(request *ObtainCertificateRequ
 	}
 
 	req := certificate.ObtainRequest{
-		Domains:        request.DomainOrIPs,
-		PrivateKey:     privkey,
-		Bundle:         true,
-		PreferredChain: request.PreferredChain,
-		Profile:        request.ACMEProfile,
-		NotBefore:      request.ValidityNotBefore,
-		NotAfter:       request.ValidityNotAfter,
-		ReplacesCertID: lo.If(request.ARIReplacesAcctUrl == c.account.ACMEAcctUrl, request.ARIReplacesCertId).Else(""),
+		Domains:          request.DomainOrIPs,
+		KeyType:          request.PrivateKeyType,
+		PrivateKey:       privkey,
+		Bundle:           true,
+		EnableCommonName: !request.NoCommonName,
+		PreferredChain:   request.PreferredChain,
+		Profile:          request.ACMEProfile,
+		NotBefore:        request.ValidityNotBefore,
+		NotAfter:         request.ValidityNotAfter,
+		ReplacesCertID:   lo.If(request.ARIReplacesAcctUrl == c.account.ACMEAcctUrl, request.ARIReplacesCertId).Else(""),
 	}
-	resp, err := c.client.Certificate.Obtain(req)
+	resp, err := c.client.Certificate.Obtain(ctx, req)
 	if err != nil {
 		ariErr := &acme.AlreadyReplacedError{}
 		if !errors.As(err, &ariErr) {
 			return nil, err
 		}
 
-		log.Warnf("the certificate has already been replaced, try to obtain again without ARI ...")
+		log.Warn("the certificate has already been replaced, try to obtain again without ARI ...")
 
 		// reset ARI and retry if failure
 		req.ReplacesCertID = ""
-		resp, err = c.client.Certificate.Obtain(req)
+		resp, err = c.client.Certificate.Obtain(ctx, req)
 		if err != nil {
 			return nil, err
 		}

@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/go-acme/lego/v4/providers/dns/httpreq"
+	"github.com/go-acme/lego/v5/providers/dns/httpreq"
 
 	"github.com/certimate-go/certimate/pkg/core/certifier"
 )

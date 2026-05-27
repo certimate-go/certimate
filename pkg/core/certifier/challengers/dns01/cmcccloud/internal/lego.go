@@ -1,13 +1,14 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/platform/config/env"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
 	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns"
 	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns/model"
@@ -94,10 +95,10 @@ func NewDNSProviderConfig(cfg *Config) (*DNSProvider, error) {
 	}, nil
 }
 
-func (d *DNSProvider) Present(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
-	zoneName, err := dns01.FindZoneByFqdn(info.EffectiveFQDN)
+	zoneName, err := dns01.DefaultClient().FindZoneByFqdn(ctx, info.EffectiveFQDN)
 	if err != nil {
 		return fmt.Errorf("cmccecloud: could not find zone for domain %q: %w", domain, err)
 	}
@@ -132,8 +133,8 @@ func (d *DNSProvider) Present(domain, token, keyAuth string) error {
 	return nil
 }
 
-func (d *DNSProvider) CleanUp(domain, token, keyAuth string) error {
-	info := dns01.GetChallengeInfo(domain, keyAuth)
+func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	info := dns01.GetChallengeInfo(ctx, domain, keyAuth)
 
 	d.recordIDsMu.Lock()
 	recordID, ok := d.recordIDs[token]

@@ -159,10 +159,16 @@ const (
 	CAProviderTypeZeroSSL             = CAProviderType(AccessProviderTypeZeroSSL)
 )
 
-type ACMEDns01ProviderType string
+type ACMEChallengeProviderType string
+
+func (t ACMEChallengeProviderType) String() string {
+	return string(t)
+}
+
+type ACMEDns01ProviderType ACMEChallengeProviderType
 
 func (t ACMEDns01ProviderType) String() string {
-	return string(t)
+	return t.String()
 }
 
 /*
@@ -252,10 +258,10 @@ const (
 	ACMEDns01ProviderTypeXinnet            = ACMEDns01ProviderType(AccessProviderTypeXinnet)
 )
 
-type ACMEHttp01ProviderType string
+type ACMEHttp01ProviderType ACMEChallengeProviderType
 
 func (t ACMEHttp01ProviderType) String() string {
-	return string(t)
+	return t.String()
 }
 
 /*
