@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-acme/lego/v5/providers/dns/gname"
+
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/gname/internal"
 )
 
 type ChallengerConfig struct {
@@ -20,7 +21,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
-	providerConfig := internal.NewDefaultConfig()
+	providerConfig := gname.NewDefaultConfig()
 	providerConfig.AppID = config.AppId
 	providerConfig.AppKey = config.AppKey
 	if config.DnsPropagationTimeout != 0 {
@@ -30,7 +31,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = config.DnsTTL
 	}
 
-	provider, err := internal.NewDNSProviderConfig(providerConfig)
+	provider, err := gname.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}
