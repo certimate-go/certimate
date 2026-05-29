@@ -1075,24 +1075,24 @@
       "tooltip": "For more information, see <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
     },
     "regru_username": {
-      "label": "Рег.ру username",
-      "placeholder": "Please enter Рег.ру username"
+      "label": "Reg.ru username",
+      "placeholder": "Please enter Reg.ru username"
     },
     "regru_password": {
-      "label": "Рег.ру password",
-      "placeholder": "Please enter Рег.ру password or API password"
+      "label": "Reg.ru password",
+      "placeholder": "Please enter Reg.ru password or API password"
     },
     "regru_mtls_certificate": {
-      "label": "Рег.ру mTLS certificate (Optional)",
-      "placeholder": "Please enter Рег.ру mTLS certificate",
+      "label": "Reg.ru mTLS certificate (Optional)",
+      "placeholder": "Please enter Reg.ru mTLS certificate",
       "errmsg": {
         "invalid": "Invalid certificate"
       },
       "tooltip": "For more information, see <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
     },
     "regru_mtls_private_key": {
-      "label": "Рег.ру mTLS private key (Optional)",
-      "placeholder": "Please enter Рег.ру mTLS private key",
+      "label": "Reg.ru mTLS private key (Optional)",
+      "placeholder": "Please enter Reg.ru mTLS private key",
       "errmsg": {
         "invalid": "Invalid private key"
       },
@@ -1117,6 +1117,24 @@
     "rfc2136_tsig_secret": {
       "label": "TSIG authentication secret (Optional)",
       "placeholder": "Please enter TSIG authentication secret"
+    },
+    "rucenter_username": {
+      "label": "Ru-Center username",
+      "placeholder": "Please enter Ru-Center username"
+    },
+    "rucenter_password": {
+      "label": "Ru-Center password",
+      "placeholder": "Please enter Ru-Center password"
+    },
+    "rucenter_application_id": {
+      "label": "Ru-Center application ID",
+      "placeholder": "Please enter Ru-Center application ID",
+      "tooltip": "For more information, see <a href=\"https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list\" target=\"_blank\">https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list</a>"
+    },
+    "rucenter_application_token": {
+      "label": "Ru-Center application token",
+      "placeholder": "Please enter Ru-Center application token",
+      "tooltip": "For more information, see <a href=\"https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list\" target=\"_blank\">https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list</a>"
     },
     "s3_endpoint": {
       "label": "Endpoint",

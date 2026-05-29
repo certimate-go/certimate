@@ -106,6 +106,7 @@ const (
 	AccessProviderTypeRatPanel            = AccessProviderType("ratpanel")
 	AccessProviderTypeRegru               = AccessProviderType("regru")
 	AccessProviderTypeRFC2136             = AccessProviderType("rfc2136")
+	AccessProviderTypeRuCenter            = AccessProviderType("rucenter")
 	AccessProviderTypeS3                  = AccessProviderType("s3")
 	AccessProviderTypeSafeLine            = AccessProviderType("safeline")
 	AccessProviderTypeSamWAF              = AccessProviderType("samwaf")
@@ -246,6 +247,7 @@ const (
 	ACMEDns01ProviderTypeRainYun           = ACMEDns01ProviderType(AccessProviderTypeRainYun)
 	ACMEDns01ProviderTypeRegru             = ACMEDns01ProviderType(AccessProviderTypeRegru)
 	ACMEDns01ProviderTypeRFC2136           = ACMEDns01ProviderType(AccessProviderTypeRFC2136)
+	ACMEDns01ProviderTypeRuCenter          = ACMEDns01ProviderType(AccessProviderTypeRuCenter)
 	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)
 	ACMEDns01ProviderTypeTechnitiumDNS     = ACMEDns01ProviderType(AccessProviderTypeTechnitiumDNS)
 	ACMEDns01ProviderTypeTencentCloud      = ACMEDns01ProviderType(AccessProviderTypeTencentCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeTencentCloudDNS]

@@ -90,6 +90,7 @@ import AccessConfigFieldsProviderRainYun from "./AccessConfigFieldsProviderRainY
 import AccessConfigFieldsProviderRatPanel from "./AccessConfigFieldsProviderRatPanel";
 import AccessConfigFieldsProviderRegru from "./AccessConfigFieldsProviderRegru";
 import AccessConfigFieldsProviderRFC2136 from "./AccessConfigFieldsProviderRFC2136";
+import AccessConfigFieldsProviderRuCenter from "./AccessConfigFieldsProviderRuCenter";
 import AccessConfigFieldsProviderS3 from "./AccessConfigFieldsProviderS3";
 import AccessConfigFieldsProviderSafeLine from "./AccessConfigFieldsProviderSafeLine";
 import AccessConfigFieldsProviderSamWAF from "./AccessConfigFieldsProviderSamWAF";
@@ -210,6 +211,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.RATPANEL]: AccessConfigFieldsProviderRatPanel,
   [ACCESS_PROVIDERS.REGRU]: AccessConfigFieldsProviderRegru,
   [ACCESS_PROVIDERS.RFC2136]: AccessConfigFieldsProviderRFC2136,
+  [ACCESS_PROVIDERS.RUCENTER]: AccessConfigFieldsProviderRuCenter,
   [ACCESS_PROVIDERS.S3]: AccessConfigFieldsProviderS3,
   [ACCESS_PROVIDERS.SAFELINE]: AccessConfigFieldsProviderSafeLine,
   [ACCESS_PROVIDERS.SAMWAF]: AccessConfigFieldsProviderSamWAF,

@@ -500,6 +500,13 @@ type AccessConfigForRFC2136 struct {
 	TsigSecret    string `json:"tsigSecret,omitempty"`
 }
 
+type AccessConfigForRuCenter struct {
+	Username         string `json:"username"`
+	Password         string `json:"password"`
+	ApplicationId    string `json:"applicationId"`
+	ApplicationToken string `json:"applicationToken"`
+}
+
 type AccessConfigForS3 struct {
 	Endpoint                 string `json:"endpoint"`
 	AccessKey                string `json:"accessKey"`
