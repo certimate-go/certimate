@@ -472,8 +472,8 @@ const AccessList = () => {
           </Show>
         </div>
 
-        <AccessEditDrawer mode="create" usage={filters["usage"] as AccessUsages} {...createDrawerProps} />
-        <AccessEditDrawer mode="modify" usage={filters["usage"] as AccessUsages} {...detailDrawerProps} />
+        <AccessEditDrawer afterSubmit={() => refreshData()} mode="create" usage={filters["usage"] as AccessUsages} {...createDrawerProps} />
+        <AccessEditDrawer afterSubmit={() => refreshData()} mode="modify" usage={filters["usage"] as AccessUsages} {...detailDrawerProps} />
       </div>
     </div>
   );
