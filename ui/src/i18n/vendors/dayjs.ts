@@ -15,7 +15,7 @@ const localesMap: Record<string, Locale> = {
 
 export const useDayjsLocale = () => {
   const { i18n } = useTranslation();
-  const dayjsLocale = localesMap[i18n.resolvedLanguage ?? i18n.language] ?? localesMap[localeNames.EN];
+  const dayjsLocale = localesMap[i18n.resolvedLanguage ?? i18n.language];
 
   useEffect(() => {
     dayjs.locale(dayjsLocale);

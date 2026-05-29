@@ -89,7 +89,7 @@ const localesMap: Record<string, Locale> = {
 
 export const useZodLocale = () => {
   const { i18n } = useTranslation();
-  const zodLocale = localesMap[i18n.resolvedLanguage ?? i18n.language] ?? localesMap[localeNames.EN];
+  const zodLocale = localesMap[i18n.resolvedLanguage ?? i18n.language];
 
   useEffect(() => {
     zconfig(zodLocale);

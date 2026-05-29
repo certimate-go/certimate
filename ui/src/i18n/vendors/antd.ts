@@ -12,5 +12,5 @@ const localesMap: Record<string, Locale> = {
 
 export const useAntdLocale = () => {
   const { i18n } = useTranslation();
-  return localesMap[i18n.resolvedLanguage ?? i18n.language] ?? localesMap[localeNames.EN];
+  return localesMap[i18n.resolvedLanguage ?? i18n.language];
 };
