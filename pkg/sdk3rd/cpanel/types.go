@@ -1,4 +1,4 @@
-package baishan
+package cpanel
 
 type sdkResponse interface {
 	GetStatus() int

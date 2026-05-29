@@ -1,8 +1,10 @@
 ﻿import { getPocketBase } from "./_pocketbase";
 
+const pb = getPocketBase();
+
 export const listCronJobs = () => {
-  return getPocketBase()
-    .crons.getFullList({
+  return pb.crons
+    .getFullList({
       requestKey: null,
     })
     .then((res) => {
@@ -29,8 +31,8 @@ export const listLogs = (request: ListLogsRequest) => {
   const page = request.page || 1;
   const perPage = request.perPage || 10;
 
-  return getPocketBase()
-    .logs.getList(page, perPage, {
+  return pb.logs
+    .getList(page, perPage, {
       filter: 'data.type!="request"',
       sort: "-@rowid",
       skipTotal: true,

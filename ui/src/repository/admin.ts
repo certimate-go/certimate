@@ -1,15 +1,16 @@
 ﻿import { COLLECTION_NAME_ADMIN, getPocketBase } from "./_pocketbase";
 
+const pb = getPocketBase();
+const pbco = pb.collection(COLLECTION_NAME_ADMIN);
+
 export const authWithPassword = (username: string, password: string) => {
-  return getPocketBase().collection(COLLECTION_NAME_ADMIN).authWithPassword(username, password);
+  return pbco.authWithPassword(username, password);
 };
 
 export const getAuthStore = () => {
-  return getPocketBase().authStore;
+  return pb.authStore;
 };
 
 export const save = (data: { email: string } | { password: string; passwordConfirm: string }) => {
-  return getPocketBase()
-    .collection(COLLECTION_NAME_ADMIN)
-    .update(getAuthStore().record?.id || "", data);
+  return pbco.update(getAuthStore().record?.id || "", data);
 };

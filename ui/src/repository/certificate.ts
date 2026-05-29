@@ -3,6 +3,9 @@ import dayjs from "dayjs";
 import { type CertificateModel } from "@/domain/certificate";
 import { COLLECTION_NAME_CERTIFICATE, getPocketBase } from "./_pocketbase";
 
+const pb = getPocketBase();
+const pbco = pb.collection(COLLECTION_NAME_CERTIFICATE);
+
 const _commonFields = [
   "id",
   "source",
@@ -37,8 +40,6 @@ export const list = async ({
   page?: number;
   perPage?: number;
 }) => {
-  const pb = getPocketBase();
-
   const filters: string[] = ["deleted=null"];
   if (keyword) {
     filters.push(pb.filter("(id={:keyword} || serialNumber={:keyword} || subjectAltNames~{:keyword})", { keyword: keyword }));
@@ -51,7 +52,7 @@ export const list = async ({
     filters.push(pb.filter("validityNotAfter<=@now"));
   }
 
-  return pb.collection(COLLECTION_NAME_CERTIFICATE).getList<CertificateModel>(page, perPage, {
+  return pbco.getList<CertificateModel>(page, perPage, {
     expand: ["workflowRef"].join(","),
     fields: [..._commonFields, ..._expandFields].join(","),
     filter: filters.join(" && "),
@@ -61,16 +62,13 @@ export const list = async ({
 };
 
 export const listByWorkflowRunId = async (workflowRunId: string) => {
-  const pb = getPocketBase();
-
-  const list = await pb.collection(COLLECTION_NAME_CERTIFICATE).getFullList<CertificateModel>({
+  const list = await pbco.getFullList<CertificateModel>({
     batch: 65535,
     fields: [..._commonFields, ..._expandFields, "certificate", "privateKey"].join(","),
     filter: pb.filter("workflowRunRef={:workflowRunId}", { workflowRunId }),
     sort: "created",
     requestKey: null,
   });
-
   return {
     totalItems: list.length,
     items: list,
@@ -78,18 +76,14 @@ export const listByWorkflowRunId = async (workflowRunId: string) => {
 };
 
 export const get = async (id: string) => {
-  return await getPocketBase()
-    .collection(COLLECTION_NAME_CERTIFICATE)
-    .getOne<CertificateModel>(id, {
-      expand: ["workflowRef"].join(","),
-      fields: ["*", ..._expandFields].join(","),
-      requestKey: null,
-    });
+  return pbco.getOne<CertificateModel>(id, {
+    expand: ["workflowRef"].join(","),
+    fields: ["*", ..._expandFields].join(","),
+    requestKey: null,
+  });
 };
 
 export const remove = async (record: MaybeModelRecordWithId<CertificateModel> | MaybeModelRecordWithId<CertificateModel>[]) => {
-  const pb = getPocketBase();
-
   const deletedAt = dayjs.utc().format("YYYY-MM-DD HH:mm:ss");
 
   if (Array.isArray(record)) {
@@ -100,7 +94,7 @@ export const remove = async (record: MaybeModelRecordWithId<CertificateModel> | 
     const res = await batch.send();
     return res.every((e) => e.status >= 200 && e.status < 400);
   } else {
-    await pb.collection(COLLECTION_NAME_CERTIFICATE).update<CertificateModel>(record.id!, { deleted: deletedAt });
+    await pbco.update<CertificateModel>(record.id!, { deleted: deletedAt });
     return true;
   }
 };

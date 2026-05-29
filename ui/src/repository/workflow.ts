@@ -3,6 +3,9 @@ import { type RecordSubscription } from "pocketbase";
 import { type WorkflowModel } from "@/domain/workflow";
 import { COLLECTION_NAME_WORKFLOW, getPocketBase } from "./_pocketbase";
 
+const pb = getPocketBase();
+const pbco = pb.collection(COLLECTION_NAME_WORKFLOW);
+
 const _commonFields = [
   "id",
   "name",
@@ -43,8 +46,6 @@ export const list = async ({
   perPage?: number;
   expand?: boolean;
 }) => {
-  const pb = getPocketBase();
-
   const filters: string[] = [];
   if (keyword) {
     filters.push(pb.filter("(id={:keyword} || name~{:keyword})", { keyword: keyword }));
@@ -53,7 +54,7 @@ export const list = async ({
     filters.push(pb.filter("enabled={:enabled}", { enabled: enabled }));
   }
 
-  return await pb.collection(COLLECTION_NAME_WORKFLOW).getList<WorkflowModel>(page, perPage, {
+  return await pbco.getList<WorkflowModel>(page, perPage, {
     expand: expand ? ["lastRunRef"].join(",") : void 0,
     fields: [..._commonFields, ..._expandFields].join(","),
     filter: filters.join(" && "),
@@ -63,28 +64,22 @@ export const list = async ({
 };
 
 export const get = async (id: string) => {
-  return await getPocketBase()
-    .collection(COLLECTION_NAME_WORKFLOW)
-    .getOne<WorkflowModel>(id, {
-      expand: ["lastRunRef"].join(","),
-      fields: ["*", ..._expandFields].join(","),
-      requestKey: null,
-    });
+  return await pbco.getOne<WorkflowModel>(id, {
+    expand: ["lastRunRef"].join(","),
+    fields: ["*", ..._expandFields].join(","),
+    requestKey: null,
+  });
 };
 
 export const save = async (record: MaybeModelRecord<WorkflowModel>) => {
   if (record.id) {
-    return await getPocketBase()
-      .collection(COLLECTION_NAME_WORKFLOW)
-      .update<WorkflowModel>(record.id as string, record);
+    return await pbco.update<WorkflowModel>(record.id as string, record);
   }
 
-  return await getPocketBase().collection(COLLECTION_NAME_WORKFLOW).create<WorkflowModel>(record);
+  return await pbco.create<WorkflowModel>(record);
 };
 
 export const remove = async (record: MaybeModelRecordWithId<WorkflowModel> | MaybeModelRecordWithId<WorkflowModel>[]) => {
-  const pb = getPocketBase();
-
   if (Array.isArray(record)) {
     const batch = pb.createBatch();
     for (const item of record) {
@@ -93,14 +88,14 @@ export const remove = async (record: MaybeModelRecordWithId<WorkflowModel> | May
     const res = await batch.send();
     return res.every((e) => e.status >= 200 && e.status < 400);
   } else {
-    return await pb.collection(COLLECTION_NAME_WORKFLOW).delete(record.id);
+    return await pbco.delete(record.id);
   }
 };
 
 export const subscribe = async (id: string, cb: (e: RecordSubscription<WorkflowModel>) => void) => {
-  return getPocketBase().collection(COLLECTION_NAME_WORKFLOW).subscribe(id, cb);
+  return pbco.subscribe(id, cb);
 };
 
 export const unsubscribe = async (id: string) => {
-  return getPocketBase().collection(COLLECTION_NAME_WORKFLOW).unsubscribe(id);
+  return pbco.unsubscribe(id);
 };

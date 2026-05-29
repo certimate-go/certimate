@@ -7,7 +7,7 @@ import (
 	"net/url"
 )
 
-type ProvisionSiteTLSCertificateParams struct {
+type ProvisionSiteTLSCertificateRequest struct {
 	Certificate    string `json:"certificate"`
 	CACertificates string `json:"ca_certificates"`
 	Key            string `json:"key"`
@@ -22,11 +22,11 @@ type ProvisionSiteTLSCertificateResponse struct {
 	UpdatedAt string   `json:"updated_at,omitempty"`
 }
 
-func (c *Client) ProvisionSiteTLSCertificate(siteId string, req *ProvisionSiteTLSCertificateParams) (*ProvisionSiteTLSCertificateResponse, error) {
+func (c *Client) ProvisionSiteTLSCertificate(siteId string, req *ProvisionSiteTLSCertificateRequest) (*ProvisionSiteTLSCertificateResponse, error) {
 	return c.ProvisionSiteTLSCertificateWithContext(context.Background(), siteId, req)
 }
 
-func (c *Client) ProvisionSiteTLSCertificateWithContext(ctx context.Context, siteId string, req *ProvisionSiteTLSCertificateParams) (*ProvisionSiteTLSCertificateResponse, error) {
+func (c *Client) ProvisionSiteTLSCertificateWithContext(ctx context.Context, siteId string, req *ProvisionSiteTLSCertificateRequest) (*ProvisionSiteTLSCertificateResponse, error) {
 	if siteId == "" {
 		return nil, fmt.Errorf("sdkerr: unset siteId")
 	}

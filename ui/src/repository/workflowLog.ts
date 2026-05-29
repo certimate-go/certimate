@@ -2,16 +2,16 @@
 
 import { COLLECTION_NAME_WORKFLOW_LOG, getPocketBase } from "./_pocketbase";
 
-export const listByWorkflowRunId = async (workflowRunId: string) => {
-  const pb = getPocketBase();
+const pb = getPocketBase();
+const pbco = pb.collection(COLLECTION_NAME_WORKFLOW_LOG);
 
-  const list = await pb.collection(COLLECTION_NAME_WORKFLOW_LOG).getFullList<WorkflowLogModel>({
+export const listByWorkflowRunId = async (workflowRunId: string) => {
+  const list = await pbco.getFullList<WorkflowLogModel>({
     batch: 65535,
     filter: pb.filter("runRef={:workflowRunId}", { workflowRunId }),
     sort: "timestamp",
     requestKey: null,
   });
-
   return {
     totalItems: list.length,
     items: list,

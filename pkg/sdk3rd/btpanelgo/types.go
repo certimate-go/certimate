@@ -1,4 +1,4 @@
-package btpanel
+package btpanelgo
 
 import (
 	"encoding/json"

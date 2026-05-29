@@ -2,6 +2,7 @@ package logging
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"sync"
 )
@@ -102,12 +103,22 @@ func (h *HookHandler) Handle(ctx context.Context, r slog.Record) error {
 		return h.parent.Handle(ctx, r)
 	}
 
+	errs := make([]error, 0)
+
 	if h.base != nil {
-		h.base.Handle(ctx, r)
+		if err := h.base.Handle(ctx, r); err != nil {
+			errs = append(errs, err)
+		}
 	}
 
-	if err := h.writeRecord(ctx, Record{Record: r}); err != nil {
-		return err
+	if h.options.WriteFunc != nil {
+		if err := h.options.WriteFunc(ctx, Record{Record: r}); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return errors.Join(errs...)
 	}
 
 	return nil
@@ -117,12 +128,4 @@ func (h *HookHandler) SetLevel(level slog.Level) {
 	h.mutex.Lock()
 	h.options.Level = level
 	h.mutex.Unlock()
-}
-
-func (h *HookHandler) writeRecord(ctx context.Context, r Record) error {
-	if h.parent != nil {
-		return h.parent.writeRecord(ctx, r)
-	}
-
-	return h.options.WriteFunc(ctx, r)
 }

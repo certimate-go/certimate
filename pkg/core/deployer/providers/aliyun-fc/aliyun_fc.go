@@ -78,13 +78,13 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
 	switch d.config.ServiceVersion {
-	case "3", "3.0":
-		if err := d.deployToFC3(ctx, certPEM, privkeyPEM); err != nil {
+	case "2", "2.0":
+		if err := d.deployToFC2(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
-	case "2", "2.0":
-		if err := d.deployToFC2(ctx, certPEM, privkeyPEM); err != nil {
+	case "3", "3.0":
+		if err := d.deployToFC3(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 

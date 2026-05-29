@@ -14,6 +14,9 @@ import {
 
 import { COLLECTION_NAME_SETTINGS, getPocketBase } from "./_pocketbase";
 
+const pb = getPocketBase();
+const pbco = pb.collection(COLLECTION_NAME_SETTINGS);
+
 interface SettingsContentMap {
   [SETTINGS_NAMES.EMAILS]: EmailsSettingsContent;
   [SETTINGS_NAMES.NOTIFY_TEMPLATE]: NotifyTemplateContent;
@@ -27,7 +30,7 @@ export const get = async <K extends SettingsNames | string, T extends NonNullabl
 ): Promise<K extends keyof SettingsContentMap ? SettingsModel<SettingsContentMap[K]> : SettingsModel<T>> => {
   let resp: K extends keyof SettingsContentMap ? SettingsModel<SettingsContentMap[K]> : SettingsModel<T>;
   try {
-    resp = await getPocketBase().collection(COLLECTION_NAME_SETTINGS).getFirstListItem<typeof resp>(`name='${name}'`, {
+    resp = await pbco.getFirstListItem<typeof resp>(`name='${name}'`, {
       requestKey: null,
     });
     return resp;
@@ -87,8 +90,8 @@ export const get = async <K extends SettingsNames | string, T extends NonNullabl
 
 export const save = async <T extends NonNullable<unknown>>(record: MaybeModelRecordWithId<SettingsModel<T>>) => {
   if (record.id) {
-    return await getPocketBase().collection(COLLECTION_NAME_SETTINGS).update<SettingsModel<T>>(record.id, record);
+    return await pbco.update<SettingsModel<T>>(record.id, record);
   }
 
-  return await getPocketBase().collection(COLLECTION_NAME_SETTINGS).create<SettingsModel<T>>(record);
+  return await pbco.create<SettingsModel<T>>(record);
 };

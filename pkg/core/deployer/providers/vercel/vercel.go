@@ -59,7 +59,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 	// 上传证书
 	// REF: https://vercel.com/docs/rest-api/certs/upload-a-cert
-	uploadCertReq := &vercelsdk.UploadCertParams{
+	uploadCertReq := &vercelsdk.UploadCertRequest{
 		CA:             intermediaCertPEM,
 		Cert:           serverCertPEM,
 		Key:            privkeyPEM,

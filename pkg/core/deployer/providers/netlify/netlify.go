@@ -81,7 +81,7 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 
 	// 上传网站证书
 	// REF: https://open-api.netlify.com/#tag/sniCertificate/operation/provisionSiteTLSCertificate
-	provisionSiteTLSCertificateReq := &netlifysdk.ProvisionSiteTLSCertificateParams{
+	provisionSiteTLSCertificateReq := &netlifysdk.ProvisionSiteTLSCertificateRequest{
 		Certificate:    serverCertPEM,
 		CACertificates: intermediaCertPEM,
 		Key:            privkeyPEM,

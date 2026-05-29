@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type UploadCertParams struct {
+type UploadCertRequest struct {
 	CA             string `json:"ca"`
 	Cert           string `json:"cert"`
 	Key            string `json:"key"`
@@ -19,11 +19,11 @@ type UploadCertResponse struct {
 	CreatedAt string `json:"createdAt,omitempty"`
 }
 
-func (c *Client) UploadCert(req *UploadCertParams) (*UploadCertResponse, error) {
+func (c *Client) UploadCert(req *UploadCertRequest) (*UploadCertResponse, error) {
 	return c.UploadCertWithContext(context.Background(), req)
 }
 
-func (c *Client) UploadCertWithContext(ctx context.Context, req *UploadCertParams) (*UploadCertResponse, error) {
+func (c *Client) UploadCertWithContext(ctx context.Context, req *UploadCertRequest) (*UploadCertResponse, error) {
 	httpreq, err := c.newRequest(http.MethodPut, "/certs")
 	if err != nil {
 		return nil, err
