@@ -1,4 +1,4 @@
-package netcup
+package netlify
 
 import (
 	"fmt"

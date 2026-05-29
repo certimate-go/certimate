@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	xinnet "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/xinnet"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/xinnet"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

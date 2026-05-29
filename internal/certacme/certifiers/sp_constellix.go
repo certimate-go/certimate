@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	constellix "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/constellix"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/constellix"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

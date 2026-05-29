@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	duckdns "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/duckdns"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/duckdns"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

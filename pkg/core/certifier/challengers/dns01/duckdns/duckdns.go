@@ -1,4 +1,4 @@
-package namedotcom
+package duckdns
 
 import (
 	"fmt"

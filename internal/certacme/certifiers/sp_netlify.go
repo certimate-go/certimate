@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	netlify "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/netlify"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/netlify"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

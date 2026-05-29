@@ -1,4 +1,4 @@
-package conohavpsv2
+package conohavpsv3
 
 import (
 	"fmt"

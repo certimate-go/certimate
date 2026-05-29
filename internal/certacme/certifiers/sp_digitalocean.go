@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	digitalocean "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/digitalocean"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/digitalocean"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

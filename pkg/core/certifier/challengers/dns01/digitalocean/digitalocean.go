@@ -1,4 +1,4 @@
-package namedotcom
+package digitalocean
 
 import (
 	"fmt"

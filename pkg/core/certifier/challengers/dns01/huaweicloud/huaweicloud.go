@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-acme/lego/v5/providers/dns/huaweicloud"
+
 	"github.com/certimate-go/certimate/pkg/core/certifier"
-	hwc "github.com/go-acme/lego/v5/providers/dns/huaweicloud"
 )
 
 type ChallengerConfig struct {
@@ -27,7 +28,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		region = "cn-north-1"
 	}
 
-	providerConfig := hwc.NewDefaultConfig()
+	providerConfig := huaweicloud.NewDefaultConfig()
 	providerConfig.AccessKeyID = config.AccessKeyId
 	providerConfig.SecretAccessKey = config.SecretAccessKey
 	providerConfig.Region = region
@@ -38,7 +39,7 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 		providerConfig.TTL = int32(config.DnsTTL)
 	}
 
-	provider, err := hwc.NewDNSProviderConfig(providerConfig)
+	provider, err := huaweicloud.NewDNSProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}
