@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { type Locale as ILocale } from "dayjs/locale/en";
@@ -15,12 +15,7 @@ const localesMap: Record<string, Locale> = {
 
 export const useDayjsLocale = () => {
   const { i18n } = useTranslation();
-
-  const [dayjsLocale, setDayjsLocale] = useState<Locale>(localesMap[i18n.language]);
-
-  useEffect(() => {
-    setDayjsLocale(localesMap[i18n.language]);
-  }, [i18n.language]);
+  const dayjsLocale = localesMap[i18n.resolvedLanguage ?? i18n.language] ?? localesMap[localeNames.EN];
 
   useEffect(() => {
     dayjs.locale(dayjsLocale);

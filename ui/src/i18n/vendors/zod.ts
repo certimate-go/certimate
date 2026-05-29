@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { config as zconfig } from "zod";
 import { en as ZodLocaleEnUs, zhCN as ZodLocaleZhCN } from "zod/locales";
@@ -89,12 +89,7 @@ const localesMap: Record<string, Locale> = {
 
 export const useZodLocale = () => {
   const { i18n } = useTranslation();
-
-  const [zodLocale, setZodLocale] = useState<Locale>(localesMap[i18n.language]);
-
-  useEffect(() => {
-    setZodLocale(localesMap[i18n.language]);
-  }, [i18n.language]);
+  const zodLocale = localesMap[i18n.resolvedLanguage ?? i18n.language] ?? localesMap[localeNames.EN];
 
   useEffect(() => {
     zconfig(zodLocale);

@@ -1,5 +1,4 @@
-﻿import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+﻿import { useTranslation } from "react-i18next";
 import { type Locale } from "antd/es/locale";
 import AntdLocaleEnUS from "antd/locale/en_US";
 import AntdLocaleZhCN from "antd/locale/zh_CN";
@@ -13,12 +12,5 @@ const localesMap: Record<string, Locale> = {
 
 export const useAntdLocale = () => {
   const { i18n } = useTranslation();
-
-  const [antdLocale, setAntdLocale] = useState<Locale>(localesMap[i18n.language]);
-
-  useEffect(() => {
-    setAntdLocale(localesMap[i18n.language]);
-  }, [i18n.language]);
-
-  return antdLocale;
+  return localesMap[i18n.resolvedLanguage ?? i18n.language] ?? localesMap[localeNames.EN];
 };
