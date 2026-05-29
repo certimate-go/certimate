@@ -20,6 +20,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/domain"
+	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
 type ObtainCertificateRequest struct {
@@ -172,11 +173,20 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		}
 	}
 
+	// lego 自 v5 起返回的私钥 PEM 内容使用 PKCS#8 格式编码，
+	// 这里转换为 PKCS#1 或 SEC1 格式编码，以满足更好的兼容性。
+	privkeyPEM := strings.TrimSpace(string(resp.PrivateKey))
+	if t1, err := xcert.ParsePrivateKeyFromPEM(privkeyPEM); err == nil {
+		if t2, err := xcert.ConvertPrivateKeyToPEM(t1, false); err == nil {
+			privkeyPEM = t2
+		}
+	}
+
 	return &ObtainCertificateResponse{
 		CSR:                  strings.TrimSpace(string(resp.CSR)),
 		FullChainCertificate: strings.TrimSpace(string(resp.Certificate)),
 		IssuerCertificate:    strings.TrimSpace(string(resp.IssuerCertificate)),
-		PrivateKey:           strings.TrimSpace(string(resp.PrivateKey)),
+		PrivateKey:           privkeyPEM,
 		ACMEAcctUrl:          c.account.ACMEAcctUrl,
 		ACMECertUrl:          resp.CertURL,
 		ARIReplaced:          req.ReplacesCertID != "",

@@ -45,7 +45,7 @@ func CreateACMEAccount(ctx context.Context, config *ACMEConfig, email string) (*
 			return nil, err
 		}
 
-		keyPEM, err := xcert.ConvertECPrivateKeyToPEM(key)
+		keyPEM, err := xcert.ConvertECPrivateKeyToPEM(key, false)
 		if err != nil {
 			return nil, err
 		}
