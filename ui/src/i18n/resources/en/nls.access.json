@@ -304,6 +304,15 @@
       "placeholder": "Please enter aaWAF API key",
       "tooltip": "For more information, see <a href=\"https://github.com/aaPanel/aaWAF/blob/main/API.md\" target=\"_blank\">https://github.com/aaPanel/aaWAF/blob/main/API.md</a>"
     },
+    "beget_username": {
+      "label": "Beget username",
+      "placeholder": "Please enter Beget username"
+    },
+    "beget_api_password": {
+      "label": "Beget API password",
+      "placeholder": "Please enter Beget API password",
+      "tooltip": "For more information, see <a href=\"https://cp.beget.com/settings/security/api\" target=\"_blank\">https://cp.beget.com/settings/security/api</a>"
+    },
     "bookmyname_username": {
       "label": "BookMyName username",
       "placeholder": "Please enter BookMyName username"

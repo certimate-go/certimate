@@ -20,6 +20,7 @@ import AccessConfigFieldsProviderBaishan from "./AccessConfigFieldsProviderBaish
 import AccessConfigFieldsProviderBaotaPanel from "./AccessConfigFieldsProviderBaotaPanel";
 import AccessConfigFieldsProviderBaotaPanelGo from "./AccessConfigFieldsProviderBaotaPanelGo";
 import AccessConfigFieldsProviderBaotaWAF from "./AccessConfigFieldsProviderBaotaWAF";
+import AccessConfigFieldsProviderBeget from "./AccessConfigFieldsProviderBeget";
 import AccessConfigFieldsProviderBookMyName from "./AccessConfigFieldsProviderBookMyName";
 import AccessConfigFieldsProviderBunny from "./AccessConfigFieldsProviderBunny";
 import AccessConfigFieldsProviderBytePlus from "./AccessConfigFieldsProviderBytePlus";
@@ -141,6 +142,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.BAOTAPANEL]: AccessConfigFieldsProviderBaotaPanel,
   [ACCESS_PROVIDERS.BAOTAPANELGO]: AccessConfigFieldsProviderBaotaPanelGo,
   [ACCESS_PROVIDERS.BAOTAWAF]: AccessConfigFieldsProviderBaotaWAF,
+  [ACCESS_PROVIDERS.BEGET]: AccessConfigFieldsProviderBeget,
   [ACCESS_PROVIDERS.BOOKMYNAME]: AccessConfigFieldsProviderBookMyName,
   [ACCESS_PROVIDERS.BUNNY]: AccessConfigFieldsProviderBunny,
   [ACCESS_PROVIDERS.BYTEPLUS]: AccessConfigFieldsProviderBytePlus,

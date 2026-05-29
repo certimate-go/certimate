@@ -31,6 +31,7 @@ const (
 	AccessProviderTypeBaotaPanel          = AccessProviderType("baotapanel")
 	AccessProviderTypeBaotaPanelGo        = AccessProviderType("baotapanelgo")
 	AccessProviderTypeBaotaWAF            = AccessProviderType("baotawaf")
+	AccessProviderTypeBeget               = AccessProviderType("beget")
 	AccessProviderTypeBookMyName          = AccessProviderType("bookmyname")
 	AccessProviderTypeBunny               = AccessProviderType("bunny")
 	AccessProviderTypeBytePlus            = AccessProviderType("byteplus")
@@ -199,6 +200,7 @@ const (
 	ACMEDns01ProviderTypeAzureDNS          = ACMEDns01ProviderType(AccessProviderTypeAzure + "-dns")
 	ACMEDns01ProviderTypeBaiduCloud        = ACMEDns01ProviderType(AccessProviderTypeBaiduCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeBaiduCloudDNS]
 	ACMEDns01ProviderTypeBaiduCloudDNS     = ACMEDns01ProviderType(AccessProviderTypeBaiduCloud + "-dns")
+	ACMEDns01ProviderTypeBeget             = ACMEDns01ProviderType(AccessProviderTypeBeget)
 	ACMEDns01ProviderTypeBookMyName        = ACMEDns01ProviderType(AccessProviderTypeBookMyName)
 	ACMEDns01ProviderTypeBunny             = ACMEDns01ProviderType(AccessProviderTypeBunny)
 	ACMEDns01ProviderTypeCloudflare        = ACMEDns01ProviderType(AccessProviderTypeCloudflare)

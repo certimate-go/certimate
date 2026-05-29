@@ -302,6 +302,15 @@
       "placeholder": "请输入堡塔云 WAF 接口密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://github.com/aaPanel/aaWAF/blob/main/API.md\" target=\"_blank\">https://github.com/aaPanel/aaWAF/blob/main/API.md</a>"
     },
+    "beget_username": {
+      "label": "Beget 用户名",
+      "placeholder": "请输入 Beget 用户名"
+    },
+    "beget_api_password": {
+      "label": "Beget API 密码",
+      "placeholder": "请输入 Beget API 密码",
+      "tooltip": "这是什么？请参阅 <a href=\"https://cp.beget.com/settings/security/api\" target=\"_blank\">https://cp.beget.com/settings/security/api</a>"
+    },
     "bookmyname_username": {
       "label": "BookMyName 用户名",
       "placeholder": "请输入 BookMyName 用户名"

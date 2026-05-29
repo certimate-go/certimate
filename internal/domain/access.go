@@ -120,6 +120,11 @@ type AccessConfigForBaotaWAF struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForBeget struct {
+	Username    string `json:"username"`
+	ApiPassword string `json:"apiPassword"`
+}
+
 type AccessConfigForBookMyName struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
