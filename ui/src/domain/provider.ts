@@ -104,6 +104,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   QINIU: "qiniu",
   RAINYUN: "rainyun",
   RATPANEL: "ratpanel",
+  REGRU: "regru",
   RFC2136: "rfc2136",
   S3: "s3",
   SAFELINE: "safeline",
@@ -240,6 +241,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.NS1, "provider.ns1", "/imgs/providers/ns1.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.OVHCLOUD, "provider.ovhcloud", "/imgs/providers/ovhcloud.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.PORKBUN, "provider.porkbun", "/imgs/providers/porkbun.svg", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.REGRU, "provider.regru", "/imgs/providers/regru.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.SPACESHIP, "provider.spaceship", "/imgs/providers/spaceship.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.VULTR, "provider.vultr", "/imgs/providers/vultr.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.CMCCCLOUD, "provider.cmcccloud", "/imgs/providers/cmcccloud.svg", [ACCESS_USAGES.DNS]],
@@ -417,6 +419,7 @@ export const ACME_DNS01_PROVIDERS = Object.freeze({
   QINGCLOUD: `${ACCESS_PROVIDERS.QINGCLOUD}`, // 兼容旧值，等同于 `QINGCLOUD_DNS`
   QINGCLOUD_DNS: `${ACCESS_PROVIDERS.QINGCLOUD}-dns`,
   RAINYUN: `${ACCESS_PROVIDERS.RAINYUN}`,
+  REGRU: `${ACCESS_PROVIDERS.REGRU}`,
   RFC2136: `${ACCESS_PROVIDERS.RFC2136}`,
   SPACESHIP: `${ACCESS_PROVIDERS.SPACESHIP}`,
   UCLOUD: `${ACCESS_PROVIDERS.UCLOUD}`, // 兼容旧值，等同于 `UCLOUD_UDNR`
@@ -490,6 +493,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.NS1, "provider.ns1"],
       [ACME_DNS01_PROVIDERS.OVHCLOUD, "provider.ovhcloud"],
       [ACME_DNS01_PROVIDERS.PORKBUN, "provider.porkbun"],
+      [ACME_DNS01_PROVIDERS.REGRU, "provider.regru"],
       [ACME_DNS01_PROVIDERS.SPACESHIP, "provider.spaceship"],
       [ACME_DNS01_PROVIDERS.VERCEL, "provider.vercel"],
       [ACME_DNS01_PROVIDERS.VULTR, "provider.vultr"],

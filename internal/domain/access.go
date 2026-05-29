@@ -485,6 +485,13 @@ type AccessConfigForRatPanel struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForRegru struct {
+	Username        string `json:"username"`
+	Password        string `json:"password"`
+	MtlsCertificate string `json:"mtlsCertificate,omitempty"`
+	MtlsPrivateKey  string `json:"mtlsPrivateKey,omitempty"`
+}
+
 type AccessConfigForRFC2136 struct {
 	Host          string `json:"host"`
 	Port          int32  `json:"port"`

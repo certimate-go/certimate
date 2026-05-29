@@ -1072,6 +1072,30 @@
       "placeholder": "请输入耗子面板 AccessToken",
       "tooltip": "这是什么？请参阅 <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
     },
+    "regru_username": {
+      "label": "Рег.ру 用户名",
+      "placeholder": "请输入 Рег.ру 用户名"
+    },
+    "regru_password": {
+      "label": "Рег.ру 密码",
+      "placeholder": "请输入 Рег.ру 密码或 API 密码"
+    },
+    "regru_mtls_certificate": {
+      "label": "Рег.ру SSL 双向认证证书（可选）",
+      "placeholder": "请输入 Рег.ру SSL 双向认证证书",
+      "errmsg": {
+        "invalid": "无效的证书"
+      },
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
+    },
+    "regru_mtls_private_key": {
+      "label": "Рег.ру SSL 双向认证私钥（可选）",
+      "placeholder": "请输入 Рег.ру SSL 双向认证私钥",
+      "errmsg": {
+        "invalid": "无效的私钥"
+      },
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
+    },
     "rfc2136_host": {
       "label": "DNS 服务器地址",
       "placeholder": "请输入 DNS 服务器地址"

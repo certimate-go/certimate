@@ -1074,6 +1074,30 @@
       "placeholder": "Please enter RatPanel access token",
       "tooltip": "For more information, see <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
     },
+    "regru_username": {
+      "label": "Рег.ру username",
+      "placeholder": "Please enter Рег.ру username"
+    },
+    "regru_password": {
+      "label": "Рег.ру password",
+      "placeholder": "Please enter Рег.ру password or API password"
+    },
+    "regru_mtls_certificate": {
+      "label": "Рег.ру mTLS certificate (Optional)",
+      "placeholder": "Please enter Рег.ру mTLS certificate",
+      "errmsg": {
+        "invalid": "Invalid certificate"
+      },
+      "tooltip": "For more information, see <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
+    },
+    "regru_mtls_private_key": {
+      "label": "Рег.ру mTLS private key (Optional)",
+      "placeholder": "Please enter Рег.ру mTLS private key",
+      "errmsg": {
+        "invalid": "Invalid private key"
+      },
+      "tooltip": "For more information, see <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
+    },
     "rfc2136_host": {
       "label": "DNS server host",
       "placeholder": "Please enter DNS server host"

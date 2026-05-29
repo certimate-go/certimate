@@ -198,6 +198,7 @@
   "ratpanel": "AcePanel (aka RatPanel)",
   "ratpanel_common": "AcePanel",
   "ratpanel_console": "AcePanel - Console itself",
+  "regru": "Рег.ру (Reg.ru)",
   "rfc2136": "Dynamic DNS Updates (RFC 2136)",
   "s3": "Object storage (S3-compatible)",
   "s3_upload": "Upload to S3-compatible object storage",

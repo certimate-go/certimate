@@ -104,6 +104,7 @@ const (
 	AccessProviderTypeQingCloud           = AccessProviderType("qingcloud")
 	AccessProviderTypeRainYun             = AccessProviderType("rainyun")
 	AccessProviderTypeRatPanel            = AccessProviderType("ratpanel")
+	AccessProviderTypeRegru               = AccessProviderType("regru")
 	AccessProviderTypeRFC2136             = AccessProviderType("rfc2136")
 	AccessProviderTypeS3                  = AccessProviderType("s3")
 	AccessProviderTypeSafeLine            = AccessProviderType("safeline")
@@ -243,6 +244,7 @@ const (
 	ACMEDns01ProviderTypeQingCloud         = ACMEDns01ProviderType(AccessProviderTypeQingCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeQingCloudDNS]
 	ACMEDns01ProviderTypeQingCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeQingCloud + "-dns")
 	ACMEDns01ProviderTypeRainYun           = ACMEDns01ProviderType(AccessProviderTypeRainYun)
+	ACMEDns01ProviderTypeRegru             = ACMEDns01ProviderType(AccessProviderTypeRegru)
 	ACMEDns01ProviderTypeRFC2136           = ACMEDns01ProviderType(AccessProviderTypeRFC2136)
 	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)
 	ACMEDns01ProviderTypeTechnitiumDNS     = ACMEDns01ProviderType(AccessProviderTypeTechnitiumDNS)
