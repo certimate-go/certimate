@@ -8,10 +8,10 @@ import (
 )
 
 type SSLInstallSSLRequest struct {
-	Domain   *string `url:"domain,omitempty"`
-	Cert     *string `url:"cert,omitempty"`
-	Key      *string `url:"key,omitempty"`
-	CABundle *string `url:"cabundle,omitempty"`
+	Domain   *string `json:"domain,omitempty"   url:"domain,omitempty"`
+	Cert     *string `json:"cert,omitempty"     url:"cert,omitempty"`
+	Key      *string `json:"key,omitempty"      url:"key,omitempty"`
+	CABundle *string `json:"cabundle,omitempty" url:"cabundle,omitempty"`
 }
 
 type SSLInstallSSLResponse struct {

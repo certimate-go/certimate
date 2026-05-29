@@ -377,6 +377,62 @@
       "placeholder": "Please enter CMCC ECloud AccessKeySecret",
       "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/49739\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/49739</a>"
     },
+    "conohavps_api_version": {
+      "label": "ConoHa VPS version",
+      "placeholder": "Please select ConoHa VPS version"
+    },
+    "conohavps_api_v2_username": {
+      "label": "ConoHa VPS API username",
+      "placeholder": "Please enter ConoHa VPS 2.0 API username",
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/</a>"
+    },
+    "conohavps_api_v2_password": {
+      "label": "ConoHa VPS API password",
+      "placeholder": "Please enter ConoHa VPS 2.0 API password",
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/</a>"
+    },
+    "conohavps_api_v2_tenant_id": {
+      "label": "ConoHa VPS tenant ID",
+      "placeholder": "Please enter ConoHa VPS 2.0 tenant ID",
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps2/api-identity-vps2/identity-post_tokens-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-identity-vps2/identity-post_tokens-v2/</a>"
+    },
+    "conohavps_api_v3_user_id": {
+      "label": "ConoHa VPS API user ID",
+      "placeholder": "Please enter ConoHa VPS 3.0 API user ID",
+      "errmsg": {
+        "conflict": "Conflict with the \"API user name\", please retain only one field"
+      },
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_user_name": {
+      "label": "ConoHa VPS API user name",
+      "placeholder": "Please enter ConoHa VPS 3.0 API user name",
+      "errmsg": {
+        "conflict": "Conflict with the \"API user ID\", please retain only one field"
+      },
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_password": {
+      "label": "ConoHa VPS API password",
+      "placeholder": "Please enter ConoHa VPS 3.0 API password",
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_project_id": {
+      "label": "ConoHa VPS project ID",
+      "placeholder": "Please enter ConoHa VPS 3.0 tenant project ID",
+      "errmsg": {
+        "conflict": "Conflict with the \"project name\", please retain only one field"
+      },
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/</a>"
+    },
+    "conohavps_api_v3_project_name": {
+      "label": "ConoHa VPS project name",
+      "placeholder": "Please enter ConoHa VPS 3.0 tenant project name",
+      "errmsg": {
+        "conflict": "Conflict with the \"project ID\", please retain only one field"
+      },
+      "tooltip": "For more information, see <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/</a>"
+    },
     "constellix_api_key": {
       "label": "Constellix API key",
       "placeholder": "Please enter Constellix API key",

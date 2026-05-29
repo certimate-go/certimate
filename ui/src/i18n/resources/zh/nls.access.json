@@ -375,6 +375,62 @@
       "placeholder": "请输入移动云 AccessKeySecret",
       "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/49739\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/49739</a>"
     },
+    "conohavps_api_version": {
+      "label": "ConoHa VPS 版本",
+      "placeholder": "请选择 ConoHa VPS 版本"
+    },
+    "conohavps_api_v2_username": {
+      "label": "ConoHa VPS API 用户名",
+      "placeholder": "请输入 ConoHa VPS 2.0 API 用户名",
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/</a>"
+    },
+    "conohavps_api_v2_password": {
+      "label": "ConoHa VPS API 密码",
+      "placeholder": "请输入 ConoHa VPS 2.0 API 密码",
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/</a>"
+    },
+    "conohavps_api_v2_tenant_id": {
+      "label": "ConoHa VPS 租户 ID",
+      "placeholder": "请输入 ConoHa VPS 2.0 租户 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps2/api-identity-vps2/identity-post_tokens-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-identity-vps2/identity-post_tokens-v2/</a>"
+    },
+    "conohavps_api_v3_user_id": {
+      "label": "ConoHa VPS API 用户 ID",
+      "placeholder": "请输入 ConoHa VPS 3.0 API 用户 ID",
+      "errmsg": {
+        "conflict": "与字段「API 用户名」冲突，请二选一"
+      },
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_user_name": {
+      "label": "ConoHa VPS API 用户名",
+      "placeholder": "请输入 ConoHa VPS 3.0 API 用户名",
+      "errmsg": {
+        "conflict": "与字段「API 用户 ID」冲突，请二选一"
+      },
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_password": {
+      "label": "ConoHa VPS API 密码",
+      "placeholder": "请输入 ConoHa VPS 3.0 API 密码",
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_project_id": {
+      "label": "ConoHa VPS 项目 ID",
+      "placeholder": "请输入 ConoHa VPS 3.0 租户项目 ID",
+      "errmsg": {
+        "conflict": "与字段「项目名称」冲突，请二选一"
+      },
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/</a>"
+    },
+    "conohavps_api_v3_project_name": {
+      "label": "ConoHa VPS 项目名称",
+      "placeholder": "请输入 ConoHa VPS 3.0 租户项目名称",
+      "errmsg": {
+        "conflict": "与字段「项目 ID」冲突，请二选一"
+      },
+      "tooltip": "这是什么？请参阅 <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/</a>"
+    },
     "constellix_api_key": {
       "label": "Constellix API Key",
       "placeholder": "请输入 Constellix API Key",

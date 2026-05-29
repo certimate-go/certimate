@@ -1,0 +1,43 @@
+package v3
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/url"
+)
+
+type DnsDeleteRecordResponse struct {
+	sdkResponseBase
+}
+
+func (c *Client) DnsDeleteRecord(domainId string, recordId string) (*DnsDeleteRecordResponse, error) {
+	return c.DnsDeleteRecordWithContext(context.Background(), domainId, recordId)
+}
+
+func (c *Client) DnsDeleteRecordWithContext(ctx context.Context, domainId string, recordId string) (*DnsDeleteRecordResponse, error) {
+	if domainId == "" {
+		return nil, fmt.Errorf("sdkerr: unset domainId")
+	}
+	if recordId == "" {
+		return nil, fmt.Errorf("sdkerr: unset recordId")
+	}
+
+	if err := c.ensureAccessTokenExists(); err != nil {
+		return nil, err
+	}
+
+	httpreq, err := c.newRequest(http.MethodDelete, fmt.Sprintf("%s/v1/domains/%s/records/%s", dnsBaseURL, url.PathEscape(domainId), url.PathEscape(recordId)))
+	if err != nil {
+		return nil, err
+	} else {
+		httpreq.SetContext(ctx)
+	}
+
+	result := &DnsDeleteRecordResponse{}
+	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
+		return result, err
+	}
+
+	return result, nil
+}

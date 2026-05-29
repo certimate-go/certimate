@@ -160,6 +160,15 @@ type AccessConfigForCMCCCloud struct {
 	AccessKeySecret string `json:"accessKeySecret"`
 }
 
+type AccessConfigForConoHaVPS struct {
+	ApiVersion  string `json:"apiVersion"`
+	ApiUserId   string `json:"apiUserId,omitempty"`
+	ApiUserName string `json:"apiUserName"`
+	ApiPassword string `json:"apiPassword"`
+	TenantId    string `json:"tenantId"`
+	TenantName  string `json:"tenantName,omitempty"`
+}
+
 type AccessConfigForConstellix struct {
 	ApiKey    string `json:"apiKey"`
 	SecretKey string `json:"secretKey"`

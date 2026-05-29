@@ -30,9 +30,9 @@ var _ challenge.ProviderTimeout = (*DNSProvider)(nil)
 type Config struct {
 	HTTPToken string
 
+	TTL                int
 	PropagationTimeout time.Duration
 	PollingInterval    time.Duration
-	TTL                int
 	HTTPTimeout        time.Duration
 }
 
@@ -40,7 +40,7 @@ type DNSProvider struct {
 	config *Config
 	client *dynv6sdk.Client
 
-	zoneIDs     map[string]int64 // Key: ZoneName; Value: ZoneID
+	zoneIDs     map[string]int64 // Key: ZoneFQDN; Value: ZoneID
 	zoneIDsMu   sync.Mutex
 	recordIDs   map[string]int64 // Key: ChallengeToken; Value: RecordID
 	recordIDsMu sync.Mutex
@@ -102,13 +102,13 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("dynv6: %w", err)
 	}
 
-	zone, err := d.findZone(ctx, dns01.UnFqdn(authZone))
+	zoneInfo, err := d.findZone(ctx, authZone)
 	if err != nil {
 		return fmt.Errorf("dynv6: error when list zones: %w", err)
 	}
 
 	// REF: https://dynv6.github.io/api-spec/#tag/records/operation/addRecord
-	response, err := d.client.AddRecordWithContext(ctx, zone.ID, &dynv6sdk.AddRecordRequest{
+	response, err := d.client.AddRecordWithContext(ctx, zoneInfo.ID, &dynv6sdk.AddRecordRequest{
 		Type: lo.ToPtr("TXT"),
 		Name: lo.ToPtr(subDomain),
 		Data: lo.ToPtr(info.Value),
@@ -118,7 +118,7 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 	}
 
 	d.zoneIDsMu.Lock()
-	d.zoneIDs[zone.Name] = zone.ID
+	d.zoneIDs[authZone] = zoneInfo.ID
 	d.zoneIDsMu.Unlock()
 
 	d.recordIDsMu.Lock()
@@ -137,10 +137,10 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string
 	}
 
 	d.zoneIDsMu.Lock()
-	zoneId, ok := d.zoneIDs[dns01.UnFqdn(authZone)]
+	zoneId, ok := d.zoneIDs[authZone]
 	d.zoneIDsMu.Unlock()
 	if !ok {
-		return fmt.Errorf("dynv6: unknown zone ID for '%s'", dns01.UnFqdn(authZone))
+		return fmt.Errorf("dynv6: unknown zone ID for '%s'", authZone)
 	}
 
 	d.recordIDsMu.Lock()
@@ -169,7 +169,7 @@ func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*dynv6sdk.
 	}
 
 	for _, zone := range *zones {
-		if zone.Name == zoneName {
+		if dns01.UnFqdn(zone.Name) == dns01.UnFqdn(zoneName) {
 			return zone, nil
 		}
 	}

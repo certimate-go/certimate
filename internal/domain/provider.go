@@ -39,6 +39,7 @@ const (
 	AccessProviderTypeCloudflare          = AccessProviderType("cloudflare")
 	AccessProviderTypeClouDNS             = AccessProviderType("cloudns")
 	AccessProviderTypeCMCCCloud           = AccessProviderType("cmcccloud")
+	AccessProviderTypeConoHaVPS           = AccessProviderType("conohavps")
 	AccessProviderTypeConstellix          = AccessProviderType("constellix")
 	AccessProviderTypeCPanel              = AccessProviderType("cpanel")
 	AccessProviderTypeCTCCCloud           = AccessProviderType("ctcccloud")
@@ -202,6 +203,7 @@ const (
 	ACMEDns01ProviderTypeClouDNS           = ACMEDns01ProviderType(AccessProviderTypeClouDNS)
 	ACMEDns01ProviderTypeCMCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCMCCCloudDNS]
 	ACMEDns01ProviderTypeCMCCCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud + "-dns")
+	ACMEDns01ProviderTypeConoHaVPS         = ACMEDns01ProviderType(AccessProviderTypeConoHaVPS)
 	ACMEDns01ProviderTypeConstellix        = ACMEDns01ProviderType(AccessProviderTypeConstellix)
 	ACMEDns01ProviderTypeCPanel            = ACMEDns01ProviderType(AccessProviderTypeCPanel)
 	ACMEDns01ProviderTypeCTCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCTCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCTCCCloudSmartDNS]

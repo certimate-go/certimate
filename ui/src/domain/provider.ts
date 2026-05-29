@@ -41,6 +41,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   CLOUDFLARE: "cloudflare",
   CLOUDNS: "cloudns",
   CMCCCLOUD: "cmcccloud",
+  CONOHAVPS: "conohavps",
   CONSTELLIX: "constellix",
   CPANEL: "cpanel",
   CTCCCLOUD: "ctcccloud",
@@ -213,6 +214,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.BOOKMYNAME, "provider.bookmyname", "/imgs/providers/bookmyname.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.CLOUDFLARE, "provider.cloudflare", "/imgs/providers/cloudflare.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.CLOUDNS, "provider.cloudns", "/imgs/providers/cloudns.png", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.CONOHAVPS, "provider.conohavps", "/imgs/providers/conohavps.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.CONSTELLIX, "provider.constellix", "/imgs/providers/constellix.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DESEC, "provider.desec", "/imgs/providers/desec.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DIGITALOCEAN, "provider.digitalocean", "/imgs/providers/digitalocean.svg", [ACCESS_USAGES.DNS]],
@@ -375,6 +377,7 @@ export const ACME_DNS01_PROVIDERS = Object.freeze({
   CLOUDNS: `${ACCESS_PROVIDERS.CLOUDNS}`,
   CMCCCLOUD: `${ACCESS_PROVIDERS.CMCCCLOUD}`, // 兼容旧值，等同于 `CMCCCLOUD_DNS`
   CMCCCLOUD_DNS: `${ACCESS_PROVIDERS.CMCCCLOUD}-dns`,
+  CONOHAVPS: `${ACCESS_PROVIDERS.CONOHAVPS}`,
   CONSTELLIX: `${ACCESS_PROVIDERS.CONSTELLIX}`,
   CPANEL: `${ACCESS_PROVIDERS.CPANEL}`,
   CTCCCLOUD: `${ACCESS_PROVIDERS.CTCCCLOUD}`, // 兼容旧值，等同于 `CTCCCLOUD_SMARTDNS`
@@ -459,6 +462,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.BUNNY, "provider.bunny"],
       [ACME_DNS01_PROVIDERS.CLOUDFLARE, "provider.cloudflare"],
       [ACME_DNS01_PROVIDERS.CLOUDNS, "provider.cloudns"],
+      [ACME_DNS01_PROVIDERS.CONOHAVPS, "provider.conohavps"],
       [ACME_DNS01_PROVIDERS.CONSTELLIX, "provider.constellix"],
       [ACME_DNS01_PROVIDERS.DESEC, "provider.desec"],
       [ACME_DNS01_PROVIDERS.DIGITALOCEAN, "provider.digitalocean"],

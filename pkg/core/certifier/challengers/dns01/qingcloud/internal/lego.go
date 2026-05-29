@@ -32,9 +32,9 @@ type Config struct {
 	AccessKey    string
 	AccessSecret string
 
+	TTL                int
 	PropagationTimeout time.Duration
 	PollingInterval    time.Duration
-	TTL                int
 	HTTPTimeout        time.Duration
 }
 
