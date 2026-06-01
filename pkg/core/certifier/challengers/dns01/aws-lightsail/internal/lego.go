@@ -98,16 +98,11 @@ func (d *DNSProvider) Present(ctx context.Context, domain, _, keyAuth string) er
 		return fmt.Errorf("lightsail: could not find zone for domain %q: %w", domain, err)
 	}
 
-	subDomain, err := dns01.ExtractSubDomain(info.EffectiveFQDN, authZone)
-	if err != nil {
-		return fmt.Errorf("lightsail: %w", err)
-	}
-
 	if _, err := d.client.CreateDomainEntry(ctx, &lightsail.CreateDomainEntryInput{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
 		DomainEntry: &awstypes.DomainEntry{
 			Type:   aws.String("TXT"),
-			Name:   aws.String(subDomain),
+			Name:   aws.String(info.EffectiveFQDN),
 			Target: aws.String(strconv.Quote(info.Value)),
 		},
 	}); err != nil {
@@ -125,16 +120,11 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, _, keyAuth string) er
 		return fmt.Errorf("lightsail: could not find zone for domain %q: %w", domain, err)
 	}
 
-	subDomain, err := dns01.ExtractSubDomain(info.EffectiveFQDN, authZone)
-	if err != nil {
-		return fmt.Errorf("lightsail: %w", err)
-	}
-
 	if _, err := d.client.DeleteDomainEntry(ctx, &lightsail.DeleteDomainEntryInput{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
 		DomainEntry: &awstypes.DomainEntry{
 			Type:   aws.String("TXT"),
-			Name:   aws.String(subDomain),
+			Name:   aws.String(info.EffectiveFQDN),
 			Target: aws.String(strconv.Quote(info.Value)),
 		},
 	}); err != nil {
