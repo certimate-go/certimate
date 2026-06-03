@@ -338,6 +338,7 @@ const (
 	DeploymentProviderTypeBaotaWAF              = DeploymentProviderType(AccessProviderTypeBaotaWAF)
 	DeploymentProviderTypeBaotaWAFConsole       = DeploymentProviderType(AccessProviderTypeBaotaWAF + "-console")
 	DeploymentProviderTypeBunnyCDN              = DeploymentProviderType(AccessProviderTypeBunny + "-cdn")
+	DeploymentProviderTypeBytePlusALB           = DeploymentProviderType(AccessProviderTypeBytePlus + "-alb")
 	DeploymentProviderTypeBytePlusCDN           = DeploymentProviderType(AccessProviderTypeBytePlus + "-cdn")
 	DeploymentProviderTypeBytePlusCertCenter    = DeploymentProviderType(AccessProviderTypeBytePlus + "-certcenter")
 	DeploymentProviderTypeBytePlusMediaLive     = DeploymentProviderType(AccessProviderTypeBytePlus + "-medialive")

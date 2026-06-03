@@ -89,6 +89,7 @@
   "bunny": "Bunny",
   "bunny_cdn": "Bunny - 内容分发网络 CDN",
   "byteplus": "BytePlus",
+  "byteplus_alb": "BytePlus - 应用型负载均衡 ALB",
   "byteplus_cdn": "BytePlus - 内容分发网络 CDN",
   "byteplus_certcenter_upload": "BytePlus - 上传到证书中心",
   "byteplus_dns": "BytePlus - DNS Suite",

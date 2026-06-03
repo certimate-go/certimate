@@ -1209,6 +1209,36 @@
         "placeholder": "Please enter Bunny CDN hostname",
         "tooltip": "What is this? See <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>"
       },
+      "byteplus_alb_region": {
+        "label": "BytePlus region",
+        "placeholder": "Please enter BytePlus ALB region (e.g. ap-southeast-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones</a>"
+      },
+      "byteplus_alb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "ALB load balancer"
+          },
+          "listener": {
+            "label": "ALB listener"
+          }
+        }
+      },
+      "byteplus_alb_loadbalancer_id": {
+        "label": "BytePlus ALB load balancer ID",
+        "placeholder": "Please enter BytePlus ALB load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
+      },
+      "byteplus_alb_listener_id": {
+        "label": "BytePlus ALB listener ID",
+        "placeholder": "Please enter BytePlus ALB listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
+      },
+      "byteplus_alb_snidomain": {
+        "label": "BytePlus ALB SNI domain (Optional)",
+        "placeholder": "Please enter BytePlus ALB SNI domain name",
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
       "byteplus_cdn_domain": {
         "label": "BytePlus CDN domain",
         "placeholder": "Please enter BytePlus CDN domain name"
@@ -1223,8 +1253,8 @@
       },
       "byteplus_tos_region": {
         "label": "BytePlus region",
-        "placeholder": "Please enter BytePlus TOS region (e.g. ap-singapore-1)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
+        "placeholder": "Please enter BytePlus TOS region (e.g. ap-southeast-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint\" target=\"_blank\">https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint</a>"
       },
       "byteplus_tos_bucket": {
         "label": "BytePlus TOS bucket",

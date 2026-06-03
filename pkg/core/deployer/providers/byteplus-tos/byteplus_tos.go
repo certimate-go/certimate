@@ -54,7 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		AccessKeyId:     config.AccessKeyId,
 		SecretAccessKey: config.SecretAccessKey,
 		ProjectName:     config.ProjectName,
-		Region:          config.Region,
+		Region:          "ap-singapore-1",
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
