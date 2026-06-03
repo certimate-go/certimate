@@ -38,6 +38,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/iam v1.53.10
 	github.com/aws/aws-sdk-go-v2/service/lightsail v1.54.0
 	github.com/baidubce/bce-sdk-go v0.9.266
+	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.65
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.65
 	github.com/go-acme/lego/v5 v5.1.0
 	github.com/go-cmd/cmd v1.4.3

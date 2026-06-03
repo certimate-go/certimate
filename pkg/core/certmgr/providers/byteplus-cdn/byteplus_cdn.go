@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	bytepluscdn "github.com/byteplus-sdk/byteplus-sdk-golang/service/cdn"
+	bpcdn "github.com/byteplus-sdk/byteplus-sdk-golang/service/cdn"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -26,7 +26,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *bytepluscdn.CDN
+	sdkClient *bpcdn.CDN
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -36,7 +36,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client := bytepluscdn.NewInstance()
+	client := bpcdn.NewInstance()
 	client.Client.SetAccessKey(config.AccessKey)
 	client.Client.SetSecretKey(config.SecretKey)
 
@@ -73,10 +73,10 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		default:
 		}
 
-		listCertInfoReq := &bytepluscdn.ListCertInfoRequest{
-			PageNum:  bytepluscdn.GetInt64Ptr(int64(listCertInfoPageNum)),
-			PageSize: bytepluscdn.GetInt64Ptr(int64(listCertInfoPageSize)),
-			Source:   bytepluscdn.GetStrPtr("cert_center"),
+		listCertInfoReq := &bpcdn.ListCertInfoRequest{
+			PageNum:  bpcdn.GetInt64Ptr(int64(listCertInfoPageNum)),
+			PageSize: bpcdn.GetInt64Ptr(int64(listCertInfoPageSize)),
+			Source:   bpcdn.GetStrPtr("cert_center"),
 		}
 		listCertInfoResp, err := c.sdkClient.ListCertInfo(listCertInfoReq)
 		c.logger.Debug("sdk request 'cdn.ListCertInfo'", slog.Any("request", listCertInfoReq), slog.Any("response", listCertInfoResp))
@@ -117,11 +117,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 
 	// 上传新证书
 	// REF: https://docs.byteplus.com/en/docs/byteplus-cdn/reference-addcertificate
-	addCertificateReq := &bytepluscdn.AddCertificateRequest{
+	addCertificateReq := &bpcdn.AddCertificateRequest{
 		Certificate: certPEM,
 		PrivateKey:  privkeyPEM,
-		Source:      bytepluscdn.GetStrPtr("cert_center"),
-		Desc:        bytepluscdn.GetStrPtr(certName),
+		Source:      bpcdn.GetStrPtr("cert_center"),
+		Desc:        bpcdn.GetStrPtr(certName),
 	}
 	addCertificateResp, err := c.sdkClient.AddCertificate(addCertificateReq)
 	c.logger.Debug("sdk request 'cdn.AddCertificate'", slog.Any("request", addCertificateReq), slog.Any("response", addCertificateResp))

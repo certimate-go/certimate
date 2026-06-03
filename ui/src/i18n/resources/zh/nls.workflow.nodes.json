@@ -1212,6 +1212,10 @@
         "label": "BytePlus CDN 域名",
         "placeholder": "请输入 BytePlus CDN 域名"
       },
+      "byteplus_certcenter_region": {
+        "label": "BytePlus 证书中心服务地域",
+        "placeholder": "请输入 BytePlus 证书中心服务地域（例如：ap-singapore-1）"
+      },
       "cdnfly_deploy_target": {
         "option": {
           "website": {

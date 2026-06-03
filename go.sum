@@ -257,6 +257,9 @@ github.com/boombuler/barcode v1.1.0 h1:ChaYjBR63fr4LFyGn8E8nt7dBSt3MiU3zMOZqFvVk
 github.com/boombuler/barcode v1.1.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/buger/goterm v1.0.4 h1:Z9YvGmOih81P0FbVtEYTFF6YsSgxSUKEhf/f9bTMXbY=
 github.com/buger/goterm v1.0.4/go.mod h1:HiFWV3xnkolgrBV3mY8m0X0Pumt4zg4QhbdOzQtB8tE=
+github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.65 h1:6qCTwt4bzF7ofeASf+Ja4BDqhGD39uBThQZWFgUbnX4=
+github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.65/go.mod h1:eqR3bDX3XtdPBcB9vERznOyi0MAcAI1GFAdcRspNMBU=
+github.com/byteplus-sdk/byteplus-sdk-golang v1.0.16/go.mod h1:7iCaE+dR9EycrJU0GQyMhptbInLbQhsKXiDKDjNi8Vs=
 github.com/byteplus-sdk/byteplus-sdk-golang v1.0.65 h1:hmRsVDVU5gP/UdM/PIXTjYRAHWspe8+wUOlPsFJ9Ppg=
 github.com/byteplus-sdk/byteplus-sdk-golang v1.0.65/go.mod h1:CIL/T2dxgbIA79os+wl0Fq0vCbADTZNIddV6PNYB6DY=
 github.com/casbin/casbin/v2 v2.37.0/go.mod h1:vByNa/Fchek0KZUgG5wEsl7iFsiviAYKRtgrQfcJqHg=

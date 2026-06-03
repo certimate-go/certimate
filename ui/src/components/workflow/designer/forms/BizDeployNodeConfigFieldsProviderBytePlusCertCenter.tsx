@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const BizDeployNodeConfigFieldsProviderVolcEngineCertCenter = () => {
+const BizDeployNodeConfigFieldsProviderBytePlusCertCenter = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -20,10 +20,10 @@ const BizDeployNodeConfigFieldsProviderVolcEngineCertCenter = () => {
       <Form.Item
         name={[parentNamePath, "region"]}
         initialValue={initialValues.region}
-        label={t("workflow_node.deploy.form.volcengine_certcenter_region.label")}
+        label={t("workflow_node.deploy.form.byteplus_certcenter_region.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("workflow_node.deploy.form.volcengine_certcenter_region.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.byteplus_certcenter_region.placeholder")} />
       </Form.Item>
     </>
   );
@@ -31,7 +31,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineCertCenter = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    region: "cn-beijing",
+    region: "ap-singapore-1",
   };
 };
 
@@ -43,7 +43,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderVolcEngineCertCenter, {
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderBytePlusCertCenter, {
   getInitialValues,
   getSchema,
 });

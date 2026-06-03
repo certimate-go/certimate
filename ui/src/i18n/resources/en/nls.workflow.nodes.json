@@ -1213,6 +1213,10 @@
         "label": "BytePlus CDN domain",
         "placeholder": "Please enter BytePlus CDN domain name"
       },
+      "byteplus_certcenter_region": {
+        "label": "BytePlus region",
+        "placeholder": "Please enter BytePlus Certificate Center region (e.g. ap-singapore-1)"
+      },
       "cdnfly_deploy_target": {
         "option": {
           "website": {
