@@ -14,10 +14,10 @@ import (
 )
 
 type CertmgrConfig struct {
-	// BytePlus AccessKey。
-	AccessKey string `json:"accessKey"`
-	// BytePlus SecretKey。
-	SecretKey string `json:"secretKey"`
+	// BytePlus AccessKeyId。
+	AccessKeyId string `json:"accessKeyId"`
+	// BytePlus SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// BytePlus 项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 	// BytePlus 地域。
@@ -37,7 +37,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKey, config.SecretKey, config.Region)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -95,13 +95,13 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return nil, certmgr.ErrUnsupported
 }
 
-func createSDKClient(accessKey, secretKey, region string) (*bpcertificateservice.CERTIFICATESERVICE, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*bpcertificateservice.CERTIFICATESERVICE, error) {
 	if region == "" {
 		region = "ap-singapore-1" // 证书中心默认区域：新加坡
 	}
 
 	config := bp.NewConfig().
-		WithAkSk(accessKey, secretKey).
+		WithAkSk(accessKeyId, secretAccessKey).
 		WithRegion(region)
 
 	session, err := bpsesion.NewSession(config)

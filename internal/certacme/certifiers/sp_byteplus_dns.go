@@ -17,8 +17,8 @@ func init() {
 		}
 
 		provider, err := byteplus.NewChallenger(&byteplus.ChallengerConfig{
-			AccessKey:             credentials.AccessKey,
-			SecretKey:             credentials.SecretKey,
+			AccessKeyId:           credentials.AccessKeyId,
+			SecretAccessKey:       credentials.SecretAccessKey,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,
 			DnsTTL:                options.DnsTTL,
 		})

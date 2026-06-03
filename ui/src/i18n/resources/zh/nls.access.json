@@ -324,14 +324,14 @@
       "placeholder": "请输入 Bunny API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.bunny.net/reference/bunnynet-api-overview\" target=\"_blank\">https://docs.bunny.net/reference/bunnynet-api-overview</a>"
     },
-    "byteplus_access_key": {
-      "label": "BytePlus AccessKey",
-      "placeholder": "请输入 BytePlus AccessKey",
+    "byteplus_access_key_id": {
+      "label": "BytePlus AccessKeyID",
+      "placeholder": "请输入 BytePlus AccessKeyID",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/zh-CN/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/zh-CN/docs/byteplus-platform/docs-managing-keys</a>"
     },
-    "byteplus_secret_key": {
-      "label": "BytePlus SecretKey",
-      "placeholder": "请输入 BytePlus SecretKey",
+    "byteplus_secret_access_key": {
+      "label": "BytePlus SecretAccessKey",
+      "placeholder": "请输入 BytePlus SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/zh-CN/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/zh-CN/docs/byteplus-platform/docs-managing-keys</a>"
     },
     "byteplus_project_name": {

@@ -8,18 +8,18 @@ import (
 )
 
 var (
-	fp            = tester.Args("BYTEPLUSCDN_")
-	fTestCertPath string
-	fTestKeyPath  string
-	fAccessKey    string
-	fSecretKey    string
+	fp               = tester.Args("BYTEPLUSCDN_")
+	fTestCertPath    string
+	fTestKeyPath     string
+	fAccessKeyId     string
+	fSecretAccessKey string
 )
 
 func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
-	fp.DefineString(&fAccessKey, "ACCESSKEY")
-	fp.DefineString(&fSecretKey, "SECRETKEY")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 }
 
 /*
@@ -28,16 +28,16 @@ Shell command to run this test:
 	go test -v ./byteplus_cdn_test.go -args \
 	--BYTEPLUSCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BYTEPLUSCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
-	--BYTEPLUSCDN_ACCESSKEY="your-access-key" \
-	--BYTEPLUSCDN_SECRETKEY="your-secret-key"
+	--BYTEPLUSCDN_ACCESSKEYID="your-access-key-id" \
+	--BYTEPLUSCDN_SECRETACCESSKEY="your-secret-access-key"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
 
 	t.Run("Upload", func(t *testing.T) {
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
-			AccessKey: fAccessKey,
-			SecretKey: fSecretKey,
+			AccessKeyId:     fAccessKeyId,
+			SecretAccessKey: fSecretAccessKey,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

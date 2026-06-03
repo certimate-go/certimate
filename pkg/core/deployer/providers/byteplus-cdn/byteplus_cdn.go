@@ -17,10 +17,10 @@ import (
 )
 
 type DeployerConfig struct {
-	// BytePlus AccessKey。
-	AccessKey string `json:"accessKey"`
-	// BytePlus SecretKey。
-	SecretKey string `json:"secretKey"`
+	// BytePlus AccessKeyId。
+	AccessKeyId string `json:"accessKeyId"`
+	// BytePlus SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// BytePlus 项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 	// 域名匹配模式。
@@ -45,12 +45,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	}
 
 	client := bpcdn.NewInstance()
-	client.Client.SetAccessKey(config.AccessKey)
-	client.Client.SetSecretKey(config.SecretKey)
+	client.Client.SetAccessKey(config.AccessKeyId)
+	client.Client.SetSecretKey(config.SecretAccessKey)
 
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
-		AccessKey: config.AccessKey,
-		SecretKey: config.SecretKey,
+		AccessKeyId:     config.AccessKeyId,
+		SecretAccessKey: config.SecretAccessKey,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)

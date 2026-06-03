@@ -326,14 +326,14 @@
       "placeholder": "Please enter Bunny API key",
       "tooltip": "For more information, see <a href=\"https://docs.bunny.net/reference/bunnynet-api-overview\" target=\"_blank\">https://docs.bunny.net/reference/bunnynet-api-overview</a>"
     },
-    "byteplus_access_key": {
-      "label": "BytePlus AccessKey",
-      "placeholder": "Please enter BytePlus AccessKey",
+    "byteplus_access_key_id": {
+      "label": "BytePlus AccessKeyID",
+      "placeholder": "Please enter BytePlus AccessKeyID",
       "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys</a>"
     },
-    "byteplus_secret_key": {
-      "label": "BytePlus SecretKey",
-      "placeholder": "Please enter BytePlus SecretKey",
+    "byteplus_secret_access_key": {
+      "label": "BytePlus SecretAccessKey",
+      "placeholder": "Please enter BytePlus SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys</a>"
     },
     "byteplus_project_name": {

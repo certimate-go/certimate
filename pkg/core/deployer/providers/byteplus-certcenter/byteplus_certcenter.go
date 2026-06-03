@@ -11,10 +11,10 @@ import (
 )
 
 type DeployerConfig struct {
-	// BytePlus AccessKey。
-	AccessKey string `json:"accessKey"`
-	// BytePlus SecretKey。
-	SecretKey string `json:"secretKey"`
+	// BytePlus AccessKeyId。
+	AccessKeyId string `json:"accessKeyId"`
+	// BytePlus SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// BytePlus 项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 	// BytePlus 地域。
@@ -35,10 +35,10 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	}
 
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
-		AccessKey:   config.AccessKey,
-		SecretKey:   config.SecretKey,
-		ProjectName: config.ProjectName,
-		Region:      config.Region,
+		AccessKeyId:     config.AccessKeyId,
+		SecretAccessKey: config.SecretAccessKey,
+		ProjectName:     config.ProjectName,
+		Region:          config.Region,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)

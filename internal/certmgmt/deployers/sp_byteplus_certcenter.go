@@ -17,10 +17,10 @@ func init() {
 		}
 
 		provider, err := bytepluscertcenter.NewDeployer(&bytepluscertcenter.DeployerConfig{
-			AccessKey:   credentials.AccessKey,
-			SecretKey:   credentials.SecretKey,
-			ProjectName: credentials.ProjectName,
-			Region:      xmaps.GetString(options.ProviderExtendedConfig, "region"),
+			AccessKeyId:     credentials.AccessKeyId,
+			SecretAccessKey: credentials.SecretAccessKey,
+			ProjectName:     credentials.ProjectName,
+			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
 		})
 		return provider, err
 	})

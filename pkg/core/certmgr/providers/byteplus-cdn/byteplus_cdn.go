@@ -17,10 +17,10 @@ import (
 )
 
 type CertmgrConfig struct {
-	// BytePlus AccessKey。
-	AccessKey string `json:"accessKey"`
-	// BytePlus SecretKey。
-	SecretKey string `json:"secretKey"`
+	// BytePlus AccessKeyId。
+	AccessKeyId string `json:"accessKeyId"`
+	// BytePlus SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 }
 
 type Certmgr struct {
@@ -37,8 +37,8 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	}
 
 	client := bpcdn.NewInstance()
-	client.Client.SetAccessKey(config.AccessKey)
-	client.Client.SetSecretKey(config.SecretKey)
+	client.Client.SetAccessKey(config.AccessKeyId)
+	client.Client.SetSecretKey(config.SecretAccessKey)
 
 	return &Certmgr{
 		config:    config,

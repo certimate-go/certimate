@@ -17,8 +17,8 @@ func init() {
 		}
 
 		provider, err := bytepluscdn.NewDeployer(&bytepluscdn.DeployerConfig{
-			AccessKey:          credentials.AccessKey,
-			SecretKey:          credentials.SecretKey,
+			AccessKeyId:        credentials.AccessKeyId,
+			SecretAccessKey:    credentials.SecretAccessKey,
 			ProjectName:        credentials.ProjectName,
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),

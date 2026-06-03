@@ -10,8 +10,8 @@ import (
 )
 
 type ChallengerConfig struct {
-	AccessKey             string `json:"accessKey"`
-	SecretKey             string `json:"secretKey"`
+	AccessKeyId           string `json:"accessKeyId"`
+	SecretAccessKey       string `json:"secretAccessKey"`
 	DnsPropagationTimeout int    `json:"dnsPropagationTimeout,omitempty"`
 	DnsTTL                int    `json:"dnsTTL,omitempty"`
 }
@@ -22,8 +22,8 @@ func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
 	}
 
 	providerConfig := internal.NewDefaultConfig()
-	providerConfig.AccessKey = config.AccessKey
-	providerConfig.SecretKey = config.SecretKey
+	providerConfig.AccessKey = config.AccessKeyId
+	providerConfig.SecretKey = config.SecretAccessKey
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}

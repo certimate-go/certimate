@@ -135,9 +135,9 @@ type AccessConfigForBunny struct {
 }
 
 type AccessConfigForBytePlus struct {
-	AccessKey   string `json:"accessKey"`
-	SecretKey   string `json:"secretKey"`
-	ProjectName string `json:"projectName,omitempty"`
+	AccessKeyId     string `json:"accessKeyId"`
+	SecretAccessKey string `json:"secretAccessKey"`
+	ProjectName     string `json:"projectName,omitempty"`
 }
 
 type AccessConfigForCacheFly struct {
