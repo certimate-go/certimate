@@ -1247,6 +1247,31 @@
         "label": "BytePlus region",
         "placeholder": "Please enter BytePlus Certificate Center region (e.g. ap-singapore-1)"
       },
+      "byteplus_clb_region": {
+        "label": "BytePlus region",
+        "placeholder": "Please enter BytePlus CLB region (e.g. ap-southeast-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/clb/Product-Overview-08\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Product-Overview-08</a>"
+      },
+      "byteplus_clb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "CLB load balancer"
+          },
+          "listener": {
+            "label": "CLB listener"
+          }
+        }
+      },
+      "byteplus_clb_loadbalancer_id": {
+        "label": "BytePlus CLB load balancer ID",
+        "placeholder": "Please enter BytePlus CLB load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
+      },
+      "byteplus_clb_listener_id": {
+        "label": "BytePlus CLB listener ID",
+        "placeholder": "Please enter BytePlus CLB listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
+      },
       "byteplus_medialive_domain": {
         "label": "BytePlus MediaLive streaming domain",
         "placeholder": "Please enter BytePlus MediaLive streaming domain name"

@@ -341,6 +341,7 @@ const (
 	DeploymentProviderTypeBytePlusALB           = DeploymentProviderType(AccessProviderTypeBytePlus + "-alb")
 	DeploymentProviderTypeBytePlusCDN           = DeploymentProviderType(AccessProviderTypeBytePlus + "-cdn")
 	DeploymentProviderTypeBytePlusCertCenter    = DeploymentProviderType(AccessProviderTypeBytePlus + "-certcenter")
+	DeploymentProviderTypeBytePlusCLB           = DeploymentProviderType(AccessProviderTypeBytePlus + "-clb")
 	DeploymentProviderTypeBytePlusMediaLive     = DeploymentProviderType(AccessProviderTypeBytePlus + "-medialive")
 	DeploymentProviderTypeBytePlusTOS           = DeploymentProviderType(AccessProviderTypeBytePlus + "-tos")
 	DeploymentProviderTypeCacheFly              = DeploymentProviderType(AccessProviderTypeCacheFly)

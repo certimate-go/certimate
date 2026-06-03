@@ -40,6 +40,7 @@ import BizDeployNodeConfigFieldsProviderBunnyCDN from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderBytePlusALB from "./BizDeployNodeConfigFieldsProviderBytePlusALB";
 import BizDeployNodeConfigFieldsProviderBytePlusCDN from "./BizDeployNodeConfigFieldsProviderBytePlusCDN";
 import BizDeployNodeConfigFieldsProviderBytePlusCertCenter from "./BizDeployNodeConfigFieldsProviderBytePlusCertCenter";
+import BizDeployNodeConfigFieldsProviderBytePlusCLB from "./BizDeployNodeConfigFieldsProviderBytePlusCLB";
 import BizDeployNodeConfigFieldsProviderBytePlusMediaLive from "./BizDeployNodeConfigFieldsProviderBytePlusMediaLive";
 import BizDeployNodeConfigFieldsProviderCdnfly from "./BizDeployNodeConfigFieldsProviderCdnfly";
 import BizDeployNodeConfigFieldsProviderCPanel from "./BizDeployNodeConfigFieldsProviderCPanel";
@@ -171,6 +172,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_ALB]: BizDeployNodeConfigFieldsProviderBytePlusALB,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_CDN]: BizDeployNodeConfigFieldsProviderBytePlusCDN,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_CERTCENTER]: BizDeployNodeConfigFieldsProviderBytePlusCertCenter,
+  [DEPLOYMENT_PROVIDERS.BYTEPLUS_CLB]: BizDeployNodeConfigFieldsProviderBytePlusCLB,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_MEDIALIVE]: BizDeployNodeConfigFieldsProviderBytePlusMediaLive,
   [DEPLOYMENT_PROVIDERS.CDNFLY]: BizDeployNodeConfigFieldsProviderCdnfly,
   [DEPLOYMENT_PROVIDERS.CPANEL]: BizDeployNodeConfigFieldsProviderCPanel,
