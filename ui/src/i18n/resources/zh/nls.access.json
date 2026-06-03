@@ -1323,6 +1323,11 @@
       "placeholder": "请输入腾讯云 SecretKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/598/40488\" target=\"_blank\">https://cloud.tencent.com/document/product/598/40488</a>"
     },
+    "tencentcloud_project_id": {
+      "label": "腾讯云项目 ID（可选）",
+      "placeholder": "请输入腾讯云项目 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.cn/project\" target=\"_blank\">https://console.cloud.tencent.cn/project</a>"
+    },
     "todaynic_user_id": {
       "label": "时代互联代理商用户 ID",
       "placeholder": "请输入时代互联代理商用户 ID"

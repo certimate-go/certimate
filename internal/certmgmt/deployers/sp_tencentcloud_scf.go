@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudscf.NewDeployer(&tencentcloudscf.DeployerConfig{
 			SecretId:           credentials.SecretId,
 			SecretKey:          credentials.SecretKey,
+			ProjectId:          credentials.ProjectId,
 			Endpoint:           xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			Region:             xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

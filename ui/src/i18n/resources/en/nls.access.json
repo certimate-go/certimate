@@ -1319,12 +1319,17 @@
     "tencentcloud_secret_id": {
       "label": "Tencent Cloud SecretID",
       "placeholder": "Please enter Tencent Cloud SecretID",
-      "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/zh/document/product/598/34228\" target=\"_blank\">https://www.tencentcloud.com/zh/document/product/598/34228</a>"
+      "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/en/document/product/598/34228\" target=\"_blank\">https://www.tencentcloud.com/en/document/product/598/34228</a>"
     },
     "tencentcloud_secret_key": {
       "label": "Tencent Cloud SecretKey",
       "placeholder": "Please enter Tencent Cloud SecretKey",
-      "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/zh/document/product/598/34228\" target=\"_blank\">https://www.tencentcloud.com/zh/document/product/598/34228</a>"
+      "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/en/document/product/598/34228\" target=\"_blank\">https://www.tencentcloud.com/en/document/product/598/34228</a>"
+    },
+    "tencentcloud_project_id": {
+      "label": "Tencent Cloud project ID (Optional)",
+      "placeholder": "Please enter Tencent Cloud project ID",
+      "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/project\" target=\"_blank\">https://console.tencentcloud.com/project</a>"
     },
     "todaynic_user_id": {
       "label": "TodayNIC.com agent user ID",

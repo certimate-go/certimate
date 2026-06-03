@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudgaap.NewDeployer(&tencentcloudgaap.DeployerConfig{
 			SecretId:     credentials.SecretId,
 			SecretKey:    credentials.SecretKey,
+			ProjectId:    credentials.ProjectId,
 			Endpoint:     xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			DeployTarget: xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			ProxyId:      xmaps.GetString(options.ProviderExtendedConfig, "proxyId"),

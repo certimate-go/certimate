@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudcos.NewDeployer(&tencentcloudcos.DeployerConfig{
 			SecretId:  credentials.SecretId,
 			SecretKey: credentials.SecretKey,
+			ProjectId: credentials.ProjectId,
 			Region:    xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			Bucket:    xmaps.GetString(options.ProviderExtendedConfig, "bucket"),
 			Domain:    xmaps.GetString(options.ProviderExtendedConfig, "domain"),

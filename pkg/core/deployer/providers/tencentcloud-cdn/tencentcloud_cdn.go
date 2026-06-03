@@ -23,6 +23,8 @@ type DeployerConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云项目 ID。
+	ProjectId int64 `json:"projectId,omitempty"`
 	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
 	// 域名匹配模式。
@@ -54,6 +56,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		ProjectId: config.ProjectId,
 		Endpoint: lo.
 			If(strings.HasSuffix(config.Endpoint, "intl.tencentcloudapi.com"), "ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
 			Else(""),
@@ -263,6 +266,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	// 更新加速域名配置
 	// REF: https://cloud.tencent.com/document/api/228/41116
 	updateDomainConfigReq := tccdn.NewUpdateDomainConfigRequest()
+	updateDomainConfigReq.ProjectId = lo.IfF(d.config.ProjectId != 0, func() *int64 { return common.Int64Ptr(d.config.ProjectId) }).Else(nil)
 	updateDomainConfigReq.Domain = common.StringPtr(domain)
 	updateDomainConfigReq.Https = domainConfig.Https
 	if updateDomainConfigReq.Https == nil {

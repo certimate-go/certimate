@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudvod.NewDeployer(&tencentcloudvod.DeployerConfig{
 			SecretId:           credentials.SecretId,
 			SecretKey:          credentials.SecretKey,
+			ProjectId:          credentials.ProjectId,
 			Endpoint:           xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			SubAppId:           xmaps.GetInt64(options.ProviderExtendedConfig, "subAppId"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

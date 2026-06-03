@@ -22,6 +22,7 @@ func init() {
 		provider, err := tencentcloudeo.NewDeployer(&tencentcloudeo.DeployerConfig{
 			SecretId:           credentials.SecretId,
 			SecretKey:          credentials.SecretKey,
+			ProjectId:          credentials.ProjectId,
 			Endpoint:           xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			ZoneId:             xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

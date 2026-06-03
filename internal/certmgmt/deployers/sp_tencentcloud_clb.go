@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudclb.NewDeployer(&tencentcloudclb.DeployerConfig{
 			SecretId:       credentials.SecretId,
 			SecretKey:      credentials.SecretKey,
+			ProjectId:      credentials.ProjectId,
 			Endpoint:       xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			Region:         xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			DeployTarget:   xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),

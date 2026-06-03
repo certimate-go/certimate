@@ -44,7 +44,7 @@ const AccessConfigFormFieldsProviderAliyun = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.aliyun_resource_group_id.tooltip") }}></span>}
       >
-        <Input allowClear autoComplete="new-password" placeholder={t("access.form.aliyun_resource_group_id.placeholder")} />
+        <Input allowClear placeholder={t("access.form.aliyun_resource_group_id.placeholder")} />
       </Form.Item>
     </>
   );

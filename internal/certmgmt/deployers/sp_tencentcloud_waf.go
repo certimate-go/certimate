@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudwaf.NewDeployer(&tencentcloudwaf.DeployerConfig{
 			SecretId:   credentials.SecretId,
 			SecretKey:  credentials.SecretKey,
+			ProjectId:  credentials.ProjectId,
 			Endpoint:   xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			Region:     xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			InstanceId: xmaps.GetString(options.ProviderExtendedConfig, "instanceId"),

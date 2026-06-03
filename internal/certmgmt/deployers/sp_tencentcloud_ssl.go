@@ -19,6 +19,7 @@ func init() {
 		provider, err := tencentcloudssl.NewDeployer(&tencentcloudssl.DeployerConfig{
 			SecretId:  credentials.SecretId,
 			SecretKey: credentials.SecretKey,
+			ProjectId: credentials.ProjectId,
 			Endpoint:  xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 		})
 		return provider, err

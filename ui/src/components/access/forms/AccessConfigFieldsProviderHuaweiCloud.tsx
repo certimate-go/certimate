@@ -44,7 +44,7 @@ const AccessConfigFormFieldsProviderHuaweiCloud = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.huaweicloud_enterprise_project_id.tooltip") }}></span>}
       >
-        <Input allowClear autoComplete="new-password" placeholder={t("access.form.huaweicloud_enterprise_project_id.placeholder")} />
+        <Input allowClear placeholder={t("access.form.huaweicloud_enterprise_project_id.placeholder")} />
       </Form.Item>
     </>
   );

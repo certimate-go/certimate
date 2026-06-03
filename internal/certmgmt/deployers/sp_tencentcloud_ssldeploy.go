@@ -22,6 +22,7 @@ func init() {
 		provider, err := tencentcloudssldeploy.NewDeployer(&tencentcloudssldeploy.DeployerConfig{
 			SecretId:        credentials.SecretId,
 			SecretKey:       credentials.SecretKey,
+			ProjectId:       credentials.ProjectId,
 			Endpoint:        xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			ResourceRegion:  xmaps.GetString(options.ProviderExtendedConfig, "resourceRegion"),
 			ResourceProduct: xmaps.GetString(options.ProviderExtendedConfig, "resourceProduct"),

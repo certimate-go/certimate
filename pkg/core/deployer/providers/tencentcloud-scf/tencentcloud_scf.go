@@ -23,6 +23,8 @@ type DeployerConfig struct {
 	SecretId string `json:"secretId"`
 	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
+	// 腾讯云项目 ID。
+	ProjectId int64 `json:"projectId,omitempty"`
 	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
 	// 腾讯云地域。
@@ -56,6 +58,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
+		ProjectId: config.ProjectId,
 		Endpoint: lo.
 			If(strings.HasSuffix(config.Endpoint, "intl.tencentcloudapi.com"), "ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
 			Else(""),

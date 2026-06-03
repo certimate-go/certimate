@@ -22,6 +22,7 @@ func init() {
 		provider, err := tencentcloudsslupdate.NewDeployer(&tencentcloudsslupdate.DeployerConfig{
 			SecretId:         credentials.SecretId,
 			SecretKey:        credentials.SecretKey,
+			ProjectId:        credentials.ProjectId,
 			Endpoint:         xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			CertificateId:    xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 			ResourceRegions:  lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceRegions"), ";"), func(s string, _ int) bool { return s != "" }),

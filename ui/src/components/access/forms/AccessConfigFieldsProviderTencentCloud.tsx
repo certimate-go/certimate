@@ -36,6 +36,16 @@ const AccessConfigFormFieldsProviderTencentCloud = () => {
       >
         <Input.Password autoComplete="new-password" placeholder={t("access.form.tencentcloud_secret_key.placeholder")} />
       </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "projectId"]}
+        initialValue={initialValues.projectId}
+        label={t("access.form.tencentcloud_project_id.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.tencentcloud_project_id.tooltip") }}></span>}
+      >
+        <Input allowClear placeholder={t("access.form.tencentcloud_project_id.placeholder")} />
+      </Form.Item>
     </>
   );
 };
@@ -53,6 +63,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   return z.object({
     secretId: z.string().nonempty(),
     secretKey: z.string().nonempty(),
+    projectId: z.coerce.number().int().positive().or(z.literal("")).nullish(),
   });
 };
 

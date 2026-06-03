@@ -593,6 +593,7 @@ type AccessConfigForTodayNIC struct {
 type AccessConfigForTencentCloud struct {
 	SecretId  string `json:"secretId"`
 	SecretKey string `json:"secretKey"`
+	ProjectId int64  `json:"projectId,omitempty"`
 }
 
 type AccessConfigForUCloud struct {
