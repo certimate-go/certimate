@@ -174,6 +174,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.AWS, "provider.aws", "/imgs/providers/aws.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.AZURE, "provider.azure", "/imgs/providers/azure.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BUNNY, "provider.bunny", "/imgs/providers/bunny.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.BYTEPLUS, "provider.byteplus", "/imgs/providers/byteplus.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.GCORE, "provider.gcore", "/imgs/providers/gcore.png", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.NETLIFY, "provider.netlify", "/imgs/providers/netlify.png", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.VERCEL, "provider.vercel", "/imgs/providers/vercel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -188,7 +189,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.WANGSU, "provider.wangsu", "/imgs/providers/wangsu.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.DOGECLOUD, "provider.dogecloud", "/imgs/providers/dogecloud.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.KSYUN, "provider.ksyun", "/imgs/providers/ksyun.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BYTEPLUS, "provider.byteplus", "/imgs/providers/byteplus.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CACHEFLY, "provider.cachefly", "/imgs/providers/cachefly.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.MOHUA, "provider.mohua", "/imgs/providers/mohua.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.UNICLOUD, "provider.unicloud", "/imgs/providers/unicloud.png", [ACCESS_USAGES.HOSTING]],
@@ -380,6 +380,8 @@ export const ACME_DNS01_PROVIDERS = Object.freeze({
   BEGET: `${ACCESS_PROVIDERS.BEGET}`,
   BOOKMYNAME: `${ACCESS_PROVIDERS.BOOKMYNAME}`,
   BUNNY: `${ACCESS_PROVIDERS.BUNNY}`,
+  BYTEPLUS: `${ACCESS_PROVIDERS.BYTEPLUS}`, // 兼容旧值，等同于 `BYTEPLUS_DNS`
+  BYTEPLUS_DNS: `${ACCESS_PROVIDERS.BYTEPLUS}-dns`,
   CLOUDFLARE: `${ACCESS_PROVIDERS.CLOUDFLARE}`,
   CLOUDNS: `${ACCESS_PROVIDERS.CLOUDNS}`,
   CMCCCLOUD: `${ACCESS_PROVIDERS.CMCCCLOUD}`, // 兼容旧值，等同于 `CMCCCLOUD_DNS`

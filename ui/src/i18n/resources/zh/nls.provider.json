@@ -90,6 +90,7 @@
   "bunny_cdn": "Bunny - 内容分发网络 CDN",
   "byteplus": "BytePlus",
   "byteplus_cdn": "BytePlus - 内容分发网络 CDN",
+  "byteplus_dns": "BytePlus - DNS",
   "cachefly": "CacheFly",
   "cdnfly": "Cdnfly",
   "cloudflare": "Cloudflare",

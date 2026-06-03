@@ -203,6 +203,8 @@ const (
 	ACMEDns01ProviderTypeBeget             = ACMEDns01ProviderType(AccessProviderTypeBeget)
 	ACMEDns01ProviderTypeBookMyName        = ACMEDns01ProviderType(AccessProviderTypeBookMyName)
 	ACMEDns01ProviderTypeBunny             = ACMEDns01ProviderType(AccessProviderTypeBunny)
+	ACMEDns01ProviderTypeBytePlus          = ACMEDns01ProviderType(AccessProviderTypeBytePlus) // 兼容旧值，等同于 [ACMEDns01ProviderTypeBytePlusDNS]
+	ACMEDns01ProviderTypeBytePlusDNS       = ACMEDns01ProviderType(AccessProviderTypeBytePlus + "-dns")
 	ACMEDns01ProviderTypeCloudflare        = ACMEDns01ProviderType(AccessProviderTypeCloudflare)
 	ACMEDns01ProviderTypeClouDNS           = ACMEDns01ProviderType(AccessProviderTypeClouDNS)
 	ACMEDns01ProviderTypeCMCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCMCCCloudDNS]
