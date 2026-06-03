@@ -4,8 +4,9 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/providers/dns/edgedns"
+
+	"github.com/certimate-go/certimate/pkg/core"
 )
 
 type ChallengerConfig struct {
@@ -17,7 +18,7 @@ type ChallengerConfig struct {
 	DnsTTL                int
 }
 
-func NewChallenger(config *ChallengerConfig) (challenge.Provider, error) {
+func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	edgegridConfig := &edgegrid.Config{
 		Host:         config.Host,
 		ClientToken:  config.ClientToken,

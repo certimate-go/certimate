@@ -6,7 +6,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	webhook "github.com/certimate-go/certimate/pkg/core/deployer/providers/webhook"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/webhook"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
@@ -38,7 +38,7 @@ func init() {
 			}
 		}
 
-		provider, err := webhook.NewDeployer(&webhook.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			WebhookUrl:               credentials.Url,
 			WebhookData:              xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "webhookData", credentials.DataString),
 			Method:                   credentials.Method,

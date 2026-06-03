@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	azuredns "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/azure-dns"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/azure-dns"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := azuredns.NewChallenger(&azuredns.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			TenantId:              credentials.TenantId,
 			ClientId:              credentials.ClientId,
 			ClientSecret:          credentials.ClientSecret,

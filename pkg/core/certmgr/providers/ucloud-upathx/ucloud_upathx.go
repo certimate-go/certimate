@@ -11,9 +11,15 @@ import (
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	"github.com/certimate-go/certimate/pkg/core"
 	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/upathx"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+)
+
+type (
+	Provider      = core.Certmgr
+	UploadResult  = core.CertmgrUploadResult
+	ReplaceResult = core.CertmgrReplaceResult
 )
 
 type CertmgrConfig struct {
@@ -31,7 +37,7 @@ type Certmgr struct {
 	sdkClient *ucloudsdk.UPathXClient
 }
 
-var _ certmgr.Provider = (*Certmgr)(nil)
+var _ Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
@@ -58,7 +64,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
+func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 避免重复上传
 	if upres, upok, err := c.tryGetResultIfCertExists(ctx, certPEM, privkeyPEM); err != nil {
 		return nil, err
@@ -87,17 +93,17 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	createPathXSSLResp, err := c.sdkClient.CreatePathXSSL(createPathXSSLReq)
 	c.logger.Debug("sdk request 'pathx.CreatePathXSSL'", slog.Any("request", createPathXSSLReq), slog.Any("response", createPathXSSLResp))
 
-	return &certmgr.UploadResult{
+	return &UploadResult{
 		CertId:   createPathXSSLResp.SSLId,
 		CertName: certName,
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
-	return nil, certmgr.ErrUnsupported
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
+	return nil, core.ErrUnsupported
 }
 
-func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, bool, error) {
+func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, bool, error) {
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {
@@ -154,7 +160,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 			}
 
 			// 如果以上信息都一致，则视为已存在相同证书，直接返回
-			return &certmgr.UploadResult{
+			return &UploadResult{
 				CertId:   sslItem.SSLId,
 				CertName: sslItem.SSLName,
 			}, true, nil

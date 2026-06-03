@@ -15,9 +15,16 @@ import (
 	hwiamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	hwelb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
+
+	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+)
+
+type (
+	Provider      = core.Certmgr
+	UploadResult  = core.CertmgrUploadResult
+	ReplaceResult = core.CertmgrReplaceResult
 )
 
 type CertmgrConfig struct {
@@ -37,7 +44,7 @@ type Certmgr struct {
 	sdkClient *hwelb.ElbClient
 }
 
-var _ certmgr.Provider = (*Certmgr)(nil)
+var _ Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
@@ -64,7 +71,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
+func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 查询已有证书，避免重复上传
 	// REF: https://support.huaweicloud.com/api-elb/ListCertificates.html
 	listCertificatesMarker := (*string)(nil)
@@ -94,7 +101,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			// 如果已存在相同证书，直接返回
 			if xcert.EqualCertificatesFromPEM(certPEM, certItem.Certificate) {
 				c.logger.Info("ssl certificate already exists")
-				return &certmgr.UploadResult{
+				return &UploadResult{
 					CertId:   certItem.Id,
 					CertName: certItem.Name,
 				}, nil
@@ -137,13 +144,13 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		return nil, fmt.Errorf("failed to execute sdk request 'elb.CreateCertificate': %w", err)
 	}
 
-	return &certmgr.UploadResult{
+	return &UploadResult{
 		CertId:   createCertificateResp.Certificate.Id,
 		CertName: createCertificateResp.Certificate.Name,
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
 	// 更新证书
 	// REF: https://support.huaweicloud.com/api-elb/UpdateCertificate.html
 	updateCertificateReq := &hwelbmodel.UpdateCertificateRequest{
@@ -161,7 +168,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'elb.UpdateCertificate': %w", err)
 	}
 
-	return &certmgr.ReplaceResult{}, nil
+	return &ReplaceResult{}, nil
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwelb.ElbClient, error) {

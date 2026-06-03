@@ -9,7 +9,12 @@ import (
 	mohuasdk "github.com/mohuatech/mohuacloud-go-sdk"
 	mohuasdktypes "github.com/mohuatech/mohuacloud-go-sdk/types"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -29,7 +34,7 @@ type Deployer struct {
 	sdkClient *mohuasdk.Client
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
@@ -56,7 +61,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	if d.config.HostId == "" {
 		return nil, fmt.Errorf("config `hostId` is required")
 	}
@@ -87,7 +92,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, fmt.Errorf("failed to execute sdk request 'mvh.SetSSL': %w", err)
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func createSDKClient(username, apiPassword string) (*mohuasdk.Client, error) {

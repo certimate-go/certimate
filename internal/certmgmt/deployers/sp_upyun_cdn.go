@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	upyuncdn "github.com/certimate-go/certimate/pkg/core/deployer/providers/upyun-cdn"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/upyun-cdn"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := upyuncdn.NewDeployer(&upyuncdn.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			Username:           credentials.Username,
 			Password:           credentials.Password,
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

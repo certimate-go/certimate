@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/cpanel"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/cpanel"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := cpanel.NewChallenger(&cpanel.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			ServerUrl:                credentials.ServerUrl,
 			Username:                 credentials.Username,
 			ApiToken:                 credentials.ApiToken,

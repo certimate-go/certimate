@@ -1,4 +1,4 @@
-package discordbot_test
+package slackbot_test
 
 import (
 	"testing"

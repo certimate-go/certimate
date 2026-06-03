@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	baiducloudcdn "github.com/certimate-go/certimate/pkg/core/deployer/providers/baiducloud-cdn"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/baiducloud-cdn"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := baiducloudcdn.NewDeployer(&baiducloudcdn.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:        credentials.AccessKeyId,
 			SecretAccessKey:    credentials.SecretAccessKey,
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

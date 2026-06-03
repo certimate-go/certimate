@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/notifier/providers/dingtalkbot"
+	ntfyimpl "github.com/certimate-go/certimate/pkg/core/notifier/providers/dingtalkbot"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := dingtalkbot.NewNotifier(&dingtalkbot.NotifierConfig{
+		provider, err := ntfyimpl.NewNotifier(&ntfyimpl.NotifierConfig{
 			WebhookUrl:    credentials.WebhookUrl,
 			Secret:        credentials.Secret,
 			CustomPayload: credentials.CustomPayload,

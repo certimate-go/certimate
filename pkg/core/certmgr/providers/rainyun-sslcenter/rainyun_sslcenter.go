@@ -9,9 +9,15 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	"github.com/certimate-go/certimate/pkg/core"
 	rainyunsdk "github.com/certimate-go/certimate/pkg/sdk3rd/rainyun"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+)
+
+type (
+	Provider      = core.Certmgr
+	UploadResult  = core.CertmgrUploadResult
+	ReplaceResult = core.CertmgrReplaceResult
 )
 
 type CertmgrConfig struct {
@@ -25,7 +31,7 @@ type Certmgr struct {
 	sdkClient *rainyunsdk.Client
 }
 
-var _ certmgr.Provider = (*Certmgr)(nil)
+var _ Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
@@ -52,7 +58,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
+func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 避免重复上传
 	if upres, upok, err := c.tryGetResultIfCertExists(ctx, certPEM); err != nil {
 		return nil, err
@@ -83,7 +89,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	}
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
 	certId, err := strconv.ParseInt(certIdOrName, 10, 64)
 	if err != nil {
 		return nil, err
@@ -101,10 +107,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'sslcenter.Update': %w", err)
 	}
 
-	return &certmgr.ReplaceResult{}, nil
+	return &ReplaceResult{}, nil
 }
 
-func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) (*certmgr.UploadResult, bool, error) {
+func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) (*UploadResult, bool, error) {
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {
@@ -162,7 +168,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			}
 
 			// 如果以上信息都一致，则视为已存在相同证书，直接返回
-			return &certmgr.UploadResult{
+			return &UploadResult{
 				CertId: fmt.Sprintf("%d", sslItem.ID),
 			}, true, nil
 		}

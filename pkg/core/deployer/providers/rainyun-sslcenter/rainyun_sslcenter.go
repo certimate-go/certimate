@@ -6,9 +6,13 @@ import (
 	"log/slog"
 	"strconv"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
-	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core"
+	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -22,17 +26,17 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkCertmgr certmgr.Provider
+	sdkCertmgr core.Certmgr
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
+	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
 		ApiKey: config.ApiKey,
 	})
 	if err != nil {
@@ -56,7 +60,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	if d.config.CertificateId == 0 {
 		// 上传证书
 		upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
@@ -75,5 +79,5 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		}
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }

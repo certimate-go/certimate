@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	rainyunsslcenter "github.com/certimate-go/certimate/pkg/core/deployer/providers/rainyun-sslcenter"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/rainyun-sslcenter"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := rainyunsslcenter.NewDeployer(&rainyunsslcenter.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ApiKey:        credentials.ApiKey,
 			CertificateId: xmaps.GetInt64(options.ProviderExtendedConfig, "certificateId"),
 		})

@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/http01/ssh"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/http01/ssh"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,9 +16,9 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		jumpServers := make([]ssh.ServerConfig, len(credentials.JumpServers))
+		jumpServers := make([]chlgimpl.ServerConfig, len(credentials.JumpServers))
 		for i, jumpServer := range credentials.JumpServers {
-			jumpServers[i] = ssh.ServerConfig{
+			jumpServers[i] = chlgimpl.ServerConfig{
 				SshHost:          jumpServer.Host,
 				SshPort:          jumpServer.Port,
 				SshAuthMethod:    jumpServer.AuthMethod,
@@ -29,8 +29,8 @@ func init() {
 			}
 		}
 
-		provider, err := ssh.NewChallenger(&ssh.ChallengerConfig{
-			ServerConfig: ssh.ServerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
+			ServerConfig: chlgimpl.ServerConfig{
 				SshHost:          credentials.Host,
 				SshPort:          credentials.Port,
 				SshAuthMethod:    credentials.AuthMethod,

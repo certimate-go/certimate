@@ -13,10 +13,15 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core"
 	btsdk "github.com/certimate-go/certimate/pkg/sdk3rd/btpanelgo"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -38,7 +43,7 @@ type Deployer struct {
 	sdkClient *btsdk.Client
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 var (
 	btProjectTypes      = []string{"php", "java", "asp", "go", "python", "nodejs", "proxy", "general"}
@@ -70,7 +75,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	if len(d.config.SiteNames) == 0 {
 		return nil, fmt.Errorf("config `siteNames` is required")
 	}
@@ -99,7 +104,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, errors.Join(errs...)
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func (d *Deployer) findSiteByName(ctx context.Context, siteType, siteName string) (*btsdk.SiteData, error) {

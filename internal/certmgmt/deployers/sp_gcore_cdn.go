@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	gcorecdn "github.com/certimate-go/certimate/pkg/core/deployer/providers/gcore-cdn"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/gcore-cdn"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := gcorecdn.NewDeployer(&gcorecdn.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ApiToken:      credentials.ApiToken,
 			ResourceId:    xmaps.GetInt64(options.ProviderExtendedConfig, "resourceId"),
 			CertificateId: xmaps.GetInt64(options.ProviderExtendedConfig, "certificateId"),

@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/constellix"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/constellix"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := constellix.NewChallenger(&constellix.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			ApiKey:                credentials.ApiKey,
 			SecretKey:             credentials.SecretKey,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

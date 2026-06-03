@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/netcup"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/netcup"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := netcup.NewChallenger(&netcup.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			CustomerNumber:        credentials.CustomerNumber,
 			ApiKey:                credentials.ApiKey,
 			ApiPassword:           credentials.ApiPassword,

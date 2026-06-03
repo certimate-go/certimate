@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/ftp"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ftp"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,12 +16,12 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := ftp.NewDeployer(&ftp.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			FtpHost:                      credentials.Host,
 			FtpPort:                      credentials.Port,
 			FtpUsername:                  credentials.Username,
 			FtpPassword:                  credentials.Password,
-			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", ftp.FILE_FORMAT_PEM),
+			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", dplyimpl.FILE_FORMAT_PEM),
 			FilePathForKey:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForKey"),
 			FilePathForCrt:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrt"),
 			FilePathForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyServer"),

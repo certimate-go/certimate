@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	slackbot "github.com/certimate-go/certimate/pkg/core/notifier/providers/slackbot"
+	ntfyimpl "github.com/certimate-go/certimate/pkg/core/notifier/providers/slackbot"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := slackbot.NewNotifier(&slackbot.NotifierConfig{
+		provider, err := ntfyimpl.NewNotifier(&ntfyimpl.NotifierConfig{
 			BotToken:  credentials.BotToken,
 			ChannelId: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "channelId", credentials.ChannelId),
 		})

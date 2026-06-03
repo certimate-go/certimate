@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	aliyuncas "github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-cas"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/aliyun-cas"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := aliyuncas.NewDeployer(&aliyuncas.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
 			AccessKeySecret: credentials.AccessKeySecret,
 			ResourceGroupId: credentials.ResourceGroupId,

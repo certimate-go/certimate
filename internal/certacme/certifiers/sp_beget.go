@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/beget"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/beget"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := beget.NewChallenger(&beget.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			Username:              credentials.Username,
 			ApiPassword:           credentials.ApiPassword,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

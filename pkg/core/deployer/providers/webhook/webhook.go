@@ -13,9 +13,14 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -41,7 +46,7 @@ type Deployer struct {
 	httpClient *resty.Client
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
@@ -74,7 +79,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {
@@ -200,7 +205,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 
 	d.logger.Debug("webhook responded", slog.Any("response", resp.String()))
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/ssh"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ssh"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,9 +16,9 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		jumpServers := make([]ssh.ServerConfig, len(credentials.JumpServers))
+		jumpServers := make([]dplyimpl.ServerConfig, len(credentials.JumpServers))
 		for i, jumpServer := range credentials.JumpServers {
-			jumpServers[i] = ssh.ServerConfig{
+			jumpServers[i] = dplyimpl.ServerConfig{
 				SshHost:          jumpServer.Host,
 				SshPort:          jumpServer.Port,
 				SshAuthMethod:    jumpServer.AuthMethod,
@@ -29,8 +29,8 @@ func init() {
 			}
 		}
 
-		provider, err := ssh.NewDeployer(&ssh.DeployerConfig{
-			ServerConfig: ssh.ServerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
+			ServerConfig: dplyimpl.ServerConfig{
 				SshHost:          credentials.Host,
 				SshPort:          credentials.Port,
 				SshAuthMethod:    credentials.AuthMethod,
@@ -43,7 +43,7 @@ func init() {
 			UseSCP:                       xmaps.GetBool(options.ProviderExtendedConfig, "useSCP"),
 			PreCommand:                   xmaps.GetString(options.ProviderExtendedConfig, "preCommand"),
 			PostCommand:                  xmaps.GetString(options.ProviderExtendedConfig, "postCommand"),
-			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", ssh.FILE_FORMAT_PEM),
+			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", dplyimpl.FILE_FORMAT_PEM),
 			FilePathForKey:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForKey"),
 			FilePathForCrt:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrt"),
 			FilePathForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyServer"),

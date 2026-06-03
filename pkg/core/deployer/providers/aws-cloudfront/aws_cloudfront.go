@@ -11,10 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudfront"
 	"github.com/aws/aws-sdk-go-v2/service/cloudfront/types"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	certmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
-	certmgrimpliam "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-iam"
-	"github.com/certimate-go/certimate/pkg/core/deployer"
+	"github.com/certimate-go/certimate/pkg/core"
+	cmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
+	cmgrimpliam "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-iam"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -35,10 +39,10 @@ type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
 	sdkClient  *cloudfront.Client
-	sdkCertmgr certmgr.Provider
+	sdkCertmgr core.Certmgr
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
@@ -50,10 +54,10 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	var pcertmgr certmgr.Provider
+	var pcertmgr core.Certmgr
 	switch config.CertificateSource {
 	case CERTIFICATE_SOURCE_ACM:
-		pcertmgr, err = certmgrimplacm.NewCertmgr(&certmgrimplacm.CertmgrConfig{
+		pcertmgr, err = cmgrimplacm.NewCertmgr(&cmgrimplacm.CertmgrConfig{
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,
@@ -63,7 +67,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		}
 
 	case CERTIFICATE_SOURCE_IAM:
-		pcertmgr, err = certmgrimpliam.NewCertmgr(&certmgrimpliam.CertmgrConfig{
+		pcertmgr, err = cmgrimpliam.NewCertmgr(&cmgrimpliam.CertmgrConfig{
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,
@@ -95,7 +99,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	if d.config.DistributionId == "" {
 		return nil, fmt.Errorf("config `distribuitionId` is required")
 	}
@@ -151,7 +155,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, fmt.Errorf("failed to execute sdk request 'cloudfront.UpdateDistribution': %w", err)
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*cloudfront.Client, error) {

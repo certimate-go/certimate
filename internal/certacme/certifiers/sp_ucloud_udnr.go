@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/ucloud"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/ucloud"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := ucloud.NewChallenger(&ucloud.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			PrivateKey:            credentials.PrivateKey,
 			PublicKey:             credentials.PublicKey,
 			ProjectId:             credentials.ProjectId,

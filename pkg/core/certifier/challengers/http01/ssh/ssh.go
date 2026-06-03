@@ -1,15 +1,11 @@
 package ssh
 
 import (
-	"context"
 	"fmt"
-	"path/filepath"
-
-	"github.com/go-acme/lego/v5/challenge/http01"
 
 	"github.com/certimate-go/certimate/internal/tools/ssh"
-	"github.com/certimate-go/certimate/pkg/core/certifier"
-	xssh "github.com/certimate-go/certimate/pkg/utils/ssh"
+	"github.com/certimate-go/certimate/pkg/core"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/http01/ssh/internal"
 )
 
 type ServerConfig struct {
@@ -44,77 +40,36 @@ type ChallengerConfig struct {
 	WebRootPath string `json:"webRootPath"`
 }
 
-func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
+func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
-	provider := &provider{config: config}
-	return provider, nil
-}
-
-type provider struct {
-	config *ChallengerConfig
-}
-
-func (p *provider) Present(ctx context.Context, domain, token, keyAuth string) error {
-	client, err := createSshClient(*p.config)
-	if err != nil {
-		return fmt.Errorf("ssh: failed to create SSH client: %w", err)
-	}
-
-	defer client.Close()
-
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	if err := xssh.WriteRemoteString(client.RawClient(), challengePath, keyAuth, p.config.UseSCP); err != nil {
-		return fmt.Errorf("ssh: failed to write file for HTTP challenge: %w", err)
-	}
-
-	return nil
-}
-
-func (p *provider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
-	client, err := createSshClient(*p.config)
-	if err != nil {
-		return fmt.Errorf("ssh: failed to create SSH client: %w", err)
-	}
-
-	defer client.Close()
-
-	// 删除质询文件
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	if err := xssh.RemoveRemote(client.RawClient(), challengePath, p.config.UseSCP); err != nil {
-		return fmt.Errorf("ssh: failed to remove file after HTTP challenge: %w", err)
-	}
-
-	return nil
-}
-
-func createSshClient(config ChallengerConfig) (*ssh.Client, error) {
-	clientCfg := ssh.NewDefaultConfig()
-	clientCfg.Host = config.SshHost
-	clientCfg.Port = int(config.SshPort)
-	clientCfg.AuthMethod = ssh.AuthMethodType(config.SshAuthMethod)
-	clientCfg.Username = config.SshUsername
-	clientCfg.Password = config.SshPassword
-	clientCfg.Key = config.SshKey
-	clientCfg.KeyPassphrase = config.SshKeyPassphrase
+	providerConfig := internal.NewDefaultConfig()
+	providerConfig.Host = config.SshHost
+	providerConfig.Port = int(config.SshPort)
+	providerConfig.AuthMethod = ssh.AuthMethodType(config.SshAuthMethod)
+	providerConfig.Username = config.SshUsername
+	providerConfig.Password = config.SshPassword
+	providerConfig.Key = config.SshKey
+	providerConfig.KeyPassphrase = config.SshKeyPassphrase
 	for _, jumpServer := range config.JumpServers {
-		jumpServerCfg := ssh.NewServerConfig()
-		jumpServerCfg.Host = jumpServer.SshHost
-		jumpServerCfg.Port = int(jumpServer.SshPort)
-		jumpServerCfg.AuthMethod = ssh.AuthMethodType(jumpServer.SshAuthMethod)
-		jumpServerCfg.Username = jumpServer.SshUsername
-		jumpServerCfg.Password = jumpServer.SshPassword
-		jumpServerCfg.Key = jumpServer.SshKey
-		jumpServerCfg.KeyPassphrase = jumpServer.SshKeyPassphrase
-		clientCfg.JumpServers = append(clientCfg.JumpServers, *jumpServerCfg)
+		jumpServerCfg := ssh.ServerConfig{
+			Host:          jumpServer.SshHost,
+			Port:          int(jumpServer.SshPort),
+			AuthMethod:    ssh.AuthMethodType(jumpServer.SshAuthMethod),
+			Username:      jumpServer.SshUsername,
+			Password:      jumpServer.SshPassword,
+			Key:           jumpServer.SshKey,
+			KeyPassphrase: jumpServer.SshKeyPassphrase,
+		}
+		providerConfig.JumpServers = append(providerConfig.JumpServers, jumpServerCfg)
 	}
 
-	client, err := ssh.NewClient(clientCfg)
+	provider, err := internal.NewHTTPProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	return client, nil
+	return provider, nil
 }

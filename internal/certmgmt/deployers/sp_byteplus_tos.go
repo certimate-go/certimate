@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	byteplustos "github.com/certimate-go/certimate/pkg/core/deployer/providers/byteplus-tos"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/byteplus-tos"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := byteplustos.NewDeployer(&byteplustos.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
 			SecretAccessKey: credentials.SecretAccessKey,
 			ProjectName:     credentials.ProjectName,

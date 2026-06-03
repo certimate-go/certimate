@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	akamaiedgedns "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/akamai-edgedns"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/akamai-edgedns"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := akamaiedgedns.NewChallenger(&akamaiedgedns.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			Host:                  credentials.Host,
 			ClientToken:           credentials.ClientToken,
 			ClientSecret:          credentials.ClientSecret,

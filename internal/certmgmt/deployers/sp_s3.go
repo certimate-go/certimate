@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/s3"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/s3"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := s3.NewDeployer(&s3.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			Endpoint:                      credentials.Endpoint,
 			AccessKey:                     credentials.AccessKey,
 			SecretKey:                     credentials.SecretKey,
@@ -25,7 +25,7 @@ func init() {
 			AllowInsecureConnections:      credentials.AllowInsecureConnections,
 			Region:                        xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			Bucket:                        xmaps.GetString(options.ProviderExtendedConfig, "bucket"),
-			FileFormat:                    xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", s3.FILE_FORMAT_PEM),
+			FileFormat:                    xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", dplyimpl.FILE_FORMAT_PEM),
 			ObjectKeyForKey:               xmaps.GetString(options.ProviderExtendedConfig, "objectKeyForKey"),
 			ObjectKeyForCrt:               xmaps.GetString(options.ProviderExtendedConfig, "objectKeyForCrt"),
 			ObjectKeyForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "objectKeyForCrtOnlyServer"),

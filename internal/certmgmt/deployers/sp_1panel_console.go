@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	opconsole "github.com/certimate-go/certimate/pkg/core/deployer/providers/1panel-console"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/1panel-console"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := opconsole.NewDeployer(&opconsole.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ServerUrl:                credentials.ServerUrl,
 			ApiVersion:               credentials.ApiVersion,
 			ApiKey:                   credentials.ApiKey,

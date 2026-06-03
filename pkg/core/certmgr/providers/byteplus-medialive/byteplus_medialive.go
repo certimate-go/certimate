@@ -11,8 +11,14 @@ import (
 	bplive "github.com/byteplus-sdk/byteplus-sdk-golang/service/live/v20230101"
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+)
+
+type (
+	Provider      = core.Certmgr
+	UploadResult  = core.CertmgrUploadResult
+	ReplaceResult = core.CertmgrReplaceResult
 )
 
 type CertmgrConfig struct {
@@ -30,7 +36,7 @@ type Certmgr struct {
 	sdkClient *bplive.Live
 }
 
-var _ certmgr.Provider = (*Certmgr)(nil)
+var _ Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
@@ -56,7 +62,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
+func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 查询证书列表，避免重复上传
 	// REF: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-listcertv2
 	listCertPageNum := 1
@@ -94,7 +100,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			oldCertPEM := strings.Join(describeCertDetailSecretResp.Result.SSL.Chain, "\n\n")
 			if xcert.EqualCertificatesFromPEM(certPEM, oldCertPEM) {
 				c.logger.Info("ssl certificate already exists")
-				return &certmgr.UploadResult{
+				return &UploadResult{
 					CertId:   certItem.ChainID,
 					CertName: certItem.CertName,
 				}, nil
@@ -128,13 +134,13 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		return nil, fmt.Errorf("failed to execute sdk request 'medialive.CreateCert': %w", err)
 	}
 
-	return &certmgr.UploadResult{
+	return &UploadResult{
 		CertId:   *createCertResp.Result.ChainID,
 		CertName: certName,
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
 	// 更新证书
 	// REF: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-createcert-2023
 	createCertReq := &bplive.CreateCertBody{
@@ -152,5 +158,5 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'medialive.CreateCert': %w", err)
 	}
 
-	return &certmgr.ReplaceResult{}, nil
+	return &ReplaceResult{}, nil
 }

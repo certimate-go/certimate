@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	qiniupili "github.com/certimate-go/certimate/pkg/core/deployer/providers/qiniu-pili"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/qiniu-pili"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := qiniupili.NewDeployer(&qiniupili.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKey:          credentials.AccessKey,
 			SecretKey:          credentials.SecretKey,
 			Hub:                xmaps.GetString(options.ProviderExtendedConfig, "hub"),

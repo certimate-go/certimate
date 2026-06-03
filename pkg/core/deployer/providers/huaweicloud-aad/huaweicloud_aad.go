@@ -13,10 +13,16 @@ import (
 	hwaadmodelv2 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2/model"
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer"
 	hwaadv1 "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
 	hwaadv2 "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2"
+
+	"github.com/certimate-go/certimate/pkg/core"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -41,7 +47,7 @@ type Deployer struct {
 	sdkClients *wSDKClients
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 type wSDKClients struct {
 	AADv1 *hwaadv1.AadClient
@@ -73,7 +79,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	if d.config.InstanceId == "" {
 		return nil, fmt.Errorf("config `instanceId` is required")
 	}
@@ -172,7 +178,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		}
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func (d *Deployer) getAllDomainsByInstanceId(ctx context.Context, cloudInstanceId string) ([]*hwaadmodelv2.InstanceDomainItem, error) {

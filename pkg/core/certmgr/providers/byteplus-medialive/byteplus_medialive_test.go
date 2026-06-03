@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
-	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-live"
+	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-medialive"
 )
 
 var (

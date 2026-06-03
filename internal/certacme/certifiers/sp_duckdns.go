@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/duckdns"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/duckdns"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := duckdns.NewChallenger(&duckdns.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			Token:                 credentials.Token,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,
 		})

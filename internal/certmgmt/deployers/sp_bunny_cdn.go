@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	bunnycdn "github.com/certimate-go/certimate/pkg/core/deployer/providers/bunny-cdn"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/bunny-cdn"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := bunnycdn.NewDeployer(&bunnycdn.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ApiKey:     credentials.ApiKey,
 			PullZoneId: xmaps.GetString(options.ProviderExtendedConfig, "pullZoneId"),
 			Hostname:   xmaps.GetString(options.ProviderExtendedConfig, "hostname"),

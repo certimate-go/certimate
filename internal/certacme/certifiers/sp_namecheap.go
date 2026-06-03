@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	namecheap "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/namecheap"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/namecheap"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := namecheap.NewChallenger(&namecheap.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			Username:              credentials.Username,
 			ApiKey:                credentials.ApiKey,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

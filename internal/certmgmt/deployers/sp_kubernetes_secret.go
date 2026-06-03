@@ -6,7 +6,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	k8ssecret "github.com/certimate-go/certimate/pkg/core/deployer/providers/k8s-secret"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/k8s-secret"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -61,7 +61,7 @@ func init() {
 			secretLabels = temp
 		}
 
-		provider, err := k8ssecret.NewDeployer(&k8ssecret.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			KubeConfig:                        credentials.KubeConfig,
 			Namespace:                         xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "namespace", "default"),
 			SecretName:                        xmaps.GetString(options.ProviderExtendedConfig, "secretName"),

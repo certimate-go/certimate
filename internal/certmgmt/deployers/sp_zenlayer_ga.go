@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	zenlayerga "github.com/certimate-go/certimate/pkg/core/deployer/providers/zenlayer-ga"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/zenlayer-ga"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := zenlayerga.NewDeployer(&zenlayerga.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:       credentials.AccessKeyId,
 			AccessKeyPassword: credentials.AccessKeyPassword,
 			ResourceGroupId:   credentials.ResourceGroupId,

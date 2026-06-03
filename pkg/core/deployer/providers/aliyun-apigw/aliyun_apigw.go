@@ -13,12 +13,17 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
-	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
-	"github.com/certimate-go/certimate/pkg/core/deployer"
 	aliapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/apig-20240327/v6/client"
 	alicloudapi "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/cloudapi-20160714/v5/client"
+
+	"github.com/certimate-go/certimate/pkg/core"
+	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -49,7 +54,7 @@ type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
 	sdkClients *wSDKClients
-	sdkCertmgr certmgr.Provider
+	sdkCertmgr core.Certmgr
 }
 
 type wSDKClients struct {
@@ -57,7 +62,7 @@ type wSDKClients struct {
 	TraditionalAPIGateway *alicloudapi.Client
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
@@ -69,7 +74,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
-	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
+	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
@@ -97,7 +102,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	switch d.config.ServiceType {
 	case SERVICE_TYPE_TRADITIONAL:
 		if err := d.deployToTraditional(ctx, certPEM, privkeyPEM); err != nil {
@@ -113,7 +118,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, fmt.Errorf("unsupported service type '%s'", string(d.config.ServiceType))
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func (d *Deployer) deployToTraditional(ctx context.Context, certPEM, privkeyPEM string) error {

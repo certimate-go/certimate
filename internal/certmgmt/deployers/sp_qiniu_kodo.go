@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	qiniukodo "github.com/certimate-go/certimate/pkg/core/deployer/providers/qiniu-kodo"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/qiniu-kodo"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := qiniukodo.NewDeployer(&qiniukodo.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKey: credentials.AccessKey,
 			SecretKey: credentials.SecretKey,
 			Bucket:    xmaps.GetString(options.ProviderExtendedConfig, "bucket"),

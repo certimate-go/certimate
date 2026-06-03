@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	teo "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/tencentcloud-eo"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/tencentcloud-eo"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := teo.NewChallenger(&teo.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			SecretId:              credentials.SecretId,
 			SecretKey:             credentials.SecretKey,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/ctcccloud"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/ctcccloud"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := ctcccloud.NewChallenger(&ctcccloud.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			AccessKeyId:           credentials.AccessKeyId,
 			SecretAccessKey:       credentials.SecretAccessKey,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

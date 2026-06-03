@@ -1,14 +1,10 @@
 package ftp
 
 import (
-	"context"
 	"fmt"
-	"path/filepath"
 
-	"github.com/go-acme/lego/v5/challenge/http01"
-
-	"github.com/certimate-go/certimate/internal/tools/ftp"
-	"github.com/certimate-go/certimate/pkg/core/certifier"
+	"github.com/certimate-go/certimate/pkg/core"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/http01/ftp/internal"
 )
 
 type ChallengerConfig struct {
@@ -25,75 +21,22 @@ type ChallengerConfig struct {
 	WebRootPath string `json:"webRootPath"`
 }
 
-func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
+func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
-	provider := &provider{config: config}
-	return provider, nil
-}
+	providerConfig := internal.NewDefaultConfig()
+	providerConfig.Host = config.FtpHost
+	providerConfig.Port = int(config.FtpPort)
+	providerConfig.Username = config.FtpUsername
+	providerConfig.Password = config.FtpPassword
+	providerConfig.WebRootPath = config.WebRootPath
 
-type provider struct {
-	config *ChallengerConfig
-}
-
-func (p *provider) Present(ctx context.Context, domain, token, keyAuth string) error {
-	client, err := createFtpClient(*p.config)
-	if err != nil {
-		return fmt.Errorf("ftp: failed to create FTP client: %w", err)
-	}
-
-	defer client.Quit()
-
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	challengeDir := filepath.Dir(challengePath)
-	challengeFile := filepath.Base(challengePath)
-	if err := client.MkdirAll(ctx, challengeDir); err != nil {
-		return fmt.Errorf("ftp: failed to create the \".well-known\" directory: %w", err)
-	}
-	if err := client.ChangeDir(ctx, challengeDir); err != nil {
-		return fmt.Errorf("ftp: failed to change to the \".well-known\" directory: %w", err)
-	}
-	if err := client.StoreString(ctx, challengeFile, keyAuth); err != nil {
-		return fmt.Errorf("ftp: failed to write file for HTTP challenge: %w", err)
-	}
-
-	return nil
-}
-
-func (p *provider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
-	client, err := createFtpClient(*p.config)
-	if err != nil {
-		return fmt.Errorf("ftp: failed to create FTP client: %w", err)
-	}
-
-	defer client.Quit()
-
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	challengeDir := filepath.Dir(challengePath)
-	challengeFile := filepath.Base(challengePath)
-	if err := client.ChangeDir(ctx, challengeDir); err != nil {
-		return fmt.Errorf("ftp: failed to change to the \".well-known\" directory: %w", err)
-	}
-	if err := client.Delete(ctx, challengeFile); err != nil {
-		return fmt.Errorf("ftp: failed to remove file after HTTP challenge: %w", err)
-	}
-
-	return nil
-}
-
-func createFtpClient(config ChallengerConfig) (*ftp.Client, error) {
-	clientCfg := ftp.NewDefaultConfig()
-	clientCfg.Host = config.FtpHost
-	clientCfg.Port = int(config.FtpPort)
-	clientCfg.Username = config.FtpUsername
-	clientCfg.Password = config.FtpPassword
-
-	client, err := ftp.NewClient(clientCfg)
+	provider, err := internal.NewHTTPProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	return client, nil
+	return provider, nil
 }

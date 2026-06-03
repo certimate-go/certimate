@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/notifier/providers/telegrambot"
+	ntfyimpl "github.com/certimate-go/certimate/pkg/core/notifier/providers/telegrambot"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := telegrambot.NewNotifier(&telegrambot.NotifierConfig{
+		provider, err := ntfyimpl.NewNotifier(&ntfyimpl.NotifierConfig{
 			BotToken: credentials.BotToken,
 			ChatId:   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "chatId", credentials.ChatId),
 		})

@@ -8,7 +8,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	wangsucdn "github.com/certimate-go/certimate/pkg/core/deployer/providers/wangsu-cdn"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/wangsu-cdn"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -19,7 +19,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := wangsucdn.NewDeployer(&wangsucdn.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:        credentials.AccessKeyId,
 			AccessKeySecret:    credentials.AccessKeySecret,
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

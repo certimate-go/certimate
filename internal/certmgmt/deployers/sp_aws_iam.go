@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	awsiam "github.com/certimate-go/certimate/pkg/core/deployer/providers/aws-iam"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/aws-iam"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := awsiam.NewDeployer(&awsiam.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
 			SecretAccessKey: credentials.SecretAccessKey,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),

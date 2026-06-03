@@ -10,8 +10,14 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	"github.com/certimate-go/certimate/pkg/core"
 	baishansdk "github.com/certimate-go/certimate/pkg/sdk3rd/baishan"
+)
+
+type (
+	Provider      = core.Certmgr
+	UploadResult  = core.CertmgrUploadResult
+	ReplaceResult = core.CertmgrReplaceResult
 )
 
 type CertmgrConfig struct {
@@ -25,7 +31,7 @@ type Certmgr struct {
 	sdkClient *baishansdk.Client
 }
 
-var _ certmgr.Provider = (*Certmgr)(nil)
+var _ Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
@@ -52,7 +58,7 @@ func (d *Certmgr) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
+func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 生成新证书名（需符合白山云命名规则）
 	certName := fmt.Sprintf("certimate_%d", time.Now().UnixMilli())
 
@@ -82,13 +88,13 @@ func (d *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		certId = uploadDomainCertificateResp.Data.CertId.String()
 	}
 
-	return &certmgr.UploadResult{
+	return &UploadResult{
 		CertId:   certId,
 		CertName: certName,
 	}, nil
 }
 
-func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
+func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
 	// 替换证书
 	// REF: https://portal.baishancloud.com/track/document/downloadPdf/1441
 	uploadDomainCertificateReq := &baishansdk.UploadDomainCertificateRequest{
@@ -103,7 +109,7 @@ func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		return nil, fmt.Errorf("failed to execute sdk request 'cdn.UploadDomainCertificate': %w", err)
 	}
 
-	return &certmgr.ReplaceResult{}, nil
+	return &ReplaceResult{}, nil
 }
 
 func createSDKClient(apiToken string) (*baishansdk.Client, error) {

@@ -1,14 +1,10 @@
 package s3
 
 import (
-	"context"
 	"fmt"
-	"strings"
 
-	"github.com/go-acme/lego/v5/challenge/http01"
-
-	"github.com/certimate-go/certimate/internal/tools/s3"
-	"github.com/certimate-go/certimate/pkg/core/certifier"
+	"github.com/certimate-go/certimate/pkg/core"
+	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/http01/s3/internal"
 )
 
 type ChallengerConfig struct {
@@ -32,57 +28,24 @@ type ChallengerConfig struct {
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
 }
 
-func NewChallenger(config *ChallengerConfig) (certifier.ACMEChallenger, error) {
+func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
-	client, err := createS3Client(*config)
-	if err != nil {
-		return nil, fmt.Errorf("s3: failed to create S3 client: %w", err)
-	}
+	providerConfig := internal.NewDefaultConfig()
+	providerConfig.Endpoint = config.Endpoint
+	providerConfig.AccessKey = config.AccessKey
+	providerConfig.SecretKey = config.SecretKey
+	providerConfig.SignatureVersion = config.SignatureVersion
+	providerConfig.UsePathStyle = config.UsePathStyle
+	providerConfig.Region = config.Region
+	providerConfig.SkipTlsVerify = config.AllowInsecureConnections
 
-	provider := &provider{client: client, bucket: config.Bucket}
-	return provider, nil
-}
-
-type provider struct {
-	client *s3.Client
-	bucket string
-}
-
-func (p *provider) Present(ctx context.Context, domain, token, keyAuth string) error {
-	objectKey := strings.Trim(http01.ChallengePath(token), "/")
-	if err := p.client.PutObjectString(ctx, p.bucket, objectKey, keyAuth); err != nil {
-		return fmt.Errorf("s3: failed to upload file for HTTP challenge: %w", err)
-	}
-
-	return nil
-}
-
-func (p *provider) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
-	objectKey := strings.Trim(http01.ChallengePath(token), "/")
-	if err := p.client.RemoveObject(ctx, p.bucket, objectKey); err != nil {
-		return fmt.Errorf("s3: failed to remove file after HTTP challenge: %w", err)
-	}
-
-	return nil
-}
-
-func createS3Client(config ChallengerConfig) (*s3.Client, error) {
-	clientCfg := s3.NewDefaultConfig()
-	clientCfg.Endpoint = config.Endpoint
-	clientCfg.AccessKey = config.AccessKey
-	clientCfg.SecretKey = config.SecretKey
-	clientCfg.SignatureVersion = config.SignatureVersion
-	clientCfg.UsePathStyle = config.UsePathStyle
-	clientCfg.Region = config.Region
-	clientCfg.SkipTlsVerify = config.AllowInsecureConnections
-
-	client, err := s3.NewClient(clientCfg)
+	provider, err := internal.NewHTTPProviderConfig(providerConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	return client, nil
+	return provider, nil
 }

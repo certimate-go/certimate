@@ -13,7 +13,12 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/certimate-go/certimate/pkg/core/notifier"
+	"github.com/certimate-go/certimate/pkg/core"
+)
+
+type (
+	Provider     = core.Notifier
+	NotifyResult = core.NotifierNotifyResult
 )
 
 type NotifierConfig struct {
@@ -39,7 +44,7 @@ type Notifier struct {
 	httpClient *resty.Client
 }
 
-var _ notifier.Provider = (*Notifier)(nil)
+var _ Provider = (*Notifier)(nil)
 
 func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	if config == nil {
@@ -72,7 +77,7 @@ func (n *Notifier) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (n *Notifier) Notify(ctx context.Context, subject string, message string) (*notifier.NotifyResult, error) {
+func (n *Notifier) Notify(ctx context.Context, subject string, message string) (*NotifyResult, error) {
 	// 处理 Webhook URL
 	webhookUrl, err := url.Parse(n.config.WebhookUrl)
 	if err != nil {
@@ -175,7 +180,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 
 	n.logger.Debug("webhook responded", slog.String("response", resp.String()))
 
-	return &notifier.NotifyResult{}, nil
+	return &NotifyResult{}, nil
 }
 
 func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {

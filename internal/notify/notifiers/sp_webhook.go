@@ -6,7 +6,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/notifier/providers/webhook"
+	ntfyimpl "github.com/certimate-go/certimate/pkg/core/notifier/providers/webhook"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
@@ -38,7 +38,7 @@ func init() {
 			}
 		}
 
-		provider, err := webhook.NewNotifier(&webhook.NotifierConfig{
+		provider, err := ntfyimpl.NewNotifier(&ntfyimpl.NotifierConfig{
 			WebhookUrl:               credentials.Url,
 			WebhookData:              xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "webhookData", credentials.DataString),
 			Method:                   credentials.Method,

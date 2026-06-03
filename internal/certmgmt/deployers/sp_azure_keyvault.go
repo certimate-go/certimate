@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	azurekeyvault "github.com/certimate-go/certimate/pkg/core/deployer/providers/azure-keyvault"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/azure-keyvault"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := azurekeyvault.NewDeployer(&azurekeyvault.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			TenantId:        credentials.TenantId,
 			ClientId:        credentials.ClientId,
 			ClientSecret:    credentials.ClientSecret,

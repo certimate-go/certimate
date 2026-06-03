@@ -9,8 +9,14 @@ import (
 
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	"github.com/certimate-go/certimate/pkg/core"
 	dokploysdk "github.com/certimate-go/certimate/pkg/sdk3rd/dokploy"
+)
+
+type (
+	Provider      = core.Certmgr
+	UploadResult  = core.CertmgrUploadResult
+	ReplaceResult = core.CertmgrReplaceResult
 )
 
 type CertmgrConfig struct {
@@ -28,7 +34,7 @@ type Certmgr struct {
 	sdkClient *dokploysdk.Client
 }
 
-var _ certmgr.Provider = (*Certmgr)(nil)
+var _ Provider = (*Certmgr)(nil)
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	if config == nil {
@@ -55,7 +61,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
+func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 查询证书列表，避免重复上传
 	// REF: https://docs.dokploy.com/docs/api/certificates#certificates-all
 	certificatesAllReq := &dokploysdk.CertificatesAllRequest{}
@@ -68,7 +74,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 			if certItem.CertificateData == certPEM && certItem.PrivateKey == privkeyPEM {
 				// 如果已存在相同证书，直接返回
 				c.logger.Info("ssl certificate already exists")
-				return &certmgr.UploadResult{
+				return &UploadResult{
 					CertId:   certItem.CertificateId,
 					CertName: certItem.Name,
 				}, nil
@@ -99,14 +105,14 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		return nil, fmt.Errorf("failed to execute sdk request 'certificates.create': %w", err)
 	}
 
-	return &certmgr.UploadResult{
+	return &UploadResult{
 		CertId:   certificatesCreateResp.CertificateId,
 		CertName: certificatesCreateResp.Name,
 	}, nil
 }
 
-func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
-	return nil, certmgr.ErrUnsupported
+func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
+	return nil, core.ErrUnsupported
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*dokploysdk.Client, error) {

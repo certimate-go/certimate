@@ -5,8 +5,8 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	conohavpsv2 "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/conohavpsv2"
-	conohavpsv3 "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/conohavpsv3"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/conohavpsv2"
+	chlgimplv3 "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/conohavpsv3"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -19,7 +19,7 @@ func init() {
 
 		switch credentials.ApiVersion {
 		case "2", "2.0", "v2", "v2.0":
-			return conohavpsv2.NewChallenger(&conohavpsv2.ChallengerConfig{
+			return chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 				ApiUserName:           credentials.ApiUserName,
 				ApiPassword:           credentials.ApiPassword,
 				TenantId:              credentials.TenantId,
@@ -27,7 +27,7 @@ func init() {
 				DnsTTL:                options.DnsTTL,
 			})
 		case "3", "3.0", "v3", "v3.0":
-			return conohavpsv3.NewChallenger(&conohavpsv3.ChallengerConfig{
+			return chlgimplv3.NewChallenger(&chlgimplv3.ChallengerConfig{
 				ApiUserId:             credentials.ApiUserId,
 				ApiUserName:           credentials.ApiUserName,
 				ApiPassword:           credentials.ApiPassword,

@@ -8,7 +8,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	baotapanel "github.com/certimate-go/certimate/pkg/core/deployer/providers/baotapanel"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/baotapanel"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -19,7 +19,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := baotapanel.NewDeployer(&baotapanel.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ServerUrl:                credentials.ServerUrl,
 			ApiKey:                   credentials.ApiKey,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,

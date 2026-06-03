@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/spaceship"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/spaceship"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := spaceship.NewChallenger(&spaceship.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			ApiKey:                credentials.ApiKey,
 			ApiSecret:             credentials.ApiSecret,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

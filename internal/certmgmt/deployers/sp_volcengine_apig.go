@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	volcengineapig "github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-apig"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-apig"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := volcengineapig.NewDeployer(&volcengineapig.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:        credentials.AccessKeyId,
 			SecretAccessKey:    credentials.SecretAccessKey,
 			ProjectName:        credentials.ProjectName,

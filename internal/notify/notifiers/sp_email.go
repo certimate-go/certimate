@@ -6,6 +6,7 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/core/notifier/providers/email"
+	ntfyimpl "github.com/certimate-go/certimate/pkg/core/notifier/providers/email"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +17,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := email.NewNotifier(&email.NotifierConfig{
+		provider, err := ntfyimpl.NewNotifier(&ntfyimpl.NotifierConfig{
 			SmtpHost:                 credentials.SmtpHost,
 			SmtpPort:                 credentials.SmtpPort,
 			SmtpTls:                  credentials.SmtpTls,

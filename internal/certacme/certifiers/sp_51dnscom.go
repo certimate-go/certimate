@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	dnscom "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/51dnscom"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/51dnscom"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := dnscom.NewChallenger(&dnscom.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			ApiKey:                credentials.ApiKey,
 			ApiSecret:             credentials.ApiSecret,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,

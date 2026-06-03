@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	netlify "github.com/certimate-go/certimate/pkg/core/deployer/providers/netlify"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/netlify"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := netlify.NewDeployer(&netlify.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ApiToken:     credentials.ApiToken,
 			DeployTarget: xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			SiteId:       xmaps.GetString(options.ProviderExtendedConfig, "siteId"),

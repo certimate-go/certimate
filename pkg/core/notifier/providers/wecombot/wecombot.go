@@ -11,7 +11,12 @@ import (
 	"github.com/go-resty/resty/v2"
 
 	"github.com/certimate-go/certimate/internal/app"
-	"github.com/certimate-go/certimate/pkg/core/notifier"
+	"github.com/certimate-go/certimate/pkg/core"
+)
+
+type (
+	Provider     = core.Notifier
+	NotifyResult = core.NotifierNotifyResult
 )
 
 type NotifierConfig struct {
@@ -28,7 +33,7 @@ type Notifier struct {
 	httpClient *resty.Client
 }
 
-var _ notifier.Provider = (*Notifier)(nil)
+var _ Provider = (*Notifier)(nil)
 
 func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	if config == nil {
@@ -54,7 +59,7 @@ func (n *Notifier) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (n *Notifier) Notify(ctx context.Context, subject string, message string) (*notifier.NotifyResult, error) {
+func (n *Notifier) Notify(ctx context.Context, subject string, message string) (*NotifyResult, error) {
 	webhookUrl, err := url.Parse(n.config.WebhookUrl)
 	if err != nil {
 		return nil, fmt.Errorf("dingtalk api error: invalid webhook url: %w", err)
@@ -76,7 +81,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	} else {
 		err = json.Unmarshal([]byte(n.config.CustomPayload), &webhookData)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal webhook data: %w", err)
+			return nil, fmt.Errorf("failed to unmarshal custom payload: %w", err)
 		}
 
 		replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
@@ -105,7 +110,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 		return nil, fmt.Errorf("wecom api error: errcode='%d', errmsg='%s'", result.ErrorCode, result.ErrorMessage)
 	}
 
-	return &notifier.NotifyResult{}, nil
+	return &NotifyResult{}, nil
 }
 
 func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {

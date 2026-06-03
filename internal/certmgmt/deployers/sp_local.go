@@ -3,17 +3,17 @@ package deployers
 import (
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	"github.com/certimate-go/certimate/pkg/core/deployer/providers/local"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/local"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
 	Registries.MustRegister(domain.DeploymentProviderTypeLocal, func(options *ProviderFactoryOptions) (core.Deployer, error) {
-		provider, err := local.NewDeployer(&local.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ShellEnv:                     xmaps.GetString(options.ProviderExtendedConfig, "shellEnv"),
 			PreCommand:                   xmaps.GetString(options.ProviderExtendedConfig, "preCommand"),
 			PostCommand:                  xmaps.GetString(options.ProviderExtendedConfig, "postCommand"),
-			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", local.FILE_FORMAT_PEM),
+			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", dplyimpl.FILE_FORMAT_PEM),
 			FilePathForKey:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForKey"),
 			FilePathForCrt:               xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrt"),
 			FilePathForCrtOnlyServer:     xmaps.GetString(options.ProviderExtendedConfig, "filePathForCrtOnlyServer"),

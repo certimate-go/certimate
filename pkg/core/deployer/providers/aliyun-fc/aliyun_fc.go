@@ -13,10 +13,16 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer"
 	alifc "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/fc-20230330/v4/client"
 	alifcopen "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/fc-open-20210406/v2/client"
+
+	"github.com/certimate-go/certimate/pkg/core"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+)
+
+type (
+	Provider     = core.Deployer
+	DeployResult = core.DeployerDeployResult
 )
 
 type DeployerConfig struct {
@@ -44,7 +50,7 @@ type Deployer struct {
 	sdkClients *wSDKClients
 }
 
-var _ deployer.Provider = (*Deployer)(nil)
+var _ Provider = (*Deployer)(nil)
 
 type wSDKClients struct {
 	FC2 *alifcopen.Client
@@ -76,7 +82,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	}
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	switch d.config.ServiceVersion {
 	case "2", "2.0":
 		if err := d.deployToFC2(ctx, certPEM, privkeyPEM); err != nil {
@@ -92,7 +98,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*dep
 		return nil, fmt.Errorf("unsupported service version '%s'", d.config.ServiceVersion)
 	}
 
-	return &deployer.DeployResult{}, nil
+	return &DeployResult{}, nil
 }
 
 func (d *Deployer) deployToFC3(ctx context.Context, certPEM, privkeyPEM string) error {

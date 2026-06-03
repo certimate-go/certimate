@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	mohuamvh "github.com/certimate-go/certimate/pkg/core/deployer/providers/mohua-mvh"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/mohua-mvh"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := mohuamvh.NewDeployer(&mohuamvh.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			Username:    credentials.Username,
 			ApiPassword: credentials.ApiPassword,
 			HostId:      xmaps.GetString(options.ProviderExtendedConfig, "hostId"),

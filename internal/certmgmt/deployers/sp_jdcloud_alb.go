@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	jdcloudalb "github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-alb"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/jdcloud-alb"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := jdcloudalb.NewDeployer(&jdcloudalb.DeployerConfig{
+		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
 			AccessKeySecret: credentials.AccessKeySecret,
 			RegionId:        xmaps.GetString(options.ProviderExtendedConfig, "regionId"),

@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	awsroute53 "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/aws-route53"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/aws-route53"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -16,7 +16,7 @@ func init() {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
 
-		provider, err := awsroute53.NewChallenger(&awsroute53.ChallengerConfig{
+		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			AccessKeyId:           credentials.AccessKeyId,
 			SecretAccessKey:       credentials.SecretAccessKey,
 			Region:                xmaps.GetString(options.ProviderExtendedConfig, "region"),
