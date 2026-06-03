@@ -1,13 +1,13 @@
 package client
 
 import (
-	alilive "github.com/alibabacloud-go/live-20161101/v2/client"
+	"github.com/alibabacloud-go/live-20161101/v2/client"
 )
 
-type DescribeLiveUserDomainsRequest = alilive.DescribeLiveUserDomainsRequest
+type DescribeLiveUserDomainsRequest = client.DescribeLiveUserDomainsRequest
 
-type DescribeLiveUserDomainsResponse = alilive.DescribeLiveUserDomainsResponse
+type DescribeLiveUserDomainsResponse = client.DescribeLiveUserDomainsResponse
 
-type SetLiveDomainCertificateRequest = alilive.SetLiveDomainCertificateRequest
+type SetLiveDomainCertificateRequest = client.SetLiveDomainCertificateRequest
 
-type SetLiveDomainCertificateResponse = alilive.SetLiveDomainCertificateResponse
+type SetLiveDomainCertificateResponse = client.SetLiveDomainCertificateResponse

@@ -2,7 +2,7 @@
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwaad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2"
+	aad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2/model"
 )
 
@@ -15,7 +15,7 @@ func NewAadClient(hcClient *httpclient.HcHttpClient) *AadClient {
 }
 
 func AadClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwaad.AadClientBuilder()
+	return aad.AadClientBuilder()
 }
 
 func (c *AadClient) ListInstanceDomains(request *model.ListInstanceDomainsRequest) (*model.ListInstanceDomainsResponse, error) {

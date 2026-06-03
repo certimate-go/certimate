@@ -1,17 +1,17 @@
 ﻿package client
 
 import (
-	aliapig "github.com/alibabacloud-go/apig-20240327/v6/client"
+	"github.com/alibabacloud-go/apig-20240327/v6/client"
 )
 
-type GetDomainRequest = aliapig.GetDomainRequest
+type GetDomainRequest = client.GetDomainRequest
 
-type GetDomainResponse = aliapig.GetDomainResponse
+type GetDomainResponse = client.GetDomainResponse
 
-type ListDomainsRequest = aliapig.ListDomainsRequest
+type ListDomainsRequest = client.ListDomainsRequest
 
-type ListDomainsResponse = aliapig.ListDomainsResponse
+type ListDomainsResponse = client.ListDomainsResponse
 
-type UpdateDomainRequest = aliapig.UpdateDomainRequest
+type UpdateDomainRequest = client.UpdateDomainRequest
 
-type UpdateDomainResponse = aliapig.UpdateDomainResponse
+type UpdateDomainResponse = client.UpdateDomainResponse

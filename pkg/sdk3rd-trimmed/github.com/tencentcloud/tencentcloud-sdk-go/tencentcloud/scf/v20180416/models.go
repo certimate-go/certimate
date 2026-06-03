@@ -1,21 +1,21 @@
 package v20180416
 
 import (
-	tcscf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf/v20180416"
+	scf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf/v20180416"
 )
 
 type (
-	CertConf = tcscf.CertConf
+	CertConf = scf.CertConf
 )
 
-type GetCustomDomainRequest = tcscf.GetCustomDomainRequest
+type GetCustomDomainRequest = scf.GetCustomDomainRequest
 
-type GetCustomDomainResponse = tcscf.GetCustomDomainResponse
+type GetCustomDomainResponse = scf.GetCustomDomainResponse
 
-type ListCustomDomainsRequest = tcscf.ListCustomDomainsRequest
+type ListCustomDomainsRequest = scf.ListCustomDomainsRequest
 
-type ListCustomDomainsResponse = tcscf.ListCustomDomainsResponse
+type ListCustomDomainsResponse = scf.ListCustomDomainsResponse
 
-type UpdateCustomDomainRequest = tcscf.UpdateCustomDomainRequest
+type UpdateCustomDomainRequest = scf.UpdateCustomDomainRequest
 
-type UpdateCustomDomainResponse = tcscf.UpdateCustomDomainResponse
+type UpdateCustomDomainResponse = scf.UpdateCustomDomainResponse

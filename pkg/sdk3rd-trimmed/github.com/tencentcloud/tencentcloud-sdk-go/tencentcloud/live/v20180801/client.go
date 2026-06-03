@@ -6,10 +6,10 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tclive "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live/v20180801"
+	live "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live/v20180801"
 )
 
-const APIVersion = tclive.APIVersion
+const APIVersion = live.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeLiveDomainsRequest() (request *DescribeLiveDomainsRequest) {
-	return tclive.NewDescribeLiveDomainsRequest()
+	return live.NewDescribeLiveDomainsRequest()
 }
 
 func NewDescribeLiveDomainsResponse() (response *DescribeLiveDomainsResponse) {
-	return tclive.NewDescribeLiveDomainsResponse()
+	return live.NewDescribeLiveDomainsResponse()
 }
 
 func (c *Client) DescribeLiveDomainsWithContext(ctx context.Context, request *DescribeLiveDomainsRequest) (response *DescribeLiveDomainsResponse, err error) {
@@ -49,11 +49,11 @@ func (c *Client) DescribeLiveDomainsWithContext(ctx context.Context, request *De
 }
 
 func NewModifyLiveDomainCertBindingsRequest() (request *ModifyLiveDomainCertBindingsRequest) {
-	return tclive.NewModifyLiveDomainCertBindingsRequest()
+	return live.NewModifyLiveDomainCertBindingsRequest()
 }
 
 func NewModifyLiveDomainCertBindingsResponse() (response *ModifyLiveDomainCertBindingsResponse) {
-	return tclive.NewModifyLiveDomainCertBindingsResponse()
+	return live.NewModifyLiveDomainCertBindingsResponse()
 }
 
 func (c *Client) ModifyLiveDomainCertBindingsWithContext(ctx context.Context, request *ModifyLiveDomainCertBindingsRequest) (response *ModifyLiveDomainCertBindingsResponse, err error) {

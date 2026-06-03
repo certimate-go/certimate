@@ -1,13 +1,13 @@
 package client
 
 import (
-	alivod "github.com/alibabacloud-go/vod-20170321/v4/client"
+	"github.com/alibabacloud-go/vod-20170321/v4/client"
 )
 
-type DescribeVodUserDomainsRequest = alivod.DescribeVodUserDomainsRequest
+type DescribeVodUserDomainsRequest = client.DescribeVodUserDomainsRequest
 
-type DescribeVodUserDomainsResponse = alivod.DescribeVodUserDomainsResponse
+type DescribeVodUserDomainsResponse = client.DescribeVodUserDomainsResponse
 
-type SetVodDomainSSLCertificateRequest = alivod.SetVodDomainSSLCertificateRequest
+type SetVodDomainSSLCertificateRequest = client.SetVodDomainSSLCertificateRequest
 
-type SetVodDomainSSLCertificateResponse = alivod.SetVodDomainSSLCertificateResponse
+type SetVodDomainSSLCertificateResponse = client.SetVodDomainSSLCertificateResponse

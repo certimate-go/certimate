@@ -1,13 +1,13 @@
 package client
 
 import (
-	aliddoscoo "github.com/alibabacloud-go/ddoscoo-20200101/v5/client"
+	"github.com/alibabacloud-go/ddoscoo-20200101/v5/client"
 )
 
-type AssociateWebCertRequest = aliddoscoo.AssociateWebCertRequest
+type AssociateWebCertRequest = client.AssociateWebCertRequest
 
-type AssociateWebCertResponse = aliddoscoo.AssociateWebCertResponse
+type AssociateWebCertResponse = client.AssociateWebCertResponse
 
-type DescribeDomainsRequest = aliddoscoo.DescribeDomainsRequest
+type DescribeDomainsRequest = client.DescribeDomainsRequest
 
-type DescribeDomainsResponse = aliddoscoo.DescribeDomainsResponse
+type DescribeDomainsResponse = client.DescribeDomainsResponse

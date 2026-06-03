@@ -1,33 +1,33 @@
 ﻿package client
 
 import (
-	alicas "github.com/alibabacloud-go/cas-20200407/v4/client"
+	"github.com/alibabacloud-go/cas-20200407/v4/client"
 )
 
-type CreateDeploymentJobRequest = alicas.CreateDeploymentJobRequest
+type CreateDeploymentJobRequest = client.CreateDeploymentJobRequest
 
-type CreateDeploymentJobResponse = alicas.CreateDeploymentJobResponse
+type CreateDeploymentJobResponse = client.CreateDeploymentJobResponse
 
-type DescribeDeploymentJobRequest = alicas.DescribeDeploymentJobRequest
+type DescribeDeploymentJobRequest = client.DescribeDeploymentJobRequest
 
-type DescribeDeploymentJobResponse = alicas.DescribeDeploymentJobResponse
+type DescribeDeploymentJobResponse = client.DescribeDeploymentJobResponse
 
-type GetCertificateDetailRequest = alicas.GetCertificateDetailRequest
+type GetCertificateDetailRequest = client.GetCertificateDetailRequest
 
-type GetCertificateDetailResponse = alicas.GetCertificateDetailResponse
+type GetCertificateDetailResponse = client.GetCertificateDetailResponse
 
-type GetUserCertificateDetailRequest = alicas.GetUserCertificateDetailRequest
+type GetUserCertificateDetailRequest = client.GetUserCertificateDetailRequest
 
-type GetUserCertificateDetailResponse = alicas.GetUserCertificateDetailResponse
+type GetUserCertificateDetailResponse = client.GetUserCertificateDetailResponse
 
-type ListContactRequest = alicas.ListContactRequest
+type ListContactRequest = client.ListContactRequest
 
-type ListContactResponse = alicas.ListContactResponse
+type ListContactResponse = client.ListContactResponse
 
-type ListUserCertificateOrderRequest = alicas.ListUserCertificateOrderRequest
+type ListUserCertificateOrderRequest = client.ListUserCertificateOrderRequest
 
-type ListUserCertificateOrderResponse = alicas.ListUserCertificateOrderResponse
+type ListUserCertificateOrderResponse = client.ListUserCertificateOrderResponse
 
-type UploadUserCertificateRequest = alicas.UploadUserCertificateRequest
+type UploadUserCertificateRequest = client.UploadUserCertificateRequest
 
-type UploadUserCertificateResponse = alicas.UploadUserCertificateResponse
+type UploadUserCertificateResponse = client.UploadUserCertificateResponse

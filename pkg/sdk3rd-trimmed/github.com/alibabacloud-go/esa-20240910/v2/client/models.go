@@ -1,19 +1,19 @@
 package client
 
 import (
-	aliesa "github.com/alibabacloud-go/esa-20240910/v2/client"
+	"github.com/alibabacloud-go/esa-20240910/v2/client"
 )
 
-type ListCustomHostnamesRequest = aliesa.ListCustomHostnamesRequest
+type ListCustomHostnamesRequest = client.ListCustomHostnamesRequest
 
-type ListCustomHostnamesResponse = aliesa.ListCustomHostnamesResponse
+type ListCustomHostnamesResponse = client.ListCustomHostnamesResponse
 
-type ListCustomHostnamesResponseBodyHostnames = aliesa.ListCustomHostnamesResponseBodyHostnames
+type ListCustomHostnamesResponseBodyHostnames = client.ListCustomHostnamesResponseBodyHostnames
 
-type SetCertificateRequest = aliesa.SetCertificateRequest
+type SetCertificateRequest = client.SetCertificateRequest
 
-type SetCertificateResponse = aliesa.SetCertificateResponse
+type SetCertificateResponse = client.SetCertificateResponse
 
-type UpdateCustomHostnameRequest = aliesa.UpdateCustomHostnameRequest
+type UpdateCustomHostnameRequest = client.UpdateCustomHostnameRequest
 
-type UpdateCustomHostnameResponse = aliesa.UpdateCustomHostnameResponse
+type UpdateCustomHostnameResponse = client.UpdateCustomHostnameResponse

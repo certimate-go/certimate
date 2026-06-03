@@ -1,23 +1,23 @@
 package client
 
 import (
-	alinlb "github.com/alibabacloud-go/nlb-20220430/v4/client"
+	"github.com/alibabacloud-go/nlb-20220430/v4/client"
 )
 
-type GetListenerAttributeRequest = alinlb.GetListenerAttributeRequest
+type GetListenerAttributeRequest = client.GetListenerAttributeRequest
 
-type GetListenerAttributeResponse = alinlb.GetListenerAttributeResponse
+type GetListenerAttributeResponse = client.GetListenerAttributeResponse
 
-type GetLoadBalancerAttributeRequest = alinlb.GetLoadBalancerAttributeRequest
+type GetLoadBalancerAttributeRequest = client.GetLoadBalancerAttributeRequest
 
-type GetLoadBalancerAttributeResponse = alinlb.GetLoadBalancerAttributeResponse
+type GetLoadBalancerAttributeResponse = client.GetLoadBalancerAttributeResponse
 
-type ListListenersRequest = alinlb.ListListenersRequest
+type ListListenersRequest = client.ListListenersRequest
 
-type ListListenersResponse = alinlb.ListListenersResponse
+type ListListenersResponse = client.ListListenersResponse
 
-type UpdateListenerAttributeRequest = alinlb.UpdateListenerAttributeRequest
+type UpdateListenerAttributeRequest = client.UpdateListenerAttributeRequest
 
-type UpdateListenerAttributeResponse = alinlb.UpdateListenerAttributeResponse
+type UpdateListenerAttributeResponse = client.UpdateListenerAttributeResponse
 
-type UpdateListenerAttributeShrinkRequest = alinlb.UpdateListenerAttributeShrinkRequest
+type UpdateListenerAttributeShrinkRequest = client.UpdateListenerAttributeShrinkRequest

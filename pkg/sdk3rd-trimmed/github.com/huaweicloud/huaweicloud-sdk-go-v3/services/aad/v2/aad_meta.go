@@ -2,9 +2,9 @@
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"
-	hwaad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2"
+	aad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v2"
 )
 
 func GenReqDefForListInstanceDomains() *def.HttpRequestDef {
-	return hwaad.GenReqDefForListInstanceDomains()
+	return aad.GenReqDefForListInstanceDomains()
 }

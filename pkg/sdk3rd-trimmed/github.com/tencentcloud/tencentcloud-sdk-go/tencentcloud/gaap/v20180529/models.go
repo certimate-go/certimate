@@ -1,13 +1,13 @@
 package v20180529
 
 import (
-	tcgaap "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
+	gaap "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
 )
 
-type DescribeHTTPSListenersRequest = tcgaap.DescribeHTTPSListenersRequest
+type DescribeHTTPSListenersRequest = gaap.DescribeHTTPSListenersRequest
 
-type DescribeHTTPSListenersResponse = tcgaap.DescribeHTTPSListenersResponse
+type DescribeHTTPSListenersResponse = gaap.DescribeHTTPSListenersResponse
 
-type ModifyHTTPSListenerAttributeRequest = tcgaap.ModifyHTTPSListenerAttributeRequest
+type ModifyHTTPSListenerAttributeRequest = gaap.ModifyHTTPSListenerAttributeRequest
 
-type ModifyHTTPSListenerAttributeResponse = tcgaap.ModifyHTTPSListenerAttributeResponse
+type ModifyHTTPSListenerAttributeResponse = gaap.ModifyHTTPSListenerAttributeResponse

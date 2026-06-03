@@ -1,19 +1,19 @@
 package v20220901
 
 import (
-	tceo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
+	teo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
 )
 
 type (
-	AccelerationDomain = tceo.AccelerationDomain
-	CertificateInfo    = tceo.CertificateInfo
-	ServerCertInfo     = tceo.ServerCertInfo
+	AccelerationDomain = teo.AccelerationDomain
+	CertificateInfo    = teo.CertificateInfo
+	ServerCertInfo     = teo.ServerCertInfo
 )
 
-type DescribeAccelerationDomainsRequest = tceo.DescribeAccelerationDomainsRequest
+type DescribeAccelerationDomainsRequest = teo.DescribeAccelerationDomainsRequest
 
-type DescribeAccelerationDomainsResponse = tceo.DescribeAccelerationDomainsResponse
+type DescribeAccelerationDomainsResponse = teo.DescribeAccelerationDomainsResponse
 
-type ModifyHostsCertificateRequest = tceo.ModifyHostsCertificateRequest
+type ModifyHostsCertificateRequest = teo.ModifyHostsCertificateRequest
 
-type ModifyHostsCertificateResponse = tceo.ModifyHostsCertificateResponse
+type ModifyHostsCertificateResponse = teo.ModifyHostsCertificateResponse

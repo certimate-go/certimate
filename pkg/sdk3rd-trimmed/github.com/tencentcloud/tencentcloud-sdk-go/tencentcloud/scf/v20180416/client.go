@@ -6,10 +6,10 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcscf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf/v20180416"
+	scf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf/v20180416"
 )
 
-const APIVersion = tcscf.APIVersion
+const APIVersion = scf.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewGetCustomDomainRequest() (request *GetCustomDomainRequest) {
-	return tcscf.NewGetCustomDomainRequest()
+	return scf.NewGetCustomDomainRequest()
 }
 
 func NewGetCustomDomainResponse() (response *GetCustomDomainResponse) {
-	return tcscf.NewGetCustomDomainResponse()
+	return scf.NewGetCustomDomainResponse()
 }
 
 func (c *Client) GetCustomDomainWithContext(ctx context.Context, request *GetCustomDomainRequest) (response *GetCustomDomainResponse, err error) {
@@ -49,11 +49,11 @@ func (c *Client) GetCustomDomainWithContext(ctx context.Context, request *GetCus
 }
 
 func NewListCustomDomainsRequest() (request *ListCustomDomainsRequest) {
-	return tcscf.NewListCustomDomainsRequest()
+	return scf.NewListCustomDomainsRequest()
 }
 
 func NewListCustomDomainsResponse() (response *ListCustomDomainsResponse) {
-	return tcscf.NewListCustomDomainsResponse()
+	return scf.NewListCustomDomainsResponse()
 }
 
 func (c *Client) ListCustomDomainsWithContext(ctx context.Context, request *ListCustomDomainsRequest) (response *ListCustomDomainsResponse, err error) {
@@ -74,11 +74,11 @@ func (c *Client) ListCustomDomainsWithContext(ctx context.Context, request *List
 }
 
 func NewUpdateCustomDomainRequest() (request *UpdateCustomDomainRequest) {
-	return tcscf.NewUpdateCustomDomainRequest()
+	return scf.NewUpdateCustomDomainRequest()
 }
 
 func NewUpdateCustomDomainResponse() (response *UpdateCustomDomainResponse) {
-	return tcscf.NewUpdateCustomDomainResponse()
+	return scf.NewUpdateCustomDomainResponse()
 }
 
 func (c *Client) UpdateCustomDomainWithContext(ctx context.Context, request *UpdateCustomDomainRequest) (response *UpdateCustomDomainResponse, err error) {

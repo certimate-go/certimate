@@ -2,7 +2,7 @@ package v1
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwlive "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1"
+	live "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/live/v1/model"
 )
 
@@ -15,7 +15,7 @@ func NewLiveClient(hcClient *httpclient.HcHttpClient) *LiveClient {
 }
 
 func LiveClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwlive.LiveClientBuilder()
+	return live.LiveClientBuilder()
 }
 
 func (c *LiveClient) ShowDomain(request *model.ShowDomainRequest) (*model.ShowDomainResponse, error) {

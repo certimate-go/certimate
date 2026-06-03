@@ -1,27 +1,27 @@
 package v20180606
 
 import (
-	tccdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
+	cdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 )
 
 type (
-	DomainFilter = tccdn.DomainFilter
-	Https        = tccdn.Https
-	ServerCert   = tccdn.ServerCert
+	DomainFilter = cdn.DomainFilter
+	Https        = cdn.Https
+	ServerCert   = cdn.ServerCert
 )
 
-type DescribeCertDomainsRequest = tccdn.DescribeCertDomainsRequest
+type DescribeCertDomainsRequest = cdn.DescribeCertDomainsRequest
 
-type DescribeCertDomainsResponse = tccdn.DescribeCertDomainsResponse
+type DescribeCertDomainsResponse = cdn.DescribeCertDomainsResponse
 
-type DescribeDomainsRequest = tccdn.DescribeDomainsRequest
+type DescribeDomainsRequest = cdn.DescribeDomainsRequest
 
-type DescribeDomainsResponse = tccdn.DescribeDomainsResponse
+type DescribeDomainsResponse = cdn.DescribeDomainsResponse
 
-type DescribeDomainsConfigRequest = tccdn.DescribeDomainsConfigRequest
+type DescribeDomainsConfigRequest = cdn.DescribeDomainsConfigRequest
 
-type DescribeDomainsConfigResponse = tccdn.DescribeDomainsConfigResponse
+type DescribeDomainsConfigResponse = cdn.DescribeDomainsConfigResponse
 
-type UpdateDomainConfigRequest = tccdn.UpdateDomainConfigRequest
+type UpdateDomainConfigRequest = cdn.UpdateDomainConfigRequest
 
-type UpdateDomainConfigResponse = tccdn.UpdateDomainConfigResponse
+type UpdateDomainConfigResponse = cdn.UpdateDomainConfigResponse

@@ -2,7 +2,7 @@
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwscm "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
+	scm "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/model"
 )
 
@@ -15,7 +15,7 @@ func NewScmClient(hcClient *httpclient.HcHttpClient) *ScmClient {
 }
 
 func ScmClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwscm.ScmClientBuilder()
+	return scm.ScmClientBuilder()
 }
 
 func (c *ScmClient) ExportCertificate(request *model.ExportCertificateRequest) (*model.ExportCertificateResponse, error) {

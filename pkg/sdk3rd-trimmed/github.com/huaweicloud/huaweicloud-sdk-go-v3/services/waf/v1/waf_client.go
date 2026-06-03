@@ -2,7 +2,7 @@
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwwaf "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1"
+	waf "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1/model"
 )
 
@@ -15,7 +15,7 @@ func NewWafClient(hcClient *httpclient.HcHttpClient) *WafClient {
 }
 
 func WafClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwwaf.WafClientBuilder()
+	return waf.WafClientBuilder()
 }
 
 func (c *WafClient) CreateCertificate(request *model.CreateCertificateRequest) (*model.CreateCertificateResponse, error) {

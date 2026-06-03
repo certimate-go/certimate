@@ -1,23 +1,23 @@
 ﻿package client
 
 import (
-	alifcopen "github.com/alibabacloud-go/fc-open-20210406/v2/client"
+	"github.com/alibabacloud-go/fc-open-20210406/v2/client"
 )
 
-type CertConfig = alifcopen.CertConfig
+type CertConfig = client.CertConfig
 
-type GetCustomDomainHeaders = alifcopen.GetCustomDomainHeaders
+type GetCustomDomainHeaders = client.GetCustomDomainHeaders
 
-type GetCustomDomainResponse = alifcopen.GetCustomDomainResponse
+type GetCustomDomainResponse = client.GetCustomDomainResponse
 
-type ListCustomDomainsHeaders = alifcopen.ListCustomDomainsHeaders
+type ListCustomDomainsHeaders = client.ListCustomDomainsHeaders
 
-type ListCustomDomainsRequest = alifcopen.ListCustomDomainsRequest
+type ListCustomDomainsRequest = client.ListCustomDomainsRequest
 
-type ListCustomDomainsResponse = alifcopen.ListCustomDomainsResponse
+type ListCustomDomainsResponse = client.ListCustomDomainsResponse
 
-type UpdateCustomDomainHeaders = alifcopen.UpdateCustomDomainHeaders
+type UpdateCustomDomainHeaders = client.UpdateCustomDomainHeaders
 
-type UpdateCustomDomainRequest = alifcopen.UpdateCustomDomainRequest
+type UpdateCustomDomainRequest = client.UpdateCustomDomainRequest
 
-type UpdateCustomDomainResponse = alifcopen.UpdateCustomDomainResponse
+type UpdateCustomDomainResponse = client.UpdateCustomDomainResponse

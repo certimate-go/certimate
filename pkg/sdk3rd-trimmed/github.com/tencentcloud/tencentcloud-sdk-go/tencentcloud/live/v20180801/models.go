@@ -1,17 +1,17 @@
 package v20180801
 
 import (
-	tclive "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live/v20180801"
+	live "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live/v20180801"
 )
 
 type (
-	LiveCertDomainInfo = tclive.LiveCertDomainInfo
+	LiveCertDomainInfo = live.LiveCertDomainInfo
 )
 
-type DescribeLiveDomainsRequest = tclive.DescribeLiveDomainsRequest
+type DescribeLiveDomainsRequest = live.DescribeLiveDomainsRequest
 
-type DescribeLiveDomainsResponse = tclive.DescribeLiveDomainsResponse
+type DescribeLiveDomainsResponse = live.DescribeLiveDomainsResponse
 
-type ModifyLiveDomainCertBindingsRequest = tclive.ModifyLiveDomainCertBindingsRequest
+type ModifyLiveDomainCertBindingsRequest = live.ModifyLiveDomainCertBindingsRequest
 
-type ModifyLiveDomainCertBindingsResponse = tclive.ModifyLiveDomainCertBindingsResponse
+type ModifyLiveDomainCertBindingsResponse = live.ModifyLiveDomainCertBindingsResponse

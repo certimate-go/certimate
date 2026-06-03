@@ -2,7 +2,7 @@
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwelb "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
+	elb "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3/model"
 )
 
@@ -15,7 +15,7 @@ func NewElbClient(hcClient *httpclient.HcHttpClient) *ElbClient {
 }
 
 func ElbClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwelb.ElbClientBuilder()
+	return elb.ElbClientBuilder()
 }
 
 func (c *ElbClient) CreateCertificate(request *model.CreateCertificateRequest) (*model.CreateCertificateResponse, error) {

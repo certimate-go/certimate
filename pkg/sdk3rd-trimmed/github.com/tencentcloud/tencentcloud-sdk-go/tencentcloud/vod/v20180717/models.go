@@ -1,13 +1,13 @@
 package v20180717
 
 import (
-	tcvod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
+	vod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
 )
 
-type DescribeVodDomainsRequest = tcvod.DescribeVodDomainsRequest
+type DescribeVodDomainsRequest = vod.DescribeVodDomainsRequest
 
-type DescribeVodDomainsResponse = tcvod.DescribeVodDomainsResponse
+type DescribeVodDomainsResponse = vod.DescribeVodDomainsResponse
 
-type SetVodDomainCertificateRequest = tcvod.SetVodDomainCertificateRequest
+type SetVodDomainCertificateRequest = vod.SetVodDomainCertificateRequest
 
-type SetVodDomainCertificateResponse = tcvod.SetVodDomainCertificateResponse
+type SetVodDomainCertificateResponse = vod.SetVodDomainCertificateResponse

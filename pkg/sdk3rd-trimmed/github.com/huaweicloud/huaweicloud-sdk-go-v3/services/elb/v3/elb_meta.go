@@ -2,37 +2,37 @@
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"
-	hwelb "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
+	elb "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
 )
 
 func GenReqDefForCreateCertificate() *def.HttpRequestDef {
-	return hwelb.GenReqDefForCreateCertificate()
+	return elb.GenReqDefForCreateCertificate()
 }
 
 func GenReqDefForListCertificates() *def.HttpRequestDef {
-	return hwelb.GenReqDefForListCertificates()
+	return elb.GenReqDefForListCertificates()
 }
 
 func GenReqDefForListListeners() *def.HttpRequestDef {
-	return hwelb.GenReqDefForListListeners()
+	return elb.GenReqDefForListListeners()
 }
 
 func GenReqDefForShowCertificate() *def.HttpRequestDef {
-	return hwelb.GenReqDefForShowCertificate()
+	return elb.GenReqDefForShowCertificate()
 }
 
 func GenReqDefForShowListener() *def.HttpRequestDef {
-	return hwelb.GenReqDefForShowListener()
+	return elb.GenReqDefForShowListener()
 }
 
 func GenReqDefForShowLoadBalancer() *def.HttpRequestDef {
-	return hwelb.GenReqDefForShowLoadBalancer()
+	return elb.GenReqDefForShowLoadBalancer()
 }
 
 func GenReqDefForUpdateCertificate() *def.HttpRequestDef {
-	return hwelb.GenReqDefForUpdateCertificate()
+	return elb.GenReqDefForUpdateCertificate()
 }
 
 func GenReqDefForUpdateListener() *def.HttpRequestDef {
-	return hwelb.GenReqDefForUpdateListener()
+	return elb.GenReqDefForUpdateListener()
 }

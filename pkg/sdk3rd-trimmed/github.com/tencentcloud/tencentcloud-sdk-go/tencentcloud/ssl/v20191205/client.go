@@ -6,10 +6,10 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
+	ssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
 )
 
-const APIVersion = tcssl.APIVersion
+const APIVersion = ssl.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,18 +24,18 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeHostCosInstanceListRequest() (request *DescribeHostCosInstanceListRequest) {
-	return tcssl.NewDescribeHostCosInstanceListRequest()
+	return ssl.NewDescribeHostCosInstanceListRequest()
 }
 
 func NewDescribeHostCosInstanceListResponse() (response *DescribeHostCosInstanceListResponse) {
-	return tcssl.NewDescribeHostCosInstanceListResponse()
+	return ssl.NewDescribeHostCosInstanceListResponse()
 }
 
 func (c *Client) DescribeHostCosInstanceListWithContext(ctx context.Context, request *DescribeHostCosInstanceListRequest) (response *DescribeHostCosInstanceListResponse, err error) {
 	if request == nil {
 		request = NewDescribeHostCosInstanceListRequest()
 	}
-	c.InitBaseRequest(&request.BaseRequest, "ssl", tcssl.APIVersion, "DescribeHostCosInstanceList")
+	c.InitBaseRequest(&request.BaseRequest, "ssl", ssl.APIVersion, "DescribeHostCosInstanceList")
 
 	if c.GetCredential() == nil {
 		return nil, errors.New("DescribeHostCosInstanceList require credential")
@@ -48,11 +48,11 @@ func (c *Client) DescribeHostCosInstanceListWithContext(ctx context.Context, req
 }
 
 func NewDescribeHostDeployRecordDetailRequest() (request *DescribeHostDeployRecordDetailRequest) {
-	return tcssl.NewDescribeHostDeployRecordDetailRequest()
+	return ssl.NewDescribeHostDeployRecordDetailRequest()
 }
 
 func NewDescribeHostDeployRecordDetailResponse() (response *DescribeHostDeployRecordDetailResponse) {
-	return tcssl.NewDescribeHostDeployRecordDetailResponse()
+	return ssl.NewDescribeHostDeployRecordDetailResponse()
 }
 
 func (c *Client) DescribeHostDeployRecordDetailWithContext(ctx context.Context, request *DescribeHostDeployRecordDetailRequest) (response *DescribeHostDeployRecordDetailResponse, err error) {
@@ -73,11 +73,11 @@ func (c *Client) DescribeHostDeployRecordDetailWithContext(ctx context.Context, 
 }
 
 func NewDescribeHostUpdateRecordDetailRequest() (request *DescribeHostUpdateRecordDetailRequest) {
-	return tcssl.NewDescribeHostUpdateRecordDetailRequest()
+	return ssl.NewDescribeHostUpdateRecordDetailRequest()
 }
 
 func NewDescribeHostUpdateRecordDetailResponse() (response *DescribeHostUpdateRecordDetailResponse) {
-	return tcssl.NewDescribeHostUpdateRecordDetailResponse()
+	return ssl.NewDescribeHostUpdateRecordDetailResponse()
 }
 
 func (c *Client) DescribeHostUpdateRecordDetailWithContext(ctx context.Context, request *DescribeHostUpdateRecordDetailRequest) (response *DescribeHostUpdateRecordDetailResponse, err error) {
@@ -98,11 +98,11 @@ func (c *Client) DescribeHostUpdateRecordDetailWithContext(ctx context.Context, 
 }
 
 func NewDescribeHostUploadUpdateRecordDetailRequest() (request *DescribeHostUploadUpdateRecordDetailRequest) {
-	return tcssl.NewDescribeHostUploadUpdateRecordDetailRequest()
+	return ssl.NewDescribeHostUploadUpdateRecordDetailRequest()
 }
 
 func NewDescribeHostUploadUpdateRecordDetailResponse() (response *DescribeHostUploadUpdateRecordDetailResponse) {
-	return tcssl.NewDescribeHostUploadUpdateRecordDetailResponse()
+	return ssl.NewDescribeHostUploadUpdateRecordDetailResponse()
 }
 
 func (c *Client) DescribeHostUploadUpdateRecordDetailWithContext(ctx context.Context, request *DescribeHostUploadUpdateRecordDetailRequest) (response *DescribeHostUploadUpdateRecordDetailResponse, err error) {
@@ -123,11 +123,11 @@ func (c *Client) DescribeHostUploadUpdateRecordDetailWithContext(ctx context.Con
 }
 
 func NewDeployCertificateInstanceRequest() (request *DeployCertificateInstanceRequest) {
-	return tcssl.NewDeployCertificateInstanceRequest()
+	return ssl.NewDeployCertificateInstanceRequest()
 }
 
 func NewDeployCertificateInstanceResponse() (response *DeployCertificateInstanceResponse) {
-	return tcssl.NewDeployCertificateInstanceResponse()
+	return ssl.NewDeployCertificateInstanceResponse()
 }
 
 func (c *Client) DeployCertificateInstanceWithContext(ctx context.Context, request *DeployCertificateInstanceRequest) (response *DeployCertificateInstanceResponse, err error) {
@@ -148,11 +148,11 @@ func (c *Client) DeployCertificateInstanceWithContext(ctx context.Context, reque
 }
 
 func NewUpdateCertificateInstanceRequest() (request *UpdateCertificateInstanceRequest) {
-	return tcssl.NewUpdateCertificateInstanceRequest()
+	return ssl.NewUpdateCertificateInstanceRequest()
 }
 
 func NewUpdateCertificateInstanceResponse() (response *UpdateCertificateInstanceResponse) {
-	return tcssl.NewUpdateCertificateInstanceResponse()
+	return ssl.NewUpdateCertificateInstanceResponse()
 }
 
 func (c *Client) UpdateCertificateInstanceWithContext(ctx context.Context, request *UpdateCertificateInstanceRequest) (response *UpdateCertificateInstanceResponse, err error) {
@@ -173,11 +173,11 @@ func (c *Client) UpdateCertificateInstanceWithContext(ctx context.Context, reque
 }
 
 func NewUploadCertificateRequest() (request *UploadCertificateRequest) {
-	return tcssl.NewUploadCertificateRequest()
+	return ssl.NewUploadCertificateRequest()
 }
 
 func NewUploadCertificateResponse() (response *UploadCertificateResponse) {
-	return tcssl.NewUploadCertificateResponse()
+	return ssl.NewUploadCertificateResponse()
 }
 
 func (c *Client) UploadCertificateWithContext(ctx context.Context, request *UploadCertificateRequest) (response *UploadCertificateResponse, err error) {
@@ -197,11 +197,11 @@ func (c *Client) UploadCertificateWithContext(ctx context.Context, request *Uplo
 }
 
 func NewUploadUpdateCertificateInstanceRequest() (request *UploadUpdateCertificateInstanceRequest) {
-	return tcssl.NewUploadUpdateCertificateInstanceRequest()
+	return ssl.NewUploadUpdateCertificateInstanceRequest()
 }
 
 func NewUploadUpdateCertificateInstanceResponse() (response *UploadUpdateCertificateInstanceResponse) {
-	return tcssl.NewUploadUpdateCertificateInstanceResponse()
+	return ssl.NewUploadUpdateCertificateInstanceResponse()
 }
 
 func (c *Client) UploadUpdateCertificateInstanceWithContext(ctx context.Context, request *UploadUpdateCertificateInstanceRequest) (response *UploadUpdateCertificateInstanceResponse, err error) {

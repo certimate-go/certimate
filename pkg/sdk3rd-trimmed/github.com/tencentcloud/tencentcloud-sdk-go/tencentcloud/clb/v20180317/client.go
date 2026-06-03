@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 
-	tcclb "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
+	clb "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 )
 
-const APIVersion = tcclb.APIVersion
+const APIVersion = clb.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeListenersRequest() (request *DescribeListenersRequest) {
-	return tcclb.NewDescribeListenersRequest()
+	return clb.NewDescribeListenersRequest()
 }
 
 func NewDescribeListenersResponse() (response *DescribeListenersResponse) {
-	return tcclb.NewDescribeListenersResponse()
+	return clb.NewDescribeListenersResponse()
 }
 
 func (c *Client) DescribeListenersWithContext(ctx context.Context, request *DescribeListenersRequest) (response *DescribeListenersResponse, err error) {
@@ -48,11 +48,11 @@ func (c *Client) DescribeListenersWithContext(ctx context.Context, request *Desc
 }
 
 func NewDescribeTaskStatusRequest() (request *DescribeTaskStatusRequest) {
-	return tcclb.NewDescribeTaskStatusRequest()
+	return clb.NewDescribeTaskStatusRequest()
 }
 
 func NewDescribeTaskStatusResponse() (response *DescribeTaskStatusResponse) {
-	return tcclb.NewDescribeTaskStatusResponse()
+	return clb.NewDescribeTaskStatusResponse()
 }
 
 func (c *Client) DescribeTaskStatusWithContext(ctx context.Context, request *DescribeTaskStatusRequest) (response *DescribeTaskStatusResponse, err error) {
@@ -72,11 +72,11 @@ func (c *Client) DescribeTaskStatusWithContext(ctx context.Context, request *Des
 }
 
 func NewModifyDomainAttributesRequest() (request *ModifyDomainAttributesRequest) {
-	return tcclb.NewModifyDomainAttributesRequest()
+	return clb.NewModifyDomainAttributesRequest()
 }
 
 func NewModifyDomainAttributesResponse() (response *ModifyDomainAttributesResponse) {
-	return tcclb.NewModifyDomainAttributesResponse()
+	return clb.NewModifyDomainAttributesResponse()
 }
 
 func (c *Client) ModifyDomainAttributesWithContext(ctx context.Context, request *ModifyDomainAttributesRequest) (response *ModifyDomainAttributesResponse, err error) {
@@ -96,11 +96,11 @@ func (c *Client) ModifyDomainAttributesWithContext(ctx context.Context, request 
 }
 
 func NewModifyListenerRequest() (request *ModifyListenerRequest) {
-	return tcclb.NewModifyListenerRequest()
+	return clb.NewModifyListenerRequest()
 }
 
 func NewModifyListenerResponse() (response *ModifyListenerResponse) {
-	return tcclb.NewModifyListenerResponse()
+	return clb.NewModifyListenerResponse()
 }
 
 func (c *Client) ModifyListenerWithContext(ctx context.Context, request *ModifyListenerRequest) (response *ModifyListenerResponse, err error) {

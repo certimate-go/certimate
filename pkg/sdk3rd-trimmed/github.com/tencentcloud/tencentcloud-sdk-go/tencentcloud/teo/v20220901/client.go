@@ -6,10 +6,10 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tceo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
+	teo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
 )
 
-const APIVersion = tceo.APIVersion
+const APIVersion = teo.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeAccelerationDomainsRequest() (request *DescribeAccelerationDomainsRequest) {
-	return tceo.NewDescribeAccelerationDomainsRequest()
+	return teo.NewDescribeAccelerationDomainsRequest()
 }
 
 func NewDescribeAccelerationDomainsResponse() (response *DescribeAccelerationDomainsResponse) {
-	return tceo.NewDescribeAccelerationDomainsResponse()
+	return teo.NewDescribeAccelerationDomainsResponse()
 }
 
 func (c *Client) DescribeAccelerationDomainsWithContext(ctx context.Context, request *DescribeAccelerationDomainsRequest) (response *DescribeAccelerationDomainsResponse, err error) {
@@ -49,11 +49,11 @@ func (c *Client) DescribeAccelerationDomainsWithContext(ctx context.Context, req
 }
 
 func NewModifyHostsCertificateRequest() (request *ModifyHostsCertificateRequest) {
-	return tceo.NewModifyHostsCertificateRequest()
+	return teo.NewModifyHostsCertificateRequest()
 }
 
 func NewModifyHostsCertificateResponse() (response *ModifyHostsCertificateResponse) {
-	return tceo.NewModifyHostsCertificateResponse()
+	return teo.NewModifyHostsCertificateResponse()
 }
 
 func (c *Client) ModifyHostsCertificateWithContext(ctx context.Context, request *ModifyHostsCertificateRequest) (response *ModifyHostsCertificateResponse, err error) {

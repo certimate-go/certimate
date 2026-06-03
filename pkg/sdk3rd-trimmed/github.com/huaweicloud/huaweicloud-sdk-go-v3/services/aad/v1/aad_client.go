@@ -2,7 +2,7 @@
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwaad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
+	aad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1/model"
 )
 
@@ -15,7 +15,7 @@ func NewAadClient(hcClient *httpclient.HcHttpClient) *AadClient {
 }
 
 func AadClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwaad.AadClientBuilder()
+	return aad.AadClientBuilder()
 }
 
 func (c *AadClient) SetCertForDomain(request *model.SetCertForDomainRequest) (*model.SetCertForDomainResponse, error) {

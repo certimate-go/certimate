@@ -2,9 +2,9 @@
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"
-	hwaad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
+	aad "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1"
 )
 
 func GenReqDefForSetCertForDomain() *def.HttpRequestDef {
-	return hwaad.GenReqDefForSetCertForDomain()
+	return aad.GenReqDefForSetCertForDomain()
 }

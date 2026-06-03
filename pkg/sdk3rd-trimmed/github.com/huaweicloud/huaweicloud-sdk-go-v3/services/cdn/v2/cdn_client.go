@@ -2,7 +2,7 @@ package v2
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwcdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
+	cdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
 )
 
@@ -15,7 +15,7 @@ func NewCdnClient(hcClient *httpclient.HcHttpClient) *CdnClient {
 }
 
 func CdnClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwcdn.CdnClientBuilder()
+	return cdn.CdnClientBuilder()
 }
 
 func (c *CdnClient) ListDomains(request *model.ListDomainsRequest) (*model.ListDomainsResponse, error) {

@@ -1,41 +1,41 @@
 ﻿package v20191205
 
 import (
-	tcssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
+	ssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
 )
 
 type (
-	ResourceTypeRegions = tcssl.ResourceTypeRegions
+	ResourceTypeRegions = ssl.ResourceTypeRegions
 )
 
-type DescribeHostCosInstanceListRequest = tcssl.DescribeHostCosInstanceListRequest
+type DescribeHostCosInstanceListRequest = ssl.DescribeHostCosInstanceListRequest
 
-type DescribeHostCosInstanceListResponse = tcssl.DescribeHostCosInstanceListResponse
+type DescribeHostCosInstanceListResponse = ssl.DescribeHostCosInstanceListResponse
 
-type DescribeHostDeployRecordDetailRequest = tcssl.DescribeHostDeployRecordDetailRequest
+type DescribeHostDeployRecordDetailRequest = ssl.DescribeHostDeployRecordDetailRequest
 
-type DescribeHostDeployRecordDetailResponse = tcssl.DescribeHostDeployRecordDetailResponse
+type DescribeHostDeployRecordDetailResponse = ssl.DescribeHostDeployRecordDetailResponse
 
-type DescribeHostUpdateRecordDetailRequest = tcssl.DescribeHostUpdateRecordDetailRequest
+type DescribeHostUpdateRecordDetailRequest = ssl.DescribeHostUpdateRecordDetailRequest
 
-type DescribeHostUpdateRecordDetailResponse = tcssl.DescribeHostUpdateRecordDetailResponse
+type DescribeHostUpdateRecordDetailResponse = ssl.DescribeHostUpdateRecordDetailResponse
 
-type DescribeHostUploadUpdateRecordDetailRequest = tcssl.DescribeHostUploadUpdateRecordDetailRequest
+type DescribeHostUploadUpdateRecordDetailRequest = ssl.DescribeHostUploadUpdateRecordDetailRequest
 
-type DescribeHostUploadUpdateRecordDetailResponse = tcssl.DescribeHostUploadUpdateRecordDetailResponse
+type DescribeHostUploadUpdateRecordDetailResponse = ssl.DescribeHostUploadUpdateRecordDetailResponse
 
-type DeployCertificateInstanceRequest = tcssl.DeployCertificateInstanceRequest
+type DeployCertificateInstanceRequest = ssl.DeployCertificateInstanceRequest
 
-type DeployCertificateInstanceResponse = tcssl.DeployCertificateInstanceResponse
+type DeployCertificateInstanceResponse = ssl.DeployCertificateInstanceResponse
 
-type UpdateCertificateInstanceRequest = tcssl.UpdateCertificateInstanceRequest
+type UpdateCertificateInstanceRequest = ssl.UpdateCertificateInstanceRequest
 
-type UpdateCertificateInstanceResponse = tcssl.UpdateCertificateInstanceResponse
+type UpdateCertificateInstanceResponse = ssl.UpdateCertificateInstanceResponse
 
-type UploadCertificateRequest = tcssl.UploadCertificateRequest
+type UploadCertificateRequest = ssl.UploadCertificateRequest
 
-type UploadCertificateResponse = tcssl.UploadCertificateResponse
+type UploadCertificateResponse = ssl.UploadCertificateResponse
 
-type UploadUpdateCertificateInstanceRequest = tcssl.UploadUpdateCertificateInstanceRequest
+type UploadUpdateCertificateInstanceRequest = ssl.UploadUpdateCertificateInstanceRequest
 
-type UploadUpdateCertificateInstanceResponse = tcssl.UploadUpdateCertificateInstanceResponse
+type UploadUpdateCertificateInstanceResponse = ssl.UploadUpdateCertificateInstanceResponse

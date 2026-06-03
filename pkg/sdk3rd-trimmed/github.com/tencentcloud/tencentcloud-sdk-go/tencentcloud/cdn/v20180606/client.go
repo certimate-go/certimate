@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 
-	tccdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
+	cdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 )
 
-const APIVersion = tccdn.APIVersion
+const APIVersion = cdn.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeCertDomainsRequest() (request *DescribeCertDomainsRequest) {
-	return tccdn.NewDescribeCertDomainsRequest()
+	return cdn.NewDescribeCertDomainsRequest()
 }
 
 func NewDescribeCertDomainsResponse() (response *DescribeCertDomainsResponse) {
-	return tccdn.NewDescribeCertDomainsResponse()
+	return cdn.NewDescribeCertDomainsResponse()
 }
 
 func (c *Client) DescribeCertDomainsWithContext(ctx context.Context, request *DescribeCertDomainsRequest) (response *DescribeCertDomainsResponse, err error) {
@@ -49,11 +49,11 @@ func (c *Client) DescribeCertDomainsWithContext(ctx context.Context, request *De
 }
 
 func NewDescribeDomainsRequest() (request *DescribeDomainsRequest) {
-	return tccdn.NewDescribeDomainsRequest()
+	return cdn.NewDescribeDomainsRequest()
 }
 
 func NewDescribeDomainsResponse() (response *DescribeDomainsResponse) {
-	return tccdn.NewDescribeDomainsResponse()
+	return cdn.NewDescribeDomainsResponse()
 }
 
 func (c *Client) DescribeDomainsWithContext(ctx context.Context, request *DescribeDomainsRequest) (response *DescribeDomainsResponse, err error) {
@@ -74,11 +74,11 @@ func (c *Client) DescribeDomainsWithContext(ctx context.Context, request *Descri
 }
 
 func NewDescribeDomainsConfigRequest() (request *DescribeDomainsConfigRequest) {
-	return tccdn.NewDescribeDomainsConfigRequest()
+	return cdn.NewDescribeDomainsConfigRequest()
 }
 
 func NewDescribeDomainsConfigResponse() (response *DescribeDomainsConfigResponse) {
-	return tccdn.NewDescribeDomainsConfigResponse()
+	return cdn.NewDescribeDomainsConfigResponse()
 }
 
 func (c *Client) DescribeDomainsConfigWithContext(ctx context.Context, request *DescribeDomainsConfigRequest) (response *DescribeDomainsConfigResponse, err error) {
@@ -99,11 +99,11 @@ func (c *Client) DescribeDomainsConfigWithContext(ctx context.Context, request *
 }
 
 func NewUpdateDomainConfigRequest() (request *UpdateDomainConfigRequest) {
-	return tccdn.NewUpdateDomainConfigRequest()
+	return cdn.NewUpdateDomainConfigRequest()
 }
 
 func NewUpdateDomainConfigResponse() (response *UpdateDomainConfigResponse) {
-	return tccdn.NewUpdateDomainConfigResponse()
+	return cdn.NewUpdateDomainConfigResponse()
 }
 
 func (c *Client) UpdateDomainConfigWithContext(ctx context.Context, request *UpdateDomainConfigRequest) (response *UpdateDomainConfigResponse, err error) {

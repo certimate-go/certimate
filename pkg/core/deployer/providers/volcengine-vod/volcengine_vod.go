@@ -15,7 +15,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
 	"github.com/certimate-go/certimate/pkg/core/deployer"
-	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volc-sdk-golang/service/vod"
+	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volc-sdk-golang/service/vod"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 

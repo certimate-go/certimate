@@ -6,10 +6,10 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcgaap "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
+	gaap "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
 )
 
-const APIVersion = tcgaap.APIVersion
+const APIVersion = gaap.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeHTTPSListenersRequest() (request *DescribeHTTPSListenersRequest) {
-	return tcgaap.NewDescribeHTTPSListenersRequest()
+	return gaap.NewDescribeHTTPSListenersRequest()
 }
 
 func NewDescribeHTTPSListenersResponse() (response *DescribeHTTPSListenersResponse) {
-	return tcgaap.NewDescribeHTTPSListenersResponse()
+	return gaap.NewDescribeHTTPSListenersResponse()
 }
 
 func (c *Client) DescribeHTTPSListenersWithContext(ctx context.Context, request *DescribeHTTPSListenersRequest) (response *DescribeHTTPSListenersResponse, err error) {
@@ -49,11 +49,11 @@ func (c *Client) DescribeHTTPSListenersWithContext(ctx context.Context, request 
 }
 
 func NewModifyHTTPSListenerAttributeRequest() (request *ModifyHTTPSListenerAttributeRequest) {
-	return tcgaap.NewModifyHTTPSListenerAttributeRequest()
+	return gaap.NewModifyHTTPSListenerAttributeRequest()
 }
 
 func NewModifyHTTPSListenerAttributeResponse() (response *ModifyHTTPSListenerAttributeResponse) {
-	return tcgaap.NewModifyHTTPSListenerAttributeResponse()
+	return gaap.NewModifyHTTPSListenerAttributeResponse()
 }
 
 func (c *Client) ModifyHTTPSListenerAttributeWithContext(ctx context.Context, request *ModifyHTTPSListenerAttributeRequest) (response *ModifyHTTPSListenerAttributeResponse, err error) {

@@ -1,13 +1,13 @@
 ﻿package client
 
 import (
-	alicloudapi "github.com/alibabacloud-go/cloudapi-20160714/v5/client"
+	"github.com/alibabacloud-go/cloudapi-20160714/v5/client"
 )
 
-type DescribeApiGroupRequest = alicloudapi.DescribeApiGroupRequest
+type DescribeApiGroupRequest = client.DescribeApiGroupRequest
 
-type DescribeApiGroupResponse = alicloudapi.DescribeApiGroupResponse
+type DescribeApiGroupResponse = client.DescribeApiGroupResponse
 
-type SetDomainCertificateRequest = alicloudapi.SetDomainCertificateRequest
+type SetDomainCertificateRequest = client.SetDomainCertificateRequest
 
-type SetDomainCertificateResponse = alicloudapi.SetDomainCertificateResponse
+type SetDomainCertificateResponse = client.SetDomainCertificateResponse

@@ -1,31 +1,31 @@
 package client
 
 import (
-	aliga "github.com/alibabacloud-go/ga-20191120/v4/client"
+	"github.com/alibabacloud-go/ga-20191120/v4/client"
 )
 
-type AssociateAdditionalCertificatesWithListenerRequest = aliga.AssociateAdditionalCertificatesWithListenerRequest
+type AssociateAdditionalCertificatesWithListenerRequest = client.AssociateAdditionalCertificatesWithListenerRequest
 
-type AssociateAdditionalCertificatesWithListenerRequestCertificates = aliga.AssociateAdditionalCertificatesWithListenerRequestCertificates
+type AssociateAdditionalCertificatesWithListenerRequestCertificates = client.AssociateAdditionalCertificatesWithListenerRequestCertificates
 
-type AssociateAdditionalCertificatesWithListenerResponse = aliga.AssociateAdditionalCertificatesWithListenerResponse
+type AssociateAdditionalCertificatesWithListenerResponse = client.AssociateAdditionalCertificatesWithListenerResponse
 
-type ListListenersRequest = aliga.ListListenersRequest
+type ListListenersRequest = client.ListListenersRequest
 
-type ListListenersResponse = aliga.ListListenersResponse
+type ListListenersResponse = client.ListListenersResponse
 
-type ListListenerCertificatesRequest = aliga.ListListenerCertificatesRequest
+type ListListenerCertificatesRequest = client.ListListenerCertificatesRequest
 
-type ListListenerCertificatesResponse = aliga.ListListenerCertificatesResponse
+type ListListenerCertificatesResponse = client.ListListenerCertificatesResponse
 
-type ListListenerCertificatesResponseBodyCertificates = aliga.ListListenerCertificatesResponseBodyCertificates
+type ListListenerCertificatesResponseBodyCertificates = client.ListListenerCertificatesResponseBodyCertificates
 
-type UpdateAdditionalCertificateWithListenerRequest = aliga.UpdateAdditionalCertificateWithListenerRequest
+type UpdateAdditionalCertificateWithListenerRequest = client.UpdateAdditionalCertificateWithListenerRequest
 
-type UpdateAdditionalCertificateWithListenerResponse = aliga.UpdateAdditionalCertificateWithListenerResponse
+type UpdateAdditionalCertificateWithListenerResponse = client.UpdateAdditionalCertificateWithListenerResponse
 
-type UpdateListenerRequest = aliga.UpdateListenerRequest
+type UpdateListenerRequest = client.UpdateListenerRequest
 
-type UpdateListenerRequestCertificates = aliga.UpdateListenerRequestCertificates
+type UpdateListenerRequestCertificates = client.UpdateListenerRequestCertificates
 
-type UpdateListenerResponse = aliga.UpdateListenerResponse
+type UpdateListenerResponse = client.UpdateListenerResponse

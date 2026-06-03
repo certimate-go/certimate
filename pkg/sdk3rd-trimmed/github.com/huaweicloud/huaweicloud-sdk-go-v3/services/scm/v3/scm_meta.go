@@ -2,17 +2,17 @@
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"
-	hwscm "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
+	scm "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
 )
 
 func GenReqDefForExportCertificate() *def.HttpRequestDef {
-	return hwscm.GenReqDefForExportCertificate()
+	return scm.GenReqDefForExportCertificate()
 }
 
 func GenReqDefForImportCertificate() *def.HttpRequestDef {
-	return hwscm.GenReqDefForImportCertificate()
+	return scm.GenReqDefForImportCertificate()
 }
 
 func GenReqDefForListCertificates() *def.HttpRequestDef {
-	return hwscm.GenReqDefForListCertificates()
+	return scm.GenReqDefForListCertificates()
 }

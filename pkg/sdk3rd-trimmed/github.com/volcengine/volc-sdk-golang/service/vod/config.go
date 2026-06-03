@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/volcengine/volc-sdk-golang/base"
-	vevod "github.com/volcengine/volc-sdk-golang/service/vod"
+	"github.com/volcengine/volc-sdk-golang/service/vod"
 )
 
 type Vod struct {
@@ -64,10 +64,10 @@ func NewInstanceWithRegion(region string, opts ...Option) *Vod {
 }
 
 var (
-	ServiceInfoMap = vevod.ServiceInfoMap
+	ServiceInfoMap = vod.ServiceInfoMap
 
 	ApiInfoList = map[string]*base.ApiInfo{
-		"ListDomain":         vevod.ApiInfoList["ListDomain"],
-		"UpdateDomainConfig": vevod.ApiInfoList["UpdateDomainConfig"],
+		"ListDomain":         vod.ApiInfoList["ListDomain"],
+		"UpdateDomainConfig": vod.ApiInfoList["UpdateDomainConfig"],
 	}
 )

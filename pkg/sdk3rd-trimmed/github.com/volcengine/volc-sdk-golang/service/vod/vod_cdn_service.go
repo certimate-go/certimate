@@ -6,12 +6,10 @@ import (
 	"net/url"
 	"strconv"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"github.com/pkg/errors"
-
 	"github.com/volcengine/volc-sdk-golang/service/vod/models/request"
 	"github.com/volcengine/volc-sdk-golang/service/vod/models/response"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (p *Vod) ListDomain(req *request.VodListDomainRequest) (*response.VodListDomainResponse, int, error) {

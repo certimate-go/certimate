@@ -6,10 +6,10 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcwaf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf/v20180125"
+	waf "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf/v20180125"
 )
 
-const APIVersion = tcwaf.APIVersion
+const APIVersion = waf.APIVersion
 
 type Client struct {
 	common.Client
@@ -24,11 +24,11 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 }
 
 func NewDescribeDomainDetailsSaasRequest() (request *DescribeDomainDetailsSaasRequest) {
-	return tcwaf.NewDescribeDomainDetailsSaasRequest()
+	return waf.NewDescribeDomainDetailsSaasRequest()
 }
 
 func NewDescribeDomainDetailsSaasResponse() (response *DescribeDomainDetailsSaasResponse) {
-	return tcwaf.NewDescribeDomainDetailsSaasResponse()
+	return waf.NewDescribeDomainDetailsSaasResponse()
 }
 
 func (c *Client) DescribeDomainDetailsSaasWithContext(ctx context.Context, request *DescribeDomainDetailsSaasRequest) (response *DescribeDomainDetailsSaasResponse, err error) {
@@ -48,16 +48,16 @@ func (c *Client) DescribeDomainDetailsSaasWithContext(ctx context.Context, reque
 	return
 }
 
-func (c *Client) ModifySpartaProtection(request *tcwaf.ModifySpartaProtectionRequest) (response *tcwaf.ModifySpartaProtectionResponse, err error) {
+func (c *Client) ModifySpartaProtection(request *waf.ModifySpartaProtectionRequest) (response *waf.ModifySpartaProtectionResponse, err error) {
 	return c.ModifySpartaProtectionWithContext(context.Background(), request)
 }
 
 func NewModifySpartaProtectionRequest() (request *ModifySpartaProtectionRequest) {
-	return tcwaf.NewModifySpartaProtectionRequest()
+	return waf.NewModifySpartaProtectionRequest()
 }
 
 func NewModifySpartaProtectionResponse() (response *ModifySpartaProtectionResponse) {
-	return tcwaf.NewModifySpartaProtectionResponse()
+	return waf.NewModifySpartaProtectionResponse()
 }
 
 func (c *Client) ModifySpartaProtectionWithContext(ctx context.Context, request *ModifySpartaProtectionRequest) (response *ModifySpartaProtectionResponse, err error) {

@@ -1,13 +1,13 @@
 package client
 
 import (
-	alidcdn "github.com/alibabacloud-go/dcdn-20180115/v4/client"
+	"github.com/alibabacloud-go/dcdn-20180115/v4/client"
 )
 
-type DescribeDcdnUserDomainsRequest = alidcdn.DescribeDcdnUserDomainsRequest
+type DescribeDcdnUserDomainsRequest = client.DescribeDcdnUserDomainsRequest
 
-type DescribeDcdnUserDomainsResponse = alidcdn.DescribeDcdnUserDomainsResponse
+type DescribeDcdnUserDomainsResponse = client.DescribeDcdnUserDomainsResponse
 
-type SetDcdnDomainSSLCertificateRequest = alidcdn.SetDcdnDomainSSLCertificateRequest
+type SetDcdnDomainSSLCertificateRequest = client.SetDcdnDomainSSLCertificateRequest
 
-type SetDcdnDomainSSLCertificateResponse = alidcdn.SetDcdnDomainSSLCertificateResponse
+type SetDcdnDomainSSLCertificateResponse = client.SetDcdnDomainSSLCertificateResponse

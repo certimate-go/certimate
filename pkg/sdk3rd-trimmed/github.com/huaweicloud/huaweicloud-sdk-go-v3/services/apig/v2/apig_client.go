@@ -2,7 +2,7 @@ package v2
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
-	hwapig "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2"
+	apig "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/model"
 )
 
@@ -15,7 +15,7 @@ func NewApigClient(hcClient *httpclient.HcHttpClient) *ApigClient {
 }
 
 func ApigClientBuilder() *httpclient.HcHttpClientBuilder {
-	return hwapig.ApigClientBuilder()
+	return apig.ApigClientBuilder()
 }
 
 func (c *ApigClient) ShowDetailsOfCertificateV2(request *model.ShowDetailsOfCertificateV2Request) (*model.ShowDetailsOfCertificateV2Response, error) {

@@ -1,25 +1,25 @@
 package v20180317
 
 import (
-	tcclb "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
+	clb "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb/v20180317"
 )
 
 type (
-	CertificateInput = tcclb.CertificateInput
+	CertificateInput = clb.CertificateInput
 )
 
-type DescribeListenersRequest = tcclb.DescribeListenersRequest
+type DescribeListenersRequest = clb.DescribeListenersRequest
 
-type DescribeListenersResponse = tcclb.DescribeListenersResponse
+type DescribeListenersResponse = clb.DescribeListenersResponse
 
-type DescribeTaskStatusRequest = tcclb.DescribeTaskStatusRequest
+type DescribeTaskStatusRequest = clb.DescribeTaskStatusRequest
 
-type DescribeTaskStatusResponse = tcclb.DescribeTaskStatusResponse
+type DescribeTaskStatusResponse = clb.DescribeTaskStatusResponse
 
-type ModifyDomainAttributesRequest = tcclb.ModifyDomainAttributesRequest
+type ModifyDomainAttributesRequest = clb.ModifyDomainAttributesRequest
 
-type ModifyDomainAttributesResponse = tcclb.ModifyDomainAttributesResponse
+type ModifyDomainAttributesResponse = clb.ModifyDomainAttributesResponse
 
-type ModifyListenerRequest = tcclb.ModifyListenerRequest
+type ModifyListenerRequest = clb.ModifyListenerRequest
 
-type ModifyListenerResponse = tcclb.ModifyListenerResponse
+type ModifyListenerResponse = clb.ModifyListenerResponse

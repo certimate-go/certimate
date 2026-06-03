@@ -6,21 +6,21 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	tcvod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
+	vod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
 )
 
-const APIVersion = tcvod.APIVersion
+const APIVersion = vod.APIVersion
 
 type Client struct {
 	common.Client
 }
 
 func NewDescribeVodDomainsRequest() (request *DescribeVodDomainsRequest) {
-	return tcvod.NewDescribeVodDomainsRequest()
+	return vod.NewDescribeVodDomainsRequest()
 }
 
 func NewDescribeVodDomainsResponse() (response *DescribeVodDomainsResponse) {
-	return tcvod.NewDescribeVodDomainsResponse()
+	return vod.NewDescribeVodDomainsResponse()
 }
 
 func NewClient(credential common.CredentialIface, region string, clientProfile *profile.ClientProfile) (client *Client, err error) {
@@ -49,11 +49,11 @@ func (c *Client) DescribeVodDomainsWithContext(ctx context.Context, request *Des
 }
 
 func NewSetVodDomainCertificateRequest() (request *SetVodDomainCertificateRequest) {
-	return tcvod.NewSetVodDomainCertificateRequest()
+	return vod.NewSetVodDomainCertificateRequest()
 }
 
 func NewSetVodDomainCertificateResponse() (response *SetVodDomainCertificateResponse) {
-	return tcvod.NewSetVodDomainCertificateResponse()
+	return vod.NewSetVodDomainCertificateResponse()
 }
 
 func (c *Client) SetVodDomainCertificateWithContext(ctx context.Context, request *SetVodDomainCertificateRequest) (response *SetVodDomainCertificateResponse, err error) {

@@ -2,37 +2,37 @@
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"
-	hwwaf "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1"
+	waf "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/waf/v1"
 )
 
 func GenReqDefForCreateCertificate() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForCreateCertificate()
+	return waf.GenReqDefForCreateCertificate()
 }
 
 func GenReqDefForListCertificates() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForListCertificates()
+	return waf.GenReqDefForListCertificates()
 }
 
 func GenReqDefForListHost() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForListHost()
+	return waf.GenReqDefForListHost()
 }
 
 func GenReqDefForListPremiumHost() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForListPremiumHost()
+	return waf.GenReqDefForListPremiumHost()
 }
 
 func GenReqDefForShowCertificate() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForShowCertificate()
+	return waf.GenReqDefForShowCertificate()
 }
 
 func GenReqDefForUpdateCertificate() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForUpdateCertificate()
+	return waf.GenReqDefForUpdateCertificate()
 }
 
 func GenReqDefForUpdateHost() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForUpdateHost()
+	return waf.GenReqDefForUpdateHost()
 }
 
 func GenReqDefForUpdatePremiumHost() *def.HttpRequestDef {
-	return hwwaf.GenReqDefForUpdatePremiumHost()
+	return waf.GenReqDefForUpdatePremiumHost()
 }
