@@ -38,10 +38,12 @@ import BizDeployNodeConfigFieldsProviderBaotaWAF from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderBaotaWAFConsole from "./BizDeployNodeConfigFieldsProviderBaotaWAFConsole";
 import BizDeployNodeConfigFieldsProviderBunnyCDN from "./BizDeployNodeConfigFieldsProviderBunnyCDN";
 import BizDeployNodeConfigFieldsProviderBytePlusALB from "./BizDeployNodeConfigFieldsProviderBytePlusALB";
+import BizDeployNodeConfigFieldsProviderBytePlusAPIG from "./BizDeployNodeConfigFieldsProviderBytePlusAPIG";
 import BizDeployNodeConfigFieldsProviderBytePlusCDN from "./BizDeployNodeConfigFieldsProviderBytePlusCDN";
 import BizDeployNodeConfigFieldsProviderBytePlusCertCenter from "./BizDeployNodeConfigFieldsProviderBytePlusCertCenter";
 import BizDeployNodeConfigFieldsProviderBytePlusCLB from "./BizDeployNodeConfigFieldsProviderBytePlusCLB";
 import BizDeployNodeConfigFieldsProviderBytePlusMediaLive from "./BizDeployNodeConfigFieldsProviderBytePlusMediaLive";
+import BizDeployNodeConfigFieldsProviderBytePlusTOS from "./BizDeployNodeConfigFieldsProviderBytePlusTOS";
 import BizDeployNodeConfigFieldsProviderCdnfly from "./BizDeployNodeConfigFieldsProviderCdnfly";
 import BizDeployNodeConfigFieldsProviderCPanel from "./BizDeployNodeConfigFieldsProviderCPanel";
 import BizDeployNodeConfigFieldsProviderCTCCCloudAO from "./BizDeployNodeConfigFieldsProviderCTCCCloudAO";
@@ -170,10 +172,12 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.BAOTAWAF_CONSOLE]: BizDeployNodeConfigFieldsProviderBaotaWAFConsole,
   [DEPLOYMENT_PROVIDERS.BUNNY_CDN]: BizDeployNodeConfigFieldsProviderBunnyCDN,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_ALB]: BizDeployNodeConfigFieldsProviderBytePlusALB,
+  [DEPLOYMENT_PROVIDERS.BYTEPLUS_APIG]: BizDeployNodeConfigFieldsProviderBytePlusAPIG,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_CDN]: BizDeployNodeConfigFieldsProviderBytePlusCDN,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_CERTCENTER]: BizDeployNodeConfigFieldsProviderBytePlusCertCenter,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_CLB]: BizDeployNodeConfigFieldsProviderBytePlusCLB,
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_MEDIALIVE]: BizDeployNodeConfigFieldsProviderBytePlusMediaLive,
+  [DEPLOYMENT_PROVIDERS.BYTEPLUS_TOS]: BizDeployNodeConfigFieldsProviderBytePlusTOS,
   [DEPLOYMENT_PROVIDERS.CDNFLY]: BizDeployNodeConfigFieldsProviderCdnfly,
   [DEPLOYMENT_PROVIDERS.CPANEL]: BizDeployNodeConfigFieldsProviderCPanel,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_AO]: BizDeployNodeConfigFieldsProviderCTCCCloudAO,

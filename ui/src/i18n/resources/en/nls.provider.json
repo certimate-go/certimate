@@ -90,6 +90,7 @@
   "bunny_cdn": "Bunny - CDN (Content Delivery Network)",
   "byteplus": "BytePlus",
   "byteplus_alb": "BytePlus - ALB (Application Load Balancer)",
+  "byteplus_apig": "BytePlus - API Gateway",
   "byteplus_cdn": "BytePlus - CDN (Content Delivery Network)",
   "byteplus_certcenter_upload": "BytePlus - Upload to Certificate Center",
   "byteplus_clb": "BytePlus - CLB (Classic Load Balancer)",

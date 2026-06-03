@@ -1239,6 +1239,15 @@
         "placeholder": "Please enter BytePlus ALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
+      "byteplus_apig_region": {
+        "label": "BytePlus region",
+        "placeholder": "Please enter BytePlus API gateway region (e.g. ap-southeast-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones</a>"
+      },
+      "byteplus_apig_domain": {
+        "label": "BytePlus API gateway custom domain",
+        "placeholder": "Please enter BytePlus API gateway custom domain name"
+      },
       "byteplus_cdn_domain": {
         "label": "BytePlus CDN domain",
         "placeholder": "Please enter BytePlus CDN domain name"
