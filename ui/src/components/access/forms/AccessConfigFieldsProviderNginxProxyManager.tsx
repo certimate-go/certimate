@@ -1,7 +1,7 @@
 import { getI18n, useTranslation } from "react-i18next";
 import { Form, Input, Radio, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { core, z } from "zod";
+import { z } from "zod";
 
 import Show from "@/components/Show";
 
@@ -101,7 +101,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   return z
     .object({
-      serverUrl: z.url({ protocol: core.regexes.httpProtocol }),
+      serverUrl: z.url({ protocol: z.core.regexes.httpProtocol }),
       authMethod: z.enum([AUTH_METHOD_PASSWORD, AUTH_METHOD_TOKEN]),
       username: z.string().nullish(),
       password: z.string().nullish(),

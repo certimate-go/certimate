@@ -1,7 +1,7 @@
 import { getI18n, useTranslation } from "react-i18next";
 import { Checkbox, Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
-import { core, z } from "zod";
+import { z } from "zod";
 
 import CodeTextInput from "@/components/CodeTextInput";
 import { isJsonObject } from "@/utils/validator";
@@ -92,7 +92,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
 
   return z
     .object({
-      webhookUrl: z.url({ protocol: core.regexes.httpProtocol }),
+      webhookUrl: z.url({ protocol: z.core.regexes.httpProtocol }),
       useCustomPayload: z.boolean().nullish(),
       customPayload: z.string().nullish(),
     })
