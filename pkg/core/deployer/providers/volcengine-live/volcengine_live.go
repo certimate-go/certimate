@@ -22,6 +22,8 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 	// 域名匹配模式。
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
@@ -50,6 +52,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
+		ProjectName:     config.ProjectName,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)

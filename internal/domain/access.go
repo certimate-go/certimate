@@ -620,6 +620,7 @@ type AccessConfigForVercel struct {
 type AccessConfigForVolcEngine struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
+	ProjectName     string `json:"projectName,omitempty"`
 }
 
 type AccessConfigForVultr struct {

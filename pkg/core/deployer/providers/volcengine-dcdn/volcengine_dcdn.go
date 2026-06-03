@@ -22,6 +22,8 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 	// 火山引擎地域。
 	Region string `json:"region"`
 	// 域名匹配模式。
@@ -53,6 +55,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
+		ProjectName:     config.ProjectName,
 		Region:          config.Region,
 	})
 	if err != nil {
@@ -162,7 +165,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	domains := make([]string, 0)
 
 	// 查询域名配置列表
-	// https://www.volcengine.com/docs/6559/1171745
+	// REF: https://www.volcengine.com/docs/6559/1171745
 	listDomainConfigPageNumber := 1
 	listDomainConfigPageSize := 100
 	for {
@@ -173,8 +176,9 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		}
 
 		listDomainConfigReq := &vedcdn.ListDomainConfigInput{
-			PageNumber: ve.Int32(int32(listDomainConfigPageNumber)),
-			PageSize:   ve.Int32(int32(listDomainConfigPageSize)),
+			ProjectName: lo.IfF(d.config.ProjectName != "", func() []*string { return ve.StringSlice([]string{d.config.ProjectName}) }).Else(nil),
+			PageNumber:  ve.Int32(int32(listDomainConfigPageNumber)),
+			PageSize:    ve.Int32(int32(listDomainConfigPageSize)),
 		}
 		listDomainConfigResp, err := d.sdkClient.ListDomainConfigWithContext(ctx, listDomainConfigReq)
 		d.logger.Debug("sdk request 'dcdn.ListDomainConfig'", slog.Any("request", listDomainConfigReq), slog.Any("response", listDomainConfigResp))

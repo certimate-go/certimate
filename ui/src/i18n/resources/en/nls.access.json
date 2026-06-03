@@ -1388,12 +1388,17 @@
     "volcengine_access_key_id": {
       "label": "VolcEngine AccessKeyID",
       "placeholder": "Please enter VolcEngine AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6291/216571\" target=\"_blank\">https://www.volcengine.com/docs/6291/216571</a>"
+      "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6291/65568\" target=\"_blank\">https://www.volcengine.com/docs/6291/65568</a>"
     },
     "volcengine_secret_access_key": {
       "label": "VolcEngine SecretAccessKey",
       "placeholder": "Please enter VolcEngine SecretAccessKey",
-      "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6291/216571\" target=\"_blank\">https://www.volcengine.com/docs/6291/216571</a>"
+      "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6291/65568\" target=\"_blank\">https://www.volcengine.com/docs/6291/65568</a>"
+    },
+    "volcengine_project_name": {
+      "label": "VolcEngine project ID",
+      "placeholder": "Please enter VolcEngine project ID",
+      "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6649/94336\" target=\"_blank\">https://www.volcengine.com/docs/6649/94336</a>"
     },
     "vultr_api_key": {
       "label": "Vultr API key",

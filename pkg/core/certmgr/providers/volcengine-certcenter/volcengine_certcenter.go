@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/samber/lo"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
@@ -17,6 +18,8 @@ type CertmgrConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 	// 火山引擎地域。
 	Region string `json:"region"`
 }
@@ -58,6 +61,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// 上传证书
 	// REF: https://www.volcengine.com/docs/6638/1365580
 	importCertificateReq := &vecertificateservice.ImportCertificateInput{
+		ProjectName: lo.EmptyableToPtr(c.config.ProjectName),
 		CertificateInfo: &vecertificateservice.CertificateInfoForImportCertificateInput{
 			CertificateChain: ve.String(certPEM),
 			PrivateKey:       ve.String(privkeyPEM),

@@ -23,6 +23,8 @@ type CertmgrConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 }
 
 type Certmgr struct {

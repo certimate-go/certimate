@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
 	velive "github.com/volcengine/volc-sdk-golang/service/live/v20230101"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 
@@ -19,6 +20,8 @@ type CertmgrConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 }
 
 type Certmgr struct {
@@ -57,6 +60,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// 查询证书列表，避免重复上传
 	// REF: https://www.volcengine.com/docs/6469/1186278#%E6%9F%A5%E8%AF%A2%E8%AF%81%E4%B9%A6%E5%88%97%E8%A1%A8
 	listCertReq := &velive.ListCertV2Body{}
+	listCertReq.ProjectName = lo.EmptyableToPtr(c.config.ProjectName)
 	listCertResp, err := c.sdkClient.ListCertV2(ctx, listCertReq)
 	c.logger.Debug("sdk request 'live.ListCertV2'", slog.Any("request", listCertReq), slog.Any("response", listCertResp))
 	if err != nil {
@@ -93,7 +97,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 	// 上传新证书
 	// REF: https://www.volcengine.com/docs/6469/1186278#%E6%B7%BB%E5%8A%A0%E8%AF%81%E4%B9%A6
 	createCertReq := &velive.CreateCertBody{
-		CertName: ve.String(certName),
+		ProjectName: lo.EmptyableToPtr(c.config.ProjectName),
+		CertName:    ve.String(certName),
 		Rsa: velive.CreateCertBodyRsa{
 			Prikey: privkeyPEM,
 			Pubkey: certPEM,

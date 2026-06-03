@@ -21,6 +21,8 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 	// 火山引擎地域。
 	Region string `json:"region"`
 	// WAF 接入模式。
@@ -51,6 +53,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
+		ProjectName:     config.ProjectName,
 		Region:          config.Region,
 	})
 	if err != nil {
@@ -106,6 +109,7 @@ func (d *Deployer) deployWithCNAME(ctx context.Context, cloudCertId string) erro
 	// 查询云 WAF 实例防护网站信息
 	// REF: https://www.volcengine.com/docs/6511/1214827
 	listDomainReq := &vewaf.ListDomainInput{
+		ProjectName:   lo.EmptyableToPtr(d.config.ProjectName),
 		Region:        ve.String(d.config.Region),
 		Domain:        ve.String(d.config.Domain),
 		AccurateQuery: ve.Int32(1),
@@ -124,6 +128,7 @@ func (d *Deployer) deployWithCNAME(ctx context.Context, cloudCertId string) erro
 	// REF: https://www.volcengine.com/docs/6511/1214835
 	domainInfo := listDomainResp.Data[0]
 	updateDomainReq := &vewaf.UpdateDomainInput{
+		ProjectName: lo.EmptyableToPtr(d.config.ProjectName),
 		Region:      ve.String(d.config.Region),
 		Domain:      ve.String(d.config.Domain),
 		AccessMode:  ve.Int32(10),

@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/samber/lo"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
@@ -22,6 +23,8 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 火山引擎 AccessKeySecret。
 	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 	// 域名匹配模式。
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
@@ -51,6 +54,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
+		ProjectName:     config.ProjectName,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -168,6 +172,7 @@ func (d *Deployer) getMatchedDomainsByWildcard(ctx context.Context, wildcardDoma
 		}
 
 		listCdnDomainsReq := &vecdn.ListCdnDomainsInput{
+			Project:  lo.EmptyableToPtr(d.config.ProjectName),
 			Domain:   ve.String(strings.TrimPrefix(wildcardDomain, "*.")),
 			Status:   ve.String("online"),
 			PageNum:  ve.Int64(int64(listCdnDomainsPageNum)),

@@ -19,6 +19,7 @@ func init() {
 		provider, err := volcenginetos.NewDeployer(&volcenginetos.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
 			AccessKeySecret: credentials.SecretAccessKey,
+			ProjectName:     credentials.ProjectName,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			Bucket:          xmaps.GetString(options.ProviderExtendedConfig, "bucket"),
 			Domain:          xmaps.GetString(options.ProviderExtendedConfig, "domain"),
