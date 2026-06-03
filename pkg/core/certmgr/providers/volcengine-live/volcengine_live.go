@@ -18,8 +18,8 @@ import (
 type CertmgrConfig struct {
 	// 火山引擎 AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
-	// 火山引擎 AccessKeySecret。
-	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎 SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// 火山引擎项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 }
@@ -39,7 +39,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 
 	client := velive.NewInstance()
 	client.SetAccessKey(config.AccessKeyId)
-	client.SetSecretKey(config.AccessKeySecret)
+	client.SetSecretKey(config.SecretAccessKey)
 
 	return &Certmgr{
 		config:    config,

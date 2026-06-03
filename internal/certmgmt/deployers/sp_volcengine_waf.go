@@ -18,7 +18,7 @@ func init() {
 
 		provider, err := volcenginewaf.NewDeployer(&volcenginewaf.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
-			AccessKeySecret: credentials.SecretAccessKey,
+			SecretAccessKey: credentials.SecretAccessKey,
 			ProjectName:     credentials.ProjectName,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			AccessMode:      xmaps.GetString(options.ProviderExtendedConfig, "accessMode"),

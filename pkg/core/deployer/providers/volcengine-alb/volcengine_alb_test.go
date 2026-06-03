@@ -12,7 +12,7 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fRegion          string
 	fListenerId      string
 )
@@ -21,7 +21,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fListenerId, "LISTENERID")
 }
@@ -33,7 +33,7 @@ Shell command to run this test:
 	--VOLCENGINEALB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEALB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEALB_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINEALB_ACCESSKEYSECRET="your-access-key-secret" \
+	--VOLCENGINEALB_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINEALB_REGION="cn-beijing" \
 	--VOLCENGINEALB_LISTENERID="your-listener-id"
 */
@@ -43,7 +43,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy_ToListener", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
-			AccessKeySecret: fAccessKeySecret,
+			SecretAccessKey: fSecretAccessKey,
 			Region:          fRegion,
 			DeployTarget:    impl.DEPLOY_TARGET_LISTENER,
 			ListenerId:      fListenerId,

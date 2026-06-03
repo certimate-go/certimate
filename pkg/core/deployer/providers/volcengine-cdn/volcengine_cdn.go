@@ -21,8 +21,8 @@ import (
 type DeployerConfig struct {
 	// 火山引擎 AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
-	// 火山引擎 AccessKeySecret。
-	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎 SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// 火山引擎项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 	// 域名匹配模式。
@@ -46,14 +46,14 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
-		AccessKeySecret: config.AccessKeySecret,
+		SecretAccessKey: config.SecretAccessKey,
 		ProjectName:     config.ProjectName,
 	})
 	if err != nil {
@@ -255,9 +255,9 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	return nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret string) (*vecdn.CDN, error) {
+func createSDKClient(accessKeyId, secretAccessKey string) (*vecdn.CDN, error) {
 	config := ve.NewConfig().
-		WithAkSk(accessKeyId, accessKeySecret).
+		WithAkSk(accessKeyId, secretAccessKey).
 		WithRegion("cn-north-1")
 
 	session, err := vesession.NewSession(config)

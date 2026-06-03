@@ -12,7 +12,7 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fSpaceName       string
 	fDomainType      string
 	fDomain          string
@@ -22,7 +22,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fSpaceName, "SPACENAME")
 	fp.DefineString(&fDomainType, "DOMAINTYPE")
 	fp.DefineString(&fDomain, "DOMAIN")
@@ -35,7 +35,7 @@ Shell command to run this test:
 	--VOLCENGINEVOD_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEVOD_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEVOD_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINEVOD_ACCESSKEYSECRET="your-access-key-secret" \
+	--VOLCENGINEVOD_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINEVOD_SPACENAME="vod-space-name" \
 	--VOLCENGINEVOD_DOMAINTYPE="play" \
 	--VOLCENGINEVOD_DOMAIN="example.com"
@@ -46,7 +46,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:        fAccessKeyId,
-			AccessKeySecret:    fAccessKeySecret,
+			SecretAccessKey:    fSecretAccessKey,
 			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			SpaceName:          fSpaceName,
 			DomainType:         fDomainType,

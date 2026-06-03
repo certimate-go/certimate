@@ -46,6 +46,13 @@ func init() {
 						record.Set("config", config)
 						changed = true
 					}
+				case "volcengine":
+					if _, ok := config["accessKeySecret"]; ok {
+						config["secretAccessKey"] = config["accessKeySecret"]
+						delete(config, "accessKeySecret")
+						record.Set("config", config)
+						changed = true
+					}
 				}
 
 				if changed {

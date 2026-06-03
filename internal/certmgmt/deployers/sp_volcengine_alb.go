@@ -18,7 +18,7 @@ func init() {
 
 		provider, err := volcenginealb.NewDeployer(&volcenginealb.DeployerConfig{
 			AccessKeyId:     credentials.AccessKeyId,
-			AccessKeySecret: credentials.SecretAccessKey,
+			SecretAccessKey: credentials.SecretAccessKey,
 			ProjectName:     credentials.ProjectName,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			DeployTarget:    xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),

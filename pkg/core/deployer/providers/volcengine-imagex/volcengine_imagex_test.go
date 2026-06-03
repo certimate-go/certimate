@@ -12,7 +12,7 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fRegion          string
 	fServiceId       string
 	fDomain          string
@@ -22,7 +22,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fServiceId, "SERVICEID")
 	fp.DefineString(&fDomain, "DOMAIN")
@@ -35,7 +35,7 @@ Shell command to run this test:
 	--VOLCENGINEIMAGEX_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEIMAGEX_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEIMAGEX_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINEIMAGEX_ACCESSKEYSECRET="your-access-key-secret" \
+	--VOLCENGINEIMAGEX_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINEIMAGEX_REGION="cn-north-1" \
 	--VOLCENGINEIMAGEX_SERVICEID="your-service-id" \
 	--VOLCENGINEIMAGEX_DOMAIN="example.com"
@@ -46,7 +46,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
-			AccessKeySecret: fAccessKeySecret,
+			SecretAccessKey: fSecretAccessKey,
 			Region:          fRegion,
 			ServiceId:       fServiceId,
 			Domain:          fDomain,

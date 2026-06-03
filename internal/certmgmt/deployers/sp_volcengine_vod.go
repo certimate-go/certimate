@@ -18,7 +18,7 @@ func init() {
 
 		provider, err := volcenginevod.NewDeployer(&volcenginevod.DeployerConfig{
 			AccessKeyId:        credentials.AccessKeyId,
-			AccessKeySecret:    credentials.SecretAccessKey,
+			SecretAccessKey:    credentials.SecretAccessKey,
 			ProjectName:        credentials.ProjectName,
 			SpaceName:          xmaps.GetString(options.ProviderExtendedConfig, "spaceName"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),

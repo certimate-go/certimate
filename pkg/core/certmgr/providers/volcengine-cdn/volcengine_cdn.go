@@ -21,8 +21,8 @@ import (
 type CertmgrConfig struct {
 	// 火山引擎 AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
-	// 火山引擎 AccessKeySecret。
-	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎 SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// 火山引擎项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 }
@@ -40,7 +40,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}

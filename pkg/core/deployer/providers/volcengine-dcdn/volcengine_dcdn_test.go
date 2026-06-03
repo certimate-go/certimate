@@ -12,7 +12,7 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fDomain          string
 )
 
@@ -20,7 +20,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fDomain, "DOMAIN")
 }
 
@@ -31,7 +31,7 @@ Shell command to run this test:
 	--VOLCENGINEDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEDCDN_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINEDCDN_ACCESSKEYSECRET="your-access-key-secret" \
+	--VOLCENGINEDCDN_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINEDCDN_DOMAIN="example.com"
 */
 func TestProvider(t *testing.T) {
@@ -40,7 +40,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:        fAccessKeyId,
-			AccessKeySecret:    fAccessKeySecret,
+			SecretAccessKey:    fSecretAccessKey,
 			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			Domain:             fDomain,
 		})

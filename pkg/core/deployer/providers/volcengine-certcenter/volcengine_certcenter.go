@@ -13,8 +13,8 @@ import (
 type DeployerConfig struct {
 	// 火山引擎 AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
-	// 火山引擎 AccessKeySecret。
-	AccessKeySecret string `json:"accessKeySecret"`
+	// 火山引擎 SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
 	// 火山引擎项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 	// 火山引擎地域。
@@ -36,7 +36,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 
 	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
-		AccessKeySecret: config.AccessKeySecret,
+		SecretAccessKey: config.SecretAccessKey,
 		ProjectName:     config.ProjectName,
 		Region:          config.Region,
 	})

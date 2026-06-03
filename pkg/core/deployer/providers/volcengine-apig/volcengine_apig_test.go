@@ -12,7 +12,7 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fRegion          string
 	fDomain          string
 )
@@ -21,7 +21,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fDomain, "DOMAIN")
 }
@@ -33,7 +33,7 @@ Shell command to run this test:
 	--VOLCENGINEAPIG_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEAPIG_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEAPIG_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINEAPIG_ACCESSKEYSECRET="your-access-key-secret" \
+	--VOLCENGINEAPIG_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINEALB_REGION="cn-beijing" \
 	--VOLCENGINEAPIG_DOMAIN="example.com"
 */
@@ -43,7 +43,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:        fAccessKeyId,
-			AccessKeySecret:    fAccessKeySecret,
+			SecretAccessKey:    fSecretAccessKey,
 			Region:             fRegion,
 			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			Domain:             fDomain,

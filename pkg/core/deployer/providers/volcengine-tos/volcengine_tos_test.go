@@ -12,7 +12,7 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fRegion          string
 	fBucket          string
 	fDomain          string
@@ -22,7 +22,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fBucket, "BUCKET")
 	fp.DefineString(&fDomain, "DOMAIN")
@@ -35,7 +35,7 @@ Shell command to run this test:
 	--VOLCENGINETOS_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINETOS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINETOS_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINETOS_ACCESSKEYSECRET="your-access-key-secret" \
+	--VOLCENGINETOS_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINETOS_REGION="cn-beijing" \
 	--VOLCENGINETOS_BUCKET="your-tos-bucket" \
 	--VOLCENGINETOS_DOMAIN="example.com"
@@ -46,7 +46,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
-			AccessKeySecret: fAccessKeySecret,
+			SecretAccessKey: fSecretAccessKey,
 			Region:          fRegion,
 			Bucket:          fBucket,
 			Domain:          fDomain,

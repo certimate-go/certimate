@@ -12,14 +12,14 @@ var (
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 )
 
 func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 }
 
 /*
@@ -29,7 +29,7 @@ Shell command to run this test:
 	--VOLCENGINECERTCENTER_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINECERTCENTER_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINECERTCENTER_ACCESSKEYID="your-access-key-id" \
-	--VOLCENGINECERTCENTER_ACCESSKEYSECRET="your-access-key-secret"
+	--VOLCENGINECERTCENTER_SECRETACCESSKEY="your-secret-access-key"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -37,7 +37,7 @@ func TestProvider(t *testing.T) {
 	t.Run("Upload", func(t *testing.T) {
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			AccessKeyId:     fAccessKeyId,
-			AccessKeySecret: fAccessKeySecret,
+			SecretAccessKey: fSecretAccessKey,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)
