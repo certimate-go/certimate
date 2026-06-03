@@ -340,6 +340,7 @@ const (
 	DeploymentProviderTypeBunnyCDN              = DeploymentProviderType(AccessProviderTypeBunny + "-cdn")
 	DeploymentProviderTypeBytePlusCDN           = DeploymentProviderType(AccessProviderTypeBytePlus + "-cdn")
 	DeploymentProviderTypeBytePlusCertCenter    = DeploymentProviderType(AccessProviderTypeBytePlus + "-certcenter")
+	DeploymentProviderTypeBytePlusTOS           = DeploymentProviderType(AccessProviderTypeBytePlus + "-tos")
 	DeploymentProviderTypeCacheFly              = DeploymentProviderType(AccessProviderTypeCacheFly)
 	DeploymentProviderTypeCdnfly                = DeploymentProviderType(AccessProviderTypeCdnfly)
 	DeploymentProviderTypeCPanel                = DeploymentProviderType(AccessProviderTypeCPanel)

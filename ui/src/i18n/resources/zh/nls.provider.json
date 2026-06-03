@@ -92,6 +92,7 @@
   "byteplus_cdn": "BytePlus - 内容分发网络 CDN",
   "byteplus_certcenter_upload": "BytePlus - 上传到证书中心",
   "byteplus_dns": "BytePlus - DNS",
+  "byteplus_tos": "BytePlus - 对象存储 TOS",
   "cachefly": "CacheFly",
   "cdnfly": "Cdnfly",
   "cloudflare": "Cloudflare",

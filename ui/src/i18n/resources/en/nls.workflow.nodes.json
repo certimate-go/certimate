@@ -1217,6 +1217,19 @@
         "label": "BytePlus region",
         "placeholder": "Please enter BytePlus Certificate Center region (e.g. ap-singapore-1)"
       },
+      "byteplus_tos_region": {
+        "label": "BytePlus region",
+        "placeholder": "Please enter BytePlus TOS region (e.g. ap-singapore-1)",
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
+      },
+      "byteplus_tos_bucket": {
+        "label": "BytePlus TOS bucket",
+        "placeholder": "Please enter BytePlus TOS bucket name"
+      },
+      "byteplus_tos_domain": {
+        "label": "BytePlus TOS custom domain",
+        "placeholder": "Please enter BytePlus TOS bucket custom domain name"
+      },
       "cdnfly_deploy_target": {
         "option": {
           "website": {

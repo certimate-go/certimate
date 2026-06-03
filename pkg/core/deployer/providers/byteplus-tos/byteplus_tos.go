@@ -1,0 +1,125 @@
+package byteplustos
+
+import (
+	"context"
+	"fmt"
+	"log/slog"
+
+	"github.com/volcengine/ve-tos-golang-sdk/v2/tos"
+
+	"github.com/certimate-go/certimate/pkg/core/certmgr"
+	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-certcenter"
+	"github.com/certimate-go/certimate/pkg/core/deployer"
+)
+
+type DeployerConfig struct {
+	// BytePlus AccessKeyId。
+	AccessKeyId string `json:"accessKeyId"`
+	// BytePlus SecretAccessKey。
+	SecretAccessKey string `json:"secretAccessKey"`
+	// BytePlus 项目名称。
+	ProjectName string `json:"projectName,omitempty"`
+	// BytePlus 地域。
+	Region string `json:"region"`
+	// 存储桶名。
+	Bucket string `json:"bucket"`
+	// 自定义域名（不支持泛域名）。
+	Domain string `json:"domain"`
+}
+
+type Deployer struct {
+	config     *DeployerConfig
+	logger     *slog.Logger
+	sdkClient  *tos.ClientV2
+	sdkCertmgr certmgr.Provider
+}
+
+var _ deployer.Provider = (*Deployer)(nil)
+
+func NewDeployer(config *DeployerConfig) (*Deployer, error) {
+	if config == nil {
+		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
+	}
+
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	pcertmgr, err := certmgrimpl.NewCertmgr(&certmgrimpl.CertmgrConfig{
+		AccessKeyId:     config.AccessKeyId,
+		SecretAccessKey: config.SecretAccessKey,
+		ProjectName:     config.ProjectName,
+		Region:          config.Region,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("could not create certmgr: %w", err)
+	}
+
+	return &Deployer{
+		config:     config,
+		logger:     slog.Default(),
+		sdkClient:  client,
+		sdkCertmgr: pcertmgr,
+	}, nil
+}
+
+func (d *Deployer) SetLogger(logger *slog.Logger) {
+	if logger == nil {
+		d.logger = slog.New(slog.DiscardHandler)
+	} else {
+		d.logger = logger
+	}
+
+	d.sdkCertmgr.SetLogger(logger)
+}
+
+func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*deployer.DeployResult, error) {
+	if d.config.Bucket == "" {
+		return nil, fmt.Errorf("config `bucket` is required")
+	}
+	if d.config.Domain == "" {
+		return nil, fmt.Errorf("config `domain` is required")
+	}
+
+	// 上传证书
+	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+	} else {
+		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
+	}
+
+	// 设置自定义域名
+	// REF: https://docs.byteplus.com/en/docs/tos/Putbucketcustomdomain
+	// REF: https://docs.byteplus.com/en/docs/tos/Manage-custom-domain-names-go-sdk
+	putBucketCustomDomainReq := &tos.PutBucketCustomDomainInput{
+		Bucket: d.config.Bucket,
+		Rule: tos.CustomDomainRule{
+			Domain: d.config.Domain,
+			CertID: upres.CertId,
+		},
+	}
+	putBucketCustomDomainResp, err := d.sdkClient.PutBucketCustomDomain(ctx, putBucketCustomDomainReq)
+	d.logger.Debug("sdk request 'tos.PutBucketCustomDomain'", slog.Any("request", putBucketCustomDomainReq), slog.Any("response", putBucketCustomDomainResp))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sdk request 'tos.PutBucketCustomDomain': %w", err)
+	}
+
+	return &deployer.DeployResult{}, nil
+}
+
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*tos.ClientV2, error) {
+	endpoint := fmt.Sprintf("tos-%s.bytepluses.com", region)
+
+	client, err := tos.NewClientV2(
+		endpoint,
+		tos.WithRegion(region),
+		tos.WithCredentials(tos.NewStaticCredentials(accessKeyId, secretAccessKey)),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
