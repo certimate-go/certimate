@@ -244,7 +244,7 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 		if err != nil {
 			return nil, fmt.Errorf("could not parse custom private key: %w", err)
 		} else {
-			privkeyAlg, privkeySize, _ := xcertkey.DetectPrivateKeyAlgorithm(privkey)
+			privkeyAlg, privkeySize, _ := xcertkey.GetPrivateKeyAlgorithm(privkey)
 			switch privkeyAlg {
 			case x509.RSA:
 				if nodeCfg.KeyAlgorithm != fmt.Sprintf("RSA%d", privkeySize) {

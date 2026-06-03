@@ -11,7 +11,7 @@ import (
 
 type KeyAlgorithm = x509.PublicKeyAlgorithm
 
-func DetectPublicKeyAlgorithm(pubkey crypto.PublicKey) (_algorithm KeyAlgorithm, _size int, _error error) {
+func GetPublicKeyAlgorithm(pubkey crypto.PublicKey) (_algorithm KeyAlgorithm, _size int, _error error) {
 	switch t := pubkey.(type) {
 	case *rsa.PublicKey:
 		size := t.N.BitLen()
@@ -28,7 +28,7 @@ func DetectPublicKeyAlgorithm(pubkey crypto.PublicKey) (_algorithm KeyAlgorithm,
 	return x509.UnknownPublicKeyAlgorithm, 0, fmt.Errorf("unknown public key type")
 }
 
-func DetectPrivateKeyAlgorithm(privkey crypto.PrivateKey) (_algorithm KeyAlgorithm, _size int, _error error) {
+func GetPrivateKeyAlgorithm(privkey crypto.PrivateKey) (_algorithm KeyAlgorithm, _size int, _error error) {
 	switch t := privkey.(type) {
 	case *rsa.PrivateKey:
 		size := t.N.BitLen()
