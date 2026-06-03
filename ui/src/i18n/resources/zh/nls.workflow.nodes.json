@@ -452,15 +452,15 @@
         "help": "提示：待部署证书来自之前的申请或上传节点，如果选项为空请先检查前序节点。"
       },
       "provider": {
-        "label": "提供商",
-        "placeholder": "请选择提供商",
+        "label": "主机提供商",
+        "placeholder": "请选择主机提供商",
         "search": {
-          "placeholder": "搜索提供商……"
+          "placeholder": "搜索主机提供商……"
         }
       },
       "provider_access": {
-        "label": "提供商授权",
-        "placeholder": "请选择提供商授权",
+        "label": "主机提供商授权",
+        "placeholder": "请选择主机提供商授权",
         "button": "新建"
       },
       "skip_on_last_succeeded": {
@@ -1215,6 +1215,10 @@
       "byteplus_certcenter_region": {
         "label": "BytePlus 服务地域",
         "placeholder": "请输入 BytePlus 证书中心服务地域（例如：ap-singapore-1）"
+      },
+      "byteplus_medialive_domain": {
+        "label": "BytePlus 视频平台直播流域名",
+        "placeholder": "请输入 BytePlus 视频平台直播流域名"
       },
       "byteplus_tos_region": {
         "label": "BytePlus 服务地域",

@@ -1,4 +1,4 @@
-package volcenginelive
+package byteplusmedialive
 
 import (
 	"context"
@@ -7,27 +7,27 @@ import (
 	"strings"
 	"time"
 
+	bp "github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"
+	bplive "github.com/byteplus-sdk/byteplus-sdk-golang/service/live/v20230101"
 	"github.com/samber/lo"
-	velive "github.com/volcengine/volc-sdk-golang/service/live/v20230101"
-	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
 type CertmgrConfig struct {
-	// 火山引擎 AccessKeyId。
+	// BytePlus AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
-	// 火山引擎 SecretAccessKey。
+	// BytePlus SecretAccessKey。
 	SecretAccessKey string `json:"secretAccessKey"`
-	// 火山引擎项目名称。
+	// BytePlus 项目名称。
 	ProjectName string `json:"projectName,omitempty"`
 }
 
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *velive.Live
+	sdkClient *bplive.Live
 }
 
 var _ certmgr.Provider = (*Certmgr)(nil)
@@ -37,7 +37,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client := velive.NewInstance()
+	client := bplive.NewInstance()
 	client.SetAccessKey(config.AccessKeyId)
 	client.SetSecretKey(config.SecretAccessKey)
 
@@ -58,7 +58,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 
 func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*certmgr.UploadResult, error) {
 	// 查询证书列表，避免重复上传
-	// REF: https://www.volcengine.com/docs/6469/1126823
+	// REF: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-listcertv2
 	listCertPageNum := 1
 	listCertPageSize := 10
 	for {
@@ -68,24 +68,24 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		default:
 		}
 
-		listCertReq := &velive.ListCertV2Body{}
+		listCertReq := &bplive.ListCertV2Body{}
 		listCertReq.ProjectName = lo.EmptyableToPtr(c.config.ProjectName)
-		listCertReq.PageNum = ve.Int32(int32(listCertPageNum))
-		listCertReq.PageSize = ve.Int32(int32(listCertPageSize))
-		listCertResp, err := c.sdkClient.ListCertV2(ctx, listCertReq)
-		c.logger.Debug("sdk request 'live.ListCertV2'", slog.Any("request", listCertReq), slog.Any("response", listCertResp))
+		listCertReq.PageNum = bp.Int32(int32(listCertPageNum))
+		listCertReq.PageSize = bp.Int32(int32(listCertPageSize))
+		listCertResp, err := c.sdkClient.ListCertV2(listCertReq)
+		c.logger.Debug("sdk request 'medialive.ListCertV2'", slog.Any("request", listCertReq), slog.Any("response", listCertResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'live.ListCertV2': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'medialive.ListCertV2': %w", err)
 		}
 
 		for _, certItem := range listCertResp.Result.CertList {
 			// 查询证书详细信息
-			// REF: https://www.volcengine.com/docs/6469/1126822
-			describeCertDetailSecretReq := &velive.DescribeCertDetailSecretV2Body{
-				ChainID: ve.String(certItem.ChainID),
+			// REF: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-describecertdetailsecretv2-2023
+			describeCertDetailSecretReq := &bplive.DescribeCertDetailSecretV2Body{
+				ChainID: bp.String(certItem.ChainID),
 			}
-			describeCertDetailSecretResp, err := c.sdkClient.DescribeCertDetailSecretV2(ctx, describeCertDetailSecretReq)
-			c.logger.Debug("sdk request 'live.DescribeCertDetailSecretV2'", slog.Any("request", describeCertDetailSecretReq), slog.Any("response", describeCertDetailSecretResp))
+			describeCertDetailSecretResp, err := c.sdkClient.DescribeCertDetailSecretV2(describeCertDetailSecretReq)
+			c.logger.Debug("sdk request 'medialive.DescribeCertDetailSecretV2'", slog.Any("request", describeCertDetailSecretReq), slog.Any("response", describeCertDetailSecretResp))
 			if err != nil {
 				continue
 			}
@@ -108,24 +108,24 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 		listCertPageNum++
 	}
 
-	// 生成新证书名（需符合火山引擎命名规则）
+	// 生成新证书名（需符合 BytePlus 命名规则）
 	certName := fmt.Sprintf("certimate-%d", time.Now().UnixMilli())
 
 	// 添加证书
-	// REF: https://www.volcengine.com/docs/6469/1126817
-	createCertReq := &velive.CreateCertBody{
+	// REF: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-createcert-2023
+	createCertReq := &bplive.CreateCertBody{
 		ProjectName: lo.EmptyableToPtr(c.config.ProjectName),
-		CertName:    ve.String(certName),
-		Rsa: velive.CreateCertBodyRsa{
+		CertName:    bp.String(certName),
+		Rsa: bplive.CreateCertBodyRsa{
 			Prikey: privkeyPEM,
 			Pubkey: certPEM,
 		},
 		UseWay: "https",
 	}
-	createCertResp, err := c.sdkClient.CreateCert(ctx, createCertReq)
-	c.logger.Debug("sdk request 'live.CreateCert'", slog.Any("request", createCertReq), slog.Any("response", createCertResp))
+	createCertResp, err := c.sdkClient.CreateCert(createCertReq)
+	c.logger.Debug("sdk request 'medialive.CreateCert'", slog.Any("request", createCertReq), slog.Any("response", createCertResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'live.CreateCert': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'medialive.CreateCert': %w", err)
 	}
 
 	return &certmgr.UploadResult{
@@ -136,20 +136,20 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*cert
 
 func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*certmgr.ReplaceResult, error) {
 	// 更新证书
-	// REF: https://www.volcengine.com/docs/6469/1126817
-	createCertReq := &velive.CreateCertBody{
+	// REF: https://docs.byteplus.com/en/docs/byteplus-media-live/docs-createcert-2023
+	createCertReq := &bplive.CreateCertBody{
 		ProjectName: lo.EmptyableToPtr(c.config.ProjectName),
-		ChainID:     ve.String(certIdOrName),
-		Rsa: velive.CreateCertBodyRsa{
+		ChainID:     bp.String(certIdOrName),
+		Rsa: bplive.CreateCertBodyRsa{
 			Prikey: privkeyPEM,
 			Pubkey: certPEM,
 		},
 		UseWay: "https",
 	}
-	createCertResp, err := c.sdkClient.CreateCert(ctx, createCertReq)
-	c.logger.Debug("sdk request 'live.CreateCert'", slog.Any("request", createCertReq), slog.Any("response", createCertResp))
+	createCertResp, err := c.sdkClient.CreateCert(createCertReq)
+	c.logger.Debug("sdk request 'medialive.CreateCert'", slog.Any("request", createCertReq), slog.Any("response", createCertResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'live.CreateCert': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'medialive.CreateCert': %w", err)
 	}
 
 	return &certmgr.ReplaceResult{}, nil

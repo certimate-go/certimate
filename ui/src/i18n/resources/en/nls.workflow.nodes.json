@@ -453,15 +453,15 @@
         "help": "Notes: The certificate to be deployed comes from the previous nodes of application or upload."
       },
       "provider": {
-        "label": "Provider",
-        "placeholder": "Please select provider",
+        "label": "Hosting provider",
+        "placeholder": "Please select hosting provider",
         "search": {
-          "placeholder": "Search provider ..."
+          "placeholder": "Search hosting provider ..."
         }
       },
       "provider_access": {
-        "label": "Provider credential",
-        "placeholder": "Please select an credential of the provider",
+        "label": "Hosting provider credential",
+        "placeholder": "Please select an credential of the hosting provider",
         "button": "Create"
       },
       "skip_on_last_succeeded": {
@@ -1216,6 +1216,10 @@
       "byteplus_certcenter_region": {
         "label": "BytePlus region",
         "placeholder": "Please enter BytePlus Certificate Center region (e.g. ap-singapore-1)"
+      },
+      "byteplus_medialive_domain": {
+        "label": "BytePlus MediaLive streaming domain",
+        "placeholder": "Please enter BytePlus MediaLive streaming domain name"
       },
       "byteplus_tos_region": {
         "label": "BytePlus region",
