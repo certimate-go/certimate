@@ -132,6 +132,14 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 		return execRes, fmt.Errorf("unsupported upload source: '%s'", nodeCfg.Source)
 	}
 
+	// 二次检测是否可以跳过执行
+	if lastCertificate != nil {
+		if xcert.EqualCertificatesFromPEM(certPEM, lastCertificate.Certificate) {
+			ne.logger.Info("skip this uploading, because the last uploaded certificate already exists")
+			return execRes, nil
+		}
+	}
+
 	// 验证证书
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {
@@ -143,7 +151,7 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	// 验证私钥
 	privkey, err := xcert.ParsePrivateKeyFromPEM(privkeyPEM)
 	if err != nil {
-		return nil, err
+		return execRes, err
 	} else {
 		matched := false
 		switch pub := certX509.PublicKey.(type) {
@@ -162,14 +170,6 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 
 		if !matched {
 			return nil, fmt.Errorf("the uploaded private key does not match the uploaded certificate")
-		}
-	}
-
-	// 二次检测是否可以跳过执行
-	if lastCertificate != nil {
-		if xcert.EqualCertificatesFromPEM(certPEM, lastCertificate.Certificate) {
-			ne.logger.Info("skip this uploading, because the last uploaded certificate already exists")
-			return execRes, nil
 		}
 	}
 

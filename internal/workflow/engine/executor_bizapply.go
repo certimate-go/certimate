@@ -98,7 +98,7 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 	}
 
 	// 申请证书
-	obtainResp, err := ne.executeObtain(execCtx, &nodeCfg, lastCertificate)
+	obtainResp, err := ne.execObtainCertificate(execCtx, &nodeCfg, lastCertificate)
 	if err != nil {
 		return execRes, err
 	}
@@ -228,7 +228,7 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 	return false, ""
 }
 
-func (ne *bizApplyNodeExecutor) executeObtain(execCtx *NodeExecutionContext, nodeCfg *domain.WorkflowNodeConfigForBizApply, lastCertificate *domain.Certificate) (*certacme.ObtainCertificateResponse, error) {
+func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionContext, nodeCfg *domain.WorkflowNodeConfigForBizApply, lastCertificate *domain.Certificate) (*certacme.ObtainCertificateResponse, error) {
 	// 读取私钥算法
 	// 如果复用私钥，则保持算法一致
 	keyAlgorithm := domain.CertificateKeyAlgorithmType(nodeCfg.KeyAlgorithm)
