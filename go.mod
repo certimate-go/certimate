@@ -14,7 +14,7 @@ require (
 	github.com/alibabacloud-go/cas-20200407/v4 v4.2.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/cloudapi-20160714/v5 v5.7.10
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.16
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.1
 	github.com/alibabacloud-go/dcdn-20180115/v4 v4.1.0
 	github.com/alibabacloud-go/ddoscoo-20200101/v5 v5.0.2
 	github.com/alibabacloud-go/esa-20240910/v2 v2.48.0
@@ -25,27 +25,27 @@ require (
 	github.com/alibabacloud-go/nlb-20220430/v4 v4.1.3
 	github.com/alibabacloud-go/openapi-util v0.1.2
 	github.com/alibabacloud-go/slb-20140515/v4 v4.0.14
-	github.com/alibabacloud-go/tea v1.4.0
+	github.com/alibabacloud-go/tea v1.5.0
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/alibabacloud-go/vod-20170321/v4 v4.11.3
 	github.com/alibabacloud-go/waf-openapi-20211001/v7 v7.7.0
 	github.com/aliyun/alibabacloud-oss-go-sdk-v2 v1.5.1
-	github.com/aws/aws-sdk-go-v2 v1.41.7
-	github.com/aws/aws-sdk-go-v2/config v1.32.17
-	github.com/aws/aws-sdk-go-v2/credentials v1.19.16
+	github.com/aws/aws-sdk-go-v2 v1.41.8
+	github.com/aws/aws-sdk-go-v2/config v1.32.19
+	github.com/aws/aws-sdk-go-v2/credentials v1.19.18
 	github.com/aws/aws-sdk-go-v2/service/acm v1.38.3
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.63.0
 	github.com/aws/aws-sdk-go-v2/service/iam v1.53.10
-	github.com/aws/aws-sdk-go-v2/service/lightsail v1.54.0
-	github.com/baidubce/bce-sdk-go v0.9.266
+	github.com/aws/aws-sdk-go-v2/service/lightsail v1.54.1
+	github.com/baidubce/bce-sdk-go v0.9.267
 	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.65
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.65
-	github.com/go-acme/lego/v5 v5.1.0
+	github.com/go-acme/lego/v5 v5.2.2
 	github.com/go-cmd/cmd v1.4.3
 	github.com/go-resty/resty/v2 v2.17.2
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/google/go-querystring v1.2.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.197
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.198
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/kong/go-kong v0.75.1
@@ -66,7 +66,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.90
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb v1.3.83
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.102
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.106
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap v1.3.34
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live v1.3.95
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf v1.3.29
@@ -74,9 +74,9 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.93
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.96
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.95
-	github.com/ucloud/ucloud-sdk-go v0.22.73
+	github.com/ucloud/ucloud-sdk-go v0.22.74
 	github.com/volcengine/ve-tos-golang-sdk/v2 v2.9.4
-	github.com/volcengine/volc-sdk-golang v1.0.248
+	github.com/volcengine/volc-sdk-golang v1.0.249
 	github.com/volcengine/volcengine-go-sdk v1.2.27
 	github.com/wneessen/go-mail v0.7.3
 	github.com/xhit/go-str2duration/v2 v2.1.0
@@ -97,13 +97,13 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.12.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/dns/armdns v1.2.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/privatedns/armprivatedns v1.3.0 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resourcegraph/armresourcegraph v0.9.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resourcegraph/armresourcegraph v0.10.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/internal v1.2.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.7.2 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-fc-util v0.0.7 // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/aws/aws-sdk-go v1.55.8 // indirect
-	github.com/aws/aws-sdk-go-v2/service/route53 v1.62.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/route53 v1.62.8 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/buger/goterm v1.0.4 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
@@ -111,7 +111,6 @@ require (
 	github.com/djherbis/times v1.6.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.13.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.1 // indirect
-	github.com/go-acme/alidns-20150109/v4 v4.7.0 // indirect
 	github.com/go-acme/tencentclouddnspod v1.3.24 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-openapi/jsonpointer v0.22.5 // indirect
@@ -183,16 +182,16 @@ require (
 	github.com/alibabacloud-go/endpoint-util v1.1.1 // indirect
 	github.com/aliyun/credentials-go v1.4.12 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.23 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.23 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.23 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.24 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.24 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.24 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.24 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.25 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.9 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.23 // indirect
-	github.com/aws/aws-sdk-go-v2/service/signin v1.0.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.30.17 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.21 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.42.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.24 // indirect
+	github.com/aws/aws-sdk-go-v2/service/signin v1.1.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.30.18 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.36.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.42.2 // indirect
 	github.com/aws/smithy-go v1.25.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bodgit/gssapi v0.0.3 // indirect
@@ -209,7 +208,8 @@ require (
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/ganigeorgiev/fexpr v0.5.0 // indirect
-	github.com/go-acme/esa-20240910/v2 v2.48.0 // indirect
+	github.com/go-acme/alidns-20150109/v5 v5.4.1 // indirect
+	github.com/go-acme/esa-20240910/v3 v3.2.2 // indirect
 	github.com/go-acme/jdcloud-sdk-go v1.64.0 // indirect
 	github.com/go-acme/tencentedgdeone v1.3.38 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
