@@ -336,6 +336,11 @@
       "placeholder": "Please enter BytePlus SecretKey",
       "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys</a>"
     },
+    "byteplus_project_name": {
+      "label": "BytePlus project ID",
+      "placeholder": "Please enter BytePlus project ID",
+      "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management</a>"
+    },
     "cachefly_api_token": {
       "label": "CacheFly API token",
       "placeholder": "Please enter CacheFly API token",

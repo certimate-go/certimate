@@ -74,7 +74,7 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 
 	client, err := dynv6sdk.NewClient(config.HTTPToken)
 	if err != nil {
-		return nil, fmt.Errorf("dnsexit: %w", err)
+		return nil, fmt.Errorf("dynv6: %w", err)
 	} else {
 		client.SetTimeout(config.HTTPTimeout)
 	}

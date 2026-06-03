@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	bpcdn "github.com/byteplus-sdk/byteplus-sdk-golang/service/cdn"
-	bp "github.com/volcengine/volcengine-go-sdk/volcengine"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core/certmgr"
 	certmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-cdn"
@@ -21,6 +21,8 @@ type DeployerConfig struct {
 	AccessKey string `json:"accessKey"`
 	// BytePlus SecretKey。
 	SecretKey string `json:"secretKey"`
+	// BytePlus 项目名称。
+	ProjectName string `json:"projectName,omitempty"`
 	// 域名匹配模式。
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
@@ -166,10 +168,11 @@ func (d *Deployer) getMatchedDomainsByWildcard(ctx context.Context, wildcardDoma
 		}
 
 		listCdnDomainsReq := &bpcdn.ListCdnDomainsRequest{
-			Domain:   bp.String(strings.TrimPrefix(wildcardDomain, "*.")),
-			Status:   bp.String("online"),
-			PageNum:  bp.Int64(int64(listCdnDomainsPageNum)),
-			PageSize: bp.Int64(int64(listCdnDomainsPageSize)),
+			Project:  lo.EmptyableToPtr(d.config.ProjectName),
+			Domain:   bpcdn.GetStrPtr(strings.TrimPrefix(wildcardDomain, "*.")),
+			Status:   bpcdn.GetStrPtr("online"),
+			PageNum:  bpcdn.GetInt64Ptr(int64(listCdnDomainsPageNum)),
+			PageSize: bpcdn.GetInt64Ptr(int64(listCdnDomainsPageSize)),
 		}
 		listCdnDomainsResp, err := d.sdkClient.ListCdnDomains(listCdnDomainsReq)
 		d.logger.Debug("sdk request 'cdn.ListCdnDomains'", slog.Any("request", listCdnDomainsReq), slog.Any("response", listCdnDomainsResp))

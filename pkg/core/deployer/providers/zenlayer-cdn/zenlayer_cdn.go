@@ -236,7 +236,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]*zcdnsdk.DomainInfo, er
 	domains := make([]*zcdnsdk.DomainInfo, 0)
 
 	// 查询加速域名列表
-	// https://docs.console.zenlayer.com/api-reference/cn/networking/cdn/domain/describedomains
+	// REF: https://docs.console.zenlayer.com/api-reference/cn/networking/cdn/domain/describedomains
 	describeDomainsPageNum := 1
 	describeDomainsPageSize := 100
 	for {

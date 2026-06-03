@@ -174,7 +174,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	}
 
 	// 更新证书
-	// https://docs.ksyun.com/documents/259
+	// REF: https://docs.ksyun.com/documents/259
 	setCertificateInput := map[string]any{
 		"CertificateId":     d.config.CertificateId,
 		"CertificateName":   fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
@@ -194,7 +194,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	domains := make([]string, 0)
 
 	// 查询域名列表
-	// https://docs.ksyun.com/documents/198
+	// REF: https://docs.ksyun.com/documents/198
 	getCdnDomainsPageNumber := 1
 	getCdnDomainsPageSize := 100
 	for {
@@ -250,7 +250,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 func (d *Deployer) findDomainIdByDomain(ctx context.Context, domain string) (string, error) {
 	// 查询域名列表
-	// https://docs.ksyun.com/documents/198
+	// REF: https://docs.ksyun.com/documents/198
 	getCdnDomainsPageNumber := 1
 	getCdnDomainsPageSize := 100
 	for {
@@ -316,7 +316,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	}
 
 	// 为加速域名配置证书接口
-	// https://docs.ksyun.com/documents/261
+	// REF: https://docs.ksyun.com/documents/261
 	configCertificateInput := map[string]any{
 		"Enable":            "on",
 		"DomainIds":         domainId,

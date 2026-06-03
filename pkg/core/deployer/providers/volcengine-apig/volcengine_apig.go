@@ -190,7 +190,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]*veapig.ItemForListCust
 	domains := make([]*veapig.ItemForListCustomDomainsOutput, 0)
 
 	// 查询自定义域名列表
-	// https://api.volcengine.com/api-explorer?action=ListCustomDomains&serviceCode=apig&version=2021-03-03
+	// REF: https://api.volcengine.com/api-explorer?action=ListCustomDomains&serviceCode=apig&version=2021-03-03
 	listCustomDomainsPageNumber := 1
 	listCustomDomainsPageSize := 100
 	for {

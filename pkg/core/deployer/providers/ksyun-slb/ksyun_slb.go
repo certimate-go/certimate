@@ -78,7 +78,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	}
 
 	// 更新证书信息
-	// https://docs.ksyun.com/documents/2121
+	// REF: https://docs.ksyun.com/documents/2121
 	modifyCertificateInput := map[string]any{
 		"CertificateId":   d.config.CertificateId,
 		"CertificateName": fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),

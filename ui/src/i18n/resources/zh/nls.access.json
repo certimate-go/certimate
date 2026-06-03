@@ -334,6 +334,11 @@
       "placeholder": "请输入 BytePlus SecretKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/zh-CN/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/zh-CN/docs/byteplus-platform/docs-managing-keys</a>"
     },
+    "byteplus_project_name": {
+      "label": "BytePlus 项目名称（可选）",
+      "placeholder": "请输入 BytePlus 项目名称",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/zh-CN/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/zh-CN/docs/resourcemanagement/Project_Management</a>"
+    },
     "cachefly_api_token": {
       "label": "CacheFly API Token",
       "placeholder": "请输入 CacheFly API Token",
