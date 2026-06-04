@@ -5,12 +5,12 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/aws-cloudfront"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/aws-clb"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
-	Registries.MustRegister(domain.DeploymentProviderTypeAWSCloudFront, func(options *ProviderFactoryOptions) (core.Deployer, error) {
+	Registries.MustRegister(domain.DeploymentProviderTypeAWSCLB, func(options *ProviderFactoryOptions) (core.Deployer, error) {
 		credentials := domain.AccessConfigForAWS{}
 		if err := xmaps.Populate(options.ProviderAccessConfig, &credentials); err != nil {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
@@ -20,7 +20,8 @@ func init() {
 			AccessKeyId:       credentials.AccessKeyId,
 			SecretAccessKey:   credentials.SecretAccessKey,
 			Region:            xmaps.GetString(options.ProviderExtendedConfig, "region"),
-			DistributionId:    xmaps.GetString(options.ProviderExtendedConfig, "distributionId"),
+			LoadbalancerName:  xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerName"),
+			LoadbalancerPort:  xmaps.GetOrDefaultInt32(options.ProviderExtendedConfig, "loadbalancerPort", 443),
 			CertificateSource: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "certificateSource", dplyimpl.CERTIFICATE_SOURCE_ACM),
 		})
 		return provider, err

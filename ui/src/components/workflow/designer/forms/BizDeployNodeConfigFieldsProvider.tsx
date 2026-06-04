@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { DEPLOYMENT_PROVIDERS, type DeploymentProviderType } from "@/domain/provider";
 
@@ -23,6 +23,7 @@ import BizDeployNodeConfigFieldsProviderAliyunVOD from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderAliyunWAF from "./BizDeployNodeConfigFieldsProviderAliyunWAF";
 import BizDeployNodeConfigFieldsProviderAPISIX from "./BizDeployNodeConfigFieldsProviderAPISIX";
 import BizDeployNodeConfigFieldsProviderAWSACM from "./BizDeployNodeConfigFieldsProviderAWSACM";
+import BizDeployNodeConfigFieldsProviderAWSCLB from "./BizDeployNodeConfigFieldsProviderAWSCLB";
 import BizDeployNodeConfigFieldsProviderAWSCloudFront from "./BizDeployNodeConfigFieldsProviderAWSCloudFront";
 import BizDeployNodeConfigFieldsProviderAWSIAM from "./BizDeployNodeConfigFieldsProviderAWSIAM";
 import BizDeployNodeConfigFieldsProviderAzureKeyVault from "./BizDeployNodeConfigFieldsProviderAzureKeyVault";
@@ -157,6 +158,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.ALIYUN_WAF]: BizDeployNodeConfigFieldsProviderAliyunWAF,
   [DEPLOYMENT_PROVIDERS.APISIX]: BizDeployNodeConfigFieldsProviderAPISIX,
   [DEPLOYMENT_PROVIDERS.AWS_ACM]: BizDeployNodeConfigFieldsProviderAWSACM,
+  [DEPLOYMENT_PROVIDERS.AWS_CLB]: BizDeployNodeConfigFieldsProviderAWSCLB,
   [DEPLOYMENT_PROVIDERS.AWS_CLOUDFRONT]: BizDeployNodeConfigFieldsProviderAWSCloudFront,
   [DEPLOYMENT_PROVIDERS.AWS_IAM]: BizDeployNodeConfigFieldsProviderAWSIAM,
   [DEPLOYMENT_PROVIDERS.AZURE_KEYVAULT]: BizDeployNodeConfigFieldsProviderAzureKeyVault,

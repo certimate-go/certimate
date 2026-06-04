@@ -101,7 +101,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	if d.config.DistributionId == "" {
-		return nil, fmt.Errorf("config `distribuitionId` is required")
+		return nil, fmt.Errorf("config `distributionId` is required")
 	}
 
 	// 上传证书
@@ -113,7 +113,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	// 获取分配配置
-	// REF: https://docs.aws.amazon.com/en_us/cloudfront/latest/APIReference/API_GetDistributionConfig.html
+	// REF: https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_GetDistributionConfig.html
 	getDistributionConfigReq := &cloudfront.GetDistributionConfigInput{
 		Id: aws.String(d.config.DistributionId),
 	}
@@ -124,7 +124,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	// 更新分配配置
-	// REF: https://docs.aws.amazon.com/zh_cn/cloudfront/latest/APIReference/API_UpdateDistribution.html
+	// REF: https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdateDistribution.html
 	updateDistributionReq := &cloudfront.UpdateDistributionInput{
 		Id:                 aws.String(d.config.DistributionId),
 		DistributionConfig: getDistributionConfigResp.DistributionConfig,

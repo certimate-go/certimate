@@ -326,6 +326,7 @@ const (
 	DeploymentProviderTypeAliyunWAF             = DeploymentProviderType(AccessProviderTypeAliyun + "-waf")
 	DeploymentProviderTypeAPISIX                = DeploymentProviderType(AccessProviderTypeAPISIX)
 	DeploymentProviderTypeAWSACM                = DeploymentProviderType(AccessProviderTypeAWS + "-acm")
+	DeploymentProviderTypeAWSCLB                = DeploymentProviderType(AccessProviderTypeAWS + "-clb")
 	DeploymentProviderTypeAWSCloudFront         = DeploymentProviderType(AccessProviderTypeAWS + "-cloudfront")
 	DeploymentProviderTypeAWSIAM                = DeploymentProviderType(AccessProviderTypeAWS + "-iam")
 	DeploymentProviderTypeAzureKeyVault         = DeploymentProviderType(AccessProviderTypeAzure + "-keyvault")

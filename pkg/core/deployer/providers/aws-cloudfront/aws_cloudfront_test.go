@@ -14,7 +14,7 @@ var (
 	fAccessKeyId     string
 	fSecretAccessKey string
 	fRegion          string
-	fDistribuitionId string
+	fDistributionId  string
 )
 
 func init() {
@@ -23,7 +23,7 @@ func init() {
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
 	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
-	fp.DefineString(&fDistribuitionId, "DISTRIBUTIONID")
+	fp.DefineString(&fDistributionId, "DISTRIBUTIONID")
 }
 
 /*
@@ -42,10 +42,11 @@ func TestProvider(t *testing.T) {
 
 	t.Run("Deploy", func(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
-			AccessKeyId:     fAccessKeyId,
-			SecretAccessKey: fSecretAccessKey,
-			Region:          fRegion,
-			DistributionId:  fDistribuitionId,
+			AccessKeyId:       fAccessKeyId,
+			SecretAccessKey:   fSecretAccessKey,
+			Region:            fRegion,
+			DistributionId:    fDistributionId,
+			CertificateSource: impl.CERTIFICATE_SOURCE_ACM,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

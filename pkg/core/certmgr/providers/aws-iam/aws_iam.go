@@ -1,6 +1,7 @@
 package awsiam
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"log/slog"
@@ -80,8 +81,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 获取证书列表，避免重复上传
-	// REF: https://docs.aws.amazon.com/en_us/IAM/latest/APIReference/API_ListServerCertificates.html
-	// REF: https://docs.aws.amazon.com/en_us/IAM/latest/APIReference/API_GetServerCertificate.html
+	// REF: https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListServerCertificates.html
+	// REF: https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetServerCertificate.html
 	listServerCertificatesMarker := (*string)(nil)
 	for {
 		select {
@@ -132,6 +133,10 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			return &UploadResult{
 				CertId:   aws.ToString(certItem.ServerCertificateId),
 				CertName: aws.ToString(certItem.ServerCertificateName),
+				ExtendedData: map[string]any{
+					"Arn":  aws.ToString(certItem.Arn),
+					"Path": aws.ToString(certItem.Path),
+				},
 			}, nil
 		}
 
@@ -146,16 +151,13 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	certName := fmt.Sprintf("certimate-%d", time.Now().UnixMilli())
 
 	// 导入证书
-	// REF: https://docs.aws.amazon.com/en_us/IAM/latest/APIReference/API_UploadServerCertificate.html
+	// REF: https://docs.aws.amazon.com/IAM/latest/APIReference/API_UploadServerCertificate.html
 	uploadServerCertificateReq := &awsiam.UploadServerCertificateInput{
 		ServerCertificateName: aws.String(certName),
-		Path:                  aws.String(c.config.CertificatePath),
+		Path:                  aws.String(cmp.Or(c.config.CertificatePath, "/")),
 		CertificateBody:       aws.String(serverCertPEM),
 		CertificateChain:      aws.String(intermediaCertPEM),
 		PrivateKey:            aws.String(privkeyPEM),
-	}
-	if c.config.CertificatePath == "" {
-		uploadServerCertificateReq.Path = aws.String("/")
 	}
 	uploadServerCertificateResp, err := c.sdkClient.UploadServerCertificate(ctx, uploadServerCertificateReq)
 	c.logger.Debug("sdk request 'iam.UploadServerCertificate'", slog.Any("request", uploadServerCertificateReq), slog.Any("response", uploadServerCertificateResp))
@@ -165,7 +167,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 	return &UploadResult{
 		CertId:   aws.ToString(uploadServerCertificateResp.ServerCertificateMetadata.ServerCertificateId),
-		CertName: certName,
+		CertName: aws.ToString(uploadServerCertificateResp.ServerCertificateMetadata.ServerCertificateName),
+		ExtendedData: map[string]any{
+			"Arn":  aws.ToString(uploadServerCertificateResp.ServerCertificateMetadata.Arn),
+			"Path": aws.ToString(uploadServerCertificateResp.ServerCertificateMetadata.Path),
+		},
 	}, nil
 }
 

@@ -968,6 +968,25 @@
         "label": "AWS CloudFront 证书来源",
         "placeholder": "请选择 AWS CloudFront 证书来源"
       },
+      "aws_clb_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS CLB 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_clb_loadbalancer_name": {
+        "label": "AWS CLB 负载均衡器名称",
+        "placeholder": "请输入 AWS CLB 负载均衡器名称",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html</a>"
+      },
+      "aws_clb_loadbalancer_port": {
+        "label": "AWS CLB 负载均衡器侦听端口",
+        "placeholder": "请输入 AWS CLB 负载均衡器侦听端口",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html</a>"
+      },
+      "aws_clb_certificate_source": {
+        "label": "AWS CLB 证书来源",
+        "placeholder": "请选择 AWS CLB 证书来源"
+      },
       "aws_iam_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS IAM 服务区域（例如：us-east-1）",
