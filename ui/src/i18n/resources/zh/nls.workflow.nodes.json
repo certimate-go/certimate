@@ -976,6 +976,19 @@
       "aws_alb_is_default": {
         "label": "设为默认证书"
       },
+      "aws_apigateway_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS API 网关区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_apigateway_domain": {
+        "label": "AWS API 网关自定义域名",
+        "placeholder": "请输入 AWS API 网关自定义域名"
+      },
+      "aws_apigateway_certificate_source": {
+        "label": "AWS API 网关证书来源",
+        "placeholder": "请选择 AWS API 网关证书来源"
+      },
       "aws_clb_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS CLB 服务区域（例如：us-east-1）",

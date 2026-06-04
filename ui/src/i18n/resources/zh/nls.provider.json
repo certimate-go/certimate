@@ -61,6 +61,7 @@
   "aws": "AWS",
   "aws_acm": "AWS - 证书管理器 ACM",
   "aws_alb": "AWS - 应用程序负载均衡器 ALB",
+  "aws_apigateway": "AWS - API 网关",
   "aws_clb": "AWS - 经典负载均衡器 CLB",
   "aws_cloudfront": "AWS - 全球内容分发网络 CloudFront",
   "aws_iam": "AWS - 身份与访问权限管理器 IAM",

@@ -977,6 +977,19 @@
       "aws_alb_is_default": {
         "label": "Set as default certificate"
       },
+      "aws_apigateway_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS API Gateway region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_apigateway_domain": {
+        "label": "AWS API Gateway custom domain",
+        "placeholder": "Please enter AWS API Gateway custom domain name"
+      },
+      "aws_apigateway_certificate_source": {
+        "label": "AWS API Gateway certificate source",
+        "placeholder": "Please select AWS API Gateway certificate source"
+      },
       "aws_clb_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS CLB region (e.g. us-east-1)",

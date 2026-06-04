@@ -24,6 +24,7 @@ import BizDeployNodeConfigFieldsProviderAliyunWAF from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderAPISIX from "./BizDeployNodeConfigFieldsProviderAPISIX";
 import BizDeployNodeConfigFieldsProviderAWSACM from "./BizDeployNodeConfigFieldsProviderAWSACM";
 import BizDeployNodeConfigFieldsProviderAWSALB from "./BizDeployNodeConfigFieldsProviderAWSALB";
+import BizDeployNodeConfigFieldsProviderAWSAPIGateway from "./BizDeployNodeConfigFieldsProviderAWSAPIGateway";
 import BizDeployNodeConfigFieldsProviderAWSCLB from "./BizDeployNodeConfigFieldsProviderAWSCLB";
 import BizDeployNodeConfigFieldsProviderAWSCloudFront from "./BizDeployNodeConfigFieldsProviderAWSCloudFront";
 import BizDeployNodeConfigFieldsProviderAWSIAM from "./BizDeployNodeConfigFieldsProviderAWSIAM";
@@ -161,6 +162,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.APISIX]: BizDeployNodeConfigFieldsProviderAPISIX,
   [DEPLOYMENT_PROVIDERS.AWS_ACM]: BizDeployNodeConfigFieldsProviderAWSACM,
   [DEPLOYMENT_PROVIDERS.AWS_ALB]: BizDeployNodeConfigFieldsProviderAWSALB,
+  [DEPLOYMENT_PROVIDERS.AWS_APIGATEWAY]: BizDeployNodeConfigFieldsProviderAWSAPIGateway,
   [DEPLOYMENT_PROVIDERS.AWS_CLB]: BizDeployNodeConfigFieldsProviderAWSCLB,
   [DEPLOYMENT_PROVIDERS.AWS_CLOUDFRONT]: BizDeployNodeConfigFieldsProviderAWSCloudFront,
   [DEPLOYMENT_PROVIDERS.AWS_IAM]: BizDeployNodeConfigFieldsProviderAWSIAM,
