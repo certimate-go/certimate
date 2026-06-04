@@ -44,6 +44,7 @@ require (
 	github.com/baidubce/bce-sdk-go v0.9.267
 	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.65
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.65
+	github.com/cloudflare/cloudflare-go/v7 v7.4.0
 	github.com/go-acme/lego/v5 v5.2.2
 	github.com/go-cmd/cmd v1.4.3
 	github.com/go-resty/resty/v2 v2.17.2
@@ -272,6 +273,7 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/zeebo/xxh3 v1.1.0 // indirect

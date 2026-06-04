@@ -105,6 +105,7 @@
   "cachefly": "CacheFly",
   "cdnfly": "Cdnfly",
   "cloudflare": "Cloudflare",
+  "cloudflare_ssl": "Cloudflare - Edge Certificates",
   "cloudns": "ClouDNS",
   "cmcccloud": "China Mobile ECloud",
   "cmcccloud_dns": "China Mobile ECloud - DNS",

@@ -1411,6 +1411,22 @@
         "placeholder": "请输入 Cdnfly 证书 ID",
         "tooltip": "请登录 Cdnfly 控制台查看"
       },
+      "cloudflare_ssl_environment": {
+        "label": "Cloudflare 环境",
+        "placeholder": "请输入 Cloudflare 环境",
+        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
+      },
+      "cloudflare_ssl_zone_id": {
+        "label": "Cloudflare DNS 区域 ID",
+        "placeholder": "请输入 Cloudflare DNS 区域 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/#copy-your-zone-id\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/</a>"
+      },
+      "cloudflare_ssl_certificate_id": {
+        "label": "Cloudflare 自定义证书 ID（可选）",
+        "placeholder": "请输入 Cloudflare 自定义证书 ID",
+        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
+        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {

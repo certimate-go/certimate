@@ -31,7 +31,7 @@ const BizDeployNodeConfigFieldsProviderWangsuCDNPro = () => {
         rules={[formRule]}
       >
         <Select
-          options={["production", "stating"].map((s) => ({
+          options={["production", "staging"].map((s) => ({
             label: t(`workflow_node.deploy.form.wangsu_cdnpro_environment.option.${s}.label`),
             value: s,
           }))}

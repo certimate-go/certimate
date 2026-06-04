@@ -819,12 +819,12 @@
       "aliyun_ga_accelerator_id": {
         "label": "Alibaba Cloud GA accelerator ID",
         "placeholder": "Please enter Alibaba Cloud GA accelerator ID",
-        "tooltip": "For more information, <a href=\"https://ga.console.aliyun.com\" target=\"_blank\">https://ga.console.aliyun.com</a>"
+        "tooltip": "For more information, see <a href=\"https://ga.console.aliyun.com\" target=\"_blank\">https://ga.console.aliyun.com</a>"
       },
       "aliyun_ga_listener_id": {
         "label": "Alibaba Cloud GA listener ID",
         "placeholder": "Please enter Alibaba Cloud GA listener ID",
-        "tooltip": "For more information, <a href=\"https://ga.console.aliyun.com\" target=\"_blank\">https://ga.console.aliyun.com</a>"
+        "tooltip": "For more information, see <a href=\"https://ga.console.aliyun.com\" target=\"_blank\">https://ga.console.aliyun.com</a>"
       },
       "aliyun_ga_snidomain": {
         "label": "Alibaba Cloud GA SNI domain (Optional)",
@@ -1411,6 +1411,22 @@
         "label": "Cdnfly certificate ID",
         "placeholder": "Please enter Cdnfly certificate ID",
         "tooltip": "You can find it on Cdnfly dashboard."
+      },
+      "cloudflare_ssl_environment": {
+        "label": "Cloudflare environment",
+        "placeholder": "Please enter Cloudflare environment",
+        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
+      },
+      "cloudflare_ssl_zone_id": {
+        "label": "Cloudflare DNS zone ID",
+        "placeholder": "Please enter Cloudflare DNS zone ID",
+        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/#copy-your-zone-id\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/</a>"
+      },
+      "cloudflare_ssl_certificate_id": {
+        "label": "Cloudflare custom certificate ID (Optional)",
+        "placeholder": "Please enter Cloudflare custom certificate ID",
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
+        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
       },
       "cpanel_deploy_target": {
         "option": {
@@ -2698,7 +2714,7 @@
       "zenlayer_cdn_certificate_id": {
         "label": "Zenlayer CDN certificate ID",
         "placeholder": "Please enter Zenlayer CDN certificate ID",
-        "tooltip": "For more information, <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
+        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
       },
       "zenlayer_ga_deploy_target": {
         "option": {
@@ -2713,12 +2729,12 @@
       "zenlayer_ga_accelerator_id": {
         "label": "Zenlayer ZGA accelerator ID",
         "placeholder": "Please enter Zenlayer ZGA accelerator ID",
-        "tooltip": "For more information, <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
+        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
       },
       "zenlayer_ga_certificate_id": {
         "label": "Zenlayer ZGA certificate ID",
         "placeholder": "Please enter Zenlayer ZGA certificate ID",
-        "tooltip": "For more information, <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
+        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
       }
     }
   },

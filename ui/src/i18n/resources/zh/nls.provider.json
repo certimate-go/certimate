@@ -105,6 +105,7 @@
   "cachefly": "CacheFly",
   "cdnfly": "Cdnfly",
   "cloudflare": "Cloudflare",
+  "cloudflare_ssl": "Cloudflare - 边缘证书",
   "cloudns": "ClouDNS",
   "cmcccloud": "移动云",
   "cmcccloud_dns": "移动云 - 云解析 DNS",
