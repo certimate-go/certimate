@@ -327,6 +327,7 @@ const (
 	DeploymentProviderTypeAPISIX                = DeploymentProviderType(AccessProviderTypeAPISIX)
 	DeploymentProviderTypeAWSACM                = DeploymentProviderType(AccessProviderTypeAWS + "-acm")
 	DeploymentProviderTypeAWSALB                = DeploymentProviderType(AccessProviderTypeAWS + "-alb")
+	DeploymentProviderTypeAWSAmplify            = DeploymentProviderType(AccessProviderTypeAWS + "-amplify")
 	DeploymentProviderTypeAWSAPIGateway         = DeploymentProviderType(AccessProviderTypeAWS + "-apigateway")
 	DeploymentProviderTypeAWSCLB                = DeploymentProviderType(AccessProviderTypeAWS + "-clb")
 	DeploymentProviderTypeAWSCloudFront         = DeploymentProviderType(AccessProviderTypeAWS + "-cloudfront")

@@ -977,6 +977,24 @@
       "aws_alb_is_default": {
         "label": "Set as default certificate"
       },
+      "aws_amplify_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS Amplify region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_amplify_app_id": {
+        "label": "AWS Amplify application ID",
+        "placeholder": "Please enter AWS Amplify application ID",
+        "tooltip": "For more information, see <a href=\"https://console.aws.amazon.com/amplify/\" target=\"_blank\">https://console.aws.amazon.com/amplify/</a>"
+      },
+      "aws_amplify_domain": {
+        "label": "AWS Amplify custom domain",
+        "placeholder": "Please enter AWS Amplify custom domain name"
+      },
+      "aws_amplify_certificate_source": {
+        "label": "AWS Amplify certificate source",
+        "placeholder": "Please select AWS Amplify certificate source"
+      },
       "aws_apigateway_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS API Gateway region (e.g. us-east-1)",

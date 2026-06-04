@@ -976,6 +976,24 @@
       "aws_alb_is_default": {
         "label": "设为默认证书"
       },
+      "aws_amplify_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS Amplify 区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_amplify_app_id": {
+        "label": "AWS Amplify 应用程序 ID",
+        "placeholder": "请输入 AWS Amplify 应用程序 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.aws.amazon.com/amplify/\" target=\"_blank\">https://console.aws.amazon.com/amplify/</a>"
+      },
+      "aws_amplify_domain": {
+        "label": "AWS Amplify 自定义域名",
+        "placeholder": "请输入 AWS Amplify 自定义域名"
+      },
+      "aws_amplify_certificate_source": {
+        "label": "AWS Amplify 证书来源",
+        "placeholder": "请选择 AWS Amplify 证书来源"
+      },
       "aws_apigateway_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS API 网关区域（例如：us-east-1）",
