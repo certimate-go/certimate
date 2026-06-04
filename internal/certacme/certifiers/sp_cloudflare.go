@@ -17,8 +17,8 @@ func init() {
 		}
 
 		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
-			DnsApiToken:           credentials.DnsApiToken,
-			ZoneApiToken:          credentials.ZoneApiToken,
+			ApiToken:              credentials.ApiToken,
+			ApiTokenForZone:       credentials.ApiTokenForZone,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,
 			DnsTTL:                options.DnsTTL,
 		})

@@ -18,24 +18,24 @@ const AccessConfigFormFieldsProviderCloudflare = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "dnsApiToken"]}
-        initialValue={initialValues.dnsApiToken}
-        label={t("access.form.cloudflare_dns_api_token.label")}
+        name={[parentNamePath, "apiToken"]}
+        initialValue={initialValues.apiToken}
+        label={t("access.form.cloudflare_api_token.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.cloudflare_dns_api_token.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.cloudflare_api_token.tooltip") }}></span>}
       >
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.cloudflare_dns_api_token.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.cloudflare_api_token.placeholder")} />
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "zoneApiToken"]}
-        initialValue={initialValues.zoneApiToken}
-        label={t("access.form.cloudflare_zone_api_token.label")}
-        extra={<span dangerouslySetInnerHTML={{ __html: t("access.form.cloudflare_zone_api_token.help") }}></span>}
+        name={[parentNamePath, "apiTokenForZone"]}
+        initialValue={initialValues.apiTokenForZone}
+        label={t("access.form.cloudflare_api_token_for_zone.label")}
+        extra={<span dangerouslySetInnerHTML={{ __html: t("access.form.cloudflare_api_token_for_zone.help") }}></span>}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.cloudflare_zone_api_token.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.cloudflare_api_token_for_zone.tooltip") }}></span>}
       >
-        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.cloudflare_zone_api_token.placeholder")} />
+        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.cloudflare_api_token_for_zone.placeholder")} />
       </Form.Item>
     </>
   );
@@ -43,7 +43,7 @@ const AccessConfigFormFieldsProviderCloudflare = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    dnsApiToken: "",
+    apiToken: "",
   };
 };
 
@@ -51,8 +51,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t: _ } = i18n;
 
   return z.object({
-    dnsApiToken: z.string().nonempty(),
-    zoneApiToken: z.string().nullish(),
+    apiToken: z.string().nonempty(),
+    apiTokenForZone: z.string().nullish(),
   });
 };
 

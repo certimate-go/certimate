@@ -10,8 +10,8 @@ import (
 )
 
 type ChallengerConfig struct {
-	DnsApiToken           string `json:"dnsApiToken"`
-	ZoneApiToken          string `json:"zoneApiToken,omitempty"`
+	ApiToken              string `json:"apiToken"`
+	ApiTokenForZone       string `json:"apiTokenForZone,omitempty"`
 	DnsPropagationTimeout int    `json:"dnsPropagationTimeout,omitempty"`
 	DnsTTL                int    `json:"dnsTTL,omitempty"`
 }
@@ -22,8 +22,10 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	}
 
 	providerConfig := cloudflare.NewDefaultConfig()
-	providerConfig.AuthToken = config.DnsApiToken
-	providerConfig.ZoneToken = config.ZoneApiToken
+	providerConfig.AuthToken = config.ApiToken
+	if config.ApiTokenForZone != "" {
+		providerConfig.ZoneToken = config.ApiTokenForZone
+	}
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}

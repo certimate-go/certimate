@@ -358,15 +358,15 @@
       "placeholder": "请输入 Cdnfly 用户端 API Secret",
       "tooltip": "这是什么？请参阅 <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
     },
-    "cloudflare_dns_api_token": {
-      "label": "Cloudflare DNS API 令牌",
-      "placeholder": "请输入 Cloudflare DNS API 令牌",
+    "cloudflare_api_token": {
+      "label": "Cloudflare API 令牌",
+      "placeholder": "请输入 Cloudflare API 令牌",
       "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/api/get-started/create-token/</a>"
     },
-    "cloudflare_zone_api_token": {
+    "cloudflare_api_token_for_zone": {
       "label": "Cloudflare Zone API 令牌（可选）",
       "placeholder": "请输入 Cloudflare Zone API 令牌",
-      "help": "提示：仅当你将 DNS API 令牌范围指定为<b>特定域</b>时需要填写，请将 Zone API 令牌范围指定为<b>全部域</b>，并分配 <i>Zone/Zone/Read</i> 权限。",
+      "help": "提示：仅当你将 API 令牌范围指定为<b>特定域</b>时需要填写，请将 Zone API 令牌范围指定为<b>全部域</b>，并分配 <i>Zone/Zone/Read</i> 权限。",
       "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/api/get-started/create-token/</a>"
     },
     "cloudns_auth_id": {

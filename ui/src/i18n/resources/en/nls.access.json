@@ -360,15 +360,15 @@
       "placeholder": "Please enter Cdnfly user API secret",
       "tooltip": "For more information, see <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
     },
-    "cloudflare_dns_api_token": {
-      "label": "Cloudflare DNS API token",
-      "placeholder": "Please enter Cloudflare DNS API token",
+    "cloudflare_api_token": {
+      "label": "Cloudflare API token",
+      "placeholder": "Please enter Cloudflare API token",
       "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/api/get-started/create-token/</a>"
     },
-    "cloudflare_zone_api_token": {
+    "cloudflare_api_token_for_zone": {
       "label": "Cloudflare Zone API token (Optional)",
       "placeholder": "Please enter Cloudflare Zone API token",
-      "help": "Notes: Only required when you scope the DNS API token to <b>specific zones</b>. PLease scope the Zone API token to <b>all zones</b> with <i>Zone/Zone/Read</i> permission.",
+      "help": "Notes: Only required when you scope the API token to <b>specific zones</b>. PLease scope the Zone API token to <b>all zones</b> with <i>Zone/Zone/Read</i> permission.",
       "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/api/get-started/create-token/</a>"
     },
     "cloudns_auth_id": {

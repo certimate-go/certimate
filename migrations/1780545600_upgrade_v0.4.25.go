@@ -33,25 +33,44 @@ func init() {
 				}
 
 				switch provider {
-				case "byteplus":
-					if _, ok := config["accessKey"]; ok {
-						config["accessKeyId"] = config["accessKey"]
-						delete(config, "accessKey")
-						record.Set("config", config)
-						changed = true
+				case "cloudflare":
+					{
+						if _, ok := config["dnsApiToken"]; ok {
+							config["apiToken"] = config["dnsApiToken"]
+							delete(config, "dnsApiToken")
+							record.Set("config", config)
+							changed = true
+						}
+						if _, ok := config["zoneApiToken"]; ok {
+							config["apiTokenForZone"] = config["zoneApiToken"]
+							delete(config, "zoneApiToken")
+							record.Set("config", config)
+							changed = true
+						}
 					}
-					if _, ok := config["secretKey"]; ok {
-						config["secretAccessKey"] = config["secretKey"]
-						delete(config, "secretKey")
-						record.Set("config", config)
-						changed = true
+				case "byteplus":
+					{
+						if _, ok := config["accessKey"]; ok {
+							config["accessKeyId"] = config["accessKey"]
+							delete(config, "accessKey")
+							record.Set("config", config)
+							changed = true
+						}
+						if _, ok := config["secretKey"]; ok {
+							config["secretAccessKey"] = config["secretKey"]
+							delete(config, "secretKey")
+							record.Set("config", config)
+							changed = true
+						}
 					}
 				case "volcengine":
-					if _, ok := config["accessKeySecret"]; ok {
-						config["secretAccessKey"] = config["accessKeySecret"]
-						delete(config, "accessKeySecret")
-						record.Set("config", config)
-						changed = true
+					{
+						if _, ok := config["accessKeySecret"]; ok {
+							config["secretAccessKey"] = config["accessKeySecret"]
+							delete(config, "accessKeySecret")
+							record.Set("config", config)
+							changed = true
+						}
 					}
 				}
 
