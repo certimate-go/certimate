@@ -19,3 +19,4 @@ build
 /certimate
 /certimate.exe
 /pb_data
+/.tmp*
