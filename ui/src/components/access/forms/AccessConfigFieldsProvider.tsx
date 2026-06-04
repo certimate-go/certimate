@@ -57,6 +57,7 @@ import AccessConfigFieldsProviderGlobalSignAtlas from "./AccessConfigFieldsProvi
 import AccessConfigFieldsProviderGname from "./AccessConfigFieldsProviderGname";
 import AccessConfigFieldsProviderGoDaddy from "./AccessConfigFieldsProviderGoDaddy";
 import AccessConfigFieldsProviderGoEdge from "./AccessConfigFieldsProviderGoEdge";
+import AccessConfigFieldsProviderGoogleCloud from "./AccessConfigFieldsProviderGoogleCloud";
 import AccessConfigFieldsProviderGoogleTrustServices from "./AccessConfigFieldsProviderGoogleTrustServices";
 import AccessConfigFieldsProviderHetzner from "./AccessConfigFieldsProviderHetzner";
 import AccessConfigFieldsProviderHostingde from "./AccessConfigFieldsProviderHostingde";
@@ -175,10 +176,11 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.FTP]: AccessConfigFieldsProviderFTP,
   [ACCESS_PROVIDERS.GANDINET]: AccessConfigFieldsProviderGandinet,
   [ACCESS_PROVIDERS.GCORE]: AccessConfigFieldsProviderGcore,
+  [ACCESS_PROVIDERS.GLOBALSIGNATLAS]: AccessConfigFieldsProviderGlobalSignAtlas,
   [ACCESS_PROVIDERS.GNAME]: AccessConfigFieldsProviderGname,
   [ACCESS_PROVIDERS.GODADDY]: AccessConfigFieldsProviderGoDaddy,
   [ACCESS_PROVIDERS.GOEDGE]: AccessConfigFieldsProviderGoEdge,
-  [ACCESS_PROVIDERS.GLOBALSIGNATLAS]: AccessConfigFieldsProviderGlobalSignAtlas,
+  [ACCESS_PROVIDERS.GOOGLECLOUD]: AccessConfigFieldsProviderGoogleCloud,
   [ACCESS_PROVIDERS.GOOGLETRUSTSERVICES]: AccessConfigFieldsProviderGoogleTrustServices,
   [ACCESS_PROVIDERS.HETZNER]: AccessConfigFieldsProviderHetzner,
   [ACCESS_PROVIDERS.HOSTINGDE]: AccessConfigFieldsProviderHostingde,

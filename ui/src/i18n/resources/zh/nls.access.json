@@ -684,6 +684,9 @@
       "placeholder": "请输入 G-Core API Token",
       "tooltip": "这是什么？请参阅 <a href=\"https://api.gcore.com/docs/iam#section/Authentication\" target=\"_blank\">https://api.gcore.com/docs/iam#section/Authentication</a>"
     },
+    "globalsignatlas_eab": {
+      "guide": "点击下方链接了解如何获取 GlobalSign Atlas EAB：<br><a href=\"https://globalsign.cn/acme-automated-certificate-management\" target=\"_blank\">https://globalsign.cn/acme-automated-certificate-management</a>"
+    },
     "gname_app_id": {
       "label": "GNAME AppID",
       "placeholder": "请输入 GNAME AppID",
@@ -730,8 +733,15 @@
       "placeholder": "请输入 GoEdge AccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
     },
-    "globalsignatlas_eab": {
-      "guide": "点击下方链接了解如何获取 GlobalSign Atlas EAB：<br><a href=\"https://globalsign.cn/acme-automated-certificate-management\" target=\"_blank\">https://globalsign.cn/acme-automated-certificate-management</a>"
+    "googlecloud_project_id": {
+      "label": "Google Cloud 项目 ID",
+      "placeholder": "请输入 Google Cloud 项目 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
+    },
+    "googlecloud_service_account_key": {
+      "label": "Google Cloud 服务账号密钥",
+      "placeholder": "请输入 Google Cloud 服务账号密钥",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
       "guide": "点击下方链接了解如何获取 Google Trust Services EAB：<br><a href=\"https://cloud.google.com/certificate-manager/docs/public-ca-tutorial\" target=\"_blank\">https://cloud.google.com/certificate-manager/docs/public-ca-tutorial</a>"

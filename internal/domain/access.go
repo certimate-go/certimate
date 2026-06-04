@@ -319,6 +319,11 @@ type AccessConfigForGoEdge struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForGoogleCloud struct {
+	ProjectId         string `json:"projectId"`
+	ServiceAccountKey string `json:"serviceAccountKey"`
+}
+
 type AccessConfigForGoogleTrustServices struct {
 	AccessConfigForACMEExternalAccountBinding
 }

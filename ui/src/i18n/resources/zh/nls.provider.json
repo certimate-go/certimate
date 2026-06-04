@@ -143,6 +143,8 @@
   "gname": "GNAME",
   "godaddy": "GoDaddy",
   "goedge": "GoEdge",
+  "googlecloud": "Google Cloud",
+  "googlecloud_dns": "Google Cloud - DNS",
   "googletrustservices": "Google Trust Services",
   "hetzner": "Hetzner",
   "hostingde": "hosting.de",
