@@ -974,6 +974,9 @@
         "label": "AWS ALB certificate source",
         "placeholder": "Please select AWS ALB certificate source"
       },
+      "aws_alb_is_default": {
+        "label": "Set as default certificate"
+      },
       "aws_clb_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS CLB region (e.g. us-east-1)",
@@ -1019,6 +1022,28 @@
           "invalid": "Invalid certificate path"
         },
         "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html</a>"
+      },
+      "aws_nlb_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS NLB region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_nlb_loadbalancer_arn": {
+        "label": "AWS NLB load balancer ARN",
+        "placeholder": "Please enter AWS NLB load balancer ARN",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-network-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-network-load-balancer.html</a>"
+      },
+      "aws_nlb_listener_arn": {
+        "label": "AWS NLB listener ARN",
+        "placeholder": "Please enter AWS NLB listener ARN",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-listener.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-listener.html</a>"
+      },
+      "aws_nlb_certificate_source": {
+        "label": "AWS NLB certificate source",
+        "placeholder": "Please select AWS NLB certificate source"
+      },
+      "aws_nlb_is_default": {
+        "label": "Set as default certificate"
       },
       "azure_keyvault_name": {
         "label": "Azure KeyVault name",

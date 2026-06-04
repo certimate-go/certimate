@@ -65,6 +65,7 @@
   "aws_cloudfront": "AWS - 全球内容分发网络 CloudFront",
   "aws_iam": "AWS - 身份与访问权限管理器 IAM",
   "aws_lightsail": "AWS - Lightsail",
+  "aws_nlb": "AWS - 网络负载均衡器 NLB",
   "aws_route53": "AWS - Route53",
   "azure": "Azure",
   "azure_dns": "Azure - DNS",

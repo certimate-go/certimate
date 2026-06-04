@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const BizDeployNodeConfigFieldsProviderAWSALB = () => {
+const BizDeployNodeConfigFieldsProviderAWSNLB = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -20,49 +20,49 @@ const BizDeployNodeConfigFieldsProviderAWSALB = () => {
       <Form.Item
         name={[parentNamePath, "region"]}
         initialValue={initialValues.region}
-        label={t("workflow_node.deploy.form.aws_alb_region.label")}
+        label={t("workflow_node.deploy.form.aws_nlb_region.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aws_alb_region.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aws_nlb_region.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.aws_alb_region.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.aws_nlb_region.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "loadbalancerArn"]}
         initialValue={initialValues.loadbalancerArn}
-        label={t("workflow_node.deploy.form.aws_alb_loadbalancer_arn.label")}
+        label={t("workflow_node.deploy.form.aws_nlb_loadbalancer_arn.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aws_alb_loadbalancer_arn.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aws_nlb_loadbalancer_arn.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.aws_alb_loadbalancer_arn.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.aws_nlb_loadbalancer_arn.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "listenerArn"]}
         initialValue={initialValues.listenerArn}
-        label={t("workflow_node.deploy.form.aws_alb_listener_arn.label")}
+        label={t("workflow_node.deploy.form.aws_nlb_listener_arn.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aws_alb_listener_arn.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aws_nlb_listener_arn.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.aws_alb_listener_arn.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.aws_nlb_listener_arn.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "certificateSource"]}
         initialValue={initialValues.certificateSource}
-        label={t("workflow_node.deploy.form.aws_alb_certificate_source.label")}
+        label={t("workflow_node.deploy.form.aws_nlb_certificate_source.label")}
         rules={[formRule]}
       >
         <Select
           options={["ACM", "IAM"].map((s) => ({ label: s, value: s }))}
-          placeholder={t("workflow_node.deploy.form.aws_alb_certificate_source.placeholder")}
+          placeholder={t("workflow_node.deploy.form.aws_nlb_certificate_source.placeholder")}
         />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "isDefault"]}
         initialValue={initialValues.isDefault}
-        label={t("workflow_node.deploy.form.aws_alb_is_default.label")}
+        label={t("workflow_node.deploy.form.aws_nlb_is_default.label")}
         rules={[formRule]}
       >
         <Switch />
@@ -93,7 +93,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderAWSALB, {
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderAWSNLB, {
   getInitialValues,
   getSchema,
 });

@@ -330,6 +330,7 @@ const (
 	DeploymentProviderTypeAWSCLB                = DeploymentProviderType(AccessProviderTypeAWS + "-clb")
 	DeploymentProviderTypeAWSCloudFront         = DeploymentProviderType(AccessProviderTypeAWS + "-cloudfront")
 	DeploymentProviderTypeAWSIAM                = DeploymentProviderType(AccessProviderTypeAWS + "-iam")
+	DeploymentProviderTypeAWSNLB                = DeploymentProviderType(AccessProviderTypeAWS + "-nlb")
 	DeploymentProviderTypeAzureKeyVault         = DeploymentProviderType(AccessProviderTypeAzure + "-keyvault")
 	DeploymentProviderTypeBaiduCloudAppBLB      = DeploymentProviderType(AccessProviderTypeBaiduCloud + "-appblb")
 	DeploymentProviderTypeBaiduCloudBLB         = DeploymentProviderType(AccessProviderTypeBaiduCloud + "-blb")

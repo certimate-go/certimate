@@ -27,6 +27,7 @@ import BizDeployNodeConfigFieldsProviderAWSALB from "./BizDeployNodeConfigFields
 import BizDeployNodeConfigFieldsProviderAWSCLB from "./BizDeployNodeConfigFieldsProviderAWSCLB";
 import BizDeployNodeConfigFieldsProviderAWSCloudFront from "./BizDeployNodeConfigFieldsProviderAWSCloudFront";
 import BizDeployNodeConfigFieldsProviderAWSIAM from "./BizDeployNodeConfigFieldsProviderAWSIAM";
+import BizDeployNodeConfigFieldsProviderAWSNLB from "./BizDeployNodeConfigFieldsProviderAWSNLB";
 import BizDeployNodeConfigFieldsProviderAzureKeyVault from "./BizDeployNodeConfigFieldsProviderAzureKeyVault";
 import BizDeployNodeConfigFieldsProviderBaiduCloudAppBLB from "./BizDeployNodeConfigFieldsProviderBaiduCloudAppBLB";
 import BizDeployNodeConfigFieldsProviderBaiduCloudBLB from "./BizDeployNodeConfigFieldsProviderBaiduCloudBLB";
@@ -163,6 +164,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.AWS_CLB]: BizDeployNodeConfigFieldsProviderAWSCLB,
   [DEPLOYMENT_PROVIDERS.AWS_CLOUDFRONT]: BizDeployNodeConfigFieldsProviderAWSCloudFront,
   [DEPLOYMENT_PROVIDERS.AWS_IAM]: BizDeployNodeConfigFieldsProviderAWSIAM,
+  [DEPLOYMENT_PROVIDERS.AWS_NLB]: BizDeployNodeConfigFieldsProviderAWSNLB,
   [DEPLOYMENT_PROVIDERS.AZURE_KEYVAULT]: BizDeployNodeConfigFieldsProviderAzureKeyVault,
   [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_APPBLB]: BizDeployNodeConfigFieldsProviderBaiduCloudAppBLB,
   [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_BLB]: BizDeployNodeConfigFieldsProviderBaiduCloudBLB,

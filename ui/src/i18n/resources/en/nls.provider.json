@@ -65,6 +65,7 @@
   "aws_cloudfront": "AWS - CloudFront",
   "aws_iam": "AWS - IAM (Identity and Access Management)",
   "aws_lightsail": "AWS - Lightsail",
+  "aws_nlb": "AWS - NLB (Network Load Balancer)",
   "aws_route53": "AWS - Route53",
   "azure": "Azure",
   "azure_dns": "Azure - DNS",

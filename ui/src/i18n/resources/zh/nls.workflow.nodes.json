@@ -973,6 +973,9 @@
         "label": "AWS ALB 证书来源",
         "placeholder": "请选择 AWS ALB 证书来源"
       },
+      "aws_alb_is_default": {
+        "label": "设为默认证书"
+      },
       "aws_clb_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS CLB 服务区域（例如：us-east-1）",
@@ -1018,6 +1021,28 @@
           "invalid": "无效的证书路径"
         },
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html</a>"
+      },
+      "aws_nlb_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS NLB 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_nlb_loadbalancer_arn": {
+        "label": "AWS NLB 负载均衡器 ARN",
+        "placeholder": "请输入 AWS NLB 负载均衡器 ARN",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/network/create-network-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/network/create-network-load-balancer.html</a>"
+      },
+      "aws_nlb_listener_arn": {
+        "label": "AWS NLB 侦听器 ARN",
+        "placeholder": "请输入 AWS NLB 侦听器 ARN",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/network/create-listener.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/network/create-listener.html</a>"
+      },
+      "aws_nlb_certificate_source": {
+        "label": "AWS NLB 证书来源",
+        "placeholder": "请选择 AWS NLB 证书来源"
+      },
+      "aws_nlb_is_default": {
+        "label": "设为默认证书"
       },
       "azure_keyvault_name": {
         "label": "Azure KeyVault 名称",
