@@ -2715,9 +2715,9 @@
         }
       },
       "matrix_room_id": {
-        "label": "房间 ID（覆盖）",
+        "label": "房间 ID（可选）",
         "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
-        "help": "<strong>发送通知</strong>须在本字段或关联的<a href=\"#/accesses\">通知凭据</a>（默认房间）中至少填写一处。此处留空则使用凭据中的默认房间。<br><br><strong>两处都留空</strong>时无法发送（<code>matrix: room id is required</code>）。凭据上的连接测试可在不填房间时进行，仅验证登录，不验证投递。"
+        "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。"
       }
     }
   },

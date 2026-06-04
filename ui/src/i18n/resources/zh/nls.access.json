@@ -1,14 +1,17 @@
 {
   "$ns": "access",
+
   "text": {
     "nodata": "暂无授权",
     "nodata_description": "当前未找到授权信息。请先创建。",
     "nodata_button": "新建授权"
   },
+
   "page": {
     "heading": "授权凭据",
     "subheading": "授权凭据中存储有用于访问特定第三方应用程序或服务的身份验证信息（如账号密码、接口密钥、API 令牌等）。"
   },
+
   "action": {
     "search.input": {
       "placeholder": "按授权名称搜索……"
@@ -36,6 +39,7 @@
     },
     "test_notify.button": "测试通知"
   },
+
   "props": {
     "name": "名称",
     "provider": {
@@ -55,10 +59,12 @@
     "created_at": "创建时间",
     "updated_at": "更新时间"
   },
+
   "new": {
     "heading": "新建授权",
     "subheading": "使用此授权访问特定的第三方应用程序或服务。"
   },
+
   "form": {
     "name": {
       "label": "名称",
@@ -72,6 +78,7 @@
         "placeholder": "搜索提供商……"
       }
     },
+
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "请输入 ACME EAB KID"
@@ -83,6 +90,7 @@
     "shared_allow_insecure_conns": {
       "label": "忽略 SSL/TLS 证书验证"
     },
+
     "1panel_server_url": {
       "label": "1Panel 服务地址",
       "placeholder": "请输入 1Panel 服务地址",
@@ -879,6 +887,29 @@
       "help": "提示：可在工作流中覆盖此设置。",
       "tooltip": "如何获取此参数？从左侧边栏中选择目标频道，点击顶部的频道名称，选择“频道详情”，即可在弹出页面中直接看到频道 ID。"
     },
+
+    "matrix_access_token": {
+      "label": "Access token",
+      "placeholder": "syt_…",
+      "help": "来自 Matrix 主服务器的机器人或用户 access token（Element → 设置 → 帮助与关于 → 高级，或集成管理器）。"
+    },
+    "matrix_homeserver_url": {
+      "label": "Homeserver URL",
+      "placeholder": "https://matrix.example.org",
+      "tooltip": "Element 网页地址或 Matrix 主服务器基础 URL（Client-Server API）。示例：<code>https://matrix.example.org</code>"
+    },
+    "matrix_room_id": {
+      "label": "房间 ID（可选）",
+      "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
+      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
+      "tooltip": "Element：房间设置 → 高级 → 房间 ID（以 <code>!</code> 开头）。"
+    },
+    "matrix_user_id": {
+      "label": "用户 ID",
+      "placeholder": "@user:matrix.example.org",
+      "help": "拥有该 access token 的机器人或用户的完整 MXID（例如 <code>@bot:matrix.example.org</code>）。"
+    },
+
     "mohua_username": {
       "label": "嘿华云用户名",
       "placeholder": "请输入嘿华云用户名"
@@ -1502,69 +1533,6 @@
     },
     "zerossl_eab": {
       "guide": "点击下方链接了解如何获取 ZeroSSL EAB：<br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
-    },
-    "matrix_homeserver_url": {
-      "label": "Homeserver URL",
-      "placeholder": "https://matrix.example.org",
-      "tooltip": "Element 网页地址或 Matrix 主服务器基础 URL（Client-Server API）。示例：<code>https://matrix.example.org</code>"
-    },
-    "matrix_auth_mode": {
-      "label": "认证方式",
-      "option": {
-        "token": "Access token（推荐用于机器人）",
-        "password": "密码（用户账号）"
-      }
-    },
-    "matrix_access_token": {
-      "label": "Access token",
-      "placeholder": "syt_…",
-      "help": "来自 Matrix 主服务器的机器人或用户 access token（Element → 设置 → 帮助与关于 → 高级，或集成管理器）。"
-    },
-    "matrix_user_id": {
-      "label": "用户 ID",
-      "placeholder": "@user:matrix.example.org",
-      "help": "完整 MXID 或仅本地部分（例如 <code>bot</code> → <code>@bot:matrix.example.org</code>）。"
-    },
-    "matrix_password": {
-      "label": "密码",
-      "placeholder": "账号密码",
-      "help": "首次登录时请在 Element 中确认 MFA。会话将保存，无需再次确认。"
-    },
-    "matrix_session": {
-      "active": "已保存的会话有效（无需重新登录）。",
-      "saved_auto": "会话已保存到凭据。",
-      "saved_form": "已获取会话 — 点击保存以写入凭据。"
-    },
-    "matrix_room_id": {
-      "label": "房间 ID（默认发送目标）",
-      "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
-      "help": "<strong>留空时：</strong><em>测试连接</em>仅检查主服务器与登录（令牌或密码），<strong>不会发送任何通知</strong>。<br><br><strong>要从工作流发送消息</strong>，须在此填写房间 ID（本凭据的默认值），或在<a href=\"#/workflows\">工作流</a>通知节点中填写（覆盖此处）。<strong>两处都留空</strong>时发送失败（<code>matrix: room id is required</code>）。<br><br>格式：<code>!localpart:server.name</code>。请先将机器人邀请进房间。",
-      "tooltip": "Element：房间设置 → 高级 → 房间 ID（以 <code>!</code> 开头）。若已填写，<em>测试连接</em>还会检查账号是否已加入该房间。"
-    },
-    "matrix_verify": {
-      "hint": "若上方未填房间 ID，<em>测试连接</em>不会发送消息，仅验证主服务器与认证。",
-      "button": "测试连接",
-      "success": "Matrix 连接成功",
-      "failed": "连接检查失败 — 请查看下方步骤",
-      "step": {
-        "homeserver": "Homeserver",
-        "auth": "认证",
-        "room": "房间"
-      },
-      "err": {
-        "M_LIMIT_EXCEEDED": "登录尝试过多。请等待约 {{seconds}} 秒后重试，或改用 access token 而非密码。",
-        "M_LIMIT_EXCEEDED_generic": "登录尝试过多。请等待一分钟后重试，或改用 access token 而非密码。",
-        "M_FORBIDDEN": "用户名或密码无效。",
-        "M_USER_DEACTIVATED": "该账号在主服务器上已停用。",
-        "M_UIA_TIMEOUT": "等待 Element 中 MFA 确认超时 — 请确认登录后重试。"
-      }
-    },
-    "matrix_test_send": {
-      "button": "发送测试消息",
-      "hint": "向上述房间 ID 发送一条简短测试消息。须在连接测试成功后可用。",
-      "success": "测试消息已发送到房间。",
-      "subject": "Certimate 测试通知",
-      "body": "这是一条来自凭据设置的测试消息。"
     }
   }
 }

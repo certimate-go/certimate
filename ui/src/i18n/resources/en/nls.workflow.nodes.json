@@ -2719,9 +2719,9 @@
         "unit": "seconds"
       },
       "matrix_room_id": {
-        "label": "Room ID (override)",
+        "label": "Room ID (Optional)",
         "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
-        "help": "<strong>Sending requires a Room ID</strong> in this field <strong>or</strong> in the linked <a href=\"#/accesses\">notification credential</a> (default room). Leave blank here to use the credential default.<br><br>If <strong>both</strong> are empty, the notify node cannot send (<code>matrix: room id is required</code>). Connection test on the credential works without a room — it only checks server login, not delivery."
+        "help": "Notes: It can be overrided in the workflows. Invite the bot to the room first."
       }
     }
   },
