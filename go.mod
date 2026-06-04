@@ -36,6 +36,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/acm v1.38.3
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.63.0
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing v1.34.2
+	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.55.2
 	github.com/aws/aws-sdk-go-v2/service/iam v1.53.10
 	github.com/aws/aws-sdk-go-v2/service/lightsail v1.54.1
 	github.com/baidubce/bce-sdk-go v0.9.267

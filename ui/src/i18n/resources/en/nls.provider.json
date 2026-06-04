@@ -60,6 +60,7 @@
   "arvancloud": "ArvanCloud",
   "aws": "AWS",
   "aws_acm": "AWS - ACM (Amazon Certificate Manager)",
+  "aws_alb": "AWS - ALB (Application Load Balancer)",
   "aws_clb": "AWS - CLB (Classic Load Balancer)",
   "aws_cloudfront": "AWS - CloudFront",
   "aws_iam": "AWS - IAM (Identity and Access Management)",

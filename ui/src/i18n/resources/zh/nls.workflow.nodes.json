@@ -954,19 +954,24 @@
         "placeholder": "请输入 AWS ACM 证书 ARN",
         "help": "提示：不填写时，将导入为新证书；否则，将替换原证书。"
       },
-      "aws_cloudfront_region": {
+      "aws_alb_region": {
         "label": "AWS 服务区域",
-        "placeholder": "请输入 AWS CloudFront 服务区域（例如：us-east-1）",
+        "placeholder": "请输入 AWS ALB 服务区域（例如：us-east-1）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
       },
-      "aws_cloudfront_distribution_id": {
-        "label": "AWS CloudFront 分配 ID",
-        "placeholder": "请输入 AWS CloudFront 分配 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html</a>"
+      "aws_alb_loadbalancer_arn": {
+        "label": "AWS ALB 负载均衡器 ARN",
+        "placeholder": "请输入 AWS ALB 负载均衡器 ARN",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/create-application-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/create-application-load-balancer.html</a>"
       },
-      "aws_cloudfront_certificate_source": {
-        "label": "AWS CloudFront 证书来源",
-        "placeholder": "请选择 AWS CloudFront 证书来源"
+      "aws_alb_listener_arn": {
+        "label": "AWS ALB 侦听器 ARN",
+        "placeholder": "请输入 AWS ALB 侦听器 ARN",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/create-listener.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/application/create-listener.html</a>"
+      },
+      "aws_alb_certificate_source": {
+        "label": "AWS ALB 证书来源",
+        "placeholder": "请选择 AWS ALB 证书来源"
       },
       "aws_clb_region": {
         "label": "AWS 服务区域",
@@ -986,6 +991,20 @@
       "aws_clb_certificate_source": {
         "label": "AWS CLB 证书来源",
         "placeholder": "请选择 AWS CLB 证书来源"
+      },
+      "aws_cloudfront_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS CloudFront 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_cloudfront_distribution_id": {
+        "label": "AWS CloudFront 分配 ID",
+        "placeholder": "请输入 AWS CloudFront 分配 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html</a>"
+      },
+      "aws_cloudfront_certificate_source": {
+        "label": "AWS CloudFront 证书来源",
+        "placeholder": "请选择 AWS CloudFront 证书来源"
       },
       "aws_iam_region": {
         "label": "AWS 服务区域",

@@ -955,19 +955,24 @@
         "placeholder": "Please enter AWS ACM certificate ARN",
         "help": "Notes: Leave it blank to import a new certificate."
       },
-      "aws_cloudfront_region": {
+      "aws_alb_region": {
         "label": "AWS Region",
-        "placeholder": "Please enter AWS CloudFront region (e.g. us-east-1)",
+        "placeholder": "Please enter AWS ALB region (e.g. us-east-1)",
         "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
       },
-      "aws_cloudfront_distribution_id": {
-        "label": "AWS CloudFront distribution ID",
-        "placeholder": "Please enter AWS CloudFront distribution ID",
-        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html</a>"
+      "aws_alb_loadbalancer_arn": {
+        "label": "AWS ALB load balancer ARN",
+        "placeholder": "Please enter AWS ALB load balancer ARN",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-application-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-application-load-balancer.html</a>"
       },
-      "aws_cloudfront_certificate_source": {
-        "label": "AWS CloudFront certificate source",
-        "placeholder": "Please select AWS CloudFront certificate source"
+      "aws_alb_listener_arn": {
+        "label": "AWS ALB listener ARN",
+        "placeholder": "Please enter AWS ALB listener ARN",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-listener.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-listener.html</a>"
+      },
+      "aws_alb_certificate_source": {
+        "label": "AWS ALB certificate source",
+        "placeholder": "Please select AWS ALB certificate source"
       },
       "aws_clb_region": {
         "label": "AWS Region",
@@ -987,6 +992,20 @@
       "aws_clb_certificate_source": {
         "label": "AWS CLB certificate source",
         "placeholder": "Please select AWS CLB certificate source"
+      },
+      "aws_cloudfront_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS CloudFront region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_cloudfront_distribution_id": {
+        "label": "AWS CloudFront distribution ID",
+        "placeholder": "Please enter AWS CloudFront distribution ID",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html</a>"
+      },
+      "aws_cloudfront_certificate_source": {
+        "label": "AWS CloudFront certificate source",
+        "placeholder": "Please select AWS CloudFront certificate source"
       },
       "aws_iam_region": {
         "label": "AWS Region",
