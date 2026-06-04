@@ -33,8 +33,8 @@ const BizDeployNodeConfigFieldsProviderZenlayerGA = () => {
       >
         <Select
           options={[DEPLOY_TARGET_ACCELERATOR, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.zenlayer_ga_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />

@@ -55,8 +55,8 @@ const BizDeployNodeConfigFieldsProviderTencentCloudCLB = () => {
       >
         <Select
           options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_RULEDOMAIN].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.tencentcloud_clb_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />

@@ -27,7 +27,6 @@ const AccessConfigFormFieldsProviderSectigo = () => {
       >
         <Select
           options={["dv", "ov", "ev"].map((s) => ({
-            key: s,
             label: t(`access.form.sectigo_validation_type.option.${s}.label`),
             value: s,
           }))}

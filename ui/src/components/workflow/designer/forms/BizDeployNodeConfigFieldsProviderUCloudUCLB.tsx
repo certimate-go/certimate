@@ -43,8 +43,8 @@ const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
       >
         <Select
           options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_VSERVER].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.ucloud_uclb_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />

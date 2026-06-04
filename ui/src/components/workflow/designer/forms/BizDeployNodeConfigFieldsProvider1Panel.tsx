@@ -71,7 +71,6 @@ const BizDeployNodeConfigFieldsProvider1Panel = () => {
         >
           <Radio.Group
             options={[WEBSITE_MATCH_PATTERN_SPECIFIED, WEBSITE_MATCH_PATTERN_CERTSAN].map((s) => ({
-              key: s,
               label: t(`workflow_node.deploy.form.1panel_website_match_pattern.option.${s}.label`),
               value: s,
             }))}

@@ -49,7 +49,6 @@ const BizDeployNodeConfigFieldsProviderRainYunRCDN = () => {
       >
         <Radio.Group
           options={[DOMAIN_MATCH_PATTERN_EXACT].map((s) => ({
-            key: s,
             label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
             value: s,
           }))}

@@ -30,14 +30,13 @@ const BizDeployNodeConfigFieldsProviderWangsuCDNPro = () => {
         label={t("workflow_node.deploy.form.wangsu_cdnpro_environment.label")}
         rules={[formRule]}
       >
-        <Select placeholder={t("workflow_node.deploy.form.wangsu_cdnpro_environment.placeholder")}>
-          <Select.Option key="production" value="production">
-            {t("workflow_node.deploy.form.wangsu_cdnpro_environment.option.production.label")}
-          </Select.Option>
-          <Select.Option key="stating" value="stating">
-            {t("workflow_node.deploy.form.wangsu_cdnpro_environment.option.staging.label")}
-          </Select.Option>
-        </Select>
+        <Select
+          options={["production", "stating"].map((s) => ({
+            label: t(`workflow_node.deploy.form.wangsu_cdnpro_environment.option.${s}.label`),
+            value: s,
+          }))}
+          placeholder={t("workflow_node.deploy.form.wangsu_cdnpro_environment.placeholder")}
+        />
       </Form.Item>
 
       <Form.Item
@@ -55,7 +54,6 @@ const BizDeployNodeConfigFieldsProviderWangsuCDNPro = () => {
       >
         <Radio.Group
           options={[DOMAIN_MATCH_PATTERN_EXACT].map((s) => ({
-            key: s,
             label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
             value: s,
           }))}

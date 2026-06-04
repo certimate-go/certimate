@@ -104,7 +104,6 @@ const CertificateDownloadModal = ({ afterClose, data, trigger, ...props }: Certi
               <Form.Item name="pfxEncoder" label={t("certificate.action.download.modal.form.pfx_encoder.label")}>
                 <Select
                   options={["LegacyRC2", "LegacyDES", "Modern2023", "Modern2026"].map((s) => ({
-                    key: s,
                     label: t(`certificate.action.download.modal.form.pfx_encoder.option.${s.toLowerCase()}.label`),
                     value: s,
                   }))}

@@ -165,7 +165,6 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
                         <Form.Item name={[index, "authMethod"]} label={t("access.form.ssh_auth_method.label")} shouldUpdate rules={[formRule]}>
                           <Radio.Group
                             options={[AUTH_METHOD_NONE, AUTH_METHOD_PASSWORD, AUTH_METHOD_KEY].map((s) => ({
-                              key: s,
                               label: t(`access.form.ssh_auth_method.option.${s}.label`),
                               value: s,
                             }))}

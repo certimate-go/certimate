@@ -43,14 +43,10 @@ const BizDeployNodeConfigFieldsProviderAWSCloudFront = () => {
         label={t("workflow_node.deploy.form.aws_cloudfront_certificate_source.label")}
         rules={[formRule]}
       >
-        <Select placeholder={t("workflow_node.deploy.form.aws_cloudfront_certificate_source.placeholder")}>
-          <Select.Option key="ACM" value="ACM">
-            ACM
-          </Select.Option>
-          <Select.Option key="IAM" value="IAM">
-            IAM
-          </Select.Option>
-        </Select>
+        <Select
+          options={["ACM", "IAM"].map((s) => ({ label: s, value: s }))}
+          placeholder={t("workflow_node.deploy.form.aws_cloudfront_certificate_source.placeholder")}
+        />
       </Form.Item>
     </>
   );

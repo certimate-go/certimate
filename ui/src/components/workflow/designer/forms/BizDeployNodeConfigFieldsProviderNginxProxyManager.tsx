@@ -42,8 +42,8 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
       >
         <Select
           options={[DEPLOY_TARGET_HOST, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.nginxproxymanager_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
@@ -58,7 +58,6 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
         >
           <Radio.Group
             options={[HOST_MATCH_PATTERN_SPECIFIED, HOST_MATCH_PATTERN_CERTSAN].map((s) => ({
-              key: s,
               label: t(`workflow_node.deploy.form.nginxproxymanager_host_match_pattern.option.${s}.label`),
               value: s,
             }))}
@@ -73,8 +72,8 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
         >
           <Select
             options={[HOST_TYPE_PROXY, HOST_TYPE_REDIRECTION, HOST_TYPE_STREAM, HOST_TYPE_DEAD].map((s) => ({
-              value: s,
               label: t(`workflow_node.deploy.form.nginxproxymanager_host_type.option.${s}.label`),
+              value: s,
             }))}
             placeholder={t("workflow_node.deploy.form.nginxproxymanager_host_type.placeholder")}
           />

@@ -28,7 +28,6 @@ const BizNotifyNodeConfigFieldsProviderEmail = () => {
       >
         <Select
           options={[MESSAGE_FORMAT_PLAIN, MESSAGE_FORMAT_HTML].map((s) => ({
-            key: s,
             label: t(`workflow_node.notify.form.email_format.option.${s}.label`),
             value: s,
           }))}

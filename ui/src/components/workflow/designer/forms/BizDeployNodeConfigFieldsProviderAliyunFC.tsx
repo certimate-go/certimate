@@ -43,14 +43,10 @@ const BizDeployNodeConfigFieldsProviderAliyunFC = () => {
         label={t("workflow_node.deploy.form.aliyun_fc_service_version.label")}
         rules={[formRule]}
       >
-        <Select placeholder={t("workflow_node.deploy.form.aliyun_fc_service_version.placeholder")}>
-          <Select.Option key="2.0" value="2.0">
-            2.0
-          </Select.Option>
-          <Select.Option key="3.0" value="3.0">
-            3.0
-          </Select.Option>
-        </Select>
+        <Select
+          options={["2.0", "3.0"].map((s) => ({ label: s, value: s }))}
+          placeholder={t("workflow_node.deploy.form.aliyun_fc_service_version.placeholder")}
+        />
       </Form.Item>
 
       <Form.Item
@@ -68,7 +64,6 @@ const BizDeployNodeConfigFieldsProviderAliyunFC = () => {
       >
         <Radio.Group
           options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
-            key: s,
             label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
             value: s,
           }))}

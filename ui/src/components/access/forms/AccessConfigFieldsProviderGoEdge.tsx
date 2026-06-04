@@ -27,7 +27,12 @@ const AccessConfigFormFieldsProviderGoEdge = () => {
       </Form.Item>
 
       <Form.Item name={[parentNamePath, "apiRole"]} initialValue={initialValues.apiRole} label={t("access.form.goedge_api_role.label")} rules={[formRule]}>
-        <Radio.Group options={["user", "admin"].map((s) => ({ label: t(`access.form.goedge_api_role.option.${s}.label`), value: s }))} />
+        <Radio.Group
+          options={["user", "admin"].map((s) => ({
+            label: t(`access.form.goedge_api_role.option.${s}.label`),
+            value: s,
+          }))}
+        />
       </Form.Item>
 
       <Form.Item

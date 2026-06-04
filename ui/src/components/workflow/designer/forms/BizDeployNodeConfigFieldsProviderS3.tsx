@@ -62,7 +62,6 @@ const BizDeployNodeConfigFieldsProviderS3 = () => {
       >
         <Select
           options={[FORMAT_PEM, FORMAT_PFX, FORMAT_JKS].map((s) => ({
-            key: s,
             label: t(`workflow_node.deploy.form.shared_file_format.option.${s.toLowerCase()}.label`),
             value: s,
           }))}
@@ -135,7 +134,6 @@ const BizDeployNodeConfigFieldsProviderS3 = () => {
         >
           <Select
             options={["LegacyRC2", "LegacyDES", "Modern2023", "Modern2026"].map((s) => ({
-              key: s,
               label: t(`workflow_node.deploy.form.shared_pfx_encoder.option.${s.toLowerCase()}.label`),
               value: s,
             }))}

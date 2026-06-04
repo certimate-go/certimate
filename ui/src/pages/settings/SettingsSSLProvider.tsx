@@ -378,7 +378,6 @@ const InternalCASettingsFormProviderSectigo = () => {
       <Form.Item name="validationType" initialValue="dv" label={t("access.form.sectigo_validation_type.label")} rules={[formRule]}>
         <Select
           options={["dv", "ov", "ev"].map((s) => ({
-            key: s,
             label: t(`access.form.sectigo_validation_type.option.${s}.label`),
             value: s,
           }))}

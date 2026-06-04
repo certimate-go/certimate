@@ -124,7 +124,6 @@ const SettingsAppearancePagination = ({ className, style }: { className?: string
         <Form.Item label={t("settings.appearance.pagination.form.default_per_page.label")}>
           <Select
             options={[10, 15, 20, 30, 50, 100].map((value) => ({
-              key: value,
               value: value,
               label: `${value} ${t("settings.appearance.pagination.form.default_per_page.unit")}`,
             }))}
@@ -157,7 +156,6 @@ const SettingsAppearanceWorkflow = ({ className, style }: { className?: string; 
         <Form.Item label={t("settings.appearance.workflow.form.default_designer_layout.label")}>
           <Select
             options={["horizontal", "vertical"].map((value) => ({
-              key: value,
               value: value,
               label: t(`settings.appearance.workflow.form.default_designer_layout.option.${value}`),
             }))}

@@ -37,8 +37,8 @@ const BizDeployNodeConfigFieldsProviderKong = () => {
       >
         <Select
           options={[DEPLOY_TARGET_CERTIFICATE].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.kong_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />

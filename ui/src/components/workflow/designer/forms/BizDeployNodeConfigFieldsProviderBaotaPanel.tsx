@@ -34,8 +34,8 @@ const BizDeployNodeConfigFieldsProviderBaotaPanel = () => {
       >
         <Select
           options={["php", "java", "nodejs", "go", "python", "proxy", "html", "general", "any"].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.baotapanel_site_type.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.baotapanel_site_type.placeholder")}
         />

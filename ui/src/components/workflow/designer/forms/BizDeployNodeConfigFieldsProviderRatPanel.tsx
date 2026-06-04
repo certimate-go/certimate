@@ -41,8 +41,8 @@ const BizDeployNodeConfigFieldsProviderRatPanel = () => {
       >
         <Select
           options={[DEPLOY_TARGET_WEBSITE, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.ratpanel_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />

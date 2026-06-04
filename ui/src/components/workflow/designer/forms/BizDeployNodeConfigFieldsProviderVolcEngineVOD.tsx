@@ -51,8 +51,8 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
       >
         <Select
           options={[DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.volcengine_vod_domain_type.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.volcengine_vod_domain_type.placeholder")}
         />
@@ -66,7 +66,6 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
       >
         <Radio.Group
           options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
-            key: s,
             label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
             value: s,
           }))}

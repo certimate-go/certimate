@@ -42,7 +42,6 @@ const BizDeployNodeConfigFieldsProviderCTCCCloudCDN = () => {
       >
         <Radio.Group
           options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
-            key: s,
             label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
             value: s,
           }))}

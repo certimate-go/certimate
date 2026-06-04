@@ -823,6 +823,7 @@ const InternalIdentifierPicker = memo(({ disabled, onSelect }: { disabled?: bool
         <div className="flex flex-col gap-2">
           {options.map((option) => (
             <Card
+              key={option.value}
               className={mergeCls("relative overflow-hidden", { ["border-primary"]: value === option.value })}
               hoverable={!disabled}
               onClick={() => {
@@ -1000,7 +1001,6 @@ const InternalValidityLifetimeInput = memo(({ disabled, ...props }: { disabled?:
       <div className="w-24">
         <Select
           options={["h", "d"].map((s) => ({
-            key: s,
             label: t(`workflow_node.apply.form.validity_lifetime.units.${s}`),
             value: s,
           }))}

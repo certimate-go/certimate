@@ -37,8 +37,8 @@ const BizDeployNodeConfigFieldsProviderBaishanCDN = () => {
       >
         <Select
           options={[DEPLOY_TARGET_DOMAIN, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.baishan_cdn_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />
@@ -60,7 +60,6 @@ const BizDeployNodeConfigFieldsProviderBaishanCDN = () => {
         >
           <Radio.Group
             options={[DOMAIN_MATCH_PATTERN_EXACT].map((s) => ({
-              key: s,
               label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
               value: s,
             }))}

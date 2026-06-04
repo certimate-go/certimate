@@ -42,8 +42,8 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
       >
         <Select
           options={[DEPLOY_TARGET_LISTENER].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.tencentcloud_gaap_deploy_target.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
         />

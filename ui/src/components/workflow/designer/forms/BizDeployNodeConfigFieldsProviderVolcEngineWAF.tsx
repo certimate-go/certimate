@@ -39,8 +39,8 @@ const BizDeployNodeConfigFieldsProviderVolcEngineWAF = () => {
       >
         <Select
           options={[ACCESS_MODE_CNAME].map((s) => ({
-            value: s,
             label: t(`workflow_node.deploy.form.volcengine_waf_access_mode.option.${s}.label`),
+            value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.volcengine_waf_access_mode.placeholder")}
         />
