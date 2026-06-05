@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
@@ -20,6 +21,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -122,12 +124,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// 根据部署目标决定业务流程
 	switch d.config.DeployTarget {
 	case DEPLOY_TARGET_LOADBALANCER:
-		if err := d.deployToLoadbalancer(ctx, upres.ExtendedData["CertIdentifier"].(string), certX509.DNSNames); err != nil {
+		if err := d.deployToLoadbalancer(ctx, upres.ExtendedData["CertIdentifier"].(string), certX509.Subject.CommonName, certX509.DNSNames); err != nil {
 			return nil, err
 		}
 
 	case DEPLOY_TARGET_LISTENER:
-		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdentifier"].(string), certX509.DNSNames); err != nil {
+		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdentifier"].(string), certX509.Subject.CommonName, certX509.DNSNames); err != nil {
 			return nil, err
 		}
 
@@ -138,7 +140,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string, cloudCertSANs []string) error {
+func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string, cloudCertCommonName string, cloudCertSANs []string) error {
 	if d.config.LoadbalancerId == "" {
 		return fmt.Errorf("config `loadbalancerId` is required")
 	}
@@ -241,7 +243,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string,
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId, cloudCertSANs); err != nil {
+				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId, cloudCertCommonName, cloudCertSANs); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -255,20 +257,20 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string,
 	return nil
 }
 
-func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string, cloudCertSANs []string) error {
+func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string, cloudCertCommonName string, cloudCertSANs []string) error {
 	if d.config.ListenerId == "" {
 		return fmt.Errorf("config `listenerId` is required")
 	}
 
 	// 更新监听
-	if err := d.updateListenerCertificate(ctx, d.config.ListenerId, cloudCertId, cloudCertSANs); err != nil {
+	if err := d.updateListenerCertificate(ctx, d.config.ListenerId, cloudCertId, cloudCertCommonName, cloudCertSANs); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string, cloudCertSANs []string) error {
+func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string, cloudCertCommonName string, cloudCertSANs []string) error {
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到监听器
 
@@ -351,7 +353,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 				certIdWithRegion := tea.StringValue(listenerCertificate.CertificateId)
 				if certIdWithRegion == cloudCertId {
 					certificateIsAlreadyAssociated = true
-					break
+					continue
 				}
 
 				certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
@@ -376,15 +378,14 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 					errs = append(errs, fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err))
 					continue
 				} else {
-					certCNMatched := tea.StringValue(getCertificateDetailResp.Body.CommonName) == d.config.Domain
-					certSANDiff, _ := lo.Difference(tea.StringSliceValue(getCertificateDetailResp.Body.SubjectAlternativeNames), cloudCertSANs)
-					if certCNMatched || len(certSANDiff) == 0 {
-						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
-						continue
-					}
-
-					certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
-					if certNotAfter.Before(time.Now()) {
+					if shouldDissociateAdditionalCertificateForDomain(
+						tea.StringValue(getCertificateDetailResp.Body.CommonName),
+						tea.StringSliceValue(getCertificateDetailResp.Body.SubjectAlternativeNames),
+						tea.StringValue(getCertificateDetailResp.Body.Domain),
+						d.config.Domain,
+						cloudCertCommonName,
+						cloudCertSANs,
+					) {
 						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
@@ -420,7 +421,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 
 		// 解除关联监听和扩展证书
 		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-dissociateadditionalcertificatesfromlistener
-		if !certificateIsAlreadyAssociated && len(certificateIdsToDissociate) > 0 {
+		if len(certificateIdsToDissociate) > 0 {
 			if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
 				return err
 			}
@@ -451,6 +452,93 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	}
 
 	return nil
+}
+
+func shouldDissociateAdditionalCertificateForDomain(commonName string, subjectAlternativeNames []string, certificateDomains string, domain string, cloudCertCommonName string, cloudCertSANs []string) bool {
+	if domain == "" {
+		return false
+	}
+
+	oldCertDomains := collectCertificateDomains(commonName, subjectAlternativeNames, certificateDomains)
+
+	if !certificateDomainsMatch(oldCertDomains, domain) {
+		return false
+	}
+
+	newCertDomains := collectCertificateDomains(cloudCertCommonName, cloudCertSANs, "")
+	return certificateDomainsCoveredBy(newCertDomains, oldCertDomains)
+}
+
+func certificateDomainsMatch(certificateDomains []string, domain string) bool {
+	for _, candidate := range certificateDomains {
+		if xcerthostname.IsMatch(candidate, domain) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func certificateDomainsCoveredBy(coveringDomains []string, coveredDomains []string) bool {
+	if len(coveringDomains) == 0 || len(coveredDomains) == 0 {
+		return false
+	}
+
+	for _, coveredDomain := range coveredDomains {
+		covered := false
+		for _, coveringDomain := range coveringDomains {
+			if xcerthostname.IsMatch(coveringDomain, coveredDomain) {
+				covered = true
+				break
+			}
+		}
+
+		if !covered {
+			return false
+		}
+	}
+
+	return true
+}
+
+func collectCertificateDomains(commonName string, subjectAlternativeNames []string, certificateDomains string) []string {
+	domains := make([]string, 0, 1+len(subjectAlternativeNames))
+	domains = appendCertificateDomains(domains, commonName)
+	for _, san := range subjectAlternativeNames {
+		domains = appendCertificateDomains(domains, san)
+	}
+	domains = appendCertificateDomains(domains, certificateDomains)
+	return domains
+}
+
+func appendCertificateDomains(domains []string, certificateDomains string) []string {
+	seen := make(map[string]struct{}, len(domains))
+	for _, domain := range domains {
+		seen[strings.ToLower(domain)] = struct{}{}
+	}
+
+	for _, domain := range splitCertificateDomains(certificateDomains) {
+		domain = strings.TrimSpace(domain)
+		if domain == "" {
+			continue
+		}
+
+		key := strings.ToLower(domain)
+		if _, ok := seen[key]; ok {
+			continue
+		}
+
+		domains = append(domains, domain)
+		seen[key] = struct{}{}
+	}
+
+	return domains
+}
+
+func splitCertificateDomains(certificateDomains string) []string {
+	return strings.FieldsFunc(certificateDomains, func(r rune) bool {
+		return r == ',' || r == ';' || unicode.IsSpace(r)
+	})
 }
 
 func (d *Deployer) waitForListenerReady(ctx context.Context, cloudListenerId string) error {
