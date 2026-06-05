@@ -123,6 +123,7 @@ func (ne *bizMonitorNodeExecutor) execRetrieveCertificates(execCtx *NodeExecutio
 	transport := xhttp.NewDefaultTransport()
 	transport.DisableKeepAlives = true
 	transport.TLSClientConfig = xtls.NewInsecureConfig()
+	transport.TLSClientConfig.ServerName = domain
 
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
