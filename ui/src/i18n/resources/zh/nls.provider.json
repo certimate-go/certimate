@@ -1,5 +1,6 @@
 {
   "$ns": "provider",
+
   "text": {
     "nodata": "暂无提供商",
     "default_ca": "（默认）不指定，跟随全局设置",
@@ -9,6 +10,7 @@
     "unavailable_group": "不可用（未添加授权凭据）",
     "unavailable_divider": "以下提供商不可用（即未添加过授权凭据）"
   },
+
   "category": {
     "all": "全部",
     "cdn": "CDN",
@@ -23,6 +25,7 @@
     "ssl": "证书托管",
     "other": "其他"
   },
+
   "1panel": "1Panel",
   "1panel_console": "1Panel - 面板自身",
   "35cn": "三五互联",
@@ -177,8 +180,8 @@
   "linode": "Linode",
   "litessl": "LiteSSL",
   "local": "本地主机",
+  "matrix": "Matrix / ElementX",
   "mattermost": "Mattermost",
-  "matrix": "Matrix",
   "mohua": "嘿华云",
   "mohua_mvh": "嘿华云 - 虚拟主机 MVH ",
   "namecheap": "Namecheap",

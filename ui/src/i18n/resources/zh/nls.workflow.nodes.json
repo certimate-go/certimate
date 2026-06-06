@@ -1,10 +1,12 @@
 {
   "$ns": "workflow_node",
+
   "kind": {
     "basis": "基础",
     "business": "业务",
     "logic": "逻辑"
   },
+
   "variables": {
     "type": {
       "certificate": {
@@ -23,6 +25,7 @@
       }
     }
   },
+
   "start": {
     "label": "开始",
     "default_name": "开始",
@@ -56,6 +59,7 @@
       }
     }
   },
+
   "apply": {
     "label": "申请签发证书",
     "default_name": "申请",
@@ -331,6 +335,7 @@
       }
     }
   },
+
   "upload": {
     "label": "上传自有证书",
     "default_name": "上传",
@@ -392,6 +397,7 @@
       }
     }
   },
+
   "monitor": {
     "label": "监控网站证书",
     "default_name": "监控",
@@ -421,6 +427,7 @@
       }
     }
   },
+
   "deploy": {
     "label": "部署证书到 ...",
     "default_name": "部署",
@@ -2614,6 +2621,7 @@
       }
     }
   },
+
   "notify": {
     "label": "推送通知",
     "default_name": "通知",
@@ -2679,6 +2687,11 @@
         "placeholder": "请输入收件人邮箱以覆盖默认值",
         "help": "提示：不填写时，将使用所选通知渠道授权的默认收件人邮箱。"
       },
+      "matrix_room_id": {
+        "label": "Matrix 房间 ID（可选）",
+        "placeholder": "请输入 Matrix 房间 ID",
+        "help": "提示：不填写时，将使用所选通知渠道授权的默认房间 ID。"
+      },
       "mattermost_channel_id": {
         "label": "Mattermost 频道 ID（可选）",
         "placeholder": "请输入 Mattermost 频道 ID",
@@ -2713,14 +2726,10 @@
           "on": "跳过",
           "off": "不跳过"
         }
-      },
-      "matrix_room_id": {
-        "label": "房间 ID（可选）",
-        "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
-        "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。"
       }
     }
   },
+
   "delay": {
     "label": "延迟等待",
     "default_name": "延迟",
@@ -2737,6 +2746,7 @@
       }
     }
   },
+
   "condition": {
     "label": "并行/条件分支",
     "default_name": {
@@ -2745,6 +2755,7 @@
       "template_certtest_on_expired": "若网站证书已过期…"
     }
   },
+
   "branch_block": {
     "label": "分支",
     "default_name": "分支",
@@ -2823,14 +2834,17 @@
       }
     }
   },
+
   "try_catch": {
     "label": "执行结果分支",
     "default_name": "尝试执行…"
   },
+
   "catch_block": {
     "label": "执行失败分支",
     "default_name": "若执行失败…"
   },
+
   "end": {
     "label": "结束",
     "default_name": "结束"

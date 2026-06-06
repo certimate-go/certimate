@@ -9,8 +9,6 @@ import (
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
-// Registers the Matrix notification provider (token-only access config).
-// Регистрирует провайдер уведомлений Matrix (конфиг только с access token).
 func init() {
 	Registries.MustRegister(domain.NotificationProviderTypeMatrix, func(options *ProviderFactoryOptions) (core.Notifier, error) {
 		credentials := domain.AccessConfigForMatrix{}
@@ -19,10 +17,10 @@ func init() {
 		}
 
 		provider, err := matrix.NewNotifier(&matrix.NotifierConfig{
-			HomeserverUrl: credentials.HomeserverUrl,
-			UserId:        credentials.UserId,
-			AccessToken:   credentials.AccessToken,
-			RoomId:        xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "roomId", credentials.RoomId),
+			ServerUrl:   credentials.ServerUrl,
+			UserId:      credentials.UserId,
+			AccessToken: credentials.AccessToken,
+			RoomId:      xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "roomId", credentials.RoomId),
 		})
 		return provider, err
 	})

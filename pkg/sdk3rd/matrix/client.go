@@ -1,6 +1,9 @@
 package matrix
 
 import (
+	"crypto/rand"
+	"crypto/tls"
+	"encoding/hex"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,63 +14,73 @@ import (
 	"github.com/certimate-go/certimate/internal/app"
 )
 
-// Client calls the Matrix Client-Server API.
-// Клиент для Matrix Client-Server API.
-// REF: https://spec.matrix.org/latest/client-server-api/
 type Client struct {
-	enteredURL string
-	baseURL    string
-	http       *resty.Client
+	client *resty.Client
 }
 
-// NewClient builds an HTTP client for the given homeserver URL (scheme added if missing).
-// Создаёт HTTP-клиент для указанного URL homeserver (схема https добавляется при отсутствии).
-func NewClient(homeserverURL string) (*Client, error) {
-	entered := strings.TrimSpace(homeserverURL)
-	if entered == "" {
-		return nil, fmt.Errorf("sdkerr: unset homeserver url")
+func NewClient(serverUrl string, userId string, accessToken string) (*Client, error) {
+	if serverUrl == "" {
+		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
-	if !strings.HasPrefix(entered, "http://") && !strings.HasPrefix(entered, "https://") {
-		entered = "https://" + entered
+	if _, err := url.Parse(serverUrl); err != nil {
+		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	entered = strings.TrimSuffix(entered, "/")
-	if _, err := url.Parse(entered); err != nil {
-		return nil, fmt.Errorf("sdkerr: invalid homeserver url: %w", err)
+	if userId == "" {
+		return nil, fmt.Errorf("sdkerr: unset userId")
+	}
+	if accessToken == "" {
+		return nil, fmt.Errorf("sdkerr: unset accessToken")
 	}
 
-	http := resty.New().
+	baseUrl, _ := resolveBaseUrl(serverUrl)
+	if baseUrl == "" {
+		baseUrl = serverUrl
+	}
+
+	client := &Client{}
+	client.client = resty.New().
+		SetBaseURL(strings.TrimSuffix(baseUrl, "/")).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetTimeout(60 * time.Second)
-
-	return &Client{
-		enteredURL: entered,
-		http:       http,
-	}, nil
-}
-
-// ResolveBaseURL discovers the Client-Server API base URL.
-// Определяет базовый URL Client-Server API (well-known или введённый адрес).
-// REF: https://spec.matrix.org/latest/client-server-api/#getwell-knownmatrixclient
-func (c *Client) ResolveBaseURL() (string, error) {
-	if c.baseURL != "" {
-		return c.baseURL, nil
+		SetAuthToken(accessToken)
+	if err := client.probeVersions(); err != nil {
+		return nil, err
 	}
 
-	var wellKnown struct {
+	return client, nil
+}
+
+func (c *Client) SetTimeout(timeout time.Duration) *Client {
+	c.client.SetTimeout(timeout)
+	return c
+}
+
+func (c *Client) SetTLSConfig(config *tls.Config) *Client {
+	c.client.SetTLSClientConfig(config)
+	return c
+}
+
+func resolveBaseUrl(serverUrl string) (string, error) {
+	var wkJSON struct {
 		Homeserver struct {
 			BaseURL string `json:"base_url"`
 		} `json:"m.homeserver"`
 	}
-	wk, err := c.http.R().SetResult(&wellKnown).Get(c.enteredURL + "/.well-known/matrix/client")
-	if err == nil && !wk.IsError() && strings.TrimSpace(wellKnown.Homeserver.BaseURL) != "" {
-		c.baseURL = strings.TrimSuffix(wellKnown.Homeserver.BaseURL, "/")
-	} else {
-		c.baseURL = c.enteredURL
-	}
 
-	if err := c.probeVersions(); err != nil {
-		return "", err
+	_, err := resty.New().R().
+		SetResult(&wkJSON).
+		Get(serverUrl + "/.well-known/matrix/client")
+	if err != nil {
+		return "", fmt.Errorf("failed to discovery Matrix Client API: %w", err)
+	} else if strings.TrimSpace(wkJSON.Homeserver.BaseURL) != "" {
+		return strings.TrimSuffix(wkJSON.Homeserver.BaseURL, "/"), nil
+	} else {
+		return serverUrl, nil
 	}
-	return c.baseURL, nil
+}
+
+func newTransactionId() string {
+	b := make([]byte, 8)
+	_, _ = rand.Read(b)
+	return fmt.Sprintf("certimate_%d_%s", time.Now().UnixNano(), hex.EncodeToString(b))
 }

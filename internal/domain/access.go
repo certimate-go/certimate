@@ -393,21 +393,11 @@ type AccessConfigForLiteSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
-// AccessConfigForMatrix stores token-only Matrix credentials (no password login).
-// Конфигурация Matrix только по access token (без входа по паролю).
 type AccessConfigForMatrix struct {
-	// Homeserver URL (Element web URL or Matrix homeserver base URL).
-	// URL homeserver (адрес Element или базовый URL Matrix).
-	HomeserverUrl string `json:"homeserverUrl"`
-	// User ID (MXID), e.g. @bot:example.org.
-	// Идентификатор пользователя (MXID), например @bot:example.org.
-	UserId string `json:"userId"`
-	// Access token from the homeserver (bot or user).
-	// Access token с homeserver (бот или пользователь).
+	ServerUrl   string `json:"serverUrl"`
+	UserId      string `json:"userId"`
 	AccessToken string `json:"accessToken"`
-	// Default room ID (!room:server) for notifications.
-	// ID комнаты по умолчанию (!room:server) для уведомлений.
-	RoomId string `json:"roomId,omitempty"`
+	RoomId      string `json:"roomId,omitempty"`
 }
 
 type AccessConfigForMattermost struct {

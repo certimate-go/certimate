@@ -869,6 +869,26 @@
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
+    "matrix_server_url": {
+      "label": "Matrix 服务地址",
+      "placeholder": "请输入 Matrix 服务地址"
+    },
+    "matrix_user_id": {
+      "label": "Matrix 用户 ID",
+      "placeholder": "请输入 Matrix 用户 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
+    },
+    "matrix_access_token": {
+      "label": "Matrix Access token",
+      "placeholder": "请输入 Matrix Access token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
+    },
+    "matrix_room_id": {
+      "label": "Matrix 房间 ID（可选）",
+      "placeholder": "请输入默认的 Matrix 房间 ID",
+      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
+    },
     "mattermost_server_url": {
       "label": "Mattermost 服务地址",
       "placeholder": "请输入 Mattermost 服务地址"
@@ -887,29 +907,6 @@
       "help": "提示：可在工作流中覆盖此设置。",
       "tooltip": "如何获取此参数？从左侧边栏中选择目标频道，点击顶部的频道名称，选择“频道详情”，即可在弹出页面中直接看到频道 ID。"
     },
-
-    "matrix_access_token": {
-      "label": "Access token",
-      "placeholder": "syt_…",
-      "help": "来自 Matrix 主服务器的机器人或用户 access token（Element → 设置 → 帮助与关于 → 高级，或集成管理器）。"
-    },
-    "matrix_homeserver_url": {
-      "label": "Homeserver URL",
-      "placeholder": "https://matrix.example.org",
-      "tooltip": "Element 网页地址或 Matrix 主服务器基础 URL（Client-Server API）。示例：<code>https://matrix.example.org</code>"
-    },
-    "matrix_room_id": {
-      "label": "房间 ID（可选）",
-      "placeholder": "!ufvGLUejBDStvBDQoC:matrix.example.org",
-      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
-      "tooltip": "Element：房间设置 → 高级 → 房间 ID（以 <code>!</code> 开头）。"
-    },
-    "matrix_user_id": {
-      "label": "用户 ID",
-      "placeholder": "@user:matrix.example.org",
-      "help": "拥有该 access token 的机器人或用户的完整 MXID（例如 <code>@bot:matrix.example.org</code>）。"
-    },
-
     "mohua_username": {
       "label": "嘿华云用户名",
       "placeholder": "请输入嘿华云用户名"

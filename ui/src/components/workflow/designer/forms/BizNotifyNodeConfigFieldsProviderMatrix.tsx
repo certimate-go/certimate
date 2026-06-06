@@ -21,7 +21,7 @@ const BizNotifyNodeConfigFieldsProviderMatrix = () => {
       <Form.Item
         name={[parentNamePath, "roomId"]}
         label={t("workflow_node.notify.form.matrix_room_id.label")}
-        extra={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.notify.form.matrix_room_id.help") }} />}
+        extra={t("workflow_node.notify.form.matrix_room_id.help")}
         rules={[formRule]}
         initialValue={initialValues?.roomId}
       >

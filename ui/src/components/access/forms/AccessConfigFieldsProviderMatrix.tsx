@@ -18,13 +18,12 @@ const AccessConfigFormFieldsProviderMatrix = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "homeserverUrl"]}
-        initialValue={initialValues.homeserverUrl}
-        label={t("access.form.matrix_homeserver_url.label")}
+        name={[parentNamePath, "serverUrl"]}
+        initialValue={initialValues.serverUrl}
+        label={t("access.form.matrix_server_url.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.matrix_homeserver_url.tooltip") }} />}
       >
-        <Input type="url" placeholder={t("access.form.matrix_homeserver_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.matrix_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -32,9 +31,9 @@ const AccessConfigFormFieldsProviderMatrix = () => {
         initialValue={initialValues.userId}
         label={t("access.form.matrix_user_id.label")}
         rules={[formRule]}
-        help={t("access.form.matrix_user_id.help")}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.matrix_user_id.tooltip") }} />}
       >
-        <Input placeholder={t("access.form.matrix_user_id.placeholder")} />
+        <Input autoComplete="new-password" placeholder={t("access.form.matrix_user_id.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -42,9 +41,9 @@ const AccessConfigFormFieldsProviderMatrix = () => {
         initialValue={initialValues.accessToken}
         label={t("access.form.matrix_access_token.label")}
         rules={[formRule]}
-        help={t("access.form.matrix_access_token.help")}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.matrix_access_token.tooltip") }} />}
       >
-        <Input.Password placeholder={t("access.form.matrix_access_token.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.matrix_access_token.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -63,7 +62,7 @@ const AccessConfigFormFieldsProviderMatrix = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    homeserverUrl: "https://matrix.example.org",
+    serverUrl: "https://matrix-client.matrix.org",
     userId: "",
     accessToken: "",
     roomId: "",
@@ -74,8 +73,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t: _ } = i18n;
 
   return z.object({
-    homeserverUrl: z.url({ protocol: core.regexes.httpProtocol }),
-    userId: z.string().nonempty(),
+    serverUrl: z.url({ protocol: core.regexes.httpProtocol }),
+    userId: z.string().nonempty().startsWith("@"),
     accessToken: z.string().nonempty(),
     roomId: z.string().nullish(),
   });
