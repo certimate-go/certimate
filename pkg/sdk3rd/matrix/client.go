@@ -32,7 +32,7 @@ func NewClient(serverUrl string, userId string, accessToken string) (*Client, er
 		return nil, fmt.Errorf("sdkerr: unset accessToken")
 	}
 
-	baseUrl, _ := resolveBaseUrl(serverUrl)
+	baseUrl, _ := resolveBaseUrl(strings.TrimSuffix(serverUrl, "/"))
 	if baseUrl == "" {
 		baseUrl = serverUrl
 	}
@@ -73,7 +73,7 @@ func resolveBaseUrl(serverUrl string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to discovery Matrix Client API: %w", err)
 	} else if strings.TrimSpace(wkJSON.Homeserver.BaseURL) != "" {
-		return strings.TrimSuffix(wkJSON.Homeserver.BaseURL, "/"), nil
+		return wkJSON.Homeserver.BaseURL, nil
 	} else {
 		return serverUrl, nil
 	}

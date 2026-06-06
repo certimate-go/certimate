@@ -276,6 +276,7 @@
         "unit": "days",
         "help": "Notes: The actual renewal interval also depends on the CRON expression that triggers the workflow."
       },
+
       "aliyun_esa_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
@@ -472,6 +473,7 @@
           "off": "don't skip"
         }
       },
+
       "shared_deploy_target": {
         "label": "Certificate deploy target",
         "placeholder": "Please select certificate deploy target"
@@ -567,6 +569,7 @@
         "placeholder": "Please enter JKS store password",
         "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
+
       "1panel_node_name": {
         "label": "1Panel node name (Optional)",
         "placeholder": "Please enter 1Panel node name",
@@ -2678,6 +2681,7 @@
           "off": "not skip"
         }
       },
+
       "discordbot_channel_id": {
         "label": "Discord channel ID (Optional)",
         "placeholder": "Please enter Discord channel ID",

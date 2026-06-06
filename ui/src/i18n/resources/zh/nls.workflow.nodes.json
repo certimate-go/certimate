@@ -275,6 +275,7 @@
         "unit": "天",
         "help": "提示：证书实际续期间隔还取决于触发运行的 CRON 表达式。"
       },
+
       "aliyun_esa_region": {
         "label": "阿里云服务地域",
         "placeholder": "请输入阿里云 ESA 服务地域（例如：cn-hangzhou）",
@@ -471,6 +472,7 @@
           "off": "不跳过"
         }
       },
+
       "shared_deploy_target": {
         "label": "证书部署方式",
         "placeholder": "请选择证书部署方式"
@@ -566,6 +568,7 @@
         "placeholder": "请输入 JKS 密钥库存储口令",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
+
       "1panel_node_name": {
         "label": "1Panel 子节点名称（可选）",
         "placeholder": "请输入 1Panel 子节点名称",
@@ -2665,6 +2668,7 @@
       "params_config": {
         "label": "参数设置"
       },
+
       "discordbot_channel_id": {
         "label": "Discord 频道 ID（可选）",
         "placeholder": "请输入 Discord 频道 ID",
