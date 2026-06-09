@@ -13,7 +13,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
-	aliesa "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/esa-20240910/v2/client"
+	aliesa "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/esa-20240910/v3/client"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"

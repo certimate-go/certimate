@@ -13,7 +13,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
-	alilive "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/live-20161101/v2/client"
+	alilive "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/live-20161101/v3/client"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"

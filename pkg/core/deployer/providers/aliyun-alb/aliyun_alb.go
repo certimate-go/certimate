@@ -368,7 +368,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 				d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
 				if err != nil {
 					if sdkerr, ok := err.(*tea.SDKError); ok {
-						if tea.IntValue(sdkerr.StatusCode) == 400 && tea.StringValue(sdkerr.Code) == "NotFound" {
+						if tea.IntValue(sdkerr.StatusCode) == 404 && strings.HasPrefix(tea.StringValue(sdkerr.Code), "NotFound") {
 							continue
 						}
 					}

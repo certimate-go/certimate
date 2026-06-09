@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/alibabacloud-go/esa-20240910/v2/client"
+	"github.com/alibabacloud-go/esa-20240910/v3/client"
 )
 
 type ListCustomHostnamesRequest = client.ListCustomHostnamesRequest

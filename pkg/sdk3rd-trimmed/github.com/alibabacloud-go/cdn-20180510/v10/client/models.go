@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/alibabacloud-go/cdn-20180510/v9/client"
+	"github.com/alibabacloud-go/cdn-20180510/v10/client"
 )
 
 type DescribeUserDomainsRequest = client.DescribeUserDomainsRequest

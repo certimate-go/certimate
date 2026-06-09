@@ -1,7 +1,7 @@
 ﻿package client
 
 import (
-	"github.com/alibabacloud-go/apig-20240327/v6/client"
+	"github.com/alibabacloud-go/apig-20240327/v7/client"
 )
 
 type GetDomainRequest = client.GetDomainRequest
