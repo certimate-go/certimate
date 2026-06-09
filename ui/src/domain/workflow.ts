@@ -67,11 +67,21 @@ export type WorkflowNode = {
 export type WorkflowNodeConfigForStart = {
   trigger: string;
   triggerCron?: string;
+  triggerSchedule?: WorkflowSimpleSchedule;
+};
+
+export type WorkflowSimpleSchedule = {
+  intervalDays: number;
+  timePoints: string[];
 };
 
 export const defaultNodeConfigForStart = (): Partial<WorkflowNodeConfigForStart> => {
   return {
     trigger: WORKFLOW_TRIGGERS.MANUAL,
+    triggerSchedule: {
+      intervalDays: 1,
+      timePoints: ["00:00"],
+    },
   };
 };
 
