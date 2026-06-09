@@ -31,8 +31,11 @@ const CertificateDownloadModal = ({ afterClose, data, trigger, ...props }: Certi
   });
   const setOpen = (open: boolean) => {
     _setOpen(open);
-    setTableExpandedKeys([]);
-    formInst.resetFields();
+
+    if (!open) {
+      setTableExpandedKeys([]);
+      formInst.resetFields();
+    }
   };
 
   const triggerEl = useTriggerElement(trigger, { onClick: () => setOpen(true) });
@@ -145,7 +148,9 @@ const CertificateDownloadModal = ({ afterClose, data, trigger, ...props }: Certi
   ];
   const [tableExpandedKeys, setTableExpandedKeys] = useState<string[]>([]);
 
-  const handleCancelClick = () => {};
+  const handleCancelClick = () => {
+    setOpen(false);
+  };
 
   const handleDownloadClick = async (format: CertificateFormatType) => {
     await formInst.validateFields();
