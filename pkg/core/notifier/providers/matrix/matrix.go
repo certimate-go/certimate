@@ -56,7 +56,10 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 		return nil, errors.New("matrix: config `roomId` is required")
 	}
 
-	client, err := matrixsdk.NewClient(n.config.ServerUrl, n.config.UserId, n.config.AccessToken)
+	client, err := matrixsdk.NewClient(n.config.ServerUrl,
+		matrixsdk.WithUserId(n.config.UserId),
+		matrixsdk.WithAccessToken(n.config.AccessToken),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("matrix: %w", err)
 	}

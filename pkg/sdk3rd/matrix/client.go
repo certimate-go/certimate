@@ -18,17 +18,19 @@ type Client struct {
 	client *resty.Client
 }
 
-func NewClient(serverUrl string, userId string, accessToken string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if userId == "" {
-		return nil, fmt.Errorf("sdkerr: unset userId")
-	}
-	if accessToken == "" {
+	if opts.AccessToken == "" {
 		return nil, fmt.Errorf("sdkerr: unset accessToken")
 	}
 
@@ -40,9 +42,9 @@ func NewClient(serverUrl string, userId string, accessToken string) (*Client, er
 	client := &Client{}
 	client.client = resty.New().
 		SetBaseURL(strings.TrimSuffix(baseUrl, "/")).
+		SetHeader("Authorization", "Bearer "+opts.AccessToken)
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetAuthToken(accessToken)
 	if err := client.probeVersions(); err != nil {
 		return nil, err
 	}
