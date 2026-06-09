@@ -34,6 +34,10 @@ type Certificate struct {
 	CA                 string                          `db:"ca"                json:"ca"`
 	ACMEAccountUrl     string                          `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
 	ACMECertificateUrl string                          `db:"acmeCertUrl"       json:"acmeCertUrl"`
+	ARIWindowStart     time.Time                       `db:"ariWindowStart"    json:"ariWindowStart"`
+	ARIWindowEnd       time.Time                       `db:"ariWindowEnd"      json:"ariWindowEnd"`
+	ARINextRefreshAt   time.Time                       `db:"ariNextRefreshAt"  json:"ariNextRefreshAt"`
+	ARISupported       bool                            `db:"ariSupported"      json:"ariSupported"`
 	IsRenewed          bool                            `db:"isRenewed"         json:"isRenewed"`
 	IsRevoked          bool                            `db:"isRevoked"         json:"isRevoked"`
 	WorkflowId         string                          `db:"workflowRef"       json:"workflowId"`

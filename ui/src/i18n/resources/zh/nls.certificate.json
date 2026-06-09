@@ -121,6 +121,14 @@
     "issuer_name": "颁发者通用名称",
     "issuer_org": "颁发者组织",
     "key_algorithm": "私钥算法",
+    "ari_supported": {
+      "": "ARI",
+      "supported": "支持",
+      "not_supported": "不支持"
+    },
+    "ari_window": "ARI 建议续期窗口",
+    "ari_next_refresh": "下次 ARI 刷新时间",
+    "ari_not_supported_tip": "当前 CA 不支持 ARI（RFC 9773）。",
     "created_at": "创建时间",
     "updated_at": "更新时间"
   }

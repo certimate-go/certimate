@@ -10,7 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-acme/lego/v5/acme"
 	"github.com/go-acme/lego/v5/acme/api"
+	legocert "github.com/go-acme/lego/v5/certificate"
 	"github.com/go-acme/lego/v5/lego"
 	"github.com/samber/lo"
 	"github.com/xhit/go-str2duration/v2"
@@ -55,6 +57,7 @@ type bizApplyNodeExecutor struct {
 
 	settingsRepo    settingsRepository
 	accessRepo      accessRepository
+	acmeAccountRepo acmeAccountRepository
 	certificateRepo certificateRepository
 	wfoutputRepo    workflowOutputRepository
 }
@@ -117,6 +120,12 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		WorkflowNodeId:     execCtx.Node.Id,
 	}
 	certificate.PopulateFromPEM(obtainResp.FullChainCertificate, obtainResp.PrivateKey)
+	if obtainResp.ARIInfo != nil {
+		applyARIInfoToCertificate(certificate, obtainResp.ARIInfo)
+	} else if obtainResp.ARIError != "" {
+		ne.logger.Warn("could not get ARI info", slog.String("error", obtainResp.ARIError))
+		copyARIFields(certificate, lastCertificate)
+	}
 	if certificate, err := ne.certificateRepo.Save(execCtx.Context(), certificate); err != nil {
 		ne.logger.Warn("could not save certificate")
 		return execRes, err
@@ -215,15 +224,40 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 			return false, "the last requested certificate has been revoked"
 		}
 
+		now := time.Now()
+		ariTriggered := false
+		if !thisNodeCfg.DisableARI && !lastCertificate.ARIWindowStart.IsZero() {
+			if lastCertificate.ARINextRefreshAt.IsZero() || !now.Before(lastCertificate.ARINextRefreshAt) {
+				if ariInfo, err := ne.getARIInfoForCertificate(execCtx, lastCertificate); err != nil {
+					ne.logger.Warn("could not refresh ARI info", slog.String("certificateId", lastCertificate.Id), slog.Any("error", err))
+				} else if ariInfo != nil {
+					applyARIInfoToCertificate(lastCertificate, ariInfo)
+					if _, err := ne.certificateRepo.Save(execCtx.Context(), lastCertificate); err != nil {
+						ne.logger.Warn("could not save refreshed ARI info", slog.String("certificateId", lastCertificate.Id), slog.Any("error", err))
+					}
+				}
+			}
+
+			ariTriggered = shouldRenewByARI(lastCertificate.ARIWindowStart, lastCertificate.ARIWindowEnd, now)
+		}
+
 		renewalInterval := time.Duration(thisNodeCfg.SkipBeforeExpiryDays) * time.Hour * 24
 		expirationTime := time.Until(lastCertificate.ValidityNotAfter)
 		daysLeft := int(math.Floor(expirationTime.Hours() / 24))
-		if expirationTime > renewalInterval {
+		staticTriggered := expirationTime <= renewalInterval
+		if !ariTriggered && !staticTriggered {
 			daysUntilRenewal := int(math.Ceil((expirationTime - renewalInterval).Hours() / 24))
 			return true, fmt.Sprintf("the last requested certificate expires in %d day(s), a renewal will be performed when the remaining validity is less than %d day(s), and the next renewal will be in %d day(s)", daysLeft, thisNodeCfg.SkipBeforeExpiryDays, daysUntilRenewal)
 		}
 
-		return false, fmt.Sprintf("the last requested certificate expires in %d day(s), the renewal window period has been reached", daysLeft)
+		switch {
+		case ariTriggered && staticTriggered:
+			return false, fmt.Sprintf("the last requested certificate expires in %d day(s), renewal triggered by both ARI suggestedWindow and SkipBeforeExpiryDays threshold", daysLeft)
+		case ariTriggered:
+			return false, fmt.Sprintf("the last requested certificate expires in %d day(s), renewal triggered by ARI suggestedWindow", daysLeft)
+		default:
+			return false, fmt.Sprintf("the last requested certificate expires in %d day(s), renewal triggered by SkipBeforeExpiryDays threshold", daysLeft)
+		}
 	}
 
 	return false, ""
@@ -345,6 +379,7 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 		HttpDelayWait:          nodeCfg.HttpDelayWait,
 		PreferredChain:         nodeCfg.PreferredChain,
 		ACMEProfile:            nodeCfg.ACMEProfile,
+		DisableARI:             nodeCfg.DisableARI,
 		ARIReplacesAccountUrl: lo.
 			If(nodeCfg.DisableARI || lastCertificate == nil, "").
 			ElseF(func() string {
@@ -440,6 +475,76 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 	return obtainResp, nil
 }
 
+func (ne *bizApplyNodeExecutor) getARIInfoForCertificate(execCtx *NodeExecutionContext, certificate *domain.Certificate) (*certacme.ARIInfo, error) {
+	if certificate == nil {
+		return nil, fmt.Errorf("the certificate is nil")
+	}
+	if certificate.ACMEAccountUrl == "" {
+		return nil, fmt.Errorf("the certificate has no ACME account URL")
+	}
+
+	acmeAcct, err := ne.acmeAccountRepo.GetByCAAndAcctUrl(execCtx.Context(), certificate.CA, certificate.ACMEAccountUrl)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get ACME account by URL: %w", err)
+	}
+
+	acmeClient, err := certacme.NewACMEClientWithAccount(acmeAcct)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize ACME client: %w", err)
+	}
+
+	return acmeClient.GetARIInfo(execCtx.Context(), certificate.Certificate)
+}
+
+func applyARIInfoToCertificate(certificate *domain.Certificate, ariInfo *certacme.ARIInfo) {
+	if certificate == nil || ariInfo == nil {
+		return
+	}
+
+	certificate.ARISupported = ariInfo.Supported
+	if !ariInfo.Supported {
+		certificate.ARIWindowStart = time.Time{}
+		certificate.ARIWindowEnd = time.Time{}
+		certificate.ARINextRefreshAt = time.Time{}
+		return
+	}
+
+	certificate.ARIWindowStart = ariInfo.WindowStart
+	certificate.ARIWindowEnd = ariInfo.WindowEnd
+	certificate.ARINextRefreshAt = ariInfo.NextRefreshAt
+}
+
+func copyARIFields(target *domain.Certificate, source *domain.Certificate) {
+	if target == nil || source == nil {
+		return
+	}
+
+	target.ARIWindowStart = source.ARIWindowStart
+	target.ARIWindowEnd = source.ARIWindowEnd
+	target.ARINextRefreshAt = source.ARINextRefreshAt
+	target.ARISupported = source.ARISupported
+}
+
+func shouldRenewByARI(windowStart, windowEnd, now time.Time) bool {
+	if windowStart.IsZero() || windowEnd.IsZero() {
+		return false
+	}
+
+	renewalInfo := &legocert.RenewalInfo{
+		ExtendedRenewalInfo: &acme.ExtendedRenewalInfo{
+			RenewalInfo: acme.RenewalInfo{
+				SuggestedWindow: acme.Window{
+					Start: windowStart,
+					End:   windowEnd,
+				},
+			},
+		},
+	}
+	return renewalInfo.ShouldRenewAt(now, 0) != nil ||
+		(!now.Before(windowStart) && !now.After(windowEnd)) ||
+		now.After(windowEnd)
+}
+
 func (ne *bizApplyNodeExecutor) setOuputsOfResult(execCtx *NodeExecutionContext, execRes *NodeExecutionResult, certificate *domain.Certificate, persistent bool) {
 	if certificate != nil {
 		key := "certificate"
@@ -496,6 +601,7 @@ func newBizApplyNodeExecutor() NodeExecutor {
 		nodeExecutor:    nodeExecutor{logger: slog.Default()},
 		settingsRepo:    repository.NewSettingsRepository(),
 		accessRepo:      repository.NewAccessRepository(),
+		acmeAccountRepo: repository.NewACMEAccountRepository(),
 		certificateRepo: repository.NewCertificateRepository(),
 		wfoutputRepo:    repository.NewWorkflowOutputRepository(),
 	}

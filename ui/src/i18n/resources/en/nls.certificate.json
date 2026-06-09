@@ -121,6 +121,14 @@
     "issuer_name": "Issuer common name",
     "issuer_org": "Issuer organization",
     "key_algorithm": "Key algorithm",
+    "ari_supported": {
+      "": "ARI",
+      "supported": "Supported",
+      "not_supported": "Not supported"
+    },
+    "ari_window": "ARI suggested window",
+    "ari_next_refresh": "Next ARI refresh",
+    "ari_not_supported_tip": "This CA does not support ARI (RFC 9773).",
     "created_at": "Created at",
     "updated_at": "Updated at"
   }

@@ -1,7 +1,7 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
 import { IconClipboard, IconDownload } from "@tabler/icons-react";
-import { App, Button, Form, Input, Tag, Tooltip } from "antd";
+import { App, Button, Form, Input, Tag, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 
 import { type CertificateModel } from "@/domain/certificate";
@@ -18,6 +18,8 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
   const { t } = useTranslation();
 
   const { message } = App.useApp();
+  const hasARIWindow = data.ariSupported && data.ariWindowStart && data.ariWindowEnd;
+  const showARI = data.source === "request" && (data.ariSupported || data.ariSupported === false);
 
   return (
     <div {...props}>
@@ -54,6 +56,42 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
         <Form.Item label={t("certificate.props.key_algorithm")}>
           <Input value={data.keyAlgorithm} variant="filled" placeholder="" />
         </Form.Item>
+
+        {showARI && (
+          <>
+            <Form.Item label={t("certificate.props.ari_supported")}>
+              <Input
+                value={data.ariSupported ? t("certificate.props.ari_supported.supported") : t("certificate.props.ari_supported.not_supported")}
+                variant="filled"
+                placeholder=""
+                suffix={
+                  data.ariSupported ? (
+                    <Tag color="success">{t("certificate.props.ari_supported.supported")}</Tag>
+                  ) : (
+                    <Tag>{t("certificate.props.ari_supported.not_supported")}</Tag>
+                  )
+                }
+              />
+              {!data.ariSupported && <Typography.Text type="secondary">{t("certificate.props.ari_not_supported_tip")}</Typography.Text>}
+            </Form.Item>
+
+            {hasARIWindow && (
+              <Form.Item label={t("certificate.props.ari_window")}>
+                <Input
+                  value={`${dayjs(data.ariWindowStart).format("YYYY-MM-DD HH:mm:ss")} ~ ${dayjs(data.ariWindowEnd).format("YYYY-MM-DD HH:mm:ss")}`}
+                  variant="filled"
+                  placeholder=""
+                />
+              </Form.Item>
+            )}
+
+            {data.ariSupported && data.ariNextRefreshAt && (
+              <Form.Item label={t("certificate.props.ari_next_refresh")}>
+                <Input value={dayjs(data.ariNextRefreshAt).format("YYYY-MM-DD HH:mm:ss")} variant="filled" placeholder="" />
+              </Form.Item>
+            )}
+          </>
+        )}
 
         <Form.Item label={t("certificate.props.certificate")}>
           <div className="absolute -top-1.5 right-0 -translate-y-full">
