@@ -2,7 +2,9 @@ package migrations
 
 import (
 	"errors"
+	"strings"
 
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
 
@@ -93,6 +95,7 @@ func init() {
 		//   - add field `subjectName`
 		//   - add field `issuerName`
 		//   - add field `validationPolicy`
+		//   - add field `ca`
 		{
 			collection, err := app.FindCollectionByNameOrId("4szxr9x43tpj6np")
 			if err != nil {
@@ -207,6 +210,24 @@ func init() {
 				return err
 			}
 
+			if err := collection.Fields.AddMarshaledJSONAt(15, []byte(`{
+				"autogeneratePattern": "",
+				"help": "",
+				"hidden": false,
+				"id": "text4045880084",
+				"max": 0,
+				"min": 0,
+				"name": "ca",
+				"pattern": "",
+				"presentable": false,
+				"primaryKey": false,
+				"required": false,
+				"system": false,
+				"type": "text"
+			}`)); err != nil {
+				return err
+			}
+
 			if err := app.Save(collection); err != nil {
 				return err
 			}
@@ -221,7 +242,12 @@ func init() {
 			for _, record := range records {
 				changed := false
 
-				if certX509, err := xcert.ParseCertificateFromPEM(record.GetString("certificate")); err == nil {
+				if record.GetString("certificate") != "" {
+					certX509, err := xcert.ParseCertificateFromPEM(record.GetString("certificate"))
+					if err != nil {
+						continue
+					}
+
 					record.Set("subjectName", certX509.Subject.CommonName)
 					record.Set("issuerName", certX509.Issuer.CommonName)
 
@@ -239,6 +265,35 @@ func init() {
 					}
 
 					changed = true
+				}
+
+				if record.GetString("acmeAcctUrl") != "" {
+					acmeAcctUrl := record.GetString("acmeAcctUrl")
+					acmeAcctRecord, err := app.FindFirstRecordByFilter("acme_accounts", "acmeAcctUrl={:acmeAcctUrl}", dbx.Params{"acmeAcctUrl": acmeAcctUrl})
+					if err != nil {
+						mapping := map[string]string{
+							"https://acme-v02.api.letsencrypt.org/":         "letsencrypt",
+							"https://acme-staging-v02.api.letsencrypt.org/": "letsencryptstaging",
+							"https://acme-api.actalis.com/":                 "actalisssl",
+							"https://acme.digicert.com/":                    "digicert",
+							"https://emea.acme.atlas.globalsign.com/":       "globalsignatlas",
+							"https://dv.acme-v02.api.pki.goog/":             "googletrustservices",
+							"https://acme.litessl.com/acme/v2/":             "litessl",
+							"https://acme.ssl.com/":                         "sslcom",
+							"https://acme.sectigo.com/":                     "sectigo",
+							"https://acme.zerossl.com/":                     "zerossl",
+						}
+						for url, ca := range mapping {
+							if strings.HasPrefix(acmeAcctUrl, url) {
+								record.Set("ca", ca)
+								changed = true
+								break
+							}
+						}
+					} else {
+						record.Set("ca", acmeAcctRecord.GetString("ca"))
+						changed = true
+					}
 				}
 
 				if changed {

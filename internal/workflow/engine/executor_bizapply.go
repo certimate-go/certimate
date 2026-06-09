@@ -109,6 +109,7 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		Certificate:       obtainResp.FullChainCertificate,
 		PrivateKey:        obtainResp.PrivateKey,
 		IssuerCertificate: obtainResp.IssuerCertificate,
+		CA:                obtainResp.CAProvider.String(),
 		ACMEAcctUrl:       obtainResp.ACMEAcctUrl,
 		ACMECertUrl:       obtainResp.ACMECertUrl,
 		WorkflowId:        execCtx.WorkflowId,

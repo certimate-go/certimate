@@ -31,6 +31,7 @@ type Certificate struct {
 	ValidityNotBefore time.Time                       `db:"validityNotBefore" json:"validityNotBefore"`
 	ValidityNotAfter  time.Time                       `db:"validityNotAfter"  json:"validityNotAfter"`
 	ValidityInterval  int32                           `db:"validityInterval"  json:"validityInterval"`
+	CA                string                          `db:"ca"                json:"ca"`
 	ACMEAcctUrl       string                          `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
 	ACMECertUrl       string                          `db:"acmeCertUrl"       json:"acmeCertUrl"`
 	IsRenewed         bool                            `db:"isRenewed"         json:"isRenewed"`

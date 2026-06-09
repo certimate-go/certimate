@@ -107,6 +107,7 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	record.Set("validityNotBefore", certificate.ValidityNotBefore)
 	record.Set("validityNotAfter", certificate.ValidityNotAfter)
 	record.Set("validityInterval", certificate.ValidityInterval)
+	record.Set("ca", certificate.CA)
 	record.Set("acmeAcctUrl", certificate.ACMEAcctUrl)
 	record.Set("acmeCertUrl", certificate.ACMECertUrl)
 	record.Set("isRenewed", certificate.IsRenewed)
@@ -172,6 +173,7 @@ func (r *CertificateRepository) castRecordToModel(record *core.Record) (*domain.
 		ValidityNotBefore: record.GetDateTime("validityNotBefore").Time(),
 		ValidityNotAfter:  record.GetDateTime("validityNotAfter").Time(),
 		ValidityInterval:  int32(record.GetInt("validityInterval")),
+		CA:                record.GetString("ca"),
 		ACMEAcctUrl:       record.GetString("acmeAcctUrl"),
 		ACMECertUrl:       record.GetString("acmeCertUrl"),
 		IsRenewed:         record.GetBool("isRenewed"),

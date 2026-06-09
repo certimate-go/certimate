@@ -36,11 +36,11 @@ func (r *ACMEAccountRepository) GetByCAAndEmail(ctx context.Context, ca, caDirUr
 	return r.castRecordToModel(record)
 }
 
-func (r *ACMEAccountRepository) GetByAcctUrl(ctx context.Context, acctUrl string) (*domain.ACMEAccount, error) {
+func (r *ACMEAccountRepository) GetByCAAndAcctUrl(ctx context.Context, ca string, acctUrl string) (*domain.ACMEAccount, error) {
 	record, err := app.GetApp().FindFirstRecordByFilter(
 		domain.CollectionNameACMEAccount,
-		"acmeAcctUrl={:acmeAcctUrl}",
-		dbx.Params{"acmeAcctUrl": acctUrl},
+		"ca={:ca} && acmeAcctUrl={:acmeAcctUrl}",
+		dbx.Params{"ca": ca, "acmeAcctUrl": acctUrl},
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

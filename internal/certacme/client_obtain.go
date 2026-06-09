@@ -59,6 +59,7 @@ type ObtainCertificateRequest struct {
 }
 
 type ObtainCertificateResponse struct {
+	CAProvider           domain.CAProviderType
 	CSR                  string
 	FullChainCertificate string
 	IssuerCertificate    string
@@ -183,6 +184,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 	}
 
 	return &ObtainCertificateResponse{
+		CAProvider:           domain.CAProviderType(c.account.CA),
 		CSR:                  strings.TrimSpace(string(resp.CSR)),
 		FullChainCertificate: strings.TrimSpace(string(resp.Certificate)),
 		IssuerCertificate:    strings.TrimSpace(string(resp.IssuerCertificate)),

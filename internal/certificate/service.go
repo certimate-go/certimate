@@ -235,7 +235,7 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 		return nil, fmt.Errorf("could not revoke a certificate which is already revoked")
 	}
 
-	acmeAccount, err := s.acmeAccountRepo.GetByAcctUrl(ctx, certificate.ACMEAcctUrl)
+	acmeAccount, err := s.acmeAccountRepo.GetByCAAndAcctUrl(ctx, certificate.CA, certificate.ACMEAcctUrl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to revoke certificate: could not find acme account: %w", err)
 	}

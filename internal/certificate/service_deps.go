@@ -9,7 +9,7 @@ import (
 )
 
 type acmeAccountRepository interface {
-	GetByAcctUrl(ctx context.Context, acctUrl string) (*domain.ACMEAccount, error)
+	GetByCAAndAcctUrl(ctx context.Context, ca string, acctUrl string) (*domain.ACMEAccount, error)
 }
 
 type certificateRepository interface {
