@@ -6,13 +6,30 @@ import (
 	"net"
 )
 
-var oidSubjectAlternativeNameExtension = asn1.ObjectIdentifier{2, 5, 29, 17}
+var (
+	oidSubjectAlternativeNameExtension = asn1.ObjectIdentifier{2, 5, 29, 17}
+
+	oidValidationTypeEV = asn1.ObjectIdentifier{2, 23, 140, 1, 1}
+	oidValidationTypeDV = asn1.ObjectIdentifier{2, 23, 140, 1, 2, 1}
+	oidValidationTypeOV = asn1.ObjectIdentifier{2, 23, 140, 1, 2, 2}
+	oidValidationTypeIV = asn1.ObjectIdentifier{2, 23, 140, 1, 2, 3}
+)
 
 const (
 	sanGeneralNameTagEmail = 1
 	sanGeneralNameTagDNS   = 2
 	sanGeneralNameTagURI   = 6
 	sanGeneralNameTagIP    = 7
+)
+
+type ValidationType int
+
+const (
+	UnknownValidation ValidationType = iota
+	ExtendedValidation
+	DomainValidated
+	OrganizationalValidated
+	IndividualValidated
 )
 
 // 返回指定 x509.Certificate 对象的主题名称。
@@ -83,4 +100,59 @@ func GetSubjectAltNames(cert *x509.Certificate) []string {
 	}
 
 	return sans
+}
+
+// 返回指定 x509.Certificate 对象的证书验证类型。
+//
+// 入参：
+//   - cert: x509.Certificate 对象。
+//
+// 出参：
+//   - 证书验证类型。
+func GetValidationType(cert *x509.Certificate) ValidationType {
+	// 同一证书可能有多个符合的策略，按 EV > OV > IV > DV 顺序判断
+	if HasPolicy(cert, oidValidationTypeEV) {
+		return ExtendedValidation
+	} else if HasPolicy(cert, oidValidationTypeOV) {
+		return OrganizationalValidated
+	} else if HasPolicy(cert, oidValidationTypeIV) {
+		return IndividualValidated
+	} else if HasPolicy(cert, oidValidationTypeDV) {
+		return DomainValidated
+	}
+	return UnknownValidation
+}
+
+// 检查指定 x509.Certificate 对象是否包含指定的证书策略。
+//
+// 入参：
+//   - cert: x509.Certificate 对象。
+//   - policy: 证书策略 OID。
+//
+// 出参：
+//   - 是否包含指定的证书策略。
+func HasPolicy(cert *x509.Certificate, policy asn1.ObjectIdentifier) bool {
+	for _, p := range cert.PolicyIdentifiers {
+		if p.Equal(policy) {
+			return true
+		}
+	}
+	return false
+}
+
+// 检查指定 x509.Certificate 对象是否包含指定的证书策略。
+//
+// 入参：
+//   - cert: x509.Certificate 对象。
+//   - policy: 证书策略 OID 字符串。
+//
+// 出参：
+//   - 是否包含指定的证书策略。
+func HasPolicyString(cert *x509.Certificate, policy string) bool {
+	for _, p := range cert.PolicyIdentifiers {
+		if p.String() == policy {
+			return true
+		}
+	}
+	return false
 }

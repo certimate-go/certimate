@@ -17,30 +17,35 @@ const CollectionNameCertificate = "certificate"
 
 type Certificate struct {
 	Meta
-	Source            CertificateSourceType       `db:"source"            json:"source"`
-	SubjectAltNames   string                      `db:"subjectAltNames"   json:"subjectAltNames"`
-	SerialNumber      string                      `db:"serialNumber"      json:"serialNumber"`
-	Certificate       string                      `db:"certificate"       json:"certificate"`
-	PrivateKey        string                      `db:"privateKey"        json:"privateKey"`
-	IssuerOrg         string                      `db:"issuerOrg"         json:"issuerOrg"`
-	IssuerCertificate string                      `db:"issuerCertificate" json:"issuerCertificate"`
-	KeyAlgorithm      CertificateKeyAlgorithmType `db:"keyAlgorithm"      json:"keyAlgorithm"`
-	ValidityNotBefore time.Time                   `db:"validityNotBefore" json:"validityNotBefore"`
-	ValidityNotAfter  time.Time                   `db:"validityNotAfter"  json:"validityNotAfter"`
-	ValidityInterval  int32                       `db:"validityInterval"  json:"validityInterval"`
-	ACMEAcctUrl       string                      `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
-	ACMECertUrl       string                      `db:"acmeCertUrl"       json:"acmeCertUrl"`
-	IsRenewed         bool                        `db:"isRenewed"         json:"isRenewed"`
-	IsRevoked         bool                        `db:"isRevoked"         json:"isRevoked"`
-	WorkflowId        string                      `db:"workflowRef"       json:"workflowId"`
-	WorkflowRunId     string                      `db:"workflowRunRef"    json:"workflowRunId"`
-	WorkflowNodeId    string                      `db:"workflowNodeId"    json:"workflowNodeId"`
-	DeletedAt         *time.Time                  `db:"deleted" json:"deleted"`
+	Source            CertificateSourceType           `db:"source"            json:"source"`
+	Certificate       string                          `db:"certificate"       json:"certificate"`
+	PrivateKey        string                          `db:"privateKey"        json:"privateKey"`
+	SerialNumber      string                          `db:"serialNumber"      json:"serialNumber"`
+	SubjectName       string                          `db:"subjectName"       json:"subjectName"`
+	SubjectAltNames   string                          `db:"subjectAltNames"   json:"subjectAltNames"`
+	IssuerName        string                          `db:"issuerName"        json:"issuerName"`
+	IssuerOrg         string                          `db:"issuerOrg"         json:"issuerOrg"`
+	IssuerCertificate string                          `db:"issuerCertificate" json:"issuerCertificate"`
+	KeyAlgorithm      CertificateKeyAlgorithmType     `db:"keyAlgorithm"      json:"keyAlgorithm"`
+	ValidationPolicy  CertificateValidationPolicyType `db:"validationPolicy"  json:"validationPolicy"`
+	ValidityNotBefore time.Time                       `db:"validityNotBefore" json:"validityNotBefore"`
+	ValidityNotAfter  time.Time                       `db:"validityNotAfter"  json:"validityNotAfter"`
+	ValidityInterval  int32                           `db:"validityInterval"  json:"validityInterval"`
+	ACMEAcctUrl       string                          `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
+	ACMECertUrl       string                          `db:"acmeCertUrl"       json:"acmeCertUrl"`
+	IsRenewed         bool                            `db:"isRenewed"         json:"isRenewed"`
+	IsRevoked         bool                            `db:"isRevoked"         json:"isRevoked"`
+	WorkflowId        string                          `db:"workflowRef"       json:"workflowId"`
+	WorkflowRunId     string                          `db:"workflowRunRef"    json:"workflowRunId"`
+	WorkflowNodeId    string                          `db:"workflowNodeId"    json:"workflowNodeId"`
+	DeletedAt         *time.Time                      `db:"deleted" json:"deleted"`
 }
 
 func (c *Certificate) PopulateFromX509(certX509 *x509.Certificate) *Certificate {
-	c.SubjectAltNames = strings.Join(xcertx509.GetSubjectAltNames(certX509), ";")
 	c.SerialNumber = strings.ToUpper(certX509.SerialNumber.Text(16))
+	c.SubjectName = certX509.Subject.CommonName
+	c.SubjectAltNames = strings.Join(xcertx509.GetSubjectAltNames(certX509), ";")
+	c.IssuerName = certX509.Issuer.CommonName
 	c.IssuerOrg = strings.Join(certX509.Issuer.Organization, ";")
 	c.ValidityNotBefore = certX509.NotBefore
 	c.ValidityNotAfter = certX509.NotAfter
@@ -56,6 +61,20 @@ func (c *Certificate) PopulateFromX509(certX509 *x509.Certificate) *Certificate 
 		c.KeyAlgorithm = CertificateKeyAlgorithmType("Ed25519")
 	default:
 		c.KeyAlgorithm = CertificateKeyAlgorithmType("")
+	}
+
+	validationType := xcertx509.GetValidationType(certX509)
+	switch validationType {
+	case xcertx509.ExtendedValidation:
+		c.ValidationPolicy = CertificateValidationPolicyTypeEV
+	case xcertx509.DomainValidated:
+		c.ValidationPolicy = CertificateValidationPolicyTypeDV
+	case xcertx509.OrganizationalValidated:
+		c.ValidationPolicy = CertificateValidationPolicyTypeOV
+	case xcertx509.IndividualValidated:
+		c.ValidationPolicy = CertificateValidationPolicyTypeIV
+	default:
+		c.ValidationPolicy = CertificateValidationPolicyType("")
 	}
 
 	return c
@@ -104,6 +123,19 @@ const (
 	CertificateKeyAlgorithmTypeRSA8192 = CertificateKeyAlgorithmType(certcrypto.RSA8192)
 	CertificateKeyAlgorithmTypeEC256   = CertificateKeyAlgorithmType(certcrypto.EC256)
 	CertificateKeyAlgorithmTypeEC384   = CertificateKeyAlgorithmType(certcrypto.EC384)
+)
+
+type CertificateValidationPolicyType string
+
+func (t CertificateValidationPolicyType) String() string {
+	return string(t)
+}
+
+const (
+	CertificateValidationPolicyTypeEV = CertificateValidationPolicyType("EV")
+	CertificateValidationPolicyTypeDV = CertificateValidationPolicyType("DV")
+	CertificateValidationPolicyTypeOV = CertificateValidationPolicyType("OV")
+	CertificateValidationPolicyTypeIV = CertificateValidationPolicyType("IV")
 )
 
 type CertificateFormatType string

@@ -94,13 +94,16 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	}
 
 	record.Set("source", certificate.Source.String())
-	record.Set("subjectAltNames", certificate.SubjectAltNames)
-	record.Set("serialNumber", certificate.SerialNumber)
 	record.Set("certificate", certificate.Certificate)
 	record.Set("privateKey", certificate.PrivateKey)
+	record.Set("serialNumber", certificate.SerialNumber)
+	record.Set("subjectName", certificate.SubjectName)
+	record.Set("subjectAltNames", certificate.SubjectAltNames)
 	record.Set("issuerOrg", certificate.IssuerOrg)
+	record.Set("issuerName", certificate.IssuerName)
 	record.Set("issuerCertificate", certificate.IssuerCertificate)
 	record.Set("keyAlgorithm", certificate.KeyAlgorithm.String())
+	record.Set("validationPolicy", certificate.ValidationPolicy.String())
 	record.Set("validityNotBefore", certificate.ValidityNotBefore)
 	record.Set("validityNotAfter", certificate.ValidityNotAfter)
 	record.Set("validityInterval", certificate.ValidityInterval)
@@ -156,13 +159,16 @@ func (r *CertificateRepository) castRecordToModel(record *core.Record) (*domain.
 			UpdatedAt: record.GetDateTime("updated").Time(),
 		},
 		Source:            domain.CertificateSourceType(record.GetString("source")),
-		SubjectAltNames:   record.GetString("subjectAltNames"),
-		SerialNumber:      record.GetString("serialNumber"),
 		Certificate:       record.GetString("certificate"),
 		PrivateKey:        record.GetString("privateKey"),
+		SerialNumber:      record.GetString("serialNumber"),
+		SubjectName:       record.GetString("subjectName"),
+		SubjectAltNames:   record.GetString("subjectAltNames"),
+		IssuerName:        record.GetString("issuerName"),
 		IssuerOrg:         record.GetString("issuerOrg"),
 		IssuerCertificate: record.GetString("issuerCertificate"),
 		KeyAlgorithm:      domain.CertificateKeyAlgorithmType(record.GetString("keyAlgorithm")),
+		ValidationPolicy:  domain.CertificateValidationPolicyType(record.GetString("validationPolicy")),
 		ValidityNotBefore: record.GetDateTime("validityNotBefore").Time(),
 		ValidityNotAfter:  record.GetDateTime("validityNotAfter").Time(),
 		ValidityInterval:  int32(record.GetInt("validityInterval")),
