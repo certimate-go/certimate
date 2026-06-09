@@ -57,8 +57,10 @@ const CertificateList = () => {
   const tableColumns: TableProps<CertificateModel>["columns"] = [
     {
       key: "name",
-      title: t("certificate.props.subject_alt_names"),
-      render: (_, record) => <Typography.Text delete={record.isRevoked}>{record.subjectAltNames}</Typography.Text>,
+      title: t("certificate.props.name"),
+      render: (_, record) => {
+        return <Typography.Text delete={record.isRevoked}>{record.subjectAltNames.split(";").join("; ")}</Typography.Text>;
+      },
     },
     {
       key: "validity",
@@ -108,7 +110,10 @@ const CertificateList = () => {
       render: (_, record) => (
         <div className="flex max-w-full flex-col gap-1 truncate">
           <Typography.Text ellipsis>{record.issuerOrg || "\u00A0"}</Typography.Text>
-          <Typography.Text ellipsis>{record.keyAlgorithm || "\u00A0"}</Typography.Text>
+          <Typography.Text className="space-x-2" ellipsis>
+            <span>{record.keyAlgorithm || "\u00A0"}</span>
+            <span>{record.validationPolicy}</span>
+          </Typography.Text>
         </div>
       ),
     },

@@ -22,12 +22,20 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
   return (
     <div {...props}>
       <Form layout="vertical">
-        <Form.Item label={t("certificate.props.subject_alt_names")}>
-          <Input value={data.subjectAltNames} variant="filled" placeholder="" />
+        <Form.Item label={t("certificate.props.subject_name")}>
+          <Input value={data.subjectName} variant="filled" placeholder="" />
         </Form.Item>
 
-        <Form.Item label={t("certificate.props.issuer")}>
-          <Input value={data.issuerOrg} variant="filled" placeholder="" />
+        <Form.Item label={t("certificate.props.subject_alt_names")}>
+          <Input value={data.subjectAltNames.split(";").join("; ")} variant="filled" placeholder="" />
+        </Form.Item>
+
+        <Form.Item label={t("certificate.props.issuer_name")}>
+          <Input value={`${data.issuerName}`} variant="filled" placeholder="" />
+        </Form.Item>
+
+        <Form.Item label={t("certificate.props.issuer_org")}>
+          <Input value={`${data.issuerOrg}`} variant="filled" placeholder="" />
         </Form.Item>
 
         <Form.Item label={t("certificate.props.validity")}>

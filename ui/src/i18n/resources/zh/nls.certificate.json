@@ -93,7 +93,7 @@
   },
 
   "props": {
-    "subject_alt_names": "名称",
+    "name": "名称",
     "validity": {
       "": "有效期限",
       "left_days": "{{left}} / {{total}} 天",
@@ -106,18 +106,21 @@
         "expired": "已过期"
       }
     },
-    "brand": "证书品牌",
     "source": {
       "": "来源",
       "request": "申请",
       "upload": "上传"
     },
+    "brand": "证书品牌",
     "revoked": "已吊销",
     "certificate": "证书内容",
     "private_key": "私钥内容",
     "serial_number": "证书序列号",
+    "subject_name": "主题通用名称",
+    "subject_alt_names": "主题备用名称",
+    "issuer_name": "颁发者通用名称",
+    "issuer_org": "颁发者组织",
     "key_algorithm": "私钥算法",
-    "issuer": "颁发者",
     "created_at": "创建时间",
     "updated_at": "更新时间"
   }

@@ -93,9 +93,9 @@
   },
 
   "props": {
-    "subject_alt_names": "Name",
+    "name": "Name",
     "validity": {
-      "": "Expiry",
+      "": "Validity period",
       "left_days": "{{left}} / {{total}} days left",
       "less_than_a_day": "≤1 / {{total}} days left",
       "expired": "Expired",
@@ -106,18 +106,21 @@
         "expired": "Expired"
       }
     },
-    "brand": "Brand",
     "source": {
       "": "Source",
       "request": "Request",
       "upload": "Upload"
     },
+    "brand": "Brand",
     "revoked": "Revoked",
     "certificate": "Certificate chain",
     "private_key": "Private key",
     "serial_number": "Serial number",
+    "subject_name": "Subject common name",
+    "subject_alt_names": "Subject alternative names",
+    "issuer_name": "Issuer common name",
+    "issuer_org": "Issuer organization",
     "key_algorithm": "Key algorithm",
-    "issuer": "Issuer",
     "created_at": "Created at",
     "updated_at": "Updated at"
   }
