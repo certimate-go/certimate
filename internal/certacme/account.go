@@ -51,10 +51,10 @@ func CreateACMEAccount(ctx context.Context, config *ACMEConfig, email string) (*
 		}
 
 		account = &ACMEAccount{
-			CA:         config.CAProvider.String(),
-			Email:      email,
-			PrivateKey: keyPEM,
-			ACMEDirUrl: config.CADirUrl,
+			CA:               config.CAProvider.String(),
+			Email:            email,
+			PrivateKey:       keyPEM,
+			ACMEDirectoryUrl: config.CADirUrl,
 		}
 
 		legoCfg := lego.NewConfig(account)
@@ -95,8 +95,8 @@ func CreateACMEAccount(ctx context.Context, config *ACMEConfig, email string) (*
 			return nil, fmt.Errorf("failed to register acme account: %w", regerr)
 		}
 
-		account.ACMEAcctUrl = regres.Location
-		account.ACMEAccount = &regres.Account
+		account.ACMEAccountUrl = regres.Location
+		account.ResourceObject = &regres.Account
 
 		if _, err := accountRepo.Save(ctx, account); err != nil {
 			return nil, fmt.Errorf("failed to save acme account record: %w", err)

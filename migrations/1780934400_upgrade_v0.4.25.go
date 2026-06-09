@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/go-acme/lego/v5/acme"
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	m "github.com/pocketbase/pocketbase/migrations"
@@ -16,6 +17,63 @@ func init() {
 	m.Register(func(app core.App) error {
 		tracer := NewTracer("v0.4.25")
 		tracer.Printf("go ...")
+
+		// update collection `acme_accounts`
+		//   - rename field `acmeAccount` to `resourceObj`
+		{
+			collection, err := app.FindCollectionByNameOrId("012d7abbod1hwvr")
+			if err != nil {
+				return err
+			}
+
+			if err := collection.Fields.AddMarshaledJSONAt(4, []byte(`{
+				"hidden": false,
+				"id": "1aoia909",
+				"maxSize": 2000000,
+				"name": "resourceObj",
+				"presentable": false,
+				"required": false,
+				"system": false,
+				"type": "json"
+			}`)); err != nil {
+				return err
+			}
+
+			if err := app.Save(collection); err != nil {
+				return err
+			}
+
+			tracer.Printf("collection '%s' updated", collection.Name)
+
+			records, err := app.FindAllRecords(collection)
+			if err != nil {
+				return err
+			}
+
+			for _, record := range records {
+				changed := false
+
+				var resourceObj *acme.Account
+				if err := record.UnmarshalJSONField("resourceObj", &resourceObj); err != nil {
+					return err
+				} else {
+					if len(resourceObj.Contact) == 0 {
+						resourceObj.Contact = []string{"mailto:" + record.GetString("email")}
+
+						record.Set("resourceObj", resourceObj)
+						changed = true
+					}
+				}
+
+				if changed {
+					if err := app.Save(record); err != nil {
+						return err
+					}
+
+					tracer.Printf("record #%s in collection '%s' updated", record.Id, collection.Name)
+				}
+			}
+		}
 
 		// update collection `access`
 		//   - modify field `config` schema

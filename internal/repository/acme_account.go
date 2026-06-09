@@ -74,9 +74,9 @@ func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.AC
 	record.Set("ca", acmeAccount.CA)
 	record.Set("email", acmeAccount.Email)
 	record.Set("privateKey", acmeAccount.PrivateKey)
-	record.Set("acmeDirUrl", acmeAccount.ACMEDirUrl)
-	record.Set("acmeAcctUrl", acmeAccount.ACMEAcctUrl)
-	record.Set("acmeAccount", acmeAccount.ACMEAccount)
+	record.Set("acmeDirUrl", acmeAccount.ACMEDirectoryUrl)
+	record.Set("acmeAcctUrl", acmeAccount.ACMEAccountUrl)
+	record.Set("resourceObj", acmeAccount.ResourceObject)
 	if err := app.GetApp().Save(record); err != nil {
 		return acmeAccount, err
 	}
@@ -92,9 +92,9 @@ func (r *ACMEAccountRepository) castRecordToModel(record *core.Record) (*domain.
 		return nil, fmt.Errorf("the record is nil")
 	}
 
-	account := &acme.Account{}
-	if err := record.UnmarshalJSONField("acmeAccount", account); err != nil {
-		return nil, fmt.Errorf("field 'acmeAccount' is malformed")
+	resourceObj := &acme.Account{}
+	if err := record.UnmarshalJSONField("resourceObj", resourceObj); err != nil {
+		return nil, fmt.Errorf("field 'resourceObj' is malformed")
 	}
 
 	acmeAccount := &domain.ACMEAccount{
@@ -103,12 +103,12 @@ func (r *ACMEAccountRepository) castRecordToModel(record *core.Record) (*domain.
 			CreatedAt: record.GetDateTime("created").Time(),
 			UpdatedAt: record.GetDateTime("updated").Time(),
 		},
-		CA:          record.GetString("ca"),
-		Email:       record.GetString("email"),
-		PrivateKey:  record.GetString("privateKey"),
-		ACMEDirUrl:  record.GetString("acmeDirUrl"),
-		ACMEAcctUrl: record.GetString("acmeAcctUrl"),
-		ACMEAccount: account,
+		CA:               record.GetString("ca"),
+		Email:            record.GetString("email"),
+		PrivateKey:       record.GetString("privateKey"),
+		ACMEDirectoryUrl: record.GetString("acmeDirUrl"),
+		ACMEAccountUrl:   record.GetString("acmeAcctUrl"),
+		ResourceObject:   resourceObj,
 	}
 	return acmeAccount, nil
 }

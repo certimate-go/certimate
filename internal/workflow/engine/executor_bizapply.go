@@ -105,16 +105,16 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 
 	// 保存证书实体
 	certificate := &domain.Certificate{
-		Source:            domain.CertificateSourceTypeRequest,
-		Certificate:       obtainResp.FullChainCertificate,
-		PrivateKey:        obtainResp.PrivateKey,
-		IssuerCertificate: obtainResp.IssuerCertificate,
-		CA:                obtainResp.CAProvider.String(),
-		ACMEAcctUrl:       obtainResp.ACMEAcctUrl,
-		ACMECertUrl:       obtainResp.ACMECertUrl,
-		WorkflowId:        execCtx.WorkflowId,
-		WorkflowRunId:     execCtx.RunId,
-		WorkflowNodeId:    execCtx.Node.Id,
+		Source:             domain.CertificateSourceTypeRequest,
+		Certificate:        obtainResp.FullChainCertificate,
+		PrivateKey:         obtainResp.PrivateKey,
+		IssuerCertificate:  obtainResp.IssuerCertificate,
+		CA:                 obtainResp.CAProvider.String(),
+		ACMEAccountUrl:     obtainResp.ACMEAccountUrl,
+		ACMECertificateUrl: obtainResp.ACMECertificateUrl,
+		WorkflowId:         execCtx.WorkflowId,
+		WorkflowRunId:      execCtx.RunId,
+		WorkflowNodeId:     execCtx.Node.Id,
 	}
 	certificate.PopulateFromPEM(obtainResp.FullChainCertificate, obtainResp.PrivateKey)
 	if certificate, err := ne.certificateRepo.Save(execCtx.Context(), certificate); err != nil {
@@ -303,7 +303,7 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 		ne.logger.Warn("could not initialize acme account")
 		return nil, err
 	} else {
-		ne.logger.Info("acme account initialized", slog.String("acmeAcctUrl", acmeAcct.ACMEAcctUrl))
+		ne.logger.Info("acme account initialized", slog.String("acmeAcctUrl", acmeAcct.ACMEAccountUrl))
 	}
 
 	// 构造证书申请请求
@@ -345,13 +345,13 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 		HttpDelayWait:          nodeCfg.HttpDelayWait,
 		PreferredChain:         nodeCfg.PreferredChain,
 		ACMEProfile:            nodeCfg.ACMEProfile,
-		ARIReplacesAcctUrl: lo.
+		ARIReplacesAccountUrl: lo.
 			If(nodeCfg.DisableARI || lastCertificate == nil, "").
 			ElseF(func() string {
 				if lastCertificate.IsRenewed {
 					return ""
 				}
-				return lastCertificate.ACMEAcctUrl
+				return lastCertificate.ACMEAccountUrl
 			}),
 		ARIReplacesCertId: lo.
 			If(nodeCfg.DisableARI || lastCertificate == nil, "").

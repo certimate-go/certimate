@@ -108,8 +108,8 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	record.Set("validityNotAfter", certificate.ValidityNotAfter)
 	record.Set("validityInterval", certificate.ValidityInterval)
 	record.Set("ca", certificate.CA)
-	record.Set("acmeAcctUrl", certificate.ACMEAcctUrl)
-	record.Set("acmeCertUrl", certificate.ACMECertUrl)
+	record.Set("acmeAcctUrl", certificate.ACMEAccountUrl)
+	record.Set("acmeCertUrl", certificate.ACMECertificateUrl)
 	record.Set("isRenewed", certificate.IsRenewed)
 	record.Set("isRevoked", certificate.IsRevoked)
 	record.Set("workflowRef", certificate.WorkflowId)
@@ -159,28 +159,28 @@ func (r *CertificateRepository) castRecordToModel(record *core.Record) (*domain.
 			CreatedAt: record.GetDateTime("created").Time(),
 			UpdatedAt: record.GetDateTime("updated").Time(),
 		},
-		Source:            domain.CertificateSourceType(record.GetString("source")),
-		Certificate:       record.GetString("certificate"),
-		PrivateKey:        record.GetString("privateKey"),
-		SerialNumber:      record.GetString("serialNumber"),
-		SubjectName:       record.GetString("subjectName"),
-		SubjectAltNames:   record.GetString("subjectAltNames"),
-		IssuerName:        record.GetString("issuerName"),
-		IssuerOrg:         record.GetString("issuerOrg"),
-		IssuerCertificate: record.GetString("issuerCertificate"),
-		KeyAlgorithm:      domain.CertificateKeyAlgorithmType(record.GetString("keyAlgorithm")),
-		ValidationPolicy:  domain.CertificateValidationPolicyType(record.GetString("validationPolicy")),
-		ValidityNotBefore: record.GetDateTime("validityNotBefore").Time(),
-		ValidityNotAfter:  record.GetDateTime("validityNotAfter").Time(),
-		ValidityInterval:  int32(record.GetInt("validityInterval")),
-		CA:                record.GetString("ca"),
-		ACMEAcctUrl:       record.GetString("acmeAcctUrl"),
-		ACMECertUrl:       record.GetString("acmeCertUrl"),
-		IsRenewed:         record.GetBool("isRenewed"),
-		IsRevoked:         record.GetBool("isRevoked"),
-		WorkflowId:        record.GetString("workflowRef"),
-		WorkflowRunId:     record.GetString("workflowRunRef"),
-		WorkflowNodeId:    record.GetString("workflowNodeId"),
+		Source:             domain.CertificateSourceType(record.GetString("source")),
+		Certificate:        record.GetString("certificate"),
+		PrivateKey:         record.GetString("privateKey"),
+		SerialNumber:       record.GetString("serialNumber"),
+		SubjectName:        record.GetString("subjectName"),
+		SubjectAltNames:    record.GetString("subjectAltNames"),
+		IssuerName:         record.GetString("issuerName"),
+		IssuerOrg:          record.GetString("issuerOrg"),
+		IssuerCertificate:  record.GetString("issuerCertificate"),
+		KeyAlgorithm:       domain.CertificateKeyAlgorithmType(record.GetString("keyAlgorithm")),
+		ValidationPolicy:   domain.CertificateValidationPolicyType(record.GetString("validationPolicy")),
+		ValidityNotBefore:  record.GetDateTime("validityNotBefore").Time(),
+		ValidityNotAfter:   record.GetDateTime("validityNotAfter").Time(),
+		ValidityInterval:   int32(record.GetInt("validityInterval")),
+		CA:                 record.GetString("ca"),
+		ACMEAccountUrl:     record.GetString("acmeAcctUrl"),
+		ACMECertificateUrl: record.GetString("acmeCertUrl"),
+		IsRenewed:          record.GetBool("isRenewed"),
+		IsRevoked:          record.GetBool("isRevoked"),
+		WorkflowId:         record.GetString("workflowRef"),
+		WorkflowRunId:      record.GetString("workflowRunRef"),
+		WorkflowNodeId:     record.GetString("workflowNodeId"),
 	}
 	return certificate, nil
 }

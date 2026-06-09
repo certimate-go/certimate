@@ -228,14 +228,14 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 		return nil, err
 	}
 
-	if certificate.ACMEAcctUrl == "" || certificate.ACMECertUrl == "" {
+	if certificate.ACMEAccountUrl == "" || certificate.ACMECertificateUrl == "" {
 		return nil, fmt.Errorf("could not revoke a certificate which is not issued in Certimate")
 	}
 	if certificate.IsRevoked {
 		return nil, fmt.Errorf("could not revoke a certificate which is already revoked")
 	}
 
-	acmeAccount, err := s.acmeAccountRepo.GetByCAAndAcctUrl(ctx, certificate.CA, certificate.ACMEAcctUrl)
+	acmeAccount, err := s.acmeAccountRepo.GetByCAAndAcctUrl(ctx, certificate.CA, certificate.ACMEAccountUrl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to revoke certificate: could not find acme account: %w", err)
 	}

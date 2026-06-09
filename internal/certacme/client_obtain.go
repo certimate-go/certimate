@@ -54,8 +54,8 @@ type ObtainCertificateRequest struct {
 	ACMEProfile    string
 
 	// ARI 相关
-	ARIReplacesAcctUrl string
-	ARIReplacesCertId  string
+	ARIReplacesAccountUrl string
+	ARIReplacesCertId     string
 }
 
 type ObtainCertificateResponse struct {
@@ -64,8 +64,8 @@ type ObtainCertificateResponse struct {
 	FullChainCertificate string
 	IssuerCertificate    string
 	PrivateKey           string
-	ACMEAcctUrl          string
-	ACMECertUrl          string
+	ACMEAccountUrl       string
+	ACMECertificateUrl   string
 	ARIReplaced          bool
 }
 
@@ -155,7 +155,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		Profile:          request.ACMEProfile,
 		NotBefore:        request.ValidityNotBefore,
 		NotAfter:         request.ValidityNotAfter,
-		ReplacesCertID:   lo.If(request.ARIReplacesAcctUrl == c.account.ACMEAcctUrl, request.ARIReplacesCertId).Else(""),
+		ReplacesCertID:   lo.If(request.ARIReplacesAccountUrl == c.account.ACMEAccountUrl, request.ARIReplacesCertId).Else(""),
 	}
 	resp, err := c.client.Certificate.Obtain(ctx, req)
 	if err != nil {
@@ -189,8 +189,8 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		FullChainCertificate: strings.TrimSpace(string(resp.Certificate)),
 		IssuerCertificate:    strings.TrimSpace(string(resp.IssuerCertificate)),
 		PrivateKey:           privkeyPEM,
-		ACMEAcctUrl:          c.account.ACMEAcctUrl,
-		ACMECertUrl:          resp.CertURL,
+		ACMEAccountUrl:       c.account.ACMEAccountUrl,
+		ACMECertificateUrl:   resp.CertURL,
 		ARIReplaced:          req.ReplacesCertID != "",
 	}, nil
 }

@@ -43,7 +43,7 @@ func newACMEClientWithAccount(account *ACMEAccount, configures ...func(*lego.Con
 
 	legoCfg := lego.NewConfig(account)
 	legoCfg.UserAgent = app.AppUserAgent
-	legoCfg.CADirURL = account.ACMEDirUrl
+	legoCfg.CADirURL = account.ACMEDirectoryUrl
 
 	errs := make([]error, 0)
 	for _, configure := range configures {

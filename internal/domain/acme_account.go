@@ -12,12 +12,12 @@ const CollectionNameACMEAccount = "acme_accounts"
 
 type ACMEAccount struct {
 	Meta
-	CA          string        `db:"ca"          json:"ca"`
-	Email       string        `db:"email"       json:"email"`
-	PrivateKey  string        `db:"privateKey"  json:"privateKey"`
-	ACMEDirUrl  string        `db:"acmeDirUrl"  json:"acmeDirUrl"`
-	ACMEAcctUrl string        `db:"acmeAcctUrl" json:"acmeAcctUrl"`
-	ACMEAccount *acme.Account `db:"acmeAccount" json:"acmeAccount"`
+	CA               string        `db:"ca"          json:"ca"`
+	Email            string        `db:"email"       json:"email"`
+	PrivateKey       string        `db:"privateKey"  json:"privateKey"`
+	ACMEDirectoryUrl string        `db:"acmeDirUrl"  json:"acmeDirUrl"`
+	ACMEAccountUrl   string        `db:"acmeAcctUrl" json:"acmeAcctUrl"`
+	ResourceObject   *acme.Account `db:"resourceObj" json:"resourceObj"`
 }
 
 func (a *ACMEAccount) GetEmail() string {
@@ -25,13 +25,13 @@ func (a *ACMEAccount) GetEmail() string {
 }
 
 func (a *ACMEAccount) GetRegistration() *acme.ExtendedAccount {
-	if a.ACMEAccount == nil {
+	if a.ResourceObject == nil {
 		return nil
 	}
 
 	return &acme.ExtendedAccount{
-		Account:  *a.ACMEAccount,
-		Location: a.ACMEAcctUrl,
+		Account:  *a.ResourceObject,
+		Location: a.ACMEAccountUrl,
 	}
 }
 

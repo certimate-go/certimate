@@ -17,29 +17,29 @@ const CollectionNameCertificate = "certificate"
 
 type Certificate struct {
 	Meta
-	Source            CertificateSourceType           `db:"source"            json:"source"`
-	Certificate       string                          `db:"certificate"       json:"certificate"`
-	PrivateKey        string                          `db:"privateKey"        json:"privateKey"`
-	SerialNumber      string                          `db:"serialNumber"      json:"serialNumber"`
-	SubjectName       string                          `db:"subjectName"       json:"subjectName"`
-	SubjectAltNames   string                          `db:"subjectAltNames"   json:"subjectAltNames"`
-	IssuerName        string                          `db:"issuerName"        json:"issuerName"`
-	IssuerOrg         string                          `db:"issuerOrg"         json:"issuerOrg"`
-	IssuerCertificate string                          `db:"issuerCertificate" json:"issuerCertificate"`
-	KeyAlgorithm      CertificateKeyAlgorithmType     `db:"keyAlgorithm"      json:"keyAlgorithm"`
-	ValidationPolicy  CertificateValidationPolicyType `db:"validationPolicy"  json:"validationPolicy"`
-	ValidityNotBefore time.Time                       `db:"validityNotBefore" json:"validityNotBefore"`
-	ValidityNotAfter  time.Time                       `db:"validityNotAfter"  json:"validityNotAfter"`
-	ValidityInterval  int32                           `db:"validityInterval"  json:"validityInterval"`
-	CA                string                          `db:"ca"                json:"ca"`
-	ACMEAcctUrl       string                          `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
-	ACMECertUrl       string                          `db:"acmeCertUrl"       json:"acmeCertUrl"`
-	IsRenewed         bool                            `db:"isRenewed"         json:"isRenewed"`
-	IsRevoked         bool                            `db:"isRevoked"         json:"isRevoked"`
-	WorkflowId        string                          `db:"workflowRef"       json:"workflowId"`
-	WorkflowRunId     string                          `db:"workflowRunRef"    json:"workflowRunId"`
-	WorkflowNodeId    string                          `db:"workflowNodeId"    json:"workflowNodeId"`
-	DeletedAt         *time.Time                      `db:"deleted" json:"deleted"`
+	Source             CertificateSourceType           `db:"source"            json:"source"`
+	Certificate        string                          `db:"certificate"       json:"certificate"`
+	PrivateKey         string                          `db:"privateKey"        json:"privateKey"`
+	SerialNumber       string                          `db:"serialNumber"      json:"serialNumber"`
+	SubjectName        string                          `db:"subjectName"       json:"subjectName"`
+	SubjectAltNames    string                          `db:"subjectAltNames"   json:"subjectAltNames"`
+	IssuerName         string                          `db:"issuerName"        json:"issuerName"`
+	IssuerOrg          string                          `db:"issuerOrg"         json:"issuerOrg"`
+	IssuerCertificate  string                          `db:"issuerCertificate" json:"issuerCertificate"`
+	KeyAlgorithm       CertificateKeyAlgorithmType     `db:"keyAlgorithm"      json:"keyAlgorithm"`
+	ValidationPolicy   CertificateValidationPolicyType `db:"validationPolicy"  json:"validationPolicy"`
+	ValidityNotBefore  time.Time                       `db:"validityNotBefore" json:"validityNotBefore"`
+	ValidityNotAfter   time.Time                       `db:"validityNotAfter"  json:"validityNotAfter"`
+	ValidityInterval   int32                           `db:"validityInterval"  json:"validityInterval"`
+	CA                 string                          `db:"ca"                json:"ca"`
+	ACMEAccountUrl     string                          `db:"acmeAcctUrl"       json:"acmeAcctUrl"`
+	ACMECertificateUrl string                          `db:"acmeCertUrl"       json:"acmeCertUrl"`
+	IsRenewed          bool                            `db:"isRenewed"         json:"isRenewed"`
+	IsRevoked          bool                            `db:"isRevoked"         json:"isRevoked"`
+	WorkflowId         string                          `db:"workflowRef"       json:"workflowId"`
+	WorkflowRunId      string                          `db:"workflowRunRef"    json:"workflowRunId"`
+	WorkflowNodeId     string                          `db:"workflowNodeId"    json:"workflowNodeId"`
+	DeletedAt          *time.Time                      `db:"deleted" json:"deleted"`
 }
 
 func (c *Certificate) PopulateFromX509(certX509 *x509.Certificate) *Certificate {
