@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"errors"
 	"os"
 	"strings"
 
@@ -1248,6 +1249,6 @@ func init() {
 
 		return nil
 	}, func(app core.App) error {
-		return nil
+		return errors.ErrUnsupported
 	})
 }

@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 
 	"github.com/go-viper/mapstructure/v2"
@@ -277,6 +278,6 @@ func init() {
 		tracer.Printf("done")
 		return nil
 	}, func(app core.App) error {
-		return nil
+		return errors.ErrUnsupported
 	})
 }

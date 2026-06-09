@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"errors"
 	"net"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -153,6 +154,6 @@ func init() {
 		tracer.Printf("done")
 		return nil
 	}, func(app core.App) error {
-		return nil
+		return errors.ErrUnsupported
 	})
 }
