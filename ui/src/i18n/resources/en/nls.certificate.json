@@ -126,7 +126,10 @@
       "supported": "Supported",
       "not_supported": "Not supported"
     },
-    "ari_window": "ARI suggested window",
+    "ari_window": "ARI Suggested Renewal Window (CA Guidance)",
+    "ari_window_expiry_context": "Certificate expires: {{validityNotAfter}}, {{daysLeft}} days remaining",
+    "ari_window_active_tip": "The CA recommends renewing within this window. If the current time falls within this window on the next workflow run, the certificate will be renewed early (regardless of your configured threshold).",
+    "ari_window_passed_tip": "The CA's suggested renewal window has ended. The certificate will be renewed immediately on the next workflow run.",
     "ari_next_refresh": "Next ARI refresh",
     "ari_not_supported_tip": "This CA does not support ARI (RFC 9773).",
     "created_at": "Created at",

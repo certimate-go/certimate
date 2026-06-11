@@ -64,6 +64,10 @@
 
   "logs": {
     "": "Logs",
+    "renewal_trigger": {
+      "ari": "ARI Triggered",
+      "threshold": "Threshold Triggered"
+    },
     "menu": {
       "show_timestamps": "Show timestamps",
       "show_whitespaces": "Show whitespaces",

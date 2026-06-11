@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { EditorState, FlowLayoutDefault } from "@flowgram.ai/fixed-layout-editor";
 import { IconBrowserShare, IconBug, IconCheck, IconClock, IconDots, IconDownload, IconMinus, IconSettings2, IconTransferOut } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
-import { Alert, App, Button, Card, Divider, Dropdown, Empty, Skeleton, Table, type TableProps, Tooltip, Typography, theme } from "antd";
+import { Alert, App, Button, Card, Divider, Dropdown, Empty, Skeleton, Table, type TableProps, Tag, Tooltip, Typography, theme } from "antd";
 import dayjs from "dayjs";
 import { ClientResponseError } from "pocketbase";
 
@@ -23,6 +23,9 @@ import WorkflowDesigner from "./designer/Designer";
 import WorkflowToolbar from "./designer/Toolbar";
 import WorkflowGraphExportModal from "./WorkflowGraphExportModal";
 import WorkflowStatus from "./WorkflowStatus";
+
+const RENEWAL_TRIGGER_ARI_PATTERN = "ARI suggestedWindow";
+const RENEWAL_TRIGGER_THRESHOLD_PATTERN = "SkipBeforeExpiryDays threshold";
 
 export interface WorkflowRunDetailProps {
   className?: string;
@@ -237,15 +240,45 @@ const WorkflowRunLogs = ({ runData }: { runData: WorkflowRunModel }) => {
   const [showTimestamp, setShowTimestamp] = useState(true);
   const [showWhitespace, setShowWhitespace] = useState(true);
 
+  const renderRenewalTriggerTags = (message: string) => {
+    const tags = [];
+    if (message.includes(RENEWAL_TRIGGER_ARI_PATTERN)) {
+      tags.push(
+        <Tag key="ari" color="blue" className="ms-2">
+          {t("workflow_run.logs.renewal_trigger.ari")}
+        </Tag>
+      );
+    }
+
+    if (message.includes(RENEWAL_TRIGGER_THRESHOLD_PATTERN)) {
+      tags.push(
+        <Tag key="threshold" color="gold" className="ms-2">
+          {t("workflow_run.logs.renewal_trigger.threshold")}
+        </Tag>
+      );
+    }
+
+    return tags.length > 0 ? tags : null;
+  };
+
   const renderLogRecord = (record: Log) => {
     let timestamp = dayjs(record.timestamp).format("YYYY-MM-DD HH:mm:ss");
     timestamp = `[${timestamp}]`;
 
-    let message = <>{record.message}</>;
+    const renewalTriggerTags = renderRenewalTriggerTags(record.message);
+    let message = (
+      <>
+        {record.message}
+        {renewalTriggerTags}
+      </>
+    );
     if (record.data != null && Object.keys(record.data).length > 0) {
       message = (
         <details>
-          <summary>{record.message}</summary>
+          <summary>
+            {record.message}
+            {renewalTriggerTags}
+          </summary>
           {Object.entries(record.data).map(([key, value]) => (
             <div key={key} className="flex space-x-2" style={{ wordBreak: "break-word" }}>
               <div className="whitespace-nowrap">{key}:</div>

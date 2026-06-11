@@ -64,6 +64,10 @@
 
   "logs": {
     "": "日志",
+    "renewal_trigger": {
+      "ari": "ARI 触发",
+      "threshold": "阈值触发"
+    },
     "menu": {
       "show_timestamps": "显示日期时间",
       "show_whitespaces": "显示转义换行符",

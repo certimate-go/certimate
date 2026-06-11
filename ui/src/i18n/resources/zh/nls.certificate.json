@@ -126,7 +126,10 @@
       "supported": "支持",
       "not_supported": "不支持"
     },
-    "ari_window": "ARI 建议续期窗口",
+    "ari_window": "ARI 建议续期窗口（CA 建议）",
+    "ari_window_expiry_context": "证书到期时间：{{validityNotAfter}}，距离到期 {{daysLeft}} 天",
+    "ari_window_active_tip": "CA 建议在此窗口内续期。如果在下次工作流运行时当前时间处于该窗口内，系统将提前续期证书（无论你设置的续期阈值如何）。",
+    "ari_window_passed_tip": "CA 建议的续期窗口已结束。系统将在下次工作流运行时立即续期。",
     "ari_next_refresh": "下次 ARI 刷新时间",
     "ari_not_supported_tip": "当前 CA 不支持 ARI（RFC 9773）。",
     "created_at": "创建时间",

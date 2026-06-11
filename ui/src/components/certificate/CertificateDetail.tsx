@@ -1,7 +1,7 @@
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useTranslation } from "react-i18next";
 import { IconClipboard, IconDownload } from "@tabler/icons-react";
-import { App, Button, Form, Input, Tag, Tooltip, Typography } from "antd";
+import { Alert, App, Button, Form, Input, Tag, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 
 import { type CertificateModel } from "@/domain/certificate";
@@ -20,6 +20,9 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
   const { message } = App.useApp();
   const hasARIWindow = data.ariSupported && data.ariWindowStart && data.ariWindowEnd;
   const showARI = data.source === "request" && (data.ariSupported || data.ariSupported === false);
+  const ariWindowPassed = hasARIWindow && dayjs(data.ariWindowEnd).isBefore(dayjs());
+  const validityNotAfter = dayjs(data.validityNotAfter);
+  const daysLeft = Math.max(0, Math.ceil(validityNotAfter.diff(dayjs(), "millisecond") / 86_400_000));
 
   return (
     <div {...props}>
@@ -81,6 +84,18 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
                   value={`${dayjs(data.ariWindowStart).format("YYYY-MM-DD HH:mm:ss")} ~ ${dayjs(data.ariWindowEnd).format("YYYY-MM-DD HH:mm:ss")}`}
                   variant="filled"
                   placeholder=""
+                />
+                <Typography.Text type="secondary">
+                  {t("certificate.props.ari_window_expiry_context", {
+                    validityNotAfter: validityNotAfter.format("YYYY-MM-DD HH:mm:ss"),
+                    daysLeft,
+                  })}
+                </Typography.Text>
+                <Alert
+                  className="mt-2"
+                  message={t(ariWindowPassed ? "certificate.props.ari_window_passed_tip" : "certificate.props.ari_window_active_tip")}
+                  showIcon
+                  type={ariWindowPassed ? "warning" : "info"}
                 />
               </Form.Item>
             )}
