@@ -2213,6 +2213,28 @@
           "off": "Disallow"
         }
       },
+      "tencentcloud_ga2_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud GA2 API endpoint (e.g. ga2.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ga2.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ga2.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+      },
+      "tencentcloud_ga2_deploy_target": {
+        "option": {
+          "listener": {
+            "label": "GA2 listener"
+          }
+        }
+      },
+      "tencentcloud_ga2_accelerator_id": {
+        "label": "Tencent Cloud GA2 accelerator ID (Optional)",
+        "placeholder": "Please enter Tencent Cloud GA2 accelerator ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
+      },
+      "tencentcloud_ga2_listener_id": {
+        "label": "Tencent Cloud GA2 listener ID",
+        "placeholder": "Please enter Tencent Cloud GA2 listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",

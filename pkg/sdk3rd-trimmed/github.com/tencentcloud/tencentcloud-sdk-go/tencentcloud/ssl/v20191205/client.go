@@ -23,6 +23,30 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 	return
 }
 
+func NewDescribeCertificateRequest() (request *DescribeCertificateRequest) {
+	return ssl.NewDescribeCertificateRequest()
+}
+
+func NewDescribeCertificateResponse() (response *DescribeCertificateResponse) {
+	return ssl.NewDescribeCertificateResponse()
+}
+
+func (c *Client) DescribeCertificateWithContext(ctx context.Context, request *DescribeCertificateRequest) (response *DescribeCertificateResponse, err error) {
+	if request == nil {
+		request = NewDescribeCertificateRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "ssl", ssl.APIVersion, "DescribeCertificate")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DescribeCertificate require credential")
+	}
+
+	request.SetContext(ctx)
+	response = NewDescribeCertificateResponse()
+	err = c.Send(request, response)
+	return
+}
+
 func NewDescribeHostCosInstanceListRequest() (request *DescribeHostCosInstanceListRequest) {
 	return ssl.NewDescribeHostCosInstanceListRequest()
 }

@@ -238,6 +238,7 @@
   "tencentcloud_dns": "腾讯云 - 云解析 DNS",
   "tencentcloud_ecdn": "腾讯云 - 全站加速网络 ECDN",
   "tencentcloud_eo": "腾讯云 - 边缘安全加速平台 EdgeOne",
+  "tencentcloud_ga2": "腾讯云 - 全球加速 2.0 GA2",
   "tencentcloud_gaap": "腾讯云 - 全球应用加速 GAAP",
   "tencentcloud_scf": "腾讯云 - 云函数 SCF",
   "tencentcloud_ssl_deploy": "腾讯云 - 通过 SSL 证书服务创建部署任务",

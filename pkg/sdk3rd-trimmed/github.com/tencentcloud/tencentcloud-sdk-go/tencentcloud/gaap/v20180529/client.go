@@ -23,6 +23,81 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 	return
 }
 
+func NewCreateCertificateRequest() (request *CreateCertificateRequest) {
+	return gaap.NewCreateCertificateRequest()
+}
+
+func NewCreateCertificateResponse() (response *CreateCertificateResponse) {
+	return gaap.NewCreateCertificateResponse()
+}
+
+func (c *Client) CreateCertificateWithContext(ctx context.Context, request *CreateCertificateRequest) (response *CreateCertificateResponse, err error) {
+	if request == nil {
+		request = NewCreateCertificateRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "gaap", APIVersion, "CreateCertificate")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("CreateCertificate require credential")
+	}
+
+	request.SetContext(ctx)
+
+	response = NewCreateCertificateResponse()
+	err = c.Send(request, response)
+	return
+}
+
+func NewDescribeCertificatesRequest() (request *DescribeCertificatesRequest) {
+	return gaap.NewDescribeCertificatesRequest()
+}
+
+func NewDescribeCertificatesResponse() (response *DescribeCertificatesResponse) {
+	return gaap.NewDescribeCertificatesResponse()
+}
+
+func (c *Client) DescribeCertificatesWithContext(ctx context.Context, request *DescribeCertificatesRequest) (response *DescribeCertificatesResponse, err error) {
+	if request == nil {
+		request = NewDescribeCertificatesRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "gaap", APIVersion, "DescribeCertificates")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DescribeCertificates require credential")
+	}
+
+	request.SetContext(ctx)
+
+	response = NewDescribeCertificatesResponse()
+	err = c.Send(request, response)
+	return
+}
+
+func NewDescribeCertificateDetailRequest() (request *DescribeCertificateDetailRequest) {
+	return gaap.NewDescribeCertificateDetailRequest()
+}
+
+func NewDescribeCertificateDetailResponse() (response *DescribeCertificateDetailResponse) {
+	return gaap.NewDescribeCertificateDetailResponse()
+}
+
+func (c *Client) DescribeCertificateDetailWithContext(ctx context.Context, request *DescribeCertificateDetailRequest) (response *DescribeCertificateDetailResponse, err error) {
+	if request == nil {
+		request = NewDescribeCertificateDetailRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "gaap", APIVersion, "DescribeCertificateDetail")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DescribeCertificateDetail require credential")
+	}
+
+	request.SetContext(ctx)
+
+	response = NewDescribeCertificateDetailResponse()
+	err = c.Send(request, response)
+	return
+}
+
 func NewDescribeHTTPSListenersRequest() (request *DescribeHTTPSListenersRequest) {
 	return gaap.NewDescribeHTTPSListenersRequest()
 }

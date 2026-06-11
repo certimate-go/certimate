@@ -414,6 +414,7 @@ const (
 	DeploymentProviderTypeTencentCloudCSS               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-css")
 	DeploymentProviderTypeTencentCloudECDN              = DeploymentProviderType(AccessProviderTypeTencentCloud + "-ecdn")
 	DeploymentProviderTypeTencentCloudEO                = DeploymentProviderType(AccessProviderTypeTencentCloud + "-eo")
+	DeploymentProviderTypeTencentCloudGA2               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-ga2")
 	DeploymentProviderTypeTencentCloudGAAP              = DeploymentProviderType(AccessProviderTypeTencentCloud + "-gaap")
 	DeploymentProviderTypeTencentCloudSCF               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-scf")
 	DeploymentProviderTypeTencentCloudSSL               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-ssl")

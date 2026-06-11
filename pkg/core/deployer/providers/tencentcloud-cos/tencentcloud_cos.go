@@ -212,13 +212,17 @@ func (d *Deployer) checkIsBind(ctx context.Context, cloudCertId string) (bool, e
 }
 
 func createSDKClients(secretId, secretKey, region string) (*wSDKClients, error) {
-	credential := common.NewCredential(secretId, secretKey)
-	client, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
-	if err != nil {
-		return nil, err
+	wsdk := &wSDKClients{}
+
+	{
+		credential := common.NewCredential(secretId, secretKey)
+		client, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.SSL = client
 	}
 
-	return &wSDKClients{
-		SSL: client,
-	}, nil
+	return wsdk, nil
 }

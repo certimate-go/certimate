@@ -8,6 +8,10 @@ type (
 	ResourceTypeRegions = ssl.ResourceTypeRegions
 )
 
+type DescribeCertificateRequest = ssl.DescribeCertificateRequest
+
+type DescribeCertificateResponse = ssl.DescribeCertificateResponse
+
 type DescribeHostCosInstanceListRequest = ssl.DescribeHostCosInstanceListRequest
 
 type DescribeHostCosInstanceListResponse = ssl.DescribeHostCosInstanceListResponse

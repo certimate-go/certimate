@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
@@ -13,7 +12,7 @@ import (
 	tcgaap "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
 
 	"github.com/certimate-go/certimate/pkg/core"
-	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-gaap"
 )
 
 type (
@@ -35,7 +34,7 @@ type DeployerConfig struct {
 	// 通道 ID。
 	// 选填。
 	ProxyId string `json:"proxyId,omitempty"`
-	// 负载均衡监听 ID。
+	// 监听器 ID。
 	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
 }
@@ -54,7 +53,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint)
+	client, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -63,9 +62,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		ProjectId: config.ProjectId,
-		Endpoint: lo.
-			If(strings.HasSuffix(config.Endpoint, "intl.tencentcloudapi.com"), "ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
-			Else(""),
+		Endpoint:  config.Endpoint,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -155,7 +152,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudList
 	return nil
 }
 
-func createSDKClients(secretId, secretKey, endpoint string) (*tcgaap.Client, error) {
+func createSDKClient(secretId, secretKey, endpoint string) (*tcgaap.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
 
 	cpf := profile.NewClientProfile()

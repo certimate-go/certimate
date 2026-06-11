@@ -67,7 +67,8 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.90
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb v1.3.105
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.112
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.113
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ga2 v1.3.113
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap v1.3.34
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/live v1.3.103
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf v1.3.101

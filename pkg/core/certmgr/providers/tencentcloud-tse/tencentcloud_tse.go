@@ -46,9 +46,9 @@ type CertmgrConfig struct {
 }
 
 type Certmgr struct {
-	config    *CertmgrConfig
-	logger    *slog.Logger
-	sdkClient *wSDKClients
+	config     *CertmgrConfig
+	logger     *slog.Logger
+	sdkClients *wSDKClients
 }
 
 var _ Provider = (*Certmgr)(nil)
@@ -63,15 +63,15 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
+	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
 	return &Certmgr{
-		config:    config,
-		logger:    slog.Default(),
-		sdkClient: client,
+		config:     config,
+		logger:     slog.Default(),
+		sdkClients: clients,
 	}, nil
 }
 
@@ -117,7 +117,7 @@ func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM s
 	uploadCertificateReq.CertificatePublicKey = common.StringPtr(certPEM)
 	uploadCertificateReq.CertificatePrivateKey = common.StringPtr(privkeyPEM)
 	uploadCertificateReq.Repeatable = common.BoolPtr(false)
-	uploadCertificateResp, err := c.sdkClient.SSL.UploadCertificateWithContext(ctx, uploadCertificateReq)
+	uploadCertificateResp, err := c.sdkClients.SSL.UploadCertificateWithContext(ctx, uploadCertificateReq)
 	c.logger.Debug("sdk request 'ssl.UploadCertificate'", slog.Any("request", uploadCertificateReq), slog.Any("response", uploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ssl.UploadCertificate': %w", err)
@@ -138,7 +138,7 @@ func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM s
 		describeCloudNativeAPIGatewayCertificatesReq.GatewayId = common.StringPtr(c.config.GatewayId)
 		describeCloudNativeAPIGatewayCertificatesReq.Offset = common.Int64Ptr(int64(describeCloudNativeAPIGatewayCertificatesOffset))
 		describeCloudNativeAPIGatewayCertificatesReq.Limit = common.Int64Ptr(int64(describeCloudNativeAPIGatewayCertificatesLimit))
-		describeCloudNativeAPIGatewayCertificatesResp, err := c.sdkClient.TSE.DescribeCloudNativeAPIGatewayCertificatesWithContext(ctx, describeCloudNativeAPIGatewayCertificatesReq)
+		describeCloudNativeAPIGatewayCertificatesResp, err := c.sdkClients.TSE.DescribeCloudNativeAPIGatewayCertificatesWithContext(ctx, describeCloudNativeAPIGatewayCertificatesReq)
 		c.logger.Debug("sdk request 'tse.DescribeCloudNativeAPIGatewayCertificates'", slog.Any("request", describeCloudNativeAPIGatewayCertificatesReq), slog.Any("response", describeCloudNativeAPIGatewayCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'tse.DescribeCloudNativeAPIGatewayCertificates': %w", err)
@@ -173,7 +173,7 @@ func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM s
 	createCloudNativeAPIGatewayCertificateReq.Name = common.StringPtr(certName)
 	createCloudNativeAPIGatewayCertificateReq.CertId = uploadCertificateResp.Response.CertificateId
 	createCloudNativeAPIGatewayCertificateReq.BindDomains = common.StringPtrs(lo.Ternary(len(c.config.Domains) != 0, c.config.Domains, certX509.DNSNames))
-	createCloudNativeAPIGatewayCertificateResp, err := c.sdkClient.TSE.CreateCloudNativeAPIGatewayCertificateWithContext(ctx, createCloudNativeAPIGatewayCertificateReq)
+	createCloudNativeAPIGatewayCertificateResp, err := c.sdkClients.TSE.CreateCloudNativeAPIGatewayCertificateWithContext(ctx, createCloudNativeAPIGatewayCertificateReq)
 	c.logger.Debug("sdk request 'tse.CreateCloudNativeAPIGatewayCertificate'", slog.Any("request", createCloudNativeAPIGatewayCertificateReq), slog.Any("response", createCloudNativeAPIGatewayCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'tse.CreateCloudNativeAPIGatewayCertificate': %w", err)
@@ -194,7 +194,7 @@ func (c *Certmgr) replaceToCloudNative(ctx context.Context, certIdOrName string,
 	modifyCloudNativeAPIGatewayCertificateReq.Crt = common.StringPtr(certPEM)
 	modifyCloudNativeAPIGatewayCertificateReq.Key = common.StringPtr(privkeyPEM)
 	modifyCloudNativeAPIGatewayCertificateReq.CertSource = common.StringPtr("native")
-	modifyCloudNativeAPIGatewayCertificateResp, err := c.sdkClient.TSE.ModifyCloudNativeAPIGatewayCertificateWithContext(ctx, modifyCloudNativeAPIGatewayCertificateReq)
+	modifyCloudNativeAPIGatewayCertificateResp, err := c.sdkClients.TSE.ModifyCloudNativeAPIGatewayCertificateWithContext(ctx, modifyCloudNativeAPIGatewayCertificateReq)
 	c.logger.Debug("sdk request 'tse.ModifyCloudNativeAPIGatewayCertificate'", slog.Any("request", modifyCloudNativeAPIGatewayCertificateReq), slog.Any("response", modifyCloudNativeAPIGatewayCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'tse.ModifyCloudNativeAPIGatewayCertificate': %w", err)

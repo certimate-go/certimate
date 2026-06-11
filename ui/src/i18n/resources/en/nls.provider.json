@@ -238,6 +238,7 @@
   "tencentcloud_dns": "Tencent Cloud - DNS",
   "tencentcloud_ecdn": "Tencent Cloud - ECDN (Enterprise Content Delivery Network)",
   "tencentcloud_eo": "Tencent Cloud - EdgeOne",
+  "tencentcloud_ga2": "Tencent Cloud - GA2 (Global Accelerator 2.0)",
   "tencentcloud_gaap": "Tencent Cloud - GAAP (Global Application Acceleration Platform)",
   "tencentcloud_scf": "Tencent Cloud - SCF (Serverless Cloud Function)",
   "tencentcloud_ssl_deploy": "Tencent Cloud - Deploy via SSL Certificate Service",

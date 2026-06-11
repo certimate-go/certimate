@@ -2209,6 +2209,28 @@
           "off": "不"
         }
       },
+      "tencentcloud_ga2_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 GA2 接口端点（例如：ga2.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/1817/129372\" target=\"_blank\">https://cloud.tencent.com/document/product/1817/129372</a><br>国际站用户请填写 <em>ga2.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_ga2_deploy_target": {
+        "option": {
+          "listener": {
+            "label": "部署到指定监听器"
+          }
+        }
+      },
+      "tencentcloud_ga2_accelerator_id": {
+        "label": "腾讯云 GA2 加速实例 ID",
+        "placeholder": "请输入腾讯云 GA2 加速实例 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/gaap\" target=\"_blank\">https://console.cloud.tencent.com/gaap</a>"
+      },
+      "tencentcloud_ga2_listener_id": {
+        "label": "腾讯云 GA2 监听器 ID",
+        "placeholder": "请输入腾讯云 GA2 监听器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/gaap\" target=\"_blank\">https://console.cloud.tencent.com/gaap</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",

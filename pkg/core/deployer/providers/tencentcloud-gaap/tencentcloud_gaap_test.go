@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	fp            = tester.Args("TENCENTCLOUDCDN_")
+	fp            = tester.Args("TENCENTCLOUGAAP_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fSecretId     string
@@ -35,7 +35,7 @@ Shell command to run this test:
 	--TENCENTCLOUDGAAP_SECRETID="your-secret-id" \
 	--TENCENTCLOUDGAAP_SECRETKEY="your-secret-key" \
 	--TENCENTCLOUDGAAP_PROXYID="your-gaap-group-id" \
-	--TENCENTCLOUDGAAP_LISTENERID="your-clb-listener-id"
+	--TENCENTCLOUDGAAP_LISTENERID="your-gaap-listener-id"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()

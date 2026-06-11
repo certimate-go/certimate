@@ -376,15 +376,14 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 					errs = append(errs, fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err))
 					continue
 				} else {
-					certCNMatched := tea.StringValue(getCertificateDetailResp.Body.CommonName) == d.config.Domain
 					certSANDiff, _ := lo.Difference(tea.StringSliceValue(getCertificateDetailResp.Body.SubjectAlternativeNames), cloudCertSANs)
-					if certCNMatched || len(certSANDiff) == 0 {
+					if len(certSANDiff) == 0 { // 同域名证书需要删除
 						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
 
 					certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
-					if certNotAfter.Before(time.Now()) {
+					if certNotAfter.Before(time.Now()) { // 过期证书需要删除
 						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
