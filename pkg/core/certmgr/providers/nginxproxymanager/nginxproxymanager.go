@@ -117,7 +117,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		},
 	}
 	ngincxUploadCertificateResp, err := c.sdkClient.NginxUploadCertificateWithContext(ctx, nginxCreateCertificateResp.Id, ngincxUploadCertificateReq)
-	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("request.certId", nginxCreateCertificateResp.Id), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
+	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("params.certId", nginxCreateCertificateResp.Id), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'nginx.UploadCertificate': %w", err)
 	}
@@ -149,7 +149,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		},
 	}
 	ngincxUploadCertificateResp, err := c.sdkClient.NginxUploadCertificateWithContext(ctx, certId, ngincxUploadCertificateReq)
-	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("request.certId", certId), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
+	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("params.certId", certId), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'nginx.UploadCertificate': %w", err)
 	}

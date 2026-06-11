@@ -268,7 +268,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	// 更新加速域名配置
 	// REF: https://cloud.tencent.com/document/api/228/41116
 	updateDomainConfigReq := tccdn.NewUpdateDomainConfigRequest()
-	updateDomainConfigReq.ProjectId = lo.IfF(d.config.ProjectId != 0, func() *int64 { return common.Int64Ptr(d.config.ProjectId) }).Else(nil)
+	updateDomainConfigReq.ProjectId = lo.EmptyableToPtr(d.config.ProjectId)
 	updateDomainConfigReq.Domain = common.StringPtr(domain)
 	updateDomainConfigReq.Https = domainConfig.Https
 	if updateDomainConfigReq.Https == nil {

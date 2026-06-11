@@ -97,7 +97,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		ID:          lo.ToPtr(d.config.CertificateId),
 		Certificate: lo.ToPtr(certPEM),
 		PrivateKey:  lo.ToPtr(privkeyPEM),
-		SNIs:        lo.Map(certX509.DNSNames, func(s string, _ int) *string { return lo.ToPtr(s) }),
+		SNIs:        lo.ToSlicePtr(certX509.DNSNames),
 		Type:        lo.ToPtr("server"),
 		Status:      lo.ToPtr(int32(1)),
 	}

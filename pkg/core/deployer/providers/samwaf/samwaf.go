@@ -85,7 +85,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	// 获取 SSL 证书 详情
 	// REF: https://doc.samwaf.com/api/
 	sslConfigDetailResp, err := d.sdkClient.SslConfigDetailWithContext(ctx, d.config.CertificateId)
-	d.logger.Debug("sdk request 'sslconfig.Detail'", slog.Any("request.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
+	d.logger.Debug("sdk request 'sslconfig.Detail'", slog.Any("params.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'sslconfig.Detail': %w", err)
 	} else if sslConfigDetailResp.Data == nil || sslConfigDetailResp.Data.Id == "" {

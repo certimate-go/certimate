@@ -124,7 +124,7 @@ func (d *Deployer) executeUpdateCertificateInstance(ctx context.Context, certPEM
 	var deployRecordId string
 	if _, err := xwait.UntilWithContext(ctx, func(_ context.Context, _ int) (bool, error) {
 		updateCertificateInstanceReq := tcssl.NewUpdateCertificateInstanceRequest()
-		updateCertificateInstanceReq.ProjectId = lo.IfF(d.config.ProjectId != 0, func() *uint64 { return common.Uint64Ptr(uint64(d.config.ProjectId)) }).Else(nil)
+		updateCertificateInstanceReq.ProjectId = lo.EmptyableToPtr(uint64(d.config.ProjectId))
 		updateCertificateInstanceReq.OldCertificateId = common.StringPtr(d.config.CertificateId)
 		updateCertificateInstanceReq.CertificateId = common.StringPtr(upres.CertId)
 		updateCertificateInstanceReq.ResourceTypes = common.StringPtrs(d.config.ResourceProducts)

@@ -101,7 +101,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		Id:   lo.ToPtr(d.config.CertificateId),
 		Cert: lo.ToPtr(certPEM),
 		Key:  lo.ToPtr(privkeyPEM),
-		SNIs: lo.Map(certX509.DNSNames, func(s string, _ int) *string { return lo.ToPtr(s) }),
+		SNIs: lo.ToSlicePtr(certX509.DNSNames),
 	}
 	upsertCertificateResp, err := d.sdkClient.UpsertCertificateWithContext(ctx, d.config.CertificateId, upsertCertificateReq)
 	d.logger.Debug("sdk request 'UpsertCertificate'", slog.String("params.certificateId", d.config.CertificateId), slog.Any("request", upsertCertificateReq), slog.Any("response", upsertCertificateResp))

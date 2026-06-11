@@ -2,7 +2,6 @@
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -79,7 +78,7 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	if config == nil {
-		return nil, errors.New("linode: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("linode: the configuration of the DNS provider is nil")
 	}
 
 	client, err := linodesdk.NewClient(
