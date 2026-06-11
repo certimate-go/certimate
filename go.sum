@@ -903,6 +903,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.90/go.mod h
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.101/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.103/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.105/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.107/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.111/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.112 h1:PNCN4HXHVAfG87Msvelk7Ks5MhotAXk2vqPVvfy1Epw=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.112/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
@@ -916,6 +917,8 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.3.105 h1:rzbhp0b
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.3.105/go.mod h1:KScd4O0ZJum7PsWPoJY1wbKnK1zRCAq7RH3PBRmiYJI=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.112 h1:VPiTJ5n49TS2nmCF1LDZ/T2jSRpsv1ZJnddTkzrvm1I=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.112/go.mod h1:FGEhdHxUk6wOSNpDvr+wdL34Lu6FunNDCQTyK4YqwUw=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tse v1.3.107 h1:doa/f0RtjMuoCpQo5P/Ni3EPOEmcn7MCkCRMnULWqHo=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tse v1.3.107/go.mod h1:uTigeKJi8/YABmv8LeucOcpK/ZAK5htJaCia8L3ol6E=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.112 h1:vxOJOerDOVMvjFh+X3ZMrbb8/htfyxDSKjGkmtD+2jM=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.112/go.mod h1:zCS+AwYqW2r0RBeCWHh9dmydCmP6LSew6y9Uyxsedy0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.111 h1:CKRs1TWBVinSLGZ2J0OVtfzoqoWMizrJ6IdYo6QEfow=

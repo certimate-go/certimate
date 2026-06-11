@@ -2328,6 +2328,45 @@
         "label": "Renewal certificate (certificate ID unchanged)",
         "tooltip": "When unchecked, it will invoke <em>UpdateCertificateInstance</em>; otherwise, it will invoke <em>UploadUpdateCertificateInstance</em>."
       },
+      "tencentcloud_tse_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud TSE API endpoint (e.g. tse.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+      },
+      "tencentcloud_tse_region": {
+        "label": "Tencent Cloud region",
+        "placeholder": "Please enter Tencent Cloud TSE region (e.g. ap-guangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1290/79214\" target=\"_blank\">https://www.tencentcloud.com/document/product/1290/79214</a>"
+      },
+      "tencentcloud_tse_service_type": {
+        "label": "Tencent Cloud TSE service type",
+        "placeholder": "Please select Tencent Cloud TSE service type",
+        "option": {
+          "cloudnative": {
+            "label": "Cloud-native API gateway"
+          }
+        }
+      },
+      "tencentcloud_tse_gateway_id": {
+        "label": "Tencent Cloud TSE Cloud-native API gateway ID",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
+      },
+      "tencentcloud_tse_domains": {
+        "label": "Tencent Cloud TSE Cloud-native API gateway binding domains",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway binding domain names (separated by semicolons)",
+        "help": "Notes: Multiple domains should be separated by semicolons.",
+        "multiple_input_modal": {
+          "title": "Change Tencent Cloud TSE Cloud-native API gateway binding domains",
+          "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway binding domain name"
+        }
+      },
+      "tencentcloud_tse_certificate_id": {
+        "label": "Tencent Cloud TSE Cloud-native certificate ID",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native certificate ID",
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
+      },
       "tencentcloud_vod_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud VOD API endpoint (e.g. vod.intl.tencentcloudapi.com)",
@@ -2650,7 +2689,7 @@
         "help": "Notes: Multiple domains should be separated by semicolons.",
         "multiple_input_modal": {
           "title": "Change Wangsu Cloud CDN domains",
-          "placeholder": "Please enter Wangsu Cloud CDN domain"
+          "placeholder": "Please enter Wangsu Cloud CDN domain name"
         }
       },
       "wangsu_cdnpro_environment": {

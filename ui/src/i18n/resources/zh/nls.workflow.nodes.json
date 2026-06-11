@@ -952,7 +952,7 @@
       "aws_acm_certificate_arn": {
         "label": "AWS ACM 证书 ARN（可选）",
         "placeholder": "请输入 AWS ACM 证书 ARN",
-        "help": "提示：不填写时，将导入为新证书；否则，将替换原证书。"
+        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
       },
       "aws_alb_region": {
         "label": "AWS 服务区域",
@@ -2323,6 +2323,45 @@
       "tencentcloud_sslupdate_is_replaced": {
         "label": "是否更新原证书（即证书 ID 保持不变）",
         "tooltip": "不勾选时，将调用腾讯云 OpenAPI <em>UpdateCertificateInstance</em> 接口；否则，将调用腾讯云 OpenAPI <em>UploadUpdateCertificateInstance</em> 接口。"
+      },
+      "tencentcloud_tse_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 TSE 接口端点（例如：tse.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com.cn/document/product/1364/54618\" target=\"_blank\">https://cloud.tencent.com.cn/document/product/1364/54618</a><br>国际站用户请填写 <em>tse.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_tse_region": {
+        "label": "腾讯云服务地域",
+        "placeholder": "输入腾讯云 TSE 服务地域（例如：ap-guangzhou）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com.cn/document/product/1364/54618\" target=\"_blank\">https://cloud.tencent.com.cn/document/product/1364/54618</a>"
+      },
+      "tencentcloud_tse_service_type": {
+        "label": "腾讯云 TSE 服务类型",
+        "placeholder": "请选择腾讯云 TSE 服务类型",
+        "option": {
+          "cloudnative": {
+            "label": "云原生网关"
+          }
+        }
+      },
+      "tencentcloud_tse_gateway_id": {
+        "label": "腾讯云 TSE 云原生网关 ID",
+        "placeholder": "请输入腾讯云 TSE 云原生网关 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com.cn/rcc/governance\" target=\"_blank\">https://console.cloud.tencent.com.cn/rcc/governance</a>"
+      },
+      "tencentcloud_tse_domains": {
+        "label": "腾讯云 TSE 云原生网关绑定域名",
+        "placeholder": "输入腾讯云 TSE 云原生网关绑定域名（多个值请用半角分号隔开）",
+        "help": "提示：支持多个域名，以半角分号隔开。",
+        "multiple_input_modal": {
+          "title": "修改腾讯云 TSE 云原生网关绑定域名",
+          "placeholder": "请输入腾讯云 TSE 云原生网关绑定域名"
+        }
+      },
+      "tencentcloud_tse_certificate_id": {
+        "label": "腾讯云 TSE 云原生证书 ID（可选）",
+        "placeholder": "请输入腾讯云 TSE 云原生证书 ID",
+        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com.cn/rcc/governance\" target=\"_blank\">https://console.cloud.tencent.com.cn/rcc/governance</a>"
       },
       "tencentcloud_vod_endpoint": {
         "label": "腾讯云接口端点（可选）",

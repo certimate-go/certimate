@@ -243,6 +243,7 @@
   "tencentcloud_ssl_deploy": "Tencent Cloud - Deploy via SSL Certificate Service",
   "tencentcloud_ssl_update": "Tencent Cloud - Update via SSL Certificate Service",
   "tencentcloud_ssl_upload": "Tencent Cloud - Upload to SSL Certificate Service",
+  "tencentcloud_tse": "Tencent Cloud - TSE (Cloud Service Engine)",
   "tencentcloud_vod": "Tencent Cloud - VOD (Video on Demand)",
   "tencentcloud_waf": "Tencent Cloud - WAF (Web Application Firewall)",
   "ucloud": "UCloud",

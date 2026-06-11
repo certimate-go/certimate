@@ -243,6 +243,7 @@
   "tencentcloud_ssl_deploy": "腾讯云 - 通过 SSL 证书服务创建部署任务",
   "tencentcloud_ssl_update": "腾讯云 - 通过 SSL 证书服务更新云资源证书",
   "tencentcloud_ssl_upload": "腾讯云 - 上传到 SSL 证书服务",
+  "tencentcloud_tse": "腾讯云 - 微服务引擎 TSE",
   "tencentcloud_vod": "腾讯云 - 云点播 VOD",
   "tencentcloud_waf": "腾讯云 - Web 应用防火墙 WAF",
   "todaynic": "时代互联",

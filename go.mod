@@ -73,6 +73,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf v1.3.101
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.3.105
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.112
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tse v1.3.107
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.112
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.111
 	github.com/ucloud/ucloud-sdk-go v0.22.77

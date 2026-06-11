@@ -48,7 +48,7 @@ const BizDeployNodeConfigFieldsProviderAliyunAPIGW = () => {
         rules={[formRule]}
       >
         <Select
-          options={[SERVICE_TYPE_CLOUDNATIVE, SERVICE_TYPE_CLOUDNATIVE].map((s) => ({
+          options={[SERVICE_TYPE_CLOUDNATIVE, SERVICE_TYPE_TRADITIONAL].map((s) => ({
             value: s,
             label: t(`workflow_node.deploy.form.aliyun_apigw_service_type.option.${s}.label`),
           }))}
