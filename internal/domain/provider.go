@@ -391,6 +391,7 @@ const (
 	DeploymentProviderTypeKsyunCDN                      = DeploymentProviderType(AccessProviderTypeKsyun + "-cdn")
 	DeploymentProviderTypeKsyunSLB                      = DeploymentProviderType(AccessProviderTypeKsyun + "-slb")
 	DeploymentProviderTypeLeCDN                         = DeploymentProviderType(AccessProviderTypeLeCDN)
+	DeploymentProviderTypeLinodeLOS                     = DeploymentProviderType(AccessProviderTypeLinode + "-los")
 	DeploymentProviderTypeLocal                         = DeploymentProviderType(AccessProviderTypeLocal)
 	DeploymentProviderTypeMohuaMVH                      = DeploymentProviderType(AccessProviderTypeMohua + "-mvh")
 	DeploymentProviderTypeNetlify                       = DeploymentProviderType(AccessProviderTypeNetlify)

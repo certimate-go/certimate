@@ -187,6 +187,7 @@
   "letsencrypt": "Let's Encrypt",
   "letsencryptstaging": "Let's Encrypt 测试环境",
   "linode": "Linode",
+  "linode_los": "Linode - 对象存储",
   "litessl": "LiteSSL",
   "local": "本地主机",
   "mattermost": "Mattermost",

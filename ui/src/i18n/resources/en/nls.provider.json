@@ -187,6 +187,7 @@
   "letsencrypt": "Let's Encrypt",
   "letsencryptstaging": "Let's Encrypt Staging Environment",
   "linode": "Linode",
+  "linode_los": "Linode - Object Storage",
   "litessl": "LiteSSL",
   "local": "Local host",
   "mattermost": "Mattermost",
