@@ -3,12 +3,14 @@ package internal
 import (
 	"context"
 	"fmt"
-	"path/filepath"
+	"log/slog"
 
 	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/challenge/http01"
+	"github.com/go-acme/lego/v5/log"
 
 	"github.com/certimate-go/certimate/internal/tools/ssh"
+	xfilepath "github.com/certimate-go/certimate/pkg/utils/filepath"
 	xssh "github.com/certimate-go/certimate/pkg/utils/ssh"
 )
 
@@ -51,12 +53,18 @@ func (p *HTTPProvider) Present(ctx context.Context, domain, token, keyAuth strin
 		return fmt.Errorf("ssh: failed to create SSH client: %w", err)
 	}
 
-	defer client.Close()
+	log.Info("ssh: ssh connected")
+	defer func() {
+		client.Close()
+		log.Info("ssh: ssh closed")
+	}()
 
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
+	challengePath := xfilepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
 	if err := xssh.WriteRemoteString(client.RawClient(), challengePath, keyAuth, p.config.UseSCP); err != nil {
 		return fmt.Errorf("ssh: failed to write file for HTTP challenge: %w", err)
 	}
+
+	log.Info("ssh: authz file uploaded", slog.String("path", challengePath))
 
 	return nil
 }
@@ -67,13 +75,19 @@ func (p *HTTPProvider) CleanUp(ctx context.Context, domain, token, keyAuth strin
 		return fmt.Errorf("ssh: failed to create SSH client: %w", err)
 	}
 
-	defer client.Close()
+	log.Info("ssh: ssh connected")
+	defer func() {
+		client.Close()
+		log.Info("ssh: ssh closed")
+	}()
 
 	// 删除质询文件
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
+	challengePath := xfilepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
 	if err := xssh.RemoveRemote(client.RawClient(), challengePath, p.config.UseSCP); err != nil {
 		return fmt.Errorf("ssh: failed to remove file after HTTP challenge: %w", err)
 	}
+
+	log.Info("ssh: authz file removed", slog.String("path", challengePath))
 
 	return nil
 }
