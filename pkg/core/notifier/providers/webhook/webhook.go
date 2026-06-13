@@ -112,9 +112,9 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	if webhookContentType == "" {
 		webhookContentType = CONTENT_TYPE_JSON
 		webhookHeaders.Set("Content-Type", CONTENT_TYPE_JSON)
-	} else if strings.HasPrefix(webhookContentType, CONTENT_TYPE_JSON) &&
-		strings.HasPrefix(webhookContentType, CONTENT_TYPE_FORM) &&
-		strings.HasPrefix(webhookContentType, CONTENT_TYPE_MULTIPART) {
+	} else if !(strings.HasPrefix(webhookContentType, CONTENT_TYPE_JSON) ||
+		strings.HasPrefix(webhookContentType, CONTENT_TYPE_FORM) ||
+		strings.HasPrefix(webhookContentType, CONTENT_TYPE_MULTIPART)) {
 		return nil, fmt.Errorf("unsupported webhook content type '%s'", webhookContentType)
 	}
 
