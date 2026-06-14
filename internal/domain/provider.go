@@ -397,6 +397,7 @@ const (
 	DeploymentProviderTypeNetlify                       = DeploymentProviderType(AccessProviderTypeNetlify)
 	DeploymentProviderTypeNginxProxyManager             = DeploymentProviderType(AccessProviderTypeNginxProxyManager)
 	DeploymentProviderTypeProxmoxVE                     = DeploymentProviderType(AccessProviderTypeProxmoxVE)
+	DeploymentProviderTypeQingCloudLB                   = DeploymentProviderType(AccessProviderTypeQingCloud + "-lb")
 	DeploymentProviderTypeQiniuCDN                      = DeploymentProviderType(AccessProviderTypeQiniu + "-cdn")
 	DeploymentProviderTypeQiniuKodo                     = DeploymentProviderType(AccessProviderTypeQiniu + "-kodo")
 	DeploymentProviderTypeQiniuPili                     = DeploymentProviderType(AccessProviderTypeQiniu + "-pili")

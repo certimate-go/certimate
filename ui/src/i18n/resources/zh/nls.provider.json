@@ -206,6 +206,7 @@
   "proxmoxve": "Proxmox VE",
   "qingcloud": "青云",
   "qingcloud_dns": "青云 - 云解析 DNS",
+  "qingcloud_lb": "青云 - 负载均衡 LB",
   "qiniu": "七牛云",
   "qiniu_cdn": "七牛云 - 内容分发网络 CDN",
   "qiniu_kodo": "七牛云 - 对象存储 Kodo",

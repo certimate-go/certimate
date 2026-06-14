@@ -83,6 +83,7 @@ require (
 	github.com/volcengine/volcengine-go-sdk v1.2.34
 	github.com/wneessen/go-mail v0.7.3
 	github.com/xhit/go-str2duration/v2 v2.1.0
+	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
 	github.com/zenlayer/zenlayercloud-sdk-go v0.2.39
 	gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1
 	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0

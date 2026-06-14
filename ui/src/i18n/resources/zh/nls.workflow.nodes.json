@@ -1602,11 +1602,6 @@
           }
         }
       },
-      "huaweicloud_elb_certificate_id": {
-        "label": "华为云 ELB 证书 ID",
-        "placeholder": "请输入华为云 ELB 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
       "huaweicloud_elb_loadbalancer_id": {
         "label": "华为云 ELB 负载均衡器 ID",
         "placeholder": "请输入华为云 ELB 负载均衡器 ID",
@@ -1616,6 +1611,11 @@
         "label": "华为云 ELB 监听器 ID",
         "placeholder": "请输入华为云 ELB 监听器 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/list/grid</a>"
+      },
+      "huaweicloud_elb_certificate_id": {
+        "label": "华为云 ELB 证书 ID",
+        "placeholder": "请输入华为云 ELB 证书 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/elbCert</a>"
       },
       "huaweicloud_live_region": {
         "label": "华为云服务区域",
@@ -1954,6 +1954,31 @@
       },
       "proxmoxve_auto_restart": {
         "label": "部署后自动重启 Proxmox VE 服务"
+      },
+      "qingcloud_lb_zone_id": {
+        "label": "青云服务区域 ID",
+        "placeholder": "请输入青云 ELB 服务区域 ID（例如：pek3a）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
+      },
+      "qingcloud_lb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
+          },
+          "listener": {
+            "label": "部署到指定 HTTPS 监听器"
+          }
+        }
+      },
+      "qingcloud_lb_loadbalancer_id": {
+        "label": "青云 LB 负载均衡器 ID",
+        "placeholder": "请输入青云 LB 负载均衡器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
+      },
+      "qingcloud_lb_listener_id": {
+        "label": "青云 LB 监听器 ID",
+        "placeholder": "请输入青云 LB 监听器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
       },
       "qiniu_cdn_domain": {
         "label": "七牛云 CDN 加速域名",

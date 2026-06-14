@@ -5,13 +5,13 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-elb"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/qingcloud-lb"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
-	Registries.MustRegister(domain.DeploymentProviderTypeHuaweiCloudELB, func(options *ProviderFactoryOptions) (core.Deployer, error) {
-		credentials := domain.AccessConfigForHuaweiCloud{}
+	Registries.MustRegister(domain.DeploymentProviderTypeQingCloudLB, func(options *ProviderFactoryOptions) (core.Deployer, error) {
+		credentials := domain.AccessConfigForQingCloud{}
 		if err := xmaps.Populate(options.ProviderAccessConfig, &credentials); err != nil {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
 		}
@@ -19,12 +19,10 @@ func init() {
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			AccessKeyId:         credentials.AccessKeyId,
 			SecretAccessKey:     credentials.SecretAccessKey,
-			EnterpriseProjectId: credentials.EnterpriseProjectId,
-			Region:              xmaps.GetString(options.ProviderExtendedConfig, "region"),
+			ZoneId:              xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
 			DeployTarget:        xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			LoadbalancerId:      xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),
 			ListenerId:          xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
-			CertificateId:       xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 		})
 		return provider, err
 	})

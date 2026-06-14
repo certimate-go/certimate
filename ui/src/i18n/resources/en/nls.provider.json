@@ -206,6 +206,7 @@
   "proxmoxve": "Proxmox VE",
   "qingcloud": "QingCloud",
   "qingcloud_dns": "QingCloud - DNS",
+  "qingcloud_lb": "QingCloud - LBC (Load Balancer Cluster)",
   "qiniu": "Qiniu",
   "qiniu_cdn": "Qiniu - CDN (Content Delivery Network)",
   "qiniu_kodo": "Qiniu - Kodo",

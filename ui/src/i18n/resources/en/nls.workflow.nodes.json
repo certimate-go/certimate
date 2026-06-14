@@ -1606,11 +1606,6 @@
           }
         }
       },
-      "huaweicloud_elb_certificate_id": {
-        "label": "Huawei Cloud ELB certificate ID",
-        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
       "huaweicloud_elb_loadbalancer_id": {
         "label": "Huawei Cloud ELB load balancer ID",
         "placeholder": "Please enter Huawei Cloud ELB load balancer ID",
@@ -1620,6 +1615,11 @@
         "label": "Huawei Cloud ELB listener ID",
         "placeholder": "Please enter Huawei Cloud ELB listener ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>"
+      },
+      "huaweicloud_elb_certificate_id": {
+        "label": "Huawei Cloud ELB certificate ID",
+        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
       },
       "huaweicloud_live_region": {
         "label": "Huawei Cloud region",
@@ -1958,6 +1958,31 @@
       },
       "proxmoxve_auto_restart": {
         "label": "Auto restart Proxmox VE after deployment"
+      },
+      "qingcloud_lb_zone_id": {
+        "label": "QingCloud zone ID",
+        "placeholder": "Please enter QingCloud LBC zone ID (e.g. pek3a)",
+        "tooltip": "For more information, see <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
+      },
+      "qingcloud_lb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "LBC load balancer"
+          },
+          "listener": {
+            "label": "LBC listener"
+          }
+        }
+      },
+      "qingcloud_lb_loadbalancer_id": {
+        "label": "QingCloud LBC load balancer ID",
+        "placeholder": "Please enter QingCloud LBC load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
+      },
+      "qingcloud_lb_listener_id": {
+        "label": "QingCloud LBC listener ID",
+        "placeholder": "Please enter QingCloud LBC listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
       },
       "qiniu_cdn_domain": {
         "label": "Qiniu CDN domain",

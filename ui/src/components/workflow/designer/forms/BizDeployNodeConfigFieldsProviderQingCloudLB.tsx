@@ -9,9 +9,8 @@ import { useFormNestedFieldsContext } from "./_context";
 
 const DEPLOY_TARGET_LOADBALANCER = "loadbalancer" as const;
 const DEPLOY_TARGET_LISTENER = "listener" as const;
-const DEPLOY_TARGET_CERTIFICATE = "certificate" as const;
 
-const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
+const BizDeployNodeConfigFieldsProviderQingCloudLB = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -27,13 +26,13 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "region"]}
-        initialValue={initialValues.region}
-        label={t("workflow_node.deploy.form.huaweicloud_elb_region.label")}
+        name={[parentNamePath, "zoneId"]}
+        initialValue={initialValues.zoneId}
+        label={t("workflow_node.deploy.form.qingcloud_lb_zone_id.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_region.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.qingcloud_lb_zone_id.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_region.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.qingcloud_lb_zone_id.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -43,8 +42,8 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
         rules={[formRule]}
       >
         <Select
-          options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_CERTIFICATE].map((s) => ({
-            label: t(`workflow_node.deploy.form.huaweicloud_elb_deploy_target.option.${s}.label`),
+          options={[DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER].map((s) => ({
+            label: t(`workflow_node.deploy.form.qingcloud_lb_deploy_target.option.${s}.label`),
             value: s,
           }))}
           placeholder={t("workflow_node.deploy.form.shared_deploy_target.placeholder")}
@@ -55,11 +54,11 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
         <Form.Item
           name={[parentNamePath, "loadbalancerId"]}
           initialValue={initialValues.loadbalancerId}
-          label={t("workflow_node.deploy.form.huaweicloud_elb_loadbalancer_id.label")}
+          label={t("workflow_node.deploy.form.qingcloud_lb_loadbalancer_id.label")}
           rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_loadbalancer_id.tooltip") }}></span>}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.qingcloud_lb_loadbalancer_id.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_loadbalancer_id.placeholder")} />
+          <Input placeholder={t("workflow_node.deploy.form.qingcloud_lb_loadbalancer_id.placeholder")} />
         </Form.Item>
       </Show>
 
@@ -67,23 +66,11 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
         <Form.Item
           name={[parentNamePath, "listenerId"]}
           initialValue={initialValues.listenerId}
-          label={t("workflow_node.deploy.form.huaweicloud_elb_listener_id.label")}
+          label={t("workflow_node.deploy.form.qingcloud_lb_listener_id.label")}
           rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_listener_id.tooltip") }}></span>}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.qingcloud_lb_listener_id.tooltip") }}></span>}
         >
-          <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_listener_id.placeholder")} />
-        </Form.Item>
-      </Show>
-
-      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
-        <Form.Item
-          name={[parentNamePath, "certificateId"]}
-          initialValue={initialValues.certificateId}
-          label={t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.label")}
-          rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.tooltip") }}></span>}
-        >
-          <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.placeholder")} />
+          <Input placeholder={t("workflow_node.deploy.form.qingcloud_lb_listener_id.placeholder")} />
         </Form.Item>
       </Show>
     </>
@@ -92,7 +79,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    region: "",
+    zoneId: "",
     deployTarget: DEPLOY_TARGET_LISTENER,
   };
 };
@@ -102,11 +89,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().nonempty(),
-      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_CERTIFICATE]),
+      zoneId: z.string().nonempty(),
+      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER]),
       loadbalancerId: z.string().nullish(),
       listenerId: z.string().nullish(),
-      certificateId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.deployTarget) {
@@ -137,25 +123,11 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
             }
           }
           break;
-
-        case DEPLOY_TARGET_CERTIFICATE:
-          {
-            const scCertificateId = z.string().nonempty();
-            const spCertificateId = scCertificateId.safeParse(values.certificateId);
-            if (!spCertificateId.success) {
-              ctx.addIssue({
-                code: "custom",
-                message: z.treeifyError(spCertificateId.error).errors.join(),
-                path: ["certificateId"],
-              });
-            }
-          }
-          break;
       }
     });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderHuaweiCloudELB, {
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderQingCloudLB, {
   getInitialValues,
   getSchema,
 });
