@@ -125,6 +125,7 @@
   "desec": "deSEC",
   "digicert": "DigiCert",
   "digitalocean": "DigitalOcean",
+  "digitalocean_certificate_upload": "DigitalOcean - 上传到自定义证书",
   "dingtalkbot": "钉钉群机器人",
   "discordbot": "Discord 机器人",
   "dnsexit": "DNSExit",
