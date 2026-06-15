@@ -10,9 +10,10 @@ import (
 	"github.com/go-acme/lego/v5/challenge/dns01"
 	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
-	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns"
 	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns/model"
 	"gitlab.ecloud.com/ecloud/ecloudsdkcore/config"
+
+	"github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/gitlab.ecloud.com/ecloud/ecloudsdkclouddns"
 )
 
 const (
