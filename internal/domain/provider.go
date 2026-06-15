@@ -357,6 +357,7 @@ const (
 	DeploymentProviderTypeCdnfly                        = DeploymentProviderType(AccessProviderTypeCdnfly)
 	DeploymentProviderTypeCloudflareSSL                 = DeploymentProviderType(AccessProviderTypeCloudflare + "-ssl")
 	DeploymentProviderTypeCMCCCloudCDN                  = DeploymentProviderType(AccessProviderTypeCMCCCloud + "-cdn")
+	DeploymentProviderTypeCMCCCloudVLB                  = DeploymentProviderType(AccessProviderTypeCMCCCloud + "-vlb")
 	DeploymentProviderTypeCPanel                        = DeploymentProviderType(AccessProviderTypeCPanel)
 	DeploymentProviderTypeCTCCCloudAO                   = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-ao")
 	DeploymentProviderTypeCTCCCloudCDN                  = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-cdn")

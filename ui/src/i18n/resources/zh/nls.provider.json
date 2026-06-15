@@ -110,6 +110,7 @@
   "cmcccloud": "移动云",
   "cmcccloud_cdn": "移动云 - 内容分发网络 CDN",
   "cmcccloud_dns": "移动云 - 云解析 DNS",
+  "cmcccloud_vlb": "移动云 - 弹性负载均衡 VLB",
   "conohavps": "ConoHa VPS",
   "constellix": "Constellix",
   "cpanel": "cPanel",

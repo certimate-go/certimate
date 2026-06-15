@@ -110,6 +110,7 @@
   "cmcccloud": "China Mobile ECloud",
   "cmcccloud_cdn": "China Mobile ECloud - CDN (Content Delivery Network)",
   "cmcccloud_dns": "China Mobile ECloud - DNS",
+  "cmcccloud_vlb": "China Mobile ECloud - VLB (Virtual Load Balancer)",
   "conohavps": "ConoHa VPS",
   "constellix": "Constellix",
   "cpanel": "cPanel",

@@ -1431,6 +1431,36 @@
         "label": "移动云 CDN 加速域名",
         "placeholder": "请输入移动云 CDN 加速域名"
       },
+      "cmcccloud_vlb_pool_id": {
+        "label": "移动云资源池 ID",
+        "placeholder": "请输入移动云 VLB 资源池 ID（例如：CIDC-RP-29）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/54462\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/54462</a>"
+      },
+      "cmcccloud_vlb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
+          },
+          "listener": {
+            "label": "部署到指定 HTTPS 监听器"
+          }
+        }
+      },
+      "cmcccloud_vlb_loadbalancer_id": {
+        "label": "移动云 VLB 负载均衡器 ID",
+        "placeholder": "请输入移动云 VLB 负载均衡器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_listener_id": {
+        "label": "移动云 VLB 监听器 ID",
+        "placeholder": "请输入移动云 VLB 监听器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_snidomain": {
+        "label": "移动云 VLB 扩展域名（可选）",
+        "placeholder": "请输入移动云 VLB 扩展域名",
+        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {

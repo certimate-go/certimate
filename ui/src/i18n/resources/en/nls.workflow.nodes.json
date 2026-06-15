@@ -1432,6 +1432,36 @@
         "label": "CMCC ECloud CDN domain",
         "placeholder": "Please enter CMCC ECloud CDN domain name"
       },
+      "cmcccloud_vlb_pool_id": {
+        "label": "CMCC ECloud pool ID",
+        "placeholder": "Please enter CMCC ECloud VLB pool ID  (e.g. CIDC-RP-29)",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/54462\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/54462</a>"
+      },
+      "cmcccloud_vlb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "VLB load balancer"
+          },
+          "listener": {
+            "label": "VLB listener"
+          }
+        }
+      },
+      "cmcccloud_vlb_loadbalancer_id": {
+        "label": "CMCC ECloud VLB load balancer ID",
+        "placeholder": "Please enter CMCC ECloud VLB load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_listener_id": {
+        "label": "CMCC ECloud VLB listener ID",
+        "placeholder": "Please enter CMCC ECloud VLB listener ID",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_snidomain": {
+        "label": "CMCC ECloud VLB SNI domain (Optional)",
+        "placeholder": "Please enter CMCC ECloud VLB SNI domain name",
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {
@@ -1458,9 +1488,6 @@
       },
       "ctcccloud_elb_deploy_target": {
         "option": {
-          "certificate": {
-            "label": "ELB certificate"
-          },
           "loadbalancer": {
             "label": "ELB load balancer"
           },

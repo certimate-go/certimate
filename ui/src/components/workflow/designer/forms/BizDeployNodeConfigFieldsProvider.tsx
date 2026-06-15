@@ -52,6 +52,7 @@ import BizDeployNodeConfigFieldsProviderBytePlusTOS from "./BizDeployNodeConfigF
 import BizDeployNodeConfigFieldsProviderCdnfly from "./BizDeployNodeConfigFieldsProviderCdnfly";
 import BizDeployNodeConfigFieldsProviderCloudflareSSL from "./BizDeployNodeConfigFieldsProviderCloudflareSSL";
 import BizDeployNodeConfigFieldsProviderCMCCCloudCDN from "./BizDeployNodeConfigFieldsProviderCMCCCloudCDN";
+import BizDeployNodeConfigFieldsProviderCMCCCloudVLB from "./BizDeployNodeConfigFieldsProviderCMCCCloudVLB";
 import BizDeployNodeConfigFieldsProviderCPanel from "./BizDeployNodeConfigFieldsProviderCPanel";
 import BizDeployNodeConfigFieldsProviderCTCCCloudAO from "./BizDeployNodeConfigFieldsProviderCTCCCloudAO";
 import BizDeployNodeConfigFieldsProviderCTCCCloudCDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudCDN";
@@ -197,6 +198,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.CDNFLY]: BizDeployNodeConfigFieldsProviderCdnfly,
   [DEPLOYMENT_PROVIDERS.CLOUDFLARE_SSL]: BizDeployNodeConfigFieldsProviderCloudflareSSL,
   [DEPLOYMENT_PROVIDERS.CMCCCLOUD_CDN]: BizDeployNodeConfigFieldsProviderCMCCCloudCDN,
+  [DEPLOYMENT_PROVIDERS.CMCCCLOUD_VLB]: BizDeployNodeConfigFieldsProviderCMCCCloudVLB,
   [DEPLOYMENT_PROVIDERS.CPANEL]: BizDeployNodeConfigFieldsProviderCPanel,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_AO]: BizDeployNodeConfigFieldsProviderCTCCCloudAO,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_CDN]: BizDeployNodeConfigFieldsProviderCTCCCloudCDN,

@@ -178,13 +178,13 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
 	// 更新监听器
 	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=24&api=5652&data=88&isNormal=1&vid=82
-	setLoadBalancerHTTPSListenerAttributeReq := &ctyunelb.UpdateListenerRequest{
+	updateListenerReq := &ctyunelb.UpdateListenerRequest{
 		RegionID:      lo.ToPtr(d.config.RegionId),
 		ListenerID:    lo.ToPtr(cloudListenerId),
 		CertificateID: lo.ToPtr(cloudCertId),
 	}
-	setLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.UpdateListenerWithContext(ctx, setLoadBalancerHTTPSListenerAttributeReq)
-	d.logger.Debug("sdk request 'elb.UpdateListener'", slog.Any("request", setLoadBalancerHTTPSListenerAttributeReq), slog.Any("response", setLoadBalancerHTTPSListenerAttributeResp))
+	updateListenerResp, err := d.sdkClient.UpdateListenerWithContext(ctx, updateListenerReq)
+	d.logger.Debug("sdk request 'elb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'elb.UpdateListener': %w", err)
 	}

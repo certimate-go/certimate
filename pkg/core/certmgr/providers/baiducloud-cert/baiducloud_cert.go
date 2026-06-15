@@ -92,7 +92,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 			// 对比证书内容
 			getCertDetailResp, err := c.sdkClient.GetCertRawData(certItem.CertId)
-			c.logger.Debug("sdk request 'cert.GetCertRawData'", slog.Any("certId", certItem.CertId), slog.Any("response", getCertDetailResp))
+			c.logger.Debug("sdk request 'cert.GetCertRawData'", slog.String("params.certId", certItem.CertId), slog.Any("response", getCertDetailResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request 'cert.GetCertRawData': %w", err)
 			} else {
