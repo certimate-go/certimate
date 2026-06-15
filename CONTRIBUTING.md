@@ -24,6 +24,14 @@ Index:
 
 ## Development
 
+> [!IMPORTANT]
+>
+> This project uses `git submodule`. When cloning, please ensure that the submodule is also pulled.
+>
+> ```bash
+> git clone --recurse-submodules https://github.com/certimate-go/certimate.git
+> ```
+
 ### Prerequisites
 
 - Go 1.25+ (for backend code changes)

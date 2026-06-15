@@ -24,6 +24,14 @@
 
 ## 开发
 
+> [!IMPORTANT]
+>
+> 本项目使用了 `git submodule` 特性，克隆时请务必确保嵌套子模块也被拉取。
+>
+> ```bash
+> git clone --recurse-submodules https://github.com/certimate-go/certimate.git
+> ```
+
 ### 要求
 
 - Go 1.25+（用于修改后端代码）

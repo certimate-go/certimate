@@ -41,6 +41,7 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+          submodules: true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -86,6 +87,7 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+          submodules: true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -125,6 +127,7 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+          submodules: true
 
       - name: Set up Go
         uses: actions/setup-go@v6
