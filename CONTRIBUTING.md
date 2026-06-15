@@ -29,7 +29,13 @@ Index:
 > This project uses `git submodule`. When cloning, please ensure that the submodule is also pulled.
 >
 > ```bash
-> git clone --recurse-submodules https://github.com/certimate-go/certimate.git
+> # Option 1: Direct recursive pull during cloning
+> > git clone --recurse-submodules https://github.com/certimate-go/certimate.git
+>
+> # Option 2: Clone first, then initialize
+> git clone https://github.com/certimate-go/certimate.git
+> cd certimate
+> git submodule update --init --recursive
 > ```
 
 ### Prerequisites
