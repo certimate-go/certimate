@@ -15,7 +15,7 @@ import (
 )
 
 type Client struct {
-	client *resty.Client
+	rc *resty.Client
 }
 
 func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
@@ -40,9 +40,9 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 	}
 
 	client := &Client{}
-	client.client = resty.New().
+	client.rc = resty.New().
 		SetBaseURL(strings.TrimSuffix(baseUrl, "/")).
-		SetHeader("Authorization", "Bearer "+opts.AccessToken)
+		SetHeader("Authorization", "Bearer "+opts.AccessToken).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 	if err := client.probeVersions(); err != nil {
@@ -53,12 +53,12 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 

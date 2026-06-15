@@ -24,7 +24,7 @@ func (c *Client) SendTextMessageToRoom(ctx context.Context, roomId, msgBody stri
 		"body":    msgBody,
 	}
 
-	_, err := c.client.R().
+	_, err := c.rc.R().
 		SetContext(ctx).
 		SetBody(payload).
 		Put(path)
