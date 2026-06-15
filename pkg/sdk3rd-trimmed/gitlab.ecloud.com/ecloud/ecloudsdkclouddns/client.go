@@ -1,22 +1,22 @@
 package ecloudsdkclouddns
 
 import (
+	"gitlab.ecloud.com/ecloud/ecloudsdkcloudcore"
+	"gitlab.ecloud.com/ecloud/ecloudsdkcloudcore/config"
 	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns/model"
-	"gitlab.ecloud.com/ecloud/ecloudsdkcore"
-	"gitlab.ecloud.com/ecloud/ecloudsdkcore/config"
 )
 
 type Client struct {
-	APIClient   *ecloudsdkcore.APIClient
+	APIClient   *ecloudsdkcloudcore.APIClient
 	config      *config.Config
-	httpRequest *ecloudsdkcore.HttpRequest
+	httpRequest *ecloudsdkcloudcore.HttpRequest
 }
 
 func NewClient(config *config.Config) *Client {
 	client := &Client{}
 	client.config = config
-	apiClient := ecloudsdkcore.NewAPIClient()
-	httpRequest := ecloudsdkcore.NewDefaultHttpRequest()
+	apiClient := ecloudsdkcloudcore.NewAPIClient()
+	httpRequest := ecloudsdkcloudcore.NewDefaultHttpRequest()
 	httpRequest.Product = product
 	httpRequest.Version = version
 	httpRequest.SdkVersion = sdkVersion

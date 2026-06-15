@@ -1428,6 +1428,10 @@
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
         "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
       },
+      "cmcccloud_cdn_domain": {
+        "label": "CMCC ECloud CDN domain",
+        "placeholder": "Please enter CMCC ECloud CDN domain name"
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {

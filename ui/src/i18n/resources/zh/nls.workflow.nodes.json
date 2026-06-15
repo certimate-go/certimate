@@ -1427,6 +1427,10 @@
         "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
         "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
       },
+      "cmcccloud_cdn_domain": {
+        "label": "移动云 CDN 加速域名",
+        "placeholder": "请输入移动云 CDN 加速域名"
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {

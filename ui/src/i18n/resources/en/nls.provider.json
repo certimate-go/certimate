@@ -108,6 +108,7 @@
   "cloudflare_ssl": "Cloudflare - Edge Certificates",
   "cloudns": "ClouDNS",
   "cmcccloud": "China Mobile ECloud",
+  "cmcccloud_cdn": "China Mobile ECloud - CDN (Content Delivery Network)",
   "cmcccloud_dns": "China Mobile ECloud - DNS",
   "conohavps": "ConoHa VPS",
   "constellix": "Constellix",

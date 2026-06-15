@@ -108,6 +108,7 @@
   "cloudflare_ssl": "Cloudflare - 边缘证书",
   "cloudns": "ClouDNS",
   "cmcccloud": "移动云",
+  "cmcccloud_cdn": "移动云 - 内容分发网络 CDN",
   "cmcccloud_dns": "移动云 - 云解析 DNS",
   "conohavps": "ConoHa VPS",
   "constellix": "Constellix",

@@ -85,8 +85,10 @@ require (
 	github.com/xhit/go-str2duration/v2 v2.1.0
 	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
 	github.com/zenlayer/zenlayercloud-sdk-go v0.2.39
+	gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0
 	gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1
-	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0
+	gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0
+	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.2
 	golang.org/x/crypto v0.52.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
@@ -288,5 +290,10 @@ require (
 	modernc.org/sqlite v1.52.0 // indirect
 )
 
-replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.0
-replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1
+replace gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcloudcore@v1.0.0+compact
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1+compact
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcmcdn@v1.0.0
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.2 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.2
