@@ -2745,6 +2745,9 @@
           },
           "image": {
             "label": "Image"
+          },
+          "third": {
+            "label": "Third"
           }
         }
       },

@@ -1,7 +1,7 @@
-﻿package certificateservice
+﻿package vod20260101
 
 import (
-	"github.com/volcengine/volcengine-go-sdk/service/certificateservice"
+	"github.com/volcengine/volcengine-go-sdk/service/vod20260101"
 	"github.com/volcengine/volcengine-go-sdk/volcengine"
 	"github.com/volcengine/volcengine-go-sdk/volcengine/client"
 	"github.com/volcengine/volcengine-go-sdk/volcengine/client/metadata"
@@ -11,23 +11,23 @@ import (
 	"github.com/volcengine/volcengine-go-sdk/volcengine/volcenginequery"
 )
 
-type CERTIFICATESERVICE struct {
+type VOD20260101 struct {
 	*client.Client
 }
 
 const (
-	ServiceName = certificateservice.ServiceName
-	EndpointsID = certificateservice.EndpointsID
-	ServiceID   = certificateservice.ServiceID
+	ServiceName = vod20260101.ServiceName
+	EndpointsID = vod20260101.EndpointsID
+	ServiceID   = vod20260101.ServiceID
 )
 
-func New(p client.ConfigProvider, cfgs ...*volcengine.Config) *CERTIFICATESERVICE {
+func New(p client.ConfigProvider, cfgs ...*volcengine.Config) *VOD20260101 {
 	c := p.ClientConfig(EndpointsID, cfgs...)
 	return newClient(*c.Config, c.Handlers, c.Endpoint, c.SigningRegion, c.SigningName)
 }
 
-func newClient(cfg volcengine.Config, handlers request.Handlers, endpoint, signingRegion, signingName string) *CERTIFICATESERVICE {
-	svc := &CERTIFICATESERVICE{
+func newClient(cfg volcengine.Config, handlers request.Handlers, endpoint, signingRegion, signingName string) *VOD20260101 {
+	svc := &VOD20260101{
 		Client: client.New(
 			cfg,
 			metadata.ClientInfo{
@@ -36,7 +36,7 @@ func newClient(cfg volcengine.Config, handlers request.Handlers, endpoint, signi
 				SigningName:   signingName,
 				SigningRegion: signingRegion,
 				Endpoint:      endpoint,
-				APIVersion:    "2024-10-01",
+				APIVersion:    "2026-01-01",
 			},
 			handlers,
 		),
@@ -53,7 +53,7 @@ func newClient(cfg volcengine.Config, handlers request.Handlers, endpoint, signi
 	return svc
 }
 
-func (c *CERTIFICATESERVICE) newRequest(op *request.Operation, params, data interface{}) *request.Request {
+func (c *VOD20260101) newRequest(op *request.Operation, params, data interface{}) *request.Request {
 	req := c.NewRequest(op, params, data)
 
 	return req

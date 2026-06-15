@@ -80,7 +80,7 @@ require (
 	github.com/ucloud/ucloud-sdk-go v0.22.77
 	github.com/volcengine/ve-tos-golang-sdk/v2 v2.9.5
 	github.com/volcengine/volc-sdk-golang v1.0.250
-	github.com/volcengine/volcengine-go-sdk v1.2.34
+	github.com/volcengine/volcengine-go-sdk v1.2.35
 	github.com/wneessen/go-mail v0.7.3
 	github.com/xhit/go-str2duration/v2 v2.1.0
 	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
@@ -95,7 +95,6 @@ require (
 	golang.org/x/sync v0.20.0
 	golang.org/x/sys v0.45.0
 	google.golang.org/api v0.283.0
-	google.golang.org/protobuf v1.36.11
 	k8s.io/api v0.35.3
 	k8s.io/apimachinery v0.35.3
 	k8s.io/client-go v0.35.3
@@ -283,6 +282,7 @@ require (
 	golang.org/x/tools v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260523011958-0a33c5d7ca68 // indirect
 	google.golang.org/grpc v1.81.1 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/ini.v1 v1.67.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.72.3 // indirect

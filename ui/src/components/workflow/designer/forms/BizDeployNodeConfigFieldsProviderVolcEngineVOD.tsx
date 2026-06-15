@@ -14,6 +14,7 @@ const DOMAIN_MATCH_PATTERN_CERTSAN = "certsan" as const;
 
 const DOMAIN_TYPE_PLAY = "play" as const;
 const DOMAIN_TYPE_IMAGE = "image" as const;
+const DOMAIN_TYPE_THIRD = "third" as const;
 
 const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
   const { i18n, t } = useTranslation();
@@ -50,7 +51,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
         rules={[formRule]}
       >
         <Select
-          options={[DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE].map((s) => ({
+          options={[DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE, DOMAIN_TYPE_THIRD].map((s) => ({
             label: t(`workflow_node.deploy.form.volcengine_vod_domain_type.option.${s}.label`),
             value: s,
           }))}
@@ -102,7 +103,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     .object({
       spaceName: z.string().nonempty().nullish(),
       domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
-      domainType: z.enum([DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE]),
+      domainType: z.enum([DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE, DOMAIN_TYPE_THIRD]),
       domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
