@@ -136,8 +136,9 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 			if err != nil {
 				return err
 			}
+
 			domains := lo.Filter(domainCandidates, func(domainItem *zcdnsdk.DomainInfo, _ int) bool {
-				return domainItem.DomainName == d.config.Domain
+				return d.config.Domain == domainItem.DomainName
 			})
 			if len(domains) == 0 {
 				return fmt.Errorf("could not find domain")
