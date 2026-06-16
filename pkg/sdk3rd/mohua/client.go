@@ -1,12 +1,10 @@
-package nginxproxymanager
+package mohua
 
 import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
 	"sync"
 	"time"
 
@@ -25,18 +23,12 @@ type Client struct {
 	rc *resty.Client
 }
 
-func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+func NewClient(optFns ...OptionsFunc) (*Client, error) {
 	opts := &Options{}
 	for _, fn := range optFns {
 		fn(opts)
 	}
 
-	if serverUrl == "" {
-		return nil, fmt.Errorf("sdkerr: unset serverUrl")
-	}
-	if _, err := url.Parse(serverUrl); err != nil {
-		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
-	}
 	if opts.JwtToken == "" && (opts.Username == "" || opts.Password == "") {
 		return nil, fmt.Errorf("sdkerr: unset password or jwtToken")
 	}
@@ -47,13 +39,13 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		jwtToken: opts.JwtToken,
 	}
 	client.rc = resty.New().
-		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
+		SetBaseURL("https://cloud.mhjz1.cn").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			if client.jwtToken != "" {
-				req.Header.Set("Authorization", "Bearer "+client.jwtToken)
+				req.Header.Set("JWT", "Bearer "+client.jwtToken)
 			}
 
 			return nil
@@ -120,8 +112,8 @@ func (c *Client) doRequestWithResult(req *resty.Request, res interface{}) (*rest
 	if len(resp.Body()) != 0 {
 		var errRes *sdkResponseBase
 		if err := json.Unmarshal(resp.Body(), &errRes); err == nil {
-			if rError := errRes.GetError(); rError != "" {
-				return resp, fmt.Errorf("sdkerr: error='%s'", rError)
+			if rStatus := errRes.GetStatus(); rStatus != 200 {
+				return resp, fmt.Errorf("sdkerr: error='%d', msg='%s'", rStatus, errRes.GetMsg())
 			}
 		}
 
@@ -140,29 +132,28 @@ func (c *Client) ensureJwtTokenExists() error {
 		return nil
 	}
 
-	httpreq, err := c.newRequest(http.MethodPost, "/tokens")
+	httpreq, err := c.newRequest(http.MethodPost, "/v1/login_api")
 	if err != nil {
 		return err
 	} else {
 		httpreq.SetBody(map[string]string{
-			"identity": c.username,
-			"secret":   c.password,
+			"account":  c.username,
+			"password": c.password,
 		})
 	}
 
 	type tokensResponse struct {
 		sdkResponseBase
-		Token   string `json:"token"`
-		Expires string `json:"expires"`
+		JWT string `json:"jwt"`
 	}
 
 	result := &tokensResponse{}
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
-	} else if rError := result.GetError(); rError != "" {
-		return fmt.Errorf("sdkerr: failed to create npm token: error='%s'", rError)
+	} else if rStatus := result.GetStatus(); rStatus != 200 {
+		return fmt.Errorf("sdkerr: failed to create npm token: status='%d', msg='%s'", rStatus, result.GetMsg())
 	} else {
-		c.jwtToken = result.Token
+		c.jwtToken = result.JWT
 	}
 
 	return nil
