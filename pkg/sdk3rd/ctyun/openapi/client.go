@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"hash"
 	"io"
 	"net/http"
 	"net/url"
@@ -73,14 +74,13 @@ func NewClient(baseUrl string, optFns ...OptionsFunc) (*Client, error) {
 			payloadHash := sha256.Sum256([]byte(payloadStr))
 			payloadHashHex := hex.EncodeToString(payloadHash[:])
 
-			h := hmac.New(sha256.New, []byte(opts.SecretAccessKey))
+			var h hash.Hash
+			h = hmac.New(sha256.New, []byte(opts.SecretAccessKey))
 			h.Write([]byte(eopDate))
 			kTime := h.Sum(nil)
-
 			h = hmac.New(sha256.New, kTime)
 			h.Write([]byte(opts.AccessKeyId))
 			kAk := h.Sum(nil)
-
 			h = hmac.New(sha256.New, kAk)
 			h.Write([]byte(now.Format("20060102")))
 			kDate := h.Sum(nil)

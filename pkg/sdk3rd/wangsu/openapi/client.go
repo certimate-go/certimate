@@ -40,7 +40,6 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetBaseURL("https://open.chinanetcenter.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("Host", "open.chinanetcenter.com").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			// API 签名机制：
@@ -67,7 +66,7 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 
 			canonicalHeaders := "" +
 				"content-type:" + strings.TrimSpace(strings.ToLower(req.Header.Get("Content-Type"))) + "\n" +
-				"host:" + strings.TrimSpace(strings.ToLower(req.Header.Get("Host"))) + "\n"
+				"host:" + strings.TrimSpace(strings.ToLower(req.Host)) + "\n"
 			signedHeaders := "content-type;host"
 
 			payloadStr := ""
@@ -106,11 +105,11 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 			h.Write([]byte(stringToSign))
 			signature := strings.ToLower(hex.EncodeToString(h.Sum(nil)))
 
-			req.Header.Set("X-CNC-AccessKey", options.AccessKey)
-			req.Header.Set("X-CNC-Timestamp", timestampStr)
-			req.Header.Set("X-CNC-Auth-Method", "AKSK")
 			req.Header.Set("Authorization", fmt.Sprintf("%s Credential=%s, SignedHeaders=%s, Signature=%s", signAlgorithmHeader, options.AccessKey, signedHeaders, signature))
 			req.Header.Set("Date", nowUtc.Format(http.TimeFormat))
+			req.Header.Set("X-CNC-Auth-Method", "AKSK")
+			req.Header.Set("X-CNC-AccessKey", options.AccessKey)
+			req.Header.Set("X-CNC-Timestamp", timestampStr)
 
 			return nil
 		})

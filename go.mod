@@ -77,7 +77,6 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.112
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.111
 	github.com/ucloud/ucloud-sdk-go v0.22.77
-	github.com/volcengine/ve-tos-golang-sdk/v2 v2.9.5
 	github.com/volcengine/volc-sdk-golang v1.0.250
 	github.com/volcengine/volcengine-go-sdk v1.2.35
 	github.com/wneessen/go-mail v0.7.3

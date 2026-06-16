@@ -36,7 +36,6 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetBaseURL("http://api.routewize.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
-		SetHeader("Host", "api.routewize.com").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
 			// 签名机制：

@@ -154,6 +154,7 @@ func (c *Client) newRequest(method string, path string, params any) (*resty.Requ
 	payloadStr := ""
 	contentType := ""
 	if params != nil {
+		// 目前仅支持 XML 请求体，仅适用于非 S3 兼容接口
 		payloadb, err := xml.Marshal(params)
 		if err != nil {
 			return nil, err
