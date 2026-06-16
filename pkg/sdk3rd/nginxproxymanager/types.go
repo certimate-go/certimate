@@ -35,7 +35,7 @@ func (r *sdkResponseBase) GetError() string {
 		return errObj.Message
 	}
 
-	var errMap map[string]interface{}
+	var errMap map[string]any
 	if err := json.Unmarshal(r.Error, &errMap); err == nil {
 		if message, ok := errMap["message"].(string); ok {
 			return message

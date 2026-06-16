@@ -1,6 +1,7 @@
 package dogecloud
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/hex"
@@ -38,35 +39,33 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(ctx *resty.Client, req *http.Request) error {
-			requestUrl := req.URL.Path
-			requestQuery := req.URL.Query().Encode()
-			if requestQuery != "" {
-				requestUrl += "?" + requestQuery
+			// API 签名机制：
+			// https://docs.dogecloud.com/cdn/api-access-token
+
+			path := req.URL.Path
+			queryStr := req.URL.Query().Encode()
+			if queryStr != "" {
+				path += "?" + queryStr
 			}
 
-			payload := ""
+			payloadStr := ""
 			if req.Body != nil {
-				reader, err := req.GetBody()
+				payloadb, err := io.ReadAll(req.Body)
 				if err != nil {
 					return err
 				}
 
-				defer reader.Close()
-
-				payloadb, err := io.ReadAll(reader)
-				if err != nil {
-					return err
-				}
-
-				payload = string(payloadb)
+				payloadStr = string(payloadb)
+				req.Body = io.NopCloser(bytes.NewReader(payloadb))
 			}
 
-			stringToSign := fmt.Sprintf("%s\n%s", requestUrl, payload)
-			mac := hmac.New(sha1.New, []byte(opts.SecretKey))
-			mac.Write([]byte(stringToSign))
-			sign := hex.EncodeToString(mac.Sum(nil))
+			stringToSign := fmt.Sprintf("%s\n%s", path, payloadStr)
 
-			req.Header.Set("Authorization", fmt.Sprintf("TOKEN %s:%s", opts.AccessKey, sign))
+			h := hmac.New(sha1.New, []byte(opts.SecretKey))
+			h.Write([]byte(stringToSign))
+			signature := hex.EncodeToString(h.Sum(nil))
+
+			req.Header.Set("Authorization", fmt.Sprintf("TOKEN %s:%s", opts.AccessKey, signature))
 
 			return nil
 		})

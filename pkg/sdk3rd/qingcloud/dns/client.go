@@ -39,13 +39,13 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Host", "api.routewize.com").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			// 生成时间
+			// 签名机制：
+			// https://docsv4.qingcloud.com/user_guide/development_docs/api/api_list/dns/calling_method/signature/
+
 			date := time.Now().UTC().Format(time.RFC1123)
 
-			// 获取请求谓词
 			verb := req.Method
 
-			// 获取访问资源
 			canonicalizedResource := "/"
 			if req.URL != nil {
 				canonicalizedResource = req.URL.Path
@@ -55,17 +55,16 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 				}
 			}
 
-			// 计算签名
 			stringToSign := verb + "\n" +
 				date + "\n" +
 				canonicalizedResource
+
 			h := hmac.New(sha256.New, []byte(options.SecretAccessKey))
 			h.Write([]byte(stringToSign))
-			sign := base64.StdEncoding.EncodeToString(h.Sum(nil))
+			signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
 
-			// 设置请求头
 			req.Header.Set("Date", date)
-			req.Header.Set("Authorization", fmt.Sprintf("QC-HMAC-SHA256 %s:%s", options.AccessKeyId, sign))
+			req.Header.Set("Authorization", fmt.Sprintf("QC-HMAC-SHA256 %s:%s", options.AccessKeyId, signature))
 
 			return nil
 		})

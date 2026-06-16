@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -22,17 +23,17 @@ type Client struct {
 	rc *resty.Client
 }
 
-func NewClient(endpoint string, optFns ...OptionsFunc) (*Client, error) {
+func NewClient(baseUrl string, optFns ...OptionsFunc) (*Client, error) {
 	opts := &Options{}
 	for _, fn := range optFns {
 		fn(opts)
 	}
 
-	if endpoint == "" {
-		return nil, fmt.Errorf("sdkerr: unset endpoint")
+	if baseUrl == "" {
+		return nil, fmt.Errorf("sdkerr: unset baseUrl")
 	}
-	if _, err := url.Parse(endpoint); err != nil {
-		return nil, fmt.Errorf("sdkerr: invalid endpoint: %w", err)
+	if _, err := url.Parse(baseUrl); err != nil {
+		return nil, fmt.Errorf("sdkerr: invalid baseUrl: %w", err)
 	}
 	if opts.AccessKeyId == "" {
 		return nil, fmt.Errorf("sdkerr: unset accessKeyId")
@@ -42,69 +43,57 @@ func NewClient(endpoint string, optFns ...OptionsFunc) (*Client, error) {
 	}
 
 	restyClient := resty.New().
-		SetBaseURL(endpoint).
+		SetBaseURL(baseUrl).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			// 生成时间戳及流水号
+			// API 签名机制：
+			// https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=77&api=%u6784%u9020%u8BF7%u6C42&data=114&vid=107
+
 			now := time.Now()
 			eopDate := now.Format("20060102T150405Z")
 			eopReqId := security.RandomString(32)
 
-			// 获取查询参数
 			queryStr := ""
 			if req.URL != nil {
 				queryStr = req.URL.Query().Encode()
 			}
 
-			// 获取请求正文
 			payloadStr := ""
-			if req.Body != nil {
-				reader, err := req.GetBody()
+			if req.Method != http.MethodGet && req.Body != nil {
+				payloadb, err := io.ReadAll(req.Body)
 				if err != nil {
 					return err
 				}
 
-				defer reader.Close()
-				payload, err := io.ReadAll(reader)
-				if err != nil {
-					return err
-				}
-
-				payloadStr = string(payload)
+				payloadStr = string(payloadb)
+				req.Body = io.NopCloser(bytes.NewReader(payloadb))
 			}
-
-			// 构造代签字符串
 			payloadHash := sha256.Sum256([]byte(payloadStr))
 			payloadHashHex := hex.EncodeToString(payloadHash[:])
-			dataToSign := fmt.Sprintf("ctyun-eop-request-id:%s\neop-date:%s\n\n%s\n%s", eopReqId, eopDate, queryStr, payloadHashHex)
 
-			// 生成 ktime
-			hasher := hmac.New(sha256.New, []byte(opts.SecretAccessKey))
-			hasher.Write([]byte(eopDate))
-			ktime := hasher.Sum(nil)
+			h := hmac.New(sha256.New, []byte(opts.SecretAccessKey))
+			h.Write([]byte(eopDate))
+			kTime := h.Sum(nil)
 
-			// 生成 kak
-			hasher = hmac.New(sha256.New, ktime)
-			hasher.Write([]byte(opts.AccessKeyId))
-			kak := hasher.Sum(nil)
+			h = hmac.New(sha256.New, kTime)
+			h.Write([]byte(opts.AccessKeyId))
+			kAk := h.Sum(nil)
 
-			// 生成 kdate
-			hasher = hmac.New(sha256.New, kak)
-			hasher.Write([]byte(now.Format("20060102")))
-			kdate := hasher.Sum(nil)
+			h = hmac.New(sha256.New, kAk)
+			h.Write([]byte(now.Format("20060102")))
+			kDate := h.Sum(nil)
 
-			// 构造签名
-			hasher = hmac.New(sha256.New, kdate)
-			hasher.Write([]byte(dataToSign))
-			sign := hasher.Sum(nil)
-			signStr := base64.StdEncoding.EncodeToString(sign)
+			stringToSign := fmt.Sprintf("ctyun-eop-request-id:%s\neop-date:%s\n\n%s\n%s", eopReqId, eopDate, queryStr, payloadHashHex)
 
-			// 设置请求头
+			h = hmac.New(sha256.New, kDate)
+			h.Write([]byte(stringToSign))
+			signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
+
 			req.Header.Set("ctyun-eop-request-id", eopReqId)
 			req.Header.Set("eop-date", eopDate)
-			req.Header.Set("eop-authorization", fmt.Sprintf("%s Headers=ctyun-eop-request-id;eop-date Signature=%s", opts.AccessKeyId, signStr))
+			req.Header.Set("eop-authorization", fmt.Sprintf("%s Headers=ctyun-eop-request-id;eop-date Signature=%s", opts.AccessKeyId, signature))
 
 			return nil
 		})
@@ -149,7 +138,7 @@ func (c *Client) DoRequest(req *resty.Request) (*resty.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) DoRequestWithResult(req *resty.Request, res interface{}) (*resty.Response, error) {
+func (c *Client) DoRequestWithResult(req *resty.Request, res any) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}

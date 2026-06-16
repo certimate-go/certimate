@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -42,88 +43,74 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Host", "open.chinanetcenter.com").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			// Step 1: Get request method
-			method := req.Method
-			method = strings.ToUpper(method)
+			// API 签名机制：
+			// https://www.wangsu.com/document/openapi/api-authentication
 
-			// Step 2: Get request path
+			method := strings.ToUpper(req.Method)
+
 			path := "/"
 			if req.URL != nil {
 				path = req.URL.Path
 			}
 
-			// Step 3: Get unencoded query string
-			queryString := ""
+			queryStr := ""
 			if method != http.MethodPost && req.URL != nil {
-				queryString = req.URL.RawQuery
+				queryStr = req.URL.RawQuery
 
-				s, err := url.QueryUnescape(queryString)
+				s, err := url.QueryUnescape(queryStr)
 				if err != nil {
 					return err
 				}
 
-				queryString = s
+				queryStr = s
 			}
 
-			// Step 4: Get canonical headers & signed headers
 			canonicalHeaders := "" +
 				"content-type:" + strings.TrimSpace(strings.ToLower(req.Header.Get("Content-Type"))) + "\n" +
 				"host:" + strings.TrimSpace(strings.ToLower(req.Header.Get("Host"))) + "\n"
 			signedHeaders := "content-type;host"
 
-			// Step 5: Get request payload
-			payload := ""
+			payloadStr := ""
 			if method != http.MethodGet && req.Body != nil {
-				reader, err := req.GetBody()
+				payloadb, err := io.ReadAll(req.Body)
 				if err != nil {
 					return err
 				}
 
-				defer reader.Close()
-
-				payloadb, err := io.ReadAll(reader)
-				if err != nil {
-					return err
-				}
-
-				payload = string(payloadb)
+				payloadStr = string(payloadb)
+				req.Body = io.NopCloser(bytes.NewReader(payloadb))
 			}
-			hashedPayload := sha256.Sum256([]byte(payload))
-			hashedPayloadHex := strings.ToLower(hex.EncodeToString(hashedPayload[:]))
+			payloadHash := sha256.Sum256([]byte(payloadStr))
+			payloadHashHex := strings.ToLower(hex.EncodeToString(payloadHash[:]))
 
-			// Step 6: Get timestamp
-			var reqtime time.Time
-			timestampString := req.Header.Get("X-CNC-Timestamp")
-			if timestampString == "" {
-				reqtime = time.Now().UTC()
-				timestampString = fmt.Sprintf("%d", reqtime.Unix())
+			nowUtc := time.Now().UTC()
+			timestampStr := req.Header.Get("X-CNC-Timestamp")
+			if timestampStr == "" {
+				timestampStr = fmt.Sprintf("%d", nowUtc.Unix())
 			} else {
-				timestamp, err := strconv.ParseInt(timestampString, 10, 64)
+				timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
 				if err != nil {
 					return err
 				}
-				reqtime = time.Unix(timestamp, 0).UTC()
+				nowUtc = time.Unix(timestamp, 0).UTC()
 			}
 
-			// Step 7: Get canonical request string
-			canonicalRequest := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n%s", method, path, queryString, canonicalHeaders, signedHeaders, hashedPayloadHex)
-			hashedCanonicalRequest := sha256.Sum256([]byte(canonicalRequest))
-			hashedCanonicalRequestHex := strings.ToLower(hex.EncodeToString(hashedCanonicalRequest[:]))
+			canonicalRequest := fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n%s", method, path, queryStr, canonicalHeaders, signedHeaders, payloadHashHex)
+			canonicalRequestHash := sha256.Sum256([]byte(canonicalRequest))
+			canonicalRequestHashHex := strings.ToLower(hex.EncodeToString(canonicalRequestHash[:]))
 
-			// Step 8: String to sign
-			const SignAlgorithmHeader = "CNC-HMAC-SHA256"
-			stringToSign := fmt.Sprintf("%s\n%s\n%s", SignAlgorithmHeader, timestampString, hashedCanonicalRequestHex)
-			hmac := hmac.New(sha256.New, []byte(options.SecretKey))
-			hmac.Write([]byte(stringToSign))
-			sign := hmac.Sum(nil)
-			signHex := strings.ToLower(hex.EncodeToString(sign))
+			const signAlgorithmHeader = "CNC-HMAC-SHA256"
+			stringToSign := fmt.Sprintf("%s\n%s\n%s", signAlgorithmHeader, timestampStr, canonicalRequestHashHex)
 
-			// Step 9: Add headers to request
+			h := hmac.New(sha256.New, []byte(options.SecretKey))
+			h.Write([]byte(stringToSign))
+			signature := strings.ToLower(hex.EncodeToString(h.Sum(nil)))
+
 			req.Header.Set("X-CNC-AccessKey", options.AccessKey)
-			req.Header.Set("X-CNC-Timestamp", timestampString)
+			req.Header.Set("X-CNC-Timestamp", timestampStr)
 			req.Header.Set("X-CNC-Auth-Method", "AKSK")
-			req.Header.Set("Authorization", fmt.Sprintf("%s Credential=%s, SignedHeaders=%s, Signature=%s", SignAlgorithmHeader, options.AccessKey, signedHeaders, signHex))
-			req.Header.Set("Date", reqtime.Format("Mon, 02 Jan 2006 15:04:05 GMT"))
+			req.Header.Set("Authorization", fmt.Sprintf("%s Credential=%s, SignedHeaders=%s, Signature=%s", signAlgorithmHeader, options.AccessKey, signedHeaders, signature))
+			req.Header.Set("Date", nowUtc.Format(http.TimeFormat))
 
 			return nil
 		})
@@ -168,7 +155,7 @@ func (c *Client) DoRequest(req *resty.Request) (*resty.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) DoRequestWithResult(req *resty.Request, res interface{}) (*resty.Response, error) {
+func (c *Client) DoRequestWithResult(req *resty.Request, res any) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}

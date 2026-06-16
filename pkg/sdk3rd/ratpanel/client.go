@@ -48,15 +48,18 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			var body []byte
-			var err error
+			// API 签名机制：
+			// https://ratpanel.github.io/advanced/api#authentication-mechanism
 
+			payloadStr := ""
 			if req.Body != nil {
-				body, err = io.ReadAll(req.Body)
+				payloadb, err := io.ReadAll(req.Body)
 				if err != nil {
 					return err
 				}
-				req.Body = io.NopCloser(bytes.NewReader(body))
+
+				payloadStr = string(payloadb)
+				req.Body = io.NopCloser(bytes.NewReader(payloadb))
 			}
 
 			canonicalPath := req.URL.Path
@@ -71,16 +74,20 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 				req.Method,
 				canonicalPath,
 				req.URL.Query().Encode(),
-				sumSha256(string(body)))
+				sumSha256(payloadStr),
+			)
 
 			timestamp := time.Now().Unix()
-			req.Header.Set("X-Timestamp", fmt.Sprintf("%d", timestamp))
 
 			stringToSign := fmt.Sprintf("%s\n%d\n%s",
 				"HMAC-SHA256",
 				timestamp,
-				sumSha256(canonicalRequest))
+				sumSha256(canonicalRequest),
+			)
+
 			signature := sumHmacSha256(stringToSign, options.AccessToken)
+
+			req.Header.Set("X-Timestamp", fmt.Sprintf("%d", timestamp))
 			req.Header.Set("Authorization", fmt.Sprintf("HMAC-SHA256 Credential=%d, Signature=%s", options.AccessTokenId, signature))
 
 			return nil
