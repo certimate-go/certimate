@@ -48,7 +48,7 @@ func main() {
 	pb.RootCmd.AddCommand(cmd.NewWinscCommand(pb))
 
 	switch os.Args[1] {
-	case "serve":
+	case "serve", "superuser":
 		{
 			pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
 				scheduler.Setup()
