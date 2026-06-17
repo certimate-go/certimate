@@ -56,7 +56,26 @@
         "tooltip": "五段式表达式，使用 <em>crontab</em> 标准语法规则。<br>支持使用任意值（即 <strong>*</strong>）、值列表分隔符（即 <strong>,</strong>）、值的范围（即 <strong>-</strong>）、步骤值（即 <strong>/</strong>）等四种表达式。",
         "help": "预计最近 5 次运行时间（实际时区以服务器设置为准）：",
         "guide": "如果你有多个工作流，建议将它们设置为在一天中的多个时间段运行，而非总是在相同的特定时间。也不要总是设置为每日零时，以免遭遇证书颁发机构的流量高峰。<br><br>参考链接：<br>1. <a href=\"https://letsencrypt.org/zh-cn/docs/rate-limits/\" target=\"_blank\">Let’s Encrypt 速率限制</a><br>2. <a href=\"https://letsencrypt.org/zh-cn/docs/faq/#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E7%9A%84-let-s-encrypt-acme-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%AF%E5%8A%A8%E6%97%B6%E9%97%B4%E5%BA%94%E5%BD%93%E9%9A%8F%E6%9C%BA\" target=\"_blank\">为什么我的 Let’s Encrypt (ACME) 客户端启动时间应当随机？</a>"
+      },
+      "schedule": {
+        "label": "执行计划",
+        "interval_days": "每",
+        "interval_days_suffix": "天",
+        "time_points": "执行时间",
+        "hour_placeholder": "请选择小时",
+        "add_time": "添加",
+        "empty": "请添加至少一个执行时间",
+        "switch_to_cron": "切换到 CRON 表达式",
+        "tooltip": "从每月 1 号开始，每 N 天执行。",
+        "errmsg": {
+          "no_time": "请至少选择一个时间",
+          "duplicate_time": "该时间已存在",
+          "max_time": "最多 10 个执行时间"
+        }
       }
+    },
+    "display": {
+      "simple_schedule": "每 {{days}} 天 {{times}}"
     }
   },
 

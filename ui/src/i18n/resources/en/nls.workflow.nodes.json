@@ -56,7 +56,26 @@
         "tooltip": "Exactly 5 space separated segments, in standard <em>crontab</em> rules.",
         "help": "Expected execution time for the last 5 times (the actual time zone is based on the server):",
         "guide": "If you have multiple workflows, it is recommended to set them to run at different times of the day instead of always running at a specific time. And please don't always set it to midnight every day to avoid spikes in traffic. <br><br>Reference links:<br>1. <a href=\"https://letsencrypt.org/docs/rate-limits/\" target=\"_blank\">Let’s Encrypt rate limits</a><br>2. <a href=\"https://letsencrypt.org/docs/faq/#why-should-my-let-s-encrypt-acme-client-run-at-a-random-time\" target=\"_blank\">Why should my Let’s Encrypt (ACME) client run at a random time?</a>"
+      },
+      "schedule": {
+        "label": "Schedule",
+        "interval_days": "Every",
+        "interval_days_suffix": "day(s)",
+        "time_points": "Execution time(s)",
+        "hour_placeholder": "Select hour",
+        "add_time": "Add",
+        "empty": "Please add at least one execution time",
+        "switch_to_cron": "Switch to CRON expression",
+        "tooltip": "Runs every N days starting from the 1st of each month.",
+        "errmsg": {
+          "no_time": "Please select at least one time",
+          "duplicate_time": "This time already added",
+          "max_time": "Maximum 10 execution times reached"
+        }
       }
+    },
+    "display": {
+      "simple_schedule": "Every {{days}} day(s) at {{times}}"
     }
   },
 

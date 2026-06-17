@@ -3,6 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconRocket } from "@tabler/icons-react";
 
 import { WORKFLOW_TRIGGERS } from "@/domain/workflow";
+import { cronToSimpleSchedule } from "@/utils/cron";
 
 import { BaseNode } from "./_shared";
 import { NodeKindType, type NodeRegistry, NodeType } from "./typings";
@@ -63,7 +64,13 @@ export const StartNodeRegistry: NodeRegistry = {
                     </div>
                     <div>
                       <Field name="config.triggerCron">
-                        {({ field: { value: fieldTriggerCron } }) => <>{fieldTrigger === WORKFLOW_TRIGGERS.SCHEDULED ? fieldTriggerCron || "\u00A0" : ""}</>}
+                        {({ field: { value: fieldTriggerCron } }) => (
+                          <>
+                            {fieldTrigger === WORKFLOW_TRIGGERS.SCHEDULED
+                              ? formatTriggerCron(typeof fieldTriggerCron === "string" ? fieldTriggerCron : undefined, t)
+                              : ""}
+                          </>
+                        )}
                       </Field>
                     </div>
                   </>
@@ -84,3 +91,15 @@ export const StartNodeRegistry: NodeRegistry = {
     return false;
   },
 };
+
+function formatTriggerCron(fieldTriggerCron: string | undefined, t: ReturnType<typeof getI18n>["t"]): string {
+  if (!fieldTriggerCron) return "\u00A0";
+
+  const schedule = cronToSimpleSchedule(fieldTriggerCron);
+  if (!schedule) return fieldTriggerCron;
+
+  return t("workflow_node.start.display.simple_schedule", {
+    days: schedule.intervalDays,
+    times: schedule.timePoints.join(", "),
+  });
+}
