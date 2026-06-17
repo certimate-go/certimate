@@ -266,7 +266,7 @@
       },
       "disable_ari": {
         "label": "Disable ARI",
-        "tooltip": "It determines whether to disable ARI (ACME Renewal Information). If you don't understand this option, just keep it by default. <br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">Click here to learn more</a>."
+        "tooltip": "ARI (ACME Renewal Information) is a renewal scheduling hint from the CA. When enabled, if the CA suggests early renewal (e.g., pending mass revocation), the system will renew early on the next workflow run, overriding your configured threshold. When disabled, renewal is determined solely by your configured threshold. <br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">Click here to learn more</a>."
       },
       "skip_before_expiry_days": {
         "label": "Repeated application",
@@ -274,7 +274,8 @@
         "prefix": "Perform renewal if the last issued certificate expires in ≤",
         "suffix": ".",
         "unit": "days",
-        "help": "Notes: The actual renewal interval also depends on the CRON expression that triggers the workflow."
+        "help": "Notes: The actual renewal timing is also affected by the workflow CRON expression and the CA's ARI suggestion (if supported).",
+        "ari_notice": "Certificate renewal is determined by two conditions: your configured threshold and the CA's ARI suggested window (if supported). Renewal triggers when either condition is met. To rely solely on your threshold, disable ARI in 'Advanced Settings'."
       },
 
       "aliyun_esa_region": {

@@ -265,7 +265,7 @@
       },
       "disable_ari": {
         "label": "阻止 ARI 续期",
-        "tooltip": "在 ACME 证书续期时是否阻止 ARI（ACME Renewal Information）。如果你不了解该选项的用途，保持默认即可。<br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">点此了解更多</a>。"
+        "tooltip": "ARI（ACME Renewal Information）是 CA 提供的续期时间建议。开启后，如果 CA 建议提前续期（例如证书即将被批量吊销），系统会在下次工作流运行时提前续期，而忽略你设置的续期阈值。关闭后，续期完全由你设置的续期阈值决定。<br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">点此了解更多</a>。"
       },
       "skip_before_expiry_days": {
         "label": "重复申请",
@@ -273,7 +273,8 @@
         "prefix": "当上次申请的证书剩余时长大于",
         "suffix": "，再次运行工作流时跳过此节点。",
         "unit": "天",
-        "help": "提示：证书实际续期间隔还取决于触发运行的 CRON 表达式。"
+        "help": "提示：证书实际续期时机同时受工作流 CRON 表达式和 CA 的 ARI 建议（如支持）影响。",
+        "ari_notice": "证书续期由两个条件共同决定：你设置的续期阈值和 CA 的 ARI 建议窗口（如果 CA 支持）。任一条件满足时都会触发续期。如需完全由你控制续期时间，可在「高级设置」中关闭 ARI。"
       },
 
       "aliyun_esa_region": {

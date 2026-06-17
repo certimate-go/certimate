@@ -5,6 +5,7 @@ import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { IconArrowRight, IconChevronRight, IconCircleMinus, IconMapPin, IconPlus, IconWorldWww } from "@tabler/icons-react";
 import { useControllableValue, useMount } from "ahooks";
 import {
+  Alert,
   type AnchorProps,
   AutoComplete,
   Avatar,
@@ -103,6 +104,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   const fieldKeySource = Form.useWatch("keySource", { form: formInst, preserve: true });
   const fieldCAProvider = Form.useWatch("caProvider", { form: formInst, preserve: true });
   const fieldCAProviderAccessId = Form.useWatch("caProviderAccessId", { form: formInst, preserve: true });
+  const fieldDisableARI = Form.useWatch("disableARI", { form: formInst, preserve: true });
 
   const renderNestedFieldProviderComponent = BizApplyNodeConfigFieldsProvider.useComponent(fieldChallengeType, fieldProvider, {});
 
@@ -769,7 +771,17 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
               </Typography.Text>
             </Divider>
 
-            <Form.Item label={t("workflow_node.apply.form.skip_before_expiry_days.label")} extra={t("workflow_node.apply.form.skip_before_expiry_days.help")}>
+            <Form.Item
+              label={t("workflow_node.apply.form.skip_before_expiry_days.label")}
+              extra={
+                <>
+                  <div>{t("workflow_node.apply.form.skip_before_expiry_days.help")}</div>
+                  {!fieldDisableARI && (
+                    <Alert className="mt-2" closable={false} message={t("workflow_node.apply.form.skip_before_expiry_days.ari_notice")} showIcon type="info" />
+                  )}
+                </>
+              }
+            >
               <span className="me-2 inline-block">{t("workflow_node.apply.form.skip_before_expiry_days.prefix")}</span>
               <span className="inline-block">
                 <Form.Item name="skipBeforeExpiryDays" noStyle rules={[formRule]}>
