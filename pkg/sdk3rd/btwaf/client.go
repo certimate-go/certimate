@@ -1,9 +1,7 @@
 package btwaf
 
 import (
-	"crypto/md5"
 	"crypto/tls"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,24 +34,23 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	restyClient := resty.New().
+	signer := &signer{
+		apiKey: opts.ApiKey,
+	}
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			timestamp := fmt.Sprintf("%d", time.Now().Unix())
-			keyMd5 := md5.Sum([]byte(opts.ApiKey))
-			keyMd5Hex := strings.ToLower(hex.EncodeToString(keyMd5[:]))
-			signMd5 := md5.Sum([]byte(timestamp + keyMd5Hex))
-			signMd5Hex := strings.ToLower(hex.EncodeToString(signMd5[:]))
-			req.Header.Set("waf_request_time", timestamp)
-			req.Header.Set("waf_request_token", signMd5Hex)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if err := signer.Sign(req); err != nil {
+				return fmt.Errorf("sdkerr: sign error: %w", err)
+			}
 
 			return nil
 		})
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

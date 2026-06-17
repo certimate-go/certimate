@@ -1,13 +1,8 @@
 package dogecloud
 
 import (
-	"bytes"
-	"crypto/hmac"
-	"crypto/sha1"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -33,44 +28,24 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset secretKey")
 	}
 
-	restyClient := resty.New().
+	signer := &signer{
+		accessKey: opts.AccessKey,
+		secretKey: opts.SecretKey,
+	}
+	httper := resty.New().
 		SetBaseURL("https://api.dogecloud.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(ctx *resty.Client, req *http.Request) error {
-			// API 签名机制：
-			// https://docs.dogecloud.com/cdn/api-access-token
-
-			path := req.URL.Path
-			queryStr := req.URL.Query().Encode()
-			if queryStr != "" {
-				path += "?" + queryStr
+			if err := signer.Sign(req); err != nil {
+				return fmt.Errorf("sdkerr: sign error: %w", err)
 			}
-
-			payloadStr := ""
-			if req.Body != nil {
-				payloadb, err := io.ReadAll(req.Body)
-				if err != nil {
-					return err
-				}
-
-				payloadStr = string(payloadb)
-				req.Body = io.NopCloser(bytes.NewReader(payloadb))
-			}
-
-			stringToSign := fmt.Sprintf("%s\n%s", path, payloadStr)
-
-			h := hmac.New(sha1.New, []byte(opts.SecretKey))
-			h.Write([]byte(stringToSign))
-			signature := hex.EncodeToString(h.Sum(nil))
-
-			req.Header.Set("Authorization", fmt.Sprintf("TOKEN %s:%s", opts.AccessKey, signature))
 
 			return nil
 		})
 
-	return &Client{restyClient}, nil
+	return &Client{httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

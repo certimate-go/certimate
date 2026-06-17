@@ -50,7 +50,7 @@ func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	client := resty.New().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if config.Secret != "" {
 				timestamp := fmt.Sprintf("%d", time.Now().UnixMilli())
 

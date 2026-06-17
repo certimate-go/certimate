@@ -36,14 +36,14 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset tokenSecret")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api2/json").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", fmt.Sprintf("PVEAPIToken=%s=%s", opts.TokenId, opts.TokenSecret)).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

@@ -38,7 +38,7 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
@@ -46,7 +46,7 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 
 	return &Client{
 		apiKey: opts.ApiKey,
-		rc:     restyClient,
+		rc:     httper,
 	}, nil
 }
 
@@ -96,9 +96,9 @@ func (c *Client) newRequest(method string, path string, params any) (*resty.Requ
 		}
 	}
 
-	timestamp := time.Now().Unix()
-	data["request_time"] = fmt.Sprintf("%d", timestamp)
-	data["request_token"] = generateSignature(fmt.Sprintf("%d", timestamp), c.apiKey)
+	timestamp := fmt.Sprintf("%d", time.Now().Unix())
+	data["request_time"] = timestamp
+	data["request_token"] = generateSignature(timestamp, c.apiKey)
 
 	req := c.rc.R()
 	req.Method = method

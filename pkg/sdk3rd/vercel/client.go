@@ -25,13 +25,13 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiToken")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://api.vercel.com/v8").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", "Bearer "+options.ApiToken).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if options.TeamId != "" {
 				qs := req.URL.Query()
 				qs.Set("teamId", options.TeamId)
@@ -41,7 +41,7 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 			return nil
 		})
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

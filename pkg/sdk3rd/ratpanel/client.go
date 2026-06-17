@@ -1,14 +1,9 @@
 package ratpanel
 
 import (
-	"bytes"
-	"crypto/hmac"
-	"crypto/sha256"
 	"crypto/tls"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -42,58 +37,24 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset accessToken")
 	}
 
-	restyClient := resty.New().
+	signer := &signer{
+		accessTokenId: options.AccessTokenId,
+		accessToken:   options.AccessToken,
+	}
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			// API 签名机制：
-			// https://ratpanel.github.io/advanced/api#authentication-mechanism
-
-			payloadStr := ""
-			if req.Body != nil {
-				payloadb, err := io.ReadAll(req.Body)
-				if err != nil {
-					return err
-				}
-
-				payloadStr = string(payloadb)
-				req.Body = io.NopCloser(bytes.NewReader(payloadb))
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if err := signer.Sign(req); err != nil {
+				return fmt.Errorf("sdkerr: sign error: %w", err)
 			}
-
-			canonicalPath := req.URL.Path
-			if !strings.HasPrefix(canonicalPath, "/api") {
-				index := strings.Index(canonicalPath, "/api")
-				if index != -1 {
-					canonicalPath = canonicalPath[index:]
-				}
-			}
-
-			canonicalRequest := fmt.Sprintf("%s\n%s\n%s\n%s",
-				req.Method,
-				canonicalPath,
-				req.URL.Query().Encode(),
-				sumSha256(payloadStr),
-			)
-
-			timestamp := time.Now().Unix()
-
-			stringToSign := fmt.Sprintf("%s\n%d\n%s",
-				"HMAC-SHA256",
-				timestamp,
-				sumSha256(canonicalRequest),
-			)
-
-			signature := sumHmacSha256(stringToSign, options.AccessToken)
-
-			req.Header.Set("X-Timestamp", fmt.Sprintf("%d", timestamp))
-			req.Header.Set("Authorization", fmt.Sprintf("HMAC-SHA256 Credential=%d, Signature=%s", options.AccessTokenId, signature))
 
 			return nil
 		})
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -162,17 +123,4 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	}
 
 	return resp, nil
-}
-
-func sumSha256(str string) string {
-	sum := sha256.Sum256([]byte(str))
-	dst := make([]byte, hex.EncodedLen(len(sum)))
-	hex.Encode(dst, sum[:])
-	return string(dst)
-}
-
-func sumHmacSha256(data string, secret string) string {
-	h := hmac.New(sha256.New, []byte(secret))
-	h.Write([]byte(data))
-	return hex.EncodeToString(h.Sum(nil))
 }

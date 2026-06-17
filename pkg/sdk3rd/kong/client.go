@@ -38,14 +38,14 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		baseUrl += fmt.Sprintf("/%s", url.PathEscape(opts.Workspace))
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL(baseUrl).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetHeader("Kong-Admin-Token", opts.ApiToken)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

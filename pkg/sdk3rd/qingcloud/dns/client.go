@@ -1,13 +1,9 @@
 package dns
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -32,43 +28,24 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset secretAccessKey")
 	}
 
-	restyClient := resty.New().
+	signer := &signer{
+		accessKeyId:     options.AccessKeyId,
+		secretAccessKey: options.SecretAccessKey,
+	}
+	httper := resty.New().
 		SetBaseURL("http://api.routewize.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			// 签名机制：
-			// https://docsv4.qingcloud.com/user_guide/development_docs/api/api_list/dns/calling_method/signature/
-
-			date := time.Now().UTC().Format(time.RFC1123)
-
-			verb := req.Method
-
-			canonicalizedResource := "/"
-			if req.URL != nil {
-				canonicalizedResource = req.URL.Path
-				if req.URL.RawQuery != "" {
-					values, _ := url.ParseQuery(req.URL.RawQuery)
-					canonicalizedResource += "?" + values.Encode()
-				}
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if err := signer.Sign(req); err != nil {
+				return fmt.Errorf("sdkerr: sign error: %w", err)
 			}
-
-			stringToSign := verb + "\n" +
-				date + "\n" +
-				canonicalizedResource
-
-			h := hmac.New(sha256.New, []byte(options.SecretAccessKey))
-			h.Write([]byte(stringToSign))
-			signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
-
-			req.Header.Set("Date", date)
-			req.Header.Set("Authorization", fmt.Sprintf("QC-HMAC-SHA256 %s:%s", options.AccessKeyId, signature))
 
 			return nil
 		})
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

@@ -72,7 +72,7 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if client.apiUserToken != "" {
 				req.Header.Set("Token", client.apiUserToken)
 			}
