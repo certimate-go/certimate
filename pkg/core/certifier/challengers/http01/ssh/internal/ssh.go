@@ -27,9 +27,8 @@ func NewDefaultConfig() *Config {
 	defaultCfg := ssh.NewDefaultConfig()
 
 	return &Config{
-		Config:      *defaultCfg,
-		UseSCP:      false,
-		WebRootPath: "/var/www/html",
+		Config: *defaultCfg,
+		UseSCP: false,
 	}
 }
 
@@ -40,6 +39,10 @@ type HTTPProvider struct {
 func NewHTTPProviderConfig(config *Config) (*HTTPProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
+	}
+
+	if config.WebRootPath == "" {
+		return nil, fmt.Errorf("ssh: webroot path must be set")
 	}
 
 	return &HTTPProvider{
