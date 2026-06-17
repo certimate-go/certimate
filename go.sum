@@ -176,8 +176,6 @@ github.com/alibabacloud-go/vod-20170321/v4 v4.11.3 h1:xF9GzlR4Qr+H2MRu558rpJUG6s
 github.com/alibabacloud-go/vod-20170321/v4 v4.11.3/go.mod h1:2NX/9lVaKpd1+1GEV5zUAzQFfK9pF8Wkx81ugAnHYiw=
 github.com/alibabacloud-go/waf-openapi-20211001/v7 v7.8.1 h1:zCZIxEfoC3SmPx6x+7JzxXBPkQZ7eA19YFtWWJ80HMs=
 github.com/alibabacloud-go/waf-openapi-20211001/v7 v7.8.1/go.mod h1:oP48y3ec8gOIGFXcxKEUMiQwO9mZmlAH4TFZZvInHik=
-github.com/aliyun/alibabacloud-oss-go-sdk-v2 v1.5.1 h1:vtiFd0hhPAbyYJjztl0wYUq/PqEGkIlDmVuTIy6zw8Y=
-github.com/aliyun/alibabacloud-oss-go-sdk-v2 v1.5.1/go.mod h1:FTzydeQVmR24FI0D6XWUOMKckjXehM/jgMn1xC+DA9M=
 github.com/aliyun/credentials-go v1.1.2/go.mod h1:ozcZaMR5kLM7pwtCMEpVmQ242suV6qTJya2bDq4X1Tw=
 github.com/aliyun/credentials-go v1.3.1/go.mod h1:8jKYhQuDawt8x2+fusqa1Y6mPxemTsBEN04dgcAcYz0=
 github.com/aliyun/credentials-go v1.3.6/go.mod h1:1LxUuX7L5YrZUWzBrRyk0SwSdH4OmPrib8NVePL3fxM=

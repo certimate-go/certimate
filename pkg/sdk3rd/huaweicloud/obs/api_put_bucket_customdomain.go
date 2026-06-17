@@ -22,14 +22,11 @@ type PutBucketCustomDomainResponse struct {
 	sdkResponseBase
 }
 
-func (c *Client) PutBucketCustomDomain(bucket string, req *PutBucketCustomDomainRequest) (*PutBucketCustomDomainResponse, error) {
-	return c.PutBucketCustomDomainWithContext(context.Background(), bucket, req)
+func (c *Client) PutBucketCustomDomain(req *PutBucketCustomDomainRequest) (*PutBucketCustomDomainResponse, error) {
+	return c.PutBucketCustomDomainWithContext(context.Background(), req)
 }
 
-func (c *Client) PutBucketCustomDomainWithContext(ctx context.Context, bucket string, req *PutBucketCustomDomainRequest) (*PutBucketCustomDomainResponse, error) {
-	if bucket == "" {
-		return nil, fmt.Errorf("sdkerr: bad request: unset bucket")
-	}
+func (c *Client) PutBucketCustomDomainWithContext(ctx context.Context, req *PutBucketCustomDomainRequest) (*PutBucketCustomDomainResponse, error) {
 	if req.CustomDomain == "" {
 		return nil, fmt.Errorf("sdkerr: bad request: unset customdomain")
 	}

@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/alibabacloud-go/tea/tea"
-	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss"
-	"github.com/aliyun/alibabacloud-oss-go-sdk-v2/oss/credentials"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	osssdk "github.com/certimate-go/certimate/pkg/sdk3rd/alibabacloud/oss"
 )
 
 type (
@@ -33,9 +35,10 @@ type DeployerConfig struct {
 }
 
 type Deployer struct {
-	config    *DeployerConfig
-	logger    *slog.Logger
-	sdkClient *oss.Client
+	config     *DeployerConfig
+	logger     *slog.Logger
+	sdkClient  *osssdk.Client
+	sdkCertmgr core.Certmgr
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -45,15 +48,28 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret, config.Region, config.Bucket)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
+	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
+		AccessKeyId:     config.AccessKeyId,
+		AccessKeySecret: config.AccessKeySecret,
+		ResourceGroupId: config.ResourceGroupId,
+		Region: lo.
+			If(config.Region == "" || strings.HasPrefix(config.Region, "cn-"), "cn-hangzhou").
+			Else("ap-southeast-1"),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("could not create certmgr: %w", err)
+	}
+
 	return &Deployer{
-		config:    config,
-		logger:    slog.Default(),
-		sdkClient: client,
+		config:     config,
+		logger:     slog.Default(),
+		sdkClient:  client,
+		sdkCertmgr: pcertmgr,
 	}, nil
 }
 
@@ -63,6 +79,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -73,57 +91,45 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("config `domain` is required")
 	}
 
+	// 上传证书
+	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
+	} else {
+		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
+	}
+
 	// 为存储空间绑定自定义域名
 	// REF: https://help.aliyun.com/zh/oss/developer-reference/putcname
-	putCnameReq := &oss.PutCnameRequest{
-		Bucket: tea.String(d.config.Bucket),
-		BucketCnameConfiguration: &oss.BucketCnameConfiguration{
+	putBucketCnameReq := &osssdk.PutCnameRequest{
+		Cname: &osssdk.PutCnameRequestCname{
 			Domain: tea.String(d.config.Domain),
-			CertificateConfiguration: &oss.CertificateConfiguration{
+			CertificateConfiguration: &osssdk.PutCnameRequestCnameCertificateConfiguration{
+				CertId:      tea.String(upres.ExtendedData["CertIdentifier"].(string)),
 				Certificate: tea.String(certPEM),
 				PrivateKey:  tea.String(privkeyPEM),
 				Force:       tea.Bool(true),
 			},
 		},
 	}
-	putCnameResp, err := d.sdkClient.PutCname(ctx, putCnameReq)
-	d.logger.Debug("sdk request 'oss.PutCname'", slog.Any("request", putCnameReq), slog.Any("response", putCnameResp))
+	putBucketCnameResp, err := d.sdkClient.PutBucketCnameWithContext(ctx, putBucketCnameReq)
+	d.logger.Debug("sdk request 'oss.PutBucketCname'", slog.String("params.bucket", d.config.Bucket), slog.Any("request", putBucketCnameReq), slog.Any("response", putBucketCnameResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'oss.PutCname': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'oss.PutBucketCname': %w", err)
 	}
 
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret, region string) (*oss.Client, error) {
-	// 接入点一览 https://api.aliyun.com/product/Oss
-	var endpoint string
-	switch region {
-	case "":
-		endpoint = "oss.aliyuncs.com"
-	case
-		"cn-hzjbp",
-		"cn-hzjbp-a",
-		"cn-hzjbp-b":
-		endpoint = "oss-cn-hzjbp-a-internal.aliyuncs.com"
-	case
-		"cn-shanghai-finance-1",
-		"cn-shenzhen-finance-1",
-		"cn-beijing-finance-1",
-		"cn-north-2-gov-1":
-		endpoint = fmt.Sprintf("oss-%s-internal.aliyuncs.com", region)
-	default:
-		endpoint = fmt.Sprintf("oss-%s.aliyuncs.com", region)
+func createSDKClient(accessKeyId, accessKeySecret, region, bucket string) (*osssdk.Client, error) {
+	client, err := osssdk.NewClient("",
+		osssdk.WithAkSk(accessKeyId, accessKeySecret),
+		osssdk.WithRegion(region),
+		osssdk.WithBucket(bucket),
+	)
+	if err != nil {
+		return nil, err
 	}
 
-	provider := credentials.NewStaticCredentialsProvider(accessKeyId, accessKeySecret)
-	config := oss.LoadDefaultConfig().
-		WithCredentialsProvider(provider).
-		WithEndpoint(endpoint)
-	if region != "" {
-		config = config.WithRegion(region)
-	}
-
-	client := oss.NewClient(config)
 	return client, nil
 }

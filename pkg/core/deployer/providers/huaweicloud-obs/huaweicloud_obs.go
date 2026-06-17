@@ -105,7 +105,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		CertificateChain: certPEM,
 		PrivateKey:       privkeyPEM,
 	}
-	putBucketCustomDomainResp, err := d.sdkClient.PutBucketCustomDomainWithContext(ctx, d.config.Bucket, putBucketCustomDomainReq)
+	putBucketCustomDomainResp, err := d.sdkClient.PutBucketCustomDomainWithContext(ctx, putBucketCustomDomainReq)
 	d.logger.Debug("sdk request 'obs.PutBucketCustomDomain'", slog.String("params.bucket", d.config.Bucket), slog.String("params.customdomain", d.config.Domain), slog.Any("request", putBucketCustomDomainReq), slog.Any("response", putBucketCustomDomainResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'obs.PutBucketCustomDomain': %w", err)

@@ -1,6 +1,7 @@
 ﻿package obs
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
@@ -72,16 +73,16 @@ func NewClient(endpoint string, optFns ...OptionsFunc) (*Client, error) {
 
 				for _, key := range keys {
 					value := strings.TrimSpace(req.Header.Get(key))
-					canonicalizedHeaders += fmt.Sprintf("%s:%s", key, url.QueryEscape(value))
+					canonicalizedHeaders += key + ":" + escapeQuery(value)
 					canonicalizedHeaders += "\n"
 				}
 			}
 
 			bucketName := opts.Bucket
 			objectName := strings.Trim(req.URL.Path, "/")
-			canonicalizedResource := fmt.Sprintf("/%s/%s", bucketName, objectName)
+			canonicalizedResources := escapePath(fmt.Sprintf("/%s/%s", bucketName, objectName))
 			if bucketName == "" && objectName == "" {
-				canonicalizedResource = "/"
+				canonicalizedResources = "/"
 			}
 			if len(req.URL.Query()) > 0 {
 				query := req.URL.Query()
@@ -94,16 +95,16 @@ func NewClient(endpoint string, optFns ...OptionsFunc) (*Client, error) {
 
 				for i, key := range keys {
 					if i == 0 {
-						canonicalizedResource += "?"
+						canonicalizedResources += "?"
 					} else {
-						canonicalizedResource += "&"
+						canonicalizedResources += "&"
 					}
 
 					value := query.Get(key)
 					if value == "" {
-						canonicalizedResource += key
+						canonicalizedResources += escapeQuery(key)
 					} else {
-						canonicalizedResource += fmt.Sprintf("%s=%s", strings.ToLower(key), url.QueryEscape(value))
+						canonicalizedResources += escapeQuery(key) + "=" + escapeQuery(value)
 					}
 				}
 			}
@@ -115,8 +116,7 @@ func NewClient(endpoint string, optFns ...OptionsFunc) (*Client, error) {
 			contentMd5 := req.Header.Get("Content-MD5")
 			contentType := req.Header.Get("Content-Type")
 
-			stringToSign := fmt.Sprintf("%s\n%s\n%s\n%s\n%s%s", method, contentMd5, contentType, dateStr, canonicalizedHeaders, canonicalizedResource)
-			println("stringToSign:", stringToSign)
+			stringToSign := fmt.Sprintf("%s\n%s\n%s\n%s\n%s%s", method, contentMd5, contentType, dateStr, canonicalizedHeaders, canonicalizedResources)
 
 			h := hmac.New(sha1.New, []byte(opts.SecretAccessKey))
 			h.Write([]byte(stringToSign))
@@ -215,4 +215,33 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	}
 
 	return resp, nil
+}
+
+func escapeQuery(str string) string {
+	res := url.QueryEscape(str)
+	res = strings.ReplaceAll(res, "%7E", "~")
+	res = strings.ReplaceAll(res, "%2F", "/")
+	res = strings.ReplaceAll(res, "%20", "+")
+	return res
+}
+
+func escapePath(path string) string {
+	var buf bytes.Buffer
+	for i := 0; i < len(path); i++ {
+		c := path[i]
+		noEscape := (c >= 'A' && c <= 'Z') ||
+			(c >= 'a' && c <= 'z') ||
+			(c >= '0' && c <= '9') ||
+			c == '-' ||
+			c == '.' ||
+			c == '_' ||
+			c == '~' ||
+			c == '/'
+		if noEscape {
+			buf.WriteByte(c)
+		} else {
+			fmt.Fprintf(&buf, "%%%02X", c)
+		}
+	}
+	return buf.String()
 }
