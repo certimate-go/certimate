@@ -1,0 +1,1518 @@
+{
+  "$ns": "access",
+  "text": {
+    "nodata": "Нет учетных данных",
+    "nodata_description": "Похоже, у вас нет учетных данных. Начните с добавления одного.",
+    "nodata_button": "Создать учетные данные"
+  },
+  "page": {
+    "heading": "Учетные записи",
+    "subheading": "В учетных данных хранится информация для аутентификации (имя пользователя и пароль, ключ API, токены и т. д.) для подключения к определенным сторонним приложениям и службам."
+  },
+  "action": {
+    "search.input": {
+      "placeholder": "Поиск по имени учетной записи..."
+    },
+    "create.button": "Создать учетные данные",
+    "create.modal": {
+      "title": "Создать учетные данные"
+    },
+    "modify.menu": "Изменить",
+    "modify.modal": {
+      "title": "Изменить учетные данные"
+    },
+    "duplicate.menu": "Дублировать",
+    "duplicate.modal": {
+      "title": "Дубликат учетных данных"
+    },
+    "delete.menu": "Удалить",
+    "delete.modal": {
+      "title": "Удалить «{{name}}»",
+      "content": "Вы уверены, что хотите удалить эти учетные данные? <br>Это действие невозможно отменить."
+    },
+    "batch_delete.modal": {
+      "title": "Удалить учетные данные",
+      "content": "Вы уверены, что хотите удалить выбранные учетные данные {{count}}? <br>Это действие невозможно отменить."
+    },
+    "test_notify.button": "Тестовое уведомление"
+  },
+  "props": {
+    "name": "Имя",
+    "provider": {
+      "usage": {
+        "dns": "DNS",
+        "hosting": "Хостинг",
+        "ca": "Центр сертификации",
+        "notification": "Уведомление"
+      },
+      "builtin": "Встроенный"
+    },
+    "usage": {
+      "dns_hosting": "Поставщик",
+      "ca": "Центр сертификации",
+      "notification": "Канал уведомлений"
+    },
+    "created_at": "Создан",
+    "updated_at": "Обновлён"
+  },
+  "new": {
+    "heading": "Создать учетные данные",
+    "subheading": "Используйте эти учетные данные для подключения к определенным сторонним приложениям и службам."
+  },
+  "form": {
+    "name": {
+      "label": "Имя",
+      "placeholder": "Пожалуйста, введите имя учетной записи"
+    },
+    "provider": {
+      "label": "Поставщик",
+      "placeholder": "Пожалуйста, выберите провайдера",
+      "help": "Поставщик DNS: поставщик, который размещает ваши доменные имена и управляет вашими записями DNS. <br>Хостинг-провайдер: поставщик, на котором размещаются ваши серверы или облачные службы для развертывания сертификатов.",
+      "search": {
+        "placeholder": "Поиск провайдера..."
+      }
+    },
+    "shared_acme_eab_kid": {
+      "label": "ACME EAB КИД",
+      "placeholder": "Пожалуйста, введите ACME EAB KID"
+    },
+    "shared_acme_eab_hmac_key": {
+      "label": "Ключ ACME EAB HMAC",
+      "placeholder": "Пожалуйста, введите ключ ACME EAB HMAC"
+    },
+    "shared_allow_insecure_conns": {
+      "label": "Разрешить небезопасные соединения SSL/TLS"
+    },
+    "1panel_server_url": {
+      "label": "URL-адрес сервера 1Panel",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера 1Panel",
+      "help": "Примечания: НЕ включайте суффикс входа в систему безопасности."
+    },
+    "1panel_api_version": {
+      "label": "1Панельная версия",
+      "placeholder": "Пожалуйста, выберите версию 1Panel"
+    },
+    "1panel_api_key": {
+      "label": "API-ключ 1Panel",
+      "placeholder": "Пожалуйста, введите ключ API 1Panel",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.1panel.pro/dev_manual/api_manual/\" target=\"_blank\">https://docs.1panel.pro/dev_manual/api_manual/</a>."
+    },
+    "35cn_username": {
+      "label": "35.cn имя пользователя агента",
+      "placeholder": "Пожалуйста, введите имя пользователя агента West.cn"
+    },
+    "35cn_api_password": {
+      "label": "35.cn пароль API агента",
+      "placeholder": "Пожалуйста, введите пароль API агента West.cn"
+    },
+    "35cn_agent": {
+      "guide": "API West.cn поддерживает только вызовы от агентов. Узнайте больше об этом: <br><a href=\"https://console-docs.apipost.cn/preview/ab2c3103b22855ba/fac91d1e43fafb69?target_id=fa930623-3109-489d-9835-75fdfba07fbb\" target=\"_blank\">https://www.35.com/agent/mode-api.asp</a>."
+    },
+    "51dnscom_api_key": {
+      "label": "API-ключ 51DNS.com",
+      "placeholder": "Пожалуйста, введите ключ API 51DNS.com",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.51dns.com/member/apiSet\" target=\"_blank\">https://www.51dns.com/member/apiSet</a>."
+    },
+    "51dnscom_api_secret": {
+      "label": "Секрет API 51DNS.com",
+      "placeholder": "Введите секрет API 51DNS.com.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.51dns.com/member/apiSet\" target=\"_blank\">https://www.51dns.com/member/apiSet</a>."
+    },
+    "acmeca_endpoint": {
+      "label": "Конечная точка",
+      "placeholder": "Пожалуйста, введите конечную точку",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://datatracker.ietf.org/doc/html/rfc8555#section-7.1.1\" target=\"_blank\">https://datatracker.ietf.org/doc/html/rfc8555#section-7.1.1</a>."
+    },
+    "acmeca_eab_kid": {
+      "label": "ACME EAB KID (дополнительно)",
+      "placeholder": "Пожалуйста, введите ACME EAB KID"
+    },
+    "acmeca_eab_hmac_key": {
+      "label": "Ключ ACME EAB HMAC (дополнительно)",
+      "placeholder": "Пожалуйста, введите ключ ACME EAB HMAC"
+    },
+    "acmedns_server_url": {
+      "label": "URL-адрес ACME-DNS-сервера",
+      "placeholder": "Введите URL-адрес сервера ACME-DNS."
+    },
+    "acmedns_credentials": {
+      "label": "Учетные данные ACME-DNS",
+      "placeholder": "Пожалуйста, введите учетные данные ACME-DNS",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://github.com/joohoi/acme-dns\" target=\"_blank\">https://github.com/joohoi/acme-dns</a>."
+    },
+    "acmehttpreq_endpoint": {
+      "label": "Конечная точка",
+      "placeholder": "Пожалуйста, введите конечную точку",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://go-acme.github.io/lego/dns/httpreq/\" target=\"_blank\">https://go-acme.github.io/lego/dns/httpreq/</a>."
+    },
+    "acmehttpreq_mode": {
+      "label": "Режим",
+      "placeholder": "Пожалуйста, выберите режим",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://go-acme.github.io/lego/dns/httpreq/\" target=\"_blank\">https://go-acme.github.io/lego/dns/httpreq/</a>."
+    },
+    "acmehttpreq_username": {
+      "label": "Имя пользователя HTTP Basic Auth (необязательно)",
+      "placeholder": "Пожалуйста, введите имя пользователя HTTP Basic Auth",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://go-acme.github.io/lego/dns/httpreq/\" target=\"_blank\">https://go-acme.github.io/lego/dns/httpreq/</a>."
+    },
+    "acmehttpreq_password": {
+      "label": "Пароль базовой аутентификации HTTP (необязательно)",
+      "placeholder": "Пожалуйста, введите пароль базовой аутентификации HTTP",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://go-acme.github.io/lego/dns/httpreq/\" target=\"_blank\">https://go-acme.github.io/lego/dns/httpreq/</a>."
+    },
+    "actalisssl_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в Actalis SSL: <br><a href=\"https://www.actalis.com/manage-with-acme\" target=\"_blank\">https://www.actalis.com/manage-with-acme</a>."
+    },
+    "akamai_host": {
+      "label": "Хост API Akamai",
+      "placeholder": "Пожалуйста, введите хост Akamai API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials\" target=\"_blank\">https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials</a>."
+    },
+    "akamai_client_token": {
+      "label": "Токен клиента Akamai",
+      "placeholder": "Пожалуйста, введите токен клиента Akamai",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials\" target=\"_blank\">https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials</a>."
+    },
+    "akamai_client_secret": {
+      "label": "Секрет клиента Akamai",
+      "placeholder": "Пожалуйста, введите секрет клиента Akamai",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials\" target=\"_blank\">https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials</a>."
+    },
+    "akamai_access_token": {
+      "label": "Токен доступа Акамай",
+      "placeholder": "Пожалуйста, введите токен доступа Akamai",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials\" target=\"_blank\">https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials</a>."
+    },
+    "aliyun_access_key_id": {
+      "label": "Алиюн AccessKeyID",
+      "placeholder": "Пожалуйста, введите Aliyun AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/acr/create-and-obtain-an-accesskey-pair\" target=\"_blank\">https://www.alibabacloud.com/help/en/acr/create-and-obtain-an-accesskey-pair</a>."
+    },
+    "aliyun_access_key_secret": {
+      "label": "Aliyun AccessKeySecret",
+      "placeholder": "Пожалуйста, введите Aliyun AccessKeySecret",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/acr/create-and-obtain-an-accesskey-pair\" target=\"_blank\">https://www.alibabacloud.com/help/en/acr/create-and-obtain-an-accesskey-pair</a>."
+    },
+    "aliyun_resource_group_id": {
+      "label": "Идентификатор группы ресурсов Aliyun (необязательно)",
+      "placeholder": "Введите идентификатор группы ресурсов Aliyun",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/resource-management/product-overview\" target=\"_blank\">https://www.alibabacloud.com/help/en/resource-management/product-overview</a>."
+    },
+    "apisix_server_url": {
+      "label": "URL-адрес сервера APISIX",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера APISIX"
+    },
+    "apisix_api_key": {
+      "label": "Ключ API администратора APISIX",
+      "placeholder": "Введите ключ API администратора APISIX.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://apisix.apache.org/docs/apisix/admin-api/\" target=\"_blank\">https://apisix.apache.org/docs/apisix/admin-api/</a>."
+    },
+    "arvancloud_api_key": {
+      "label": "API-ключ ArvanCloud",
+      "placeholder": "Пожалуйста, введите ключ API ArvanCloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>."
+    },
+    "aws_access_key_id": {
+      "label": "AWS AccessKeyID",
+      "placeholder": "Пожалуйста, введите AWS AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html</a>."
+    },
+    "aws_secret_access_key": {
+      "label": "Секретный ключ доступа AWS",
+      "placeholder": "Пожалуйста, введите AWS SecretAccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html</a>."
+    },
+    "azure_tenant_id": {
+      "label": "Идентификатор клиента Azure",
+      "placeholder": "Введите идентификатор клиента Azure.",
+      "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id</a>."
+    },
+    "azure_client_id": {
+      "label": "Идентификатор клиента Azure",
+      "placeholder": "Введите идентификатор клиента Azure.",
+      "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/azure-monitor/logs/api/register-app-for-token\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/azure-monitor/logs/api/register-app-for-token</a>."
+    },
+    "azure_client_secret": {
+      "label": "Секрет клиента Azure",
+      "placeholder": "Введите секрет клиента Azure.",
+      "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/azure-monitor/logs/api/register-app-for-token\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/azure-monitor/logs/api/register-app-for-token</a>."
+    },
+    "azure_subscription_id": {
+      "label": "Идентификатор подписки Azure (необязательно)",
+      "placeholder": "Введите идентификатор подписки Azure.",
+      "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/azure-portal/get-subscription-tenant-id</a>."
+    },
+    "azure_resource_group_name": {
+      "label": "Имя группы ресурсов Azure (необязательно)",
+      "placeholder": "Введите имя группы ресурсов Azure.",
+      "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal</a>."
+    },
+    "azure_cloud_name": {
+      "label": "Имя независимого облака Azure (необязательно)",
+      "placeholder": "Введите имя независимого облака Azure (например, общедоступное).",
+      "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/sovereign-clouds\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/sovereign-clouds</a>."
+    },
+    "baiducloud_access_key_id": {
+      "label": "ID ключа доступа к облаку Baidu",
+      "placeholder": "Введите Baidu Cloud AccessKeyID.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en\" target=\"_blank\">https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en</a>."
+    },
+    "baiducloud_secret_access_key": {
+      "label": "Секретный ключ доступа Baidu Cloud",
+      "placeholder": "Пожалуйста, введите Baidu Cloud SecretAccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en\" target=\"_blank\">https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en</a>."
+    },
+    "baishan_api_token": {
+      "label": "Токен Baishan Cloud API",
+      "placeholder": "Пожалуйста, введите токен Baishan Cloud API"
+    },
+    "baotapanel_server_url": {
+      "label": "URL-адрес сервера aaPanel",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера aaPanel",
+      "help": "Примечания: НЕ включайте суффикс входа в систему безопасности."
+    },
+    "baotapanel_api_key": {
+      "label": "ключ API aaPanel",
+      "placeholder": "Пожалуйста, введите ключ API aaPanel",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.bt.cn/bbs/thread-20376-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-20376-1-1.html</a>."
+    },
+    "baotapanelgo_server_url": {
+      "label": "URL-адрес сервера WinGo aaPanel",
+      "placeholder": "Введите URL-адрес сервера WinGo aaPanel.",
+      "help": "Примечания: НЕ включайте суффикс входа в систему безопасности."
+    },
+    "baotapanelgo_api_key": {
+      "label": "aaPanel WinGo API-ключ",
+      "placeholder": "Пожалуйста, введите ключ API aaPanel WinGo",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.bt.cn/bbs/thread-20376-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-20376-1-1.html</a>."
+    },
+    "baotawaf_server_url": {
+      "label": "URL-адрес сервера aaWAF",
+      "placeholder": "Введите URL-адрес сервера aaWAF",
+      "help": "Примечания: НЕ включайте суффикс входа в систему безопасности."
+    },
+    "baotawaf_api_key": {
+      "label": "aaWAF API-ключ",
+      "placeholder": "Введите ключ API aaWAF",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://github.com/aaPanel/aaWAF/blob/main/API.md\" target=\"_blank\">https://github.com/aaPanel/aaWAF/blob/main/API.md</a>."
+    },
+    "beget_username": {
+      "label": "Beget пользователь",
+      "placeholder": "Пожалуйста, введите Beget пользователь"
+    },
+    "beget_api_password": {
+      "label": "Beget API пароль",
+      "placeholder": "Пожалуйста, введите Beget API пароль",
+      "tooltip": "Подробнее по ссылке <a href=\"https://cp.beget.com/settings/security/api\" target=\"_blank\">https://cp.beget.com/settings/security/api</a>"
+    },
+    "bookmyname_username": {
+      "label": "Имя пользователя BookMyName",
+      "placeholder": "Пожалуйста, введите имя пользователя BookMyName"
+    },
+    "bookmyname_password": {
+      "label": "Пароль BookMyName",
+      "placeholder": "Пожалуйста, введите пароль BookMyName"
+    },
+    "bunny_api_key": {
+      "label": "Ключ API кролика",
+      "placeholder": "Пожалуйста, введите ключ API Bunny",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.bunny.net/reference/bunnynet-api-overview\" target=\"_blank\">https://docs.bunny.net/reference/bunnynet-api-overview</a>."
+    },
+    "byteplus_access_key_id": {
+      "label": "BytePlus AccessKeyID",
+      "placeholder": "Пожалуйста, введите BytePlus AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys</a>."
+    },
+    "byteplus_secret_access_key": {
+      "label": "BytePlus SecretAccessKey",
+      "placeholder": "Пожалуйста, введите BytePlus SecretAccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys\" target=\"_blank\">https://docs.byteplus.com/en/docs/byteplus-platform/docs-managing-keys</a>."
+    },
+    "byteplus_project_name": {
+      "label": "BytePlus project ID",
+      "placeholder": "Пожалуйста, введите BytePlus project ID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management</a>"
+    },
+    "cachefly_api_token": {
+      "label": "Токен API CacheFly",
+      "placeholder": "Пожалуйста, введите токен API CacheFly",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228\" target=\"_blank\">https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228</a>."
+    },
+    "cdnfly_server_url": {
+      "label": "URL-адрес сервера Cdnfly",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера Cdnfly"
+    },
+    "cdnfly_api_key": {
+      "label": "Ключ API пользователя Cdnfly",
+      "placeholder": "Пожалуйста, введите ключ API пользователя Cdnfly",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>."
+    },
+    "cdnfly_api_secret": {
+      "label": "Секрет пользовательского API Cdnfly",
+      "placeholder": "Введите секретный код пользовательского API Cdnfly.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>."
+    },
+    "cloudflare_api_token": {
+      "label": "Cloudflare API token",
+      "placeholder": "Пожалуйста, введите Cloudflare API token",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/api/get-started/create-token/</a>."
+    },
+    "cloudflare_api_token_for_zone": {
+      "label": "Токен API Cloudflare Zone (необязательно)",
+      "placeholder": "Введите токен Cloudflare Zone API",
+      "help": "Примечание: Требуется только в том случае, если вы ограничиваете использование API-токена определенными зонами. Пожалуйста, ограничьте использование API-токена для каждой зоны.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developers.cloudflare.com/fundamentals/api/get-started/create-token/\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/api/get-started/create-token/</a>."
+    },
+    "cloudns_auth_id": {
+      "label": "Идентификатор пользователя API ClouDNS",
+      "placeholder": "Введите идентификатор пользователя ClouDNS API.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.cloudns.net/wiki/article/42/\" target=\"_blank\">https://www.cloudns.net/wiki/article/42/</a>."
+    },
+    "cloudns_auth_password": {
+      "label": "Пароль пользователя ClouDNS API",
+      "placeholder": "Введите пароль пользователя ClouDNS API.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.cloudns.net/wiki/article/42/\" target=\"_blank\">https://www.cloudns.net/wiki/article/42/</a>."
+    },
+    "cmcccloud_access_key_id": {
+      "label": "CMCC ECloud AccessKeyID",
+      "placeholder": "Пожалуйста, введите CMCC ECloud AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/49739\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/49739</a>."
+    },
+    "cmcccloud_access_key_secret": {
+      "label": "CMCC ECloud AccessKeySecret",
+      "placeholder": "Пожалуйста, введите CMCC ECloud AccessKeySecret",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/49739\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/49739</a>."
+    },
+    "conohavps_api_version": {
+      "label": "ConoHa VPS version",
+      "placeholder": "Пожалуйста, выберите ConoHa VPS version"
+    },
+    "conohavps_api_v2_username": {
+      "label": "ConoHa VPS API пользователь",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 2.0 API пользователь",
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/</a>"
+    },
+    "conohavps_api_v2_password": {
+      "label": "ConoHa VPS API пароль",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 2.0 API пароль",
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-guideline-vps2/api-guideline-v2/</a>"
+    },
+    "conohavps_api_v2_tenant_id": {
+      "label": "ConoHa VPS tenant ID",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 2.0 tenant ID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps2/api-identity-vps2/identity-post_tokens-v2/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps2/api-identity-vps2/identity-post_tokens-v2/</a>"
+    },
+    "conohavps_api_v3_user_id": {
+      "label": "ConoHa VPS API user ID",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 3.0 API user ID",
+      "errmsg": {
+        "conflict": "Конфликт с \"именем пользователя API\". Пожалуйста, сохраните только одно поле."
+      },
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_user_name": {
+      "label": "ConoHa VPS API user name",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 3.0 API user name",
+      "errmsg": {
+        "conflict": "Конфликт с \"ID пользователя API\". Пожалуйста, сохраните только одно поле."
+      },
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_password": {
+      "label": "ConoHa VPS API пароль",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 3.0 API пароль",
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-create_api_user-v3/</a>"
+    },
+    "conohavps_api_v3_project_id": {
+      "label": "ConoHa VPS project ID",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 3.0 tenant project ID",
+      "errmsg": {
+        "conflict": "Конфликт с \"названием проекта\". Пожалуйста, оставьте только одно поле."
+      },
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/</a>"
+    },
+    "conohavps_api_v3_project_name": {
+      "label": "ConoHa VPS project name",
+      "placeholder": "Пожалуйста, введите ConoHa VPS 3.0 tenant project name",
+      "errmsg": {
+        "conflict": "Конфликт с полем «project ID». Пожалуйста, оставьте только одно поле."
+      },
+      "tooltip": "Подробнее по ссылке <a href=\"https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/\" target=\"_blank\">https://doc.conoha.jp/reference/api-vps3/api-cp-vps3/cp-get_api_info-v3/</a>"
+    },
+    "constellix_api_key": {
+      "label": "API-ключ Constellix",
+      "placeholder": "Пожалуйста, введите ключ API Constellix",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://support.constellix.com/hc/en-us/articles/34574197390491-How-to-Generate-an-API-Key\" target=\"_blank\">https://support.constellix.com/hc/en-us/articles/34574197390491-How-to-Generate-an-API-Key</a>."
+    },
+    "constellix_secret_key": {
+      "label": "Секретный ключ API Constellix",
+      "placeholder": "Введите секретный ключ API Constellix.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://support.constellix.com/hc/en-us/articles/34574197390491-How-to-Generate-an-API-Key\" target=\"_blank\">https://support.constellix.com/hc/en-us/articles/34574197390491-How-to-Generate-an-API-Key</a>."
+    },
+    "cpanel_server_url": {
+      "label": "URL-адрес сервера cPanel",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера cPanel"
+    },
+    "cpanel_username": {
+      "label": "Имя пользователя cPanel",
+      "placeholder": "Пожалуйста, введите имя пользователя cPanel"
+    },
+    "cpanel_api_token": {
+      "label": "Токен API cPanel",
+      "placeholder": "Пожалуйста, введите токен API cPanel",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.cpanel.net/cpanel/security/manage-api-tokens-in-cpanel/\" target=\"_blank\">https://docs.cpanel.net/cpanel/security/manage-api-tokens-in-cpanel/</a>."
+    },
+    "ctcccloud_access_key_id": {
+      "label": "CTCC StateCloud AccessKeyID",
+      "placeholder": "Введите CTCC StateCloud AccessKeyID.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ctyun.cn/document/10015882/10015953\" target=\"_blank\">https://www.ctyun.cn/document/10015882/10015953</a>."
+    },
+    "ctcccloud_secret_access_key": {
+      "label": "CTCC StateCloud SecretAccessKey",
+      "placeholder": "Введите CTCC StateCloud SecretAccessKey.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ctyun.cn/document/10015882/10015953\" target=\"_blank\">https://www.ctyun.cn/document/10015882/10015953</a>."
+    },
+    "desec_token": {
+      "label": "токен deSEC",
+      "placeholder": "Пожалуйста, введите токен deSEC",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://desec.readthedocs.io/en/latest/auth/tokens.html#manage-tokens\" target=\"_blank\">https://desec.readthedocs.io/en/latest/auth/tokens.html</a>."
+    },
+    "digicert_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в DigiCert: <br><a href=\"https://docs.digicert.com/en/certcentral/certificate-tools/certificate-lifecycle-automation-guides/third-party-acme-integration/use-legacy-certcentral-acme-credentials.html\" target=\"_blank\">https://docs.digicert.com/en/certcentral/certificate-tools/certificate-lifecycle-automation-guides/ Third-party-acme-integration/use-legacy-certcentral-acme-credentials.html</a>"
+    },
+    "digitalocean_access_token": {
+      "label": "Токен доступа DigitalOcean",
+      "placeholder": "Пожалуйста, введите токен доступа DigitalOcean",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>."
+    },
+    "dingtalkbot_webhook_url": {
+      "label": "URL-адрес веб-перехватчика бота DingTalk",
+      "placeholder": "Введите URL-адрес веб-перехватчика бота DingTalk",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot</a>."
+    },
+    "dingtalkbot_secret": {
+      "label": "Секрет бота DingTalk",
+      "placeholder": "Пожалуйста, введите секрет бота DingTalk",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://open.dingtalk.com/document/orgapp/customize-robot-security-settings\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/customize-robot-security-settings</a>."
+    },
+    "dingtalkbot_custom_payload": {
+      "label": "Полезная нагрузка сообщения бота DingTalk (необязательно)",
+      "placeholder": "Введите пользовательскую полезную нагрузку сообщения бота DingTalk.",
+      "checkbox": "Настраиваемая полезная нагрузка сообщения"
+    },
+    "discordbot_token": {
+      "label": "Токен бота Discord",
+      "placeholder": "Пожалуйста, введите токен бота Discord",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token\" target=\"_blank\">https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token</a>."
+    },
+    "discordbot_channel_id": {
+      "label": "Идентификатор канала Discord (необязательно)",
+      "placeholder": "Пожалуйста, введите идентификатор канала Discord по умолчанию.",
+      "help": "Примечания. Его можно переопределить в рабочих процессах.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID\" target=\"_blank\">https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID</a>."
+    },
+    "dnsexit_api_key": {
+      "label": "API-ключ DNSExit",
+      "placeholder": "Введите ключ API DNSExit",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://dnsexit.com/Direct.sv?cmd=userApiKey\" target=\"_blank\">https://dnsexit.com/Direct.sv?cmd=userApiKey</a>."
+    },
+    "dnsla_api_id": {
+      "label": "Идентификатор API DNS.LA",
+      "placeholder": "Пожалуйста, введите идентификатор API DNS.LA",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.dns.la/docs/ApiDoc\" target=\"_blank\">https://www.dns.la/docs/ApiDoc</a>."
+    },
+    "dnsla_api_secret": {
+      "label": "Секрет API DNS.LA",
+      "placeholder": "Пожалуйста, введите секрет DNS.LA API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.dns.la/docs/ApiDoc\" target=\"_blank\">https://www.dns.la/docs/ApiDoc</a>."
+    },
+    "dnsmadeeasy_api_key": {
+      "label": "Ключ API DNS Made Easy",
+      "placeholder": "Введите ключ API DNS Made Easy",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://api-docs.dnsmadeeasy.com/#5b98221f-37e9-4845-a349-5e959241b4a5\" target=\"_blank\">https://api-docs.dnsmadeeasy.com/#Authentication</a>."
+    },
+    "dnsmadeeasy_api_secret": {
+      "label": "Секрет DNS Made Easy API",
+      "placeholder": "Пожалуйста, введите секрет DNS Made Easy API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://api-docs.dnsmadeeasy.com/#5b98221f-37e9-4845-a349-5e959241b4a5\" target=\"_blank\">https://api-docs.dnsmadeeasy.com/#Authentication</a>."
+    },
+    "dogecloud_access_key": {
+      "label": "Ключ доступа к Doge Cloud",
+      "placeholder": "Пожалуйста, введите ключ доступа к Doge Cloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>."
+    },
+    "dogecloud_secret_key": {
+      "label": "Секретный ключ Doge Cloud",
+      "placeholder": "Пожалуйста, введите секретный ключ Doge Cloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>."
+    },
+    "dokploy_server_url": {
+      "label": "URL-адрес сервера Dokploy",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера Dokploy"
+    },
+    "dokploy_api_key": {
+      "label": "API-ключ Dokploy",
+      "placeholder": "Пожалуйста, введите ключ API Dokploy",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.dokploy.com/docs/api\" target=\"_blank\">https://docs.dokploy.com/docs/api</a>."
+    },
+    "duckdns_token": {
+      "label": "Токен DuckDNS",
+      "placeholder": "Пожалуйста, введите токен DuckDNS",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.duckdns.org/spec.jsp\" target=\"_blank\">https://www.duckdns.org/spec.jsp</a>."
+    },
+    "dynadot_api_key": {
+      "label": "Dynadot API key",
+      "placeholder": "Пожалуйста, введите Dynadot API key",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.dynadot.com/domain/api-document\" target=\"_blank\">https://www.dynadot.com/domain/api-document</a>"
+    },
+    "dynadot_api_secret": {
+      "label": "Dynadot API secret",
+      "placeholder": "Пожалуйста, введите Dynadot API secret",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.dynadot.com/domain/api-document\" target=\"_blank\">https://www.dynadot.com/domain/api-document</a>"
+    },
+    "dynu_api_key": {
+      "label": "API-ключ Dynu",
+      "placeholder": "Пожалуйста, введите ключ API Dynu",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.dynu.com/Support/API#Authentication\" target=\"_blank\">https://www.dynu.com/Support/API#Authentication</a>."
+    },
+    "dynv6_http_token": {
+      "label": "HTTP-токен dynv6",
+      "placeholder": "Пожалуйста, введите HTTP-токен dynv6",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://dynv6.com/keys\" target=\"_blank\">https://dynv6.com/keys</a>."
+    },
+    "email_smtp_host": {
+      "label": "SMTP-хост",
+      "placeholder": "Пожалуйста, введите SMTP-хост"
+    },
+    "email_smtp_port": {
+      "label": "SMTP-порт",
+      "placeholder": "Пожалуйста, введите порт SMTP"
+    },
+    "email_smtp_tls": {
+      "label": "Безопасное соединение",
+      "placeholder": "Пожалуйста, выберите безопасное соединение",
+      "option": {
+        "true": {
+          "label": "Принудительное соединение SSL/TLS"
+        },
+        "false": {
+          "label": "Предпочитаю STARTTLS, возврат к простому варианту в случае неудачи"
+        }
+      }
+    },
+    "email_username": {
+      "label": "имя пользователя (необязательно)",
+      "placeholder": "введите имя пользователя SMTP"
+    },
+    "email_password": {
+      "label": "пароль (необязательно)",
+      "placeholder": "введите пароль SMTP"
+    },
+    "email_sender_address": {
+      "label": "Адрес электронной почты отправителя",
+      "placeholder": "Пожалуйста, введите адрес электронной почты отправителя"
+    },
+    "email_sender_name": {
+      "label": "Отображаемое имя отправителя (необязательно)",
+      "placeholder": "Пожалуйста, введите отображаемое имя отправителя"
+    },
+    "email_receiver_address": {
+      "label": "Адрес электронной почты получателя (необязательно)",
+      "placeholder": "Пожалуйста, введите адрес электронной почты получателя по умолчанию",
+      "help": "Примечания. Его можно переопределить в рабочих процессах."
+    },
+    "flexcdn_server_url": {
+      "label": "URL-адрес сервера FlexCDN",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера FlexCDN"
+    },
+    "flexcdn_api_role": {
+      "label": "Роль пользователя FlexCDN",
+      "placeholder": "Пожалуйста, выберите роль пользователя FlexCDN",
+      "option": {
+        "user": {
+          "label": "Пользователь платформы"
+        },
+        "admin": {
+          "label": "Пользователь-администратор"
+        }
+      }
+    },
+    "flexcdn_access_key_id": {
+      "label": "FlexCDN AccessKeyID",
+      "placeholder": "Пожалуйста, введите FlexCDN AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>."
+    },
+    "flexcdn_access_key": {
+      "label": "Ключ доступа FlexCDN",
+      "placeholder": "Пожалуйста, введите FlexCDN AccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>."
+    },
+    "flyio_api_token": {
+      "label": "Токен API Fly.io",
+      "placeholder": "Пожалуйста, введите токен API Fly.io",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://fly.io/docs/security/tokens/\" target=\"_blank\">https://fly.io/docs/security/tokens/</a>."
+    },
+    "ftp_host": {
+      "label": "Хост сервера",
+      "placeholder": "Пожалуйста, введите хост сервера"
+    },
+    "ftp_port": {
+      "label": "Порт сервера",
+      "placeholder": "Пожалуйста, введите порт сервера"
+    },
+    "ftp_username": {
+      "label": "Имя пользователя",
+      "placeholder": "Пожалуйста, введите имя пользователя"
+    },
+    "ftp_password": {
+      "label": "Пароль",
+      "placeholder": "Пожалуйста, введите пароль"
+    },
+    "gandinet_personal_access_token": {
+      "label": "Токен личного доступа Gandi.net",
+      "placeholder": "Пожалуйста, введите токен личного доступа Gandi.net",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://api.gandi.net/docs/authentication/\" target=\"_blank\">https://api.gandi.net/docs/authentication/</a>."
+    },
+    "gcore_api_token": {
+      "label": "Токен API G-Core",
+      "placeholder": "Пожалуйста, введите токен API G-Core",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://api.gcore.com/docs/iam#section/Authentication\" target=\"_blank\">https://api.gcore.com/docs/iam#section/Authentication</a>."
+    },
+    "globalsignatlas_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в GlobalSign Atlas: <br><a href=\"https://www.globalsign.com/en/acme-automated-certificate-management\" target=\"_blank\">https://www.globalsign.com/en/acme-automated-certificate-management</a>"
+    },
+    "gname_app_id": {
+      "label": "Идентификатор приложения GNAME",
+      "placeholder": "Пожалуйста, введите GNAME AppID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.gname.com/user#/dealer_api\" target=\"_blank\">https://www.gname.com/user#/dealer_api</a>."
+    },
+    "gname_app_key": {
+      "label": "Ключ приложения GNAME",
+      "placeholder": "Пожалуйста, введите GNAME AppKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.gname.com/user#/dealer_api\" target=\"_blank\">https://www.gname.com/user#/dealer_api</a>."
+    },
+    "godaddy_api_key": {
+      "label": "API-ключ GoDaddy",
+      "placeholder": "Пожалуйста, введите ключ API GoDaddy",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developer.godaddy.com/\" target=\"_blank\">https://developer.godaddy.com/</a>."
+    },
+    "godaddy_api_secret": {
+      "label": "Секрет API GoDaddy",
+      "placeholder": "Введите секретный код API GoDaddy.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developer.godaddy.com/\" target=\"_blank\">https://developer.godaddy.com/</a>."
+    },
+    "goedge_server_url": {
+      "label": "URL-адрес сервера GoEdge",
+      "placeholder": "Введите URL-адрес сервера GoEdge"
+    },
+    "goedge_api_role": {
+      "label": "Роль пользователя GoEdge",
+      "placeholder": "Пожалуйста, выберите роль пользователя GoEdge",
+      "option": {
+        "user": {
+          "label": "Пользователь платформы"
+        },
+        "admin": {
+          "label": "Пользователь-администратор"
+        }
+      }
+    },
+    "goedge_access_key_id": {
+      "label": "GoEdge AccessKeyID",
+      "placeholder": "Введите GoEdge AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>."
+    },
+    "goedge_access_key": {
+      "label": "Ключ доступа GoEdge",
+      "placeholder": "Пожалуйста, введите GoEdge AccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>."
+    },
+    "googlecloud_project_id": {
+      "label": "Google Cloud project ID",
+      "placeholder": "Пожалуйста, введите Google Cloud project ID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
+    },
+    "googlecloud_service_account_key": {
+      "label": "Google Cloud service account key",
+      "placeholder": "Пожалуйста, введите Google Cloud service account key",
+      "tooltip": "Подробнее по ссылке <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
+    },
+    "googletrustservices_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в службах доверия Google: <br><a href=\"https://cloud.google.com/certificate-manager/docs/public-ca-tutorial\" target=\"_blank\">https://cloud.google.com/certificate-manager/docs/public-ca-tutorial</a>."
+    },
+    "hetzner_api_token": {
+      "label": "Токен Hetzner API",
+      "placeholder": "Пожалуйста, введите токен Hetzner API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.hetzner.com/cloud/api/getting-started/generating-api-token\" target=\"_blank\">https://docs.hetzner.com/cloud/api/getting-started/generating-api-token</a>."
+    },
+    "hostingde_api_key": {
+      "label": "Ключ API хостинга.de",
+      "placeholder": "Пожалуйста, введите ключ API хостинга.de",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.hosting.de/api/#requests-and-authentication\" target=\"_blank\">https://www.hosting.de/api/#requests-and-authentication</a>."
+    },
+    "hostinger_api_token": {
+      "label": "Токен API хостинга",
+      "placeholder": "Пожалуйста, введите токен Hostinger API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developers.hostinger.com/#description/authentication\" target=\"_blank\">https://developers.hostinger.com/#description/authentication</a>."
+    },
+    "huaweicloud_access_key_id": {
+      "label": "Идентификатор ключа доступа к облаку Huawei",
+      "placeholder": "Введите Huawei Cloud AccessKeyID.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-ca/ca_01_0003.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-ca/ca_01_0003.html</a>."
+    },
+    "huaweicloud_secret_access_key": {
+      "label": "Секретный ключ доступа к облаку Huawei",
+      "placeholder": "Пожалуйста, введите Huawei Cloud SecretAccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-ca/ca_01_0003.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-ca/ca_01_0003.html</a>."
+    },
+    "huaweicloud_enterprise_project_id": {
+      "label": "Идентификатор корпоративного проекта Huawei Cloud (необязательно)",
+      "placeholder": "Введите идентификатор корпоративного проекта Huawei Cloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html</a>."
+    },
+    "infomaniak_access_token": {
+      "label": "Токен доступа Infomaniak",
+      "placeholder": "Пожалуйста, введите токен доступа Infomaniak",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://manager.infomaniak.com/v3/infomaniak-api\" target=\"_blank\">https://manager.infomaniak.com/v3/infomaniak-api</a>."
+    },
+    "ionos_api_key_public_prefix": {
+      "label": "Публичный префикс ключа API IONOS",
+      "placeholder": "Введите публичный префикс ключа API IONOS.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developer.hosting.ionos.com/docs/getstarted\" target=\"_blank\">https://developer.hosting.ionos.com/docs/getstarted</a>."
+    },
+    "ionos_api_key_secret": {
+      "label": "Секретный ключ IONOS API",
+      "placeholder": "Введите секретный ключ ключа API IONOS.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developer.hosting.ionos.com/docs/getstarted\" target=\"_blank\">https://developer.hosting.ionos.com/docs/getstarted</a>."
+    },
+    "jdcloud_access_key_id": {
+      "label": "JD Cloud AccessKeyID",
+      "placeholder": "Пожалуйста, введите JD Cloud AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.jdcloud.com/en/account-management/accesskey-management\" target=\"_blank\">https://docs.jdcloud.com/en/account-management/accesskey-management</a>."
+    },
+    "jdcloud_access_key_secret": {
+      "label": "JD Cloud AccessKeySecret",
+      "placeholder": "Пожалуйста, введите JD Cloud AccessKeySecret",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.jdcloud.com/en/account-management/accesskey-management\" target=\"_blank\">https://docs.jdcloud.com/en/account-management/accesskey-management</a>."
+    },
+    "k8s_kubeconfig": {
+      "label": "КубеКонфиг (необязательно)",
+      "placeholder": "Пожалуйста, введите файл KubeConfig",
+      "help": "Примечания. Оставьте это поле пустым, чтобы использовать ServiceAccount модуля.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a>."
+    },
+    "kong_server_url": {
+      "label": "URL-адрес сервера API администратора Kong",
+      "placeholder": "Введите URL-адрес сервера API администратора Kong."
+    },
+    "kong_api_token": {
+      "label": "Токен API администратора Kong (необязательно)",
+      "placeholder": "Введите токен API администратора Kong",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>."
+    },
+    "ksyun_access_key_id": {
+      "label": "Kingsoft Cloud AccessKeyID",
+      "placeholder": "Введите Kingsoft Cloud AccessKeyID.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://endocs.ksyun.com/documents/37659\" target=\"_blank\">https://endocs.ksyun.com/documents/37659</a>."
+    },
+    "ksyun_secret_access_key": {
+      "label": "Kingsoft Cloud SecretAccessKey",
+      "placeholder": "Пожалуйста, введите Kingsoft Cloud SecretAccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://endocs.ksyun.com/documents/37659\" target=\"_blank\">https://endocs.ksyun.com/documents/37659</a>."
+    },
+    "larkbot_webhook_url": {
+      "label": "URL вебхука бота Lark",
+      "placeholder": "Введите URL вебхука бота Lark",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot</a>."
+    },
+    "larkbot_secret": {
+      "label": "Секрет бота Lark",
+      "placeholder": "Пожалуйста, введите секрет бота Lark",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"hhttps://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot</a>."
+    },
+    "larkbot_custom_payload": {
+      "label": "Полезная нагрузка сообщения бота Lark (необязательно)",
+      "placeholder": "Введите пользовательскую полезную нагрузку сообщения бота Lark.",
+      "checkbox": "Настраиваемая полезная нагрузка сообщения"
+    },
+    "lecdn_server_url": {
+      "label": "URL-адрес сервера LeCDN",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера LeCDN"
+    },
+    "lecdn_api_version": {
+      "label": "ЛеКДН версия",
+      "placeholder": "Пожалуйста, выберите версию LeCDN"
+    },
+    "lecdn_api_role": {
+      "label": "Роль пользователя LeCDN",
+      "placeholder": "Пожалуйста, выберите роль пользователя LeCDN",
+      "option": {
+        "client": {
+          "label": "Клиент"
+        },
+        "master": {
+          "label": "Владелец"
+        }
+      }
+    },
+    "lecdn_username": {
+      "label": "Имя пользователя LeCDN",
+      "placeholder": "Пожалуйста, введите имя пользователя LeCDN"
+    },
+    "lecdn_password": {
+      "label": "Пароль ЛеКДН",
+      "placeholder": "Пожалуйста, введите пароль LeCDN"
+    },
+    "linode_access_token": {
+      "label": "Токен доступа Linode",
+      "placeholder": "Пожалуйста, введите токен доступа Linode",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://techdocs.akamai.com/linode-api/reference/get-started\" target=\"_blank\">https://techdocs.akamai.com/linode-api/reference/get-started</a>."
+    },
+    "litessl_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в LiteSSL: <br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>."
+    },
+    "mattermost_server_url": {
+      "label": "Самый важный URL-адрес сервера",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера Mattermost"
+    },
+    "mattermost_username": {
+      "label": "Самое важное имя пользователя",
+      "placeholder": "Пожалуйста, введите имя пользователя Mattermost"
+    },
+    "mattermost_password": {
+      "label": "Самый важный пароль",
+      "placeholder": "Пожалуйста, введите пароль Mattermost"
+    },
+    "mattermost_channel_id": {
+      "label": "Самый важный идентификатор канала (необязательно)",
+      "placeholder": "Введите идентификатор канала Mattermost по умолчанию.",
+      "help": "Примечания. Его можно переопределить в рабочих процессах.",
+      "tooltip": "Как это получить? Выберите целевой канал на левой боковой панели, нажмите на название канала вверху и выберите «Сведения о канале». Вы можете увидеть идентификатор канала непосредственно на всплывающей странице."
+    },
+    "mohua_username": {
+      "label": "Имя пользователя облака Мохуа",
+      "placeholder": "Пожалуйста, введите имя пользователя MoHua Cloud"
+    },
+    "mohua_api_password": {
+      "label": "Пароль API облака Мохуа",
+      "placeholder": "Пожалуйста, введите пароль Mohua Cloud API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.mhjz1.cn/apimanage\" target=\"_blank\">https://cloud.mhjz1.cn/apimanage</a>."
+    },
+    "namecheap_username": {
+      "label": "Имяcheap имя пользователя",
+      "placeholder": "Пожалуйста, введите имя пользователя Namecheap",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.namecheap.com/support/api/intro/\" target=\"_blank\">https://www.namecheap.com/support/api/intro/</a>."
+    },
+    "namecheap_api_key": {
+      "label": "Ключ API Namecheap",
+      "placeholder": "Пожалуйста, введите ключ API Namecheap",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.namecheap.com/support/api/intro/\" target=\"_blank\">https://www.namecheap.com/support/api/intro/</a>."
+    },
+    "namedotcom_username": {
+      "label": "Имя пользователя Name.com",
+      "placeholder": "Пожалуйста, введите имя пользователя Name.com",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.name.com/account/settings/api\" target=\"_blank\">https://www.name.com/account/settings/api</a>."
+    },
+    "namedotcom_api_token": {
+      "label": "Токен API Name.com",
+      "placeholder": "Пожалуйста, введите токен API Name.com",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.name.com/support/articles/31142639244819-how-to-manage-your-api-tokens\" target=\"_blank\">https://www.name.com/support/articles/31142639244819-how-to-manage-your-api-tokens</a>."
+    },
+    "namesilo_api_key": {
+      "label": "NameSilo API-ключ",
+      "placeholder": "Пожалуйста, введите ключ API NameSilo",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.namesilo.com/support/v2/articles/account-options/api-manager\" target=\"_blank\">https://www.namesilo.com/support/v2/articles/account-options/api-manager</a>."
+    },
+    "netlify_api_token": {
+      "label": "Токен API Netlify",
+      "placeholder": "Пожалуйста, введите токен Netlify API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.netlify.com/api/get-started/#authentication\" target=\"_blank\">https://docs.netlify.com/api/get-started/#authentication</a>."
+    },
+    "netcup_customer_number": {
+      "label": "номер клиента netcup",
+      "placeholder": "Пожалуйста, введите номер клиента netcup",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://helpcenter.netcup.com/en/wiki/general/ccp-login/\" target=\"_blank\">https://helpcenter.netcup.com/en/wiki/general/ccp-login/</a>."
+    },
+    "netcup_api_key": {
+      "label": "ключ API netcup",
+      "placeholder": "Пожалуйста, введите ключ API netcup",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://helpcenter.netcup.com/en/wiki/general/our-api/\" target=\"_blank\">https://helpcenter.netcup.com/en/wiki/general/our-api/</a>."
+    },
+    "netcup_api_password": {
+      "label": "пароль API Netcup",
+      "placeholder": "Пожалуйста, введите пароль API netcup",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://helpcenter.netcup.com/en/wiki/general/our-api/\" target=\"_blank\">https://helpcenter.netcup.com/en/wiki/general/our-api/</a>."
+    },
+    "nginxproxymanager_server_url": {
+      "label": "URL-адрес сервера NPM",
+      "placeholder": "Введите URL-адрес сервера NPM"
+    },
+    "nginxproxymanager_auth_method": {
+      "label": "Метод аутентификации NPM API",
+      "placeholder": "Пожалуйста, выберите метод аутентификации NPM API",
+      "option": {
+        "password": {
+          "label": "Имя пользователя и пароль"
+        },
+        "token": {
+          "label": "API-токен"
+        }
+      }
+    },
+    "nginxproxymanager_username": {
+      "label": "Имя пользователя администратора NPM",
+      "placeholder": "Пожалуйста, введите имя пользователя администратора NPM"
+    },
+    "nginxproxymanager_password": {
+      "label": "Пароль администратора NPM",
+      "placeholder": "Пожалуйста, введите пароль администратора NPM"
+    },
+    "nginxproxymanager_api_token": {
+      "label": "Токен API NPM",
+      "placeholder": "Пожалуйста, введите токен NPM API"
+    },
+    "ns1_api_key": {
+      "label": "API-ключ NS1",
+      "placeholder": "Пожалуйста, введите ключ API NS1",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api\" target=\"_blank\">https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api</a>."
+    },
+    "ovhcloud_endpoint": {
+      "label": "Конечная точка API OVHcloud",
+      "placeholder": "Введите конечную точку API OVHcloud."
+    },
+    "ovhcloud_auth_method": {
+      "label": "Метод аутентификации API OVHcloud",
+      "placeholder": "Пожалуйста, выберите метод аутентификации OVHcloud API",
+      "option": {
+        "application": {
+          "label": "Ключ приложения и секрет"
+        },
+        "oauth2": {
+          "label": "Учетные данные клиента OAuth2"
+        }
+      }
+    },
+    "ovhcloud_application_key": {
+      "label": "Ключ приложения OVHcloud",
+      "placeholder": "Пожалуйста, введите ключ приложения OVHcloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/\" target=\"_blank\">https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/</a>."
+    },
+    "ovhcloud_application_secret": {
+      "label": "Секрет приложения OVHcloud",
+      "placeholder": "Пожалуйста, введите секрет приложения OVHcloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/\" target=\"_blank\">https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/</a>."
+    },
+    "ovhcloud_consumer_key": {
+      "label": "Ключ потребителя OVHcloud",
+      "placeholder": "Введите потребительский ключ OVHcloud.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/\" target=\"_blank\">https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/</a>."
+    },
+    "ovhcloud_client_id": {
+      "label": "Идентификатор клиента OVHcloud",
+      "placeholder": "Пожалуйста, введите идентификатор клиента OVHcloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://help.ovhcloud.com/csm/en-manage-service-account?id=kb_article_view&sysparm_article=KB0059343\" target=\"_blank\">https://help.ovhcloud.com/csm/en-manage-service-account?id=kb_article_view&sysparm_article=KB0059343</a>."
+    },
+    "ovhcloud_client_secret": {
+      "label": "Секрет клиента OVHcloud",
+      "placeholder": "Пожалуйста, введите секретный код клиента OVHcloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://help.ovhcloud.com/csm/en-manage-service-account?id=kb_article_view&sysparm_article=KB0059343\" target=\"_blank\">https://help.ovhcloud.com/csm/en-manage-service-account?id=kb_article_view&sysparm_article=KB0059343</a>."
+    },
+    "porkbun_api_key": {
+      "label": "API-ключ свиной булочки",
+      "placeholder": "Пожалуйста, введите ключ API Porkbun",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://porkbun.com/api/json/v3/documentation#Authentication\" target=\"_blank\">https://porkbun.com/api/json/v3/documentation</a>."
+    },
+    "porkbun_secret_api_key": {
+      "label": "Секретный API-ключ Porkbun",
+      "placeholder": "Пожалуйста, введите секретный ключ API Porkbun",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://porkbun.com/api/json/v3/documentation#Authentication\" target=\"_blank\">https://porkbun.com/api/json/v3/documentation</a>."
+    },
+    "powerdns_server_url": {
+      "label": "URL-адрес сервера PowerDNS",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера PowerDNS"
+    },
+    "powerdns_api_key": {
+      "label": "Ключ API PowerDNS",
+      "placeholder": "Пожалуйста, введите ключ API PowerDNS",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>."
+    },
+    "proxmoxve_server_url": {
+      "label": "URL-адрес сервера Proxmox VE",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера Proxmox VE"
+    },
+    "proxmoxve_api_token": {
+      "label": "Токен API Proxmox VE",
+      "placeholder": "Пожалуйста, введите токен API Proxmox VE",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>."
+    },
+    "proxmoxve_api_token_secret": {
+      "label": "Секрет токена API Proxmox VE (необязательно)",
+      "placeholder": "Пожалуйста, введите секрет токена API Proxmox VE.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>."
+    },
+    "qingcloud_access_key_id": {
+      "label": "QingCloud AccessKeyID",
+      "placeholder": "Пожалуйста, введите QingCloud AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>."
+    },
+    "qingcloud_secret_access_key": {
+      "label": "QingCloud SecretAccessKey",
+      "placeholder": "Пожалуйста, введите QingCloud SecretAccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>."
+    },
+    "qiniu_access_key": {
+      "label": "Qiniu AccessKey",
+      "placeholder": "Пожалуйста, введите Qiniu AccessKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>."
+    },
+    "qiniu_secret_key": {
+      "label": "Циню SecretKey",
+      "placeholder": "Пожалуйста, введите Qiniu SecretKey",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>."
+    },
+    "rainyun_api_key": {
+      "label": "API-ключ Рейна Юна",
+      "placeholder": "Пожалуйста, введите ключ API Rain Yun",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://app.rainyun.com/account/settings/api-key\" target=\"_blank\">https://app.rainyun.com/account/settings/api-key</a>."
+    },
+    "ratpanel_server_url": {
+      "label": "URL-адрес сервера RatPanel",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера RatPanel",
+      "help": "Примечания: НЕ включайте суффикс входа в систему безопасности."
+    },
+    "ratpanel_access_token_id": {
+      "label": "Идентификатор токена доступа RatPanel",
+      "placeholder": "Введите идентификатор токена доступа RatPanel.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>."
+    },
+    "ratpanel_access_token": {
+      "label": "Токен доступа RatPanel",
+      "placeholder": "Пожалуйста, введите токен доступа RatPanel",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>."
+    },
+    "regru_username": {
+      "label": "Reg.ru имя пользователя",
+      "placeholder": "Введите имя пользователя Reg.ru"
+    },
+    "regru_password": {
+      "label": "Reg.ru пароль",
+      "placeholder": "Введите пароль Reg.ru или API-пароль"
+    },
+    "regru_mtls_certificate": {
+      "label": "Reg.ru mTLS сертификат (не обязательно)",
+      "placeholder": "Введите mTLS-сертификат Reg.ru",
+      "errmsg": {
+        "invalid": "Недействительный сертификат"
+      },
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
+    },
+    "regru_mtls_private_key": {
+      "label": "Reg.ru mTLS приватный ключ (не обязательно)",
+      "placeholder": "Введите приватный mTLS-ключ Reg.ru",
+      "errmsg": {
+        "invalid": "Недействительный приватный ключ"
+      },
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.reg.ru/user/account/#/settings/api/\" target=\"_blank\">https://www.reg.ru/user/account/#/settings/api/api/</a>"
+    },
+    "rfc2136_host": {
+      "label": "Хост DNS-сервера",
+      "placeholder": "Пожалуйста, введите хост DNS-сервера"
+    },
+    "rfc2136_port": {
+      "label": "Порт DNS-сервера",
+      "placeholder": "Пожалуйста, введите порт DNS-сервера"
+    },
+    "rfc2136_tsig_algorithm": {
+      "label": "Алгоритм ЦИГ",
+      "placeholder": "Пожалуйста, выберите алгоритм TSIG"
+    },
+    "rfc2136_tsig_key": {
+      "label": "Ключ аутентификации TSIG (необязательно)",
+      "placeholder": "Пожалуйста, введите ключ аутентификации TSIG"
+    },
+    "rfc2136_tsig_secret": {
+      "label": "Секрет аутентификации TSIG (необязательно)",
+      "placeholder": "Пожалуйста, введите секрет аутентификации TSIG"
+    },
+    "rucenter_username": {
+      "label": "Ru-Center пользователь",
+      "placeholder": "Пожалуйста, введите Ru-Center пользователь"
+    },
+    "rucenter_password": {
+      "label": "Ru-Center пароль",
+      "placeholder": "Пожалуйста, введите Ru-Center пароль"
+    },
+    "rucenter_application_id": {
+      "label": "Ru-Center application ID",
+      "placeholder": "Пожалуйста, введите Ru-Center application ID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list\" target=\"_blank\">https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list</a>"
+    },
+    "rucenter_application_token": {
+      "label": "Ru-Center application token",
+      "placeholder": "Пожалуйста, введите Ru-Center application token",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list\" target=\"_blank\">https://www.nic.ru/manager/oauth.cgi?step=oauth.app_list</a>"
+    },
+    "s3_endpoint": {
+      "label": "Конечная точка",
+      "placeholder": "Пожалуйста, введите конечную точку",
+      "help": "Примечания. Если протокол не указан, по умолчанию используется <em>https://</em>."
+    },
+    "s3_access_key": {
+      "label": "Ключ доступа",
+      "placeholder": "Пожалуйста, введите ключ доступа"
+    },
+    "s3_secret_key": {
+      "label": "Секретный ключ",
+      "placeholder": "Пожалуйста, введите секретный ключ"
+    },
+    "s3_signature_version": {
+      "label": "Подпись версия",
+      "placeholder": "Пожалуйста, выберите версию подписи"
+    },
+    "s3_use_path_style": {
+      "label": "Использовать адресацию в стиле пути",
+      "tooltip": "<ol style=\"list-style: disk;\"><li>Виртуальный стиль (по умолчанию): https://&lt;BUCKET&gt;.&lt;ENDPOINT&gt;/&lt;KEY&gt; </li><li>Стиль пути: https://&lt;ENDPOINT&gt;/&lt;BUCKET&gt;/&lt;KEY&gt; </li></ol>"
+    },
+    "samwaf_server_url": {
+      "label": "URL-адрес сервера SamWAF",
+      "placeholder": "Введите URL-адрес сервера SamWAF"
+    },
+    "samwaf_api_key": {
+      "label": "API-ключ SamWAF",
+      "placeholder": "Пожалуйста, введите ключ API SamWAF",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://doc.samwaf.com/api/\" target=\"_blank\">https://doc.samwaf.com/api/</a>."
+    },
+    "safeline_server_url": {
+      "label": "URL-адрес сервера SafeLine",
+      "placeholder": "Пожалуйста, введите URL-адрес сервера SafeLine"
+    },
+    "safeline_api_token": {
+      "label": "Токен SafeLine API",
+      "placeholder": "Пожалуйста, введите токен SafeLine API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.waf.chaitin.com/en/reference/articles/openapi\" target=\"_blank\">https://docs.waf.chaitin.com/en/reference/articles/openapi</a>."
+    },
+    "sectigo_validation_type": {
+      "label": "Тип проверки домена",
+      "placeholder": "Пожалуйста, выберите тип проверки домена",
+      "option": {
+        "dv": {
+          "label": "DV (проверка домена)"
+        },
+        "ov": {
+          "label": "OV (проверка организации)"
+        },
+        "ev": {
+          "label": "EV (расширенная проверка)"
+        }
+      }
+    },
+    "sectigo_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в Sectigo: <br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>."
+    },
+    "slackbot_token": {
+      "label": "Токен Slack-бота",
+      "placeholder": "Пожалуйста, введите токен бота Slack",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.slack.dev/authentication/tokens#bot\" target=\"_blank\">https://docs.slack.dev/authentication/tokens#bot</a>."
+    },
+    "slackbot_channel_id": {
+      "label": "Идентификатор слабого канала (необязательно)",
+      "placeholder": "Введите идентификатор канала Slack по умолчанию.",
+      "help": "Примечания. Его можно переопределить в рабочих процессах.",
+      "tooltip": "Как это получить? Пожалуйста, обратитесь к <a href=\"https://www.youtube.com/watch?v=Uz5Yi5C2pwQ\" target=\"_blank\">https://www.youtube.com/watch?v=Uz5Yi5C2pwQ</a>."
+    },
+    "spaceship_api_key": {
+      "label": "API-ключ космического корабля",
+      "placeholder": "Пожалуйста, введите ключ API космического корабля",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.spaceship.com/application/api-manager/\" target=\"_blank\">https://www.spaceship.com/application/api-manager/</a>."
+    },
+    "spaceship_api_secret": {
+      "label": "Секрет API космического корабля",
+      "placeholder": "Пожалуйста, введите секрет API космического корабля",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.spaceship.com/application/api-manager/\" target=\"_blank\">https://www.spaceship.com/application/api-manager/</a>."
+    },
+    "ssh_host": {
+      "label": "Хост сервера",
+      "placeholder": "Пожалуйста, введите хост сервера"
+    },
+    "ssh_port": {
+      "label": "Порт сервера",
+      "placeholder": "Пожалуйста, введите порт сервера"
+    },
+    "ssh_auth_method": {
+      "label": "Метод аутентификации",
+      "placeholder": "Пожалуйста, выберите метод аутентификации",
+      "option": {
+        "none": {
+          "label": "Никто"
+        },
+        "password": {
+          "label": "Пароль"
+        },
+        "key": {
+          "label": "SSH-ключ"
+        }
+      }
+    },
+    "ssh_username": {
+      "label": "Имя пользователя",
+      "placeholder": "Пожалуйста, введите имя пользователя"
+    },
+    "ssh_password": {
+      "label": "Пароль",
+      "placeholder": "Пожалуйста, введите пароль"
+    },
+    "ssh_key": {
+      "label": "SSH-ключ",
+      "placeholder": "Пожалуйста, введите SSH-ключ"
+    },
+    "ssh_key_passphrase": {
+      "label": "Ключевая фраза SSH (необязательно)",
+      "placeholder": "Пожалуйста, введите парольную фразу ключа SSH"
+    },
+    "ssh_jump_servers": {
+      "label": "Серверы перехода (необязательно)",
+      "errmsg": {
+        "invalid": "Неверные конфигурации jump серверов."
+      },
+      "item": {
+        "label": "Сервер перехода"
+      },
+      "add": {
+        "button": "Добавить сервер перехода"
+      }
+    },
+    "sslcom_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в SSL.com: <br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>."
+    },
+    "synologydsm_server_url": {
+      "label": "URL-адрес сервера Synology DSM",
+      "placeholder": "http://192.168.1.100:5000",
+      "tooltip": "Формат: http(s)://IP-адрес или имя-хоста:порт. Порт по умолчанию — 5000 для HTTP и 5001 для HTTPS. Пример: http://192.168.1.100:5000 или https://nas.example.com:5001."
+    },
+    "synologydsm_username": {
+      "label": "Имя пользователя Synology DSM",
+      "placeholder": "Введите имя пользователя Synology DSM"
+    },
+    "synologydsm_password": {
+      "label": "Пароль Synology DSM",
+      "placeholder": "Введите пароль Synology DSM"
+    },
+    "synologydsm_totp_secret": {
+      "label": "Секретный ключ Synology DSM 2FA TOTP (дополнительно)",
+      "placeholder": "Введите секретный ключ Synology DSM 2FA TOTP.",
+      "help": "Примечания. Требуется только при настройке входа 2FA в Synology DSM.",
+      "tooltip": "Как это получить? Секретный ключ можно найти, нажав «Невозможно отсканировать» при настройке 2FA или с помощью инструмента сканирования QRCode."
+    },
+    "telegrambot_token": {
+      "label": "Токен Telegram-бота",
+      "placeholder": "Пожалуйста, введите токен бота Telegram",
+      "tooltip": "Как это получить? Пожалуйста, обратитесь к <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>."
+    },
+    "technitiumdns_server_url": {
+      "label": "URL-адрес DNS-сервера Technitium",
+      "placeholder": "Пожалуйста, введите URL-адрес DNS-сервера Technitium"
+    },
+    "technitiumdns_api_token": {
+      "label": "Токен Technitium DNS API",
+      "placeholder": "Пожалуйста, введите токен Technitium DNS API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md\" target=\"_blank\">https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md</a>."
+    },
+    "telegrambot_chat_id": {
+      "label": "Идентификатор чата Telegram (необязательно)",
+      "placeholder": "Пожалуйста, введите идентификатор чата Telegram по умолчанию.",
+      "help": "Примечания. Его можно переопределить в рабочих процессах.",
+      "tooltip": "Как это получить? Пожалуйста, обратитесь к <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>."
+    },
+    "tencentcloud_secret_id": {
+      "label": "Секретный идентификатор Tencent Cloud",
+      "placeholder": "Пожалуйста, введите Tencent Cloud SecretID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.tencentcloud.com/en/document/product/598/34228\" target=\"_blank\">https://www.tencentcloud.com/en/document/product/598/34228</a>"
+    },
+    "tencentcloud_secret_key": {
+      "label": "Секретный ключ Tencent Cloud",
+      "placeholder": "Пожалуйста, введите секретный ключ Tencent Cloud",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.tencentcloud.com/en/document/product/598/34228\" target=\"_blank\">https://www.tencentcloud.com/en/document/product/598/34228</a>"
+    },
+    "tencentcloud_project_id": {
+      "label": "Tencent Cloud project ID (Optional)",
+      "placeholder": "Пожалуйста, введите Tencent Cloud project ID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://console.tencentcloud.com/project\" target=\"_blank\">https://console.tencentcloud.com/project</a>"
+    },
+    "todaynic_user_id": {
+      "label": "Идентификатор пользователя агента TodayNIC.com",
+      "placeholder": "Пожалуйста, введите идентификатор пользователя агента TodayNIC.com"
+    },
+    "todaynic_api_key": {
+      "label": "API-ключ агента TodayNIC.com",
+      "placeholder": "Введите ключ API агента TodayNIC.com."
+    },
+    "todaynic_agent": {
+      "guide": "API TodayNIC.com поддерживает только вызовы от агентов. Узнайте больше об этом: <br><a href=\"https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384\" target=\"_blank\">https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384</a>."
+    },
+    "ucloud_private_key": {
+      "label": "Закрытый ключ UCloud API",
+      "placeholder": "Пожалуйста, введите закрытый ключ UCloud API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>."
+    },
+    "ucloud_public_key": {
+      "label": "Открытый ключ UCloud API",
+      "placeholder": "Пожалуйста, введите открытый ключ UCloud API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>."
+    },
+    "ucloud_project_id": {
+      "label": "Идентификатор проекта UCloud (необязательно)",
+      "placeholder": "Пожалуйста, введите идентификатор проекта UCloud",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/uaccount/iam/project_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/iam/project_manage</a>."
+    },
+    "unicloud_username": {
+      "label": "имя пользователя uniCloud",
+      "placeholder": "Пожалуйста, введите имя пользователя uniCloud"
+    },
+    "unicloud_password": {
+      "label": "пароль юниклауд",
+      "placeholder": "Пожалуйста, введите пароль uniCloud"
+    },
+    "upyun_username": {
+      "label": "Имя пользователя субаккаунта UPYUN",
+      "placeholder": "Пожалуйста, введите имя пользователя субаккаунта UPYUN.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a>."
+    },
+    "upyun_password": {
+      "label": "Пароль субаккаунта UPYUN",
+      "placeholder": "Пожалуйста, введите пароль субаккаунта UPYUN",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a>."
+    },
+    "vercel_api_access_token": {
+      "label": "Токен доступа к API Vercel",
+      "placeholder": "Введите токен доступа к API Vercel",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token\" target=\"_blank\">https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token</a>."
+    },
+    "vercel_team_id": {
+      "label": "Идентификатор команды Vercel (необязательно)",
+      "placeholder": "Пожалуйста, введите идентификатор команды Vercel",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://vercel.com/docs/accounts#find-your-team-id\" target=\"_blank\">https://vercel.com/docs/accounts#find-your-team-id</a>."
+    },
+    "volcengine_access_key_id": {
+      "label": "VolcEngine AccessKeyID",
+      "placeholder": "Пожалуйста, введите VolcEngine AccessKeyID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.volcengine.com/docs/6291/65568\" target=\"_blank\">https://www.volcengine.com/docs/6291/65568</a>"
+    },
+    "volcengine_secret_access_key": {
+      "label": "Секретный ключ доступа VolcEngine",
+      "placeholder": "Пожалуйста, введите VolcEngine SecretAccessKey",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.volcengine.com/docs/6291/65568\" target=\"_blank\">https://www.volcengine.com/docs/6291/65568</a>"
+    },
+    "volcengine_project_name": {
+      "label": "VolcEngine project ID",
+      "placeholder": "Пожалуйста, введите VolcEngine project ID",
+      "tooltip": "Подробнее по ссылке <a href=\"https://www.volcengine.com/docs/6649/94336\" target=\"_blank\">https://www.volcengine.com/docs/6649/94336</a>"
+    },
+    "vultr_api_key": {
+      "label": "API-ключ Вультра",
+      "placeholder": "Пожалуйста, введите ключ API Vultr",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key\" target=\"_blank\">https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key</a>."
+    },
+    "wangsu_access_key_id": {
+      "label": "Wangsu Cloud AccessKeyID",
+      "placeholder": "Пожалуйста, введите Wangsu Cloud AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://en.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15775</a>."
+    },
+    "wangsu_access_key_secret": {
+      "label": "Ключ доступа к облаку Вансу",
+      "placeholder": "Пожалуйста, введите Wangsu Cloud AccessKeySecret",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://en.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15775</a>."
+    },
+    "wangsu_api_key": {
+      "label": "Ключ API облака Вансу",
+      "placeholder": "Пожалуйста, введите ключ Wangsu Cloud API",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://en.wangsu.com/document/account-manage/15776\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15776</a>."
+    },
+    "webhook_url": {
+      "label": "URL вебхука",
+      "placeholder": "Введите URL-адрес вебхука"
+    },
+    "webhook_method": {
+      "label": "Метод запроса вебхука",
+      "placeholder": "Пожалуйста, выберите метод запроса вебхука"
+    },
+    "webhook_headers": {
+      "label": "Заголовки запросов веб-перехватчика (необязательно)",
+      "placeholder": "Введите заголовки запросов Webhook",
+      "errmsg": {
+        "invalid": "Неверные заголовки запроса"
+      },
+      "tooltip": "Пример: <br><i>Content-Type: application/json<br>User-Agent: certimate</i>"
+    },
+    "webhook_data": {
+      "label": "Данные вебхука (необязательно)",
+      "placeholder": "Введите данные вебхука по умолчанию.",
+      "help": "Примечания. Его можно переопределить в рабочих процессах.",
+      "guide_for_deployment": "Данные вебхука должны быть в формате JSON. <br><br>Значения в JSON поддерживают переменные шаблона, которые будут заменены фактическими значениями при отправке на URL-адрес веб-перехватчика. Поддерживаемые переменные: <br><ol style=\"list-style: disk;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME</strong>: основной домен или IP-адрес сертификата.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES</strong>: домены или IP-адреса сертификата, разделенные точки с запятой.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE</strong>: содержимое файла сертификата в формате PEM.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER</strong>: содержимое сертификата сервера в формате PEM файл.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA</strong>: содержимое формата PEM файла промежуточного сертификата CA.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY</strong>: содержимое формата PEM файла закрытого ключа.</li></ol><br>Когда методом запроса является GET, данные будут переданы в виде строки запроса. В противном случае данные будут закодированы в формате, указанном Content-Type в заголовках запроса. Поддерживаемые форматы: <br><ol style=\"list-style: disk;\"><li>application/json (по умолчанию).</li><li>application/x-www-form-urlencoded: вложенные данные не поддерживаются.</li><li>multipart/form-data: вложенные данные не поддерживаются.</li>",
+      "guide_for_notification": "Данные вебхука должны быть в формате JSON. <br><br>Значения в JSON поддерживают переменные шаблона, которые будут заменены фактическими значениями при отправке на URL-адрес веб-перехватчика. Поддерживаемые переменные: <br><ol style=\"list-style: disk;\"><li><strong>${CERTIMATE_NOTIFIER_SUBJECT}</strong>: предмет уведомления.</li><li><strong>${CERTIMATE_NOTIFIER_MESSAGE</strong>: сообщение уведомления.</li></ol><br>Когда метод запроса — GET, данные будут переданы в виде строки запроса. В противном случае данные будут закодированы в формате, указанном Content-Type в заголовках запроса. Поддерживаемые форматы: <br><ol style=\"list-style: disk;\"><li>application/json (по умолчанию).</li><li>application/x-www-form-urlencoded: вложенные данные не поддерживаются.</li><li>multipart/form-data: вложенные данные не поддерживаются.</li>"
+    },
+    "webhook_preset_data": {
+      "": "Использовать предустановленный вебхук",
+      "bark": "Bark",
+      "gotify": "Gotify",
+      "messagenest": "Гнездо сообщений",
+      "ntfy": "нтфй",
+      "pushme": "PushMe",
+      "pushover": "Pushover",
+      "pushplus": "PushPlus",
+      "serverchan3": "Серверный канал<sup>3</sup>",
+      "serverchanturbo": "СерверЧан<sup>Турбо</sup>",
+      "wxpush": "WXPush",
+      "common": "Общие данные"
+    },
+    "wecombot_webhook_url": {
+      "label": "URL вебхука бота WeCom",
+      "placeholder": "Введите URL-адрес веб-перехватчика бота WeCom.",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.west.cn/CustomerCenter/doc/apiv2.html#12u3001u8eabu4efdu9a8cu8bc10a3ca20id3d12u3001u8eabu4efdu9a8cu8bc13e203ca3e\" target=\"_blank\">https://www.west.cn/CustomerCenter/doc/apiv2.html</a>."
+    },
+    "wecombot_custom_payload": {
+      "label": "Полезная нагрузка сообщения бота WeCom (необязательно)",
+      "placeholder": "Введите пользовательскую полезную нагрузку сообщения бота WeCom.",
+      "checkbox": "Настраиваемая полезная нагрузка сообщения"
+    },
+    "westcn_username": {
+      "label": "Имя пользователя агента West.cn",
+      "placeholder": "Пожалуйста, введите имя пользователя агента West.cn"
+    },
+    "westcn_api_password": {
+      "label": "Пароль API агента West.cn",
+      "placeholder": "Пожалуйста, введите пароль API агента West.cn"
+    },
+    "westcn_agent": {
+      "guide": "API West.cn поддерживает только вызовы от агентов. Узнайте больше об этом: <br><a href=\"https://www.west.cn/CustomerCenter/doc/apiv2.html#12u3001u8eabu4efdu9a8cu8bc10a3ca20id3d12u3001u8eabu4efdu9a8cu8bc13e203ca3e\" target=\"_blank\">https://www.west.cn/CustomerCenter/doc/apiv2.html</a>."
+    },
+    "xinnet_agent_id": {
+      "label": "Идентификатор агента Xinnet.com",
+      "placeholder": "Пожалуйста, введите идентификатор агента Xinnet.com"
+    },
+    "xinnet_api_password": {
+      "label": "Пароль API агента Xinnet.com",
+      "placeholder": "Пожалуйста, введите пароль API агента Xinnet.com"
+    },
+    "xinnet_agent": {
+      "guide": "API Xinnet.com поддерживает только вызовы от агентов. Узнайте больше об этом: <br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>."
+    },
+    "zenlayer_access_key_id": {
+      "label": "Zenlayer AccessKeyID",
+      "placeholder": "Пожалуйста, введите Zenlayer AccessKeyID",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key</a>."
+    },
+    "zenlayer_access_key_password": {
+      "label": "Zenlayer AccessКлючПароль",
+      "placeholder": "Пожалуйста, введите Zenlayer AccessKeyPassword",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key</a>."
+    },
+    "zenlayer_resource_group_id": {
+      "label": "Идентификатор группы ресурсов Zenlayer (необязательно)",
+      "placeholder": "Пожалуйста, введите идентификатор группы ресурсов Zenlayer",
+      "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/create-a-resource-group\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/create-a-resource-group</a>."
+    },
+    "zerossl_eab": {
+      "guide": "Узнайте больше об использовании ключа EAB в ZeroSSL: <br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>."
+    }
+  }
+}

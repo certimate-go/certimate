@@ -44,6 +44,68 @@ const localesMap: Record<string, Locale> = {
     })(),
   },
 
+  [localeNames.RU]: {
+    localeError: (() => {
+      const l = ZodLocaleEnUs();
+
+      return (issue) => {
+        let errmsg = l.localeError(issue);
+        if (typeof errmsg !== "string") {
+          errmsg = errmsg?.message ?? "";
+        }
+
+        switch (issue.code) {
+          case "too_big":
+            {
+              if (issue.origin === "string") {
+                return `Пароль должен быть не более ${issue.maximum.toString()} символов.`;
+              }
+            }
+            break;
+
+          case "too_small":
+            {
+              if (issue.origin === "string") {
+                return `Пароль должен быть не менее ${issue.minimum.toString()} символов.`;
+              }
+            }
+            break;
+
+          case "invalid_format":
+            {
+              const lower = errmsg.toLowerCase();
+              if (lower.includes("email")) {
+                return "Неправильное значение поля Email";
+              }
+            }
+            break;
+        }
+
+        const lower = errmsg.toLowerCase();
+        if (lower.includes("invalid email")) {
+          return "Неправильное значение поля Email";
+        }
+
+        if (errmsg.startsWith("Invalid value:")) {
+          const detail = errmsg.slice("Invalid value:".length).trim().toLowerCase();
+          if (detail.includes("email")) {
+            return "Неправильное значение поля Email";
+          }
+        }
+
+        if (errmsg.startsWith("Invalid string:")) {
+          return errmsg.replace(/^Invalid string:/, "Некорректная строка:");
+        }
+
+        if (errmsg.startsWith("invalid")) {
+          return errmsg.replace(/^invalid/i, "Некорректное значение");
+        }
+
+        return `Неправильное значение: ${errmsg.replace(/^./, (c) => c.toLowerCase())}`;
+      };
+    })(),
+  },
+
   [localeNames.ZH]: {
     localeError: (() => {
       // REF: https://github.com/colinhacks/zod/blob/main/packages/zod/src/v4/locales/zh-CN.ts

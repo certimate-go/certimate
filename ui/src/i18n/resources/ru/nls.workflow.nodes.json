@@ -1,0 +1,2947 @@
+{
+  "$ns": "workflow_node",
+  "kind": {
+    "basis": "Основа",
+    "business": "Бизнес",
+    "logic": "Логика"
+  },
+  "variables": {
+    "type": {
+      "certificate": {
+        "label": "Сертификат"
+      }
+    },
+    "selector": {
+      "hours_left": {
+        "label": "Осталось часов"
+      },
+      "days_left": {
+        "label": "Осталось дней"
+      },
+      "validity": {
+        "label": "Срок действия"
+      }
+    }
+  },
+  "start": {
+    "label": "Старт",
+    "default_name": "Старт",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      }
+    },
+    "form": {
+      "trigger": {
+        "label": "Триггер",
+        "placeholder": "Пожалуйста, выберите триггер",
+        "option": {
+          "scheduled": {
+            "label": "По расписанию"
+          },
+          "manual": {
+            "label": "Вручную"
+          }
+        }
+      },
+      "trigger_cron": {
+        "label": "CRON-выражение",
+        "placeholder": "Пожалуйста, введите выражение CRON",
+        "errmsg": {
+          "invalid": "Недопустимое выражение CRON"
+        },
+        "tooltip": "Ровно 5 сегментов, разделенных пробелами, в стандартных правилах <em>crontab</em>.",
+        "help": "Ожидаемое время выполнения последних 5 раз (фактический часовой пояс зависит от сервера):",
+        "guide": "Если у вас несколько рабочих процессов, рекомендуется настроить их запуск в разное время дня, а не всегда в определенное время. И, пожалуйста, не всегда устанавливайте время на полночь каждый день, чтобы избежать всплесков трафика. <br><br>Справочные ссылки:<br>1. <a href=\"https://letsencrypt.org/docs/rate-limits/\" target=\"_blank\">Ограничения скорости Let’s Encrypt</a><br>2. <a href=\"https://letsencrypt.org/docs/faq/#why-should-my-let-s-encrypt-acme-client-run-at-a-random-time\" target=\"_blank\">Почему мой клиент Let’s Encrypt (ACME) должен запускаться в случайное время?</a>"
+      }
+    }
+  },
+  "apply": {
+    "label": "Запросить сертификат",
+    "default_name": "Приложение",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      },
+      "challenge": {
+        "tab": "Подтверждение",
+        "title": "Типы подтверждения сайта"
+      },
+      "certificate": {
+        "tab": "Сертификат",
+        "title": "Настройки сертификата"
+      },
+      "advanced": {
+        "tab": "Дополнительно",
+        "title": "Расширенные настройки"
+      },
+      "strategy": {
+        "tab": "Стратегия",
+        "title": "Настройки стратегии"
+      }
+    },
+    "form": {
+      "identifier": {
+        "label": "Тип идентификатора",
+        "label2": "Сертификат выдается на...",
+        "option": {
+          "domain": {
+            "label": "Домены",
+            "description": "<ul style=\"margin: 0;\"><li>Поддерживает однодоменные, многодоменные домены и домены с подстановочными знаками (зависит от центра сертификации).</li><li>Поддерживает вызов DNS-01 или HTTP-01.</li></ul>"
+          },
+          "ip": {
+            "label": "IP-адреса",
+            "description": "<ul style=\"margin: 0;\"><li>Поддерживает адреса IPv4 и IPv6.</li><li>Поддерживает только вызов HTTP-01.</li><li>Конфигурация по умолчанию: нет общего имени.</li><li>Конфигурация по умолчанию: CA — <em><b>Let's Encrypt</b></em>.</li><li>Конфигурация по умолчанию: профиль ACME <em><b>shortlived</b></em>.</li><li>Сокращение срока действия сертификата и интервала обновления.</li></ul>"
+          }
+        },
+        "continue": {
+          "button": "Продолжать"
+        }
+      },
+      "domains": {
+        "label": "Домены",
+        "placeholder": "Пожалуйста, введите домены (через точку с запятой)",
+        "help": "Примечания. Несколько доменов следует разделять точкой с запятой. Домен с подстановочным знаком должен быть записан как <em>*.example.com</em>.",
+        "help_no_wildcard": "Примечания. Несколько доменов следует разделять точкой с запятой.",
+        "multiple_input_modal": {
+          "title": "Сменить домены",
+          "placeholder": "Пожалуйста, введите домен"
+        }
+      },
+      "ipaddrs": {
+        "label": "IP-адреса",
+        "placeholder": "Введите IP-адреса (через точку с запятой)",
+        "help": "Примечания. Несколько IP-адресов следует разделять точкой с запятой.",
+        "multiple_input_modal": {
+          "title": "Изменить IP-адреса",
+          "placeholder": "Пожалуйста, введите IP-адрес"
+        }
+      },
+      "contact_email": {
+        "label": "Контактный адрес электронной почты",
+        "placeholder": "Пожалуйста, введите контактный адрес электронной почты",
+        "tooltip": "Контактная информация, необходимая для подачи заявки на сертификат SSL. Обратите внимание на ограничения скорости <a href=\"https://letsencrypt.org/docs/rate-limits/\" target=\"_blank\"></a>."
+      },
+      "challenge_type": {
+        "label": "Тип подтверждения",
+        "placeholder": "Пожалуйста, выберите тип задания",
+        "errmsg": {
+          "no_wildcard_in_http01": "Не удалось использовать запрос HTTP-01 для запроса сертификатов домена с подстановочными знаками.",
+          "no_ip_in_dns01": "Не удалось использовать запрос DNS-01 для запроса сертификатов IP-адреса."
+        },
+        "tooltip": "Он определяет, как центры сертификации проверяют ваш контроль над доменными именами. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>."
+      },
+      "provider": {
+        "label": "Поставщик",
+        "placeholder": "Пожалуйста, выберите провайдера"
+      },
+      "provider_dns01": {
+        "label": "DNS-провайдер",
+        "placeholder": "Пожалуйста, выберите DNS-провайдера доменов"
+      },
+      "provider_http01": {
+        "label": "Хостинг-провайдер",
+        "placeholder": "Пожалуйста, выберите хостинг-провайдера доменов"
+      },
+      "provider_access": {
+        "label": "Учетные данные поставщика",
+        "placeholder": "Пожалуйста, выберите учетные данные провайдера",
+        "button": "Создать"
+      },
+      "provider_access_dns01": {
+        "label": "Учетные данные DNS-провайдера",
+        "placeholder": "Пожалуйста, выберите учетные данные DNS-провайдера."
+      },
+      "provider_access_http01": {
+        "label": "Учетные данные хостинг-провайдера",
+        "placeholder": "Пожалуйста, выберите учетные данные хостинг-провайдера."
+      },
+      "key_source": {
+        "label": "Источник ключа",
+        "placeholder": "Пожалуйста, выберите источник ключей",
+        "option": {
+          "auto": {
+            "label": "Авто"
+          },
+          "reuse": {
+            "label": "повторное использование",
+            "help": "Примечания: Если существует существующий сертификат, будет использоваться исходный алгоритм ключа."
+          },
+          "custom": {
+            "label": "Кастомный",
+            "help": "Примечания. Убедитесь, что алгоритм соответствует закрытому ключу."
+          }
+        }
+      },
+      "key_algorithm": {
+        "label": "Ключевой алгоритм",
+        "placeholder": "Пожалуйста, выберите ключевой алгоритм"
+      },
+      "key_content": {
+        "label": "Закрытый ключ (формат PEM)",
+        "placeholder": "-----BEGIN (RSA|EC) ЧАСТНЫЙ КЛЮЧ -----...-----END(RSA|EC) ЧАСТНЫЙ КЛЮЧ -----",
+        "errmsg": {
+          "invalid": "Invalid PEM private key",
+          "not_matched": "Закрытый ключ не соответствует алгоритму ключа (ожидается: {{expected}}, фактическое: {{actual}})."
+        }
+      },
+      "ca_provider": {
+        "label": "Центр сертификации (необязательно)",
+        "placeholder": "Пожалуйста, выберите центр сертификации",
+        "tooltip": "Используется для выдачи SSL-сертификатов.",
+        "button": "Настроить"
+      },
+      "ca_provider_access": {
+        "label": "Учетные данные центра сертификации",
+        "placeholder": "Пожалуйста, выберите учетные данные центра сертификации",
+        "button": "Создать"
+      },
+      "validity_lifetime": {
+        "label": "Срок действия (необязательно)",
+        "placeholder": "Пожалуйста, укажите срок действия сертификата",
+        "help": "Примечания. Не все центры сертификации поддерживают эту функцию.",
+        "tooltip": "Он определяет поле <em>NotAfter</em> сертификата в протоколе ACME. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию.",
+        "units": {
+          "h": "часы",
+          "d": "дни"
+        }
+      },
+      "preferred_chain": {
+        "label": "Предпочитаемая цепочка (необязательно)",
+        "placeholder": "Пожалуйста, введите предпочитаемую цепочку",
+        "help": "Примечания. Не все центры сертификации поддерживают эту функцию.",
+        "tooltip": "Он определяет поле <em>PreferredChain</em> сертификата в протоколе ACME. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию. <br><a href=\"https://letsencrypt.org/certificates/\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>."
+      },
+      "acme_profile": {
+        "label": "Профиль ACME (необязательно)",
+        "placeholder": "Пожалуйста, введите профиль ACME",
+        "help": "Примечания. Не все центры сертификации поддерживают эту функцию.",
+        "tooltip": "Он определяет поле <em>Профиль</em> сертификата в протоколе ACME. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию. <br><a href=\"https://letsencrypt.org/docs/profiles/#our-profiles\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>."
+      },
+      "disable_cn": {
+        "label": "Отключить общее имя в CSR",
+        "tooltip": "Он определяет, включать ли в сертификат поле <em>Subject.CommonName</em>. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию. <br><a href=\"https://letsencrypt.org/docs/profiles/#certificate-common-name\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>."
+      },
+      "nameservers": {
+        "label": "Рекурсивные DNS-серверы имен (необязательно)",
+        "placeholder": "Введите рекурсивные DNS-серверы имен (через точку с запятой).",
+        "tooltip": "Он определяет, следует ли настраивать рекурсивные DNS-серверы имен во время вызова ACME. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию. <br><a href=\"https://go-acme.github.io/lego/usage/cli/options/index.html#dns-resolvers-and-challenge-verification\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>.",
+        "multiple_input_modal": {
+          "title": "Изменить рекурсивные DNS-серверы имен",
+          "placeholder": "Пожалуйста, введите рекурсивный DNS-сервер имен"
+        }
+      },
+      "dns_propagation_wait": {
+        "label": "Время ожидания распространения DNS (необязательно)",
+        "placeholder": "Пожалуйста, введите время ожидания распространения DNS",
+        "unit": "секунды",
+        "tooltip": "Он определяет время ожидания распространения DNS во время запроса ACME DNS-01. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию."
+      },
+      "dns_propagation_timeout": {
+        "label": "Тайм-аут проверки распространения DNS (необязательно)",
+        "placeholder": "Введите тайм-аут проверки распространения DNS",
+        "unit": "секунды",
+        "tooltip": "Он определяет тайм-аут проверок распространения DNS во время запроса ACME DNS-01. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию."
+      },
+      "dns_ttl": {
+        "label": "Срок жизни DNS (необязательно)",
+        "placeholder": "Введите DNS TTL",
+        "unit": "секунды",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать значение по умолчанию, предоставленное поставщиком DNS.",
+        "tooltip": "Он определяет TTL для записи DNS во время запроса ACME DNS-01. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию."
+      },
+      "http_delay_wait": {
+        "label": "Время ожидания задержки HTTP (необязательно)",
+        "placeholder": "Пожалуйста, введите время ожидания задержки HTTP",
+        "unit": "секунды",
+        "tooltip": "Он определяет задержку между запуском HTTP-сервера и проверкой запроса во время запроса ACME HTTP-01. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию."
+      },
+      "disable_follow_cname": {
+        "label": "Отключить CNAME после",
+        "tooltip": "Он определяет, следует ли отключить отслеживание CNAME во время запроса ACME DNS-01. Если вы не понимаете эту опцию, просто оставьте ее по умолчанию. <br><a href=\"https://letsencrypt.org/2019/10/09/onboarding-your-customers-with-lets-encrypt-and-acme/#the-advantages-of-a-cname\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>."
+      },
+      "disable_ari": {
+        "label": "Отключить ОРЗ",
+        "tooltip": "Он определяет, следует ли отключить ARI (информацию о продлении ACME). Если вы не понимаете эту опцию, просто оставьте ее по умолчанию. <br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">Нажмите здесь, чтобы узнать больше</a>."
+      },
+      "skip_before_expiry_days": {
+        "label": "Повторное применение",
+        "placeholder": "Пожалуйста, введите интервал продления",
+        "prefix": "Выполните продление, если срок действия последнего выданного сертификата истекает через ≤",
+        "suffix": ".",
+        "unit": "дни",
+        "help": "Примечание: Фактический интервал обновления также зависит от выражения CRON, запускающего рабочий процесс."
+      },
+      "aliyun_esa_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud ESA (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>."
+      },
+      "aws_lightsail_region": {
+        "label": "Регион AWS",
+        "placeholder": "Введите регион AWS Lightsail (например, us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_route53_region": {
+        "label": "Регион AWS",
+        "placeholder": "Введите регион AWS Route53 (например, us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_route53_hosted_zone_id": {
+        "label": "Идентификатор размещенной зоны AWS Route53 (необязательно)",
+        "placeholder": "Введите идентификатор зоны хостинга AWS Route53.",
+        "help": "Примечания. Требуется только при наличии нескольких размещенных зон с одним и тем же полным доменным именем.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/Route53/latest/DeveloperGuide/hosted-zones-working-with.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/Route53/latest/DeveloperGuide/hosted-zones-working-with.html</a>."
+      },
+      "huaweicloud_dns_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион Huawei Cloud DNS (например, cn-north-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "jdcloud_dns_region_id": {
+        "label": "Идентификатор региона JD Cloud",
+        "placeholder": "Введите идентификатор региона DNS JD Cloud (например, cn-north-1).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.jdcloud.com/en/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/en/common-declaration/api/introduction</a>."
+      },
+      "ftp_webroot_path": {
+        "label": "Корневой веб-путь",
+        "placeholder": "Пожалуйста, введите корневой путь к веб-сайту",
+        "tooltip": "Это основной каталог на сервере, в котором хранятся файлы веб-сайта."
+      },
+      "local_webroot_path": {
+        "label": "Корневой веб-путь",
+        "placeholder": "Пожалуйста, введите корневой путь к веб-сайту",
+        "tooltip": "Это основной каталог, в котором хранятся файлы веб-сайта на локальном устройстве."
+      },
+      "s3_region": {
+        "label": "Область хранения объектов (совместимая с S3)",
+        "placeholder": "Пожалуйста, введите регион"
+      },
+      "s3_bucket": {
+        "label": "Сегмент объектного хранилища (совместимый с S3)",
+        "placeholder": "Введите название сегмента"
+      },
+      "ssh_webroot_path": {
+        "label": "Корневой веб-путь",
+        "placeholder": "Пожалуйста, введите корневой путь к веб-сайту",
+        "tooltip": "Это основной каталог на сервере, в котором хранятся файлы веб-сайта."
+      },
+      "ssh_use_scp": {
+        "label": "Откат к использованию SCP",
+        "tooltip": "Если удаленный сервер не поддерживает SFTP, установите этот флажок, чтобы вернуться к SCP."
+      }
+    }
+  },
+  "upload": {
+    "label": "Загрузить сертификат",
+    "default_name": "Загрузка",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      }
+    },
+    "form": {
+      "guide": "Содержимое файла будет считываться снова каждый раз при выполнении этого шага.",
+      "source": {
+        "label": "Загрузить исходный код",
+        "placeholder": "Пожалуйста, выберите источник загрузки",
+        "option": {
+          "form": {
+            "label": "Форма"
+          },
+          "local": {
+            "label": "Локальный путь"
+          },
+          "url": {
+            "label": "URL-адрес"
+          }
+        }
+      },
+      "name": {
+        "label": "Домены/IP-адреса",
+        "placholder": "Пожалуйста, выберите файл сертификата"
+      },
+      "certificate_pem": {
+        "label": "Сертификат (формат PEM)",
+        "placeholder": "-----НАЧАЛО СЕРТИФИКАТА-----...-----КОНЕЦ СЕРТИФИКАТА-----",
+        "errmsg": {
+          "invalid": "Неверный сертификат PEM"
+        }
+      },
+      "certificate_path": {
+        "label": "Путь к файлу сертификата",
+        "placeholder": "Пожалуйста, введите локальный путь к файлу сертификата"
+      },
+      "certificate_url": {
+        "label": "URL-адрес файла сертификата",
+        "placeholder": "Пожалуйста, введите URL-адрес для загрузки файла сертификата"
+      },
+      "private_key_pem": {
+        "label": "Закрытый ключ (формат PEM)",
+        "placeholder": "-----BEGIN (RSA|EC) ЧАСТНЫЙ КЛЮЧ -----...-----END(RSA|EC) ЧАСТНЫЙ КЛЮЧ -----",
+        "errmsg": {
+          "invalid": "Недействительный закрытый ключ PEM"
+        }
+      },
+      "private_key_path": {
+        "label": "Путь к файлу закрытого ключа",
+        "placeholder": "Пожалуйста, введите локальный путь к файлу закрытого ключа."
+      },
+      "private_key_url": {
+        "label": "URL-адрес файла закрытого ключа",
+        "placeholder": "Пожалуйста, введите URL-адрес для загрузки файла закрытого ключа."
+      }
+    }
+  },
+  "monitor": {
+    "label": "Мониторинг сертификата",
+    "default_name": "Мониторинг",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      }
+    },
+    "form": {
+      "guide": "Он отправит запрос HEAD на целевой адрес для получения сертификата. Убедитесь, что адрес доступен по протоколу HTTPS.",
+      "host": {
+        "label": "Хост",
+        "placeholder": "Пожалуйста, введите хост"
+      },
+      "port": {
+        "label": "Порт",
+        "placeholder": "Пожалуйста, введите порт"
+      },
+      "domain": {
+        "label": "Домен (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя",
+        "help": "Примечания. Требуется только в том случае, если хост является IP-адресом."
+      },
+      "request_path": {
+        "label": "Путь запроса (необязательно)",
+        "placeholder": "Пожалуйста, введите путь запроса"
+      }
+    }
+  },
+  "deploy": {
+    "label": "Развернуть сертификат",
+    "default_name": "Развертывание",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      },
+      "deployment": {
+        "tab": "Развертывание",
+        "title": "Параметры развертывания"
+      },
+      "strategy": {
+        "tab": "Стратегия",
+        "title": "Настройки стратегии"
+      }
+    },
+    "form": {
+      "certificate_output_node_id": {
+        "label": "Сертификат для развертывания",
+        "placeholder": "Пожалуйста, выберите сертификат для развертывания",
+        "help": "Примечания. Сертификат, который необходимо развернуть, получен с предыдущих шагов приложения или загрузки."
+      },
+      "provider": {
+        "label": "Хостинг-провайдер",
+        "placeholder": "Пожалуйста, выберите hosting provider",
+        "search": {
+          "placeholder": "Поиск хостинг-провайдера ..."
+        }
+      },
+      "provider_access": {
+        "label": "Учетные данные хостинг-провайдера",
+        "placeholder": "Пожалуйста, выберите учетные данные хостинг-провайдера.",
+        "button": "Создать"
+      },
+      "skip_on_last_succeeded": {
+        "label": "Повторное развертывание",
+        "prefix": "Если последнее развертывание прошло успешно,",
+        "suffix": "повторное размещение.",
+        "switch": {
+          "on": "пропускать",
+          "off": "не пропускай"
+        }
+      },
+      "shared_deploy_target": {
+        "label": "Цель развертывания сертификата (deploy target)",
+        "placeholder": "Пожалуйста, выберите цель развертывания сертификата (deploy target)"
+      },
+      "shared_domain_match_pattern": {
+        "label": "Шаблон соответствия домена",
+        "placeholder": "Пожалуйста, выберите шаблон соответствия домена",
+        "option": {
+          "exact": {
+            "label": "Точные совпадения",
+            "help.wildcard": "Примечания. Для сайтов, поддерживающих разрешение с использованием подстановочных знаков, <strong>точное совпадение</strong> домена с подстановочными знаками включает только сам сайт, но не включает его поддомены."
+          },
+          "wildcard": {
+            "label": "Подстановочные совпадения"
+          },
+          "certsan": {
+            "label": "через сертификат"
+          }
+        }
+      },
+      "shared_script_command": {
+        "vartips": "Поддерживаемые переменные: <br><ol style=\"list-style: disk;\"><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH</strong>: <br>Путь к файлу сертификата, такой же, как значение связанной формы поле.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH</strong>: <br>Путь к файлу сертификата сервера, такой же, как значение поля, связанного с формой.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH</li><li><strong>: <br>Путь к файлу промежуточного сертификата CA, такой же, как значение поля, связанного с формой.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH</strong>: <br>Путь к файлу закрытого ключа, такой же, как значение связанного с формой поле.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD</strong>: <br>Пароль PFX, такой же, как значение поля, связанного с формой.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS</strong>: <br>Псевдоним JKS, такой же, как значение связанного с формой поле.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS</strong>: <br>Пароль ключа JKS, такой же, как значение поля, связанного с формой.</li><li><strong>${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS</strong>: <br>Пароль хранилища JKS, такой же, как значение связанного с формой поля. поле.</li></ol>"
+      },
+      "shared_file_format": {
+        "label": "Формат файла",
+        "placeholder": "Пожалуйста, выберите формат файла",
+        "option": {
+          "pem": {
+            "label": "PEM (*.pem, *.crt, *.key)"
+          },
+          "pfx": {
+            "label": "PFX (*.pfx, *.p12)"
+          },
+          "jks": {
+            "label": "JKS (*.jks)"
+          }
+        }
+      },
+      "shared_file_path_for_key": {
+        "label": "Путь к файлу закрытого ключа",
+        "placeholder": "Пожалуйста, введите путь к выходному файлу для файла закрытого ключа.",
+        "help": "Примечания. Он должен включать полный путь к файлу, а не только каталог."
+      },
+      "shared_file_path_for_crt": {
+        "label": "Путь к файлу сертификата",
+        "placeholder": "Пожалуйста, введите путь к выходному файлу сертификата",
+        "help": "Примечания. Он должен включать полный путь к файлу, а не только каталог."
+      },
+      "shared_file_path_for_servercrt": {
+        "label": "Путь к файлу сертификата (только сертификат без CA и цепочки) (Не обязательно)",
+        "placeholder": "Пожалуйста, введите путь выходного файла для файла сертификата сервера",
+        "help": "Примечания. Он должен включать полный путь к файлу, а не только каталог."
+      },
+      "shared_file_path_for_intermediacrt": {
+        "label": "Путь к файлу сертификата CA (только CA) (Не обязательно)",
+        "placeholder": "Пожалуйста, введите путь к выходному файлу для промежуточного файла сертификата",
+        "help": "Примечания. Он должен включать полный путь к файлу, а не только каталог."
+      },
+      "shared_pfx_password": {
+        "label": "Пароль PFX",
+        "placeholder": "Пожалуйста, введите пароль PFX"
+      },
+      "shared_pfx_encoder": {
+        "label": "PFX encoder (Optional)",
+        "placeholder": "Пожалуйста, выберите PFX encoder",
+        "option": {
+          "legacyrc2": {
+            "label": "LegacyRC2 (RC2, compatible with older systems, but less secure)"
+          },
+          "legacydes": {
+            "label": "LegacyDES (3DES + SHA-1, default)"
+          },
+          "modern2023": {
+            "label": "Modern2023 (AES-256-CBC + SHA-256 MAC, compatible with OpenSSL v1.1.1+)"
+          },
+          "modern2026": {
+            "label": "Modern2026 (AES-256-CBC + PBMAC1 MAC, compatible with OpenSSL v3.4.0+)"
+          }
+        }
+      },
+      "shared_jks_alias": {
+        "label": "псевдоним JKS",
+        "placeholder": "Пожалуйста, введите псевдоним JKS",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>."
+      },
+      "shared_jks_keypass": {
+        "label": "Пароль ключа JKS",
+        "placeholder": "Пожалуйста, введите пароль ключа JKS",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>."
+      },
+      "shared_jks_storepass": {
+        "label": "Пароль магазина JKS",
+        "placeholder": "Пожалуйста, введите пароль магазина JKS",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>."
+      },
+      "1panel_node_name": {
+        "label": "1Имя узла панели (необязательно)",
+        "placeholder": "Пожалуйста, введите имя узла 1Panel",
+        "help": "Примечания: используется только для 1Panel v2+.",
+        "tooltip": "Вы можете найти его на панели управления 1Panel."
+      },
+      "1panel_deploy_target": {
+        "option": {
+          "website": {
+            "label": "Веб-сайт"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "1panel_website_match_pattern": {
+        "label": "Шаблон соответствия веб-сайта",
+        "placeholder": "Пожалуйста, выберите шаблон соответствия веб-сайта",
+        "option": {
+          "specified": {
+            "label": "Указанный идентификатор"
+          },
+          "certsan": {
+            "label": "через сертификат",
+            "help": "Примечания. Имя веб-сайта должно быть доменным именем и включать конфигурации SSL."
+          }
+        }
+      },
+      "1panel_website_id": {
+        "label": "Идентификатор сайта 1Panel",
+        "placeholder": "Пожалуйста, введите идентификатор сайта 1Panel",
+        "tooltip": "Вы можете найти его на панели управления 1Panel."
+      },
+      "1panel_certificate_id": {
+        "label": "1Идентификатор сертификата панели",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата 1Panel",
+        "tooltip": "Вы можете найти его на панели управления 1Panel."
+      },
+      "1panel_console_auto_restart": {
+        "label": "Автоматический перезапуск 1Panel после развертывания"
+      },
+      "aliyun_alb_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud ALB (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/slb/application-load-balancer/product-overview/supported-regions-and-zones\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/application-load-balancer/product-overview/supported-regions-and-zones</a>."
+      },
+      "aliyun_alb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки ALB"
+          },
+          "listener": {
+            "label": "слушатель АЛБ"
+          }
+        }
+      },
+      "aliyun_alb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки Alibaba Cloud ALB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки Alibaba Cloud ALB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://slb.console.aliyun.com/alb\" target=\"_blank\">https://slb.console.aliyun.com/alb</a>."
+      },
+      "aliyun_alb_listener_id": {
+        "label": "Идентификатор прослушивателя Alibaba Cloud ALB",
+        "placeholder": "Пожалуйста, введите идентификатор прослушивателя Alibaba Cloud ALB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://slb.console.aliyun.com/alb\" target=\"_blank\">https://slb.console.aliyun.com/alb</a>."
+      },
+      "aliyun_alb_snidomain": {
+        "label": "Домен Alibaba Cloud ALB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud ALB SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "aliyun_apigw_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, введите регион шлюза Alibaba Cloud API (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/api-gateway/cloud-native-api-gateway/product-overview/regions\" target=\"_blank\">https://www.alibabacloud.com/help/en/api-gateway/cloud-native-api-gateway/product-overview/regions</a>."
+      },
+      "aliyun_apigw_service_type": {
+        "label": "Тип шлюза Alibaba Cloud API",
+        "placeholder": "Пожалуйста, выберите тип шлюза Alibaba Cloud API",
+        "option": {
+          "cloudnative": {
+            "label": "Облачный API-шлюз"
+          },
+          "traditional": {
+            "label": "Традиционный шлюз API"
+          }
+        }
+      },
+      "aliyun_apigw_gateway_id": {
+        "label": "Идентификатор шлюза Alibaba Cloud API",
+        "placeholder": "Пожалуйста, введите идентификатор шлюза Alibaba Cloud API",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://apigw.console.aliyun.com\" target=\"_blank\">https://apigw.console.aliyun.com</a>."
+      },
+      "aliyun_apigw_group_id": {
+        "label": "Идентификатор группы Alibaba Cloud API",
+        "placeholder": "Введите идентификатор группы Alibaba Cloud API.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://apigateway.console.aliyun.com\" target=\"_blank\">https://apigateway.console.aliyun.com</a>."
+      },
+      "aliyun_apigw_domain": {
+        "label": "Пользовательский домен шлюза Alibaba Cloud API",
+        "placeholder": "Пожалуйста, введите собственное доменное имя шлюза Alibaba Cloud API."
+      },
+      "aliyun_cas_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud CAS (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>."
+      },
+      "aliyun_casdeploy": {
+        "guide": "TIPS: Это вызовет функцию Alibaba Cloud OpenAPI CreateDeploymentJob для создания асинхронной задачи развертывания."
+      },
+      "aliyun_casdeploy_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud CAS (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>."
+      },
+      "aliyun_casdeploy_resource_ids": {
+        "label": "Идентификаторы ресурсов Alibaba Cloud",
+        "placeholder": "Введите идентификаторы ресурсов Alibaba Cloud (через точку с запятой).",
+        "errmsg": {
+          "invalid": "Неверные ID ресурсов"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой. Поддерживаются только продукты Alibaba Cloud.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/api-cas-2020-04-07-listcloudresources\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/api-cas-2020-04-07-listcloudresources</a>.",
+        "multiple_input_modal": {
+          "title": "Изменение идентификаторов ресурсов Alibaba Cloud",
+          "placeholder": "Пожалуйста, введите идентификатор ресурса Alibaba Cloud"
+        }
+      },
+      "aliyun_casdeploy_contact_ids": {
+        "label": "Идентификаторы контактов Alibaba Cloud (необязательно)",
+        "placeholder": "Введите идентификаторы контактов Alibaba Cloud (через точку с запятой)",
+        "errmsg": {
+          "invalid": "Неверные ID контактов"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой. Оставьте это поле пустым, чтобы использовать первый системный контакт.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/api-cas-2020-04-07-listcontact\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/api-cas-2020-04-07-listcontact</a>.",
+        "multiple_input_modal": {
+          "title": "Изменить идентификаторы контактов Alibaba Cloud",
+          "placeholder": "Пожалуйста, введите идентификатор контакта Alibaba Cloud"
+        }
+      },
+      "aliyun_clb_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud CLB (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>."
+      },
+      "aliyun_clb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки CLB"
+          },
+          "listener": {
+            "label": "прослушиватель CLB"
+          }
+        }
+      },
+      "aliyun_clb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки Alibaba Cloud CLB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки Alibaba Cloud CLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://slb.console.aliyun.com/clb\" target=\"_blank\">https://slb.console.aliyun.com/clb</a>."
+      },
+      "aliyun_clb_listener_port": {
+        "label": "Порт прослушивателя Alibaba Cloud CLB",
+        "placeholder": "Пожалуйста, введите порт прослушивателя Alibaba Cloud CLB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://slb.console.aliyun.com/clb\" target=\"_blank\">https://slb.console.aliyun.com/clb</a>."
+      },
+      "aliyun_clb_snidomain": {
+        "label": "Домен Alibaba Cloud CLB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud CLB SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "aliyun_cdn_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, введите регион Alibaba Cloud CDN (например, cn-hangzhou).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>ap-southeast-1</strong> для Alibaba Cloud International</li><li><strong>cn-hangzhou</strong> для Alibaba Cloud в Китае</li></ul>"
+      },
+      "aliyun_cdn_domain": {
+        "label": "Домен Alibaba Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud CDN"
+      },
+      "aliyun_dcdn_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, введите регион Alibaba Cloud DCDN (например, cn-hangzhou).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>ap-southeast-1</strong> для Alibaba Cloud International</li><li><strong>cn-hangzhou</strong> для Alibaba Cloud в Китае</li></ul>"
+      },
+      "aliyun_dcdn_domain": {
+        "label": "Домен Alibaba Cloud DCDN",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud DCDN"
+      },
+      "aliyun_ddospro_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud Anti-DDoS (например, cn-hangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/anti-ddos/anti-ddos-pro-and-premium/developer-reference/api-ddoscoo-2020-01-01-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/anti-ddos/anti-ddos-pro-and-premium/developer-reference/api-ddoscoo-2020-01-01-endpoint</a>."
+      },
+      "aliyun_ddospro_domain": {
+        "label": "Домен Alibaba Cloud для защиты от DDoS",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud Anti-DDoS"
+      },
+      "aliyun_esa_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud ESA (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>."
+      },
+      "aliyun_esa_site_id": {
+        "label": "Идентификатор сайта Alibaba Cloud ESA",
+        "placeholder": "Пожалуйста, введите идентификатор сайта Alibaba Cloud ESA.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>."
+      },
+      "aliyun_esa_saas_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud ESA (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>."
+      },
+      "aliyun_esa_saas_site_id": {
+        "label": "Идентификатор сайта Alibaba Cloud ESA",
+        "placeholder": "Пожалуйста, введите идентификатор сайта Alibaba Cloud ESA.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>."
+      },
+      "aliyun_esa_saas_domain": {
+        "label": "Домен Alibaba Cloud ESA SaaS",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud ESA SaaS."
+      },
+      "aliyun_fc_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud FC (например, cn-ханчжоу)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/functioncompute/fc-3-0/product-overview/supported-regions\" target=\"_blank\">https://www.alibabacloud.com/help/en/functioncompute/fc-3-0/product-overview/supported-regions</a>."
+      },
+      "aliyun_fc_service_version": {
+        "label": "Версия Alibaba Cloud FC",
+        "placeholder": "Пожалуйста, выберите версию Alibaba Cloud FC."
+      },
+      "aliyun_fc_domain": {
+        "label": "Домен Alibaba Cloud FC",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud FC."
+      },
+      "aliyun_ga_deploy_target": {
+        "option": {
+          "accelerator": {
+            "label": "GA-ускоритель"
+          },
+          "listener": {
+            "label": "прослушиватель Google Analytics"
+          }
+        }
+      },
+      "aliyun_ga_accelerator_id": {
+        "label": "Идентификатор ускорителя Alibaba Cloud GA",
+        "placeholder": "Введите идентификатор ускорителя Alibaba Cloud GA.",
+        "tooltip": "Подробнее по ссылке <a href=\"https://ga.console.aliyun.com\" target=\"_blank\">https://ga.console.aliyun.com</a>"
+      },
+      "aliyun_ga_listener_id": {
+        "label": "Идентификатор прослушивателя Alibaba Cloud GA",
+        "placeholder": "Введите идентификатор прослушивателя Alibaba Cloud GA",
+        "tooltip": "Подробнее по ссылке <a href=\"https://ga.console.aliyun.com\" target=\"_blank\">https://ga.console.aliyun.com</a>"
+      },
+      "aliyun_ga_snidomain": {
+        "label": "Домен Alibaba Cloud GA SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud GA SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "aliyun_live_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud Live (например, cn-hanzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/live/product-overview/supported-regions\" target=\"_blank\">https://www.alibabacloud.com/help/en/live/product-overview/supported-regions</a>."
+      },
+      "aliyun_live_domain": {
+        "label": "Домен прямой трансляции Alibaba Cloud",
+        "placeholder": "Пожалуйста, введите доменное имя для прямой трансляции Alibaba Cloud"
+      },
+      "aliyun_nlb_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud NLB (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/slb/network-load-balancer/product-overview/regions-that-support-nlb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/network-load-balancer/product-overview/regions-that-support-nlb</a>."
+      },
+      "aliyun_nlb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки NLB"
+          },
+          "listener": {
+            "label": "прослушиватель NLB"
+          }
+        }
+      },
+      "aliyun_nlb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки Alibaba Cloud NLB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки Alibaba Cloud NLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://slb.console.aliyun.com/nlb\" target=\"_blank\">https://slb.console.aliyun.com/nlb</a>."
+      },
+      "aliyun_nlb_listener_id": {
+        "label": "Идентификатор прослушивателя Alibaba Cloud NLB",
+        "placeholder": "Введите идентификатор прослушивателя Alibaba Cloud NLB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://slb.console.aliyun.com/nlb\" target=\"_blank\">https://slb.console.aliyun.com/nlb</a>."
+      },
+      "aliyun_oss_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud OSS (например, cn-hangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/oss/user-guide/regions-and-endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/oss/user-guide/regions-and-endpoints</a>."
+      },
+      "aliyun_oss_bucket": {
+        "label": "Корзина Alibaba Cloud OSS",
+        "placeholder": "Введите имя корзины Alibaba Cloud OSS."
+      },
+      "aliyun_oss_domain": {
+        "label": "Пользовательский домен Alibaba Cloud OSS",
+        "placeholder": "Пожалуйста, введите собственное доменное имя корзины Alibaba Cloud OSS."
+      },
+      "aliyun_vod_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, введите регион Alibaba Cloud VOD (например, cn-hangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/vod/product-overview/regions\" target=\"_blank\">https://www.alibabacloud.com/help/en/vod/product-overview/regions</a>."
+      },
+      "aliyun_vod_domain": {
+        "label": "Домен Alibaba Cloud VOD",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud VOD"
+      },
+      "aliyun_waf_region": {
+        "label": "Облачный регион Alibaba",
+        "placeholder": "Пожалуйста, укажите регион Alibaba Cloud WAF (например, cn-hangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.alibabacloud.com/help/en/waf/web-application-firewall-3-0/developer-reference/api-waf-openapi-2021-10-01-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/waf/web-application-firewall-3-0/developer-reference/api-waf-openapi-2021-10-01-endpoint</a>."
+      },
+      "aliyun_waf_service_version": {
+        "label": "Версия Alibaba Cloud WAF",
+        "placeholder": "Пожалуйста, выберите версию Alibaba Cloud WAF."
+      },
+      "aliyun_waf_service_type": {
+        "label": "Тип доступа к Alibaba Cloud WAF",
+        "placeholder": "Пожалуйста, выберите тип доступа к Alibaba Cloud WAF",
+        "option": {
+          "cloudresource": {
+            "label": "Доступ к облачным продуктам"
+          },
+          "cname": {
+            "label": "Доступ CNAME"
+          }
+        }
+      },
+      "aliyun_waf_instance_id": {
+        "label": "Идентификатор экземпляра Alibaba Cloud WAF",
+        "placeholder": "Введите идентификатор экземпляра Alibaba Cloud WAF.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://yundunnext.console.aliyun.com\" target=\"_blank\">https://yundunnext.console.aliyun.com</a>."
+      },
+      "aliyun_waf_resource_product": {
+        "label": "Ресурсный продукт с доступом к Alibaba Cloud WAF",
+        "placeholder": "Пожалуйста, введите ресурсный продукт, к которому осуществляется доступ к Alibaba Cloud WAF."
+      },
+      "aliyun_waf_resource_id": {
+        "label": "Идентификатор доступа к ресурсу Alibaba Cloud WAF",
+        "placeholder": "Введите идентификатор ресурса, к которому осуществляется доступ к Alibaba Cloud WAF."
+      },
+      "aliyun_waf_resource_port": {
+        "label": "Порт ресурса доступа к Alibaba Cloud WAF",
+        "placeholder": "Пожалуйста, введите порт ресурса, к которому осуществляется доступ к Alibaba Cloud WAF."
+      },
+      "aliyun_waf_domain": {
+        "label": "Домен Alibaba Cloud WAF SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя Alibaba Cloud WAF SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "apisix": {
+        "guide": "Требуется APISIX v3.0 или выше."
+      },
+      "apisix_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "SSL-сертификат"
+          }
+        }
+      },
+      "apisix_certificate_id": {
+        "label": "Идентификатор сертификата APISIX",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата APISIX",
+        "tooltip": "Вы можете найти его на панели инструментов APISIX."
+      },
+      "aws_acm_region": {
+        "label": "Регион AWS",
+        "placeholder": "Введите регион AWS ACM (например, us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_acm_certificate_arn": {
+        "label": "Сертификат AWS ACM ARN (необязательно)",
+        "placeholder": "Пожалуйста, введите сертификат AWS ACM ARN",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат."
+      },
+      "aws_alb_region": {
+        "label": "Регион AWS",
+        "placeholder": "Пожалуйста, введите AWS ALB region (e.g. us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_alb_loadbalancer_arn": {
+        "label": "AWS ALB load balancer ARN",
+        "placeholder": "Пожалуйста, введите AWS ALB load balancer ARN",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-application-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-application-load-balancer.html</a>"
+      },
+      "aws_alb_listener_arn": {
+        "label": "AWS ALB listener ARN",
+        "placeholder": "Пожалуйста, введите AWS ALB listener ARN",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-listener.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/application/create-listener.html</a>"
+      },
+      "aws_alb_certificate_source": {
+        "label": "Источник сертификата AWS ALB",
+        "placeholder": "Пожалуйста, выберите Источник сертификата AWS ALB"
+      },
+      "aws_alb_is_default": {
+        "label": "Установить в качестве сертификата по умолчанию"
+      },
+      "aws_amplify_region": {
+        "label": "Регион AWS",
+        "placeholder": "Пожалуйста, введите AWS Amplify region (e.g. us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_amplify_app_id": {
+        "label": "AWS Amplify application ID",
+        "placeholder": "Пожалуйста, введите AWS Amplify application ID",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.aws.amazon.com/amplify/\" target=\"_blank\">https://console.aws.amazon.com/amplify/</a>"
+      },
+      "aws_amplify_domain": {
+        "label": "AWS Amplify custom domain",
+        "placeholder": "Пожалуйста, введите AWS Amplify custom domain name"
+      },
+      "aws_amplify_certificate_source": {
+        "label": "AWS Amplify источник сертификата",
+        "placeholder": "Пожалуйста, выберите AWS Amplify источник сертификата"
+      },
+      "aws_apigateway_region": {
+        "label": "Регион AWS",
+        "placeholder": "Пожалуйста, введите AWS API Gateway region (e.g. us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_apigateway_domain": {
+        "label": "AWS API Gateway custom domain",
+        "placeholder": "Пожалуйста, введите AWS API Gateway custom domain name"
+      },
+      "aws_apigateway_certificate_source": {
+        "label": "Источник сертификата AWS API Gateway",
+        "placeholder": "Пожалуйста, выберите Источник сертификата AWS API Gateway"
+      },
+      "aws_clb_region": {
+        "label": "Регион AWS",
+        "placeholder": "Пожалуйста, введите AWS CLB region (e.g. us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_clb_loadbalancer_name": {
+        "label": "AWS CLB load balancer name",
+        "placeholder": "Пожалуйста, введите имя AWS CLB load balancer",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html</a>"
+      },
+      "aws_clb_loadbalancer_port": {
+        "label": "AWS CLB load balancer port",
+        "placeholder": "Пожалуйста, введите порт AWS CLB load balancer",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/classic/elb-create-https-ssl-load-balancer.html</a>"
+      },
+      "aws_clb_certificate_source": {
+        "label": "Источник сертификата AWS CLB",
+        "placeholder": "Пожалуйста, выберите Источник сертификата AWS CLB"
+      },
+      "aws_cloudfront_region": {
+        "label": "Регион AWS",
+        "placeholder": "Введите регион AWS CloudFront (например, us-east-1).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_cloudfront_distribution_id": {
+        "label": "Идентификатор распространения AWS CloudFront",
+        "placeholder": "Введите идентификатор распространения AWS CloudFront",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/AmazonCloudFront/latest/DeveloperGuide/distribution-working-with.html</a>."
+      },
+      "aws_cloudfront_certificate_source": {
+        "label": "Источник сертификата AWS CloudFront",
+        "placeholder": "Выберите источник сертификата AWS CloudFront"
+      },
+      "aws_iam_region": {
+        "label": "Регион AWS",
+        "placeholder": "Введите регион AWS IAM (например, us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_iam_certificate_path": {
+        "label": "Путь сертификата AWS IAM (необязательно)",
+        "placeholder": "Введите путь к сертификату AWS IAM.",
+        "errmsg": {
+          "invalid": "Недействительный путь сертификата"
+        },
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html</a>."
+      },
+      "aws_nlb_region": {
+        "label": "Регион AWS",
+        "placeholder": "Пожалуйста, введите AWS NLB region (e.g. us-east-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>."
+      },
+      "aws_nlb_loadbalancer_arn": {
+        "label": "AWS NLB load balancer ARN",
+        "placeholder": "Пожалуйста, введите AWS NLB load balancer ARN",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-network-load-balancer.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-network-load-balancer.html</a>"
+      },
+      "aws_nlb_listener_arn": {
+        "label": "AWS NLB listener ARN",
+        "placeholder": "Пожалуйста, введите AWS NLB listener ARN",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-listener.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/elasticloadbalancing/latest/network/create-listener.html</a>"
+      },
+      "aws_nlb_certificate_source": {
+        "label": "Источник сертификата AWS NLB",
+        "placeholder": "Пожалуйста, выберите Источник сертификата AWS NLB"
+      },
+      "aws_nlb_is_default": {
+        "label": "Установить как сертификат по умолчанию"
+      },
+      "azure_keyvault_name": {
+        "label": "Имя Azure KeyVault",
+        "placeholder": "Введите имя Azure KeyVault.",
+        "tooltip": "Дополнительные сведения см. в разделе <a href=\"https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates</a>."
+      },
+      "azure_keyvault_certificate_name": {
+        "label": "Имя сертификата Azure KeyVault (необязательно)",
+        "placeholder": "Введите имя сертификата Azure KeyVault.",
+        "errmsg": {
+          "invalid": "Не валидное имя сертификата: может содержать только буквы, цифры и дефисы (-), с ограничением длины от 1 до 127 символов."
+        },
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать имя по умолчанию, созданное Certimate."
+      },
+      "baiducloud_appblb_region": {
+        "label": "Облачный регион Baidu",
+        "placeholder": "Введите регион Baidu Cloud BLB (например, bj)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>."
+      },
+      "baiducloud_appblb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки BLB"
+          },
+          "listener": {
+            "label": "прослушиватель BLB"
+          }
+        }
+      },
+      "baiducloud_appblb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки Baidu Cloud BLB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки Baidu Cloud BLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.bce.baidu.com/blb/#/appblb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/appblb/list</a>."
+      },
+      "baiducloud_appblb_listener_port": {
+        "label": "Порт прослушивателя Baidu Cloud BLB",
+        "placeholder": "Введите порт прослушивателя Baidu Cloud BLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.bce.baidu.com/blb/#/appblb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/appblb/list</a>."
+      },
+      "baiducloud_appblb_snidomain": {
+        "label": "Домен Baidu Cloud BLB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя Baidu Cloud BLB SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "baiducloud_blb_region": {
+        "label": "Облачный регион Baidu",
+        "placeholder": "Введите регион Baidu Cloud BLB (например, bj)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>."
+      },
+      "baiducloud_blb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки BLB"
+          },
+          "listener": {
+            "label": "прослушиватель BLB"
+          }
+        }
+      },
+      "baiducloud_blb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки Baidu Cloud BLB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки Baidu Cloud BLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.bce.baidu.com/blb/#/blb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/blb/list</a>."
+      },
+      "baiducloud_blb_listener_port": {
+        "label": "Порт прослушивателя Baidu Cloud BLB",
+        "placeholder": "Введите порт прослушивателя Baidu Cloud BLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.bce.baidu.com/blb/#/blb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/blb/list</a>."
+      },
+      "baiducloud_blb_snidomain": {
+        "label": "Домен Baidu Cloud BLB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя Baidu Cloud BLB SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "baiducloud_cdn_domain": {
+        "label": "Домен Baidu Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Baidu Cloud CDN."
+      },
+      "baishan_cdn_deploy_target": {
+        "option": {
+          "domain": {
+            "label": "Домен"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "baishan_cdn_domain": {
+        "label": "Домен Baishan Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Baishan Cloud CDN"
+      },
+      "baishan_cdn_certificate_id": {
+        "label": "Идентификатор сертификата Baishan Cloud CDN",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Baishan Cloud CDN",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdnx.console.baishan.com/#/cdn/cert\" target=\"_blank\">https://cdnx.console.baishan.com/#/cdn/cert</a>."
+      },
+      "baotapanel": {
+        "guide": "Требуется aaPanel версии 7.0 или выше."
+      },
+      "baotapanel_site_type": {
+        "label": "тип сайта aaPanel",
+        "placeholder": "Пожалуйста, выберите тип сайта aaPanel",
+        "option": {
+          "php": {
+            "label": "PHP-проект"
+          },
+          "java": {
+            "label": "Java-проект"
+          },
+          "nodejs": {
+            "label": "Проект Node.js"
+          },
+          "go": {
+            "label": "Проект Голанг"
+          },
+          "python": {
+            "label": "Python-проект"
+          },
+          "proxy": {
+            "label": "Обратный прокси"
+          },
+          "html": {
+            "label": "HTML-проект"
+          },
+          "general": {
+            "label": "Генеральный проект"
+          },
+          "any": {
+            "label": "Любой проект (aaPanel v7.26+)"
+          }
+        }
+      },
+      "baotapanel_site_names": {
+        "label": "Названия веб-сайтов aaPanel",
+        "placeholder": "Введите названия веб-сайтов aaPanel (через точку с запятой)",
+        "errmsg": {
+          "invalid": "Неверные названия веб-сайта"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Вы можете найти его на панели инструментов aaPanel.",
+        "multiple_input_modal": {
+          "title": "Изменить названия веб-сайтов aaPanel",
+          "placeholder": "Пожалуйста, введите название веб-сайта aaPanel"
+        }
+      },
+      "baotapanel_console": {
+        "guide": "Требуется aaPanel версии 7.0 или выше."
+      },
+      "baotapanel_console_auto_restart": {
+        "label": "Автоматический перезапуск aaPanel после развертывания"
+      },
+      "baotapanelgo_site_type": {
+        "label": "Тип сайта aaPanel WinGo",
+        "placeholder": "Пожалуйста, выберите тип веб-сайта aaPanel WinGo",
+        "option": {
+          "php": {
+            "label": "PHP-проект"
+          },
+          "java": {
+            "label": "Java-проект"
+          },
+          "asp": {
+            "label": ".NET-проект"
+          },
+          "go": {
+            "label": "Проект Голанг"
+          },
+          "python": {
+            "label": "Python-проект"
+          },
+          "nodejs": {
+            "label": "Проект Node.js"
+          },
+          "proxy": {
+            "label": "Обратный прокси"
+          },
+          "general": {
+            "label": "Генеральный проект"
+          }
+        }
+      },
+      "baotapanelgo_site_names": {
+        "label": "Названия веб-сайтов aaPanel WinGo",
+        "placeholder": "Введите названия веб-сайтов aaPanel WinGo (через точку с запятой)",
+        "errmsg": {
+          "invalid": "Неверные названия веб-сайта"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Вы можете найти его на панели инструментов aaPanel WinGo.",
+        "multiple_input_modal": {
+          "title": "Изменение названий веб-сайтов aaPanel WinGo",
+          "placeholder": "Пожалуйста, введите название веб-сайта aaPanel WinGo"
+        }
+      },
+      "baotawaf": {
+        "guide": "Требуется aaWAF v5.7 или выше."
+      },
+      "baotawaf_site_names": {
+        "label": "Названия веб-сайтов aaWAF",
+        "placeholder": "Введите названия веб-сайтов aaWAF (через точку с запятой).",
+        "errmsg": {
+          "invalid": "Неверные названия веб-сайта"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Вы можете найти его на панели управления aaWAF.",
+        "multiple_input_modal": {
+          "title": "Изменить названия веб-сайтов aaWAF",
+          "placeholder": "Пожалуйста, введите название веб-сайта aaWAF"
+        }
+      },
+      "baotawaf_site_port": {
+        "label": "SSL-порт веб-сайта aaWAF",
+        "placeholder": "Пожалуйста, введите SSL-порт aaWAF"
+      },
+      "baotawaf_console": {
+        "guide": "Требуется aaWAF v5.7 или выше."
+      },
+      "bunny_cdn_pull_zone_id": {
+        "label": "Идентификатор зоны получения Bunny CDN",
+        "placeholder": "Введите идентификатор зоны извлечения Bunny CDN.",
+        "tooltip": "Что это? См. <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>."
+      },
+      "bunny_cdn_hostname": {
+        "label": "Имя хоста Bunny CDN",
+        "placeholder": "Пожалуйста, введите имя хоста Bunny CDN",
+        "tooltip": "Что это? См. <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>."
+      },
+      "byteplus_alb_region": {
+        "label": "BytePlus region",
+        "placeholder": "Пожалуйста, введите BytePlus ALB region (e.g. ap-southeast-1)",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones</a>"
+      },
+      "byteplus_alb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки ALB"
+          },
+          "listener": {
+            "label": "слушатель АЛБ"
+          }
+        }
+      },
+      "byteplus_alb_loadbalancer_id": {
+        "label": "BytePlus ALB load balancer ID",
+        "placeholder": "Пожалуйста, введите BytePlus ALB load balancer ID",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
+      },
+      "byteplus_alb_listener_id": {
+        "label": "BytePlus ALB listener ID",
+        "placeholder": "Пожалуйста, введите BytePlus ALB listener ID",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
+      },
+      "byteplus_alb_snidomain": {
+        "label": "BytePlus ALB SNI domain (Optional)",
+        "placeholder": "Пожалуйста, введите BytePlus ALB SNI domain name",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "byteplus_apig_region": {
+        "label": "BytePlus region",
+        "placeholder": "Пожалуйста, введите BytePlus API gateway region (e.g. ap-southeast-1)",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones</a>"
+      },
+      "byteplus_apig_domain": {
+        "label": "BytePlus API gateway custom domain",
+        "placeholder": "Пожалуйста, введите BytePlus API gateway custom domain name"
+      },
+      "byteplus_cdn_domain": {
+        "label": "Домен BytePlus CDN",
+        "placeholder": "Пожалуйста, введите доменное имя BytePlus CDN"
+      },
+      "byteplus_certcenter_region": {
+        "label": "BytePlus region",
+        "placeholder": "Пожалуйста, введите регион BytePlus Certificate Center (например, ap-singapore-1)"
+      },
+      "byteplus_clb_region": {
+        "label": "BytePlus region",
+        "placeholder": "Пожалуйста, введите BytePlus CLB region (e.g. ap-southeast-1)",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.byteplus.com/en/docs/clb/Product-Overview-08\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Product-Overview-08</a>"
+      },
+      "byteplus_clb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки CLB"
+          },
+          "listener": {
+            "label": "прослушиватель CLB"
+          }
+        }
+      },
+      "byteplus_clb_loadbalancer_id": {
+        "label": "BytePlus CLB load balancer ID",
+        "placeholder": "Пожалуйста, введите BytePlus CLB load balancer ID",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
+      },
+      "byteplus_clb_listener_id": {
+        "label": "BytePlus CLB listener ID",
+        "placeholder": "Пожалуйста, введите BytePlus CLB listener ID",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
+      },
+      "byteplus_medialive_domain": {
+        "label": "BytePlus MediaLive streaming domain",
+        "placeholder": "Пожалуйста, введите BytePlus MediaLive streaming domain name"
+      },
+      "byteplus_tos_region": {
+        "label": "BytePlus region",
+        "placeholder": "Пожалуйста, введите BytePlus TOS region (e.g. ap-southeast-1)",
+        "tooltip": "Подробнее по ссылке <a href=\"https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint\" target=\"_blank\">https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint</a>"
+      },
+      "byteplus_tos_bucket": {
+        "label": "BytePlus TOS bucket",
+        "placeholder": "Пожалуйста, введите BytePlus TOS bucket name"
+      },
+      "byteplus_tos_domain": {
+        "label": "BytePlus TOS custom domain",
+        "placeholder": "Пожалуйста, введите BytePlus TOS bucket custom domain name"
+      },
+      "cdnfly_deploy_target": {
+        "option": {
+          "website": {
+            "label": "Веб-сайт"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "cdnfly_site_id": {
+        "label": "Идентификатор сайта Cdnfly",
+        "placeholder": "Пожалуйста, введите идентификатор сайта Cdnfly",
+        "tooltip": "Вы можете найти его на панели инструментов Cdnfly."
+      },
+      "cdnfly_certificate_id": {
+        "label": "Идентификатор сертификата Cdnfly",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Cdnfly",
+        "tooltip": "Вы можете найти его на панели инструментов Cdnfly."
+      },
+      "cloudflare_ssl_environment": {
+        "label": "Cloudflare environment",
+        "placeholder": "Пожалуйста, введите Cloudflare environment",
+        "tooltip": "Подробнее по ссылке <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
+      },
+      "cloudflare_ssl_zone_id": {
+        "label": "Cloudflare DNS zone ID",
+        "placeholder": "Пожалуйста, введите Cloudflare DNS zone ID",
+        "tooltip": "Подробнее по ссылке <a href=\"https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/#copy-your-zone-id\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/</a>"
+      },
+      "cloudflare_ssl_certificate_id": {
+        "label": "Cloudflare custom сертификат ID (Optional)",
+        "placeholder": "Пожалуйста, введите Cloudflare custom сертификат ID",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат; в противном случае заменить существующий.",
+        "tooltip": "Подробнее по ссылке <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
+      },
+      "cpanel_deploy_target": {
+        "option": {
+          "website": {
+            "label": "Веб-сайт"
+          }
+        }
+      },
+      "cpanel_domain": {
+        "label": "Домен веб-сайта cPanel",
+        "placeholder": "Пожалуйста, введите доменное имя веб-сайта cPanel"
+      },
+      "ctcccloud_ao_domain": {
+        "label": "Домен CTCC StateCloud AccessOne",
+        "placeholder": "Пожалуйста, введите доменное имя CTCC StateCloud AccessOne"
+      },
+      "ctcccloud_cdn_domain": {
+        "label": "Домен CDN StateCloud CTCC",
+        "placeholder": "Пожалуйста, введите доменное имя CTCC StateCloud CDN"
+      },
+      "ctcccloud_elb_region_id": {
+        "label": "Идентификатор региона CTCC StateCloud",
+        "placeholder": "Введите идентификатор региона CTCC StateCloud ELB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>."
+      },
+      "ctcccloud_elb_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "сертификат ЕЛБ"
+          },
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки ELB"
+          },
+          "listener": {
+            "label": "прослушиватель ELB"
+          }
+        }
+      },
+      "ctcccloud_elb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки CTCC StateCloud ELB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки CTCC StateCloud ELB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ctyun.cn/network/index/#/elb/elbList\" target=\"_blank\">https://console.ctyun.cn/network/index/#/elb/elbList</a>."
+      },
+      "ctcccloud_elb_listener_id": {
+        "label": "Идентификатор прослушивателя CTCC StateCloud ELB",
+        "placeholder": "Введите идентификатор прослушивателя CTCC StateCloud ELB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ctyun.cn/network/index/#/elb/elbList\" target=\"_blank\">https://console.ctyun.cn/network/index/#/elb/elbList</a>."
+      },
+      "ctcccloud_faas_region_id": {
+        "label": "Идентификатор региона CTCC StateCloud",
+        "placeholder": "Введите идентификатор региона CTCC StateCloud FaaS.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>."
+      },
+      "ctcccloud_faas_domain": {
+        "label": "Домен CTCC StateCloud FaaS",
+        "placeholder": "Пожалуйста, введите доменное имя CTCC StateCloud FaaS"
+      },
+      "ctcccloud_icdn_domain": {
+        "label": "ICDN-домен CTCC StateCloud",
+        "placeholder": "Пожалуйста, введите доменное имя CTCC StateCloud ICDN"
+      },
+      "ctcccloud_lvdn_domain": {
+        "label": "CTCC StateCloud LVDN-домен",
+        "placeholder": "Пожалуйста, введите доменное имя CTCC StateCloud LVDN"
+      },
+      "dogecloud_cdn_domain": {
+        "label": "CDN-домен Doge Cloud",
+        "placeholder": "Пожалуйста, введите доменное имя Doge Cloud CDN"
+      },
+      "flexcdn_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "flexcdn_certificate_id": {
+        "label": "Идентификатор сертификата FlexCDN",
+        "placeholder": "Введите идентификатор сертификата FlexCDN",
+        "tooltip": "Вы можете найти его на панели управления FlexCDN. <br><br>(Откройте инструменты разработчика браузера и посетите страницу «网站列表 -> 证书管理 -> 证书», чтобы перехватить сетевые запросы, после чего вы сможете получить идентификатор сертификата.)"
+      },
+      "flyio_app_name": {
+        "label": "Название приложения Fly.io",
+        "placeholder": "Пожалуйста, введите название приложения Fly.io"
+      },
+      "flyio_domain": {
+        "label": "Персональный домен Fly.io",
+        "placeholder": "Пожалуйста, введите собственное доменное имя Fly.io",
+        "help": "Примечания: После первого импорта пользовательского сертификата вам необходимо пройти проверку владения доменом на панели управления Fly.io."
+      },
+      "gcore_cdn_resource_id": {
+        "label": "Идентификатор ресурса G-Core CDN",
+        "placeholder": "Введите идентификатор ресурса G-Core CDN",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdn.gcore.com/resources/list\" target=\"_blank\">https://cdn.gcore.com/resources/list</a>."
+      },
+      "gcore_cdn_certificate_id": {
+        "label": "Идентификатор сертификата G-Core CDN (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата G-Core CDN",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат; в противном случае заменить существующий.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdn.gcore.com/ssl\" target=\"_blank\">https://cdn.gcore.com/ssl</a>."
+      },
+      "goedge_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "goedge_certificate_id": {
+        "label": "Идентификатор сертификата GoEdge",
+        "placeholder": "Введите идентификатор сертификата GoEdge",
+        "tooltip": "Вы можете найти его на панели управления GoEdge. <br><br>(Откройте инструменты разработчика браузера и посетите страницу «网站列表 -> 证书管理 -> 证书», чтобы перехватить сетевые запросы, после чего вы сможете получить идентификатор сертификата.)"
+      },
+      "huaweicloud_aad_domain": {
+        "label": "Домен Huawei Cloud AAD",
+        "placeholder": "Пожалуйста, введите доменное имя Huawei Cloud AAD."
+      },
+      "huaweicloud_aad_instance_id": {
+        "label": "Идентификатор экземпляра Huawei Cloud AAD",
+        "placeholder": "Введите идентификатор экземпляра Huawei Cloud AAD.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list\" target=\"_blank\">https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list</a>."
+      },
+      "huaweicloud_apig_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион шлюза Huawei Cloud API (например, cn-north-1).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "huaweicloud_apig_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат шлюза API"
+          }
+        }
+      },
+      "huaweicloud_apig_certificate_id": {
+        "label": "Идентификатор сертификата шлюза Huawei Cloud API",
+        "placeholder": "Введите идентификатор сертификата шлюза Huawei Cloud API.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apig2/#/overview\" target=\"_blank\">https://console-intl.huaweicloud.com/apig2/#/overview</a>."
+      },
+      "huaweicloud_cdn_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион Huawei Cloud CDN (например, cn-north-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "huaweicloud_cdn_domain": {
+        "label": "Домен Huawei Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Huawei Cloud CDN"
+      },
+      "huaweicloud_obs_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион Huawei Cloud OBS (например, cn-north-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "huaweicloud_obs_bucket": {
+        "label": "Название корзины Huawei Cloud OBS",
+        "placeholder": "Введите имя корзины Huawei Cloud OBS."
+      },
+      "huaweicloud_obs_domain": {
+        "label": "Персональный домен Huawei Cloud OBS",
+        "placeholder": "Пожалуйста, введите собственное доменное имя Huawei Cloud OBS."
+      },
+      "huaweicloud_elb_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион Huawei Cloud ELB (например, cn-north-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "huaweicloud_elb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки ELB"
+          },
+          "listener": {
+            "label": "прослушиватель ELB"
+          },
+          "certificate": {
+            "label": "сертификат ЕЛБ"
+          }
+        }
+      },
+      "huaweicloud_elb_certificate_id": {
+        "label": "Идентификатор сертификата Huawei Cloud ELB",
+        "placeholder": "Введите идентификатор сертификата Huawei Cloud ELB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>."
+      },
+      "huaweicloud_elb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки Huawei Cloud ELB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки Huawei Cloud ELB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>."
+      },
+      "huaweicloud_elb_listener_id": {
+        "label": "Идентификатор прослушивателя Huawei Cloud ELB",
+        "placeholder": "Введите идентификатор прослушивателя Huawei Cloud ELB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>."
+      },
+      "huaweicloud_live_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион Huawei Cloud Live (например, cn-north-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "huaweicloud_live_domain": {
+        "label": "Домен потоковой передачи Huawei Cloud Live",
+        "placeholder": "Пожалуйста, введите доменное имя потоковой передачи Huawei Cloud Live"
+      },
+      "huaweicloud_waf_region": {
+        "label": "Облачный регион Huawei",
+        "placeholder": "Введите регион Huawei Cloud WAF (например, cn-north-1).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>."
+      },
+      "huaweicloud_waf_deploy_target": {
+        "option": {
+          "cloudserver": {
+            "label": "Облачный сервер WAF"
+          },
+          "premiumhost": {
+            "label": "Премиум-хост WAF"
+          },
+          "certificate": {
+            "label": "сертификат WAF"
+          }
+        }
+      },
+      "huaweicloud_waf_domain": {
+        "label": "Домен Huawei Cloud WAF",
+        "placeholder": "Пожалуйста, введите доменное имя Huawei Cloud WAF"
+      },
+      "huaweicloud_waf_certificate_id": {
+        "label": "Идентификатор сертификата Huawei Cloud WAF",
+        "placeholder": "Введите идентификатор сертификата Huawei Cloud WAF.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console-intl.huaweicloud.com/console/#/waf/certificateManagement\" target=\"_blank\">https://console-intl.huaweicloud.com/console/#/waf/certificateManagement</a>."
+      },
+      "jdcloud_alb_region_id": {
+        "label": "Идентификатор региона JD Cloud",
+        "placeholder": "Введите идентификатор региона JD Cloud ALB (например, cn-north-1).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.jdcloud.com/en/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/en/common-declaration/api/introduction</a>."
+      },
+      "jdcloud_alb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки ALB"
+          },
+          "listener": {
+            "label": "слушатель АЛБ"
+          }
+        }
+      },
+      "jdcloud_alb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки JD Cloud ALB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки JD Cloud ALB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cns-console.jdcloud.com/host/loadBalance/list\" target=\"_blank\">https://cns-console.jdcloud.com/host/loadBalance/list</a>."
+      },
+      "jdcloud_alb_listener_id": {
+        "label": "Идентификатор прослушивателя JD Cloud ALB",
+        "placeholder": "Введите идентификатор прослушивателя JD Cloud ALB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cns-console.jdcloud.com/host/loadBalance/list\" target=\"_blank\">https://cns-console.jdcloud.com/host/loadBalance/list</a>."
+      },
+      "jdcloud_alb_snidomain": {
+        "label": "Домен JD Cloud ALB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя JD Cloud ALB SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "jdcloud_cdn_domain": {
+        "label": "Домен JD Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя JD Cloud CDN"
+      },
+      "jdcloud_live_domain": {
+        "label": "Домен потокового видео JD Cloud Live Video",
+        "placeholder": "Пожалуйста, введите доменное имя потокового видео JD Cloud Live Video"
+      },
+      "jdcloud_vod_domain": {
+        "label": "Домен JD Cloud VOD",
+        "placeholder": "Пожалуйста, введите доменное имя JD Cloud VOD"
+      },
+      "jdcloud_waf_region_id": {
+        "label": "Идентификатор региона JD Cloud",
+        "placeholder": "Введите идентификатор региона JD Cloud WAF (например, cn-north-1).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.jdcloud.com/en/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/en/common-declaration/api/introduction</a>."
+      },
+      "jdcloud_waf_instance_id": {
+        "label": "Идентификатор экземпляра JD Cloud WAF",
+        "placeholder": "Введите идентификатор экземпляра JD Cloud WAF.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloudwaf-console.jdcloud.com/instance\" target=\"_blank\">https://cloudwaf-console.jdcloud.com/instance</a>."
+      },
+      "jdcloud_waf_domain": {
+        "label": "Домен JD Cloud WAF",
+        "placeholder": "Пожалуйста, введите доменное имя JD Cloud WAF"
+      },
+      "k8s_namespace": {
+        "label": "Пространство имен Kubernetes",
+        "placeholder": "Пожалуйста, введите пространство имен Kubernetes",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/\" target=\"_blank\">https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</a>."
+      },
+      "k8s_secret_name": {
+        "label": "Секретное имя Kubernetes",
+        "placeholder": "Пожалуйста, введите секретное имя Kubernetes",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>."
+      },
+      "k8s_secret_type": {
+        "label": "Тип секрета Kubernetes",
+        "placeholder": "Пожалуйста, введите тип секрета Kubernetes",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>."
+      },
+      "k8s_secret_data_key_for_key": {
+        "label": "Секретный ключ данных Kubernetes для закрытого ключа",
+        "placeholder": "Введите секретный ключ данных Kubernetes для закрытого ключа.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>."
+      },
+      "k8s_secret_data_key_for_crt": {
+        "label": "Секретный ключ данных Kubernetes для сертификата",
+        "placeholder": "Введите секретный ключ данных Kubernetes для сертификата.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>."
+      },
+      "k8s_secret_data_key_for_servercrt": {
+        "label": "Секретный ключ Kubernetes для сертификата (включает только части, относящиеся к конечному узлу) (необязательно)",
+        "placeholder": "Пожалуйста, введите Kubernetes Secret data key для серверного сертификат",
+        "help": ""
+      },
+      "k8s_secret_data_key_for_intermediacrt": {
+        "label": "Секретный ключ Kubernetes для сертификации (включает только часть, относящуюся к центру сертификации) (необязательно)",
+        "placeholder": "Пожалуйста, введите Kubernetes Secret data key для промежуточного сертификата.",
+        "help": ""
+      },
+      "k8s_secret_annotations": {
+        "label": "Секретные аннотации Kubernetes (необязательно)",
+        "placeholder": "Введите секретные аннотации Kubernetes.",
+        "help": "Примечания. Одна пара значений ключа в строке, разделенная двоеточием.",
+        "errmsg": {
+          "invalid": "Недопустимые аннотации"
+        },
+        "tooltip": "Пример: <br><i>environment: Production<br>app: nginx</i>"
+      },
+      "k8s_secret_labels": {
+        "label": "Секретные метки Kubernetes (необязательно)",
+        "placeholder": "Введите секретные метки Kubernetes.",
+        "help": "Примечания. Одна пара значений ключа в строке, разделенная двоеточием.",
+        "errmsg": {
+          "invalid": "Неверные метки (labels)"
+        },
+        "tooltip": "Пример: <br><i>environment: Production<br>app: nginx</i>"
+      },
+      "kong": {
+        "guide": "Требуется Kong v2.0 или выше."
+      },
+      "kong_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "SSL-сертификат"
+          }
+        }
+      },
+      "kong_workspace": {
+        "label": "Рабочее пространство Kong (необязательно)",
+        "placeholder": "Пожалуйста, войдите в рабочее пространство Kong",
+        "tooltip": "Вы можете найти его на приборной панели Kong."
+      },
+      "kong_certificate_id": {
+        "label": "Идентификатор сертификата Конга",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Kong",
+        "tooltip": "Вы можете найти его на приборной панели Kong."
+      },
+      "ksyun_cdn_deploy_target": {
+        "option": {
+          "domain": {
+            "label": "Домен"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "ksyun_cdn_domain": {
+        "label": "Домен Kingsoft Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Kingsoft Cloud CDN"
+      },
+      "ksyun_cdn_certificate_id": {
+        "label": "Идентификатор сертификата Kingsoft Cloud CDN",
+        "placeholder": "Введите идентификатор сертификата Kingsoft Cloud CDN.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>."
+      },
+      "ksyun_slb_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "ksyun_slb_certificate_id": {
+        "label": "Идентификатор сертификата Kingsoft Cloud SLB",
+        "placeholder": "Введите идентификатор сертификата Kingsoft Cloud SLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://network.console.ksyun.com/index.html#!/slb/slbIndex\" target=\"_blank\">https://network.console.ksyun.com/index.html#!/slb/slbIndex</a>."
+      },
+      "lecdn_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "lecdn_certificate_id": {
+        "label": "Идентификатор сертификата LeCDN",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата LeCDN",
+        "tooltip": "Вы можете найти его на панели инструментов LeCDN."
+      },
+      "lecdn_client_id": {
+        "label": "Идентификатор пользователя LeCDN (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор пользователя LeCDN",
+        "tooltip": "Вы можете найти его на панели инструментов LeCDN. <br>Необходим при использовании авторизации администратора. Он должен совпадать с пользователем, которому принадлежит сертификат."
+      },
+      "local": {
+        "guide": "Если вы используете Certimate в Docker, «Локальный» относится к контейнеру, а не к хосту."
+      },
+      "local_shell_env": {
+        "label": "Оболочка",
+        "placeholder": "Пожалуйста, выберите среду оболочки",
+        "option": {
+          "sh": {
+            "label": "POSIX Bash (в Linux/macOS)"
+          },
+          "cmd": {
+            "label": "CMD (в Windows)"
+          },
+          "powershell": {
+            "label": "PowerShell (в Windows)"
+          }
+        }
+      },
+      "local_pre_command": {
+        "label": "Предварительная команда (необязательно)",
+        "placeholder": "Пожалуйста, введите команду, которая будет выполнена перед сохранением файлов"
+      },
+      "local_post_command": {
+        "label": "Пост-команда (необязательно)",
+        "placeholder": "Пожалуйста, введите команду, которая будет выполнена после сохранения файлов"
+      },
+      "local_preset_scripts": {
+        "sh_backup_files": "POSIX Bash — резервное копирование файлов сертификатов",
+        "ps_backup_files": "PowerShell — резервное копирование файлов сертификатов",
+        "sh_reload_nginx": "POSIX Bash — перезагрузить nginx",
+        "ps_binding_iis": "PowerShell — привязка IIS",
+        "ps_binding_netsh": "PowerShell — привязка netsh",
+        "ps_binding_rdp": "PowerShell — привязка RDP"
+      },
+      "mohua_mvh_host_id": {
+        "label": "Идентификатор виртуального хоста Mohua Cloud",
+        "placeholder": "Пожалуйста, введите идентификатор виртуального хоста Mohua Cloud",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.mhjz1.cn/service?groupid=328&language=english\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328&language=english</a>."
+      },
+      "mohua_mvh_domain_id": {
+        "label": "Идентификатор домена виртуального хоста Mohua Cloud",
+        "placeholder": "Пожалуйста, введите идентификатор домена виртуального хоста Mohua Cloud.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.mhjz1.cn/service?groupid=328&language=english\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328&language=english</a>."
+      },
+      "netlify_deploy_target": {
+        "option": {
+          "website": {
+            "label": "Веб-сайт"
+          }
+        }
+      },
+      "netlify_site_id": {
+        "label": "Идентификатор веб-сайта Netlify",
+        "placeholder": "Пожалуйста, введите идентификатор веб-сайта Netlify",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://docs.netlify.com/api/get-started/#get-site\" target=\"_blank\">https://docs.netlify.com/api/get-started/#get-site</a>."
+      },
+      "nginxproxymanager_deploy_target": {
+        "option": {
+          "host": {
+            "label": "Хост"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "nginxproxymanager_host_match_pattern": {
+        "label": "Шаблон соответствия хоста",
+        "placeholder": "Пожалуйста, выберите шаблон соответствия хоста",
+        "option": {
+          "specified": {
+            "label": "Указанный идентификатор"
+          },
+          "certsan": {
+            "label": "через сертификат"
+          }
+        }
+      },
+      "nginxproxymanager_host_type": {
+        "label": "Тип хоста NPM",
+        "placeholder": "Пожалуйста, выберите тип хоста NPM",
+        "option": {
+          "proxy": {
+            "label": "Прокси-хост"
+          },
+          "redirection": {
+            "label": "Хост перенаправления"
+          },
+          "stream": {
+            "label": "Транслировать"
+          },
+          "dead": {
+            "label": "404 хост"
+          }
+        }
+      },
+      "nginxproxymanager_host_id": {
+        "label": "Идентификатор хоста NPM",
+        "placeholder": "Пожалуйста, введите идентификатор хоста NPM",
+        "tooltip": "Вы можете найти его на панели инструментов NPM."
+      },
+      "nginxproxymanager_certificate_id": {
+        "label": "Идентификатор сертификата NPM",
+        "placeholder": "Введите идентификатор сертификата NPM",
+        "tooltip": "Вы можете найти его на панели инструментов NPM."
+      },
+      "proxmoxve": {
+        "guide": "Требуется Proxmox VE v5.2 или выше."
+      },
+      "proxmoxve_node_name": {
+        "label": "Имя узла кластера Proxmox VE",
+        "placeholder": "Пожалуйста, введите имя узла кластера Proxmox VE"
+      },
+      "proxmoxve_auto_restart": {
+        "label": "Автоматический перезапуск Proxmox VE после развертывания"
+      },
+      "qiniu_cdn_domain": {
+        "label": "CDN-домен Циню",
+        "placeholder": "Пожалуйста, введите доменное имя Qiniu CDN"
+      },
+      "qiniu_kodo_bucket": {
+        "label": "Ведро Циню Кодо",
+        "placeholder": "Пожалуйста, введите название сегмента Qiniu Kodo"
+      },
+      "qiniu_kodo_domain": {
+        "label": "Пользовательский домен Циню Кодо",
+        "placeholder": "Пожалуйста, введите собственное доменное имя корзины Qiniu Kodo."
+      },
+      "qiniu_pili_hub": {
+        "label": "Хаб Циню Пили",
+        "placeholder": "Пожалуйста, введите название хаба Qiniu Pili",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://portal.qiniu.com/hub\" target=\"_blank\">https://portal.qiniu.com/hub</a>."
+      },
+      "qiniu_pili_domain": {
+        "label": "Стриминговый домен Qiniu Pili",
+        "placeholder": "Пожалуйста, введите доменное имя Qiniu Pili для потоковой передачи"
+      },
+      "rainyun_rcdn_instance_id": {
+        "label": "Идентификатор экземпляра RCDN Рейн Юн",
+        "placeholder": "Пожалуйста, введите идентификатор экземпляра Rain Yun RCDN",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://app.rainyun.com/apps/rcdn/list\" target=\"_blank\">https://app.rainyun.com/apps/rcdn/list</a>."
+      },
+      "rainyun_rcdn_domain": {
+        "label": "Домен Рейн Юн RCDN",
+        "placeholder": "Пожалуйста, введите доменное имя Rain Yun RCDN"
+      },
+      "rainyun_sslcenter_certificate_id": {
+        "label": "Идентификатор сертификата RCDN Рейн Юн",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Rain Yun RCDN",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://app.rainyun.com/apps/ssl/list\" target=\"_blank\">https://app.rainyun.com/apps/ssl/list</a>.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат; в противном случае заменить существующий."
+      },
+      "ratpanel": {
+        "guide": "Требуется AcePanel v2.5 или выше."
+      },
+      "ratpanel_deploy_target": {
+        "option": {
+          "website": {
+            "label": "Веб-сайт"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "ratpanel_site_names": {
+        "label": "Названия веб-сайтов AcePanel",
+        "placeholder": "Введите названия веб-сайтов AcePanel (через точку с запятой)",
+        "errmsg": {
+          "invalid": "Неверное имя сайта"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Вы можете найти его на панели инструментов AcePanel.",
+        "multiple_input_modal": {
+          "title": "Изменить названия веб-сайтов AcePanel",
+          "placeholder": "Пожалуйста, введите название веб-сайта AcePanel"
+        }
+      },
+      "ratpanel_certificate_id": {
+        "label": "Идентификатор сертификата AcePanel",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата AcePanel",
+        "tooltip": "Вы можете найти его на панели инструментов AcePanel."
+      },
+      "s3_region": {
+        "label": "Область хранения объектов (совместимая с S3)",
+        "placeholder": "Пожалуйста, введите регион"
+      },
+      "s3_bucket": {
+        "label": "Сегмент объектного хранилища (совместимый с S3)",
+        "placeholder": "Введите название сегмента"
+      },
+      "s3_object_key_for_key": {
+        "label": "Ключ объекта файла закрытого ключа",
+        "placeholder": "Пожалуйста, введите object key для файла приватного ключа."
+      },
+      "s3_object_key_for_crt": {
+        "label": "Ключ объекта файла сертификата",
+        "placeholder": "Пожалуйста, введите object key для сертификата"
+      },
+      "s3_object_key_for_servercrt": {
+        "label": "Ключ объекта файла сертификата (только сертификат без CA и цепочки) (Не обязательно)",
+        "placeholder": "Пожалуйста, введите object key для серверного сертификата.",
+        "help": ""
+      },
+      "s3_object_key_for_intermediacrt": {
+        "label": "Ключ объекта файла сертификата CA (только CA) (Не обязательно)",
+        "placeholder": "Пожалуйста, введите object key для файла промежуточного сертификата.",
+        "help": ""
+      },
+      "safeline": {
+        "guide": "Требуется SafeLine v6.6 или выше."
+      },
+      "safeline_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "safeline_certificate_id": {
+        "label": "Идентификатор сертификата SafeLine",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата SafeLine",
+        "tooltip": "Вы можете найти его на панели управления SafeLine."
+      },
+      "samwaf": {
+        "guide": "Требуется SamWAF v1.3.20 или выше."
+      },
+      "samwaf_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "samwaf_certificate_id": {
+        "label": "Идентификатор сертификата SamWAF",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата SamWAF",
+        "tooltip": "Вы можете найти его на панели управления SamWAF."
+      },
+      "ssh_pre_command": {
+        "label": "Предварительная команда (необязательно)",
+        "placeholder": "Пожалуйста, введите команду, которую необходимо выполнить, прежде чем загружать файлы"
+      },
+      "ssh_post_command": {
+        "label": "Пост-команда (необязательно)",
+        "placeholder": "Введите команду, которая будет выполнена после загрузки файлов"
+      },
+      "ssh_preset_scripts": {
+        "sh_backup_files": "POSIX Bash — резервное копирование файлов сертификатов",
+        "ps_backup_files": "PowerShell — резервное копирование файлов сертификатов",
+        "sh_reload_nginx": "POSIX Bash — перезагрузить nginx",
+        "sh_replace_synologydsm_ssl": "POSIX Bash — замена SSL-сертификата SynologyDSM",
+        "sh_replace_fnos_ssl": "POSIX Bash – замена SSL-сертификата fnOS",
+        "sh_replace_qnap_ssl": "POSIX Bash – замена SSL-сертификата QNAP",
+        "ps_binding_iis": "PowerShell — привязка IIS",
+        "ps_binding_netsh": "PowerShell — привязка netsh",
+        "ps_binding_rdp": "PowerShell — привязка RDP"
+      },
+      "ssh_use_scp": {
+        "label": "Откат к использованию SCP",
+        "tooltip": "Если удаленный сервер не поддерживает SFTP, установите этот флажок, чтобы вернуться к SCP."
+      },
+      "synologydsm": {
+        "guide": "Требуется Synology DSM v6.0 или более поздней версии."
+      },
+      "synologydsm_certificate_id_or_desc": {
+        "label": "Идентификатор или описание сертификата Synology DSM (необязательно)",
+        "placeholder": "Введите идентификатор или описание сертификата Synology DSM.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат; в противном случае заменить существующий.",
+        "tooltip": "Его можно найти на панели управления Synology DSM. <br><br>(Откройте инструменты разработчика браузера и посетите страницу «Панель управления -> Безопасность -> Сертификат», чтобы перехватить сетевые запросы, после чего вы сможете получить идентификатор сертификата.)"
+      },
+      "synologydsm_is_default": {
+        "label": "Установить в качестве сертификата по умолчанию и применить ко всем службам DSM."
+      },
+      "tencentcloud_cdn_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку API Tencent Cloud CDN (например, cdn.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_cdn_domain": {
+        "label": "Домен Tencent Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud CDN"
+      },
+      "tencentcloud_clb_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку API Tencent Cloud CLB (например, clb.intl.tencentcloudapi.com).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>clb.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_clb_region": {
+        "label": "Регион Tencent Cloud",
+        "placeholder": "Введите регион Tencent Cloud CLB (например, ap-guangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/214/13629\" target=\"_blank\">https://www.tencentcloud.com/document/product/214/13629</a>."
+      },
+      "tencentcloud_clb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "экземпляр CLB"
+          },
+          "listener": {
+            "label": "прослушиватель CLB"
+          },
+          "ruledomain": {
+            "label": "Домен правил CLB"
+          }
+        }
+      },
+      "tencentcloud_clb_loadbalancer_id": {
+        "label": "Идентификатор экземпляра Tencent Cloud CLB",
+        "placeholder": "Введите идентификатор экземпляра Tencent Cloud CLB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/clb\" target=\"_blank\">https://console.tencentcloud.com/clb</a>."
+      },
+      "tencentcloud_clb_listener_id": {
+        "label": "Идентификатор прослушивателя Tencent Cloud CLB",
+        "placeholder": "Введите идентификатор прослушивателя Tencent Cloud CLB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/clb\" target=\"_blank\">https://console.tencentcloud.com/clb</a>."
+      },
+      "tencentcloud_clb_ruledomain": {
+        "label": "Домен Tencent Cloud CLB",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud CLB"
+      },
+      "tencentcloud_cos_region": {
+        "label": "Регион Tencent Cloud",
+        "placeholder": "Введите регион COS Tencent Cloud (например, ap-guangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/436/6224\" target=\"_blank\">https://www.tencentcloud.com/document/product/436/6224</a>."
+      },
+      "tencentcloud_cos_bucket": {
+        "label": "Группа Tencent Cloud COS",
+        "placeholder": "Введите имя сегмента Tencent Cloud COS."
+      },
+      "tencentcloud_cos_domain": {
+        "label": "Пользовательский домен Tencent Cloud COS",
+        "placeholder": "Введите имя собственного домена корзины Tencent Cloud COS."
+      },
+      "tencentcloud_css_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку CSS API Tencent Cloud (например, live.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>live.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_css_domain": {
+        "label": "Домен потоковой передачи CSS Tencent Cloud",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud CSS для потоковой передачи CSS"
+      },
+      "tencentcloud_ecdn_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку Tencent Cloud ECDN API (например, cdn.intl.tencentcloudapi.com).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_ecdn_domain": {
+        "label": "Домен Tencent Cloud ECDN",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud ECDN"
+      },
+      "tencentcloud_eo_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку API Tencent Cloud EdgeOne (например, teo.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_eo_zone_id": {
+        "label": "Идентификатор зоны Tencent Cloud EdgeOne",
+        "placeholder": "Введите идентификатор зоны Tencent Cloud EdgeOne",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/edgeone\" target=\"_blank\">https://console.tencentcloud.com/edgeone</a>."
+      },
+      "tencentcloud_eo_domains": {
+        "label": "Домены Tencent Cloud EdgeOne",
+        "placeholder": "Введите доменные имена Tencent Cloud EdgeOne (через точку с запятой)",
+        "help": "Примечания. Несколько доменов следует разделять точкой с запятой.",
+        "multiple_input_modal": {
+          "title": "Изменить домен Tencent Cloud EdgeOne",
+          "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud EdgeOne"
+        }
+      },
+      "tencentcloud_eo_enable_multiple_ssl": {
+        "label": "Несколько SSL-сертификатов",
+        "help": "Примечания. Каждое доменное имя поддерживает не более одного сертификата RSA и одного сертификата ECC.",
+        "switch": {
+          "suffix": "сохранять другие сертификаты с другими алгоритмами.",
+          "on": "Позволять",
+          "off": "Запретить"
+        }
+      },
+      "tencentcloud_gaap_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку Tencent Cloud GAAP API (например, gaap.intl.tencentcloudapi.com).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_gaap_deploy_target": {
+        "option": {
+          "listener": {
+            "label": "Слушатель GAAP"
+          }
+        }
+      },
+      "tencentcloud_gaap_proxy_id": {
+        "label": "Идентификатор прокси-сервера Tencent Cloud GAAP (необязательно)",
+        "placeholder": "Введите идентификатор прокси-сервера Tencent Cloud GAAP",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>."
+      },
+      "tencentcloud_gaap_listener_id": {
+        "label": "Идентификатор прослушивателя Tencent Cloud GAAP",
+        "placeholder": "Введите идентификатор прослушивателя Tencent Cloud GAAP",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>."
+      },
+      "tencentcloud_scf_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку API Tencent Cloud SCF (например, scf.intl.tencentcloudapi.com).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>scf.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_scf_region": {
+        "label": "Регион Tencent Cloud",
+        "placeholder": "Пожалуйста, укажите регион Tencent Cloud SCF (например, ap-guangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/583/17299\" target=\"_blank\">https://www.tencentcloud.com/document/product/583/17299</a>."
+      },
+      "tencentcloud_scf_domain": {
+        "label": "Домен Tencent Cloud SCF",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud SCF."
+      },
+      "tencentcloud_ssl_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку SSL API Tencent Cloud (например, ssl.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_ssldeploy": {
+        "guide": "TIPS: This will invoke Tencent Cloud OpenAPI DeployCertificateInstance to create an asynchronously deploymen..."
+      },
+      "tencentcloud_ssldeploy_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку SSL API Tencent Cloud (например, ssl.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_ssldeploy_resource_region": {
+        "label": "Tencent Cloud resource region (Optional)",
+        "placeholder": "Пожалуйста, введите Tencent Cloud resource region (e.g. ap-guangzhou)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/1007/36573\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/36573</a>."
+      },
+      "tencentcloud_ssldeploy_resource_product": {
+        "label": "Ресурсный продукт Tencent Cloud",
+        "placeholder": "Пожалуйста, введите ресурсный продукт Tencent Cloud",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.tencent.com/document/product/400/91667\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91667</a>."
+      },
+      "tencentcloud_ssldeploy_resource_ids": {
+        "label": "Идентификаторы ресурсов Tencent Cloud",
+        "placeholder": "Введите идентификаторы ресурсов Tencent Cloud (через точку с запятой).",
+        "errmsg": {
+          "invalid": "Неверные идентификаторы ресурсов (ID)"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cloud.tencent.com/document/product/400/91667\" target=\"_blank\">https://cloud.tencent.com/document/product/400/91667</a>.",
+        "multiple_input_modal": {
+          "title": "Изменение идентификаторов ресурсов Tencent Cloud",
+          "placeholder": "Пожалуйста, введите идентификатор ресурса Tencent Cloud"
+        }
+      },
+      "tencentcloud_sslupdate": {
+        "guide": "TIPS: This will invoke Tencent Cloud OpenAPI UpdateCertificateInstance or"
+      },
+      "tencentcloud_sslupdate_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку SSL API Tencent Cloud (например, ssl.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_sslupdate_certificate_id": {
+        "label": "Идентификатор SSL-сертификата Tencent Cloud",
+        "placeholder": "Введите идентификатор SSL-сертификата Tencent Cloud",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.cloud.tencent.com/certoverview\" target=\"_blank\">https://console.cloud.tencent.com/certoverview</a>."
+      },
+      "tencentcloud_sslupdate_resource_regions": {
+        "label": "Ресурсные регионы Tencent Cloud (необязательно)",
+        "placeholder": "Введите регионы ресурсов Tencent Cloud (через точку с запятой).",
+        "errmsg": {
+          "invalid": "Неверный resource regions"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/1007/57981\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/57981</a> или <a href=\"https://www.tencentcloud.com/document/product/1007/70503\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/70503</a>.",
+        "multiple_input_modal": {
+          "title": "Изменение регионов ресурсов Tencent Cloud",
+          "placeholder": "Пожалуйста, введите регион ресурса Tencent Cloud"
+        }
+      },
+      "tencentcloud_sslupdate_resource_products": {
+        "label": "Ресурсные продукты Tencent Cloud",
+        "placeholder": "Введите ресурсы Tencent Cloud (через точку с запятой)",
+        "errmsg": {
+          "invalid": "Неверный resource products"
+        },
+        "help": "Примечания. Несколько значений следует разделять точкой с запятой.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/1007/57981\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/57981</a> или <a href=\"https://www.tencentcloud.com/document/product/1007/70503\" target=\"_blank\">https://www.tencentcloud.com/document/product/1007/70503</a>.",
+        "multiple_input_modal": {
+          "title": "Изменение продуктов ресурсов Tencent Cloud",
+          "placeholder": "Пожалуйста, введите ресурсный продукт Tencent Cloud"
+        }
+      },
+      "tencentcloud_sslupdate_is_replaced": {
+        "label": "Продление сертификата (идентификатор сертификата не изменился)",
+        "tooltip": "Если флажок снят, будет вызываться <em>UpdateCertificateInstance</em>; в противном случае будет вызван <em>UploadUpdateCertificateInstance</em>."
+      },
+      "tencentcloud_vod_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку API Tencent Cloud VOD (например, vod.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>vod.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_vod_sub_app_id": {
+        "label": "Идентификатор приложения Tencent Cloud VOD",
+        "placeholder": "Введите идентификатор приложения Tencent Cloud VOD.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/vod\" target=\"_blank\">https://console.tencentcloud.com/vod</a>."
+      },
+      "tencentcloud_vod_domain": {
+        "label": "Домен Tencent Cloud VOD",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud VOD"
+      },
+      "tencentcloud_waf_endpoint": {
+        "label": "Конечная точка Tencent Cloud API (необязательно)",
+        "placeholder": "Введите конечную точку Tencent Cloud WAF API (например, waf.intl.tencentcloudapi.com).",
+        "tooltip": "<ul style=\"list-style: disk;\"><li><strong>waf.intl.tencentcloudapi.com</strong> для Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> для Tencent Cloud в Китае</li></ul>"
+      },
+      "tencentcloud_waf_region": {
+        "label": "Регион Tencent Cloud",
+        "placeholder": "Введите регион Tencent Cloud WAF (например, ap-guangzhou).",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.tencentcloud.com/document/product/627/38085\" target=\"_blank\">https://www.tencentcloud.com/document/product/627/38085</a>."
+      },
+      "tencentcloud_waf_instance_id": {
+        "label": "Идентификатор экземпляра Tencent Cloud WAF",
+        "placeholder": "Введите идентификатор экземпляра Tencent Cloud WAF.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/waf\" target=\"_blank\">https://console.tencentcloud.com/waf</a>."
+      },
+      "tencentcloud_waf_domain": {
+        "label": "Домен Tencent Cloud WAF",
+        "placeholder": "Пожалуйста, введите доменное имя Tencent Cloud WAF"
+      },
+      "tencentcloud_waf_domain_id": {
+        "label": "Идентификатор домена Tencent Cloud WAF",
+        "placeholder": "Пожалуйста, введите идентификатор домена Tencent Cloud WAF",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.tencentcloud.com/waf\" target=\"_blank\">https://console.tencentcloud.com/waf</a>."
+      },
+      "ucloud_ualb_region": {
+        "label": "UCloud регион",
+        "placeholder": "Пожалуйста, введите регион UCloud ALB (например, cn-bj2)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>."
+      },
+      "ucloud_ualb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки UALB"
+          },
+          "listener": {
+            "label": "прослушиватель UALB"
+          }
+        }
+      },
+      "ucloud_ualb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки UCloud UALB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки UCloud ALB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/ulb/alb\" target=\"_blank\">https://console.ucloud-global.com/ulb/alb</a>."
+      },
+      "ucloud_ualb_listener_id": {
+        "label": "Идентификатор прослушивателя UCloud UALB",
+        "placeholder": "Пожалуйста, введите идентификатор прослушивателя UCloud ALB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/ulb/alb\" target=\"_blank\">https://console.ucloud-global.com/ulb/alb</a>."
+      },
+      "ucloud_ualb_snidomain": {
+        "label": "Домен UCloud UALB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя UCloud UALB SNI.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "ucloud_ucdn_domain_id": {
+        "label": "Идентификатор домена UCloud UCDN",
+        "placeholder": "Пожалуйста, введите идентификатор домена UCloud UCDN",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/ucdn\" target=\"_blank\">https://console.ucloud-global.com/ucdn</a>."
+      },
+      "ucloud_uclb_region": {
+        "label": "UCloud регион",
+        "placeholder": "Пожалуйста, введите регион UCloud UCLB (например, cn-bj2)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>."
+      },
+      "ucloud_uclb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки UCLB"
+          },
+          "vserver": {
+            "label": "UCLB VServer"
+          }
+        }
+      },
+      "ucloud_uclb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки UCloud UCLB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки UCloud UCLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>."
+      },
+      "ucloud_uclb_vserver_id": {
+        "label": "Идентификатор VServer UCloud UCLB",
+        "placeholder": "Пожалуйста, введите идентификатор UCloud UCLB VServer",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>."
+      },
+      "ucloud_upathx_accelerator_id": {
+        "label": "Идентификатор ускорителя UCloud UPathX",
+        "placeholder": "Введите идентификатор ускорителя UCloud UPathX.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>."
+      },
+      "ucloud_upathx_listener_port": {
+        "label": "Порт прослушивателя UCloud UPathX",
+        "placeholder": "Пожалуйста, введите порт прослушивателя UCloud UPathX",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>."
+      },
+      "ucloud_us3_region": {
+        "label": "UCloud регион",
+        "placeholder": "Пожалуйста, введите регион UCloud US3 (например, cn-bj2)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>."
+      },
+      "ucloud_us3_bucket": {
+        "label": "Корзина UCloud US3",
+        "placeholder": "Введите имя корзины UCloud US3."
+      },
+      "ucloud_us3_domain": {
+        "label": "Пользовательский домен UCloud US3",
+        "placeholder": "Введите имя собственного домена корзины UCloud US3."
+      },
+      "ucloud_uewaf_domain": {
+        "label": "Домен UCloud UEWAF",
+        "placeholder": "Пожалуйста, введите доменное имя UCloud UEWAF"
+      },
+      "unicloud_webhost": {
+        "guide": "При этом используется вход в симулятор веб-страницы и не гарантируется стабильность. Если в uniCloud есть какие-либо изменения, создайте проблему на GitHub."
+      },
+      "unicloud_webhost_space_provider": {
+        "label": "провайдер пространства uniCloud",
+        "placeholder": "Пожалуйста, выберите поставщика пространства uniCloud",
+        "option": {
+          "aliyun": {
+            "label": "Алибаба Облако"
+          },
+          "alipay": {
+            "label": "Alipay Cloud"
+          },
+          "tencent": {
+            "label": "Тенсент Облако"
+          }
+        }
+      },
+      "unicloud_webhost_space_id": {
+        "label": "Идентификатор пространства uniCloud",
+        "placeholder": "Идентификатор пространства uniCloud",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://doc.dcloud.net.cn/uniCloud/concepts/space.html\" target=\"_blank\">https://doc.dcloud.net.cn/uniCloud/concepts/space.html</a>."
+      },
+      "unicloud_webhost_domain": {
+        "label": "Домен веб-хостинга uniCloud",
+        "placeholder": "Домен веб-хостинга uniCloud"
+      },
+      "upyun_cdn": {
+        "guide": "При этом используется вход в симулятор веб-страницы и не гарантируется стабильность. Если в UPYUN есть какие-либо изменения, создайте проблему на GitHub."
+      },
+      "upyun_cdn_domain": {
+        "label": "CDN-домен UPYUN",
+        "placeholder": "Пожалуйста, введите доменное имя UPYUN CDN"
+      },
+      "upyun_file": {
+        "guide": "При этом используется вход в симулятор веб-страницы и не гарантируется стабильность. Если в UPYUN есть какие-либо изменения, создайте проблему на GitHub."
+      },
+      "upyun_file_bucket": {
+        "label": "Ковш УПЮН УСС",
+        "placeholder": "Введите имя сегмента UPYUN USS."
+      },
+      "upyun_file_domain": {
+        "label": "Пользовательский домен UPYUN USS",
+        "placeholder": "Пожалуйста, введите имя собственного домена корзины UPYUN USS."
+      },
+      "volcengine_alb_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Пожалуйста, введите регион VolcEngine ALB (например, cn-beijing)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>."
+      },
+      "volcengine_alb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки ALB"
+          },
+          "listener": {
+            "label": "слушатель АЛБ"
+          }
+        }
+      },
+      "volcengine_alb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки VolcEngine ALB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки VolcEngine ALB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.volcengine.com/alb\" target=\"_blank\">https://console.volcengine.com/alb</a>."
+      },
+      "volcengine_alb_listener_id": {
+        "label": "Идентификатор прослушивателя VolcEngine ALB",
+        "placeholder": "Пожалуйста, введите идентификатор прослушивателя VolcEngine ALB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.volcengine.com/alb\" target=\"_blank\">https://console.volcengine.com/alb</a>."
+      },
+      "volcengine_alb_snidomain": {
+        "label": "Домен VolcEngine ALB SNI (необязательно)",
+        "placeholder": "Пожалуйста, введите доменное имя VolcEngine ALB SNI",
+        "help": "Примечания: Оставьте это поле пустым, чтобы установить сертификат по умолчанию; в противном случае установить расширение для SNI."
+      },
+      "volcengine_apig_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Пожалуйста, введите регион шлюза API VolcEngine (например, cn-beijing)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>."
+      },
+      "volcengine_apig_domain": {
+        "label": "Пользовательский домен шлюза API VolcEngine",
+        "placeholder": "Пожалуйста, введите имя собственного домена шлюза API VolcEngine."
+      },
+      "volcengine_cdn_domain": {
+        "label": "CDN-домен VolcEngine",
+        "placeholder": "Пожалуйста, введите доменное имя VolcEngine CDN"
+      },
+      "volcengine_certcenter_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Пожалуйста, укажите регион Центра сертификации VolcEngine (например, cn-beijing)"
+      },
+      "volcengine_clb_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Пожалуйста, введите регион VolcEngine CLB (например, cn-beijing)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.volcengine.com/docs/6406/74892\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>."
+      },
+      "volcengine_clb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "Балансировщик нагрузки CLB"
+          },
+          "listener": {
+            "label": "прослушиватель CLB"
+          }
+        }
+      },
+      "volcengine_clb_loadbalancer_id": {
+        "label": "Идентификатор балансировщика нагрузки VolcEngine CLB",
+        "placeholder": "Введите идентификатор балансировщика нагрузки VolcEngine CLB.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>."
+      },
+      "volcengine_clb_listener_id": {
+        "label": "Идентификатор прослушивателя VolcEngine CLB",
+        "placeholder": "Пожалуйста, введите идентификатор прослушивателя VolcEngine CLB",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>."
+      },
+      "volcengine_dcdn_domain": {
+        "label": "Домен VolcEngine DCDN",
+        "placeholder": "Пожалуйста, введите доменное имя VolcEngine DCDN"
+      },
+      "volcengine_imagex_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Пожалуйста, введите регион VolcEngine ImageX (например, cn-north-1)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.volcengine.com/docs/508/23757\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>."
+      },
+      "volcengine_imagex_service_id": {
+        "label": "Идентификатор службы VolcEngine ImageX",
+        "placeholder": "Пожалуйста, введите идентификатор службы VolcEngine ImageX",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.volcengine.com/imagex\" target=\"_blank\">https://console.volcengine.com/imagex</a>."
+      },
+      "volcengine_imagex_domain": {
+        "label": "Собственный домен VolcEngine ImageX",
+        "placeholder": "Пожалуйста, введите имя собственного домена VolcEngine ImageX"
+      },
+      "volcengine_live_domain": {
+        "label": "VolcEngine Домен прямой трансляции",
+        "placeholder": "Пожалуйста, введите доменное имя VolcEngine для прямой трансляции"
+      },
+      "volcengine_tos_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Введите регион TOS VolcEngine (например, cn-beijing)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>."
+      },
+      "volcengine_tos_bucket": {
+        "label": "Ведро VolcEngine TOS",
+        "placeholder": "Введите имя сегмента TOS VolcEngine."
+      },
+      "volcengine_tos_domain": {
+        "label": "Пользовательский домен VolcEngine TOS",
+        "placeholder": "Введите имя собственного домена корзины VolcEngine TOS."
+      },
+      "volcengine_vod_space_name": {
+        "label": "Имя пространства VolcEngine VOD",
+        "placeholder": "Пожалуйста, введите имя VOD-пространства VolcEngine",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://console.volcengine.com/vod/overview\" target=\"_blank\">https://console.volcengine.com/vod/overview</a>."
+      },
+      "volcengine_vod_domain_type": {
+        "label": "Тип домена VolcEngine VOD",
+        "placeholder": "Пожалуйста, выберите тип домена VolcEngine VOD",
+        "option": {
+          "play": {
+            "label": "Играть"
+          },
+          "image": {
+            "label": "Изображение"
+          }
+        }
+      },
+      "volcengine_vod_domain": {
+        "label": "Домен VolcEngine VOD",
+        "placeholder": "Пожалуйста, введите доменное имя VolcEngine VOD"
+      },
+      "volcengine_waf_region": {
+        "label": "Регион VolcEngine",
+        "placeholder": "Пожалуйста, введите регион VolcEngine WAF (например, cn-beijing)",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://www.volcengine.com/docs/6511/1594024\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>."
+      },
+      "volcengine_waf_access_mode": {
+        "label": "Режим доступа VolcEngine WAF",
+        "placeholder": "Пожалуйста, выберите режим доступа VolcEngine WAF",
+        "option": {
+          "cname": {
+            "label": "Доступ CNAME"
+          }
+        }
+      },
+      "volcengine_waf_domain": {
+        "label": "Домен VolcEngine WAF",
+        "placeholder": "Пожалуйста, введите доменное имя VolcEngine WAF"
+      },
+      "wangsu_cdn_domains": {
+        "label": "Домены Wangsu Cloud CDN",
+        "placeholder": "Введите доменные имена Wangsu Cloud CDN (через точку с запятой)",
+        "help": "Примечания. Несколько доменов следует разделять точкой с запятой.",
+        "multiple_input_modal": {
+          "title": "Изменить домены Wangsu Cloud CDN",
+          "placeholder": "Пожалуйста, введите домен Wangsu Cloud CDN"
+        }
+      },
+      "wangsu_cdnpro_environment": {
+        "label": "Облачная среда Вансу",
+        "placeholder": "Пожалуйста, выберите облачную среду Wangsu",
+        "option": {
+          "production": {
+            "label": "Производственная среда"
+          },
+          "staging": {
+            "label": "Промежуточная среда"
+          }
+        }
+      },
+      "wangsu_cdnpro_domain": {
+        "label": "Домен Wangsu Cloud CDN",
+        "placeholder": "Пожалуйста, введите доменное имя Wangsu Cloud CDN"
+      },
+      "wangsu_cdnpro_certificate_id": {
+        "label": "Идентификатор сертификата Wangsu Cloud CDN (необязательно)",
+        "placeholder": "Введите идентификатор сертификата Wangsu Cloud CDN.",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат; в противном случае заменить существующий.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdnpro.console.wangsu.com/v2/index/#/certificate\" target=\"_blank\">https://cdnpro.console.wangsu.com/v2/index/#/certificate</a>."
+      },
+      "wangsu_cdnpro_webhook_id": {
+        "label": "Идентификатор веб-перехватчика Wangsu Cloud CDN (необязательно)",
+        "placeholder": "Введите идентификатор Wangsu Cloud CDN Webhook",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdnpro.console.wangsu.com/v2/index/#/certificate\" target=\"_blank\">https://cdnpro.console.wangsu.com/v2/index/#/certificate</a>."
+      },
+      "wangsu_certificate_id": {
+        "label": "Идентификатор сертификата Wangsu Cloud (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Wangsu Cloud",
+        "help": "Примечания: Оставьте это поле пустым, чтобы импортировать новый сертификат; в противном случае заменить существующий.",
+        "tooltip": "Для получения дополнительной информации см. <a href=\"https://cdn.console.wangsu.com/v2/index#/certificate/list?code=cert_mylist&parentCode=cert_ssl&productCode=certificatemanagement\" target=\"_blank\">https://cdn.console.wangsu.com/v2/index#/certificate/list</a>."
+      },
+      "webhook_data": {
+        "label": "Данные вебхука (необязательно)",
+        "placeholder": "Пожалуйста, введите данные вебхука",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать данные веб-перехватчика по умолчанию, предоставленные учетными данными.",
+        "vartips": "Поддерживаемые переменные: <br><ol style=\"list-style: disk;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME</strong>: <br>Основной домен или IP-адрес сертификата.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES</strong>: <br>Домены или IP-адреса сертификата, разделенные точки с запятой.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE</strong>: <br>Содержимое файла сертификата в формате PEM.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER</strong>: <br>Содержимое сертификата сервера в формате PEM файл.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA</strong>: <br>Содержимое формата PEM файла промежуточного сертификата CA.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY</strong>: <br>Содержимое формата PEM файла закрытого ключа.</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Тайм-аут вебхука (необязательно)",
+        "placeholder": "Пожалуйста, введите тайм-аут вебхука",
+        "unit": "секунды"
+      },
+      "zenlayer_cdn_deploy_target": {
+        "option": {
+          "domain": {
+            "label": "Домен"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "zenlayer_cdn_domain": {
+        "label": "CDN-домен Zenlayer",
+        "placeholder": "Пожалуйста, введите доменное имя Zenlayer CDN"
+      },
+      "zenlayer_cdn_certificate_id": {
+        "label": "Идентификатор сертификата Zenlayer CDN",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Zenlayer CDN",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
+      },
+      "zenlayer_ga_deploy_target": {
+        "option": {
+          "accelerator": {
+            "label": "Ускоритель"
+          },
+          "certificate": {
+            "label": "Сертификат"
+          }
+        }
+      },
+      "zenlayer_ga_accelerator_id": {
+        "label": "Идентификатор ускорителя Zenlayer ZGA",
+        "placeholder": "Введите идентификатор ускорителя Zenlayer ZGA.",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
+      },
+      "zenlayer_ga_certificate_id": {
+        "label": "Идентификатор сертификата Zenlayer ZGA",
+        "placeholder": "Пожалуйста, введите идентификатор сертификата Zenlayer ZGA",
+        "tooltip": "Подробнее по ссылке <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
+      }
+    }
+  },
+  "notify": {
+    "label": "Отправить уведомление",
+    "default_name": "Уведомление",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      },
+      "channel": {
+        "tab": "Канал",
+        "title": "Настройки канала"
+      },
+      "strategy": {
+        "tab": "Стратегия",
+        "title": "Настройки стратегии"
+      }
+    },
+    "form": {
+      "subject": {
+        "label": "Заголовок письма",
+        "placeholder": "Пожалуйста, введите тему"
+      },
+      "message": {
+        "label": "Сообщение",
+        "placeholder": "Пожалуйста, введите сообщение"
+      },
+      "template": {
+        "guide": "<details><summary>Содержимое, в котором используется синтаксис «Mustache» (двойные фигурные скобки) и которому в теме или сообщении предшествует знак «$», представляет собой текстовую интерполяцию. Они будут заменены фактическими значениями. </summary><br>Поддерживаемые текстовые интерполяции: <ol style=\"list-style: disk;\"><li>Рабочий процесс: <ol style=\"margin: 0; list-style: '-';\"><li><em>workflow.id</em>: идентификатор рабочего процесса.</li><li><em>workflow.name</em>: имя рабочего процесса.</li><li><em>workflow.description</em>: описание рабочий процесс.</li><li><em>run.id</em>: идентификатор запуска рабочего процесса.</li></ol></li><li>Ошибка: <br><i>(Если до этого произошло несколько шагов, всегда указывается ближайший.)</i><ol style=\"margin: 0; list-style: '-';\"><li><em>error.nodeId</em>: идентификатор шага, выполнение которого не удалось.</li><li><em>error.nodeName</em>: имя шага, выполнение которого не удалось.</li><li><em>error.message</em>: сообщение об ошибке, что выполнение не удалось.</li></ol></li><li>Сертификат: <br><i> (Если до этого есть несколько шагов, выдающих сертификат, всегда указывается ближайший.)</i><ol style=\"margin: 0; list-style: '-';\"><li><em>certificate.commonName</em>: основной домен или IP-адрес сертификата.</li><li><em>certificate.subjectAltNames</em>: домены или IP-адреса сертификата, разделенные точкой с запятой.</li><li><em>certificate.notBefore</em>: время действия сертификата, отформатированное в RFC3339.</li><li><em>certificate.notAfter</em>: срок действия сертификата, отформатированный в RFC3339.</li><li><em>certificate.hoursLeft</em>: оставшиеся часы сертификата.</li><li><em>certificate.daysLeft</em>: оставшиеся дни сертификата.</li><li><em>certificate.validity</em>: срок действия сертификата.</li></ol></li><li>Другое: <ol style=\"margin: 0; list-style: '-';\"><li><em>сейчас</em>: текущее время на сервере в формате RFC3339. </li></ol></li></ol><br>Пример: <br><em>В вашем рабочем процессе {{ $workflow.name }} произошёл сбой на шаге {{ $error.nodeName }} в {{ $now }}.</em></details>"
+      },
+      "provider": {
+        "label": "Канал уведомлений",
+        "placeholder": "Пожалуйста, выберите канал уведомлений",
+        "search": {
+          "placeholder": "Поиск канала уведомлений..."
+        }
+      },
+      "provider_access": {
+        "label": "Учетные данные поставщика уведомлений",
+        "placeholder": "Пожалуйста, выберите учетные данные поставщика уведомлений.",
+        "button": "Создать"
+      },
+      "params_config": {
+        "label": "Настройки параметров"
+      },
+      "skip_on_all_prev_skipped": {
+        "label": "Тихое поведение",
+        "prefix": "Если все предыдущие шаги были пропущены,",
+        "suffix": "уведомить.",
+        "switch": {
+          "on": "пропускать",
+          "off": "не пропускать"
+        }
+      },
+      "discordbot_channel_id": {
+        "label": "Идентификатор канала Discord (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор канала Discord",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать идентификатор канала по умолчанию, указанный в учетных данных."
+      },
+      "email_format": {
+        "label": "Формат сообщения (необязательно)",
+        "placeholder": "Пожалуйста, выберите формат сообщения",
+        "option": {
+          "plain": {
+            "label": "Обычный текст"
+          },
+          "html": {
+            "label": "HTML"
+          }
+        }
+      },
+      "email_receiver_address": {
+        "label": "Адрес электронной почты получателя (необязательно)",
+        "placeholder": "Пожалуйста, введите адрес электронной почты получателя",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать адрес электронной почты получателя по умолчанию, указанный в выбранных учетных данных."
+      },
+      "mattermost_channel_id": {
+        "label": "Самый важный идентификатор канала (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор канала Mattermost",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать идентификатор канала по умолчанию, указанный в учетных данных."
+      },
+      "slackbot_channel_id": {
+        "label": "Идентификатор слабого канала (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор канала Slack",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать идентификатор канала по умолчанию, указанный в учетных данных."
+      },
+      "telegrambot_chat_id": {
+        "label": "Идентификатор чата Telegram (необязательно)",
+        "placeholder": "Пожалуйста, введите идентификатор чата Telegram",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать идентификатор чата по умолчанию, предоставленный выбранными учетными данными."
+      },
+      "webhook_data": {
+        "label": "Данные вебхука (необязательно)",
+        "placeholder": "Пожалуйста, введите данные вебхука",
+        "help": "Примечания. Оставьте это поле пустым, чтобы использовать данные веб-перехватчика по умолчанию, предоставленные учетными данными.",
+        "vartips": "Поддерживаемые переменные: <br><ol style=\"list-style: disk;\"><li><strong>${CERTIMATE_NOTIFIER_SUBJECT}</strong>: <br>Тема уведомления.</li><li><strong>${CERTIMATE_NOTIFIER_MESSAGE</strong>: <br>Сообщение уведомления.</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Тайм-аут вебхука (необязательно)",
+        "placeholder": "Пожалуйста, введите тайм-аут вебхука",
+        "unit": "секунды"
+      }
+    }
+  },
+  "delay": {
+    "label": "Задерживать",
+    "default_name": "Задерживать",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      }
+    },
+    "form": {
+      "wait": {
+        "label": "Время ожидания",
+        "placeholder": "Пожалуйста, введите время ожидания",
+        "unit": "секунды"
+      }
+    }
+  },
+  "condition": {
+    "label": "Параллельная/условная ветвь",
+    "default_name": {
+      "": "Параллельно",
+      "template_certtest_on_expiring_soon": "Если срок действия сертификата скоро истечет...",
+      "template_certtest_on_expired": "Если срок действия сертификата истек..."
+    }
+  },
+  "branch_block": {
+    "label": "Ветвь",
+    "default_name": "Ветвь",
+    "state": {
+      "no": "Нет условий",
+      "or": "(ИЛИ) При выполнении любого из условий",
+      "and": "(И) При выполнении всех условий"
+    },
+    "form_anchor": {
+      "parameters": {
+        "tab": "Параметры"
+      }
+    },
+    "form": {
+      "expression": {
+        "label": "Условия поступления в филиал",
+        "errmsg": {
+          "invalid": "Недопустимое выражение"
+        },
+        "logical_operator": {
+          "errmsg": "Недопустимый логический оператор условий",
+          "option": {
+            "and": {
+              "label": "Соблюдение всех условий (И)"
+            },
+            "or": {
+              "label": "Соответствие любому из условий (ИЛИ)"
+            }
+          }
+        },
+        "variable": {
+          "placeholder": "Пожалуйста, выберите",
+          "errmsg": "Недопустимая переменная"
+        },
+        "operator": {
+          "placeholder": "Пожалуйста, выберите",
+          "errmsg": "Недопустимый оператор",
+          "option": {
+            "eq": {
+              "label": "равный",
+              "alias_is_label": "является"
+            },
+            "neq": {
+              "label": "не равен",
+              "alias_not_label": "не"
+            },
+            "gt": {
+              "label": "больше, чем"
+            },
+            "gte": {
+              "label": "больше или равно"
+            },
+            "lt": {
+              "label": "меньше, чем"
+            },
+            "lte": {
+              "label": "меньше или равно"
+            }
+          }
+        },
+        "value": {
+          "placeholder": "Пожалуйста, введите",
+          "errmsg": "Недопустимое значение",
+          "option": {
+            "true": {
+              "label": "Истинный"
+            },
+            "false": {
+              "label": "ЛОЖЬ"
+            }
+          }
+        },
+        "add_condition": {
+          "button": "Добавить условие"
+        }
+      }
+    }
+  },
+  "try_catch": {
+    "label": "Ветка результата выполнения",
+    "default_name": "Условие: IF ветка (уходит в catch при false)"
+  },
+  "catch_block": {
+    "label": "Ветка сбоя выполнения",
+    "default_name": "При неудаче..."
+  },
+  "end": {
+    "label": "Конец",
+    "default_name": "Конец"
+  }
+}

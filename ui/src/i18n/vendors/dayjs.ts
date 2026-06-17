@@ -11,6 +11,7 @@ type Locale = string | ILocale;
 const localesMap: Record<string, Locale> = {
   [localeNames.EN]: "en",
   [localeNames.ZH]: "zh-cn",
+  [localeNames.RU]: "ru",
 };
 
 export const useDayjsLocale = () => {

@@ -1,0 +1,27 @@
+{
+  "$ns": "dashboard",
+  "page": {
+    "heading": "Панель управления"
+  },
+  "statistics": {
+    "all_certificates": "Все сертификаты",
+    "expiring_soon_certificates": "Скоро истекают",
+    "expired_certificates": "Истёкшие",
+    "all_workflows": "Все сценарии",
+    "enabled_workflows": "Активные сценарии"
+  },
+  "shortcut": {
+    "": "Быстрые действия",
+    "create_workflow": "Создать сценарий",
+    "change_account": "Изменить имя пользователя или пароль",
+    "configure_ca": "Настроить центры сертификации",
+    "upgrade": "Доступна новая версия!"
+  },
+  "recent_workflow_runs": {
+    "": "Недавние запуски сценариев",
+    "nodata": {
+      "description": "Похоже, запусков ещё не было. Начните с выполнения сценария.",
+      "button": "Перейти к сценариям"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$ns": "login",
+  "form": {
+    "username": {
+      "label": "Имя пользователя",
+      "placeholder": "Имя пользователя / Email"
+    },
+    "password": {
+      "label": "Пароль",
+      "placeholder": "Пароль"
+    },
+    "submit": {
+      "button": "Войти"
+    }
+  }
+}

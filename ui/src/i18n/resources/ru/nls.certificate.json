@@ -1,0 +1,123 @@
+{
+  "$ns": "certificate",
+  "text": {
+    "nodata": "Нет сертификатов",
+    "nodata_description": "Похоже, сертификатов ещё нет. Начните с выполнения сценария.",
+    "nodata_button": "Перейти к сценариям"
+  },
+  "page": {
+    "heading": "Сертификаты",
+    "subheading": "SSL-сертификаты содержат открытый ключ сайта и сведения о его идентичности. Они создаются в результате выполнения сценариев."
+  },
+  "action": {
+    "search.input": {
+      "placeholder": "Поиск по имени или серийному номеру ..."
+    },
+    "view.menu": "Подробности",
+    "revoke.menu": "Отозвать",
+    "revoke.modal": {
+      "title": "Отозвать «{{name}}»",
+      "content": "Вы уверены, что хотите отозвать этот сертификат? <br>Это действие нельзя отменить."
+    },
+    "delete.menu": "Удалить",
+    "delete.modal": {
+      "title": "Удалить «{{name}}»",
+      "content": "Вы уверены, что хотите удалить этот сертификат? <br>Это действие нельзя отменить."
+    },
+    "batch_delete.modal": {
+      "title": "Удалить сертификаты",
+      "content": "Удалить выбранные сертификаты ({{count}})? <br>Это действие нельзя отменить."
+    },
+    "download.modal": {
+      "title": "Скачать сертификат",
+      "form": {
+        "format": {
+          "label": "Формат",
+          "option": {
+            "pem": {
+              "label": "PEM (*.pem, *.crt, *.key)",
+              "description": "Подходит для большинства сценариев. Поддерживается такими серверами, как Apache и Nginx."
+            },
+            "pfx": {
+              "label": "PFX (*.pfx, *.p12)",
+              "description": "Поддерживается такими серверами, как  IIS."
+            },
+            "jks": {
+              "label": "JKS (*.jks)",
+              "description": "Поддерживается такими серверами, как Tomcat."
+            }
+          }
+        },
+        "pfx_password": {
+          "label": "PFX пароль (Optional)",
+          "placeholder": "Пожалуйста, введите пароль PFX"
+        },
+        "pfx_encoder": {
+          "label": "PFX Encoder (Optional)",
+          "placeholder": "Пожалуйста, выберите PFX encoder",
+          "option": {
+            "legacyrc2": {
+              "label": "LegacyRC2 (RC2, compatible with older systems, but less secure)"
+            },
+            "legacydes": {
+              "label": "LegacyDES (3DES + SHA-1, default)"
+            },
+            "modern2023": {
+              "label": "Modern2023 (AES-256-CBC + SHA-256 MAC, compatible with OpenSSL v1.1.1+)"
+            },
+            "modern2026": {
+              "label": "Modern2026 (AES-256-CBC + PBMAC1 MAC, compatible with OpenSSL v3.4.0+)"
+            }
+          }
+        },
+        "jks_alias": {
+          "label": "JKS Alias (Optional)",
+          "placeholder": "Пожалуйста, введите псевдоним JKS"
+        },
+        "jks_keypass": {
+          "label": "JKS Key пароль (Optional)",
+          "placeholder": "Пожалуйста, введите пароль ключа JKS"
+        },
+        "jks_storepass": {
+          "label": "JKS Store пароль (Optional)",
+          "placeholder": "Пожалуйста, введите пароль магазина JKS"
+        }
+      },
+      "action": {
+        "advanced.button": "Дополнительно"
+      }
+    }
+  },
+  "props": {
+    "name": "Имя",
+    "validity": {
+      "": "Validity period",
+      "left_days": "Осталось {{left}} / {{total}} дн.",
+      "less_than_a_day": "≤1 / {{total}} дн.",
+      "expired": "Истёкшие",
+      "expiration": "Истекает {{date}}",
+      "filter": {
+        "all": "Все",
+        "expiring_soon": "Скоро истекают",
+        "expired": "Истёкшие"
+      }
+    },
+    "source": {
+      "": "Источник",
+      "request": "Запрос",
+      "upload": "Загрузка"
+    },
+    "brand": "Бренд",
+    "revoked": "Отозван",
+    "certificate": "Цепочка сертификатов",
+    "private_key": "Закрытый ключ",
+    "serial_number": "Серийный номер",
+    "subject_name": "Subject common name",
+    "subject_alt_names": "Subject alternative names",
+    "issuer_name": "Issuer common name",
+    "issuer_org": "Issuer organization",
+    "key_algorithm": "Ключевой алгоритм",
+    "created_at": "Создан",
+    "updated_at": "Обновлён"
+  }
+}
