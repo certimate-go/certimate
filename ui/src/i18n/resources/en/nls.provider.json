@@ -184,6 +184,7 @@
   "kubernetes_secret": "Kubernetes - Secret",
   "ksyun": "Kingsoft Cloud",
   "ksyun_cdn": "Kingsoft Cloud - CDN (Content Delivery Network)",
+  "ksyun_kcm_upload": "Kingsoft Cloud - Upload to KCM (SSL Certificate Manager)",
   "ksyun_slb": "Kingsoft Cloud - SLB (Server Load Balancing)",
   "larkbot": "Lark Bot",
   "lecdn": "LeCDN",

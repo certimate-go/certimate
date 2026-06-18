@@ -184,6 +184,7 @@
   "kubernetes_secret": "Kubernetes - Secret",
   "ksyun": "金山云",
   "ksyun_cdn": "金山云 - 内容分发网络 CDN",
+  "ksyun_kcm_upload": "金山云 - 上传到 SSL 证书管理",
   "ksyun_slb": "金山云 - 负载均衡 SLB",
   "larkbot": "飞书群机器人",
   "lecdn": "LeCDN",
