@@ -1,3 +1,5 @@
+// A simple SDK client for Bunny.
+// API documentation: https://docs.bunny.net/api-reference
 package bunny
 
 import (

@@ -1,3 +1,4 @@
+// A mock HTTP client for Synology DSM.
 package synologydsm
 
 import (

@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud CDN.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=108&vid=154
 package cdn
 
 import (

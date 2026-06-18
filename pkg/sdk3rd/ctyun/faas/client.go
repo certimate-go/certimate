@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud FaaS.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=53&vid=40
 package faas
 
 import (

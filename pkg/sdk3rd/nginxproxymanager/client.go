@@ -1,3 +1,5 @@
+// A simple SDK client for NginxProxyManager.
+// API documentation: https://github.com/NginxProxyManager/nginx-proxy-manager/discussions/3265
 package nginxproxymanager
 
 import (

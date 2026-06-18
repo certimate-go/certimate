@@ -1,3 +1,5 @@
+// A simple SDK client for Linode.
+// API documentation: https://techdocs.akamai.com/linode-api/reference/api
 package linode
 
 import (

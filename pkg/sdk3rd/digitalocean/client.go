@@ -1,3 +1,5 @@
+// A simple SDK client for DigitalOcean.
+// API documentation: https://docs.digitalocean.com/reference/api/
 package digitalocean
 
 import (

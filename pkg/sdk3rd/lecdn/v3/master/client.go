@@ -1,3 +1,4 @@
+// A simple SDK client for LeCDN v3 as admin.
 package master
 
 import (

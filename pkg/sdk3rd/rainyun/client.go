@@ -1,3 +1,5 @@
+// A simple SDK client for Rainyun.
+// API documentation: https://api.rainyun.com/
 package rainyun
 
 import (

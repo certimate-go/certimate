@@ -1,3 +1,5 @@
+// A simple SDK client for APISIX.
+// API documentation: https://apisix.apache.org/zh/docs/apisix/admin-api/
 package apisix
 
 import (

@@ -1,3 +1,5 @@
+// A simple SDK client for SafeLine.
+// API documentation: https://help.waf-ce.chaitin.cn/node/01973fc6-e25e-7eda-8ea8-dae97bdd4213
 package safeline
 
 import (

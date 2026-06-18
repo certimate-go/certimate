@@ -1,3 +1,5 @@
+// A simple SDK client for Fly.io.
+// API documentation: https://fly.io/docs/machines/api/
 package flyio
 
 import (

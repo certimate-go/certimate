@@ -1,3 +1,5 @@
+// A simple SDK client for aaPanel.
+// API documentation: https://www.aapanel.com/docs/api/api-list.html
 package btpanel
 
 import (
@@ -162,5 +164,6 @@ func generateSignature(timestamp string, apiKey string) string {
 
 	signMd5 := md5.Sum([]byte(timestamp + keyMd5Hex))
 	signMd5Hex := strings.ToLower(hex.EncodeToString(signMd5[:]))
+
 	return signMd5Hex
 }

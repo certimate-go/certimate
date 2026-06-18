@@ -1,3 +1,5 @@
+// A simple SDK client for AcePanel.
+// API documentation: https://acepanel.net/en/advanced/api
 package ratpanel
 
 import (

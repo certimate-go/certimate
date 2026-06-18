@@ -89,7 +89,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			Page:    lo.ToPtr(listCertificatesPage),
 			PerPage: lo.ToPtr(listCertificatesPerPage),
 		}
-		listCertificatesResp, err := c.sdkClient.ListCertificates(listCertificatesReq)
+		listCertificatesResp, err := c.sdkClient.ListCertificatesWithContext(ctx, listCertificatesReq)
 		c.logger.Debug("sdk request 'ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'ListCertificates': %w", err)

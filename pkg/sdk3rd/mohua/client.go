@@ -1,3 +1,4 @@
+// A simple SDK client for MohuaTech.
 package mohua
 
 import (

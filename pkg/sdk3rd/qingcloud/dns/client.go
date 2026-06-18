@@ -1,3 +1,5 @@
+// A simple SDK client for QingCloud DNS.
+// API documentation: https://docsv4.qingcloud.com/user_guide/development_docs/api/api_list/dns/api_intro/
 package dns
 
 import (

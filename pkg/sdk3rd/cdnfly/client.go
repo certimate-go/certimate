@@ -1,3 +1,5 @@
+// A simple SDK client for Cdnfly.
+// API documentation: http://doc.cdnfly.com/shiyongjieshao.html
 package cdnfly
 
 import (

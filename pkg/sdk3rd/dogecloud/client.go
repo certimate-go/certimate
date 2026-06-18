@@ -1,3 +1,5 @@
+// A simple SDK client for DogeCloud.
+// API documentation: https://docs.dogecloud.com/
 package dogecloud
 
 import (

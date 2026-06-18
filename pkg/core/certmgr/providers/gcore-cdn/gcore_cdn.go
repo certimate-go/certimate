@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"time"
 
 	gcore "github.com/G-Core/gcorelabscdn-go/gcore/provider"
@@ -58,29 +59,56 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 }
 
 func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
-	// 新增证书
-	// REF: https://api.gcore.com/docs/cdn#tag/SSL-certificates/operation/add_ssl_certificates
-	createCertificateReq := &sslcerts.CreateRequest{
+	// Add SSL certificate
+	// REF: https://gcore.com/docs/api-reference/cdn/ssl-certificates/add-ssl-certificate
+	addSSLDataReq := &sslcerts.CreateRequest{
 		Name:           fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
 		Cert:           certPEM,
 		PrivateKey:     privkeyPEM,
 		Automated:      false,
 		ValidateRootCA: false,
 	}
-	createCertificateResp, err := c.sdkClient.Create(ctx, createCertificateReq)
-	c.logger.Debug("sdk request 'sslcerts.Create'", slog.Any("request", createCertificateReq), slog.Any("response", createCertificateResp))
+	addSSLDataResp, err := c.sdkClient.Create(ctx, addSSLDataReq)
+	c.logger.Debug("sdk request 'sslData.Add'", slog.Any("request", addSSLDataReq), slog.Any("response", addSSLDataResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'sslcerts.Create': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'sslData.Add': %w", err)
 	}
 
 	return &UploadResult{
-		CertId:   fmt.Sprintf("%d", createCertificateResp.ID),
-		CertName: createCertificateResp.Name,
+		CertId:   fmt.Sprintf("%d", addSSLDataResp.ID),
+		CertName: addSSLDataResp.Name,
 	}, nil
 }
 
 func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (*ReplaceResult, error) {
-	return nil, core.ErrUnsupported
+	sslId, err := strconv.ParseInt(certIdOrName, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get SSL certificate details
+	// REF: https://gcore.com/docs/api-reference/cdn/ssl-certificates/get-ssl-certificate-details
+	getSSLDataDetailResp, err := c.sdkClient.Get(ctx, sslId)
+	c.logger.Debug("sdk request 'sslData.GetDetail'", slog.Any("params.sslId", sslId), slog.Any("response", getSSLDataDetailResp))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sdk request 'sslData.GetDetail': %w", err)
+	}
+
+	// Change SSL certificate
+	// REF: https://gcore.com/docs/api-reference/cdn/ssl-certificates/change-ssl-certificate
+	changeSSLDataReq := &sslcerts.UpdateRequest{
+		Name:           getSSLDataDetailResp.Name,
+		Cert:           certPEM,
+		PrivateKey:     privkeyPEM,
+		ValidateRootCA: false,
+	}
+	changeSSLDataResp, err := c.sdkClient.Update(ctx, sslId, changeSSLDataReq)
+	c.logger.Debug("sdk request 'sslData.Change'", slog.Any("request", changeSSLDataReq), slog.Any("response", changeSSLDataResp))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sdk request 'sslData.Change': %w", err)
+	}
+
+	return &ReplaceResult{}, nil
 }
 
 func createSDKClient(apiToken string) (*sslcerts.Service, error) {

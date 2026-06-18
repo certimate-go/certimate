@@ -1,3 +1,5 @@
+// A simple SDK client for Vercel.
+// API documentation: https://vercel.com/docs/rest-api
 package vercel
 
 import (

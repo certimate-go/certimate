@@ -1,3 +1,4 @@
+// A mock HTTP client for uniCloud.
 package unicloud
 
 import (

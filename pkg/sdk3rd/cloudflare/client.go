@@ -1,3 +1,5 @@
+// A simple SDK client for Cloudflare.
+// API documentation: https://developers.cloudflare.com/api/
 package cloudflare
 
 import (

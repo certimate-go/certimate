@@ -1,3 +1,5 @@
+// A simple SDK client for Dokploy.
+// API documentation: https://docs.dokploy.com/docs/api
 package dokploy
 
 import (

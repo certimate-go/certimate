@@ -1,3 +1,5 @@
+// A simple SDK client for WangsuCloud CDN.
+// API documentation: https://www.wangsu.com/document/api-doc/product
 package cdnpro
 
 import (

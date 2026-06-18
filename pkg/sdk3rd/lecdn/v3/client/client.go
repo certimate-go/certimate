@@ -1,3 +1,4 @@
+// A simple SDK client for LeCDN v3 as user.
 package client
 
 import (

@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud AccessOne.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=113&vid=167
 package ao
 
 import (

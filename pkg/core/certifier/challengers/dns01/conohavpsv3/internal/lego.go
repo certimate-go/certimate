@@ -120,7 +120,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("conohavpsv3: error when list zones: %w", err)
 	}
 
-	// REF: https://doc.conoha.jp/reference/api-vps3/api-dns-vps3/dnsaas-create_record-v3/
 	response, err := d.client.DnsCreateRecordWithContext(ctx, zoneInfo.UUID, &conohavpssdk.DnsCreateRecordRequest{
 		Name: lo.ToPtr(info.EffectiveFQDN),
 		Type: lo.ToPtr("TXT"),
@@ -187,7 +186,6 @@ func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*conohavps
 	offset := 0
 	limit := 10
 	for {
-		// REF: https://doc.conoha.jp/reference/api-vps3/api-dns-vps3/dnsaas-get_domains_list-v3/
 		request := &conohavpssdk.DnsGetDomainsListRequest{
 			Offset: lo.ToPtr(offset),
 			Limit:  lo.ToPtr(limit),

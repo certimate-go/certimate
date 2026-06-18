@@ -1,3 +1,5 @@
+// A simple SDK client for ConoHa VPS v3.
+// API documentation: https://doc.conoha.jp/reference/api-vps3/
 package v3
 
 import (

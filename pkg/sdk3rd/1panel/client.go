@@ -1,3 +1,5 @@
+// A simple SDK client for 1Panel v1.
+// API documentation: https://1panel.cn/docs/v1/dev_manual/api_manual/
 package onepanel
 
 import (

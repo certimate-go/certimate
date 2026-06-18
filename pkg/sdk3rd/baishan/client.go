@@ -1,3 +1,5 @@
+// A simple SDK client for BaishanCloud.
+// API documentation: https://portal.baishancloud.com/track/document/api/1/1249
 package baishan
 
 import (

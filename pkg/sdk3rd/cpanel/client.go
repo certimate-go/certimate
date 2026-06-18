@@ -1,3 +1,5 @@
+// A simple SDK client for cPanel.
+// API documentation: https://api.docs.cpanel.net/
 package cpanel
 
 import (

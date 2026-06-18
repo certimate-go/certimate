@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud CMS.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=152&vid=283
 package cms
 
 import (

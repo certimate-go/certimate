@@ -1,3 +1,5 @@
+// A simple SDK client for GoEdge.
+// API documentation: https://goedge.cloud/docs/API/List.md
 package goedge
 
 import (

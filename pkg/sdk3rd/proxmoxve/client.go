@@ -1,3 +1,5 @@
+// A simple SDK client for Proxmox VE.
+// API documentation: https://pve.proxmox.com/pve-docs/api-viewer/index.html
 package proxmoxve
 
 import (

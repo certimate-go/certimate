@@ -1,3 +1,5 @@
+// A simple SDK client for CacheFly.
+// API documentation: https://api.cachefly.com/api/v2/docs/api/
 package cachefly
 
 import (

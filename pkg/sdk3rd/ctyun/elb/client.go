@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud ELB.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=24&vid=82
 package elb
 
 import (

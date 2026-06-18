@@ -1,4 +1,6 @@
-﻿package obs
+﻿// A simple SDK client for HuaweiCloud OBS.
+// API documentation: https://support.huaweicloud.com/api-obs/obs_04_0005.html
+package obs
 
 import (
 	"crypto/md5"

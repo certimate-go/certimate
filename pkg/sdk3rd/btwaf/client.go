@@ -1,3 +1,5 @@
+// A simple SDK client for aaWAF.
+// API documentation: https://github.com/aaPanel/aaWAF/blob/main/API.md
 package btwaf
 
 import (

@@ -113,7 +113,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("linode: error when list domains: %w", err)
 	}
 
-	// REF: https://techdocs.akamai.com/linode-api/reference/post-domain-record
 	response, err := d.client.CreateDomainRecordWithContext(ctx, lo.FromPtr(zoneInfo.ID), &linodesdk.CreateDomainRecordRequest{
 		Name:   lo.ToPtr(dns01.UnFqdn(info.EffectiveFQDN)),
 		Type:   lo.ToPtr("TXT"),
@@ -194,7 +193,6 @@ func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*linodesdk
 	page := 1
 	pageSize := 100
 	for {
-		// REF: https://techdocs.akamai.com/linode-api/reference/get-domains
 		request := &linodesdk.ListDomainsRequest{
 			Page:     lo.ToPtr(page),
 			PageSize: lo.ToPtr(pageSize),

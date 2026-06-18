@@ -1,3 +1,5 @@
+// A simple SDK client for FlexCDN.
+// API documentation: https://flexcdn.cn/docs/api/list
 package flexcdn
 
 import (

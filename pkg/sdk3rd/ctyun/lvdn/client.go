@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud LVDN.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&vid=261
 package lvdn
 
 import (

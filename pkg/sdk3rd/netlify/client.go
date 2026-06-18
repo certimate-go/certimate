@@ -1,3 +1,5 @@
+// A simple SDK client for Netlify.
+// API documentation: https://open-api.netlify.com/
 package netlify
 
 import (

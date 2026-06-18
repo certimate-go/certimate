@@ -1,3 +1,4 @@
+// A mock HTTP client for Upyun Console.
 package console
 
 import (

@@ -1,3 +1,5 @@
+// A simple SDK client for Dynv6.
+// API documentation: https://dynv6.com/docs/apis
 package dynv6
 
 import (

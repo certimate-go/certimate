@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud DNS.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&vid=259
 package dns
 
 import (

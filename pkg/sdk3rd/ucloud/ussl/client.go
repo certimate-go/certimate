@@ -1,3 +1,5 @@
+// An extension SDK client for UCloud SSL service.
+// Based on github.com/ucloud/ucloud-sdk-go.
 package ussl
 
 import (

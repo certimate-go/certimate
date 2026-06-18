@@ -1,3 +1,5 @@
+// A simple SDK client for StateCloud ICDN.
+// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=112&vid=166
 package icdn
 
 import (

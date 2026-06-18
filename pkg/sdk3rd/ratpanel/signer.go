@@ -20,6 +20,7 @@ type signer struct {
 func (s *signer) Sign(req *http.Request) error {
 	// API 签名机制：
 	// https://ratpanel.github.io/advanced/api#authentication-mechanism
+	// https://acepanel.net/en/advanced/api
 
 	payloadStr := ""
 	if req.Body != nil {

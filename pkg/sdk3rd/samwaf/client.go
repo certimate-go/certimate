@@ -1,3 +1,5 @@
+// A simple SDK client for SamWAF.
+// API documentation: https://doc.samwaf.com/api/
 package samwaf
 
 import (

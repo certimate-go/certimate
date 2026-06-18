@@ -1,3 +1,5 @@
+// A simple SDK client for Kong.
+// API documentation: https://developer.konghq.com/api/
 package kong
 
 import (

@@ -1,3 +1,5 @@
+// An extension SDK client for UCloud WAF service.
+// Based on github.com/ucloud/ucloud-sdk-go.
 package uewaf
 
 import (
