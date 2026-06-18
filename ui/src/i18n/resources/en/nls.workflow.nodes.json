@@ -1836,6 +1836,11 @@
         "placeholder": "Please enter Kingsoft Cloud CDN certificate ID",
         "tooltip": "For more information, see <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
+      "ksyun_slb_region": {
+        "label": "Kingsoft Cloud region",
+        "placeholder": "Please enter Kingsoft Cloud SLB region (e.g. cn-beijing-6)",
+        "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/directories/1164\" target=\"_blank\">https://endocs.ksyun.com/directories/1164</a>"
+      },
       "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {

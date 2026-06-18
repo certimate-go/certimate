@@ -1835,6 +1835,11 @@
         "placeholder": "请输入金山云 CDN 证书 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
+      "ksyun_slb_region": {
+        "label": "金山云服务地域",
+        "placeholder": "请输入金山云 SLB 服务地域（例如：cn-beijing-6）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ksyun.com/documents/1164\" target=\"_blank\">https://docs.ksyun.com/documents/1164</a>"
+      },
       "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {
