@@ -70,7 +70,7 @@ func (c *Client) newRequest(method string, path string, params any) (*resty.Requ
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	data := make(map[string]string)
+	paramsMap := make(map[string]string)
 	if params != nil {
 		temp := make(map[string]any)
 		jsonb, _ := json.Marshal(params)
@@ -82,30 +82,30 @@ func (c *Client) newRequest(method string, path string, params any) (*resty.Requ
 
 			switch reflect.Indirect(reflect.ValueOf(v)).Kind() {
 			case reflect.String:
-				data[k] = v.(string)
+				paramsMap[k] = v.(string)
 
 			case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64:
-				data[k] = fmt.Sprintf("%v", v)
+				paramsMap[k] = fmt.Sprintf("%v", v)
 
 			default:
 				if t, ok := v.(time.Time); ok {
-					data[k] = t.Format(time.RFC3339)
+					paramsMap[k] = t.Format(time.RFC3339)
 				} else {
 					jsonb, _ := json.Marshal(v)
-					data[k] = string(jsonb)
+					paramsMap[k] = string(jsonb)
 				}
 			}
 		}
 	}
 
 	timestamp := fmt.Sprintf("%d", time.Now().Unix())
-	data["request_time"] = timestamp
-	data["request_token"] = generateSignature(timestamp, c.apiKey)
+	paramsMap["request_time"] = timestamp
+	paramsMap["request_token"] = generateSignature(timestamp, c.apiKey)
 
 	req := c.rc.R()
 	req.Method = method
 	req.URL = path
-	req.SetFormData(data)
+	req.SetFormData(paramsMap)
 	return req, nil
 }
 

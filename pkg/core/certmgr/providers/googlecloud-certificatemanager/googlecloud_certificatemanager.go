@@ -94,17 +94,14 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		}
 
 		for _, certItem := range listCertificatesResp.Certificates {
-			// 对比证书内容
-			if !xcert.EqualCertificatesFromPEM(certPEM, certItem.PemCertificate) {
-				continue
+			// 如果已存在相同证书，直接返回
+			if xcert.EqualCertificatesFromPEM(certPEM, certItem.PemCertificate) {
+				c.logger.Info("ssl certificate already exists")
+				return &UploadResult{
+					CertId:   certItem.Name,
+					CertName: certItem.Description,
+				}, nil
 			}
-
-			// 如果以上信息都一致，则视为已存在相同证书，直接返回
-			c.logger.Info("ssl certificate already exists")
-			return &UploadResult{
-				CertId:   certItem.Name,
-				CertName: certItem.Description,
-			}, nil
 		}
 
 		if len(listCertificatesResp.Certificates) == 0 || listCertificatesResp.NextPageToken == "" {

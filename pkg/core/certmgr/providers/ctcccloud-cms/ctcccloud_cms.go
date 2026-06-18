@@ -155,7 +155,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		}
 
 		for _, certItem := range getCertificateListResp.ReturnObj.List {
-			// 对比证书名称
+			// 对比证书多域名
 			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), certItem.DomainName) {
 				continue
 			}

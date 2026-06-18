@@ -1,4 +1,4 @@
-﻿package openapi
+﻿package common
 
 type Options struct {
 	AccessKey string

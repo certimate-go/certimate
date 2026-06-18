@@ -6,18 +6,19 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/openapi"
 	"github.com/go-resty/resty/v2"
+
+	common "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/zz-shared-common"
 )
 
 const endpoint = "https://ctelb-global.ctapi.ctyun.cn"
 
 type Client struct {
-	client *openapi.Client
+	client *common.Client
 }
 
-func NewClient(optFns ...openapi.OptionsFunc) (*Client, error) {
-	client, err := openapi.NewClient(endpoint, optFns...)
+func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
+	client, err := common.NewClient(endpoint, optFns...)
 	if err != nil {
 		return nil, err
 	}

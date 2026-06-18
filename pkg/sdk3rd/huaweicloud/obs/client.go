@@ -120,7 +120,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	}
 
 	// WARN:
-	//   PLEASE DO NOT USE `req.SetBody` HERE! USE `newRequest` INSTEAD.
+	//   PLEASE DO NOT USE `req.SetBody` or `req.SetFormData` HERE! USE `newRequest` INSTEAD.
 	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()

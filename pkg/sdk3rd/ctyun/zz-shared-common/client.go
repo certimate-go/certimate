@@ -1,9 +1,10 @@
-package openapi
+package common
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -15,25 +16,31 @@ type Client struct {
 	rc *resty.Client
 }
 
-func NewClient(optFns ...OptionsFunc) (*Client, error) {
-	options := &Options{}
+func NewClient(baseUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
 	for _, fn := range optFns {
-		fn(options)
+		fn(opts)
 	}
 
-	if options.AccessKey == "" {
-		return nil, fmt.Errorf("sdkerr: unset accessKey")
+	if baseUrl == "" {
+		return nil, fmt.Errorf("sdkerr: unset baseUrl")
 	}
-	if options.SecretKey == "" {
-		return nil, fmt.Errorf("sdkerr: unset secretKey")
+	if _, err := url.Parse(baseUrl); err != nil {
+		return nil, fmt.Errorf("sdkerr: invalid baseUrl: %w", err)
+	}
+	if opts.AccessKeyId == "" {
+		return nil, fmt.Errorf("sdkerr: unset accessKeyId")
+	}
+	if opts.SecretAccessKey == "" {
+		return nil, fmt.Errorf("sdkerr: unset secretAccessKey")
 	}
 
 	signer := &signer{
-		accessKey: options.AccessKey,
-		secretKey: options.SecretKey,
+		accessKeyId:     opts.AccessKeyId,
+		secretAccessKey: opts.SecretAccessKey,
 	}
 	httper := resty.New().
-		SetBaseURL("https://open.chinanetcenter.com").
+		SetBaseURL(baseUrl).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).

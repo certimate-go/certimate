@@ -1,4 +1,4 @@
-﻿package openapi
+﻿package common
 
 import (
 	"bytes"
