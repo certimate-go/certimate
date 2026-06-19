@@ -134,18 +134,11 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	switch sdkClient := c.sdkClient.(type) {
 	case *onepanelsdk.Client:
 		{
-			// 获取证书详情
-			websiteSSLGetResp, err := sdkClient.WebsiteSSLGetWithContext(ctx, sslId)
-			c.logger.Debug("sdk request 'WebsiteSSLGet'", slog.Int64("params.sslId", sslId), slog.Any("response", websiteSSLGetResp))
-			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'WebsiteSSLGet': %w", err)
-			}
-
 			// 更新证书
 			websiteSSLUploadReq := &onepanelsdk.WebsiteSSLUploadRequest{
 				SSLID:       sslId,
 				Type:        "paste",
-				Description: websiteSSLGetResp.Data.Description,
+				Description: "upload from certimate",
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
@@ -158,18 +151,11 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 	case *onepanelsdk2.Client:
 		{
-			// 获取证书详情
-			websiteSSLGetResp, err := sdkClient.WebsiteSSLGetWithContext(ctx, sslId)
-			c.logger.Debug("sdk request 'WebsiteSSLGet'", slog.Int64("params.sslId", sslId), slog.Any("response", websiteSSLGetResp))
-			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'WebsiteSSLGet': %w", err)
-			}
-
 			// 更新证书
 			websiteSSLUploadReq := &onepanelsdk2.WebsiteSSLUploadRequest{
 				SSLID:       sslId,
 				Type:        "paste",
-				Description: websiteSSLGetResp.Data.Description,
+				Description: "upload from certimate",
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
@@ -228,7 +214,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 					}
 				}
 
-				if len(websiteSSLSearchResp.Data.Items) < int(websiteSSLSearchResp.Data.Total) {
+				if len(websiteSSLSearchResp.Data.Items) < searchWebsiteSSLPageSize ||
+					searchWebsiteSSLPage*searchWebsiteSSLPageSize >= int(websiteSSLSearchResp.Data.Total) {
 					break
 				}
 
@@ -277,7 +264,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 					}
 				}
 
-				if len(websiteSSLSearchResp.Data.Items) < int(websiteSSLSearchResp.Data.Total) {
+				if len(websiteSSLSearchResp.Data.Items) < searchWebsiteSSLPageSize ||
+					searchWebsiteSSLPage*searchWebsiteSSLPageSize >= int(websiteSSLSearchResp.Data.Total) {
 					break
 				}
 
