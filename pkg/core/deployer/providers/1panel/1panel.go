@@ -1,6 +1,7 @@
 package onepanel
 
 import (
+	"cmp"
 	"context"
 	"crypto/tls"
 	"errors"
@@ -339,13 +340,10 @@ func (d *Deployer) updateWebsiteCertificate(ctx context.Context, websiteId int64
 				Type:         "existed",
 				WebsiteSSLID: websiteSSLId,
 				Enable:       true,
-				HttpConfig:   websiteHttpsGetResp.Data.HttpConfig,
+				HttpConfig:   cmp.Or(websiteHttpsGetResp.Data.HttpConfig, "HTTPToHTTPS"),
 				SSLProtocol:  websiteHttpsGetResp.Data.SSLProtocol,
 				Algorithm:    websiteHttpsGetResp.Data.Algorithm,
 				Hsts:         websiteHttpsGetResp.Data.Hsts,
-			}
-			if websiteHttpsPostReq.HttpConfig == "" {
-				websiteHttpsPostReq.HttpConfig = "HTTPToHTTPS"
 			}
 			websiteHttpsPostResp, err := sdkClient.WebsiteHttpsPostWithContext(ctx, websiteId, websiteHttpsPostReq)
 			d.logger.Debug("sdk request 'WebsiteHttpsPost'", slog.Int64("params.websiteId", websiteId), slog.Any("request", websiteHttpsPostReq), slog.Any("response", websiteHttpsPostResp))
@@ -373,14 +371,11 @@ func (d *Deployer) updateWebsiteCertificate(ctx context.Context, websiteId int64
 				Type:         "existed",
 				WebsiteSSLID: websiteSSLId,
 				Enable:       true,
-				HttpConfig:   websiteHttpsGetResp.Data.HttpConfig,
+				HttpConfig:   cmp.Or(websiteHttpsGetResp.Data.HttpConfig, "HTTPToHTTPS"),
 				SSLProtocol:  websiteHttpsGetResp.Data.SSLProtocol,
 				Algorithm:    websiteHttpsGetResp.Data.Algorithm,
 				Hsts:         websiteHttpsGetResp.Data.Hsts,
 				Http3:        websiteHttpsGetResp.Data.Http3,
-			}
-			if websiteHttpsPostReq.HttpConfig == "" {
-				websiteHttpsPostReq.HttpConfig = "HTTPToHTTPS"
 			}
 			websiteHttpsPostResp, err := sdkClient.WebsiteHttpsPostWithContext(ctx, websiteId, websiteHttpsPostReq)
 			d.logger.Debug("sdk request 'WebsiteHttpsPost'", slog.Int64("params.websiteId", websiteId), slog.Any("request", websiteHttpsPostReq), slog.Any("response", websiteHttpsPostResp))

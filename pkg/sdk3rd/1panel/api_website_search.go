@@ -18,21 +18,8 @@ type WebsiteSearchResponse struct {
 	sdkResponseBase
 
 	Data *struct {
-		Items []*struct {
-			ID            int64  `json:"id"`
-			Alias         string `json:"alias"`
-			PrimaryDomain string `json:"primaryDomain"`
-			Protocol      string `json:"protocol"`
-			Type          string `json:"type"`
-			Status        string `json:"status"`
-			SitePath      string `json:"sitePath"`
-			Remark        string `json:"remark"`
-			SSLStatus     string `json:"sslStatus"`
-			SSLExpireDate string `json:"sslExpireDate"`
-			UpdatedAt     string `json:"updatedAt"`
-			CreatedAt     string `json:"createdAt"`
-		} `json:"items"`
-		Total int32 `json:"total"`
+		Items []*Website `json:"items"`
+		Total int32      `json:"total"`
 	} `json:"data,omitempty"`
 }
 
