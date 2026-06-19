@@ -286,9 +286,9 @@ require (
 	modernc.org/sqlite v1.52.0 // indirect
 )
 
-replace gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcloudcore@v1.0.0+compact
+replace gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcloudcore@v1.0.0+mod
 
-replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1+compact
+replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1+mod
 
 replace gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcmcdn@v1.0.0
 
