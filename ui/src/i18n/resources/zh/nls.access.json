@@ -629,6 +629,20 @@
       "placeholder": "请输入默认的收件人邮箱",
       "help": "提示：可在工作流中覆盖此设置。"
     },
+    "f5bigip_server_url": {
+      "label": "F5 Big-IP 服务地址",
+      "placeholder": "请输入 F5 Big-IP 服务地址，例如 https://192.168.1.100"
+    },
+    "f5bigip_username": {
+      "label": "F5 Big-IP 用户名",
+      "placeholder": "请输入 F5 Big-IP 用户名",
+      "tooltip": "用于 F5 Big-IP 认证的用户名。"
+    },
+    "f5bigip_password": {
+      "label": "F5 Big-IP 密码",
+      "placeholder": "请输入 F5 Big-IP 密码",
+      "tooltip": "用于 F5 Big-IP 认证的密码。"
+    },
     "flexcdn_server_url": {
       "label": "FlexCDN 服务地址",
       "placeholder": "请输入 FlexCDN 服务地址"

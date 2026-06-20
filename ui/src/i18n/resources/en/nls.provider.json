@@ -139,6 +139,7 @@
   "dynu": "Dynu",
   "dynv6": "dynv6",
   "email": "Email (SMTP)",
+  "f5bigip": "F5 Big-IP",
   "fastly": "Fastly",
   "flexcdn": "FlexCDN",
   "flyio": "Fly.io",

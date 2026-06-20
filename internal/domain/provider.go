@@ -60,6 +60,7 @@ const (
 	AccessProviderTypeDynu                = AccessProviderType("dynu")
 	AccessProviderTypeDynv6               = AccessProviderType("dynv6")
 	AccessProviderTypeEmail               = AccessProviderType("email")
+	AccessProviderTypeF5BigIP             = AccessProviderType("f5bigip")
 	AccessProviderTypeFastly              = AccessProviderType("fastly") // Fastly（预留）
 	AccessProviderTypeFlexCDN             = AccessProviderType("flexcdn")
 	AccessProviderTypeFlyIO               = AccessProviderType("flyio")
@@ -368,6 +369,7 @@ const (
 	DeploymentProviderTypeDigitalOceanCertificate       = DeploymentProviderType(AccessProviderTypeDigitalOcean + "-certificate")
 	DeploymentProviderTypeDogeCloudCDN                  = DeploymentProviderType(AccessProviderTypeDogeCloud + "-cdn")
 	DeploymentProviderTypeDokploy                       = DeploymentProviderType(AccessProviderTypeDokploy)
+	DeploymentProviderTypeF5BigIP                       = DeploymentProviderType(AccessProviderTypeF5BigIP)
 	DeploymentProviderTypeFlexCDN                       = DeploymentProviderType(AccessProviderTypeFlexCDN)
 	DeploymentProviderTypeFlyIO                         = DeploymentProviderType(AccessProviderTypeFlyIO)
 	DeploymentProviderTypeFTP                           = DeploymentProviderType(AccessProviderTypeFTP)
