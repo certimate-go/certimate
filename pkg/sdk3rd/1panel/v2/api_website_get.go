@@ -16,27 +16,7 @@ type WebsiteGetRequest struct {
 type WebsiteGetResponse struct {
 	sdkResponseBase
 
-	Data *struct {
-		ID            int64  `json:"id"`
-		Alias         string `json:"alias"`
-		PrimaryDomain string `json:"primaryDomain"`
-		Protocol      string `json:"protocol"`
-		Type          string `json:"type"`
-		Status        string `json:"status"`
-		SitePath      string `json:"sitePath"`
-		Remark        string `json:"remark"`
-		Domains       []*struct {
-			ID        int64  `json:"id"`
-			Domain    string `json:"domain"`
-			Port      int32  `json:"port"`
-			SSL       bool   `json:"ssl"`
-			UpdatedAt string `json:"updatedAt"`
-			CreatedAt string `json:"createdAt"`
-		} `json:"domains,omitempty"`
-		WebsiteSSLId int64  `json:"webSiteSSLId"`
-		UpdatedAt    string `json:"updatedAt"`
-		CreatedAt    string `json:"createdAt"`
-	} `json:"data,omitempty"`
+	Data *WebsiteDetail `json:"data,omitempty"`
 }
 
 func (c *Client) WebsiteGet(websiteId int64) (*WebsiteGetResponse, error) {
