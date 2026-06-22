@@ -184,8 +184,8 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 
 			return fmt.Errorf("failed to execute sdk request 'ssl.DescribeCertificate': %w", err)
 		} else {
-			certSANDiff, _ := lo.Difference(lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName), cloudCertSANs)
-			if len(certSANDiff) == 0 { // 同域名证书需要删除
+			certSANMatched := lo.ElementsMatch(lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName), cloudCertSANs)
+			if certSANMatched { // 同域名证书需要删除
 				continue
 			}
 
