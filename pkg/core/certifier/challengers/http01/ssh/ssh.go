@@ -65,6 +65,7 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 		}
 		providerConfig.JumpServers = append(providerConfig.JumpServers, jumpServerCfg)
 	}
+	providerConfig.WebRootPath = config.WebRootPath
 
 	provider, err := internal.NewHTTPProviderConfig(providerConfig)
 	if err != nil {

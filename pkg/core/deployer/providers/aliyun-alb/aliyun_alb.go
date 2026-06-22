@@ -294,7 +294,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 
 		// 查询监听证书列表
 		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-listlistenercertificates
-		listenerCertificates := make([]alialb.ListListenerCertificatesResponseBodyCertificates, 0)
+		listenerExtCertificates := make([]alialb.ListListenerCertificatesResponseBodyCertificates, 0)
 		listListenerCertificatesToken := (*string)(nil)
 		for {
 			select {
@@ -319,8 +319,20 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 				break
 			}
 
-			for _, listenerCertificate := range listListenerCertificatesResp.Body.Certificates {
-				listenerCertificates = append(listenerCertificates, *listenerCertificate)
+			for _, certItem := range listListenerCertificatesResp.Body.Certificates {
+				if tea.BoolValue(certItem.IsDefault) {
+					continue
+				}
+
+				if !strings.EqualFold(tea.StringValue(certItem.CertificateType), "Server") {
+					continue
+				}
+
+				if !strings.EqualFold(tea.StringValue(certItem.Status), "Associated") {
+					continue
+				}
+
+				listenerExtCertificates = append(listenerExtCertificates, *certItem)
 			}
 
 			if len(listListenerCertificatesResp.Body.Certificates) == 0 || listListenerCertificatesResp.Body.NextToken == nil {
@@ -335,19 +347,11 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		// REF: https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-getcertificatedetail
 		certificateIsAlreadyAssociated := false
 		certificateIdsToDissociate := make([]string, 0)
-		if len(listenerCertificates) > 0 {
-			d.logger.Info("found listener certificates to deploy", slog.Any("listenerCertificates", listenerCertificates))
+		if len(listenerExtCertificates) > 0 {
+			d.logger.Info("found listener certificates in used", slog.Any("certificates", listenerExtCertificates))
 			var errs []error
 
-			for _, listenerCertificate := range listenerCertificates {
-				if tea.BoolValue(listenerCertificate.IsDefault) {
-					continue
-				}
-
-				if !strings.EqualFold(tea.StringValue(listenerCertificate.Status), "Associated") {
-					continue
-				}
-
+			for _, listenerCertificate := range listenerExtCertificates {
 				certIdWithRegion := tea.StringValue(listenerCertificate.CertificateId)
 				if certIdWithRegion == cloudCertId {
 					certificateIsAlreadyAssociated = true
@@ -376,14 +380,15 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 					errs = append(errs, fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err))
 					continue
 				} else {
-					certSANDiff, _ := lo.Difference(tea.StringSliceValue(getCertificateDetailResp.Body.SubjectAlternativeNames), cloudCertSANs)
-					if len(certSANDiff) == 0 { // 同域名证书需要删除
+					// 注意，虽然文档中存在 SubjectAlternativeNames 字段，但实际返回的数据结构中不包含
+					certSANMatched := lo.ElementsMatch(strings.Split(tea.StringValue(getCertificateDetailResp.Body.Domain), ","), cloudCertSANs)
+					if certSANMatched && lo.Contains(cloudCertSANs, d.config.Domain) { // 同域名证书需要删除
 						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
 
 					certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
-					if certNotAfter.Before(time.Now()) { // 过期证书需要删除
+					if !certNotAfter.IsZero() && certNotAfter.Before(time.Now()) { // 过期证书需要删除
 						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
 						continue
 					}
@@ -420,9 +425,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		// 解除关联监听和扩展证书
 		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-dissociateadditionalcertificatesfromlistener
 		if !certificateIsAlreadyAssociated && len(certificateIdsToDissociate) > 0 {
-			if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
-				return err
-			}
+			d.logger.Info("found listener certificates to dissociate", slog.Any("certificateIds", certificateIdsToDissociate))
 
 			const MAX_CERT_PER_REQUEST = 10
 			certIdChunks := lo.Chunk(certificateIdsToDissociate, MAX_CERT_PER_REQUEST)
@@ -431,6 +434,10 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 				case <-ctx.Done():
 					return ctx.Err()
 				default:
+					if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
+						return err
+					}
+
 					dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
 						ListenerId: tea.String(cloudListenerId),
 						Certificates: lo.Map(certIds, func(certId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {

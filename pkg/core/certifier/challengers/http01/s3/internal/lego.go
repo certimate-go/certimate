@@ -3,10 +3,12 @@ package internal
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/challenge/http01"
+	"github.com/go-acme/lego/v5/log"
 
 	"github.com/certimate-go/certimate/internal/tools/s3"
 )
@@ -52,6 +54,8 @@ func (p *HTTPProvider) Present(ctx context.Context, domain, token, keyAuth strin
 		return fmt.Errorf("s3: failed to upload file for HTTP challenge: %w", err)
 	}
 
+	log.Info("s3: authz file uploaded", slog.String("bucket", p.config.Bucket), slog.String("object", objectKey))
+
 	return nil
 }
 
@@ -65,6 +69,8 @@ func (p *HTTPProvider) CleanUp(ctx context.Context, domain, token, keyAuth strin
 	if err := client.RemoveObject(ctx, p.config.Bucket, objectKey); err != nil {
 		return fmt.Errorf("s3: failed to remove file after HTTP challenge: %w", err)
 	}
+
+	log.Info("s3: authz file removed", slog.String("bucket", p.config.Bucket), slog.String("object", objectKey))
 
 	return nil
 }
