@@ -180,9 +180,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				Version:       lo.ToPtr(wangsuCertVer),
 			},
 		},
-	}
-	if d.config.WebhookId != "" {
-		createDeploymentTaskReq.Webhook = lo.ToPtr(d.config.WebhookId)
+		Webhook: lo.EmptyableToPtr(d.config.WebhookId),
 	}
 	createDeploymentTaskResp, err := d.sdkClient.CreateDeploymentTaskWithContext(ctx, createDeploymentTaskReq)
 	d.logger.Debug("sdk request 'cdnpro.CreateCertificate'", slog.Any("request", createDeploymentTaskReq), slog.Any("response", createDeploymentTaskResp))

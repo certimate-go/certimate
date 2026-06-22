@@ -11,6 +11,7 @@ import (
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	awscred "github.com/aws/aws-sdk-go-v2/credentials"
 	awsiam "github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -92,11 +93,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		}
 
 		listServerCertificatesReq := &awsiam.ListServerCertificatesInput{
-			Marker:   listServerCertificatesMarker,
-			MaxItems: aws.Int32(1000),
-		}
-		if c.config.CertificatePath != "" {
-			listServerCertificatesReq.PathPrefix = aws.String(c.config.CertificatePath)
+			PathPrefix: lo.EmptyableToPtr(c.config.CertificatePath),
+			Marker:     listServerCertificatesMarker,
+			MaxItems:   aws.Int32(1000),
 		}
 		listServerCertificatesResp, err := c.sdkClient.ListServerCertificates(ctx, listServerCertificatesReq)
 		c.logger.Debug("sdk request 'iam.ListServerCertificates'", slog.Any("request", listServerCertificatesReq), slog.Any("response", listServerCertificatesResp))

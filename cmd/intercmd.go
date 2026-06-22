@@ -20,7 +20,7 @@ import (
 func NewInternalCommand(app core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "intercmd",
-		Short: "[INTERNAL] Internal dedicated for Certimate",
+		Short: "[RESERVED] PLEASE DO NOT USE!",
 	}
 
 	command.AddCommand(internalCertApplyCommand(app))
