@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"mime"
 	"net/http"
 	"net/url"
 	"strings"
@@ -45,6 +46,26 @@ type Notifier struct {
 }
 
 var _ Provider = (*Notifier)(nil)
+
+const (
+	contentTypeJson      = "application/json"
+	contentTypeForm      = "application/x-www-form-urlencoded"
+	contentTypeMultipart = "multipart/form-data"
+)
+
+var allowedContentTypes = map[string]bool{
+	contentTypeJson:      true,
+	contentTypeForm:      true,
+	contentTypeMultipart: true,
+}
+
+var allowedMethods = map[string]bool{
+	http.MethodGet:    true,
+	http.MethodPost:   true,
+	http.MethodPut:    true,
+	http.MethodPatch:  true,
+	http.MethodDelete: true,
+}
 
 func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	if config == nil {
@@ -90,11 +111,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	webhookMethod := strings.ToUpper(n.config.Method)
 	if webhookMethod == "" {
 		webhookMethod = http.MethodPost
-	} else if webhookMethod != http.MethodGet &&
-		webhookMethod != http.MethodPost &&
-		webhookMethod != http.MethodPut &&
-		webhookMethod != http.MethodPatch &&
-		webhookMethod != http.MethodDelete {
+	} else if !allowedMethods[webhookMethod] {
 		return nil, fmt.Errorf("unsupported webhook request method '%s'", webhookMethod)
 	}
 
@@ -105,16 +122,11 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	}
 
 	// 处理 Webhook 请求内容类型
-	const CONTENT_TYPE_JSON = "application/json"
-	const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded"
-	const CONTENT_TYPE_MULTIPART = "multipart/form-data"
 	webhookContentType := webhookHeaders.Get("Content-Type")
 	if webhookContentType == "" {
-		webhookContentType = CONTENT_TYPE_JSON
-		webhookHeaders.Set("Content-Type", CONTENT_TYPE_JSON)
-	} else if strings.HasPrefix(webhookContentType, CONTENT_TYPE_JSON) &&
-		strings.HasPrefix(webhookContentType, CONTENT_TYPE_FORM) &&
-		strings.HasPrefix(webhookContentType, CONTENT_TYPE_MULTIPART) {
+		webhookContentType = contentTypeJson
+		webhookHeaders.Set("Content-Type", contentTypeJson)
+	} else if mediaType, _, err := mime.ParseMediaType(webhookContentType); err != nil || !allowedContentTypes[mediaType] {
 		return nil, fmt.Errorf("unsupported webhook content type '%s'", webhookContentType)
 	}
 
@@ -131,7 +143,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 			return nil, fmt.Errorf("failed to unmarshal webhook data: %w", err)
 		}
 
-		if webhookMethod == http.MethodGet || webhookContentType == CONTENT_TYPE_FORM || webhookContentType == CONTENT_TYPE_MULTIPART {
+		if webhookMethod == http.MethodGet || webhookContentType == contentTypeForm || webhookContentType == contentTypeMultipart {
 			temp := make(map[string]string)
 			jsonb, err := json.Marshal(webhookData)
 			if err != nil {
@@ -161,11 +173,11 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 		req.SetQueryParams(webhookData.(map[string]string))
 	} else {
 		switch webhookContentType {
-		case CONTENT_TYPE_JSON:
+		case contentTypeJson:
 			req.SetBody(webhookData)
-		case CONTENT_TYPE_FORM:
+		case contentTypeForm:
 			req.SetFormData(webhookData.(map[string]string))
-		case CONTENT_TYPE_MULTIPART:
+		case contentTypeMultipart:
 			req.SetMultipartFormData(webhookData.(map[string]string))
 		}
 	}
