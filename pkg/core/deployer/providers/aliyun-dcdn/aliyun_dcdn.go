@@ -86,6 +86,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {

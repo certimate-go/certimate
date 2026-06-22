@@ -1,3 +1,5 @@
+// A simple SDK client for BaishanCloud.
+// API documentation: https://portal.baishancloud.com/track/document/api/1/1249
 package baishan
 
 import (
@@ -24,14 +26,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiToken")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://cdn.api.baishan.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetQueryParam("token", opts.ApiToken)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

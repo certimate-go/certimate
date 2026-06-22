@@ -42,7 +42,7 @@
 - 支持 DNS-01（即基于域名解析验证）、HTTP-01（即基于文件验证）两种质询方式。
 - 支持 PEM、PFX、JKS 等多种格式输出证书。
 - 支持 70+ 域名托管商（如阿里云、腾讯云、AWS、Cloudflare、GoDaddy 等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-dns-providers)）。
-- 支持 140+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-hosting-providers)）。
+- 支持 150+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-hosting-providers)）。
 - 支持邮件、钉钉、飞书、企业微信、Discord、Slack、Telegram 等多种通知渠道。
 - 支持 Let's Encrypt、Actalis、Google Trust Services、SSL.com、ZeroSSL 等多种 ACME 证书颁发机构。
 - 更多特性等待探索。

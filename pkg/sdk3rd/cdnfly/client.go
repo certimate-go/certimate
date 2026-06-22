@@ -1,3 +1,5 @@
+// A simple SDK client for Cdnfly.
+// API documentation: http://doc.cdnfly.com/shiyongjieshao.html
 package cdnfly
 
 import (
@@ -36,7 +38,7 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiSecret")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/v1").
 		SetHeader("Accept", "application/json").
 		SetHeader("API-Key", opts.ApiKey).
@@ -44,7 +46,7 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

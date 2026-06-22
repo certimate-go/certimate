@@ -107,8 +107,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			if err != nil {
 				return nil, err
 			}
+
 			domains := lo.Filter(domainCandidates, func(domainItem *veapig.ItemForListCustomDomainsOutput, _ int) bool {
-				return lo.FromPtr(domainItem.Domain) == d.config.Domain
+				return d.config.Domain == lo.FromPtr(domainItem.Domain)
 			})
 			if len(domains) == 0 {
 				return nil, fmt.Errorf("could not find domain")

@@ -1,6 +1,7 @@
 package unicloud
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -17,11 +18,15 @@ type CreateDomainWithCertResponse struct {
 }
 
 func (c *Client) CreateDomainWithCert(req *CreateDomainWithCertRequest) (*CreateDomainWithCertResponse, error) {
-	if err := c.ensureApiUserTokenExists(); err != nil {
+	return c.CreateDomainWithCertWithContext(context.Background(), req)
+}
+
+func (c *Client) CreateDomainWithCertWithContext(ctx context.Context, req *CreateDomainWithCertRequest) (*CreateDomainWithCertResponse, error) {
+	if err := c.ensureApiUserToken(ctx); err != nil {
 		return nil, err
 	}
 
 	resp := &CreateDomainWithCertResponse{}
-	err := c.sendRequestWithResult(http.MethodPost, "/host/create-domain-with-cert", req, resp)
+	err := c.sendRequestWithResult(ctx, http.MethodPost, "/host/create-domain-with-cert", req, resp)
 	return resp, err
 }

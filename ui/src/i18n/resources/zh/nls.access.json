@@ -78,6 +78,7 @@
         "placeholder": "搜索提供商……"
       }
     },
+
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "请输入 ACME EAB KID"
@@ -89,6 +90,7 @@
     "shared_allow_insecure_conns": {
       "label": "忽略 SSL/TLS 证书验证"
     },
+
     "1panel_server_url": {
       "label": "1Panel 服务地址",
       "placeholder": "请输入 1Panel 服务地址",
@@ -876,6 +878,26 @@
     },
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
+    },
+    "matrix_server_url": {
+      "label": "Matrix 服务地址",
+      "placeholder": "请输入 Matrix 服务地址"
+    },
+    "matrix_user_id": {
+      "label": "Matrix 用户 ID",
+      "placeholder": "请输入 Matrix 用户 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
+    },
+    "matrix_access_token": {
+      "label": "Matrix Access token",
+      "placeholder": "请输入 Matrix Access token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
+    },
+    "matrix_room_id": {
+      "label": "Matrix 房间 ID（可选）",
+      "placeholder": "请输入默认的 Matrix 房间 ID",
+      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
     },
     "mattermost_server_url": {
       "label": "Mattermost 服务地址",

@@ -51,18 +51,6 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
         />
       </Form.Item>
 
-      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
-        <Form.Item
-          name={[parentNamePath, "certificateId"]}
-          initialValue={initialValues.certificateId}
-          label={t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.label")}
-          rules={[formRule]}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.tooltip") }}></span>}
-        >
-          <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.placeholder")} />
-        </Form.Item>
-      </Show>
-
       <Show when={fieldResourceType === DEPLOY_TARGET_LOADBALANCER}>
         <Form.Item
           name={[parentNamePath, "loadbalancerId"]}
@@ -84,6 +72,18 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudELB = () => {
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_listener_id.tooltip") }}></span>}
         >
           <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_listener_id.placeholder")} />
+        </Form.Item>
+      </Show>
+
+      <Show when={fieldResourceType === DEPLOY_TARGET_CERTIFICATE}>
+        <Form.Item
+          name={[parentNamePath, "certificateId"]}
+          initialValue={initialValues.certificateId}
+          label={t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.label")}
+          rules={[formRule]}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.tooltip") }}></span>}
+        >
+          <Input placeholder={t("workflow_node.deploy.form.huaweicloud_elb_certificate_id.placeholder")} />
         </Form.Item>
       </Show>
     </>

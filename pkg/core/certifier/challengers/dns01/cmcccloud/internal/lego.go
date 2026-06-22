@@ -10,9 +10,10 @@ import (
 	"github.com/go-acme/lego/v5/challenge/dns01"
 	"github.com/go-acme/lego/v5/platform/env"
 	"github.com/samber/lo"
-	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns"
+	"gitlab.ecloud.com/ecloud/ecloudsdkcloudcore/config"
 	"gitlab.ecloud.com/ecloud/ecloudsdkclouddns/model"
-	"gitlab.ecloud.com/ecloud/ecloudsdkcore/config"
+
+	"github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/gitlab.ecloud.com/ecloud/ecloudsdkclouddns"
 )
 
 const (
@@ -34,9 +35,9 @@ type Config struct {
 	AccessKey string
 	SecretKey string
 
+	TTL                int
 	PropagationTimeout time.Duration
 	PollingInterval    time.Duration
-	TTL                int
 	ReadTimeout        int
 	ConnectTimeout     int
 }
@@ -51,11 +52,11 @@ type DNSProvider struct {
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		ReadTimeout:        env.GetOrDefaultInt(EnvReadTimeout, 30),
-		ConnectTimeout:     env.GetOrDefaultInt(EnvConnectTimeout, 30),
 		TTL:                env.GetOrDefaultInt(EnvTTL, 600),
 		PropagationTimeout: env.GetOrDefaultSecond(EnvPropagationTimeout, 10*time.Minute),
 		PollingInterval:    env.GetOrDefaultSecond(EnvPollingInterval, dns01.DefaultPollingInterval),
+		ReadTimeout:        env.GetOrDefaultInt(EnvReadTimeout, 30),
+		ConnectTimeout:     env.GetOrDefaultInt(EnvConnectTimeout, 30),
 	}
 }
 
@@ -78,10 +79,8 @@ func NewDNSProviderConfig(cfg *Config) (*DNSProvider, error) {
 	}
 
 	client := ecloudsdkclouddns.NewClient(&config.Config{
-		AccessKey: cfg.AccessKey,
-		SecretKey: cfg.SecretKey,
-		// 资源池常量见: https://ecloud.10086.cn/op-help-center/doc/article/54462
-		// 默认全局
+		AccessKey:      cfg.AccessKey,
+		SecretKey:      cfg.SecretKey,
 		PoolId:         "CIDC-CORE-00",
 		ReadTimeOut:    cfg.ReadTimeout,
 		ConnectTimeout: cfg.ConnectTimeout,

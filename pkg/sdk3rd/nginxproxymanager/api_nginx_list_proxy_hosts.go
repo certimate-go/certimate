@@ -18,7 +18,7 @@ func (c *Client) NginxListProxyHosts(req *NginxListProxyHostsRequest) (*NginxLis
 }
 
 func (c *Client) NginxListProxyHostsWithContext(ctx context.Context, req *NginxListProxyHostsRequest) (*NginxListProxyHostsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

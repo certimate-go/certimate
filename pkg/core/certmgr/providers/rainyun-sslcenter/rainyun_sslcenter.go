@@ -68,7 +68,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// SSL 证书上传
-	// REF: https://apifox.com/apidoc/shared/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943046
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter/post
 	sslCenterCreateReq := &rainyunsdk.SslCenterCreateRequest{
 		Cert: certPEM,
 		Key:  privkeyPEM,
@@ -96,7 +96,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	}
 
 	// SSL 证书替换操作
-	// REF: https://s.apifox.cn/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943049
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter-:id/put
 	sslCenterUpdateReq := &rainyunsdk.SslCenterUpdateRequest{
 		Cert: certPEM,
 		Key:  privkeyPEM,
@@ -118,8 +118,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 	}
 
 	// 获取 SSL 证书列表
-	// REF: https://apifox.com/apidoc/shared/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943046
-	// REF: https://apifox.com/apidoc/shared/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943048
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter/get
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter-:id/get
 	sslCenterListPage := 1
 	sslCenterListPerPage := 100
 	for {

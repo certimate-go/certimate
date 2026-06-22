@@ -1,3 +1,5 @@
+// A simple SDK client for WangsuCloud CDN.
+// API documentation: https://www.wangsu.com/document/api-doc/product
 package cdn
 
 import (
@@ -6,15 +8,15 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/openapi"
+	common "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/zz-shared-common"
 )
 
 type Client struct {
-	client *openapi.Client
+	client *common.Client
 }
 
-func NewClient(optFns ...openapi.OptionsFunc) (*Client, error) {
-	client, err := openapi.NewClient(optFns...)
+func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
+	client, err := common.NewClient(optFns...)
 	if err != nil {
 		return nil, err
 	}

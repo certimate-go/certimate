@@ -18,7 +18,7 @@ func (c *Client) NginxListDeadHosts(req *NginxListDeadHostsRequest) (*NginxListD
 }
 
 func (c *Client) NginxListDeadHostsWithContext(ctx context.Context, req *NginxListDeadHostsRequest) (*NginxListDeadHostsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

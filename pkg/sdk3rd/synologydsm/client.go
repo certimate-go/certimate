@@ -1,3 +1,4 @@
+// A mock HTTP client for Synology DSM.
 package synologydsm
 
 import (
@@ -38,7 +39,7 @@ func NewClient(serverUrl string) (*Client, error) {
 	client.rc = resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")).
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if client.synoToken != "" {
 				req.Header.Set("X-SYNO-TOKEN", client.synoToken)
 			}

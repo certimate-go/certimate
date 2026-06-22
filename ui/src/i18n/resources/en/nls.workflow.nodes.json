@@ -1428,6 +1428,40 @@
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
         "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
       },
+      "cmcccloud_cdn_domain": {
+        "label": "CMCC ECloud CDN domain",
+        "placeholder": "Please enter CMCC ECloud CDN domain name"
+      },
+      "cmcccloud_vlb_pool_id": {
+        "label": "CMCC ECloud pool ID",
+        "placeholder": "Please enter CMCC ECloud VLB pool ID  (e.g. CIDC-RP-29)",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/54462\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/54462</a>"
+      },
+      "cmcccloud_vlb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "VLB load balancer"
+          },
+          "listener": {
+            "label": "VLB listener"
+          }
+        }
+      },
+      "cmcccloud_vlb_loadbalancer_id": {
+        "label": "CMCC ECloud VLB load balancer ID",
+        "placeholder": "Please enter CMCC ECloud VLB load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_listener_id": {
+        "label": "CMCC ECloud VLB listener ID",
+        "placeholder": "Please enter CMCC ECloud VLB listener ID",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_snidomain": {
+        "label": "CMCC ECloud VLB SNI domain (Optional)",
+        "placeholder": "Please enter CMCC ECloud VLB SNI domain name",
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {
@@ -1454,9 +1488,6 @@
       },
       "ctcccloud_elb_deploy_target": {
         "option": {
-          "certificate": {
-            "label": "ELB certificate"
-          },
           "loadbalancer": {
             "label": "ELB load balancer"
           },
@@ -1606,11 +1637,6 @@
           }
         }
       },
-      "huaweicloud_elb_certificate_id": {
-        "label": "Huawei Cloud ELB certificate ID",
-        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
       "huaweicloud_elb_loadbalancer_id": {
         "label": "Huawei Cloud ELB load balancer ID",
         "placeholder": "Please enter Huawei Cloud ELB load balancer ID",
@@ -1620,6 +1646,11 @@
         "label": "Huawei Cloud ELB listener ID",
         "placeholder": "Please enter Huawei Cloud ELB listener ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>"
+      },
+      "huaweicloud_elb_certificate_id": {
+        "label": "Huawei Cloud ELB certificate ID",
+        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
       },
       "huaweicloud_live_region": {
         "label": "Huawei Cloud region",
@@ -1805,6 +1836,11 @@
         "placeholder": "Please enter Kingsoft Cloud CDN certificate ID",
         "tooltip": "For more information, see <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
+      "ksyun_slb_region": {
+        "label": "Kingsoft Cloud region",
+        "placeholder": "Please enter Kingsoft Cloud SLB region (e.g. cn-beijing-6)",
+        "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/directories/1164\" target=\"_blank\">https://endocs.ksyun.com/directories/1164</a>"
+      },
       "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {
@@ -1958,6 +1994,31 @@
       },
       "proxmoxve_auto_restart": {
         "label": "Auto restart Proxmox VE after deployment"
+      },
+      "qingcloud_lb_zone_id": {
+        "label": "QingCloud zone ID",
+        "placeholder": "Please enter QingCloud LBC zone ID (e.g. pek3a)",
+        "tooltip": "For more information, see <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
+      },
+      "qingcloud_lb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "LBC load balancer"
+          },
+          "listener": {
+            "label": "LBC listener"
+          }
+        }
+      },
+      "qingcloud_lb_loadbalancer_id": {
+        "label": "QingCloud LBC load balancer ID",
+        "placeholder": "Please enter QingCloud LBC load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
+      },
+      "qingcloud_lb_listener_id": {
+        "label": "QingCloud LBC listener ID",
+        "placeholder": "Please enter QingCloud LBC listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
       },
       "qiniu_cdn_domain": {
         "label": "Qiniu CDN domain",
@@ -2689,6 +2750,9 @@
           },
           "image": {
             "label": "Image"
+          },
+          "third": {
+            "label": "Third"
           }
         }
       },
@@ -2759,7 +2823,7 @@
       "webhook_data": {
         "label": "Webhook data (Optional)",
         "placeholder": "Please enter Webhook data",
-        "help": "Notes: Leave it blank to use the default Webhook data provided by the credential.",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
         "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>: <br>The primary domain or IP address of the certificate.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>: <br>The domains or IP addresses of the certificate, separated by semicolons.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>: <br>The PEM format content of the certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>: <br>The PEM format content of the server certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>: <br>The PEM format content of the intermediate CA certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>: <br>The PEM format content of the private key file.</li></ol>"
       },
       "webhook_timeout": {
@@ -2865,7 +2929,7 @@
       "discordbot_channel_id": {
         "label": "Discord channel ID (Optional)",
         "placeholder": "Please enter Discord channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the credential."
+        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
       },
       "email_format": {
         "label": "Message format (Optional)",
@@ -2884,15 +2948,20 @@
         "placeholder": "Please enter receiver email address",
         "help": "Notes: Leave it blank to use the default receiver email address provided by the selected credential."
       },
+      "matrix_room_id": {
+        "label": "Matrix room ID (Optional)",
+        "placeholder": "Please enter Matrix room ID",
+        "help": "Notes: Leave it blank to use the default room ID provided by the selected credential."
+      },
       "mattermost_channel_id": {
         "label": "Mattermost channel ID (Optional)",
         "placeholder": "Please enter Mattermost channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the credential."
+        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
       },
       "slackbot_channel_id": {
         "label": "Slack channel ID (Optional)",
         "placeholder": "Please enter Slack channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the credential."
+        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
       },
       "telegrambot_chat_id": {
         "label": "Telegram chat ID (Optional)",
@@ -2902,7 +2971,7 @@
       "webhook_data": {
         "label": "Webhook data (Optional)",
         "placeholder": "Please enter Webhook data",
-        "help": "Notes: Leave it blank to use the default Webhook data provided by the credential.",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
         "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_NOTIFIER_SUBJECT}</strong>: <br>The subject of notification.</li><li><strong>${CERTIMATE_NOTIFIER_MESSAGE}</strong>: <br>The message of notification.</li></ol>"
       },
       "webhook_timeout": {

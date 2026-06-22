@@ -42,7 +42,7 @@ An open-source and free self-hosted SSL certificates ACME tool, automates the fu
 - Supports DNS-01 challenge and HTTP-01 challenge both.
 - Supports various certificate formats such as PEM, PFX, JKS.
 - Supports more than 70+ domain registrars (e.g., AWS, Cloudflare, GoDaddy, Alibaba Cloud, Tencent Cloud, etc. [Check out full providers](https://docs.certimate.me/en-US/docs/reference/providers#supported-dns-providers)).
-- Supports more than 140+ deployment destinations (e.g., Kubernetes, CDN, WAF, load balancers, etc. [Check out full providers](https://docs.certimate.me/en-US/docs/reference/providers#supported-hosting-providers)).
+- Supports more than 150+ deployment destinations (e.g., Kubernetes, CDN, WAF, load balancers, etc. [Check out full providers](https://docs.certimate.me/en-US/docs/reference/providers#supported-hosting-providers)).
 - Supports multiple notification channels including email, Discord, Slack, Telegram, DingTalk, Feishu, WeCom, and more.
 - Supports multiple ACME CAs including Let's Encrypt, Actalis, Google Trust Services, SSL.com, ZeroSSL, and more.
 - More features waiting to be discovered.

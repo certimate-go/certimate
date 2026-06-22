@@ -1,0 +1,120 @@
+import { getI18n, useTranslation } from "react-i18next";
+import { Form, Input, Radio } from "antd";
+import { createSchemaFieldRule } from "antd-zod";
+import { z } from "zod";
+
+import Show from "@/components/Show";
+import { isDomain } from "@/utils/validator";
+
+import { useFormNestedFieldsContext } from "./_context";
+
+const DOMAIN_MATCH_PATTERN_EXACT = "exact" as const;
+const DOMAIN_MATCH_PATTERN_WILDCARD = "wildcard" as const;
+const DOMAIN_MATCH_PATTERN_CERTSAN = "certsan" as const;
+
+const BizDeployNodeConfigFieldsProviderCMCCCloudCDN = () => {
+  const { i18n, t } = useTranslation();
+
+  const { parentNamePath } = useFormNestedFieldsContext();
+  const formSchema = z.object({
+    [parentNamePath]: getSchema({ i18n }),
+  });
+  const formRule = createSchemaFieldRule(formSchema);
+  const formInst = Form.useFormInstance();
+  const initialValues = getInitialValues();
+
+  const fieldDomainMatchPattern = Form.useWatch([parentNamePath, "domainMatchPattern"], { form: formInst, preserve: true });
+
+  return (
+    <>
+      <Form.Item
+        name={[parentNamePath, "domainMatchPattern"]}
+        initialValue={initialValues.domainMatchPattern}
+        label={t("workflow_node.deploy.form.shared_domain_match_pattern.label")}
+        extra={
+          fieldDomainMatchPattern === DOMAIN_MATCH_PATTERN_EXACT ? (
+            <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.option.exact.help.wildcard") }}></span>
+          ) : (
+            void 0
+          )
+        }
+        rules={[formRule]}
+      >
+        <Radio.Group
+          options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
+            label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
+            value: s,
+          }))}
+        />
+      </Form.Item>
+
+      <Show when={fieldDomainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN}>
+        <Form.Item
+          name={[parentNamePath, "domain"]}
+          initialValue={initialValues.domain}
+          label={t("workflow_node.deploy.form.cmcccloud_cdn_domain.label")}
+          rules={[formRule]}
+        >
+          <Input placeholder={t("workflow_node.deploy.form.cmcccloud_cdn_domain.placeholder")} />
+        </Form.Item>
+      </Show>
+    </>
+  );
+};
+
+const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
+  return {
+    domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
+    domain: "",
+  };
+};
+
+const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
+  const { t } = i18n;
+
+  return z
+    .object({
+      domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
+      domain: z.string().nullish(),
+    })
+    .superRefine((values, ctx) => {
+      if (values.domainMatchPattern) {
+        switch (values.domainMatchPattern) {
+          case DOMAIN_MATCH_PATTERN_EXACT:
+            {
+              const scDomain = z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid"));
+              const spDomain = scDomain.safeParse(values.domain);
+              if (!spDomain.success) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: z.treeifyError(spDomain.error).errors.join(),
+                  path: ["domain"],
+                });
+              }
+            }
+            break;
+
+          case DOMAIN_MATCH_PATTERN_WILDCARD:
+            {
+              const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+              const spDomain = scDomain.safeParse(values.domain);
+              if (!spDomain.success) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: z.treeifyError(spDomain.error).errors.join(),
+                  path: ["domain"],
+                });
+              }
+            }
+            break;
+        }
+      }
+    });
+};
+
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderCMCCCloudCDN, {
+  getInitialValues,
+  getSchema,
+});
+
+export default _default;

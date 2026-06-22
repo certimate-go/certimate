@@ -7,7 +7,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.13.1
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates v1.5.0
 	github.com/G-Core/gcorelabscdn-go v1.0.37
-	github.com/KscSDK/ksc-sdk-go v0.22.0
 	github.com/akamai/AkamaiOPEN-edgegrid-golang/v13 v13.2.0
 	github.com/alibabacloud-go/alb-20200616/v2 v2.3.2
 	github.com/alibabacloud-go/apig-20240327/v7 v7.0.5
@@ -29,7 +28,6 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/alibabacloud-go/vod-20170321/v4 v4.11.3
 	github.com/alibabacloud-go/waf-openapi-20211001/v7 v7.8.1
-	github.com/aliyun/alibabacloud-oss-go-sdk-v2 v1.5.1
 	github.com/aws/aws-sdk-go-v2 v1.41.12
 	github.com/aws/aws-sdk-go-v2/config v1.32.23
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.22
@@ -54,7 +52,6 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/minio/minio-go/v7 v7.2.0
-	github.com/mohuatech/mohuacloud-go-sdk v0.0.0-20251115182757-6fba4d0a4c47
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/pkg/sftp v1.13.10
 	github.com/pocketbase/dbx v1.12.0
@@ -78,20 +75,22 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.112
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.111
 	github.com/ucloud/ucloud-sdk-go v0.22.77
-	github.com/volcengine/ve-tos-golang-sdk/v2 v2.9.5
 	github.com/volcengine/volc-sdk-golang v1.0.250
-	github.com/volcengine/volcengine-go-sdk v1.2.34
+	github.com/volcengine/volcengine-go-sdk v1.2.35
 	github.com/wneessen/go-mail v0.7.3
 	github.com/xhit/go-str2duration/v2 v2.1.0
+	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
 	github.com/zenlayer/zenlayercloud-sdk-go v0.2.39
+	gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0
 	gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1
-	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0
+	gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0
+	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.6
+	gitlab.ecloud.com/ecloud/ecloudsdkvlb v1.0.7
 	golang.org/x/crypto v0.52.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
 	golang.org/x/sys v0.45.0
 	google.golang.org/api v0.283.0
-	google.golang.org/protobuf v1.36.11
 	k8s.io/api v0.35.3
 	k8s.io/apimachinery v0.35.3
 	k8s.io/client-go v0.35.3
@@ -107,7 +106,6 @@ require (
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.7.2 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-fc-util v0.0.7 // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
-	github.com/aws/aws-sdk-go v1.55.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/route53 v1.62.8 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
@@ -279,6 +277,7 @@ require (
 	golang.org/x/tools v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260523011958-0a33c5d7ca68 // indirect
 	google.golang.org/grpc v1.81.1 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/ini.v1 v1.67.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.72.3 // indirect
@@ -287,6 +286,14 @@ require (
 	modernc.org/sqlite v1.52.0 // indirect
 )
 
-replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.0 => ./pkg/sdk3rd-forks/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.0
+replace gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcloudcore@v1.0.0+mod
 
-replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forks/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1
+replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1+mod
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcmcdn@v1.0.0
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.2 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.2
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.6 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.6
+
+replace gitlab.ecloud.com/ecloud/ecloudsdkvlb v1.0.7 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkvlb@v1.0.7

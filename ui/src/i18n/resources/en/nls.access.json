@@ -879,6 +879,26 @@
     "litessl_eab": {
       "guide": "Learn more about using EAB key in LiteSSL: <br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
+    "matrix_server_url": {
+      "label": "Matrix server URL",
+      "placeholder": "Please enter Matrix server URL"
+    },
+    "matrix_user_id": {
+      "label": "Matrix user ID",
+      "placeholder": "Please enter Matrix user ID",
+      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
+    },
+    "matrix_access_token": {
+      "label": "Matrix access token",
+      "placeholder": "Please enter Matrix access token",
+      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
+    },
+    "matrix_room_id": {
+      "label": "Matrix room ID (Optional)",
+      "placeholder": "Please enter the default Matrix room ID",
+      "help": "Notes: It can be overrided in the workflows. Invite the bot to the room first.",
+      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
+    },
     "mattermost_server_url": {
       "label": "Mattermost server URL",
       "placeholder": "Please enter Mattermost server URL"
@@ -895,7 +915,7 @@
       "label": "Mattermost channel ID (Optional)",
       "placeholder": "Please enter the default Mattermost channel ID",
       "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details.” You can directly see the channel ID on the pop-up page."
+      "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details”. You can directly see the channel ID on the pop-up page."
     },
     "mohua_username": {
       "label": "Mohua Cloud username",

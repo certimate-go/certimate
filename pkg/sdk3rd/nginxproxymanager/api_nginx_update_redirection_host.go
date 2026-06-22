@@ -23,7 +23,7 @@ func (c *Client) NginxUpdateRedirectionHostWithContext(ctx context.Context, host
 		return nil, fmt.Errorf("sdkerr: bad request: unset hostId")
 	}
 
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

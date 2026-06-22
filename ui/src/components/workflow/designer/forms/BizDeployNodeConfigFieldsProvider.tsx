@@ -51,6 +51,8 @@ import BizDeployNodeConfigFieldsProviderBytePlusMediaLive from "./BizDeployNodeC
 import BizDeployNodeConfigFieldsProviderBytePlusTOS from "./BizDeployNodeConfigFieldsProviderBytePlusTOS";
 import BizDeployNodeConfigFieldsProviderCdnfly from "./BizDeployNodeConfigFieldsProviderCdnfly";
 import BizDeployNodeConfigFieldsProviderCloudflareSSL from "./BizDeployNodeConfigFieldsProviderCloudflareSSL";
+import BizDeployNodeConfigFieldsProviderCMCCCloudCDN from "./BizDeployNodeConfigFieldsProviderCMCCCloudCDN";
+import BizDeployNodeConfigFieldsProviderCMCCCloudVLB from "./BizDeployNodeConfigFieldsProviderCMCCCloudVLB";
 import BizDeployNodeConfigFieldsProviderCPanel from "./BizDeployNodeConfigFieldsProviderCPanel";
 import BizDeployNodeConfigFieldsProviderCTCCCloudAO from "./BizDeployNodeConfigFieldsProviderCTCCCloudAO";
 import BizDeployNodeConfigFieldsProviderCTCCCloudCDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudCDN";
@@ -87,6 +89,7 @@ import BizDeployNodeConfigFieldsProviderMohuaMVH from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderNetlify from "./BizDeployNodeConfigFieldsProviderNetlify";
 import BizDeployNodeConfigFieldsProviderNginxProxyManager from "./BizDeployNodeConfigFieldsProviderNginxProxyManager";
 import BizDeployNodeConfigFieldsProviderProxmoxVE from "./BizDeployNodeConfigFieldsProviderProxmoxVE";
+import BizDeployNodeConfigFieldsProviderQingCloudLB from "./BizDeployNodeConfigFieldsProviderQingCloudLB";
 import BizDeployNodeConfigFieldsProviderQiniuCDN from "./BizDeployNodeConfigFieldsProviderQiniuCDN";
 import BizDeployNodeConfigFieldsProviderQiniuKodo from "./BizDeployNodeConfigFieldsProviderQiniuKodo";
 import BizDeployNodeConfigFieldsProviderQiniuPili from "./BizDeployNodeConfigFieldsProviderQiniuPili";
@@ -194,6 +197,8 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.BYTEPLUS_TOS]: BizDeployNodeConfigFieldsProviderBytePlusTOS,
   [DEPLOYMENT_PROVIDERS.CDNFLY]: BizDeployNodeConfigFieldsProviderCdnfly,
   [DEPLOYMENT_PROVIDERS.CLOUDFLARE_SSL]: BizDeployNodeConfigFieldsProviderCloudflareSSL,
+  [DEPLOYMENT_PROVIDERS.CMCCCLOUD_CDN]: BizDeployNodeConfigFieldsProviderCMCCCloudCDN,
+  [DEPLOYMENT_PROVIDERS.CMCCCLOUD_VLB]: BizDeployNodeConfigFieldsProviderCMCCCloudVLB,
   [DEPLOYMENT_PROVIDERS.CPANEL]: BizDeployNodeConfigFieldsProviderCPanel,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_AO]: BizDeployNodeConfigFieldsProviderCTCCCloudAO,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_CDN]: BizDeployNodeConfigFieldsProviderCTCCCloudCDN,
@@ -230,6 +235,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.NETLIFY]: BizDeployNodeConfigFieldsProviderNetlify,
   [DEPLOYMENT_PROVIDERS.NGINXPROXYMANAGER]: BizDeployNodeConfigFieldsProviderNginxProxyManager,
   [DEPLOYMENT_PROVIDERS.PROXMOXVE]: BizDeployNodeConfigFieldsProviderProxmoxVE,
+  [DEPLOYMENT_PROVIDERS.QINGCLOUD_LB]: BizDeployNodeConfigFieldsProviderQingCloudLB,
   [DEPLOYMENT_PROVIDERS.QINIU_CDN]: BizDeployNodeConfigFieldsProviderQiniuCDN,
   [DEPLOYMENT_PROVIDERS.QINIU_KODO]: BizDeployNodeConfigFieldsProviderQiniuKodo,
   [DEPLOYMENT_PROVIDERS.QINIU_PILI]: BizDeployNodeConfigFieldsProviderQiniuPili,

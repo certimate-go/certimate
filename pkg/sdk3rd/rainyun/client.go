@@ -1,3 +1,5 @@
+// A simple SDK client for Rainyun.
+// API documentation: https://api.rainyun.com/
 package rainyun
 
 import (
@@ -24,14 +26,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://api.v2.rainyun.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetHeader("X-API-Key", options.ApiKey)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

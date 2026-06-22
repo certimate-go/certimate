@@ -1,9 +1,9 @@
 ﻿package cms
 
 import (
-	"github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/openapi"
+	common "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/zz-shared-common"
 )
 
-func WithAkSk(ak, sk string) openapi.OptionsFunc {
-	return openapi.WithAkSk(ak, sk)
+func WithAkSk(ak, sk string) common.OptionsFunc {
+	return common.WithAkSk(ak, sk)
 }

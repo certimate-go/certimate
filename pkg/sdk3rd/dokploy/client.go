@@ -1,3 +1,5 @@
+// A simple SDK client for Dokploy.
+// API documentation: https://docs.dokploy.com/docs/api
 package dokploy
 
 import (
@@ -33,14 +35,14 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetHeader("X-Api-Key", opts.ApiKey)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -85,7 +87,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) doRequestWithResult(req *resty.Request, res interface{}) (*resty.Response, error) {
+func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}

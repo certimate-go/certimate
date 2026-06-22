@@ -1,6 +1,9 @@
+// A simple SDK client for GoEdge.
+// API documentation: https://goedge.cloud/docs/API/List.md
 package goedge
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -20,9 +23,9 @@ type Client struct {
 	accessKeyId string
 	accessKey   string
 
-	accessToken    string
-	accessTokenExp time.Time
-	accessTokenMtx sync.Mutex
+	token   string
+	tokenAt time.Time
+	tokenMu sync.Mutex
 
 	rc *resty.Client
 }
@@ -62,9 +65,9 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			if client.accessToken != "" {
-				req.Header.Set("X-Edge-Access-Token", client.accessToken)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if client.token != "" {
+				req.Header.Set("X-Edge-Access-Token", client.token)
 			}
 
 			return nil
@@ -141,10 +144,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureAccessTokenExists() error {
-	c.accessTokenMtx.Lock()
-	defer c.accessTokenMtx.Unlock()
-	if c.accessToken != "" && c.accessTokenExp.After(time.Now()) {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" && c.tokenAt.After(time.Now()) {
 		return nil
 	}
 
@@ -157,6 +160,7 @@ func (c *Client) ensureAccessTokenExists() error {
 			"accessKeyId": c.accessKeyId,
 			"accessKey":   c.accessKey,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type getAPIAccessTokenResponse struct {
@@ -171,10 +175,19 @@ func (c *Client) ensureAccessTokenExists() error {
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
 	} else if rCode := result.GetCode(); rCode != 200 {
-		return fmt.Errorf("sdkerr: failed to get goedge access token: code='%d', message='%s'", rCode, result.GetMessage())
+		return fmt.Errorf("sdkerr: auth error: code='%d', message='%s'", rCode, result.GetMessage())
 	} else {
-		c.accessToken = result.Data.Token
-		c.accessTokenExp = time.Unix(result.Data.ExpiresAt, 0)
+		if result.Data == nil || result.Data.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
+
+		tokenAt := time.Unix(result.Data.ExpiresAt, 0)
+		if tokenAt.IsZero() {
+			return fmt.Errorf("sdkerr: auth error: received invalid token expiration")
+		}
+
+		c.token = result.Data.Token
+		c.tokenAt = tokenAt
 	}
 
 	return nil

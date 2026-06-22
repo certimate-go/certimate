@@ -17,11 +17,12 @@ func init() {
 		}
 
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
-			AccessKeyId:     credentials.AccessKeyId,
-			SecretAccessKey: credentials.SecretAccessKey,
-			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
-			Bucket:          xmaps.GetString(options.ProviderExtendedConfig, "bucket"),
-			Domain:          xmaps.GetString(options.ProviderExtendedConfig, "domain"),
+			AccessKeyId:         credentials.AccessKeyId,
+			SecretAccessKey:     credentials.SecretAccessKey,
+			EnterpriseProjectId: credentials.EnterpriseProjectId,
+			Region:              xmaps.GetString(options.ProviderExtendedConfig, "region"),
+			Bucket:              xmaps.GetString(options.ProviderExtendedConfig, "bucket"),
+			Domain:              xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 		})
 		return provider, err
 	})

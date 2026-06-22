@@ -22,9 +22,9 @@ func init() {
 			EnterpriseProjectId: credentials.EnterpriseProjectId,
 			Region:              xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			DeployTarget:        xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
-			CertificateId:       xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 			LoadbalancerId:      xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),
 			ListenerId:          xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
+			CertificateId:       xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 		})
 		return provider, err
 	})

@@ -1,3 +1,5 @@
+// A simple SDK client for Bunny.
+// API documentation: https://docs.bunny.net/api-reference
 package bunny
 
 import (
@@ -23,14 +25,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://api.bunny.net").
 		SetHeader("Accept", "application/json").
 		SetHeader("AccessKey", opts.ApiKey).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

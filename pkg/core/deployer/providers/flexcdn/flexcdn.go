@@ -97,7 +97,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	}
 
 	// 修改证书
-	// REF: https://flexcdn.cloud/dev/api/service/SSLCertService?role=user#updateSSLCert
+	// REF: https://flexcdn.cn/developer/api/service/SSLCertService
 	updateSSLCertReq := &flexcdnsdk.UpdateSSLCertRequest{
 		SSLCertId:   d.config.CertificateId,
 		IsOn:        true,

@@ -26,7 +26,7 @@ import (
 func main() {
 	pb := app.GetApp().(*pocketbase.PocketBase)
 	if len(os.Args) < 2 {
-		slog.Error("[CERTIMATE] missing exec args, maybe you forget the 'serve' command?")
+		slog.Error("[CERTIMATE] missing exec args, maybe you forgot the 'serve' command?")
 		os.Exit(1)
 		return
 	}

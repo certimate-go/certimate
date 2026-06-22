@@ -1,3 +1,5 @@
+// A simple SDK client for CacheFly.
+// API documentation: https://api.cachefly.com/api/v2/docs/api/
 package cachefly
 
 import (
@@ -24,14 +26,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiToken")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://api.cachefly.com/api/2.5").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetHeader("X-CF-Authorization", "Bearer "+opts.ApiToken)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {

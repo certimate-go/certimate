@@ -1,3 +1,5 @@
+// An extension SDK client for UCloud CDN service.
+// Based on github.com/ucloud/ucloud-sdk-go.
 package ucdn
 
 import (

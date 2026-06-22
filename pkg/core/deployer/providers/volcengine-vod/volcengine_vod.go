@@ -8,11 +8,10 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	vevodbiz "github.com/volcengine/volc-sdk-golang/service/vod/models/business"
-	vevodreq "github.com/volcengine/volc-sdk-golang/service/vod/models/request"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
+	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
-	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volc-sdk-golang/service/vod"
+	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volcengine-go-sdk/service/vod20260101"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
@@ -45,7 +44,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *vevod.Vod
+	sdkClient  *vevod.VOD20260101
 	sdkCertmgr core.Certmgr
 }
 
@@ -56,9 +55,10 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client := vevod.NewInstance()
-	client.SetAccessKey(config.AccessKeyId)
-	client.SetSecretKey(config.SecretAccessKey)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
 
 	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
@@ -179,10 +179,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	domains := make([]string, 0)
 
-	// 获取空间域名列表
-	// REF: https://www.volcengine.com/docs/4/106062
-	listDomainDetailOffset := 0
-	listDomainDetailLimit := 1000
+	// 获取域名列表
+	// REF: https://www.volcengine.com/docs/4/2389927
+	listVodDomainPageNum := 1
+	listVodDomainPageSize := 100
 	for {
 		select {
 		case <-ctx.Done():
@@ -190,47 +190,29 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		default:
 		}
 
-		listDomainReq := &vevodreq.VodListDomainRequest{
-			SpaceName:         d.config.SpaceName,
-			DomainType:        d.config.DomainType,
-			SourceStationType: 1,
-			Offset:            int32(listDomainDetailOffset),
-			Limit:             int32(listDomainDetailLimit),
+		listVodDomainReq := &vevod.ListVodDomainsInput{
+			SpaceName:  ve.String(d.config.SpaceName),
+			DomainType: ve.String(convertDomainType2CloudDomainType(d.config.DomainType)),
+			ListCdnDomainsParam: &vevod.ListCdnDomainsParamForListVodDomainsInput{
+				PageNum:  ve.Int64(int64(listVodDomainPageNum)),
+				PageSize: ve.Int64(int64(listVodDomainPageSize)),
+			},
 		}
-		listDomainResp, _, err := d.sdkClient.ListDomain(listDomainReq)
-		d.logger.Debug("sdk request 'vod.ListDomain'", slog.Any("request", listDomainReq), slog.Any("response", listDomainResp))
+		listVodDomainResp, err := d.sdkClient.ListVodDomainsWithContext(ctx, listVodDomainReq)
+		d.logger.Debug("sdk request 'vod.ListVodDomain'", slog.Any("request", listVodDomainReq), slog.Any("response", listVodDomainResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'vod.ListDomain': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'vod.ListVodDomain': %w", err)
 		}
 
-		if listDomainResp.Result == nil {
+		for _, domainItem := range listVodDomainResp.Domains {
+			domains = append(domains, ve.StringValue(domainItem.Domain))
+		}
+
+		if len(listVodDomainResp.Domains) < listVodDomainPageSize {
 			break
 		}
 
-		var domainInstances []*vevodbiz.VodDomainInstanceInfo
-		switch d.config.DomainType {
-		case DOMAIN_TYPE_PLAY:
-			domainInstances = listDomainResp.GetResult().GetPlayInstanceInfo().GetByteInstances()
-		case DOMAIN_TYPE_IMAGE:
-			domainInstances = listDomainResp.GetResult().GetImageInstanceInfo().GetByteInstances()
-		default:
-			return nil, fmt.Errorf("unsupported domain type: '%s'", d.config.DomainType)
-		}
-
-		for _, domainInstance := range domainInstances {
-			if domainInstance.Domains == nil {
-				continue
-			}
-			for _, domainItem := range domainInstance.Domains {
-				domains = append(domains, domainItem.Domain)
-			}
-		}
-
-		if listDomainResp.Result.Total <= int64(listDomainDetailOffset+listDomainDetailLimit) {
-			break
-		}
-
-		listDomainDetailOffset += listDomainDetailLimit
+		listVodDomainPageNum++
 	}
 
 	return domains, nil
@@ -238,25 +220,51 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId string) error {
 	// 更新域名配置
-	// REF: https://www.volcengine.com/docs/4/1317310
-	updateDomainConfigReq := &vevodreq.VodUpdateDomainConfigRequest{
-		SpaceName:  d.config.SpaceName,
-		DomainType: d.config.DomainType,
-		Domain:     domain,
-		Config: &vevodbiz.VodDomainConfig{
-			HTTPS: &vevodbiz.HTTPS{
+	// REF: https://www.volcengine.com/docs/4/2389907
+	updateVodDomainConfigReq := &vevod.UpdateVodDomainConfigInput{
+		SpaceName:  ve.String(d.config.SpaceName),
+		DomainType: ve.String(convertDomainType2CloudDomainType(d.config.DomainType)),
+		UpdateCdnConfigParam: &vevod.UpdateCdnConfigParamForUpdateVodDomainConfigInput{
+			Domain: ve.String(domain),
+			HTTPS: &vevod.HTTPSForUpdateVodDomainConfigInput{
 				Switch: ve.Bool(true),
-				CertInfo: &vevodbiz.CertInfo{
+				CertInfo: &vevod.CertInfoForUpdateVodDomainConfigInput{
 					CertId: ve.String(cloudCertId),
 				},
 			},
 		},
 	}
-	updateDomainConfigResp, _, err := d.sdkClient.UpdateDomainConfig(updateDomainConfigReq)
-	d.logger.Debug("sdk request 'vod.UpdateDomainConfig'", slog.Any("request", updateDomainConfigReq), slog.Any("response", updateDomainConfigResp))
+	updateVodDomainConfigResp, err := d.sdkClient.UpdateVodDomainConfigWithContext(ctx, updateVodDomainConfigReq)
+	d.logger.Debug("sdk request 'vod.UpdateVodDomainConfig'", slog.Any("request", updateVodDomainConfigReq), slog.Any("response", updateVodDomainConfigResp))
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func createSDKClient(accessKeyId, secretAccessKey string) (*vevod.VOD20260101, error) {
+	config := ve.NewConfig().
+		WithAkSk(accessKeyId, secretAccessKey)
+
+	session, err := vesession.NewSession(config)
+	if err != nil {
+		return nil, err
+	}
+
+	client := vevod.New(session)
+	return client, nil
+}
+
+func convertDomainType2CloudDomainType(domainType string) string {
+	switch domainType {
+	case DOMAIN_TYPE_PLAY:
+		return "vod_play"
+	case DOMAIN_TYPE_IMAGE:
+		return "vod_image"
+	case DOMAIN_TYPE_THIRD:
+		return "third"
+	default:
+		return domainType
+	}
 }

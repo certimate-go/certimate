@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"time"
-
-	"github.com/KscSDK/ksc-sdk-go/ksc"
-	ksckcm "github.com/KscSDK/ksc-sdk-go/service/kcm"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ksyun-slb"
 )
 
 type (
@@ -22,6 +19,10 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 金山云 SecretAccessKey。
 	SecretAccessKey string `json:"secretAccessKey"`
+	// 金山云项目 ID。
+	ProjectId int64 `json:"projectId,omitempty"`
+	// 金山云地域。
+	Region string `json:"region"`
 	// 部署目标。
 	DeployTarget string `json:"deployTarget"`
 	// 证书 ID。
@@ -30,9 +31,9 @@ type DeployerConfig struct {
 }
 
 type Deployer struct {
-	config    *DeployerConfig
-	logger    *slog.Logger
-	sdkClient *ksckcm.Kcm
+	config     *DeployerConfig
+	logger     *slog.Logger
+	sdkCertmgr core.Certmgr
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -42,15 +43,20 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
+	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
+		AccessKeyId:     config.AccessKeyId,
+		SecretAccessKey: config.SecretAccessKey,
+		ProjectId:       config.ProjectId,
+		Region:          config.Region,
+	})
 	if err != nil {
-		return nil, fmt.Errorf("could not create client: %w", err)
+		return nil, fmt.Errorf("could not create certmgr: %w", err)
 	}
 
 	return &Deployer{
-		config:    config,
-		logger:    slog.Default(),
-		sdkClient: client,
+		config:     config,
+		logger:     slog.Default(),
+		sdkCertmgr: pcertmgr,
 	}, nil
 }
 
@@ -60,6 +66,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -82,25 +90,13 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		return fmt.Errorf("config `certificateId` is required")
 	}
 
-	// 更新证书信息
-	// REF: https://docs.ksyun.com/documents/2121
-	modifyCertificateInput := map[string]any{
-		"CertificateId":   d.config.CertificateId,
-		"CertificateName": fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
-		"PublicKey":       certPEM,
-		"PrivateKey":      privkeyPEM,
-	}
-	modifyCertificateOutput, err := d.sdkClient.ModifyCertificateWithContext(ctx, &modifyCertificateInput)
-	d.logger.Debug("sdk request 'kcm.ModifyCertificate'", slog.Any("request", modifyCertificateInput), slog.Any("response", modifyCertificateOutput))
+	// 替换证书
+	rplres, err := d.sdkCertmgr.Replace(ctx, d.config.CertificateId, certPEM, privkeyPEM)
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'kcm.ModifyCertificate': %w", err)
+		return fmt.Errorf("failed to replace certificate file: %w", err)
+	} else {
+		d.logger.Info("ssl certificate replaced", slog.Any("result", rplres))
 	}
 
 	return nil
-}
-
-func createSDKClient(accessKeyId, secretAccessKey string) (*ksckcm.Kcm, error) {
-	region := "cn-beijing-6"
-	client := ksckcm.SdkNew(ksc.NewClient(accessKeyId, secretAccessKey), &ksc.Config{Region: &region})
-	return client, nil
 }

@@ -5,15 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
-	"github.com/KscSDK/ksc-sdk-go/ksc"
-	ksccdnv1 "github.com/KscSDK/ksc-sdk-go/service/cdnv1"
-	"github.com/go-viper/mapstructure/v2"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	ksyuncdnsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ksyun/cdn"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -27,6 +24,8 @@ type DeployerConfig struct {
 	AccessKeyId string `json:"accessKeyId"`
 	// 金山云 SecretAccessKey。
 	SecretAccessKey string `json:"secretAccessKey"`
+	// 金山云项目 ID。
+	ProjectId int64 `json:"projectId,omitempty"`
 	// 部署目标。
 	DeployTarget string `json:"deployTarget"`
 	// 域名匹配模式。
@@ -42,7 +41,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *ksccdnv1.Cdnv1
+	sdkClient *ksyuncdnsdk.Client
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -93,8 +92,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM string) error {
+	_, err := d.getAllDomains(ctx)
+	if err != nil {
+		return err
+	}
+
 	// 获取待部署的域名列表
-	var domains []string
+	var domainIds []string
 	switch d.config.DomainMatchPattern {
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
@@ -102,7 +106,20 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return fmt.Errorf("config `domain` is required")
 			}
 
-			domains = []string{d.config.Domain}
+			domainCandidates, err := d.getAllDomains(ctx)
+			if err != nil {
+				return err
+			}
+			domains := lo.Filter(domainCandidates, func(domainItem *ksyuncdnsdk.CDNDomain, _ int) bool {
+				return d.config.Domain == domainItem.DomainName
+			})
+			if len(domains) == 0 {
+				return fmt.Errorf("could not find domain")
+			}
+
+			domainIds = lo.Map(domains, func(domainItem *ksyuncdnsdk.CDNDomain, _ int) string {
+				return domainItem.DomainId
+			})
 		}
 
 	case DOMAIN_MATCH_PATTERN_WILDCARD:
@@ -111,21 +128,21 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return fmt.Errorf("config `domain` is required")
 			}
 
-			if strings.HasPrefix(d.config.Domain, "*.") {
-				domainCandidates, err := d.getAllDomains(ctx)
-				if err != nil {
-					return err
-				}
-
-				domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
-					return xcerthostname.IsMatch(d.config.Domain, domain)
-				})
-				if len(domains) == 0 {
-					return fmt.Errorf("could not find any domains matched by wildcard")
-				}
-			} else {
-				domains = []string{d.config.Domain}
+			domainCandidates, err := d.getAllDomains(ctx)
+			if err != nil {
+				return err
 			}
+
+			domains := lo.Filter(domainCandidates, func(domainItem *ksyuncdnsdk.CDNDomain, _ int) bool {
+				return xcerthostname.IsMatch(d.config.Domain, domainItem.DomainName)
+			})
+			if len(domains) == 0 {
+				return fmt.Errorf("could not find any domains matched by wildcard")
+			}
+
+			domainIds = lo.Map(domains, func(domainItem *ksyuncdnsdk.CDNDomain, _ int) string {
+				return domainItem.DomainId
+			})
 		}
 
 	case DOMAIN_MATCH_PATTERN_CERTSAN:
@@ -135,12 +152,16 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 				return err
 			}
 
-			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
-				return xcerthostname.IsMatchByCertificatePEM(certPEM, domain)
+			domains := lo.Filter(domainCandidates, func(domainItem *ksyuncdnsdk.CDNDomain, _ int) bool {
+				return xcerthostname.IsMatchByCertificatePEM(certPEM, domainItem.DomainName)
 			})
 			if len(domains) == 0 {
 				return fmt.Errorf("could not find any domains matched by certificate")
 			}
+
+			domainIds = lo.Map(domains, func(domainItem *ksyuncdnsdk.CDNDomain, _ int) string {
+				return domainItem.DomainId
+			})
 		}
 
 	default:
@@ -148,18 +169,18 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	}
 
 	// 遍历更新域名证书
-	if len(domains) == 0 {
+	if len(domainIds) == 0 {
 		d.logger.Info("no cdn domains to deploy")
 	} else {
-		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
+		d.logger.Info("found cdn domains to deploy", slog.Any("domainIds", domainIds))
 		var errs []error
 
-		for _, domain := range domains {
+		for _, domainId := range domainIds {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
-				if err := d.updateDomainCertificate(ctx, domain, certPEM, privkeyPEM); err != nil {
+				if err := d.updateDomainCertificate(ctx, domainId, certPEM, privkeyPEM); err != nil {
 					errs = append(errs, err)
 				}
 			}
@@ -180,14 +201,14 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 	// 更新证书
 	// REF: https://docs.ksyun.com/documents/259
-	setCertificateInput := map[string]any{
-		"CertificateId":     d.config.CertificateId,
-		"CertificateName":   fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
-		"ServerCertificate": certPEM,
-		"PrivateKey":        privkeyPEM,
+	setCertificateReq := &ksyuncdnsdk.SetCertificateRequest{
+		CertificateId:     lo.ToPtr(d.config.CertificateId),
+		CertificateName:   lo.ToPtr(fmt.Sprintf("certimate-%d", time.Now().UnixMilli())),
+		ServerCertificate: lo.ToPtr(certPEM),
+		PrivateKey:        lo.ToPtr(privkeyPEM),
 	}
-	setCertificateOutput, err := d.sdkClient.SetCertificatePostWithContext(ctx, &setCertificateInput)
-	d.logger.Debug("sdk request 'cdn.SetCertificate'", slog.Any("request", setCertificateInput), slog.Any("response", setCertificateOutput))
+	setCertificateResp, err := d.sdkClient.SetCertificateWithContext(ctx, setCertificateReq)
+	d.logger.Debug("sdk request 'cdn.SetCertificate'", slog.Any("request", setCertificateReq), slog.Any("response", setCertificateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.SetCertificate': %w", err)
 	}
@@ -195,8 +216,8 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	return nil
 }
 
-func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
-	domains := make([]string, 0)
+func (d *Deployer) getAllDomains(ctx context.Context) ([]*ksyuncdnsdk.CDNDomain, error) {
+	domains := make([]*ksyuncdnsdk.CDNDomain, 0)
 
 	// 查询域名列表
 	// REF: https://docs.ksyun.com/documents/198
@@ -209,38 +230,28 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		default:
 		}
 
-		getCdnDomainsInput := map[string]any{
-			"PageNumber": getCdnDomainsPageNumber,
-			"PageSize":   getCdnDomainsPageSize,
+		getCdnDomainsReq := &ksyuncdnsdk.GetCDNDomainsRequest{
+			ProjectId:  lo.IfF(d.config.ProjectId != 0, func() *int64 { return lo.ToPtr(d.config.ProjectId) }).Else(nil),
+			PageNumber: lo.ToPtr(int32(getCdnDomainsPageNumber)),
+			PageSize:   lo.ToPtr(int32(getCdnDomainsPageSize)),
 		}
-		getCdnDomainsOutput, err := d.sdkClient.GetCdnDomainsPostWithContext(ctx, &getCdnDomainsInput)
-		d.logger.Debug("sdk request 'cdn.GetCdnDomains'", slog.Any("request", getCdnDomainsInput), slog.Any("response", getCdnDomainsOutput))
+		getCdnDomainsResp, err := d.sdkClient.GetCDNDomainsWithContext(ctx, getCdnDomainsReq)
+		d.logger.Debug("sdk request 'cdn.GetCdnDomains'", slog.Any("request", getCdnDomainsReq), slog.Any("response", getCdnDomainsResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'cdn.GetCdnDomains': %w", err)
 		}
 
-		type GetCdnDomainsResponse struct {
-			PageNumber int32 `json:"PageNumber"`
-			PageSize   int32 `json:"PageSize"`
-			TotalCount int32 `json:"TotalCount"`
-			Domains    []*struct {
-				DomainId     string `json:"DomainId"`
-				DomainName   string `json:"DomainName"`
-				Cname        string `json:"Cname"`
-				CdnType      string `json:"CdnType"`
-				CreatedTime  string `json:"CreatedTime"`
-				ModifiedTime string `json:"ModifiedTime"`
-				Region       string `json:"Region"`
-			} `json:"Domains"`
-		}
-		var getCdnDomainsResp *GetCdnDomainsResponse
-		mapstructure.Decode(getCdnDomainsOutput, &getCdnDomainsResp)
-		if getCdnDomainsResp == nil {
+		if getCdnDomainsResp.Domains == nil {
 			break
 		}
 
+		ignoredStatuses := []string{"offline", "icp_checking", "icp_check_failed", "locking", "locked"}
 		for _, domainItem := range getCdnDomainsResp.Domains {
-			domains = append(domains, domainItem.DomainName)
+			if lo.Contains(ignoredStatuses, domainItem.DomainStatus) {
+				continue
+			}
+
+			domains = append(domains, domainItem)
 		}
 
 		if len(getCdnDomainsResp.Domains) < getCdnDomainsPageSize {
@@ -253,84 +264,18 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) findDomainIdByDomain(ctx context.Context, domain string) (string, error) {
-	// 查询域名列表
-	// REF: https://docs.ksyun.com/documents/198
-	getCdnDomainsPageNumber := 1
-	getCdnDomainsPageSize := 100
-	for {
-		select {
-		case <-ctx.Done():
-			return "", ctx.Err()
-		default:
-		}
-
-		getCdnDomainsInput := map[string]any{
-			"PageNumber": getCdnDomainsPageNumber,
-			"PageSize":   getCdnDomainsPageSize,
-			"DomainName": domain,
-			"FuzzyMatch": "off",
-		}
-		getCdnDomainsOutput, err := d.sdkClient.GetCdnDomainsPostWithContext(ctx, &getCdnDomainsInput)
-		d.logger.Debug("sdk request 'cdn.GetCdnDomains'", slog.Any("request", getCdnDomainsInput), slog.Any("response", getCdnDomainsOutput))
-		if err != nil {
-			return "", fmt.Errorf("failed to execute sdk request 'cdn.GetCdnDomains': %w", err)
-		}
-
-		type GetCdnDomainsResponse struct {
-			PageNumber int32 `json:"PageNumber"`
-			PageSize   int32 `json:"PageSize"`
-			TotalCount int32 `json:"TotalCount"`
-			Domains    []*struct {
-				DomainId     string `json:"DomainId"`
-				DomainName   string `json:"DomainName"`
-				Cname        string `json:"Cname"`
-				CdnType      string `json:"CdnType"`
-				CreatedTime  string `json:"CreatedTime"`
-				ModifiedTime string `json:"ModifiedTime"`
-				Region       string `json:"Region"`
-			} `json:"Domains"`
-		}
-		var getCdnDomainsResp *GetCdnDomainsResponse
-		mapstructure.Decode(getCdnDomainsOutput, &getCdnDomainsResp)
-		if getCdnDomainsResp == nil {
-			break
-		}
-
-		for _, domainItem := range getCdnDomainsResp.Domains {
-			if strings.EqualFold(domainItem.DomainName, domain) {
-				return domainItem.DomainId, nil
-			}
-		}
-
-		if len(getCdnDomainsResp.Domains) < getCdnDomainsPageSize {
-			break
-		}
-
-		getCdnDomainsPageNumber++
-	}
-
-	return "", fmt.Errorf("could not find domain '%s'", domain)
-}
-
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, certPEM, privkeyPEM string) error {
-	// 获取域名 ID
-	domainId, err := d.findDomainIdByDomain(ctx, domain)
-	if err != nil {
-		return err
-	}
-
+func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId string, certPEM, privkeyPEM string) error {
 	// 为加速域名配置证书接口
 	// REF: https://docs.ksyun.com/documents/261
-	configCertificateInput := map[string]any{
-		"Enable":            "on",
-		"DomainIds":         domainId,
-		"CertificateName":   fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
-		"ServerCertificate": certPEM,
-		"PrivateKey":        privkeyPEM,
+	configCertificateReq := &ksyuncdnsdk.ConfigCertificateRequest{
+		Enable:            lo.ToPtr("on"),
+		DomainIds:         lo.ToPtr(cloudDomainId),
+		CertificateName:   lo.ToPtr(fmt.Sprintf("certimate-%d", time.Now().UnixMilli())),
+		ServerCertificate: lo.ToPtr(certPEM),
+		PrivateKey:        lo.ToPtr(privkeyPEM),
 	}
-	configCertificateOutput, err := d.sdkClient.ConfigCertificatePostWithContext(ctx, &configCertificateInput)
-	d.logger.Debug("sdk request 'cdn.ConfigCertificate'", slog.Any("request", configCertificateInput), slog.Any("response", configCertificateOutput))
+	configCertificateResp, err := d.sdkClient.ConfigCertificateWithContext(ctx, configCertificateReq)
+	d.logger.Debug("sdk request 'cdn.ConfigCertificate'", slog.Any("request", configCertificateReq), slog.Any("response", configCertificateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.ConfigCertificate': %w", err)
 	}
@@ -338,8 +283,13 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey string) (*ksccdnv1.Cdnv1, error) {
-	region := "cn-beijing-6"
-	client := ksccdnv1.SdkNew(ksc.NewClient(accessKeyId, secretAccessKey), &ksc.Config{Region: &region})
+func createSDKClient(accessKeyId, secretAccessKey string) (*ksyuncdnsdk.Client, error) {
+	client, err := ksyuncdnsdk.NewClient(
+		ksyuncdnsdk.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	return client, nil
 }

@@ -1,3 +1,5 @@
+// A simple SDK client for Dynv6.
+// API documentation: https://dynv6.com/docs/apis
 package dynv6
 
 import (
@@ -24,14 +26,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset httpToken")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://dynv6.com/api/v2").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", "Bearer "+opts.HttpToken).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -71,7 +73,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) doRequestWithResult(req *resty.Request, res interface{}) (*resty.Response, error) {
+func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}

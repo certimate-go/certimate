@@ -398,6 +398,13 @@ type AccessConfigForLiteSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
+type AccessConfigForMatrix struct {
+	ServerUrl   string `json:"serverUrl"`
+	UserId      string `json:"userId"`
+	AccessToken string `json:"accessToken"`
+	RoomId      string `json:"roomId,omitempty"`
+}
+
 type AccessConfigForMattermost struct {
 	ServerUrl string `json:"serverUrl"`
 	Username  string `json:"username"`

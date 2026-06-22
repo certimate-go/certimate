@@ -1427,6 +1427,40 @@
         "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
         "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
       },
+      "cmcccloud_cdn_domain": {
+        "label": "移动云 CDN 加速域名",
+        "placeholder": "请输入移动云 CDN 加速域名"
+      },
+      "cmcccloud_vlb_pool_id": {
+        "label": "移动云资源池 ID",
+        "placeholder": "请输入移动云 VLB 资源池 ID（例如：CIDC-RP-29）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/54462\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/54462</a>"
+      },
+      "cmcccloud_vlb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
+          },
+          "listener": {
+            "label": "部署到指定 HTTPS 监听器"
+          }
+        }
+      },
+      "cmcccloud_vlb_loadbalancer_id": {
+        "label": "移动云 VLB 负载均衡器 ID",
+        "placeholder": "请输入移动云 VLB 负载均衡器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_listener_id": {
+        "label": "移动云 VLB 监听器 ID",
+        "placeholder": "请输入移动云 VLB 监听器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_snidomain": {
+        "label": "移动云 VLB 扩展域名（可选）",
+        "placeholder": "请输入移动云 VLB 扩展域名",
+        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {
@@ -1602,11 +1636,6 @@
           }
         }
       },
-      "huaweicloud_elb_certificate_id": {
-        "label": "华为云 ELB 证书 ID",
-        "placeholder": "请输入华为云 ELB 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
       "huaweicloud_elb_loadbalancer_id": {
         "label": "华为云 ELB 负载均衡器 ID",
         "placeholder": "请输入华为云 ELB 负载均衡器 ID",
@@ -1616,6 +1645,11 @@
         "label": "华为云 ELB 监听器 ID",
         "placeholder": "请输入华为云 ELB 监听器 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/list/grid</a>"
+      },
+      "huaweicloud_elb_certificate_id": {
+        "label": "华为云 ELB 证书 ID",
+        "placeholder": "请输入华为云 ELB 证书 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/elbCert</a>"
       },
       "huaweicloud_live_region": {
         "label": "华为云服务区域",
@@ -1801,6 +1835,11 @@
         "placeholder": "请输入金山云 CDN 证书 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
+      "ksyun_slb_region": {
+        "label": "金山云服务地域",
+        "placeholder": "请输入金山云 SLB 服务地域（例如：cn-beijing-6）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ksyun.com/documents/1164\" target=\"_blank\">https://docs.ksyun.com/documents/1164</a>"
+      },
       "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {
@@ -1954,6 +1993,31 @@
       },
       "proxmoxve_auto_restart": {
         "label": "部署后自动重启 Proxmox VE 服务"
+      },
+      "qingcloud_lb_zone_id": {
+        "label": "青云服务区域 ID",
+        "placeholder": "请输入青云 ELB 服务区域 ID（例如：pek3a）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
+      },
+      "qingcloud_lb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
+          },
+          "listener": {
+            "label": "部署到指定 HTTPS 监听器"
+          }
+        }
+      },
+      "qingcloud_lb_loadbalancer_id": {
+        "label": "青云 LB 负载均衡器 ID",
+        "placeholder": "请输入青云 LB 负载均衡器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
+      },
+      "qingcloud_lb_listener_id": {
+        "label": "青云 LB 监听器 ID",
+        "placeholder": "请输入青云 LB 监听器 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
       },
       "qiniu_cdn_domain": {
         "label": "七牛云 CDN 加速域名",
@@ -2685,6 +2749,9 @@
           },
           "image": {
             "label": "封面加速域名"
+          },
+          "third": {
+            "label": "自定义源站加速域名"
           }
         }
       },
@@ -2848,6 +2915,7 @@
       "params_config": {
         "label": "参数设置"
       },
+
       "discordbot_channel_id": {
         "label": "Discord 频道 ID（可选）",
         "placeholder": "请输入 Discord 频道 ID",
@@ -2869,6 +2937,11 @@
         "label": "收件人邮箱（可选）",
         "placeholder": "请输入收件人邮箱以覆盖默认值",
         "help": "提示：不填写时，将使用所选通知渠道授权的默认收件人邮箱。"
+      },
+      "matrix_room_id": {
+        "label": "Matrix 房间 ID（可选）",
+        "placeholder": "请输入 Matrix 房间 ID",
+        "help": "提示：不填写时，将使用所选通知渠道授权的默认房间 ID。"
       },
       "mattermost_channel_id": {
         "label": "Mattermost 频道 ID（可选）",

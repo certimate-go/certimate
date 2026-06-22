@@ -23,7 +23,7 @@ func (c *Client) NginxUpdateDeadHostWithContext(ctx context.Context, hostId int6
 		return nil, fmt.Errorf("sdkerr: bad request: unset hostId")
 	}
 
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

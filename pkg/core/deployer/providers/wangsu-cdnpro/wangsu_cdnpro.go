@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"regexp"
 	"strconv"
 	"time"
@@ -231,7 +232,7 @@ func createSDKClient(accessKeyId, accessKeySecret string) (*wangsucdnpro.Client,
 
 func encryptPrivateKey(privkeyPEM string, apiKey string, timestamp int64) (string, error) {
 	date := time.Unix(timestamp, 0).UTC()
-	dateStr := date.Format("Mon, 02 Jan 2006 15:04:05 GMT")
+	dateStr := date.Format(http.TimeFormat)
 
 	h := hmac.New(sha256.New, []byte(apiKey))
 	h.Write([]byte(dateStr))

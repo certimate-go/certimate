@@ -13,6 +13,7 @@ var (
 	fTestKeyPath     string
 	fAccessKeyId     string
 	fSecretAccessKey string
+	fRegion          string
 	fCertificateId   string
 )
 
@@ -21,6 +22,7 @@ func init() {
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
 	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
+	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fCertificateId, "CERTIFICATEID")
 }
 
@@ -32,6 +34,7 @@ Shell command to run this test:
 	--KSYUNSLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--KSYUNSLB_ACCESSKEYID="your-access-key-id" \
 	--KSYUNSLB_SECRETACCESSKEY="your-secret-access-key" \
+	--KSYUNSLB_REGION="cn-beijing-6" \
 	--KSYUNSLB_CERTIFICATEID="your-certificate-id"
 */
 func TestProvider(t *testing.T) {
@@ -41,6 +44,7 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
+			Region:          fRegion,
 			DeployTarget:    impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:   fCertificateId,
 		})

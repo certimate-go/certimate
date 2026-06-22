@@ -1,3 +1,5 @@
+// A simple SDK client for Cloudflare.
+// API documentation: https://developers.cloudflare.com/api/
 package cloudflare
 
 import (
@@ -24,14 +26,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiToken")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://api.cloudflare.com/client/v4").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", "Bearer "+opts.ApiToken).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -89,7 +91,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
 			if err := res.GetAPIError(); err != nil {
-				return resp, fmt.Errorf("sdkerr: errors='%s'", err.Error())
+				return resp, fmt.Errorf("sdkerr: api error: %s", err.Error())
 			}
 		}
 	}
