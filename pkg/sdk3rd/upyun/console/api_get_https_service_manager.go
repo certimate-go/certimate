@@ -39,7 +39,7 @@ func (c *Client) GetHttpsServiceManagerWithContext(ctx context.Context, domain s
 		return nil, fmt.Errorf("sdkerr: bad request: unset domain")
 	}
 
-	if err := c.ensureCookieExists(); err != nil {
+	if err := c.ensureCookies(ctx); err != nil {
 		return nil, err
 	}
 

@@ -23,7 +23,7 @@ func (c *Client) DnsDeleteRecordWithContext(ctx context.Context, domainId string
 		return nil, fmt.Errorf("sdkerr: bad request: unset recordId")
 	}
 
-	if err := c.ensureAccessTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

@@ -19,7 +19,7 @@ func (c *Client) NginxCreateCertificate(req *NginxCreateCertificateRequest) (*Ng
 }
 
 func (c *Client) NginxCreateCertificateWithContext(ctx context.Context, req *NginxCreateCertificateRequest) (*NginxCreateCertificateResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

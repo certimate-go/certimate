@@ -29,7 +29,7 @@ func (c *Client) SetVirtualHostSSLWithContext(ctx context.Context, hostId string
 		return nil, fmt.Errorf("sdkerr: bad request: unset hostId")
 	}
 
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

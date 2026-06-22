@@ -18,7 +18,7 @@ func (c *Client) NginxListStreams(req *NginxListStreamsRequest) (*NginxListStrea
 }
 
 func (c *Client) NginxListStreamsWithContext(ctx context.Context, req *NginxListStreamsRequest) (*NginxListStreamsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

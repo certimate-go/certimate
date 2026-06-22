@@ -30,7 +30,7 @@ func (c *Client) UploadHttpsCertificate(req *UploadHttpsCertificateRequest) (*Up
 }
 
 func (c *Client) UploadHttpsCertificateWithContext(ctx context.Context, req *UploadHttpsCertificateRequest) (*UploadHttpsCertificateResponse, error) {
-	if err := c.ensureCookieExists(); err != nil {
+	if err := c.ensureCookies(ctx); err != nil {
 		return nil, err
 	}
 

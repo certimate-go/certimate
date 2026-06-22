@@ -29,7 +29,7 @@ func (c *Client) UpdateSSLCert(req *UpdateSSLCertRequest) (*UpdateSSLCertRespons
 }
 
 func (c *Client) UpdateSSLCertWithContext(ctx context.Context, req *UpdateSSLCertRequest) (*UpdateSSLCertResponse, error) {
-	if err := c.ensureAccessTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

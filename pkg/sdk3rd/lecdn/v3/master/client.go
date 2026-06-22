@@ -2,6 +2,7 @@
 package master
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -20,8 +21,8 @@ type Client struct {
 	username string
 	password string
 
-	accessToken    string
-	accessTokenMtx sync.Mutex
+	token   string
+	tokenMu sync.Mutex
 
 	rc *resty.Client
 }
@@ -55,8 +56,8 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.accessToken != "" {
-				req.Header.Set("Authorization", "Bearer "+client.accessToken)
+			if client.token != "" {
+				req.Header.Set("Authorization", "Bearer "+client.token)
 			}
 
 			return nil
@@ -133,10 +134,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureAccessTokenExists() error {
-	c.accessTokenMtx.Lock()
-	defer c.accessTokenMtx.Unlock()
-	if c.accessToken != "" {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" {
 		return nil
 	}
 
@@ -148,6 +149,7 @@ func (c *Client) ensureAccessTokenExists() error {
 			"username": c.username,
 			"password": c.password,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type loginResponse struct {
@@ -163,7 +165,11 @@ func (c *Client) ensureAccessTokenExists() error {
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
 	} else {
-		c.accessToken = result.Data.Token
+		if result.Data == nil || result.Data.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
+
+		c.token = result.Data.Token
 	}
 
 	return nil

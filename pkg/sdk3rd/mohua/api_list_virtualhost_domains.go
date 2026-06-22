@@ -22,7 +22,7 @@ func (c *Client) ListVirtualHostDomainsWithContext(ctx context.Context, hostId s
 		return nil, fmt.Errorf("sdkerr: bad request: unset hostId")
 	}
 
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

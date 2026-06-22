@@ -3,6 +3,7 @@
 package v3
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -22,9 +23,9 @@ type Client struct {
 	tenantId     string
 	tenantName   string
 
-	accessToken    string
-	accessTokenExp time.Time
-	accessTokenMtx sync.Mutex
+	token   string
+	tokenAt time.Time
+	tokenMu sync.Mutex
 
 	rc *resty.Client
 }
@@ -57,8 +58,8 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.accessToken != "" {
-				req.Header.Set("X-Auth-Token", client.accessToken)
+			if client.token != "" {
+				req.Header.Set("X-Auth-Token", client.token)
 			}
 
 			return nil
@@ -135,10 +136,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureAccessTokenExists() error {
-	c.accessTokenMtx.Lock()
-	defer c.accessTokenMtx.Unlock()
-	if c.accessToken != "" && c.accessTokenExp.After(time.Now()) {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" && c.tokenAt.After(time.Now()) {
 		return nil
 	}
 
@@ -175,6 +176,7 @@ func (c *Client) ensureAccessTokenExists() error {
 				},
 			},
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type createAuthTokenResponse struct {
@@ -189,20 +191,20 @@ func (c *Client) ensureAccessTokenExists() error {
 	if httpresp, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
 	} else if rCode := result.GetCode(); rCode != 0 {
-		return fmt.Errorf("sdkerr: failed to get conoha access token: code='%d', error='%s'", rCode, result.GetError())
+		return fmt.Errorf("sdkerr: auth error: code='%d', error='%s'", rCode, result.GetError())
 	} else {
 		token := httpresp.Header().Get("X-Subject-Token")
 		if token == "" {
-			return fmt.Errorf("sdkerr: api error: received empty auth token")
+			return fmt.Errorf("sdkerr: auth error: received empty token")
 		}
 
-		tokenExp, err := time.Parse(time.RFC3339Nano, result.Token.ExpiresAt)
+		tokenAt, err := time.Parse(time.RFC3339Nano, result.Token.ExpiresAt)
 		if err != nil {
-			return fmt.Errorf("sdkerr: api error: received invalid auth token expiration: %w", err)
+			return fmt.Errorf("sdkerr: auth error: received invalid token expiration: %w", err)
 		}
 
-		c.accessToken = token
-		c.accessTokenExp = tokenExp
+		c.token = token
+		c.tokenAt = tokenAt
 	}
 
 	return nil

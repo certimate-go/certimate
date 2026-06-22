@@ -18,7 +18,7 @@ func (c *Client) NginxListCertificates(req *NginxListCertificatesRequest) (*Ngin
 }
 
 func (c *Client) NginxListCertificatesWithContext(ctx context.Context, req *NginxListCertificatesRequest) (*NginxListCertificatesResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

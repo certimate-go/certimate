@@ -2,6 +2,7 @@
 package console
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,8 +18,8 @@ type Client struct {
 	username string
 	password string
 
-	loginCookie    string
-	loginCookieMtx sync.Mutex
+	cookies   string
+	cookiesMu sync.Mutex
 
 	rc *resty.Client
 }
@@ -46,8 +47,8 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.loginCookie != "" {
-				req.Header.Set("Cookie", client.loginCookie)
+			if client.cookies != "" {
+				req.Header.Set("Cookie", client.cookies)
 			}
 
 			return nil
@@ -124,10 +125,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureCookieExists() error {
-	c.loginCookieMtx.Lock()
-	defer c.loginCookieMtx.Unlock()
-	if c.loginCookie != "" {
+func (c *Client) ensureCookies(ctx context.Context) error {
+	c.cookiesMu.Lock()
+	defer c.cookiesMu.Unlock()
+	if c.cookies != "" {
 		return nil
 	}
 
@@ -139,6 +140,7 @@ func (c *Client) ensureCookieExists() error {
 			"username": c.username,
 			"password": c.password,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type signinResponse struct {
@@ -154,9 +156,14 @@ func (c *Client) ensureCookieExists() error {
 	if err != nil {
 		return err
 	} else if !result.Data.Result {
-		return fmt.Errorf("sdkerr: failed to signin upyun console")
+		return fmt.Errorf("sdkerr: auth error")
 	} else {
-		c.loginCookie = httpresp.Header().Get("Set-Cookie")
+		cookies := httpresp.Header().Get("Set-Cookie")
+		if cookies == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty cookies")
+		}
+
+		c.cookies = cookies
 	}
 
 	return nil

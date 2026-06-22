@@ -3,6 +3,7 @@
 package nginxproxymanager
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -21,8 +22,8 @@ type Client struct {
 	username string
 	password string
 
-	jwtToken    string
-	jwtTokenMtx sync.Mutex
+	token   string
+	tokenMu sync.Mutex
 
 	rc *resty.Client
 }
@@ -46,7 +47,7 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 	client := &Client{
 		username: opts.Username,
 		password: opts.Password,
-		jwtToken: opts.JwtToken,
+		token:    opts.JwtToken,
 	}
 	client.rc = resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
@@ -54,8 +55,8 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.jwtToken != "" {
-				req.Header.Set("Authorization", "Bearer "+client.jwtToken)
+			if client.token != "" {
+				req.Header.Set("Authorization", "Bearer "+client.token)
 			}
 
 			return nil
@@ -135,10 +136,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Respon
 	return resp, nil
 }
 
-func (c *Client) ensureJwtTokenExists() error {
-	c.jwtTokenMtx.Lock()
-	defer c.jwtTokenMtx.Unlock()
-	if c.jwtToken != "" {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" {
 		return nil
 	}
 
@@ -150,6 +151,7 @@ func (c *Client) ensureJwtTokenExists() error {
 			"identity": c.username,
 			"secret":   c.password,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type tokensResponse struct {
@@ -162,9 +164,13 @@ func (c *Client) ensureJwtTokenExists() error {
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
 	} else if rError := result.GetError(); rError != "" {
-		return fmt.Errorf("sdkerr: failed to create npm token: error='%s'", rError)
+		return fmt.Errorf("sdkerr: auth error: error='%s'", rError)
 	} else {
-		c.jwtToken = result.Token
+		if result.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
+
+		c.token = result.Token
 	}
 
 	return nil

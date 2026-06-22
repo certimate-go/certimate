@@ -2,6 +2,7 @@
 package mohua
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -18,8 +19,8 @@ type Client struct {
 	username string
 	password string
 
-	jwtToken    string
-	jwtTokenMtx sync.Mutex
+	token   string
+	tokenMu sync.Mutex
 
 	rc *resty.Client
 }
@@ -37,7 +38,7 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 	client := &Client{
 		username: opts.Username,
 		password: opts.Password,
-		jwtToken: opts.JwtToken,
+		token:    opts.JwtToken,
 	}
 	client.rc = resty.New().
 		SetBaseURL("https://cloud.mhjz1.cn").
@@ -45,8 +46,8 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.jwtToken != "" {
-				req.Header.Set("JWT", "Bearer "+client.jwtToken)
+			if client.token != "" {
+				req.Header.Set("JWT", "Bearer "+client.token)
 			}
 
 			return nil
@@ -126,10 +127,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Respon
 	return resp, nil
 }
 
-func (c *Client) ensureJwtTokenExists() error {
-	c.jwtTokenMtx.Lock()
-	defer c.jwtTokenMtx.Unlock()
-	if c.jwtToken != "" {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" {
 		return nil
 	}
 
@@ -154,7 +155,11 @@ func (c *Client) ensureJwtTokenExists() error {
 	} else if rStatus := result.GetStatus(); rStatus != 200 {
 		return fmt.Errorf("sdkerr: failed to create npm token: status='%d', msg='%s'", rStatus, result.GetMsg())
 	} else {
-		c.jwtToken = result.JWT
+		if result.JWT == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
+
+		c.token = result.JWT
 	}
 
 	return nil

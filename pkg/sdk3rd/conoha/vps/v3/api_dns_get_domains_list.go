@@ -27,7 +27,7 @@ func (c *Client) DnsGetDomainsList(req *DnsGetDomainsListRequest) (*DnsGetDomain
 }
 
 func (c *Client) DnsGetDomainsListWithContext(ctx context.Context, req *DnsGetDomainsListRequest) (*DnsGetDomainsListResponse, error) {
-	if err := c.ensureAccessTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 
