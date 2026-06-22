@@ -1,3 +1,5 @@
+// A simple SDK client for Matrix (ElementX).
+// API documentation: https://spec.matrix.org/latest/client-server-api/
 package matrix
 
 import (
