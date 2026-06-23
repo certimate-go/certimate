@@ -12,8 +12,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	typedcore "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/k8s.io/client-go/kubernetes/typed/core/v1"
-
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
@@ -104,10 +102,15 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	// 获取 Secret 实例
-	var secretPayload *k8score.Secret
-	var secretIsNew bool
-	secretPayload, err = client.Secrets(d.config.Namespace).Get(ctx, d.config.SecretName, meta.GetOptions{})
-	if err != nil {
+	secretPayload := &k8score.Secret{}
+	secretIsNew := false
+	secretGetResp := client.Get().
+		Namespace(d.config.Namespace).
+		Resource("secrets").
+		Name(d.config.SecretName).
+		VersionedParams(&meta.GetOptions{}, meta.ParameterCodec).
+		Do(ctx)
+	if err := secretGetResp.Error(); err != nil {
 		if !k8serrs.IsNotFound(err) {
 			return nil, fmt.Errorf("failed to get kubernetes secret: %w", err)
 		}
@@ -123,7 +126,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			},
 		}
 		secretIsNew = true
+	} else if err := secretGetResp.Into(secretPayload); err != nil {
+		return nil, fmt.Errorf("failed to parse kubernetes secret: %w", err)
 	}
+	d.logger.Debug("kubernetes operate 'Secrets.Get'", slog.String("namespace", d.config.Namespace), slog.Any("secret", d.config.SecretName))
 
 	// 生成 Secret 注解和标签
 	secretAnnotations := map[string]string{
@@ -179,15 +185,27 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 创建或更新 Secret 实例
 	if secretIsNew {
-		secretPayload, err = client.Secrets(d.config.Namespace).Create(ctx, secretPayload, meta.CreateOptions{})
-		d.logger.Debug("kubernetes operate 'Secrets.Create'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
-		if err != nil {
+		secretPostResp := client.Post().
+			Namespace(d.config.Namespace).
+			Resource("secrets").
+			Name(d.config.SecretName).
+			VersionedParams(&meta.GetOptions{}, meta.ParameterCodec).
+			Body(secretPayload).
+			Do(ctx)
+		d.logger.Debug("kubernetes operate 'Secrets.Post'", slog.String("namespace", d.config.Namespace), slog.Any("secret", d.config.SecretName))
+		if err := secretPostResp.Error(); err != nil {
 			return nil, fmt.Errorf("failed to create kubernetes secret: %w", err)
 		}
 	} else {
-		secretPayload, err = client.Secrets(d.config.Namespace).Update(ctx, secretPayload, meta.UpdateOptions{})
-		d.logger.Debug("kubernetes operate 'Secrets.Update'", slog.String("namespace", d.config.Namespace), slog.Any("secret", secretPayload))
-		if err != nil {
+		secretPutResp := client.Put().
+			Namespace(d.config.Namespace).
+			Resource("secrets").
+			Name(d.config.SecretName).
+			VersionedParams(&meta.GetOptions{}, meta.ParameterCodec).
+			Body(secretPayload).
+			Do(ctx)
+		d.logger.Debug("kubernetes operate 'Secrets.Put'", slog.String("namespace", d.config.Namespace), slog.Any("secret", d.config.SecretName))
+		if err := secretPutResp.Error(); err != nil {
 			return nil, fmt.Errorf("failed to update kubernetes secret: %w", err)
 		}
 	}
@@ -195,7 +213,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createK8sClient(kubeConfig string) (*typedcore.CoreV1Client, error) {
+func createK8sClient(kubeConfig string) (*rest.RESTClient, error) {
 	var config *rest.Config
 	var err error
 	if kubeConfig == "" {
@@ -211,7 +229,7 @@ func createK8sClient(kubeConfig string) (*typedcore.CoreV1Client, error) {
 		return nil, err
 	}
 
-	client, err := typedcore.NewForConfig(config)
+	client, err := rest.RESTClientFor(config)
 	if err != nil {
 		return nil, err
 	}
