@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -76,10 +77,15 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("failed to parse certificate: %w", err)
 	}
 
+	leafCertPEM, chainCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract certificates from PEM: %w", err)
+	}
+
 	certName := buildCertName(certX509)
 	d.logger.Info("deploying certificate to F5 Big-IP", slog.String("certName", certName), slog.String("subject", certX509.Subject.CommonName))
 
-	if err := d.sdkClient.UploadCertificate(ctx, certName, partition, certPEM); err != nil {
+	if err := d.sdkClient.UploadCertificate(ctx, certName, partition, leafCertPEM); err != nil {
 		return nil, fmt.Errorf("failed to upload certificate: %w", err)
 	}
 	d.logger.Info("certificate uploaded", slog.String("certName", certName))
@@ -88,6 +94,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("failed to upload private key: %w", err)
 	}
 	d.logger.Info("private key uploaded", slog.String("keyName", certName))
+
+	var chainPath string
+	if chainCertPEM != "" {
+		chainName := certName + "-ca"
+		if err := d.sdkClient.UploadCertificate(ctx, chainName, partition, chainCertPEM); err != nil {
+			return nil, fmt.Errorf("failed to upload chain certificate: %w", err)
+		}
+		d.logger.Info("chain certificate uploaded", slog.String("chainName", chainName))
+		chainPath = fmt.Sprintf("/%s/%s", partition, chainName)
+	}
 
 	switch d.config.DeployTarget {
 	case "", DEPLOY_TARGET_CERTIFICATE:
@@ -100,10 +116,24 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 		certPath := fmt.Sprintf("/%s/%s", partition, certName)
 		keyPath := fmt.Sprintf("/%s/%s", partition, certName)
-		if err := d.sdkClient.UpdateClientSSLProfile(ctx, d.config.ClientSSLProfileName, partition, certPath, keyPath); err != nil {
-			return nil, fmt.Errorf("failed to update client-ssl profile: %w", err)
+
+		_, err := d.sdkClient.GetClientSSLProfile(ctx, d.config.ClientSSLProfileName, partition)
+		if err != nil {
+			if errors.Is(err, f5sdk.ErrNotFound) {
+				d.logger.Info("client-ssl profile not found, creating it", slog.String("profile", d.config.ClientSSLProfileName))
+				if err := d.sdkClient.CreateClientSSLProfile(ctx, d.config.ClientSSLProfileName, partition, certPath, keyPath, chainPath); err != nil {
+					return nil, fmt.Errorf("failed to create client-ssl profile: %w", err)
+				}
+				d.logger.Info("client-ssl profile created", slog.String("profile", d.config.ClientSSLProfileName))
+			} else {
+				return nil, fmt.Errorf("failed to get client-ssl profile: %w", err)
+			}
+		} else {
+			if err := d.sdkClient.UpdateClientSSLProfile(ctx, d.config.ClientSSLProfileName, partition, certPath, keyPath, chainPath); err != nil {
+				return nil, fmt.Errorf("failed to update client-ssl profile: %w", err)
+			}
+			d.logger.Info("client-ssl profile updated", slog.String("profile", d.config.ClientSSLProfileName))
 		}
-		d.logger.Info("client-ssl profile updated", slog.String("profile", d.config.ClientSSLProfileName))
 
 	default:
 		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -14,6 +15,8 @@ import (
 
 	"github.com/certimate-go/certimate/internal/app"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type Client struct {
 	baseUrl string
@@ -141,18 +144,52 @@ func (c *Client) GetClientSSLProfile(ctx context.Context, name, partition string
 	httpreq.SetContext(ctx)
 
 	result := make(map[string]any)
-	if _, err := c.doRequestWithResult(httpreq, &result); err != nil {
+	resp, err := c.doRequestWithResult(httpreq, &result)
+	if err != nil {
+		if resp != nil && resp.StatusCode() == http.StatusNotFound {
+			return nil, fmt.Errorf("failed to get client-ssl profile: %w", ErrNotFound)
+		}
 		return nil, fmt.Errorf("failed to get client-ssl profile: %w", err)
 	}
 
 	return result, nil
 }
 
-func (c *Client) UpdateClientSSLProfile(ctx context.Context, name, partition, certPath, keyPath string) error {
+func (c *Client) CreateClientSSLProfile(ctx context.Context, name, partition, certPath, keyPath, chainPath string) error {
+	path := fmt.Sprintf("/mgmt/tm/ltm/profile/client-ssl")
+	body := map[string]string{
+		"name":          name,
+		"partition":     partition,
+		"defaultsFrom":  "clientssl",
+		"cert":          certPath,
+		"key":           keyPath,
+	}
+	if chainPath != "" {
+		body["chain"] = chainPath
+	}
+
+	httpreq, err := c.newRequest(http.MethodPost, path)
+	if err != nil {
+		return err
+	}
+	httpreq.SetBody(body)
+	httpreq.SetContext(ctx)
+
+	if _, err := c.doRequest(httpreq); err != nil {
+		return fmt.Errorf("failed to create client-ssl profile: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Client) UpdateClientSSLProfile(ctx context.Context, name, partition, certPath, keyPath, chainPath string) error {
 	path := fmt.Sprintf("/mgmt/tm/ltm/profile/client-ssl/~%s~%s", url.PathEscape(partition), url.PathEscape(name))
 	body := map[string]string{
 		"cert": certPath,
 		"key":  keyPath,
+	}
+	if chainPath != "" {
+		body["chain"] = chainPath
 	}
 
 	httpreq, err := c.newRequest(http.MethodPatch, path)
