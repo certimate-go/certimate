@@ -76,30 +76,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	switch d.config.SiteType {
 	case "any":
 		{
-			// 上传证书
-			sslCertSaveCertReq := &btpanelsdk.SSLCertSaveCertRequest{
-				Certificate: certPEM,
-				PrivateKey:  privkeyPEM,
-			}
-			sslCertSaveCertResp, err := d.sdkClient.SSLCertSaveCertWithContext(ctx, sslCertSaveCertReq)
-			d.logger.Debug("sdk request 'ssl.cert.SaveCert'", slog.Any("request", sslCertSaveCertReq), slog.Any("response", sslCertSaveCertResp))
-			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'ssl.cert.SaveCert': %w", err)
-			}
-
-			// 设置站点证书
-			sslSetBatchCertToSiteReq := &btpanelsdk.SSLSetBatchCertToSiteRequest{
-				BatchInfo: lo.Map(d.config.SiteNames, func(siteName string, _ int) *btpanelsdk.SSLSetBatchCertToSiteRequestBatchInfo {
-					return &btpanelsdk.SSLSetBatchCertToSiteRequestBatchInfo{
-						SiteName: siteName,
-						SSLHash:  sslCertSaveCertResp.SSLHash,
-					}
-				}),
-			}
-			sslSetBatchCertToSiteResp, err := d.sdkClient.SSLSetBatchCertToSiteWithContext(ctx, sslSetBatchCertToSiteReq)
-			d.logger.Debug("sdk request 'ssl.SetBatchCertToSite'", slog.Any("request", sslSetBatchCertToSiteReq), slog.Any("response", sslSetBatchCertToSiteResp))
-			if err != nil {
-				return nil, fmt.Errorf("failed to execute sdk request 'ssl.SetBatchCertToSite': %w", err)
+			// 批量更新站点证书
+			// 注意，如果 v1 接口不可用，则尝试使用 v2 接口重试
+			if err1 := d.updateSitesCertificateByAny(ctx, d.config.SiteNames, certPEM, privkeyPEM); err1 != nil {
+				if err2 := d.updateSitesCertificateByAnyV2(ctx, d.config.SiteNames, certPEM, privkeyPEM); err2 != nil {
+					return nil, errors.Join(err1, err2)
+				}
 			}
 		}
 
@@ -166,6 +148,63 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteType, siteName
 				return fmt.Errorf("failed to execute sdk request 'site.SetSSL': %w", err)
 			}
 		}
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateSitesCertificateByAny(ctx context.Context, siteNames []string, certPEM, privkeyPEM string) error {
+	// 上传证书
+	sslCertSaveCertReq := &btpanelsdk.SSLCertSaveCertRequest{
+		Certificate: certPEM,
+		PrivateKey:  privkeyPEM,
+	}
+	sslCertSaveCertResp, err := d.sdkClient.SSLCertSaveCertWithContext(ctx, sslCertSaveCertReq)
+	d.logger.Debug("sdk request 'ssl.cert.SaveCert'", slog.Any("request", sslCertSaveCertReq), slog.Any("response", sslCertSaveCertResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ssl.cert.SaveCert': %w", err)
+	}
+
+	// 设置站点证书
+	sslSetBatchCertToSiteReq := &btpanelsdk.SSLSetBatchCertToSiteRequest{
+		BatchInfo: lo.Map(siteNames, func(siteName string, _ int) *btpanelsdk.SSLSetBatchCertToSiteRequestBatchInfo {
+			return &btpanelsdk.SSLSetBatchCertToSiteRequestBatchInfo{
+				SiteName: siteName,
+				SSLHash:  sslCertSaveCertResp.SSLHash,
+			}
+		}),
+	}
+	sslSetBatchCertToSiteResp, err := d.sdkClient.SSLSetBatchCertToSiteWithContext(ctx, sslSetBatchCertToSiteReq)
+	d.logger.Debug("sdk request 'ssl.SetBatchCertToSite'", slog.Any("request", sslSetBatchCertToSiteReq), slog.Any("response", sslSetBatchCertToSiteResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ssl.SetBatchCertToSite': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateSitesCertificateByAnyV2(ctx context.Context, siteNames []string, certPEM, privkeyPEM string) error {
+	// 上传证书
+	sslDomainUploadCertV2Req := &btpanelsdk.SSLDomainUploadCertV2Request{
+		Certificate: certPEM,
+		PrivateKey:  privkeyPEM,
+	}
+	sslDomainUploadCertV2Resp, err := d.sdkClient.SSLDomainUploadCertV2WithContext(ctx, sslDomainUploadCertV2Req)
+	d.logger.Debug("sdk request 'v2.ssldomain.UploadCert'", slog.Any("request", sslDomainUploadCertV2Req), slog.Any("response", sslDomainUploadCertV2Resp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'v2.ssldomain.UploadCert': %w", err)
+	}
+
+	// 设置站点证书
+	sslDomainCertDeploySitesV2Req := &btpanelsdk.SSLDomainCertDeploySitesV2Request{
+		SSLHash: sslDomainUploadCertV2Resp.Message.SSLHash,
+		Domains: siteNames,
+		Append:  1,
+	}
+	sslDomainCertDeploySitesV2Resp, err := d.sdkClient.SSLDomainCertDeploySitesV2WithContext(ctx, sslDomainCertDeploySitesV2Req)
+	d.logger.Debug("sdk request 'v2.ssldomain.CertDeploySites'", slog.Any("request", sslDomainCertDeploySitesV2Req), slog.Any("response", sslDomainCertDeploySitesV2Resp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'v2.ssldomain.CertDeploySites': %w", err)
 	}
 
 	return nil

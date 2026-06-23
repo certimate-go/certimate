@@ -22,3 +22,5 @@ func (r *sdkResponseBase) GetStatus() json.RawMessage {
 func (r *sdkResponseBase) GetMessage() *string {
 	return r.Message
 }
+
+var _ sdkResponse = (*sdkResponseBase)(nil)

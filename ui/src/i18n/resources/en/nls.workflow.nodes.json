@@ -1173,7 +1173,7 @@
         "tooltip": "For more information, see <a href=\"https://cdnx.console.baishan.com/#/cdn/cert\" target=\"_blank\">https://cdnx.console.baishan.com/#/cdn/cert</a>"
       },
       "baotapanel": {
-        "guide": "Requires aaPanel v7.0 or higher."
+        "guide": "Requires aaPanel v7.0 / BaotaPanel v8.3 or higher."
       },
       "baotapanel_site_type": {
         "label": "aaPanel website type",
@@ -1204,7 +1204,7 @@
             "label": "General Project"
           },
           "any": {
-            "label": "Any Project (aaPanel v7.26+)"
+            "label": "Any Project (aaPanel v7.26+ / BaotaPanel v9.4+)"
           }
         }
       },
