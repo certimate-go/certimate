@@ -2,17 +2,22 @@ package f5bigip
 
 import (
 	"context"
+	"crypto/sha1"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log/slog"
+	"regexp"
 	"strings"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	f5sdk "github.com/certimate-go/certimate/pkg/sdk3rd/f5bigip"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
+
+var nonAlphaNumericRegexp = regexp.MustCompile(`[^a-zA-Z0-9_-]`)
 
 type (
 	Provider     = core.Deployer
@@ -142,6 +147,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
+// buildCertName generates a unique object name for F5 BIG-IP ssl-cert and ssl-key uploads.
+//
+// Naming pattern: certimate_<san>_<issuer>_<hash>
+//
+// Examples:
+//
+//	certimate_example.com_letsencrypt_a1b2c3d4     (SAN: example.com,  CA: Let's Encrypt)
+//	certimate_wildcard.example.com_letsencrypt_e5f6g7h8   (SAN: *.example.com, CA: Let's Encrypt)
+//	certimate_example.com_zerossl_i9j0k1l2         (SAN: example.com,  CA: ZeroSSL)
+//	certimate_example.com_googletrust_m3n4o5p6     (SAN: example.com,  CA: Google Trust Services)
 func buildCertName(cert *x509.Certificate) string {
 	san := ""
 	if len(cert.DNSNames) > 0 {
@@ -152,8 +167,23 @@ func buildCertName(cert *x509.Certificate) string {
 		return ""
 	}
 
-	san = strings.TrimPrefix(san, "*.")
-	return "certimate_" + san
+	san = strings.Replace(san, "*", "wildcard", 1)
+
+	issuerName := ""
+	if len(cert.Issuer.Organization) > 0 {
+		issuerName = cert.Issuer.Organization[0]
+	} else {
+		issuerName = cert.Issuer.CommonName
+	}
+	issuerName = nonAlphaNumericRegexp.ReplaceAllString(issuerName, "")
+	if issuerName == "" {
+		issuerName = "unknown"
+	}
+
+	fingerprint := sha1.Sum(cert.Raw)
+	shortHash := hex.EncodeToString(fingerprint[:4])
+
+	return fmt.Sprintf("certimate_%s_%s_%s", san, strings.ToLower(issuerName), shortHash)
 }
 
 func createSDKClient(serverUrl string, skipTlsVerify bool) (*f5sdk.Client, error) {
