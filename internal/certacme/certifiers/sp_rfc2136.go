@@ -22,6 +22,9 @@ func init() {
 			TsigAlgorithm:         credentials.TsigAlgorithm,
 			TsigKey:               credentials.TsigKey,
 			TsigSecret:            credentials.TsigSecret,
+			TsigGssRealm:          credentials.TsigGssRealm,
+			TsigGssUsername:       credentials.TsigGssUsername,
+			TsigGssPassword:       credentials.TsigGssPassword,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,
 			DnsTTL:                options.DnsTTL,
 		})

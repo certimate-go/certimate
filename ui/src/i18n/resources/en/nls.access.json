@@ -1162,6 +1162,18 @@
       "label": "TSIG authentication secret (Optional)",
       "placeholder": "Please enter TSIG authentication secret"
     },
+    "rfc2136_tsig_gss_realm": {
+      "label": "GSS-TSIG Kerberos realm (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos realm"
+    },
+    "rfc2136_tsig_gss_username": {
+      "label": "GSS-TSIG Kerberos username (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos username"
+    },
+    "rfc2136_tsig_gss_password": {
+      "label": "GSS-TSIG Kerberos password (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos password"
+    },
     "rucenter_username": {
       "label": "Ru-Center username",
       "placeholder": "Please enter Ru-Center username"
