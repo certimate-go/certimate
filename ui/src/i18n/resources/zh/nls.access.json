@@ -1237,6 +1237,16 @@
     "sectigo_eab": {
       "guide": "点击下方链接了解如何获取 Sectigo EAB：<br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>"
     },
+    "simplycom_account_number": {
+      "label": "Simply.com 账号",
+      "placeholder": "请输入 Simply.com 账号",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
+    "simplycom_api_key": {
+      "label": "Simply.com API Key",
+      "placeholder": "请输入 Simply.com API Key",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
     "slackbot_token": {
       "label": "Slack 机器人 Token",
       "placeholder": "请输入 Slack 机器人 Token",

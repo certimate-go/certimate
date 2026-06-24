@@ -114,6 +114,7 @@ const (
 	AccessProviderTypeSafeLine            = AccessProviderType("safeline")
 	AccessProviderTypeSamWAF              = AccessProviderType("samwaf")
 	AccessProviderTypeSectigo             = AccessProviderType("sectigo")
+	AccessProviderTypeSimplyCom           = AccessProviderType("simplycom")
 	AccessProviderTypeSlackBot            = AccessProviderType("slackbot")
 	AccessProviderTypeSpaceship           = AccessProviderType("spaceship")
 	AccessProviderTypeSSH                 = AccessProviderType("ssh")
@@ -256,6 +257,7 @@ const (
 	ACMEDns01ProviderTypeRegru             = ACMEDns01ProviderType(AccessProviderTypeRegru)
 	ACMEDns01ProviderTypeRFC2136           = ACMEDns01ProviderType(AccessProviderTypeRFC2136)
 	ACMEDns01ProviderTypeRuCenter          = ACMEDns01ProviderType(AccessProviderTypeRuCenter)
+	ACMEDns01ProviderTypeSimplyCom         = ACMEDns01ProviderType(AccessProviderTypeSimplyCom)
 	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)
 	ACMEDns01ProviderTypeTechnitiumDNS     = ACMEDns01ProviderType(AccessProviderTypeTechnitiumDNS)
 	ACMEDns01ProviderTypeTencentCloud      = ACMEDns01ProviderType(AccessProviderTypeTencentCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeTencentCloudDNS]

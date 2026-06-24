@@ -98,6 +98,7 @@ import AccessConfigFieldsProviderS3 from "./AccessConfigFieldsProviderS3";
 import AccessConfigFieldsProviderSafeLine from "./AccessConfigFieldsProviderSafeLine";
 import AccessConfigFieldsProviderSamWAF from "./AccessConfigFieldsProviderSamWAF";
 import AccessConfigFieldsProviderSectigo from "./AccessConfigFieldsProviderSectigo";
+import AccessConfigFieldsProviderSimplyCom from "./AccessConfigFieldsProviderSimplyCom";
 import AccessConfigFieldsProviderSlackBot from "./AccessConfigFieldsProviderSlackBot";
 import AccessConfigFieldsProviderSpaceship from "./AccessConfigFieldsProviderSpaceship";
 import AccessConfigFieldsProviderSSH from "./AccessConfigFieldsProviderSSH";
@@ -222,6 +223,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.SAFELINE]: AccessConfigFieldsProviderSafeLine,
   [ACCESS_PROVIDERS.SAMWAF]: AccessConfigFieldsProviderSamWAF,
   [ACCESS_PROVIDERS.SECTIGO]: AccessConfigFieldsProviderSectigo,
+  [ACCESS_PROVIDERS.SIMPLYCOM]: AccessConfigFieldsProviderSimplyCom,
   [ACCESS_PROVIDERS.SLACKBOT]: AccessConfigFieldsProviderSlackBot,
   [ACCESS_PROVIDERS.SPACESHIP]: AccessConfigFieldsProviderSpaceship,
   [ACCESS_PROVIDERS.SSLCOM]: AccessConfigFieldsProviderSSLCom,

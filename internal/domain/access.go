@@ -546,6 +546,11 @@ type AccessConfigForSamWAF struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForSimplyCom struct {
+	AccountNumber string `json:"accountNumber"`
+	ApiKey        string `json:"apiKey"`
+}
+
 type AccessConfigForSlackBot struct {
 	BotToken  string `json:"botToken"`
 	ChannelId string `json:"channelId,omitempty"`

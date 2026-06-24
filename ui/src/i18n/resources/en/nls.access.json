@@ -1237,6 +1237,16 @@
     "sectigo_eab": {
       "guide": "Learn more about using EAB key in Sectigo: <br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>"
     },
+    "simplycom_account_number": {
+      "label": "Simply.com account number",
+      "placeholder": "Please enter Simply.com account number",
+      "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
+    "simplycom_api_key": {
+      "label": "Simply.com API key",
+      "placeholder": "Please enter Simply.com API key",
+      "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
     "slackbot_token": {
       "label": "Slack bot token",
       "placeholder": "Please enter Slack bot token",
