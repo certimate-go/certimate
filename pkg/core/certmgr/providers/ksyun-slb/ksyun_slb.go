@@ -132,7 +132,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	createCertificateReq := &ksyunkcmsdk.CreateCertificateRequest{
 		Region:           lo.ToPtr(c.config.Region),
 		CertificateName:  lo.ToPtr(fmt.Sprintf("certimate-%d", time.Now().UnixMilli())),
-		Description:      lo.ToPtr("upload from certimate"),
+		Description:      lo.ToPtr("upload from Certimate"),
 		Source:           lo.ToPtr("kcm"),
 		SSLCertificateId: lo.ToPtr(upres.CertId),
 	}
@@ -159,7 +159,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	// REF: https://apiexplorer.ksyun.com/#/api/96/ModifyCertificate/2016-03-04/1013
 	modifyCertificateReq := &ksyunkcmsdk.ModifyCertificateRequest{
 		Region:           lo.ToPtr(c.config.Region),
-		Description:      lo.ToPtr("upload from certimate"),
+		Description:      lo.ToPtr("upload from Certimate"),
 		SSLCertificateId: lo.ToPtr(upres.CertId),
 	}
 	modifyCertificateResp, err := c.sdkClient.ModifyCertificateWithContext(ctx, modifyCertificateReq)

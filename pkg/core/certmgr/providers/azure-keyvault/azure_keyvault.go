@@ -12,6 +12,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -94,11 +95,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			// 对比证书有效期
 			if certItem.Attributes == nil {
 				continue
-			}
-			if certItem.Attributes.NotBefore == nil || !certItem.Attributes.NotBefore.Equal(certX509.NotBefore) {
+			} else if !lo.FromPtr(certItem.Attributes.NotBefore).Equal(certX509.NotBefore) {
 				continue
-			}
-			if certItem.Attributes.Expires == nil || !certItem.Attributes.Expires.Equal(certX509.NotAfter) {
+			} else if !lo.FromPtr(certItem.Attributes.Expires).Equal(certX509.NotAfter) {
 				continue
 			}
 

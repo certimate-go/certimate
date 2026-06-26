@@ -102,7 +102,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		{
 			updateSSLCertReq := &lecdnclientv3.UpdateCertificateRequest{
 				Name:        fmt.Sprintf("certimate-%d", time.Now().UnixMilli()),
-				Description: "upload from certimate",
+				Description: "upload from Certimate",
 				Type:        "upload",
 				SSLPEM:      certPEM,
 				SSLKey:      privkeyPEM,
@@ -120,7 +120,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 			updateSSLCertReq := &lecdnmasterv3.UpdateCertificateRequest{
 				ClientId:    d.config.ClientId,
 				Name:        fmt.Sprintf("certimate-%d", time.Now().UnixMilli()),
-				Description: "upload from certimate",
+				Description: "upload from Certimate",
 				Type:        "upload",
 				SSLPEM:      certPEM,
 				SSLKey:      privkeyPEM,

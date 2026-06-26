@@ -96,16 +96,15 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			return nil, fmt.Errorf("failed to execute sdk request 'cdn.ListCertInfo': %w", err)
 		}
 
+		fingerprintSha1 := sha1.Sum(certX509.Raw)
+		fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
+		fingerprintSha256 := sha256.Sum256(certX509.Raw)
+		fingerprintSha256Hex := hex.EncodeToString(fingerprintSha256[:])
 		for _, certItem := range listCertInfoResp.CertInfo {
-			// 对比证书 SHA-1 摘要
-			fingerprintSha1 := sha1.Sum(certX509.Raw)
-			if !strings.EqualFold(hex.EncodeToString(fingerprintSha1[:]), ve.StringValue(certItem.CertFingerprint.Sha1)) {
+			// 对比证书指纹
+			if !strings.EqualFold(fingerprintSha1Hex, ve.StringValue(certItem.CertFingerprint.Sha1)) {
 				continue
-			}
-
-			// 对比证书 SHA-256 摘要
-			fingerprintSha256 := sha256.Sum256(certX509.Raw)
-			if !strings.EqualFold(hex.EncodeToString(fingerprintSha256[:]), ve.StringValue(certItem.CertFingerprint.Sha256)) {
+			} else if !strings.EqualFold(fingerprintSha256Hex, ve.StringValue(certItem.CertFingerprint.Sha256)) {
 				continue
 			}
 

@@ -78,15 +78,15 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				continue
 			}
 
+			// 对比证书备用名称
+			if certItem.CertDNSNames != strings.Join(certX509.DNSNames, ",") {
+				continue
+			}
+
 			// 对比证书有效期
 			oldCertNotBefore, _ := time.Parse("2006-01-02T15:04:05Z", certItem.CertStartTime)
 			oldCertNotAfter, _ := time.Parse("2006-01-02T15:04:05Z", certItem.CertStopTime)
 			if !certX509.NotBefore.Equal(oldCertNotBefore) || !certX509.NotAfter.Equal(oldCertNotAfter) {
-				continue
-			}
-
-			// 对比证书多域名
-			if certItem.CertDNSNames != strings.Join(certX509.DNSNames, ",") {
 				continue
 			}
 

@@ -94,7 +94,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		ClientToken: lo.ToPtr(security.RandomString(32)),
 		RegionID:    lo.ToPtr(c.config.RegionId),
 		Name:        lo.ToPtr(certName),
-		Description: lo.ToPtr("upload from certimate"),
+		Description: lo.ToPtr("upload from Certimate"),
 		Type:        lo.ToPtr("Server"),
 		Certificate: lo.ToPtr(certPEM),
 		PrivateKey:  lo.ToPtr(privkeyPEM),

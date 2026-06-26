@@ -138,7 +138,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 			websiteSSLUploadReq := &onepanelsdk.WebsiteSSLUploadRequest{
 				SSLID:       sslId,
 				Type:        "paste",
-				Description: "upload from certimate",
+				Description: "upload from Certimate",
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}
@@ -155,7 +155,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 			websiteSSLUploadReq := &onepanelsdk2.WebsiteSSLUploadRequest{
 				SSLID:       sslId,
 				Type:        "paste",
-				Description: "upload from certimate",
+				Description: "upload from Certimate",
 				Certificate: certPEM,
 				PrivateKey:  privkeyPEM,
 			}

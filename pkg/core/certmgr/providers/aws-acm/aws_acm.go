@@ -98,16 +98,15 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		}
 
 		for _, certItem := range listCertificatesResp.CertificateSummaryList {
-			// 对比证书有效期
-			if certItem.NotBefore == nil || !certItem.NotBefore.Equal(certX509.NotBefore) {
-				continue
-			}
-			if certItem.NotAfter == nil || !certItem.NotAfter.Equal(certX509.NotAfter) {
+			// 对比证书备用名称
+			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), strings.Join(certItem.SubjectAlternativeNameSummaries, ",")) {
 				continue
 			}
 
-			// 对比证书多域名
-			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), strings.Join(certItem.SubjectAlternativeNameSummaries, ",")) {
+			// 对比证书有效期
+			if certItem.NotBefore == nil || !certItem.NotBefore.Equal(certX509.NotBefore) {
+				continue
+			} else if certItem.NotAfter == nil || !certItem.NotAfter.Equal(certX509.NotAfter) {
 				continue
 			}
 

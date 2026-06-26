@@ -147,12 +147,12 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		}
 
 		for _, sslItem := range sslCenterListResp.Data.Records {
-			// 对比证书的多域名
+			// 对比证书备用名称
 			if sslItem.Domain != strings.Join(certX509.DNSNames, ", ") {
 				continue
 			}
 
-			// 对比证书的有效期
+			// 对比证书有效期
 			if sslItem.StartDate != certX509.NotBefore.Unix() || sslItem.ExpireDate != certX509.NotAfter.Unix() {
 				continue
 			}

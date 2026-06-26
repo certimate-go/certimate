@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/googlecloud-dns"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/googlecloud"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 

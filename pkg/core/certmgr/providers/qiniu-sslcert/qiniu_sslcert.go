@@ -93,7 +93,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				continue
 			}
 
-			// 对比证书多域名
+			// 对比证书备用名称
 			if !slices.Equal(certX509.DNSNames, sslItem.DnsNames) {
 				continue
 			}
@@ -118,7 +118,6 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 					continue
 				}
 			default:
-				// 未知算法，跳过
 				continue
 			}
 

@@ -102,7 +102,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 		SSLCertId:   d.config.CertificateId,
 		IsOn:        true,
 		Name:        fmt.Sprintf("certimate-%d", time.Now().UnixMilli()),
-		Description: "upload from certimate",
+		Description: "upload from Certimate",
 		ServerName:  certX509.Subject.CommonName,
 		IsCA:        false,
 		CertData:    base64.StdEncoding.EncodeToString([]byte(certPEM)),

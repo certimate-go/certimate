@@ -124,7 +124,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		&model.CreateLoadbalanceCertificationBody{
 			Name:        lo.ToPtr(certName),
 			Type:        lo.ToPtr(lo.Ternary(c.config.IsSNI, model.CreateLoadbalanceCertificationBodyTypeEnumSni, model.CreateLoadbalanceCertificationBodyTypeEnumServer)),
-			Description: lo.ToPtr("upload from certimate"),
+			Description: lo.ToPtr("upload from Certimate"),
 			PublicKey:   lo.ToPtr(certPEM),
 			PrivateKey:  lo.ToPtr(privkeyPEM),
 		},

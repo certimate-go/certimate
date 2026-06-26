@@ -146,28 +146,30 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		}
 
 		for _, certItem := range getCertificateListResp.CertificateList {
-			// 优刻得未提供可唯一标识证书的字段，只能通过多个字段尝试对比来判断是否为同一证书
-			// 先分别对比证书的多域名、品牌、有效期，再对比签名算法
-
+			// 对比证书备用名称
 			if len(certX509.DNSNames) == 0 || certItem.Domains != strings.Join(certX509.DNSNames, ",") {
 				continue
 			}
 
+			// 对比证书颁发者
 			if len(certX509.Issuer.Organization) == 0 || certItem.Brand != certX509.Issuer.Organization[0] {
 				continue
 			}
 
-			if int64(certItem.NotBefore) != certX509.NotBefore.UnixMilli() || int64(certItem.NotAfter) != certX509.NotAfter.UnixMilli() {
+			// 对比证书有效期
+			if int64(certItem.NotBefore) != certX509.NotBefore.UnixMilli() {
+				continue
+			} else if int64(certItem.NotAfter) != certX509.NotAfter.UnixMilli() {
 				continue
 			}
 
+			// 对比证书签名算法
 			getCertificateDetailInfoReq := c.sdkClient.NewGetCertificateDetailInfoRequest()
 			getCertificateDetailInfoReq.CertificateID = ucloud.Int(certItem.CertificateID)
 			getCertificateDetailInfoResp, err := c.sdkClient.GetCertificateDetailInfo(getCertificateDetailInfoReq)
 			if err != nil {
 				return nil, false, fmt.Errorf("failed to execute sdk request 'ussl.GetCertificateDetailInfo': %w", err)
 			}
-
 			switch certX509.SignatureAlgorithm {
 			case x509.SHA256WithRSA:
 				if !strings.EqualFold(getCertificateDetailInfoResp.CertificateInfo.Algorithm, "SHA256-RSA") {

@@ -154,8 +154,10 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			break
 		}
 
+		fingerprintSha1 := sha1.Sum(certX509.Raw)
+		fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
 		for _, certItem := range getCertificateListResp.ReturnObj.List {
-			// 对比证书多域名
+			// 对比证书备用名称
 			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), certItem.DomainName) {
 				continue
 			}
@@ -170,9 +172,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			}
 
 			// 对比证书指纹
-			fingerprint := sha1.Sum(certX509.Raw)
-			fingerprintHex := hex.EncodeToString(fingerprint[:])
-			if !strings.EqualFold(fingerprintHex, certItem.Fingerprint) {
+			if !strings.EqualFold(fingerprintSha1Hex, certItem.Fingerprint) {
 				continue
 			}
 

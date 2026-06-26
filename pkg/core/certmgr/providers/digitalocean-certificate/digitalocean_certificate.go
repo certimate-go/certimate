@@ -95,6 +95,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			return nil, fmt.Errorf("failed to execute sdk request 'ListCertificates': %w", err)
 		}
 
+		fingerprintSha1 := sha1.Sum(certX509.Raw)
+		fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
 		for _, certItem := range listCertificatesResp.Certificates {
 			// 对比证书扩展名称
 			if !slices.Equal(certX509.DNSNames, certItem.DNSNames) {
@@ -108,8 +110,6 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书指纹
-			fingerprintSha1 := sha1.Sum(certX509.Raw)
-			fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
 			if !strings.EqualFold(fingerprintSha1Hex, certItem.SHA1Fingerprint) {
 				continue
 			}

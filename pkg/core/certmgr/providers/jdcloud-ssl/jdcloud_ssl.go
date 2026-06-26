@@ -104,7 +104,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				continue
 			}
 
-			// 对比证书多域名
+			// 对比证书备用名称
 			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), strings.Join(certItem.DnsNames, ",")) {
 				continue
 			}
