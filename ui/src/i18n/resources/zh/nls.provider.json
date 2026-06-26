@@ -206,6 +206,7 @@
   "nginxproxymanager": "Nginx Proxy Manager",
   "ns1": "NS1 (IBM NS1 Connect)",
   "oraclecloud": "OCI（Oracle Cloud Infrastructure）",
+  "oraclecloud_certificatesmgmt": "Oracle Cloud - 证书管理服务",
   "oraclecloud_dns": "Oracle Cloud - DNS",
   "ovhcloud": "OVHcloud",
   "porkbun": "Porkbun",

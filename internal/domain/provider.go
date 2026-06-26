@@ -406,6 +406,7 @@ const (
 	DeploymentProviderTypeMohuaMVH                      = DeploymentProviderType(AccessProviderTypeMohua + "-mvh")
 	DeploymentProviderTypeNetlify                       = DeploymentProviderType(AccessProviderTypeNetlify)
 	DeploymentProviderTypeNginxProxyManager             = DeploymentProviderType(AccessProviderTypeNginxProxyManager)
+	DeploymentProviderTypeOracleCloudCertificatesMgmt   = DeploymentProviderType(AccessProviderTypeOracleCloud + "-certificatesmgmt")
 	DeploymentProviderTypeProxmoxVE                     = DeploymentProviderType(AccessProviderTypeProxmoxVE)
 	DeploymentProviderTypeQingCloudLB                   = DeploymentProviderType(AccessProviderTypeQingCloud + "-lb")
 	DeploymentProviderTypeQiniuCDN                      = DeploymentProviderType(AccessProviderTypeQiniu + "-cdn")

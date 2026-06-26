@@ -1994,6 +1994,11 @@
         "placeholder": "请输入 NPM 证书 ID",
         "tooltip": "请登录 NPM 面板查看"
       },
+      "oraclecloud_certificatesmgmt_compartment_ocid": {
+        "label": "OCI 资源区间 OCID",
+        "placeholder": "请输入 OCI 资源区间 OCID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
+      },
       "proxmoxve": {
         "guide": "需要 Proxmox VE v5.2 或更高版本。"
       },

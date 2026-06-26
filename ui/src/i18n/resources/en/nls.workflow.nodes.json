@@ -1995,6 +1995,11 @@
         "placeholder": "Please enter NPM certificate ID",
         "tooltip": "You can find it on NPM dashboard."
       },
+      "oraclecloud_certificatesmgmt_compartment_ocid": {
+        "label": "OCI compartment OCID",
+        "placeholder": "Please enter OCI compartment OCID",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
+      },
       "proxmoxve": {
         "guide": "Requires Proxmox VE v5.2 or higher."
       },
