@@ -99,6 +99,7 @@ const (
 	AccessProviderTypeNetlify             = AccessProviderType("netlify")
 	AccessProviderTypeNginxProxyManager   = AccessProviderType("nginxproxymanager")
 	AccessProviderTypeNS1                 = AccessProviderType("ns1")
+	AccessProviderTypeOracleCloud         = AccessProviderType("oraclecloud")
 	AccessProviderTypeOVHcloud            = AccessProviderType("ovhcloud")
 	AccessProviderTypePorkbun             = AccessProviderType("porkbun")
 	AccessProviderTypePowerDNS            = AccessProviderType("powerdns")
@@ -248,6 +249,8 @@ const (
 	ACMEDns01ProviderTypeNetcup            = ACMEDns01ProviderType(AccessProviderTypeNetcup)
 	ACMEDns01ProviderTypeNetlify           = ACMEDns01ProviderType(AccessProviderTypeNetlify)
 	ACMEDns01ProviderTypeNS1               = ACMEDns01ProviderType(AccessProviderTypeNS1)
+	ACMEDns01ProviderTypeOracleCloud       = ACMEDns01ProviderType(AccessProviderTypeOracleCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeOracleCloudDNS]
+	ACMEDns01ProviderTypeOracleCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeOracleCloud + "-dns")
 	ACMEDns01ProviderTypeOVHcloud          = ACMEDns01ProviderType(AccessProviderTypeOVHcloud)
 	ACMEDns01ProviderTypePorkbun           = ACMEDns01ProviderType(AccessProviderTypePorkbun)
 	ACMEDns01ProviderTypePowerDNS          = ACMEDns01ProviderType(AccessProviderTypePowerDNS)

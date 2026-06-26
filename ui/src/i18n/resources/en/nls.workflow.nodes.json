@@ -318,6 +318,16 @@
         "placeholder": "Please enter web root path",
         "tooltip": "It's the main directory where the website's files are stored on the local device."
       },
+      "oraclecloud_dns_region": {
+        "label": "OCI region",
+        "placeholder": "Please enter OCI DNS region (e.g. us-phoenix-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm</a>"
+      },
+      "oraclecloud_dns_compartment_ocid": {
+        "label": "OCI compartment OCID",
+        "placeholder": "Please enter OCI compartment OCID",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
+      },
       "s3_region": {
         "label": "Object storage (S3-compatible) region",
         "placeholder": "Please enter region"

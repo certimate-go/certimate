@@ -437,6 +437,8 @@ github.com/goccy/go-yaml v1.9.8/go.mod h1:JubOolP3gh0HpiBc4BLRD4YmjEjHAmIIB2aaXK
 github.com/goccy/go-yaml v1.19.2 h1:PmFC1S6h8ljIz6gMRBopkjP1TVT7xuwrButHID66PoM=
 github.com/goccy/go-yaml v1.19.2/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
+github.com/gofrs/flock v0.13.0 h1:95JolYOvGMqeH31+FC7D2+uULf6mG61mEZ/A8dRYMzw=
+github.com/gofrs/flock v0.13.0/go.mod h1:jxeyy9R1auM5S6JYDBhDt+E2TCo7DkratH4Pgi8P+Z0=
 github.com/gofrs/uuid v4.4.0+incompatible h1:3qXRTX8/NbyulANqlc0lchS1gqAVxRgsuW1YrTJupqA=
 github.com/gofrs/uuid v4.4.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
@@ -733,6 +735,12 @@ github.com/nrdcg/goacmedns v0.2.0 h1:ADMbThobzEMnr6kg2ohs4KGa3LFqmgiBA22/6jUWJR0
 github.com/nrdcg/goacmedns v0.2.0/go.mod h1:T5o6+xvSLrQpugmwHvrSNkzWht0UGAwj2ACBMhh73Cg=
 github.com/nrdcg/namesilo v0.5.0 h1:6QNxT/XxE+f5B+7QlfWorthNzOzcGlBLRQxqi6YeBrE=
 github.com/nrdcg/namesilo v0.5.0/go.mod h1:4UkwlwQfDt74kSGmhLaDylnBrD94IfflnpoEaj6T2qw=
+github.com/nrdcg/oci-go-sdk/certificatesmanagement/v1065 v1065.118.1 h1:wkYSV6QEHn3SvYBJCT0mxLxYOucrvyVLRI2E9XOoO10=
+github.com/nrdcg/oci-go-sdk/certificatesmanagement/v1065 v1065.118.1/go.mod h1:6zkMV6Nw7Mqe6pFsohqmCqdwxT47U2i6ASkSxWZqFps=
+github.com/nrdcg/oci-go-sdk/common/v1065 v1065.118.1 h1:nXs2HDhDO9Qfke/F0TIPr42aAeG+TRJGJD6w1jZj2gM=
+github.com/nrdcg/oci-go-sdk/common/v1065 v1065.118.1/go.mod h1:8bOmK+tqjALlm0WH4PEp7kFflnnZaZQdIrhCWwV0mM8=
+github.com/nrdcg/oci-go-sdk/dns/v1065 v1065.116.0 h1:j15rh7oUMvrqSwFVAavKC1haG+vP+IMH7SyFqVKFT+I=
+github.com/nrdcg/oci-go-sdk/dns/v1065 v1065.116.0/go.mod h1:GMmUxJhLHleboAp7caAU3tDJ8yHs8dBpNmsp1CEtXsc=
 github.com/nrdcg/porkbun v0.4.0 h1:rWweKlwo1PToQ3H+tEO9gPRW0wzzgmI/Ob3n2Guticw=
 github.com/nrdcg/porkbun v0.4.0/go.mod h1:/QMskrHEIM0IhC/wY7iTCUgINsxdT2WcOphktJ9+Q54=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
@@ -841,6 +849,8 @@ github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1
 github.com/smartystreets/assertions v1.1.0/go.mod h1:tcbTF8ujkAEcZ8TElKY+i30BzYlVhC/LOxJk7iOWnoo=
 github.com/smartystreets/goconvey v1.6.4/go.mod h1:syvi0/a8iFYH4r/RixwvyeAJjdLS9QV7WQ/tjFTllLA=
 github.com/sony/gobreaker v0.4.1/go.mod h1:ZKptC7FHNvhBz7dN2LGjPVBz2sZJmc0/PkyDJOjmxWY=
+github.com/sony/gobreaker/v2 v2.4.0 h1:g2KJRW1Ubty3+ZOcSEUN7K+REQJdN6yo6XvaML+jptg=
+github.com/sony/gobreaker/v2 v2.4.0/go.mod h1:pTyFJgcZ3h2tdQVLZZruK2C0eoFL1fb/G83wK1ZQl+s=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spf13/afero v1.15.0 h1:b/YBCLWAJdFWJTN9cLhiXXcD7mzKn9Dm86dNnfyQw1I=
 github.com/spf13/afero v1.15.0/go.mod h1:NC2ByUVxtQs4b3sIUphxK0NioZnmxgyCrfzeuq8lxMg=
@@ -937,6 +947,8 @@ github.com/xdg-go/stringprep v1.0.4/go.mod h1:mPGuuIYwz7CmR2bT9j4GbQqutWS1zV24gi
 github.com/xhit/go-str2duration/v2 v2.1.0 h1:lxklc02Drh6ynqX+DdPyp5pCKLUQpRT8bp8Ydu2Bstc=
 github.com/xhit/go-str2duration/v2 v2.1.0/go.mod h1:ohY8p+0f07DiV6Em5LKB0s2YpLtXVyJfNt1+BlmyAsU=
 github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d/go.mod h1:rHwXgn7JulP+udvsHwJoVG1YGAP6VLg4y9I5dyZdqmA=
+github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 h1:ilQV1hzziu+LLM3zUTJ0trRztfwgjqKnBWNtSRkbmwM=
+github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78/go.mod h1:aL8wCCfTfSfmXjznFBSZNN13rSJjlIOI1fUNAtF7rmI=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.30/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

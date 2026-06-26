@@ -454,6 +454,15 @@ type AccessConfigForNS1 struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type AccessConfigForOracleCloud struct {
+	AuthMethod           string `json:"authMethod"`
+	PrivateKey           string `json:"privateKey,omitempty"`
+	PrivateKeyPassphrase string `json:"privateKeyPassphrase,omitempty"`
+	PublicKeyFingerprint string `json:"publicKeyFingerprint,omitempty"`
+	TenancyOcid          string `json:"tenancyOcid,omitempty"`
+	UserOcid             string `json:"userOcid,omitempty"`
+}
+
 type AccessConfigForOVHcloud struct {
 	Endpoint          string `json:"endpoint"`
 	AuthMethod        string `json:"authMethod"`

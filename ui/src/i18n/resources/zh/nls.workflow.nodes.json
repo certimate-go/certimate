@@ -317,6 +317,16 @@
         "placeholder": "请输入网站根目录",
         "tooltip": "即本机存储网站文件的主文件夹。"
       },
+      "oraclecloud_dns_region": {
+        "label": "OCI 服务区域",
+        "placeholder": "请输入 OCI DNS 服务区域（例如：us-phoenix-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm</a>"
+      },
+      "oraclecloud_dns_compartment_ocid": {
+        "label": "OCI 资源区间 OCID",
+        "placeholder": "请输入 OCI 资源区间 OCID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
+      },
       "s3_region": {
         "label": "对象存储区域",
         "placeholder": "请输入对象存储区域"

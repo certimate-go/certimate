@@ -736,13 +736,13 @@
       "tooltip": "这是什么？请参阅 <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
     },
     "googlecloud_project_id": {
-      "label": "Google Cloud 项目 ID",
-      "placeholder": "请输入 Google Cloud 项目 ID",
+      "label": "GCP 项目 ID",
+      "placeholder": "请输入 GCP 项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
     },
     "googlecloud_service_account_key": {
-      "label": "Google Cloud 服务账号密钥",
-      "placeholder": "请输入 Google Cloud 服务账号密钥",
+      "label": "GCP 服务账号密钥",
+      "placeholder": "请输入 GCP 服务账号密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -998,6 +998,46 @@
     "nginxproxymanager_api_token": {
       "label": "NPM API Token",
       "placeholder": "请输入 NPM API Token"
+    },
+    "oraclecloud_auth_method": {
+      "label": "OCI API 认证方式",
+      "placeholder": "请选择 OCI API 认证方式",
+      "option": {
+        "apikey": {
+          "label": "API Key"
+        },
+        "instanceprincipal": {
+          "label": "Instance Principal"
+        },
+        "resourceprincipal": {
+          "label": "Resource Principal"
+        }
+      }
+    },
+    "oraclecloud_private_key": {
+      "label": "OCI API 签名私钥",
+      "placeholder": "请输入 OCI API 签名私钥",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_private_key_passphrase": {
+      "label": "OCI API 签名私钥口令（可选）",
+      "placeholder": "请输入 OCI API 签名私钥口令",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_public_key_fingerprint": {
+      "label": "OCI API 签名公钥指纹",
+      "placeholder": "请输入 OCI API 签名公钥指纹",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_tenancy_ocid": {
+      "label": "OCI 租户 OCID",
+      "placeholder": "请输入 OCI 租户 OCID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_user_ocid": {
+      "label": "OCI 用户 OCID",
+      "placeholder": "请输入 OCI 用户 OCID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
     },
     "ns1_api_key": {
       "label": "NS1 API Key",

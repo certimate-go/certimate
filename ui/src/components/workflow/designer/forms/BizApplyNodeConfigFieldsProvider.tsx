@@ -9,6 +9,7 @@ import BizApplyNodeConfigFieldsProviderFTP from "./BizApplyNodeConfigFieldsProvi
 import BizApplyNodeConfigFieldsProviderHuaweiCloudDNS from "./BizApplyNodeConfigFieldsProviderHuaweiCloudDNS";
 import BizApplyNodeConfigFieldsProviderJDCloudDNS from "./BizApplyNodeConfigFieldsProviderJDCloudDNS";
 import BizApplyNodeConfigFieldsProviderLocal from "./BizApplyNodeConfigFieldsProviderLocal";
+import BizApplyNodeConfigFieldsProviderOracleCloudDNS from "./BizApplyNodeConfigFieldsProviderOracleCloudDNS";
 import BizApplyNodeConfigFieldsProviderS3 from "./BizApplyNodeConfigFieldsProviderS3";
 import BizApplyNodeConfigFieldsProviderSSH from "./BizApplyNodeConfigFieldsProviderSSH";
 
@@ -25,6 +26,8 @@ const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React
   [ACME_DNS01_PROVIDERS.HUAWEICLOUD_DNS]: BizApplyNodeConfigFieldsProviderHuaweiCloudDNS,
   [ACME_DNS01_PROVIDERS.JDCLOUD]: BizApplyNodeConfigFieldsProviderJDCloudDNS,
   [ACME_DNS01_PROVIDERS.JDCLOUD_DNS]: BizApplyNodeConfigFieldsProviderJDCloudDNS,
+  [ACME_DNS01_PROVIDERS.ORACLECLOUD]: BizApplyNodeConfigFieldsProviderOracleCloudDNS,
+  [ACME_DNS01_PROVIDERS.ORACLECLOUD_DNS]: BizApplyNodeConfigFieldsProviderOracleCloudDNS,
 };
 
 const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, React.ComponentType<any>>> = {

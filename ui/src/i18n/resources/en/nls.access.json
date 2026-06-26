@@ -736,13 +736,13 @@
       "tooltip": "For more information, see <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
     },
     "googlecloud_project_id": {
-      "label": "Google Cloud project ID",
-      "placeholder": "Please enter Google Cloud project ID",
+      "label": "GCP project ID",
+      "placeholder": "Please enter GCP project ID",
       "tooltip": "For more information, see <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
     },
     "googlecloud_service_account_key": {
-      "label": "Google Cloud service account key",
-      "placeholder": "Please enter Google Cloud service account key",
+      "label": "GCP service account key",
+      "placeholder": "Please enter GCP service account key",
       "tooltip": "For more information, see <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -1003,6 +1003,46 @@
       "label": "NS1 API key",
       "placeholder": "Please enter NS1 API key",
       "tooltip": "For more information, see <a href=\"https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api\" target=\"_blank\">https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api</a>"
+    },
+    "oraclecloud_auth_method": {
+      "label": "OCI API authentication method",
+      "placeholder": "Please select OCI API authentication method",
+      "option": {
+        "apikey": {
+          "label": "API key"
+        },
+        "instanceprincipal": {
+          "label": "Instance principal"
+        },
+        "resourceprincipal": {
+          "label": "Resource principal"
+        }
+      }
+    },
+    "oraclecloud_private_key": {
+      "label": "OCI API signing private key",
+      "placeholder": "Please enter OCI API signing private key",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_private_key_passphrase": {
+      "label": "OCI API signing private key passphrase (Optional)",
+      "placeholder": "Please enter OCI API signing private key passphrase",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_public_key_fingerprint": {
+      "label": "OCI API signing public key fingerprint",
+      "placeholder": "Please enter OCI API signing public key fingerprint",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_tenancy_ocid": {
+      "label": "OCI tenancy OCID",
+      "placeholder": "Please enter OCI tenancy OCID",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_user_ocid": {
+      "label": "OCI user OCID",
+      "placeholder": "Please enter OCI user OCID",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
     },
     "ovhcloud_endpoint": {
       "label": "OVHcloud API endpoint",
