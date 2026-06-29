@@ -1,6 +1,8 @@
 package cdn
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type sdkResponse interface {
 	GetAPIError() error

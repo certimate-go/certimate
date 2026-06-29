@@ -1,6 +1,8 @@
 package engine
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	// 表示工作流引擎执行被中断，可能已结束

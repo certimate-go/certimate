@@ -13,7 +13,11 @@ var (
 
 func thisSvcInst() *WorkflowService {
 	thisSvcOnce.Do(func() {
-		thisSvc = NewWorkflowService(repository.NewWorkflowRepository(), repository.NewWorkflowRunRepository(), repository.NewSettingsRepository())
+		thisSvc = NewWorkflowService(
+			repository.NewWorkflowRepository(),
+			repository.NewWorkflowRunRepository(),
+			repository.NewSettingsRepository(),
+		)
 	})
 	return thisSvc
 }

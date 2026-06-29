@@ -25,11 +25,7 @@ type CertificateService struct {
 	settingsRepo    settingsRepository
 }
 
-func NewCertificateService(
-	acmeAccountRepo acmeAccountRepository,
-	certificateRepo certificateRepository,
-	settingsRepo settingsRepository,
-) *CertificateService {
+func NewCertificateService(acmeAccountRepo acmeAccountRepository, certificateRepo certificateRepository, settingsRepo settingsRepository) *CertificateService {
 	return &CertificateService{
 		acmeAccountRepo: acmeAccountRepo,
 		certificateRepo: certificateRepo,

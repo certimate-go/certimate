@@ -1,6 +1,8 @@
 package cert
 
-import "github.com/baidubce/bce-sdk-go/services/cert"
+import (
+	"github.com/baidubce/bce-sdk-go/services/cert"
+)
 
 type CreateCertArgs struct {
 	cert.CreateCertArgs
