@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -15,6 +14,7 @@ import (
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/domain/dtos"
+	"github.com/certimate-go/certimate/internal/settings"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertpfx "github.com/certimate-go/certimate/pkg/utils/cert/pfx"
 )
@@ -22,14 +22,12 @@ import (
 type CertificateService struct {
 	acmeAccountRepo acmeAccountRepository
 	certificateRepo certificateRepository
-	settingsRepo    settingsRepository
 }
 
-func NewCertificateService(acmeAccountRepo acmeAccountRepository, certificateRepo certificateRepository, settingsRepo settingsRepository) *CertificateService {
+func NewCertificateService(acmeAccountRepo acmeAccountRepository, certificateRepo certificateRepository) *CertificateService {
 	return &CertificateService{
 		acmeAccountRepo: acmeAccountRepo,
 		certificateRepo: certificateRepo,
-		settingsRepo:    settingsRepo,
 	}
 }
 
@@ -259,20 +257,10 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 }
 
 func (s *CertificateService) cleanupExpiredCertificates(ctx context.Context) error {
-	settings, err := s.settingsRepo.GetByName(ctx, domain.SettingsNamePersistence)
-	if err != nil {
-		if errors.Is(err, domain.ErrRecordNotFound) {
-			return nil
-		}
-
-		app.GetLogger().Error("failed to get persistence settings", slog.Any("error", err))
-		return err
-	}
-
-	persistenceSettings := settings.Content.AsPersistence()
-	if persistenceSettings.CertificatesRetentionMaxDays != 0 {
-		ret, err := s.certificateRepo.DeleteWithExprs(context.Background(),
-			dbx.NewExp(fmt.Sprintf("validityNotAfter<DATETIME('now', '-%d days')", persistenceSettings.CertificatesRetentionMaxDays)),
+	globalSettingsForPersistence := settings.GetGlobalSettingsForPersistence()
+	if globalSettingsForPersistence.CertificatesRetentionMaxDays != 0 {
+		ret, err := s.certificateRepo.DeleteWithExprs(ctx,
+			dbx.NewExp(fmt.Sprintf("validityNotAfter<DATETIME('now', '-%d days')", globalSettingsForPersistence.CertificatesRetentionMaxDays)),
 		)
 		if err != nil {
 			app.GetLogger().Error("failed to delete expired certificates", slog.Any("error", err))

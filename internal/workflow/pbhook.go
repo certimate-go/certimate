@@ -2,7 +2,6 @@ package workflow
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pocketbase/pocketbase/core"
 
@@ -17,7 +16,7 @@ func registerWorkflowRecordEvents() {
 			return err
 		}
 
-		if err := onWorkflowRecordCreateOrUpdate(e.Request.Context(), e.Record); err != nil {
+		if err := onWorkflowRecordCreateOrUpdate(e.Request.Context(), e.App, e.Record); err != nil {
 			app.GetLogger().Error(err.Error())
 			return err
 		}
@@ -29,7 +28,7 @@ func registerWorkflowRecordEvents() {
 			return err
 		}
 
-		if err := onWorkflowRecordCreateOrUpdate(e.Request.Context(), e.Record); err != nil {
+		if err := onWorkflowRecordCreateOrUpdate(e.Request.Context(), e.App, e.Record); err != nil {
 			app.GetLogger().Error(err.Error())
 			return err
 		}
@@ -41,7 +40,7 @@ func registerWorkflowRecordEvents() {
 			return err
 		}
 
-		if err := onWorkflowRecordDelete(e.Request.Context(), e.Record); err != nil {
+		if err := onWorkflowRecordDelete(e.Request.Context(), e.App, e.Record); err != nil {
 			app.GetLogger().Error(err.Error())
 			return err
 		}
@@ -50,7 +49,7 @@ func registerWorkflowRecordEvents() {
 	})
 }
 
-func onWorkflowRecordCreateOrUpdate(_ context.Context, record *core.Record) error {
+func onWorkflowRecordCreateOrUpdate(_ context.Context, _ core.App, record *core.Record) error {
 	scheduler := app.GetScheduler()
 
 	// 向数据库插入/更新时，同时更新定时任务
@@ -60,7 +59,7 @@ func onWorkflowRecordCreateOrUpdate(_ context.Context, record *core.Record) erro
 
 	// 如果非定时触发或未启用，移除定时任务
 	if !enabled || trigger != domain.WorkflowTriggerTypeScheduled.String() {
-		scheduler.Remove(fmt.Sprintf("workflow#%s", record.Id))
+		scheduler.Remove(buildPbJobKey(record.Id))
 		return nil
 	}
 
@@ -72,12 +71,11 @@ func onWorkflowRecordCreateOrUpdate(_ context.Context, record *core.Record) erro
 	return nil
 }
 
-func onWorkflowRecordDelete(_ context.Context, record *core.Record) error {
+func onWorkflowRecordDelete(_ context.Context, _ core.App, record *core.Record) error {
 	scheduler := app.GetScheduler()
 
 	// 从数据库删除时，同时移除定时任务
-	jobId := fmt.Sprintf("workflow#%s", record.Id)
-	scheduler.Remove(jobId)
+	scheduler.Remove(buildPbJobKey(record.Id))
 
 	return nil
 }

@@ -16,7 +16,6 @@ func thisSvcInst() *WorkflowService {
 		thisSvc = NewWorkflowService(
 			repository.NewWorkflowRepository(),
 			repository.NewWorkflowRunRepository(),
-			repository.NewSettingsRepository(),
 		)
 	})
 	return thisSvc

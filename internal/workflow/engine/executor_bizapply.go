@@ -18,6 +18,7 @@ import (
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/repository"
+	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
@@ -53,7 +54,6 @@ const (
 type bizApplyNodeExecutor struct {
 	nodeExecutor
 
-	settingsRepo    settingsRepository
 	accessRepo      accessRepository
 	certificateRepo certificateRepository
 	wfoutputRepo    workflowOutputRepository
@@ -380,12 +380,9 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 构造证书申请时所需的 lego 配置项
 	legoCertifierCfg := &lego.NewConfig(nil).Certificate
-	settings, _ := ne.settingsRepo.GetByName(execCtx.Context(), domain.SettingsNameSSLProvider)
-	if settings != nil {
-		sslProviderSettings := settings.Content.AsSSLProvider()
-		if sslProviderSettings.Timeout > 0 {
-			legoCertifierCfg.Timeout = time.Duration(sslProviderSettings.Timeout) * time.Second
-		}
+	globalSettingsForPersistence := settings.GetGlobalSettingsForSSLProvider()
+	if globalSettingsForPersistence.Timeout > 0 {
+		legoCertifierCfg.Timeout = time.Duration(globalSettingsForPersistence.Timeout) * time.Second
 	}
 
 	// 如果启用多进程模式，发送指令
@@ -494,7 +491,6 @@ func (ne *bizApplyNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionConte
 func newBizApplyNodeExecutor() NodeExecutor {
 	return &bizApplyNodeExecutor{
 		nodeExecutor:    nodeExecutor{logger: slog.Default()},
-		settingsRepo:    repository.NewSettingsRepository(),
 		accessRepo:      repository.NewAccessRepository(),
 		certificateRepo: repository.NewCertificateRepository(),
 		wfoutputRepo:    repository.NewWorkflowOutputRepository(),

@@ -20,7 +20,3 @@ type workflowOutputRepository interface {
 	GetByWorkflowIdAndNodeId(ctx context.Context, workflowId string, workflowNodeId string) (*domain.WorkflowOutput, error)
 	Save(ctx context.Context, workflowOutput *domain.WorkflowOutput) (*domain.WorkflowOutput, error)
 }
-
-type settingsRepository interface {
-	GetByName(ctx context.Context, name string) (*domain.Settings, error)
-}

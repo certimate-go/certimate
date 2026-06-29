@@ -14,10 +14,9 @@ func Setup() {
 	workflowRunRepo := repository.NewWorkflowRunRepository()
 	acmeAccountRepo := repository.NewACMEAccountRepository()
 	certificateRepo := repository.NewCertificateRepository()
-	settingsRepo := repository.NewSettingsRepository()
 
-	workflowSvc := workflow.NewWorkflowService(workflowRepo, workflowRunRepo, settingsRepo)
-	certificateSvc := certificate.NewCertificateService(acmeAccountRepo, certificateRepo, settingsRepo)
+	workflowSvc := workflow.NewWorkflowService(workflowRepo, workflowRunRepo)
+	certificateSvc := certificate.NewCertificateService(acmeAccountRepo, certificateRepo)
 
 	if err := initWorkflowScheduler(workflowSvc); err != nil {
 		app.GetLogger().Error("failed to init workflow scheduler", slog.Any("error", err))

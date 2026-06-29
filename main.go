@@ -17,6 +17,7 @@ import (
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
+	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/workflow"
 	"github.com/certimate-go/certimate/ui"
 
@@ -48,11 +49,13 @@ func main() {
 		pflag.StringVar(&flagHttp, "http", "127.0.0.1:8090", "HTTP server address")
 		pflag.Parse()
 
-		pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
-			scheduler.Setup()
-			workflow.Setup()
-			routes.BindRouter(e.Router)
-			return e.Next()
+		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
+			if err := e.Next(); err != nil {
+				return err
+			}
+
+			settings.Setup()
+			return nil
 		})
 
 		pb.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
@@ -66,26 +69,15 @@ func main() {
 		})
 
 		pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
-			slog.Info("[CERTIMATE] Visit the website: http://" + flagHttp)
-			return e.Next()
-		})
+			scheduler.Setup()
+			workflow.Setup()
+			routes.BindRouter(e.Router)
 
-		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
-			err := e.Next()
-			if err != nil {
+			if err := e.Next(); err != nil {
 				return err
 			}
 
-			settings := pb.Settings()
-			if !settings.Batch.Enabled {
-				settings.Batch.Enabled = true
-				settings.Batch.MaxRequests = 1000
-				settings.Batch.Timeout = 30
-				if err := pb.Save(settings); err != nil {
-					return err
-				}
-			}
-
+			slog.Info("[CERTIMATE] Visit the website: http://" + flagHttp)
 			return nil
 		})
 
