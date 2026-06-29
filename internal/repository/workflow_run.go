@@ -157,6 +157,38 @@ func (r *WorkflowRunRepository) DeleteWithExprs(ctx context.Context, exprs ...db
 	return ret, nil
 }
 
+func (r *WorkflowRunRepository) ResetStatusIfHanging(ctx context.Context) error {
+	return app.GetApp().RunInTransaction(func(txApp core.App) error {
+		var err error
+
+		_, err = txApp.DB().
+			NewQuery(fmt.Sprintf("UPDATE %s SET lastRunStatus = '%s' WHERE lastRunStatus = '%s' OR lastRunStatus = '%s'",
+				domain.CollectionNameWorkflow,
+				domain.WorkflowRunStatusTypeCanceled.String(),
+				domain.WorkflowRunStatusTypePending.String(),
+				domain.WorkflowRunStatusTypeProcessing.String(),
+			)).
+			Execute()
+		if err != nil {
+			return err
+		}
+
+		_, err = txApp.DB().
+			NewQuery(fmt.Sprintf("UPDATE %s SET lastRunStatus = '%s' WHERE lastRunStatus = '%s' OR lastRunStatus = '%s'",
+				domain.CollectionNameWorkflow,
+				domain.WorkflowRunStatusTypeCanceled.String(),
+				domain.WorkflowRunStatusTypePending.String(),
+				domain.WorkflowRunStatusTypeProcessing.String(),
+			)).
+			Execute()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
 func (r *WorkflowRunRepository) castRecordToModel(record *core.Record) (*domain.WorkflowRun, error) {
 	if record == nil {
 		return nil, fmt.Errorf("the record is nil")
