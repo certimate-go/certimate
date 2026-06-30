@@ -123,7 +123,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeLoadBalancers.html
 	describeLoadBalancersReq := &elasticloadbalancingv2.DescribeLoadBalancersInput{
 		LoadBalancerArns: []string{d.config.LoadbalancerArn},
-		PageSize:         aws.Int32(1),
 	}
 	describeLoadBalancersResp, err := d.sdkClient.DescribeLoadBalancers(ctx, describeLoadBalancersReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.DescribeLoadBalancers'", slog.Any("request", describeLoadBalancersReq), slog.Any("response", describeLoadBalancersResp))
@@ -138,7 +137,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	describeListenersReq := &elasticloadbalancingv2.DescribeListenersInput{
 		LoadBalancerArn: aws.String(d.config.LoadbalancerArn),
 		ListenerArns:    []string{d.config.ListenerArn},
-		PageSize:        aws.Int32(1),
 	}
 	describeListenersResp, err := d.sdkClient.DescribeListeners(ctx, describeListenersReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenersResp))
