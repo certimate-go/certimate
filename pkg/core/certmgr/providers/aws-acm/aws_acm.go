@@ -2,6 +2,7 @@ package awsacm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	awscred "github.com/aws/aws-sdk-go-v2/credentials"
 	awsacm "github.com/aws/aws-sdk-go-v2/service/acm"
+	"github.com/aws/smithy-go"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -116,6 +118,13 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 			getCertificateResp, err := c.sdkClient.GetCertificate(ctx, getCertificateReq)
 			if err != nil {
+				var sdkErr smithy.APIError
+				if errors.As(err, &sdkErr) {
+					if sdkErrCode := sdkErr.ErrorCode(); sdkErrCode == "NoSuchEntity" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'acm.GetCertificate': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, aws.ToString(getCertificateResp.Certificate)) {

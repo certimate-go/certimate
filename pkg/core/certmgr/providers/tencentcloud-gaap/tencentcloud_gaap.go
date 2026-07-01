@@ -9,6 +9,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
+	tcerrors "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 
 	tcgaap "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
@@ -114,6 +115,12 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			describeCertificateDetailResp, err := c.sdkClient.DescribeCertificateDetailWithContext(ctx, describeCertificateDetailReq)
 			c.logger.Debug("sdk request 'gaap.DescribeCertificateDetail'", slog.Any("request", describeCertificateDetailReq), slog.Any("response", describeCertificateDetailResp))
 			if err != nil {
+				if sdkErr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
+					if sdkErrCode := sdkErr.Code; sdkErrCode == "ResourceNotFound" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'gaap.DescribeCertificateDetail': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, lo.FromPtr(describeCertificateDetailResp.Response.CertificateDetail.CertificateContent)) {

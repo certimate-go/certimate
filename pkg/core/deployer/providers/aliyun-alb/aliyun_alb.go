@@ -371,8 +371,8 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 				getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
 				d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
 				if err != nil {
-					if sdkerr, ok := err.(*tea.SDKError); ok {
-						if tea.IntValue(sdkerr.StatusCode) == 404 && strings.HasPrefix(tea.StringValue(sdkerr.Code), "NotFound") {
+					if sdkErr, ok := err.(*tea.SDKError); ok {
+						if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
 							continue
 						}
 					}

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/baidubce/bce-sdk-go/bce"
+
 	"github.com/certimate-go/certimate/pkg/core"
 	baiducert "github.com/certimate-go/certimate/pkg/sdk3rd/baiducloud/cert"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -66,6 +68,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 查看证书列表
+	// REF: https://cloud.baidu.com/doc/Reference/s/Gjwvz27xu#34-%E6%9F%A5%E7%9C%8B%E8%AF%81%E4%B9%A6%E5%88%97%E8%A1%A8
 	// REF: https://cloud.baidu.com/doc/Reference/s/Gjwvz27xu#35-%E6%9F%A5%E7%9C%8B%E8%AF%81%E4%B9%A6%E5%88%97%E8%A1%A8%E8%AF%A6%E6%83%85
 	listCertDetail, err := c.sdkClient.ListCertDetail()
 	c.logger.Debug("sdk request 'cert.ListCertDetail'", slog.Any("response", listCertDetail))
@@ -94,6 +97,12 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			getCertDetailResp, err := c.sdkClient.GetCertRawData(certItem.CertId)
 			c.logger.Debug("sdk request 'cert.GetCertRawData'", slog.String("params.certId", certItem.CertId), slog.Any("response", getCertDetailResp))
 			if err != nil {
+				if sdkErr, ok := err.(*bce.BceServiceError); ok {
+					if sdkErrCode := sdkErr.Code; sdkErrCode == "ResourceNotFoundException" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'cert.GetCertRawData': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, getCertDetailResp.CertServerData) {

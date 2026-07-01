@@ -3,6 +3,7 @@ package awsiam
 import (
 	"cmp"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -11,6 +12,7 @@ import (
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	awscred "github.com/aws/aws-sdk-go-v2/credentials"
 	awsiam "github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/smithy-go"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
@@ -120,6 +122,13 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 			getServerCertificateResp, err := c.sdkClient.GetServerCertificate(ctx, getServerCertificateReq)
 			if err != nil {
+				var sdkErr smithy.APIError
+				if errors.As(err, &sdkErr) {
+					if sdkErrCode := sdkErr.ErrorCode(); sdkErrCode == "InvalidArnException" || sdkErrCode == "ResourceNotFoundException" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'iam.GetServerCertificate': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, aws.ToString(getServerCertificateResp.ServerCertificate.CertificateBody)) {

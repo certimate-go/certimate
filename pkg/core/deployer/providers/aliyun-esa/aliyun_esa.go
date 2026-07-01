@@ -2,7 +2,6 @@ package aliyunesa
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -103,20 +102,20 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// REF: https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-setcertificate
 	certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
 	setCertificateReq := &aliesa.SetCertificateRequest{
+		Region: tea.String(d.config.Region),
 		SiteId: tea.Int64(d.config.SiteId),
 		Type:   tea.String("cas"),
 		CasId:  tea.Int64(certId),
-		Region: tea.String(d.config.Region),
 	}
 	setCertificateResp, err := d.sdkClient.SetCertificateWithContext(ctx, setCertificateReq, &dara.RuntimeOptions{})
 	d.logger.Debug("sdk request 'esa.SetCertificate'", slog.Any("request", setCertificateReq), slog.Any("response", setCertificateResp))
 	if err != nil {
-		var sdkError *tea.SDKError
-		if errors.As(err, &sdkError) {
-			if tea.StringValue(sdkError.Code) == "Certificate.Duplicated" {
+		if sdkErr, ok := err.(*tea.SDKError); ok {
+			if sdkErrCode := tea.StringValue(sdkErr.Code); sdkErrCode == "Certificate.Duplicated" {
 				return &DeployResult{}, nil
 			}
 		}
+
 		return nil, fmt.Errorf("failed to execute sdk request 'esa.SetCertificate': %w", err)
 	}
 

@@ -119,11 +119,18 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 			// 对比证书内容
 			getUserCertificateDetailReq := &alicas.GetUserCertificateDetailRequest{
-				CertId: certItem.CertificateId,
+				CertId:     certItem.CertificateId,
+				CertFilter: tea.Bool(true),
 			}
 			getUserCertificateDetailResp, err := c.sdkClient.GetUserCertificateDetailWithContext(ctx, getUserCertificateDetailReq, &dara.RuntimeOptions{})
 			c.logger.Debug("sdk request 'cas.GetUserCertificateDetail'", slog.Any("request", getUserCertificateDetailReq), slog.Any("response", getUserCertificateDetailResp))
 			if err != nil {
+				if sdkErr, ok := err.(*tea.SDKError); ok {
+					if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'cas.GetUserCertificateDetail': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, tea.StringValue(getUserCertificateDetailResp.Body.Cert)) {

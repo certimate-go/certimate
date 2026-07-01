@@ -176,8 +176,8 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 		describeCertificateResp, err := d.sdkClients.SSL.DescribeCertificateWithContext(ctx, describeCertificateReq)
 		d.logger.Debug("sdk request 'ssl.DescribeCertificate'", slog.Any("request", describeCertificateReq), slog.Any("response", describeCertificateResp))
 		if err != nil {
-			if sdkerr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
-				if sdkerr.Code == "FailedOperation.CertificateNotFound" {
+			if sdkErr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
+				if sdkErrCode := sdkErr.Code; sdkErrCode == "FailedOperation.CertificateNotFound" {
 					continue
 				}
 			}

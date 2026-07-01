@@ -119,6 +119,13 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			getCertificateResp, err := c.sdkClient.GetCertificate(ctx, certItem.ID.Name(), certItem.ID.Version(), nil)
 			c.logger.Debug("sdk request 'keyvault.GetCertificate'", slog.String("params.certificateName", certItem.ID.Name()), slog.String("params.certificateVersion", certItem.ID.Version()), slog.Any("response", getCertificateResp))
 			if err != nil {
+				var sdkErr *azcore.ResponseError
+				if errors.As(err, &sdkErr) {
+					if sdkErrCode := sdkErr.ErrorCode; sdkErrCode == "ResourceNotFound" || sdkErrCode == "CertificateNotFound" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'keyvault.GetCertificate': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, string(getCertificateResp.CER)) {
@@ -190,8 +197,8 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	getCertificateResp, err := c.sdkClient.GetCertificate(ctx, certIdOrName, "", nil)
 	c.logger.Debug("sdk request 'keyvault.GetCertificate'", slog.String("params.certificateName", certIdOrName), slog.Any("response", getCertificateResp))
 	if err != nil {
-		var respErr *azcore.ResponseError
-		if !errors.As(err, &respErr) || (respErr.ErrorCode != "ResourceNotFound" && respErr.ErrorCode != "CertificateNotFound") {
+		var sdkErr *azcore.ResponseError
+		if !errors.As(err, &sdkErr) || (sdkErr.ErrorCode != "ResourceNotFound" && sdkErr.ErrorCode != "CertificateNotFound") {
 			return nil, fmt.Errorf("failed to execute sdk request 'keyvault.GetCertificate': %w", err)
 		}
 	} else {
