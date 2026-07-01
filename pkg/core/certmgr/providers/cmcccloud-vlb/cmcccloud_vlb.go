@@ -84,8 +84,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		if listLoadbalanceCertificationResp.Body != nil && listLoadbalanceCertificationResp.Body.Content != nil {
 			for _, certItem := range *listLoadbalanceCertificationResp.Body.Content {
 				// 对比证书有效期
+				newCertNotAfter := certX509.NotAfter
 				oldCertNotAfter, _ := time.Parse(time.DateTime, lo.FromPtr(certItem.ExpirationTime))
-				if !certX509.NotAfter.Equal(oldCertNotAfter) {
+				if !newCertNotAfter.Equal(oldCertNotAfter) {
 					continue
 				}
 

@@ -132,7 +132,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 
 		for _, sslItem := range describePathXSSLResp.DataSet {
 			// 对比证书有效期
-			if int64(sslItem.ExpireTime) != certX509.NotAfter.Unix() {
+			if certX509.NotAfter.Unix() != int64(sslItem.ExpireTime) {
 				continue
 			}
 

@@ -95,9 +95,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			// 对比证书有效期
 			if certItem.Attributes == nil {
 				continue
-			} else if !lo.FromPtr(certItem.Attributes.NotBefore).Equal(certX509.NotBefore) {
+			} else if !certX509.NotBefore.Equal(lo.FromPtr(certItem.Attributes.NotBefore)) {
 				continue
-			} else if !lo.FromPtr(certItem.Attributes.Expires).Equal(certX509.NotAfter) {
+			} else if !certX509.NotAfter.Equal(lo.FromPtr(certItem.Attributes.Expires)) {
 				continue
 			}
 

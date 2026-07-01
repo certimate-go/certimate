@@ -124,9 +124,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
-			if certItem.CurrentVersionSummary.Validity == nil || !certItem.CurrentVersionSummary.Validity.TimeOfValidityNotBefore.Equal(certX509.NotBefore) {
+			if certItem.CurrentVersionSummary.Validity == nil || !certX509.NotBefore.Equal(lo.FromPtr(certItem.CurrentVersionSummary.Validity.TimeOfValidityNotBefore).Time) {
 				continue
-			} else if certItem.CurrentVersionSummary.Validity == nil || !certItem.CurrentVersionSummary.Validity.TimeOfValidityNotAfter.Equal(certX509.NotAfter) {
+			} else if certItem.CurrentVersionSummary.Validity == nil || !certX509.NotAfter.Equal(lo.FromPtr(certItem.CurrentVersionSummary.Validity.TimeOfValidityNotAfter).Time) {
 				continue
 			}
 

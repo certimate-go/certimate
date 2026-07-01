@@ -104,8 +104,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
-			if certX509.NotBefore.Unix() != int64(lo.FromPtr(certItem.BeginTime)) ||
-				certX509.NotAfter.Unix() != int64(lo.FromPtr(certItem.EndTime)) {
+			if certX509.NotBefore.Unix() != int64(lo.FromPtr(certItem.BeginTime)) {
+				continue
+			} else if certX509.NotAfter.Unix() != int64(lo.FromPtr(certItem.EndTime)) {
 				continue
 			}
 

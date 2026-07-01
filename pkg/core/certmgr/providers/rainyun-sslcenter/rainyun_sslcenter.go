@@ -153,7 +153,9 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			}
 
 			// 对比证书有效期
-			if sslItem.StartDate != certX509.NotBefore.Unix() || sslItem.ExpireDate != certX509.NotAfter.Unix() {
+			if certX509.NotBefore.Unix() != sslItem.StartDate {
+				continue
+			} else if certX509.NotAfter.Unix() != sslItem.ExpireDate {
 				continue
 			}
 

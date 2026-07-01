@@ -85,9 +85,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 			// 对比证书有效期
 			timezoneOfCST := time.FixedZone("CST", 8*60*60)
+			newCertNotBefore := certX509.NotBefore
+			newCertNotAfter := certX509.NotAfter
 			oldCertNotBefore, _ := time.ParseInLocation(time.DateTime, certItem.ValidityFrom, timezoneOfCST)
 			oldCertNotAfter, _ := time.ParseInLocation(time.DateTime, certItem.ValidityTo, timezoneOfCST)
-			if !certX509.NotBefore.Equal(oldCertNotBefore) || !certX509.NotAfter.Equal(oldCertNotAfter) {
+			if !newCertNotBefore.Equal(oldCertNotBefore) || !newCertNotAfter.Equal(oldCertNotAfter) {
 				continue
 			}
 

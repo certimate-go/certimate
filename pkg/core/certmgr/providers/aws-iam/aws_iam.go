@@ -112,7 +112,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
-			if certItem.Expiration == nil || !certItem.Expiration.Equal(certX509.NotAfter) {
+			if certItem.Expiration == nil || !certX509.NotAfter.Equal(*certItem.Expiration) {
 				continue
 			}
 
