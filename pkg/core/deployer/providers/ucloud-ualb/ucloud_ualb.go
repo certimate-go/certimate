@@ -163,7 +163,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	if len(listenerIds) == 0 {
 		d.logger.Info("no alb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
 		var errs []error
 
 		for _, listenerId := range listenerIds {
@@ -212,89 +212,102 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeListeners': %w", err)
 	} else if len(describeListenerResp.Listeners) == 0 {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find alb listener '%s'", cloudListenerId)
 	}
 
-	// 跳过已部署过的监听器
 	listenerInfo := describeListenerResp.Listeners[0]
-	if d.config.Domain == "" {
-		if lo.ContainsBy(listenerInfo.Certificates, func(item ulb.Certificate) bool { return item.SSLId == cloudCertId && item.IsDefault }) {
-			return nil
-		}
-	} else {
-		if lo.ContainsBy(listenerInfo.Certificates, func(item ulb.Certificate) bool { return item.SSLId == cloudCertId && !item.IsDefault }) {
-			return nil
-		}
+	if len(listenerInfo.Certificates) > 0 {
+		d.logger.Info("found alb listener certificates in used", slog.Any("certificates", listenerInfo.Certificates))
 	}
 
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到监听器
-
-		updateListenerAttributeReq := d.sdkClient.NewUpdateListenerAttributeRequest()
-		updateListenerAttributeReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
-		updateListenerAttributeReq.ListenerId = ucloud.String(cloudListenerId)
-		updateListenerAttributeReq.Certificates = []string{cloudCertId}
-		updateListenerResp, err := d.sdkClient.UpdateListenerAttribute(updateListenerAttributeReq)
-		d.logger.Debug("sdk request 'ulb.UpdateListenerAttribute'", slog.Any("request", updateListenerAttributeReq), slog.Any("response", updateListenerResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'ulb.UpdateListenerAttribute': %w", err)
+		if lo.SomeBy(listenerInfo.Certificates, func(item ulb.Certificate) bool { return item.SSLId == cloudCertId && item.IsDefault }) {
+			d.logger.Info("no need to update alb listener default certificate")
+			return nil
 		}
+		return d.updateListenerDefaultCertificate(ctx, cloudLoadbalancerId, cloudListenerId, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
+		if lo.SomeBy(listenerInfo.Certificates, func(item ulb.Certificate) bool { return item.SSLId == cloudCertId && !item.IsDefault }) {
+			d.logger.Info("no need to add alb listener sni certificate")
+			return nil
+		}
+		return d.updateListenerSniCertificate(ctx, cloudLoadbalancerId, listenerInfo, cloudCertId)
+	}
+}
 
-		// 新增监听器扩展证书
-		// REF: https://docs.ucloud.cn/api/ulb-api/add_ssl_binding_json
-		addSSLBindingReq := d.sdkClient.NewAddSSLBindingRequest()
-		addSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
-		addSSLBindingReq.ListenerId = ucloud.String(cloudListenerId)
-		addSSLBindingReq.SSLIds = []string{cloudCertId}
-		addSSLBindingResp, err := d.sdkClient.AddSSLBinding(addSSLBindingReq)
-		d.logger.Debug("sdk request 'ulb.AddSSLBinding'", slog.Any("request", addSSLBindingReq), slog.Any("response", addSSLBindingResp))
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudLoadbalancerId, cloudListenerId string, cloudCertId string) error {
+	// 更新应用型负载均衡监听器属性
+	// REF: https://docs.ucloud.cn/api/ulb-api/update_listener_attribute_json
+	updateListenerAttributeReq := d.sdkClient.NewUpdateListenerAttributeRequest()
+	updateListenerAttributeReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
+	updateListenerAttributeReq.ListenerId = ucloud.String(cloudListenerId)
+	updateListenerAttributeReq.Certificates = []string{cloudCertId}
+	updateListenerResp, err := d.sdkClient.UpdateListenerAttribute(updateListenerAttributeReq)
+	d.logger.Debug("sdk request 'ulb.UpdateListenerAttribute'", slog.Any("request", updateListenerAttributeReq), slog.Any("response", updateListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ulb.UpdateListenerAttribute': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadbalancerId string, cloudListenerInfo ulb.Listener, cloudCertId string) error {
+	// 新增监听器扩展证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/add_ssl_binding_json
+	addSSLBindingReq := d.sdkClient.NewAddSSLBindingRequest()
+	addSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
+	addSSLBindingReq.ListenerId = ucloud.String(cloudListenerInfo.ListenerId)
+	addSSLBindingReq.SSLIds = []string{cloudCertId}
+	addSSLBindingResp, err := d.sdkClient.AddSSLBinding(addSSLBindingReq)
+	d.logger.Debug("sdk request 'ulb.AddSSLBinding'", slog.Any("request", addSSLBindingReq), slog.Any("response", addSSLBindingResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ulb.AddSSLBinding': %w", err)
+	}
+
+	// 找出需要删除绑定的扩展证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/describe_sslv2
+	sslIdsToDelete := make([]string, 0)
+	for _, certItem := range cloudListenerInfo.Certificates {
+		if certItem.IsDefault {
+			continue
+		}
+
+		describeSSLV2Req := d.sdkClient.NewDescribeSSLV2Request()
+		describeSSLV2Req.SSLId = ucloud.String(certItem.SSLId)
+		describeSSLV2Req.Limit = ucloud.Int(1)
+		describeSSLV2Resp, err := d.sdkClient.DescribeSSLV2(describeSSLV2Req)
+		d.logger.Debug("sdk request 'ulb.DescribeSSLV2'", slog.Any("request", describeSSLV2Req), slog.Any("response", describeSSLV2Resp))
 		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'ulb.AddSSLBinding': %w", err)
+			continue
+		} else if len(describeSSLV2Resp.DataSet) == 0 {
+			continue
 		}
 
-		// 找出需要删除绑定的扩展证书
-		// REF: https://docs.ucloud.cn/api/ulb-api/describe_sslv2
-		sslIdsToDelete := make([]string, 0)
-		for _, certItem := range listenerInfo.Certificates {
-			if certItem.IsDefault {
-				continue
-			}
-
-			describeSSLV2Req := d.sdkClient.NewDescribeSSLV2Request()
-			describeSSLV2Req.SSLId = ucloud.String(certItem.SSLId)
-			describeSSLV2Req.Limit = ucloud.Int(1)
-			describeSSLV2Resp, err := d.sdkClient.DescribeSSLV2(describeSSLV2Req)
-			d.logger.Debug("sdk request 'ulb.DescribeSSLV2'", slog.Any("request", describeSSLV2Req), slog.Any("response", describeSSLV2Resp))
-			if err != nil {
-				continue
-			} else if len(describeSSLV2Resp.DataSet) == 0 {
-				continue
-			}
-
-			sslItem := describeSSLV2Resp.DataSet[0]
-			if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
-				sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 过期证书需要删除
-				continue
-			} else if sslItem.Domains == d.config.Domain {
-				sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 同域名证书需要删除
-				continue
-			}
+		sslItem := describeSSLV2Resp.DataSet[0]
+		if sslItem.Domains == d.config.Domain {
+			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 同域名证书需要删除
+			continue
+		} else if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
+			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 过期证书需要删除。TODO: remove on v0.5
+			continue
 		}
+	}
 
-		// 删除监听器绑定的扩展证书
-		// REF: https://docs.ucloud.cn/api/ulb-api/delete_ssl_binding_json
-		if len(sslIdsToDelete) > 0 {
-			deleteSSLBindingReq := d.sdkClient.NewDeleteSSLBindingRequest()
-			deleteSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
-			deleteSSLBindingReq.ListenerId = ucloud.String(cloudListenerId)
-			deleteSSLBindingReq.SSLIds = sslIdsToDelete
-			deleteSSLBindingResp, err := d.sdkClient.DeleteSSLBinding(deleteSSLBindingReq)
-			d.logger.Debug("sdk request 'ulb.DeleteSSLBinding'", slog.Any("request", deleteSSLBindingReq), slog.Any("response", deleteSSLBindingResp))
-			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'ulb.DeleteSSLBinding': %w", err)
-			}
+	// 删除监听器绑定的扩展证书
+	// REF: https://docs.ucloud.cn/api/ulb-api/delete_ssl_binding_json
+	if len(sslIdsToDelete) > 0 {
+		d.logger.Info("found alb listener certificates to unbind", slog.Any("sslIds", sslIdsToDelete))
+
+		deleteSSLBindingReq := d.sdkClient.NewDeleteSSLBindingRequest()
+		deleteSSLBindingReq.LoadBalancerId = ucloud.String(cloudLoadbalancerId)
+		deleteSSLBindingReq.ListenerId = ucloud.String(cloudListenerInfo.ListenerId)
+		deleteSSLBindingReq.SSLIds = sslIdsToDelete
+		deleteSSLBindingResp, err := d.sdkClient.DeleteSSLBinding(deleteSSLBindingReq)
+		d.logger.Debug("sdk request 'ulb.DeleteSSLBinding'", slog.Any("request", deleteSSLBindingReq), slog.Any("response", deleteSSLBindingResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ulb.DeleteSSLBinding': %w", err)
 		}
 	}
 

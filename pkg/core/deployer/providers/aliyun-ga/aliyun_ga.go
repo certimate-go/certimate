@@ -168,7 +168,7 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, cloudCertId string) 
 		d.logger.Info("no ga listeners to deploy")
 	} else {
 		var errs []error
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found ga listeners to deploy", slog.Any("listenerIds", listenerIds))
 
 		for _, listenerId := range listenerIds {
 			select {
@@ -250,64 +250,74 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 			d.logger.Info("no need to update ga listener default certificate")
 			return nil
 		}
-
-		// 修改监听的属性
-		// REF: https://help.aliyun.com/zh/ga/developer-reference/api-ga-2019-11-20-updatelistener
-		updateListenerReq := &aliga.UpdateListenerRequest{
-			RegionId:   tea.String("cn-hangzhou"),
-			ListenerId: tea.String(cloudListenerId),
-			Certificates: []*aliga.UpdateListenerRequestCertificates{{
-				Id: tea.String(cloudCertId),
-			}},
-		}
-		updateListenerResp, err := d.sdkClient.UpdateListenerWithContext(ctx, updateListenerReq, &dara.RuntimeOptions{})
-		d.logger.Debug("sdk request 'ga.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'ga.UpdateListener': %w", err)
-		}
+		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
 		if lo.SomeBy(listenerAdditionalCertificates, func(item *aliga.ListListenerCertificatesResponseBodyCertificates) bool {
 			return tea.StringValue(item.CertificateId) == cloudCertId
 		}) {
-			d.logger.Info("no need to update ga listener additional certificate")
+			d.logger.Info("no need to add ga listener sni certificate")
 			return nil
 		}
 
-		if lo.SomeBy(listenerAdditionalCertificates, func(item *aliga.ListListenerCertificatesResponseBodyCertificates) bool {
+		added := lo.SomeBy(listenerAdditionalCertificates, func(item *aliga.ListListenerCertificatesResponseBodyCertificates) bool {
 			return tea.StringValue(item.Domain) == d.config.Domain
-		}) {
-			// 为监听替换扩展证书
-			// REF: https://help.aliyun.com/zh/ga/developer-reference/api-ga-2019-11-20-updateadditionalcertificatewithlistener
-			updateAdditionalCertificateWithListenerReq := &aliga.UpdateAdditionalCertificateWithListenerRequest{
-				RegionId:      tea.String("cn-hangzhou"),
-				AcceleratorId: tea.String(cloudAcceleratorId),
-				ListenerId:    tea.String(cloudListenerId),
-				CertificateId: tea.String(cloudCertId),
-				Domain:        tea.String(d.config.Domain),
-			}
-			updateAdditionalCertificateWithListenerResp, err := d.sdkClient.UpdateAdditionalCertificateWithListenerWithContext(ctx, updateAdditionalCertificateWithListenerReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'ga.UpdateAdditionalCertificateWithListener'", slog.Any("request", updateAdditionalCertificateWithListenerReq), slog.Any("response", updateAdditionalCertificateWithListenerResp))
-			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'ga.UpdateAdditionalCertificateWithListener': %w", err)
-			}
-		} else {
-			// 为监听绑定扩展证书
-			// REF: https://help.aliyun.com/zh/ga/developer-reference/api-ga-2019-11-20-associateadditionalcertificateswithlistener
-			associateAdditionalCertificatesWithListenerReq := &aliga.AssociateAdditionalCertificatesWithListenerRequest{
-				RegionId:      tea.String("cn-hangzhou"),
-				AcceleratorId: tea.String(cloudAcceleratorId),
-				ListenerId:    tea.String(cloudListenerId),
-				Certificates: []*aliga.AssociateAdditionalCertificatesWithListenerRequestCertificates{{
-					Id:     tea.String(cloudCertId),
-					Domain: tea.String(d.config.Domain),
-				}},
-			}
-			associateAdditionalCertificatesWithListenerResp, err := d.sdkClient.AssociateAdditionalCertificatesWithListenerWithContext(ctx, associateAdditionalCertificatesWithListenerReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'ga.AssociateAdditionalCertificatesWithListener'", slog.Any("request", associateAdditionalCertificatesWithListenerReq), slog.Any("response", associateAdditionalCertificatesWithListenerResp))
-			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'ga.AssociateAdditionalCertificatesWithListener': %w", err)
-			}
+		})
+		return d.updateListenerSniCertificate(ctx, cloudAcceleratorId, cloudListenerId, cloudCertId, added)
+	}
+}
+
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
+	// 修改监听的属性
+	// REF: https://help.aliyun.com/zh/ga/developer-reference/api-ga-2019-11-20-updatelistener
+	updateListenerReq := &aliga.UpdateListenerRequest{
+		RegionId:   tea.String("cn-hangzhou"),
+		ListenerId: tea.String(cloudListenerId),
+		Certificates: []*aliga.UpdateListenerRequestCertificates{{
+			Id: tea.String(cloudCertId),
+		}},
+	}
+	updateListenerResp, err := d.sdkClient.UpdateListenerWithContext(ctx, updateListenerReq, &dara.RuntimeOptions{})
+	d.logger.Debug("sdk request 'ga.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'ga.UpdateListener': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudAcceleratorId string, cloudListenerId string, cloudCertId string, added bool) error {
+	if added {
+		// 为监听替换扩展证书
+		// REF: https://help.aliyun.com/zh/ga/developer-reference/api-ga-2019-11-20-updateadditionalcertificatewithlistener
+		updateAdditionalCertificateWithListenerReq := &aliga.UpdateAdditionalCertificateWithListenerRequest{
+			RegionId:      tea.String("cn-hangzhou"),
+			AcceleratorId: tea.String(cloudAcceleratorId),
+			ListenerId:    tea.String(cloudListenerId),
+			CertificateId: tea.String(cloudCertId),
+			Domain:        tea.String(d.config.Domain),
+		}
+		updateAdditionalCertificateWithListenerResp, err := d.sdkClient.UpdateAdditionalCertificateWithListenerWithContext(ctx, updateAdditionalCertificateWithListenerReq, &dara.RuntimeOptions{})
+		d.logger.Debug("sdk request 'ga.UpdateAdditionalCertificateWithListener'", slog.Any("request", updateAdditionalCertificateWithListenerReq), slog.Any("response", updateAdditionalCertificateWithListenerResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ga.UpdateAdditionalCertificateWithListener': %w", err)
+		}
+	} else {
+		// 为监听绑定扩展证书
+		// REF: https://help.aliyun.com/zh/ga/developer-reference/api-ga-2019-11-20-associateadditionalcertificateswithlistener
+		associateAdditionalCertificatesWithListenerReq := &aliga.AssociateAdditionalCertificatesWithListenerRequest{
+			RegionId:      tea.String("cn-hangzhou"),
+			AcceleratorId: tea.String(cloudAcceleratorId),
+			ListenerId:    tea.String(cloudListenerId),
+			Certificates: []*aliga.AssociateAdditionalCertificatesWithListenerRequestCertificates{{
+				Id:     tea.String(cloudCertId),
+				Domain: tea.String(d.config.Domain),
+			}},
+		}
+		associateAdditionalCertificatesWithListenerResp, err := d.sdkClient.AssociateAdditionalCertificatesWithListenerWithContext(ctx, associateAdditionalCertificatesWithListenerReq, &dara.RuntimeOptions{})
+		d.logger.Debug("sdk request 'ga.AssociateAdditionalCertificatesWithListener'", slog.Any("request", associateAdditionalCertificatesWithListenerReq), slog.Any("response", associateAdditionalCertificatesWithListenerResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'ga.AssociateAdditionalCertificatesWithListener': %w", err)
 		}
 	}
 

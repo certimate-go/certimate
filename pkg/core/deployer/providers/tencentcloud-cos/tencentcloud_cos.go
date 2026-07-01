@@ -105,7 +105,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 避免多次部署，否则会报错 https://github.com/certimate-go/certimate/issues/897#issuecomment-3182904098
 	if bind, _ := d.checkIsBind(ctx, upres.CertId); bind {
-		d.logger.Info("ssl certificate already deployed")
+		d.logger.Info("no need to update cos custom domain certificate")
 		return &DeployResult{}, nil
 	}
 
@@ -135,7 +135,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 		var pendingCount, runningCount, succeededCount, failedCount, totalCount int64
 		if describeHostDeployRecordDetailResp.Response.TotalCount == nil {
-			return false, fmt.Errorf("unexpected tencentcloud deployment job status")
+			return false, fmt.Errorf("unexpected deployment deployment job status")
 		} else {
 			pendingCount = lo.FromPtr(describeHostDeployRecordDetailResp.Response.PendingTotalCount)
 			runningCount = lo.FromPtr(describeHostDeployRecordDetailResp.Response.RunningTotalCount)
@@ -145,13 +145,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 			if succeededCount+failedCount == totalCount {
 				if failedCount > 0 {
-					return false, fmt.Errorf("tencentcloud deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+					return false, fmt.Errorf("unexpected deployment deployment job status (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
 				}
 				return true, nil
 			}
 		}
 
-		d.logger.Info(fmt.Sprintf("waiting for tencentcloud deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
+		d.logger.Info(fmt.Sprintf("waiting for deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return nil, err

@@ -160,7 +160,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ga2.DescribeListeners': %w", err)
 	} else if len(describeListenersResp.Response.ListenerSet) == 0 {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find ga2 listener '%s'", cloudListenerId)
 	}
 
 	// 获取证书信息，避免重复绑定

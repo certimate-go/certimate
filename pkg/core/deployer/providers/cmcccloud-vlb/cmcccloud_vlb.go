@@ -165,9 +165,9 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 
 	// 遍历更新监听证书
 	if len(listenerIds) == 0 {
-		d.logger.Info("no elb listeners to deploy")
+		d.logger.Info("no vlb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found vlb listeners to deploy", slog.Any("listenerIds", listenerIds))
 		var errs []error
 
 		for _, listenerId := range listenerIds {
@@ -248,52 +248,58 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		listLoadBalanceHTTPSListenerPage++
 	}
 	if listenerInfo == nil {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find vlb listener '%s'", cloudListenerId)
 	}
 
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到默认证书
-
 		if lo.FromPtr(listenerInfo.DefaultTlsContainerId) == cloudCertId {
-			d.logger.Info("ssl certificate already deployed")
+			d.logger.Info("no need to update vlb default certificate")
 			return nil
 		}
-
-		// 修改 HTTPS 监听器
-		// REF: https://ecloud.10086.cn/op-help-center/doc/article/97024
-		updateListenerReq := &model.UpdateListenerRequest{
-			&model.UpdateListenerBody{
-				Id:                    lo.ToPtr(cloudListenerId),
-				DefaultTlsContainerId: lo.ToPtr(cloudCertId),
-			},
-		}
-		updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
-		d.logger.Debug("sdk request 'vlb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'vlb.UpdateListener': %w", err)
-		}
+		return d.updateListenerDefaultCertificate(ctx, *listenerInfo, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到 SNI 证书
-
 		if lo.Contains(listenerInfo.SniContainerIdList, cloudCertId) {
-			d.logger.Info("ssl certificate already deployed")
+			d.logger.Info("no need to update vlb sni certificate")
 			return nil
 		}
+		return d.updateListenerSniCertificate(ctx, *listenerInfo, cloudCertId)
+	}
+}
 
-		// 修改 HTTPS 监听器
-		// REF: https://ecloud.10086.cn/op-help-center/doc/article/97024
-		updateListenerReq := &model.UpdateListenerRequest{
-			&model.UpdateListenerBody{
-				Id:              lo.ToPtr(cloudListenerId),
-				SniUp:           lo.ToPtr(true),
-				SniContainerIds: append(listenerInfo.SniContainerIdList, cloudCertId),
-			},
-		}
-		updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
-		d.logger.Debug("sdk request 'vlb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'vlb.UpdateListener': %w", err)
-		}
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerInfo model.ListLoadBalanceHTTPSListenerResponseContent, cloudCertId string) error {
+	// 修改 HTTPS 监听器
+	// REF: https://ecloud.10086.cn/op-help-center/doc/article/97024
+	updateListenerReq := &model.UpdateListenerRequest{
+		&model.UpdateListenerBody{
+			Id:                    cloudListenerInfo.Id,
+			DefaultTlsContainerId: lo.ToPtr(cloudCertId),
+		},
+	}
+	updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
+	d.logger.Debug("sdk request 'vlb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'vlb.UpdateListener': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerInfo model.ListLoadBalanceHTTPSListenerResponseContent, cloudCertId string) error {
+	// 修改 HTTPS 监听器
+	// REF: https://ecloud.10086.cn/op-help-center/doc/article/97024
+	updateListenerReq := &model.UpdateListenerRequest{
+		&model.UpdateListenerBody{
+			Id:              cloudListenerInfo.Id,
+			SniUp:           lo.ToPtr(true),
+			SniContainerIds: append(cloudListenerInfo.SniContainerIdList, cloudCertId),
+		},
+	}
+	updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
+	d.logger.Debug("sdk request 'vlb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'vlb.UpdateListener': %w", err)
 	}
 
 	return nil

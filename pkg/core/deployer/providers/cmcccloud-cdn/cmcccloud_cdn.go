@@ -247,7 +247,8 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId in
 			return fmt.Errorf("failed to execute sdk request 'ecdn.DescribeCdnCertificateDetail': %w", err)
 		} else {
 			if xcert.EqualCertificatesFromPEM(certPEM, lo.FromPtr(describeCdnCertificateDetailResp.Body.Certificate)) {
-				d.logger.Info("ssl certificate already deployed")
+				d.logger.Info("no need to update cdn certificate")
+				return nil
 			}
 		}
 	}

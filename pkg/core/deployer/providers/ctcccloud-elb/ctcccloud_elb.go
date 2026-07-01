@@ -140,7 +140,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	if len(listenerIds) == 0 {
 		d.logger.Info("no elb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found elb listeners to deploy", slog.Any("listenerIds", listenerIds))
 		var errs []error
 
 		for _, listenerId := range listenerIds {

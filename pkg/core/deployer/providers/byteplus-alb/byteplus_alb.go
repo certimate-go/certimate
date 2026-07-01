@@ -172,7 +172,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	if len(listenerIds) == 0 {
 		d.logger.Info("no alb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
 		var errs []error
 
 		for _, listenerId := range listenerIds {
@@ -219,46 +219,55 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到监听器
-
-		// 修改指定监听器
-		modifyListenerAttributesReq := &bpalb.ModifyListenerAttributesInput{
-			ListenerId:              bp.String(cloudListenerId),
-			CertificateSource:       bp.String("cert_center"),
-			CertCenterCertificateId: bp.String(cloudCertId),
+		if bp.StringValue(describeListenerAttributesResp.CertificateId) == cloudCertId {
+			d.logger.Info("no need to update alb listener default certificate")
+			return nil
 		}
-		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
-		d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
-		}
+		return d.updateListenerDefaultCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
+		return d.updateListenerSniCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
+	}
+}
 
-		// 修改指定监听器
-		modifyListenerAttributesReq := &bpalb.ModifyListenerAttributesInput{
-			ListenerId: bp.String(cloudListenerId),
-			DomainExtensions: lo.Map(
-				lo.Filter(
-					describeListenerAttributesResp.DomainExtensions,
-					func(domain *bpalb.DomainExtensionForDescribeListenerAttributesOutput, _ int) bool {
-						return *domain.Domain == d.config.Domain
-					},
-				),
-				func(domain *bpalb.DomainExtensionForDescribeListenerAttributesOutput, _ int) *bpalb.DomainExtensionForModifyListenerAttributesInput {
-					return &bpalb.DomainExtensionForModifyListenerAttributesInput{
-						DomainExtensionId:       domain.DomainExtensionId,
-						Domain:                  domain.Domain,
-						CertificateSource:       bp.String("cert_center"),
-						CertCenterCertificateId: bp.String(cloudCertId),
-						Action:                  bp.String("modify"),
-					}
-				}),
-		}
-		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
-		d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
-		}
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerInfo bpalb.DescribeListenerAttributesOutput, cloudCertId string) error {
+	// 修改指定监听器
+	modifyListenerAttributesReq := &bpalb.ModifyListenerAttributesInput{
+		ListenerId:              cloudListenerInfo.ListenerId,
+		CertificateSource:       bp.String("cert_center"),
+		CertCenterCertificateId: bp.String(cloudCertId),
+	}
+	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
+	d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerInfo bpalb.DescribeListenerAttributesOutput, cloudCertId string) error {
+	// 修改指定监听器
+	modifyListenerAttributesReq := &bpalb.ModifyListenerAttributesInput{
+		ListenerId: cloudListenerInfo.ListenerId,
+		DomainExtensions: lo.Map(
+			lo.Filter(cloudListenerInfo.DomainExtensions, func(domain *bpalb.DomainExtensionForDescribeListenerAttributesOutput, _ int) bool {
+				return bp.StringValue(domain.Domain) == d.config.Domain
+			}),
+			func(domain *bpalb.DomainExtensionForDescribeListenerAttributesOutput, _ int) *bpalb.DomainExtensionForModifyListenerAttributesInput {
+				return &bpalb.DomainExtensionForModifyListenerAttributesInput{
+					DomainExtensionId:       domain.DomainExtensionId,
+					Domain:                  domain.Domain,
+					CertificateSource:       bp.String("cert_center"),
+					CertCenterCertificateId: bp.String(cloudCertId),
+					Action:                  bp.String("modify"),
+				}
+			}),
+	}
+	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
+	d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
 	}
 
 	return nil

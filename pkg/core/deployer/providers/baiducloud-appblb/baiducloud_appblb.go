@@ -151,9 +151,9 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 
 	// 遍历更新监听证书
 	if len(listeners) == 0 {
-		d.logger.Info("no blb listeners to deploy")
+		d.logger.Info("no appblb listeners to deploy")
 	} else {
-		d.logger.Info("found https/ssl listeners to deploy", slog.Any("listeners", listeners))
+		d.logger.Info("found appblb listeners to deploy", slog.Any("listeners", listeners))
 		var errs []error
 
 		for _, listener := range listeners {
@@ -216,7 +216,7 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 	if len(listeners) == 0 {
 		d.logger.Info("no blb listeners to deploy")
 	} else {
-		d.logger.Info("found https/ssl listeners to deploy", slog.Any("listeners", listeners))
+		d.logger.Info("found appblb listeners to deploy", slog.Any("listeners", listeners))
 		var errs []error
 
 		for _, listener := range listeners {
@@ -262,54 +262,67 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudLoad
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'appblb.DescribeAppHTTPSListeners': %w", err)
 	} else if len(describeAppHTTPSListenersResp.ListenerList) == 0 {
-		return fmt.Errorf("could not find listener '%s:%d'", cloudLoadbalancerId, cloudHttpsListenerPort)
+		return fmt.Errorf("could not find appblb listener '%s:%d'", cloudLoadbalancerId, cloudHttpsListenerPort)
 	}
 
+	listenerInfo := describeAppHTTPSListenersResp.ListenerList[0]
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到监听器
-
-		// 更新 HTTPS 监听器
-		// REF: https://cloud.baidu.com/doc/BLB/s/ujwvxnyux#updateapphttpslistener%E6%9B%B4%E6%96%B0https%E7%9B%91%E5%90%AC%E5%99%A8
-		updateAppHTTPSListenerReq := &bceappblb.UpdateAppHTTPSListenerArgs{
-			ClientToken:  security.RandomString(32),
-			ListenerPort: uint16(cloudHttpsListenerPort),
-			Scheduler:    describeAppHTTPSListenersResp.ListenerList[0].Scheduler,
-			CertIds:      []string{cloudCertId},
+		if lo.SomeBy(listenerInfo.CertIds, func(item string) bool { return item == cloudCertId }) {
+			d.logger.Info("no need to update appblb listener default certificate")
+			return nil
 		}
-		err := d.sdkClient.UpdateAppHTTPSListener(cloudLoadbalancerId, updateAppHTTPSListenerReq)
-		d.logger.Debug("sdk request 'appblb.UpdateAppHTTPSListener'", slog.Any("request", updateAppHTTPSListenerReq))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'appblb.UpdateAppHTTPSListener': %w", err)
-		}
+		return d.updateHttpsListenerDefaultCertificate(ctx, cloudLoadbalancerId, &listenerInfo, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
+		return d.updateHttpsListenerSniCertificate(ctx, cloudLoadbalancerId, &listenerInfo, cloudCertId)
+	}
+}
 
-		// 更新 HTTPS 监听器
-		// REF: https://cloud.baidu.com/doc/BLB/s/yjwvxnvl6#updatehttpslistener%E6%9B%B4%E6%96%B0https%E7%9B%91%E5%90%AC%E5%99%A8
-		updateAppHTTPSListenerReq := &bceappblb.UpdateAppHTTPSListenerArgs{
-			ClientToken:  security.RandomString(32),
-			ListenerPort: uint16(cloudHttpsListenerPort),
-			Scheduler:    describeAppHTTPSListenersResp.ListenerList[0].Scheduler,
-			CertIds:      describeAppHTTPSListenersResp.ListenerList[0].CertIds,
-			AdditionalCertDomains: lo.Map(describeAppHTTPSListenersResp.ListenerList[0].AdditionalCertDomains, func(domain bceappblb.AdditionalCertDomainsModel, _ int) bceappblb.AdditionalCertDomainsModel {
-				if domain.Host == d.config.Domain {
-					return bceappblb.AdditionalCertDomainsModel{
-						Host:   domain.Host,
-						CertId: cloudCertId,
-					}
-				}
+func (d *Deployer) updateHttpsListenerDefaultCertificate(ctx context.Context, cloudLoadbalancerId string, cloudHttpsListenerInfo *bceappblb.AppHTTPSListenerModel, cloudCertId string) error {
+	// 更新 HTTPS 监听器
+	// REF: https://cloud.baidu.com/doc/BLB/s/ujwvxnyux#updateapphttpslistener%E6%9B%B4%E6%96%B0https%E7%9B%91%E5%90%AC%E5%99%A8
+	updateAppHTTPSListenerReq := &bceappblb.UpdateAppHTTPSListenerArgs{
+		ClientToken:  security.RandomString(32),
+		ListenerPort: cloudHttpsListenerInfo.ListenerPort,
+		Scheduler:    cloudHttpsListenerInfo.Scheduler,
+		CertIds:      []string{cloudCertId},
+	}
+	err := d.sdkClient.UpdateAppHTTPSListener(cloudLoadbalancerId, updateAppHTTPSListenerReq)
+	d.logger.Debug("sdk request 'appblb.UpdateAppHTTPSListener'", slog.Any("request", updateAppHTTPSListenerReq))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'appblb.UpdateAppHTTPSListener': %w", err)
+	}
 
+	return nil
+}
+
+func (d *Deployer) updateHttpsListenerSniCertificate(ctx context.Context, cloudLoadbalancerId string, cloudHttpsListenerInfo *bceappblb.AppHTTPSListenerModel, cloudCertId string) error {
+	// 更新 HTTPS 监听器
+	// REF: https://cloud.baidu.com/doc/BLB/s/yjwvxnvl6#updatehttpslistener%E6%9B%B4%E6%96%B0https%E7%9B%91%E5%90%AC%E5%99%A8
+	updateAppHTTPSListenerReq := &bceappblb.UpdateAppHTTPSListenerArgs{
+		ClientToken:  security.RandomString(32),
+		ListenerPort: cloudHttpsListenerInfo.ListenerPort,
+		Scheduler:    cloudHttpsListenerInfo.Scheduler,
+		CertIds:      cloudHttpsListenerInfo.CertIds,
+		AdditionalCertDomains: lo.Map(cloudHttpsListenerInfo.AdditionalCertDomains, func(domain bceappblb.AdditionalCertDomainsModel, _ int) bceappblb.AdditionalCertDomainsModel {
+			if domain.Host == d.config.Domain {
 				return bceappblb.AdditionalCertDomainsModel{
 					Host:   domain.Host,
-					CertId: domain.CertId,
+					CertId: cloudCertId,
 				}
-			}),
-		}
-		err := d.sdkClient.UpdateAppHTTPSListener(cloudLoadbalancerId, updateAppHTTPSListenerReq)
-		d.logger.Debug("sdk request 'appblb.UpdateAppHTTPSListener'", slog.Any("request", updateAppHTTPSListenerReq))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'appblb.UpdateAppHTTPSListener': %w", err)
-		}
+			}
+
+			return bceappblb.AdditionalCertDomainsModel{
+				Host:   domain.Host,
+				CertId: domain.CertId,
+			}
+		}),
+	}
+	err := d.sdkClient.UpdateAppHTTPSListener(cloudLoadbalancerId, updateAppHTTPSListenerReq)
+	d.logger.Debug("sdk request 'appblb.UpdateAppHTTPSListener'", slog.Any("request", updateAppHTTPSListenerReq))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'appblb.UpdateAppHTTPSListener': %w", err)
 	}
 
 	return nil

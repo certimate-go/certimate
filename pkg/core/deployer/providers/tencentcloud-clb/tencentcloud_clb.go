@@ -160,7 +160,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	if len(listenerIds) == 0 {
 		d.logger.Info("no clb listeners to deploy")
 	} else {
-		d.logger.Info("found https/tcpssl/quic listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found clb listeners to deploy", slog.Any("listenerIds", listenerIds))
 		var errs []error
 
 		for _, listenerId := range listenerIds {
@@ -240,10 +240,10 @@ func (d *Deployer) deployToRuleDomain(ctx context.Context, cloudCertId string) e
 		case 0:
 			return true, nil
 		case 1:
-			return false, fmt.Errorf("unexpected tencentcloud task status")
+			return false, fmt.Errorf("unexpected deployment task status")
 		}
 
-		d.logger.Info("waiting for tencentcloud task completion ...")
+		d.logger.Info("waiting for deployment task completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err
@@ -263,7 +263,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.DescribeListeners': %w", err)
 	} else if len(describeListenersResp.Response.Listeners) == 0 {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find clb listener '%s'", cloudListenerId)
 	}
 
 	// 修改监听器属性
@@ -299,10 +299,10 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 		case 0:
 			return true, nil
 		case 1:
-			return false, fmt.Errorf("unexpected tencentcloud task status")
+			return false, fmt.Errorf("unexpected deployment task status")
 		}
 
-		d.logger.Info("waiting for tencentcloud task completion ...")
+		d.logger.Info("waiting for deployment task completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err

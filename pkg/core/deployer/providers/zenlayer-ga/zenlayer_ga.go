@@ -162,10 +162,10 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, certPEM, privkeyPEM 
 		case "Accelerating":
 			return true, nil
 		case "NotAccelerate", "StopAccelerate", "AccelerateFailure":
-			return false, fmt.Errorf("unexpected zenlayer accelerator status")
+			return false, fmt.Errorf("unexpected accelerator status")
 		}
 
-		d.logger.Info("waiting for zenlayer accelerator deploying completion ...")
+		d.logger.Info("waiting for accelerator deploying completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err

@@ -156,9 +156,9 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, certPEM, privkeyPEM
 
 	// 遍历更新监听器证书
 	if len(listenerIds) == 0 {
-		d.logger.Info("no listeners to deploy")
+		d.logger.Info("no lb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found lb listeners to deploy", slog.Any("listenerIds", listenerIds))
 		var errs []error
 
 		for _, listenerId := range listenerIds {

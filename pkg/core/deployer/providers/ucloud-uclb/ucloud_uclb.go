@@ -170,7 +170,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	if len(vserverIds) == 0 {
 		d.logger.Info("no clb vservers to deploy")
 	} else {
-		d.logger.Info("found https vservers to deploy", slog.Any("vserverIds", vserverIds))
+		d.logger.Info("found clb vservers to deploy", slog.Any("vserverIds", vserverIds))
 		var errs []error
 
 		for _, vserverId := range vserverIds {
@@ -219,12 +219,12 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
 	} else if len(describeVServerResp.DataSet) == 0 {
-		return fmt.Errorf("could not find vserver '%s'", cloudVServerId)
+		return fmt.Errorf("could not find uclb vserver '%s'", cloudVServerId)
 	}
 
 	// 跳过已部署过的 VServer
 	vserverInfo := describeVServerResp.DataSet[0]
-	if lo.ContainsBy(vserverInfo.SSLSet, func(item ulb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
+	if lo.SomeBy(vserverInfo.SSLSet, func(item ulb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
 		return nil
 	}
 

@@ -146,50 +146,78 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("could not find nlb listener '%s'", d.config.ListenerArn)
 	}
 
+	listenerInfo := describeListenersResp.Listeners[0]
+	if len(listenerInfo.Certificates) > 0 {
+		d.logger.Info("found nlb listener certificates in used", slog.Any("certificates", listenerInfo.Certificates))
+	}
+
 	if d.config.IsDefault {
-		if describeListenersResp.Listeners[0].Certificates != nil {
-			for _, cert := range describeListenersResp.Listeners[0].Certificates {
-				if aws.ToString(cert.CertificateArn) == upres.ExtendedData["Arn"].(string) {
-					d.logger.Info("no need to update nlb listener default certificate")
-					return &DeployResult{}, nil
-				}
+		certArn := upres.ExtendedData["Arn"].(string)
+		for _, certItem := range listenerInfo.Certificates {
+			if aws.ToString(certItem.CertificateArn) == certArn && aws.ToBool(certItem.IsDefault) {
+				d.logger.Info("no need to update nlb listener default certificate")
+				return &DeployResult{}, nil
 			}
 		}
 
-		// 更新 HTTPS 侦听器
-		// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_ModifyListener.html
-		modifyListenerReq := &elasticloadbalancingv2.ModifyListenerInput{
-			ListenerArn: aws.String(d.config.ListenerArn),
-			Certificates: []types.Certificate{
-				{
-					CertificateArn: aws.String(upres.ExtendedData["Arn"].(string)),
-				},
-			},
-		}
-		modifyListenerResp, err := d.sdkClient.ModifyListener(ctx, modifyListenerReq)
-		d.logger.Debug("sdk request 'elasticloadbalancingv2.ModifyListener'", slog.Any("request", modifyListenerReq), slog.Any("response", modifyListenerResp))
-		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.ModifyListener': %w", err)
+		if err := d.updateListenerDefaultCertificate(ctx, *listenerInfo.ListenerArn, certArn); err != nil {
+			return nil, err
 		}
 	} else {
-		// 将证书添加到证书列表
-		// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_AddListenerCertificates.html
-		addListenerCertificatesReq := &elasticloadbalancingv2.AddListenerCertificatesInput{
-			ListenerArn: aws.String(d.config.ListenerArn),
-			Certificates: []types.Certificate{
-				{
-					CertificateArn: aws.String(upres.ExtendedData["Arn"].(string)),
-				},
-			},
+		certArn := upres.ExtendedData["Arn"].(string)
+		for _, certItem := range listenerInfo.Certificates {
+			if aws.ToString(certItem.CertificateArn) == certArn && !aws.ToBool(certItem.IsDefault) {
+				d.logger.Info("no need to add nlb listener sni certificate")
+				return &DeployResult{}, nil
+			}
 		}
-		addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificates(ctx, addListenerCertificatesReq)
-		d.logger.Debug("sdk request 'elasticloadbalancingv2.AddListenerCertificates'", slog.Any("request", addListenerCertificatesReq), slog.Any("response", addListenerCertificatesResp))
-		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.AddListenerCertificates': %w", err)
+
+		if err := d.updateListenerSniCertificate(ctx, *listenerInfo.ListenerArn, certArn); err != nil {
+			return nil, err
 		}
 	}
 
 	return &DeployResult{}, nil
+}
+
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerArn string, cloudCertArn string) error {
+	// 更新 HTTPS 侦听器
+	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_ModifyListener.html
+	modifyListenerReq := &elasticloadbalancingv2.ModifyListenerInput{
+		ListenerArn: aws.String(cloudListenerArn),
+		Certificates: []types.Certificate{
+			{
+				CertificateArn: aws.String(cloudCertArn),
+			},
+		},
+	}
+	modifyListenerResp, err := d.sdkClient.ModifyListener(ctx, modifyListenerReq)
+	d.logger.Debug("sdk request 'elasticloadbalancingv2.ModifyListener'", slog.Any("request", modifyListenerReq), slog.Any("response", modifyListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.ModifyListener': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerArn string, cloudCertArn string) error {
+	// 将证书添加到证书列表
+	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_AddListenerCertificates.html
+	addListenerCertificatesReq := &elasticloadbalancingv2.AddListenerCertificatesInput{
+		ListenerArn: aws.String(cloudListenerArn),
+		Certificates: []types.Certificate{
+			{
+				CertificateArn: aws.String(cloudCertArn),
+			},
+		},
+	}
+	addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificates(ctx, addListenerCertificatesReq)
+	d.logger.Debug("sdk request 'elasticloadbalancingv2.AddListenerCertificates'", slog.Any("request", addListenerCertificatesReq), slog.Any("response", addListenerCertificatesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.AddListenerCertificates': %w", err)
+	}
+
+	return nil
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*elasticloadbalancingv2.Client, error) {

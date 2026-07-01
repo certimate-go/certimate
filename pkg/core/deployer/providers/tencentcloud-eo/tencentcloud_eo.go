@@ -174,7 +174,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			return domain == lo.FromPtr(domainInfo.DomainName)
 		})
 		if domainInfo != nil && domainInfo.Certificate != nil {
-			deployed = lo.ContainsBy(domainInfo.Certificate.List, func(certInfo *tceo.CertificateInfo) bool {
+			deployed = lo.SomeBy(domainInfo.Certificate.List, func(certInfo *tceo.CertificateInfo) bool {
 				return upres.CertId == lo.FromPtr(certInfo.CertId)
 			})
 		}

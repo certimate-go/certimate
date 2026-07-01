@@ -234,7 +234,7 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string,
 		d.logger.Info("no alb listeners to deploy")
 	} else {
 		var errs []error
-		d.logger.Info("found https/quic listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
 		for _, listenerId := range listenerIds {
 			select {
@@ -271,186 +271,197 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string, clo
 func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string, cloudCertSANs []string) error {
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到监听器
+		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
+	} else {
+		// 指定 SNI，需部署到扩展域名
+		return d.updateListenerSniCertificate(ctx, cloudListenerId, cloudCertId, cloudCertSANs)
+	}
+}
 
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
+	if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
+		return err
+	}
+
+	// 修改监听的属性
+	// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-updatelistenerattribute
+	updateListenerAttributeReq := &alialb.UpdateListenerAttributeRequest{
+		ListenerId: tea.String(cloudListenerId),
+		Certificates: []*alialb.UpdateListenerAttributeRequestCertificates{{
+			CertificateId: tea.String(cloudCertId),
+		}},
+	}
+	updateListenerAttributeResp, err := d.sdkClients.ALB.UpdateListenerAttributeWithContext(ctx, updateListenerAttributeReq, &dara.RuntimeOptions{})
+	d.logger.Debug("sdk request 'alb.UpdateListenerAttribute'", slog.Any("request", updateListenerAttributeReq), slog.Any("response", updateListenerAttributeResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'alb.UpdateListenerAttribute': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerId string, cloudCertId string, cloudCertSANs []string) error {
+	// 查询监听证书列表
+	// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-listlistenercertificates
+	listenerExtCertificates := make([]alialb.ListListenerCertificatesResponseBodyCertificates, 0)
+	listListenerCertificatesToken := (*string)(nil)
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		listListenerCertificatesReq := &alialb.ListListenerCertificatesRequest{
+			NextToken:       listListenerCertificatesToken,
+			MaxResults:      tea.Int32(100),
+			ListenerId:      tea.String(cloudListenerId),
+			CertificateType: tea.String("Server"),
+		}
+		listListenerCertificatesResp, err := d.sdkClients.ALB.ListListenerCertificatesWithContext(ctx, listListenerCertificatesReq, &dara.RuntimeOptions{})
+		d.logger.Debug("sdk request 'alb.ListListenerCertificates'", slog.Any("request", listListenerCertificatesReq), slog.Any("response", listListenerCertificatesResp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'alb.ListListenerCertificates': %w", err)
+		}
+
+		if listListenerCertificatesResp.Body == nil {
+			break
+		}
+
+		for _, certItem := range listListenerCertificatesResp.Body.Certificates {
+			if tea.BoolValue(certItem.IsDefault) {
+				continue
+			}
+
+			if !strings.EqualFold(tea.StringValue(certItem.CertificateType), "Server") {
+				continue
+			}
+
+			if !strings.EqualFold(tea.StringValue(certItem.Status), "Associated") {
+				continue
+			}
+
+			listenerExtCertificates = append(listenerExtCertificates, *certItem)
+		}
+
+		if len(listListenerCertificatesResp.Body.Certificates) == 0 || listListenerCertificatesResp.Body.NextToken == nil {
+			break
+		}
+
+		listListenerCertificatesToken = listListenerCertificatesResp.Body.NextToken
+	}
+
+	// 查询监听证书，并找出需要解除关联的证书
+	// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-listlistenercertificates
+	// REF: https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-getcertificatedetail
+	certificateIsAlreadyAssociated := false
+	certificateIdsToDissociate := make([]string, 0)
+	if len(listenerExtCertificates) > 0 {
+		d.logger.Info("found alb listener certificates in used", slog.Any("certificates", listenerExtCertificates))
+		var errs []error
+
+		for _, listenerCertificate := range listenerExtCertificates {
+			certIdWithRegion := tea.StringValue(listenerCertificate.CertificateId)
+			if certIdWithRegion == cloudCertId {
+				certificateIsAlreadyAssociated = true
+				break
+			}
+
+			certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
+			certIdBareAsInt64, err := strconv.ParseInt(certIdBare, 10, 64)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+
+			getCertificateDetailReq := &alicas.GetCertificateDetailRequest{
+				CertificateId: tea.Int64(certIdBareAsInt64),
+			}
+			getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
+			d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
+			if err != nil {
+				if sdkErr, ok := err.(*tea.SDKError); ok {
+					if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
+						continue
+					}
+				}
+
+				errs = append(errs, fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err))
+				continue
+			} else {
+				// 注意，虽然文档中存在 SubjectAlternativeNames 字段，但实际返回的数据结构中不包含
+				certSANMatched := lo.ElementsMatch(strings.Split(tea.StringValue(getCertificateDetailResp.Body.Domain), ","), cloudCertSANs)
+				if certSANMatched && lo.Contains(cloudCertSANs, d.config.Domain) { // 同域名证书需要删除
+					certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
+					continue
+				}
+
+				certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
+				if !certNotAfter.IsZero() && certNotAfter.Before(time.Now()) { // 过期证书需要删除。TODO: remove on v0.5
+					certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
+					continue
+				}
+			}
+		}
+
+		if len(errs) > 0 {
+			return errors.Join(errs...)
+		}
+	}
+
+	// 关联监听和扩展证书
+	// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-associateadditionalcertificateswithlistener
+	if certificateIsAlreadyAssociated {
+		d.logger.Info("no need to add alb listener sni certificate")
+		return nil
+	} else {
 		if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
 			return err
 		}
 
-		// 修改监听的属性
-		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-updatelistenerattribute
-		updateListenerAttributeReq := &alialb.UpdateListenerAttributeRequest{
+		associateAdditionalCertificatesFromListenerReq := &alialb.AssociateAdditionalCertificatesWithListenerRequest{
 			ListenerId: tea.String(cloudListenerId),
-			Certificates: []*alialb.UpdateListenerAttributeRequestCertificates{{
-				CertificateId: tea.String(cloudCertId),
-			}},
+			Certificates: []*alialb.AssociateAdditionalCertificatesWithListenerRequestCertificates{
+				{
+					CertificateId: tea.String(cloudCertId),
+				},
+			},
 		}
-		updateListenerAttributeResp, err := d.sdkClients.ALB.UpdateListenerAttributeWithContext(ctx, updateListenerAttributeReq, &dara.RuntimeOptions{})
-		d.logger.Debug("sdk request 'alb.UpdateListenerAttribute'", slog.Any("request", updateListenerAttributeReq), slog.Any("response", updateListenerAttributeResp))
+		associateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.AssociateAdditionalCertificatesWithListenerWithContext(ctx, associateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
+		d.logger.Debug("sdk request 'alb.AssociateAdditionalCertificatesWithListener'", slog.Any("request", associateAdditionalCertificatesFromListenerReq), slog.Any("response", associateAdditionalCertificatesFromListenerResp))
 		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'alb.UpdateListenerAttribute': %w", err)
+			return fmt.Errorf("failed to execute sdk request 'alb.AssociateAdditionalCertificatesWithListener': %w", err)
 		}
-	} else {
-		// 指定 SNI，需部署到扩展域名
+	}
 
-		// 查询监听证书列表
-		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-listlistenercertificates
-		listenerExtCertificates := make([]alialb.ListListenerCertificatesResponseBodyCertificates, 0)
-		listListenerCertificatesToken := (*string)(nil)
-		for {
+	// 解除关联监听和扩展证书
+	// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-dissociateadditionalcertificatesfromlistener
+	if len(certificateIdsToDissociate) > 0 {
+		d.logger.Info("found alb listener certificates to dissociate", slog.Any("certificateIds", certificateIdsToDissociate))
+
+		const MAX_CERT_PER_REQUEST = 10
+		certIdChunks := lo.Chunk(certificateIdsToDissociate, MAX_CERT_PER_REQUEST)
+		for _, certIds := range certIdChunks {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
-			}
-
-			listListenerCertificatesReq := &alialb.ListListenerCertificatesRequest{
-				NextToken:       listListenerCertificatesToken,
-				MaxResults:      tea.Int32(100),
-				ListenerId:      tea.String(cloudListenerId),
-				CertificateType: tea.String("Server"),
-			}
-			listListenerCertificatesResp, err := d.sdkClients.ALB.ListListenerCertificatesWithContext(ctx, listListenerCertificatesReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'alb.ListListenerCertificates'", slog.Any("request", listListenerCertificatesReq), slog.Any("response", listListenerCertificatesResp))
-			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'alb.ListListenerCertificates': %w", err)
-			}
-
-			if listListenerCertificatesResp.Body == nil {
-				break
-			}
-
-			for _, certItem := range listListenerCertificatesResp.Body.Certificates {
-				if tea.BoolValue(certItem.IsDefault) {
-					continue
+				if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
+					return err
 				}
 
-				if !strings.EqualFold(tea.StringValue(certItem.CertificateType), "Server") {
-					continue
-				}
-
-				if !strings.EqualFold(tea.StringValue(certItem.Status), "Associated") {
-					continue
-				}
-
-				listenerExtCertificates = append(listenerExtCertificates, *certItem)
-			}
-
-			if len(listListenerCertificatesResp.Body.Certificates) == 0 || listListenerCertificatesResp.Body.NextToken == nil {
-				break
-			}
-
-			listListenerCertificatesToken = listListenerCertificatesResp.Body.NextToken
-		}
-
-		// 查询监听证书，并找出需要解除关联的证书
-		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-listlistenercertificates
-		// REF: https://help.aliyun.com/zh/ssl-certificate/developer-reference/api-cas-2020-04-07-getcertificatedetail
-		certificateIsAlreadyAssociated := false
-		certificateIdsToDissociate := make([]string, 0)
-		if len(listenerExtCertificates) > 0 {
-			d.logger.Info("found listener certificates in used", slog.Any("certificates", listenerExtCertificates))
-			var errs []error
-
-			for _, listenerCertificate := range listenerExtCertificates {
-				certIdWithRegion := tea.StringValue(listenerCertificate.CertificateId)
-				if certIdWithRegion == cloudCertId {
-					certificateIsAlreadyAssociated = true
-					break
-				}
-
-				certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
-				certIdBareAsInt64, err := strconv.ParseInt(certIdBare, 10, 64)
-				if err != nil {
-					errs = append(errs, err)
-					continue
-				}
-
-				getCertificateDetailReq := &alicas.GetCertificateDetailRequest{
-					CertificateId: tea.Int64(certIdBareAsInt64),
-				}
-				getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
-				d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
-				if err != nil {
-					if sdkErr, ok := err.(*tea.SDKError); ok {
-						if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
-							continue
+				dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
+					ListenerId: tea.String(cloudListenerId),
+					Certificates: lo.Map(certIds, func(certId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {
+						return &alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates{
+							CertificateId: tea.String(certId),
 						}
-					}
-
-					errs = append(errs, fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err))
-					continue
-				} else {
-					// 注意，虽然文档中存在 SubjectAlternativeNames 字段，但实际返回的数据结构中不包含
-					certSANMatched := lo.ElementsMatch(strings.Split(tea.StringValue(getCertificateDetailResp.Body.Domain), ","), cloudCertSANs)
-					if certSANMatched && lo.Contains(cloudCertSANs, d.config.Domain) { // 同域名证书需要删除
-						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
-						continue
-					}
-
-					certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
-					if !certNotAfter.IsZero() && certNotAfter.Before(time.Now()) { // 过期证书需要删除
-						certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
-						continue
-					}
+					}),
 				}
-			}
-
-			if len(errs) > 0 {
-				return errors.Join(errs...)
-			}
-		}
-
-		// 关联监听和扩展证书
-		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-associateadditionalcertificateswithlistener
-		if !certificateIsAlreadyAssociated {
-			if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
-				return err
-			}
-
-			associateAdditionalCertificatesFromListenerReq := &alialb.AssociateAdditionalCertificatesWithListenerRequest{
-				ListenerId: tea.String(cloudListenerId),
-				Certificates: []*alialb.AssociateAdditionalCertificatesWithListenerRequestCertificates{
-					{
-						CertificateId: tea.String(cloudCertId),
-					},
-				},
-			}
-			associateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.AssociateAdditionalCertificatesWithListenerWithContext(ctx, associateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'alb.AssociateAdditionalCertificatesWithListener'", slog.Any("request", associateAdditionalCertificatesFromListenerReq), slog.Any("response", associateAdditionalCertificatesFromListenerResp))
-			if err != nil {
-				return fmt.Errorf("failed to execute sdk request 'alb.AssociateAdditionalCertificatesWithListener': %w", err)
-			}
-		}
-
-		// 解除关联监听和扩展证书
-		// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-dissociateadditionalcertificatesfromlistener
-		if !certificateIsAlreadyAssociated && len(certificateIdsToDissociate) > 0 {
-			d.logger.Info("found listener certificates to dissociate", slog.Any("certificateIds", certificateIdsToDissociate))
-
-			const MAX_CERT_PER_REQUEST = 10
-			certIdChunks := lo.Chunk(certificateIdsToDissociate, MAX_CERT_PER_REQUEST)
-			for _, certIds := range certIdChunks {
-				select {
-				case <-ctx.Done():
-					return ctx.Err()
-				default:
-					if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
-						return err
-					}
-
-					dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
-						ListenerId: tea.String(cloudListenerId),
-						Certificates: lo.Map(certIds, func(certId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {
-							return &alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates{
-								CertificateId: tea.String(certId),
-							}
-						}),
-					}
-					dissociateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.DissociateAdditionalCertificatesFromListenerWithContext(ctx, dissociateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
-					d.logger.Debug("sdk request 'alb.DissociateAdditionalCertificatesFromListener'", slog.Any("request", dissociateAdditionalCertificatesFromListenerReq), slog.Any("response", dissociateAdditionalCertificatesFromListenerResp))
-					if err != nil {
-						return fmt.Errorf("failed to execute sdk request 'alb.DissociateAdditionalCertificatesFromListener': %w", err)
-					}
+				dissociateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.DissociateAdditionalCertificatesFromListenerWithContext(ctx, dissociateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
+				d.logger.Debug("sdk request 'alb.DissociateAdditionalCertificatesFromListener'", slog.Any("request", dissociateAdditionalCertificatesFromListenerReq), slog.Any("response", dissociateAdditionalCertificatesFromListenerResp))
+				if err != nil {
+					return fmt.Errorf("failed to execute sdk request 'alb.DissociateAdditionalCertificatesFromListener': %w", err)
 				}
 			}
 		}
@@ -476,7 +487,7 @@ func (d *Deployer) waitForListenerReady(ctx context.Context, cloudListenerId str
 			return true, nil
 		}
 
-		d.logger.Info("waiting for aliyun alb listener's status to not be 'Configuring' ...")
+		d.logger.Info("waiting for alb listener's status to not be 'Configuring' ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err

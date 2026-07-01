@@ -318,10 +318,10 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 		case "DEPLOYED":
 			return true, nil
 		case "FAILED":
-			return false, fmt.Errorf("unexpected zenlayer domain status")
+			return false, fmt.Errorf("unexpected domain status")
 		}
 
-		d.logger.Info("waiting for zenlayer domain deploying completion ...")
+		d.logger.Info("waiting for domain deploying completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err
