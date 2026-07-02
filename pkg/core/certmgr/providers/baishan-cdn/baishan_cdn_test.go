@@ -32,6 +32,10 @@ func TestProvider(t *testing.T) {
 	fp.Parse()
 
 	t.Run("Upload", func(t *testing.T) {
+		if fTestCertPath == "" || fTestKeyPath == "" || fApiToken == "" {
+			t.Skip("skip integration test because BAISHANCDN_TESTCERTPATH, BAISHANCDN_TESTKEYPATH or BAISHANCDN_APITOKEN is empty")
+		}
+
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			ApiToken: fApiToken,
 		})
