@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strings"
+	"time"
 
 	"github.com/samber/lo"
 
@@ -110,10 +112,12 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
+	getDomainConfigDomain := d.getFilteredDomainForAPI("cdn.GetDomainConfig", d.config.Domain)
+
 	// 查询域名配置
 	// REF: https://portal.baishancloud.com/track/document/api/1/1065
 	getDomainConfigReq := &baishansdk.GetDomainConfigRequest{
-		Domains: lo.ToPtr(d.config.Domain),
+		Domains: lo.ToPtr(getDomainConfigDomain),
 		Config:  []*string{lo.ToPtr("https")},
 	}
 	getDomainConfigResp, err := d.sdkClient.GetDomainConfigWithContext(ctx, getDomainConfigReq)
@@ -121,13 +125,15 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.GetDomainConfig': %w", err)
 	} else if len(getDomainConfigResp.Data) == 0 {
-		return fmt.Errorf("could not find domain '%s'", d.config.Domain)
+		return fmt.Errorf("could not find domain '%s'", getDomainConfigDomain)
 	}
+
+	setDomainConfigDomain := d.getFilteredDomainForAPI("cdn.SetDomainConfig", d.config.Domain)
 
 	// 设置域名配置
 	// REF: https://portal.baishancloud.com/track/document/api/1/1045
 	setDomainConfigReq := &baishansdk.SetDomainConfigRequest{
-		Domains: lo.ToPtr(d.config.Domain),
+		Domains: lo.ToPtr(setDomainConfigDomain),
 		Config: &baishansdk.DomainConfig{
 			Https: &baishansdk.DomainConfigHttps{
 				CertId:      json.Number(upres.CertId),
@@ -144,6 +150,29 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	}
 
 	return nil
+}
+
+func (d *Deployer) getFilteredDomainForAPI(apiIdentifier string, domain string) string {
+	filteredDomain := filterWildcardDomainForBaishanAPI(domain)
+	if filteredDomain != domain {
+		d.logger.Info(
+			"baishan cdn wildcard domain prefix filtered",
+			slog.String("apiIdentifier", apiIdentifier),
+			slog.String("originalDomain", domain),
+			slog.String("filteredDomain", filteredDomain),
+			slog.Time("filterTime", time.Now().UTC()),
+		)
+	}
+
+	return filteredDomain
+}
+
+func filterWildcardDomainForBaishanAPI(domain string) string {
+	if strings.HasPrefix(domain, "*.") {
+		return strings.TrimPrefix(domain, "*")
+	}
+
+	return domain
 }
 
 func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
