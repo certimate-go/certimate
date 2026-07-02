@@ -1536,6 +1536,29 @@
         "label": "多吉云 CDN 加速域名",
         "placeholder": "请输入多吉云 CDN 加速域名"
       },
+      "f5bigip": {
+        "guide": "此部署器可将证书部署至 F5 Big-IP 设备。可选择仅上传证书，或上传并关联至已有的 client-ssl 配置。"
+      },
+      "f5bigip_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "仅上传证书"
+          },
+          "clientssl": {
+            "label": "上传证书并更新 client-ssl 配置"
+          }
+        }
+      },
+      "f5bigip_partition": {
+        "label": "分区",
+        "placeholder": "请输入 F5 Big-IP 分区（默认为 Common）",
+        "tooltip": "证书和私钥将存储在该 F5 Big-IP 分区下。"
+      },
+      "f5bigip_client_ssl_profile_name": {
+        "label": "Client-SSL 配置名称",
+        "placeholder": "请输入 client-ssl 配置名称",
+        "tooltip": "已有的 client-ssl 配置名称，证书上传后将自动关联到此配置。"
+      },
       "flexcdn_deploy_target": {
         "option": {
           "certificate": {

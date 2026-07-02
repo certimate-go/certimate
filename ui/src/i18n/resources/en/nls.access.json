@@ -629,6 +629,20 @@
       "placeholder": "Please enter the default receiver email address",
       "help": "Notes: It can be overrided in the workflows."
     },
+    "f5bigip_server_url": {
+      "label": "F5 Big-IP server URL",
+      "placeholder": "Please enter F5 Big-IP server URL, e.g. https://192.168.1.100"
+    },
+    "f5bigip_username": {
+      "label": "F5 Big-IP username",
+      "placeholder": "Please enter F5 Big-IP username",
+      "tooltip": "The username used to authenticate with the F5 Big-IP REST API."
+    },
+    "f5bigip_password": {
+      "label": "F5 Big-IP password",
+      "placeholder": "Please enter F5 Big-IP password",
+      "tooltip": "The password used to authenticate with the F5 Big-IP REST API."
+    },
     "flexcdn_server_url": {
       "label": "FlexCDN server URL",
       "placeholder": "Please enter FlexCDN server URL"

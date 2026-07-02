@@ -1537,6 +1537,29 @@
         "label": "Doge Cloud CDN domain",
         "placeholder": "Please enter Doge Cloud CDN domain name"
       },
+      "f5bigip": {
+        "guide": "This provider deploys the certificate to an F5 Big-IP appliance. You can upload only (certificate) or upload and assign to a client-ssl profile."
+      },
+      "f5bigip_deploy_target": {
+        "option": {
+          "certificate": {
+            "label": "Certificate"
+          },
+          "clientssl": {
+            "label": "Certificate + client-ssl profile"
+          }
+        }
+      },
+      "f5bigip_partition": {
+        "label": "Partition",
+        "placeholder": "Please enter F5 Big-IP partition (default: Common)",
+        "tooltip": "The F5 Big-IP partition where the certificate and key will be stored."
+      },
+      "f5bigip_client_ssl_profile_name": {
+        "label": "Client-SSL profile name",
+        "placeholder": "Please enter client-ssl profile name",
+        "tooltip": "The name of an existing client-ssl profile to update with the new certificate."
+      },
       "flexcdn_deploy_target": {
         "option": {
           "certificate": {
