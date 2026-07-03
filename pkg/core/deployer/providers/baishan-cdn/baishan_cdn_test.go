@@ -35,10 +35,6 @@ func TestProvider(t *testing.T) {
 	fp.Parse()
 
 	t.Run("Deploy", func(t *testing.T) {
-		if fTestCertPath == "" || fTestKeyPath == "" || fApiToken == "" || fDomain == "" {
-			t.Skip("skip integration test because BAISHANCDN_TESTCERTPATH, BAISHANCDN_TESTKEYPATH, BAISHANCDN_APITOKEN or BAISHANCDN_DOMAIN is empty")
-		}
-
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ApiToken:           fApiToken,
 			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
