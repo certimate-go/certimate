@@ -89,12 +89,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	switch d.config.DomainMatchPattern {
 	case "", DOMAIN_MATCH_PATTERN_EXACT:
 		{
-			if d.config.Domain == "" {
+			domain := normalizeDomain(d.config.Domain)
+			if domain == "" {
 				return nil, fmt.Errorf("config `domain` is required")
 			}
 
-			// "*.example.com" → ".example.com"，适配七牛云 CDN 要求的泛域名格式
-			domain := strings.TrimPrefix(d.config.Domain, "*")
 			domains = []string{domain}
 		}
 
@@ -231,4 +230,12 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	}
 
 	return nil
+}
+
+func normalizeDomain(domain string) string {
+	// "*.example.com" → ".example.com"，适配七牛云 CDN 的泛域名参数要求
+	if strings.HasPrefix(domain, "*.") {
+		return strings.TrimPrefix(domain, "*")
+	}
+	return domain
 }

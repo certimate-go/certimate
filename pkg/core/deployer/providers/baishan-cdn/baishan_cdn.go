@@ -176,6 +176,9 @@ func createSDKClient(apiToken string) (*baishansdk.Client, error) {
 }
 
 func normalizeDomain(domain string) string {
-	// "*.example.com" → ".example.com"，适配白山云 CDN 要求的泛域名格式
-	return strings.TrimPrefix(domain, "*")
+	// "*.example.com" → ".example.com"，适配白山云 CDN 的泛域名参数要求
+	if strings.HasPrefix(domain, "*.") {
+		return strings.TrimPrefix(domain, "*")
+	}
+	return domain
 }

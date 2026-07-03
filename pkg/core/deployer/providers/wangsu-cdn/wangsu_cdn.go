@@ -94,9 +94,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return nil, fmt.Errorf("config `domains` is required")
 			}
 
-			// "*.example.com" → ".example.com"，适配网宿云 CDN 要求的泛域名格式
 			domains = lo.Map(d.config.Domains, func(domain string, _ int) string {
-				return strings.TrimPrefix(domain, "*")
+				return normalizeDomain(domain)
 			})
 		}
 
@@ -129,4 +128,12 @@ func createSDKClient(accessKeyId, accessKeySecret string) (*wangsucdn.Client, er
 	}
 
 	return client, nil
+}
+
+func normalizeDomain(domain string) string {
+	// "*.example.com" → ".example.com"，适配网宿云 CDN 的泛域名参数要求
+	if strings.HasPrefix(domain, "*.") {
+		return strings.TrimPrefix(domain, "*")
+	}
+	return domain
 }
