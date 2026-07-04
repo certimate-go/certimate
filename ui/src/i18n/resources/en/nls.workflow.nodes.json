@@ -2318,6 +2318,39 @@
           "off": "Disallow"
         }
       },
+      "tencentcloud_eomakers_api_token": {
+        "label": "Tencent Cloud EdgeOne Makers API Token",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers API Token",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone/makers\" target=\"_blank\">https://console.tencentcloud.com/edgeone/makers</a>"
+      },
+      "tencentcloud_eomakers_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>teo.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+      },
+      "tencentcloud_eomakers_makers_id": {
+        "label": "Tencent Cloud EdgeOne Makers project ID",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers project ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone/makers\" target=\"_blank\">https://console.tencentcloud.com/edgeone/makers</a>"
+      },
+      "tencentcloud_eomakers_domains": {
+        "label": "Tencent Cloud EdgeOne Makers custom domains",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers custom domain names (separated by semicolons)",
+        "help": "Notes: Multiple domains should be separated by semicolons.",
+        "multiple_input_modal": {
+          "title": "Change Tencent Cloud EdgeOne Makers custom domain",
+          "placeholder": "Please enter Tencent Cloud EdgeOne Makers custom domain name"
+        }
+      },
+      "tencentcloud_eomakers_enable_multiple_ssl": {
+        "label": "Multiple SSL certificates",
+        "help": "Notes: Each domain name supports one RSA certificate and one ECC certificate at most.",
+        "switch": {
+          "suffix": "to retain other certificates with different algorithms.",
+          "on": "Allow",
+          "off": "Disallow"
+        }
+      },
       "tencentcloud_ga2_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GA2 API endpoint (e.g. ga2.intl.tencentcloudapi.com)",
