@@ -8,6 +8,6 @@ type Certificate struct {
 	KeyAlt    *string   `json:"key_alt,omitempty"`
 	SNIs      []*string `json:"snis,omitempty"`
 	Tags      []*string `json:"tags,omitempty"`
-	CreatedAt *string   `json:"created_at,omitempty"`
-	UpdatedAt *string   `json:"updated_at,omitempty"`
+	CreatedAt *int64   `json:"created_at,omitempty"`
+	UpdatedAt *int64   `json:"updated_at,omitempty"`
 }
