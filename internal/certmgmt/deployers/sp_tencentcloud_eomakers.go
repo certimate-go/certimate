@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
+
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
 	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-eomakers"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
-	"github.com/samber/lo"
 )
 
 func init() {
@@ -23,10 +24,10 @@ func init() {
 			provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 				SecretId:           credentials.SecretId,
 				SecretKey:          credentials.SecretKey,
-				APIToken:           xmaps.GetString(options.ProviderExtendedConfig, "apiToken"),
 				ProjectId:          credentials.ProjectId,
 				Endpoint:           xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
-				MakersId:           xmaps.GetString(options.ProviderExtendedConfig, "makersId"),
+				MakersApiToken:     xmaps.GetString(options.ProviderExtendedConfig, "apiToken"),
+				MakersProjectId:    xmaps.GetString(options.ProviderExtendedConfig, "projectId"),
 				DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 				Domains:            lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "domains"), ";"), func(s string, _ int) bool { return s != "" }),
 				EnableMultipleSSL:  xmaps.GetBool(options.ProviderExtendedConfig, "enableMultipleSSL"),

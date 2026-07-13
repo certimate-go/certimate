@@ -2317,17 +2317,17 @@
           "off": "不"
         }
       },
-      "tencentcloud_eomakers_api_token": {
-        "label": "腾讯云 EdgeOne Makers API Token",
-        "placeholder": "请输入腾讯云 EdgeOne Makers API Token",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/edgeone/makers\" target=\"_blank\">https://console.cloud.tencent.com/edgeone/makers</a>"
-      },
       "tencentcloud_eomakers_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 EdgeOne 接口端点（例如：teo.tencentcloudapi.com）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/1552/80723\" target=\"_blank\">https://cloud.tencent.com/document/product/1552/80723</a><br>国际站用户请填写 <em>teo.intl.tencentcloudapi.com</em>。"
       },
-      "tencentcloud_eomakers_makers_id": {
+      "tencentcloud_eomakers_api_token": {
+        "label": "腾讯云 EdgeOne Makers API Token",
+        "placeholder": "请输入腾讯云 EdgeOne Makers API Token",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/1552/127422\" target=\"_blank\">https://cloud.tencent.com/document/product/1552/127422</a>"
+      },
+      "tencentcloud_eomakers_project_id": {
         "label": "腾讯云 EdgeOne Makers 项目 ID",
         "placeholder": "请输入腾讯云 EdgeOne Makers 项目 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/edgeone/makers\" target=\"_blank\">https://console.cloud.tencent.com/edgeone/makers</a>"

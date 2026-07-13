@@ -67,9 +67,7 @@ func NewDescribeHostCertificatesResponse() (response *DescribeHostCertificatesRe
 	return
 }
 
-func (c *Client) DescribeHostCertificatesWithContext(ctx context.Context, request *DescribeHostCertificatesRequest) (
-	response *DescribeHostCertificatesResponse, err error,
-) {
+func (c *Client) DescribeHostCertificatesWithContext(ctx context.Context, request *DescribeHostCertificatesRequest) (response *DescribeHostCertificatesResponse, err error) {
 	if request == nil {
 		request = NewDescribeHostCertificatesRequest()
 	}

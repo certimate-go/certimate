@@ -27,22 +27,22 @@ require (
 	github.com/alibabacloud-go/tea v1.5.2
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/alibabacloud-go/vod-20170321/v4 v4.11.3
-	github.com/alibabacloud-go/waf-openapi-20211001/v7 v7.8.2
-	github.com/aws/aws-sdk-go-v2 v1.42.1
-	github.com/aws/aws-sdk-go-v2/config v1.32.29
-	github.com/aws/aws-sdk-go-v2/credentials v1.19.28
-	github.com/aws/aws-sdk-go-v2/service/acm v1.42.0
-	github.com/aws/aws-sdk-go-v2/service/amplify v1.40.0
-	github.com/aws/aws-sdk-go-v2/service/apigatewayv2 v1.36.0
-	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.66.0
-	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing v1.35.0
-	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.56.0
-	github.com/aws/aws-sdk-go-v2/service/iam v1.55.0
-	github.com/aws/aws-sdk-go-v2/service/lightsail v1.57.0
-	github.com/aws/smithy-go v1.27.3
-	github.com/baidubce/bce-sdk-go v0.9.270
-	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.71
-	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.71
+	github.com/alibabacloud-go/waf-openapi-20211001/v7 v7.8.1
+	github.com/aws/aws-sdk-go-v2 v1.41.12
+	github.com/aws/aws-sdk-go-v2/config v1.32.23
+	github.com/aws/aws-sdk-go-v2/credentials v1.19.22
+	github.com/aws/aws-sdk-go-v2/service/acm v1.39.5
+	github.com/aws/aws-sdk-go-v2/service/amplify v1.39.3
+	github.com/aws/aws-sdk-go-v2/service/apigatewayv2 v1.35.5
+	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.65.1
+	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing v1.34.5
+	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.55.3
+	github.com/aws/aws-sdk-go-v2/service/iam v1.54.3
+	github.com/aws/aws-sdk-go-v2/service/lightsail v1.55.3
+	github.com/aws/smithy-go v1.27.1
+	github.com/baidubce/bce-sdk-go v0.9.268
+	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.66
+	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.68
 	github.com/go-acme/lego/v5 v5.2.2
 	github.com/go-cmd/cmd v1.4.3
 	github.com/go-resty/resty/v2 v2.17.2
@@ -177,16 +177,16 @@ require (
 	github.com/alibabacloud-go/endpoint-util v1.1.1 // indirect
 	github.com/aliyun/credentials-go v1.4.12 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.30 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.30 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.30 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.31 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.13 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.30 // indirect
-	github.com/aws/aws-sdk-go-v2/service/signin v1.4.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.32.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.37.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.44.0 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.28 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.28 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.28 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.29 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.28 // indirect
+	github.com/aws/aws-sdk-go-v2/service/signin v1.1.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.31.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.36.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.43.2 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bodgit/gssapi v0.0.3 // indirect
 	github.com/bodgit/tsig v1.3.1 // indirect

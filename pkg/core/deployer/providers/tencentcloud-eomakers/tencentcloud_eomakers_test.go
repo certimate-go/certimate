@@ -9,14 +9,14 @@ import (
 )
 
 var (
-	fp            = tester.Args("TENCENTCLOUDEOMAKERS_")
-	fTestCertPath string
-	fTestKeyPath  string
-	fSecretId     string
-	fSecretKey    string
-	fAPIToken     string
-	fMakersId     string
-	fDomains      string
+	fp               = tester.Args("TENCENTCLOUDEOMAKERS_")
+	fTestCertPath    string
+	fTestKeyPath     string
+	fSecretId        string
+	fSecretKey       string
+	fMakersApiToken  string
+	fMakersProjectId string
+	fDomains         string
 )
 
 func init() {
@@ -24,8 +24,8 @@ func init() {
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fSecretId, "SECRETID")
 	fp.DefineString(&fSecretKey, "SECRETKEY")
-	fp.DefineString(&fAPIToken, "APITOKEN")
-	fp.DefineString(&fMakersId, "MAKERSID")
+	fp.DefineString(&fMakersApiToken, "MAKERSAPITOKEN")
+	fp.DefineString(&fMakersProjectId, "MAKERSPROJECTID")
 	fp.DefineString(&fDomains, "DOMAINS")
 }
 
@@ -37,8 +37,8 @@ Shell command to run this test:
 	--TENCENTCLOUDEOMAKERS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDEOMAKERS_SECRETID="your-secret-id" \
 	--TENCENTCLOUDEOMAKERS_SECRETKEY="your-secret-key" \
-	--TENCENTCLOUDEOMAKERS_APITOKEN="your-edgeone-makers-api-token" \
-	--TENCENTCLOUDEOMAKERS_MAKERSID="your-edgeone-makers-project-id" \
+	--TENCENTCLOUDEOMAKERS_MAKERSAPITOKEN="your-makers-api-token" \
+	--TENCENTCLOUDEOMAKERS_MAKERSPROJECTID="your-makers-project-id" \
 	--TENCENTCLOUDEOMAKERS_DOMAINS="example.com"
 */
 func TestProvider(t *testing.T) {
@@ -48,8 +48,8 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			SecretId:           fSecretId,
 			SecretKey:          fSecretKey,
-			APIToken:           fAPIToken,
-			MakersId:           fMakersId,
+			MakersApiToken:     fMakersApiToken,
+			MakersProjectId:    fMakersProjectId,
 			DomainMatchPattern: impl.DomainMatchPatternExact,
 			Domains:            strings.Split(fDomains, ";"),
 			EnableMultipleSSL:  true,

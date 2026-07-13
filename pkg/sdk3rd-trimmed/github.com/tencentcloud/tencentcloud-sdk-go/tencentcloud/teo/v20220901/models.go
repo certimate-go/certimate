@@ -7,84 +7,44 @@ import (
 
 type (
 	AccelerationDomain = teo.AccelerationDomain
+	AdvancedFilter     = teo.AdvancedFilter
 	CertificateInfo    = teo.CertificateInfo
+	MutualTLS          = teo.MutualTLS
 	ServerCertInfo     = teo.ServerCertInfo
+	UpstreamCertInfo   = teo.UpstreamCertInfo
 )
 
 type DescribeAccelerationDomainsRequest = teo.DescribeAccelerationDomainsRequest
 
 type DescribeAccelerationDomainsResponse = teo.DescribeAccelerationDomainsResponse
 
-// DescribeHostCertificatesRequest is the request structure
-// for the DescribeHostCertificates API.
-// Not exposed in Tencent Cloud official SDK or API document
-// REF: https://docs.edgeone.site/#/?id=describehostcertificates
 type DescribeHostCertificatesRequest struct {
 	*tchttp.BaseRequest
-	ZoneId  string                             `json:"ZoneId" name:"ZoneId"`
-	Filters []*DescribeHostCertificatesFilters `json:"Filters,omitempty" name:"Filters"`
+	ZoneId  *string           `json:"ZoneId,omitnil,omitempty" name:"ZoneId"`
+	Filters []*AdvancedFilter `json:"Filters,omitnil,omitempty" name:"Filters"`
 }
 
-type DescribeHostCertificatesFilters struct {
-	Name   string   `json:"Name" name:"Name"`
-	Values []string `json:"Values" name:"Values"`
-	Fuzzy  *bool    `json:"Fuzzy,omitempty" name:"Fuzzy"`
-}
-
-// DescribeHostCertificatesResponse is the response structure
-// for the DescribeHostCertificates API.
-// Not exposed in Tencent Cloud official SDK or API document
-// REF: https://docs.edgeone.site/#/?id=describehostcertificates
 type DescribeHostCertificatesResponse struct {
 	*tchttp.BaseResponse
-	Response DescribeHostCertificatesResponseParams `json:"Response"`
+	Response *DescribeHostCertificatesResponseParams `json:"Response" name:"Response"`
 }
 
 type DescribeHostCertificatesResponseParams struct {
-	RequestId        string            `json:"RequestId"`
-	HostCertificates []HostCertificate `json:"HostCertificates"`
-	TotalCount       int               `json:"TotalCount"`
-}
-
-type HostCertificate struct {
-	ApplyType        string             `json:"ApplyType"`
-	ClientCertInfo   ClientCertInfo     `json:"ClientCertInfo"`
-	Host             string             `json:"Host"`
-	HostCertInfo     []HostCertInfoItem `json:"HostCertInfo"`
-	Mode             string             `json:"Mode"`
-	UpstreamCertInfo UpstreamCertInfo   `json:"UpstreamCertInfo"`
-}
-
-type ClientCertInfo struct {
-	CertInfos []any  `json:"CertInfos"`
-	Switch    string `json:"Switch"`
-}
-
-type HostCertInfoItem struct {
-	Alias      string `json:"Alias"`
-	CertId     string `json:"CertId"`
-	DeployTime string `json:"DeployTime"`
-	ExpireTime string `json:"ExpireTime"`
-	SignAlgo   string `json:"SignAlgo"`
-	Status     string `json:"Status"`
-	Type       string `json:"Type"`
-}
-
-type UpstreamCertInfo struct {
-	UpstreamCertificateVerify UpstreamCertificateVerify `json:"UpstreamCertificateVerify"`
-	UpstreamMutualTLS         UpstreamMutualTLS         `json:"UpstreamMutualTLS"`
-}
-
-type UpstreamCertificateVerify struct {
-	CustomCACerts    []interface{} `json:"CustomCACerts"` // 类型未知
-	VerificationMode string        `json:"VerificationMode"`
-}
-
-type UpstreamMutualTLS struct {
-	CertInfos []interface{} `json:"CertInfos"` // 类型未知
-	Switch    string        `json:"Switch"`
+	RequestId        *string            `json:"RequestId,omitnil,omitempty"	name:"RequestId"`
+	TotalCount       *int64             `json:"TotalCount,omitnil,omitempty" 	name:"TotalCount"`
+	HostCertificates []*HostCertificate `json:"HostCertificates,omitnil,omitempty" 	name:"HostCertificates"`
 }
 
 type ModifyHostsCertificateRequest = teo.ModifyHostsCertificateRequest
 
 type ModifyHostsCertificateResponse = teo.ModifyHostsCertificateResponse
+
+type HostCertificate struct {
+	ApplyType        *string            `json:"ApplyType,omitnil,omitempty" name:"ApplyType"`
+	ClientCertInfo   *MutualTLS         `json:"ClientCertInfo,omitnil,omitempty" name:"ClientCertInfo"`
+	Host             *string            `json:"Host,omitnil,omitempty" name:"Host"`
+	HostCertInfo     []*CertificateInfo `json:"HostCertInfo,omitnil,omitempty" name:"HostCertInfo"`
+	Mode             *string            `json:"Mode,omitnil,omitempty" name:"Mode"`
+	ServerCertInfo   []*ServerCertInfo  `json:"ServerCertInfo,omitnil,omitempty" name:"ServerCertInfo"`
+	UpstreamCertInfo *UpstreamCertInfo  `json:"UpstreamCertInfo,omitnil,omitempty" name:"UpstreamCertInfo"`
+}

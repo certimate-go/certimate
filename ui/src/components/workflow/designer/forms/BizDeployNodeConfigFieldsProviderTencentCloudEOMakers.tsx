@@ -31,16 +31,6 @@ const BizDeployNodeConfigFieldsProviderTencentCloudEOMakers = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "apiToken"]}
-        initialValue={initialValues.apiToken}
-        label={t("workflow_node.deploy.form.tencentcloud_eomakers_api_token.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eomakers_api_token.tooltip") }}></span>}
-      >
-        <Input.Password autoComplete="new-password" placeholder={t("workflow_node.deploy.form.tencentcloud_eomakers_api_token.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
         name={[parentNamePath, "endpoint"]}
         initialValue={initialValues.endpoint}
         label={t("workflow_node.deploy.form.tencentcloud_eomakers_endpoint.label")}
@@ -51,13 +41,23 @@ const BizDeployNodeConfigFieldsProviderTencentCloudEOMakers = () => {
       </Form.Item>
 
       <Form.Item
-        name={[parentNamePath, "makersId"]}
-        initialValue={initialValues.makersId}
-        label={t("workflow_node.deploy.form.tencentcloud_eomakers_makers_id.label")}
+        name={[parentNamePath, "apiToken"]}
+        initialValue={initialValues.apiToken}
+        label={t("workflow_node.deploy.form.tencentcloud_eomakers_api_token.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eomakers_makers_id.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eomakers_api_token.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_eomakers_makers_id.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("workflow_node.deploy.form.tencentcloud_eomakers_api_token.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "projectId"]}
+        initialValue={initialValues.projectId}
+        label={t("workflow_node.deploy.form.tencentcloud_eomakers_project_id.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.tencentcloud_eomakers_project_id.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.tencentcloud_eomakers_project_id.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -119,8 +119,8 @@ const BizDeployNodeConfigFieldsProviderTencentCloudEOMakers = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     apiToken: "",
+    projectId: "",
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
-    makersId: "",
     domains: "",
   };
 };
@@ -130,9 +130,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      apiToken: z.string().nonempty(),
       endpoint: z.string().nullish(),
-      makersId: z.string().nonempty(),
+      apiToken: z.string().nonempty(),
+      projectId: z.string().nonempty(),
       domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domains: z.string().nullish(),
       enableMultipleSSL: z.boolean().nullish(),

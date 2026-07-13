@@ -2318,17 +2318,17 @@
           "off": "Disallow"
         }
       },
-      "tencentcloud_eomakers_api_token": {
-        "label": "Tencent Cloud EdgeOne Makers API Token",
-        "placeholder": "Please enter Tencent Cloud EdgeOne Makers API Token",
-        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone/makers\" target=\"_blank\">https://console.tencentcloud.com/edgeone/makers</a>"
-      },
       "tencentcloud_eomakers_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
         "tooltip": "<ul style=\"list-style: disc;\"><li><strong>teo.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
       },
-      "tencentcloud_eomakers_makers_id": {
+      "tencentcloud_eomakers_api_token": {
+        "label": "Tencent Cloud EdgeOne Makers API Token",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers API Token",
+        "tooltip": "For more information, see <a href=\"https://pages.edgeone.ai/document/api-token\" target=\"_blank\">https://pages.edgeone.ai/document/api-token</a>"
+      },
+      "tencentcloud_eomakers_project_id": {
         "label": "Tencent Cloud EdgeOne Makers project ID",
         "placeholder": "Please enter Tencent Cloud EdgeOne Makers project ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone/makers\" target=\"_blank\">https://console.tencentcloud.com/edgeone/makers</a>"

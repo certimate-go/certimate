@@ -9,17 +9,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
+
+	tceo "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
+
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
-	tceo "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
-	teom "github.com/certimate-go/certimate/pkg/sdk3rd/tencentcloud/eomakers"
+	tceomakersssdk "github.com/certimate-go/certimate/pkg/sdk3rd/tencentcloud/teomakers"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
 	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
-	"github.com/samber/lo"
-	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
-	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 )
 
 type (
@@ -28,44 +30,47 @@ type (
 )
 
 type DeployerConfig struct {
-	// Tencent Cloud SecretId
+	// 腾讯云 SecretId。
 	SecretId string `json:"secretId"`
-	// Tencent Cloud SecretKey
+	// 腾讯云 SecretKey。
 	SecretKey string `json:"secretKey"`
-	// Tencent Cloud EdgeOne Makers APIToken
-	APIToken string `json:"apiToken"`
-	// Tencent Cloud ProjectId
+	// 腾讯云项目 ID。
 	ProjectId int64 `json:"projectId,omitempty"`
-	// Tencent Cloud Endpoint
+	// 腾讯云接口端点。
 	Endpoint string `json:"endpoint,omitempty"`
-	// Tencent Cloud MakersId
-	MakersId string `json:"makersId,omitempty"`
-	// DomainMatchPattern is the match mode of the domain
+	// EdgeOne Makers API Token。
+	MakersApiToken string `json:"makersApiToken"`
+	// EdgeOne Makers 项目 ID。
+	MakersProjectId string `json:"makersProjectId"`
+	// 域名匹配模式。
+	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
-	// Domains is the list of acceleration domains
+	// 加速域名列表（支持泛域名）。
 	Domains []string `json:"domains"`
-	// EnableMultipleSSL whether the user has enabled multiple certificates mode
+	// 是否启用多证书模式。
 	EnableMultipleSSL bool `json:"enableMultipleSSL,omitempty"`
 }
 
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	apiClient  *teom.Client
-	sdkClient  *tceo.Client
+	sdkClients *wSDKClients
 	sdkCertmgr core.Certmgr
 }
 
 var _ Provider = (*Deployer)(nil)
+
+type wSDKClients struct {
+	TEO       *tceo.Client
+	TEOMakers *tceomakersssdk.Client
+}
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	apiClient := teom.NewClient(config.APIToken)
-
-	sdkClient, err := createSDKClient(config.SecretId, config.SecretKey, config.Endpoint)
+	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint, config.MakersApiToken)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -83,8 +88,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		apiClient:  apiClient,
-		sdkClient:  sdkClient,
+		sdkClients: clients,
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -100,15 +104,11 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
-	if d.config.APIToken == "" {
-		return nil, fmt.Errorf("config `apiToken` is required")
+	if d.config.MakersProjectId == "" {
+		return nil, fmt.Errorf("config `makersProjectId` is required")
 	}
 
-	if d.config.MakersId == "" {
-		return nil, fmt.Errorf("config `makersId` is required")
-	}
-
-	// Upload certificate
+	// 上传证书
 	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
@@ -116,16 +116,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// Get all deployable domains
-	domainsInMakers, err := d.getAllDomainsInMakers(ctx, d.config.MakersId)
+	// 获取全部可部署的域名列表
+	domainsInMakers, err := d.getAllDomainsInProject(ctx, d.config.MakersProjectId)
 	if err != nil {
 		return nil, err
 	}
-	if len(domainsInMakers) == 0 {
-		return nil, fmt.Errorf("could not find any custom domains in edgeone makers project")
-	}
 
-	// Get domains ready to deploy
+	// 获取待部署的域名列表
 	var domains []string
 	switch d.config.DomainMatchPattern {
 	case "", DomainMatchPatternExact:
@@ -143,8 +140,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return nil, fmt.Errorf("config `domains` is required")
 			}
 
-			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *teom.DescribePagesZoneCustomDomains, _ int) string {
-				return domainInfo.Domain
+			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
+				return lo.FromPtr(domainInfo.Domain)
 			})
 			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
 				for _, configDomain := range d.config.Domains {
@@ -161,8 +158,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	case DomainMatchPatternCertSan:
 		{
-			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *teom.DescribePagesZoneCustomDomains, _ int) string {
-				return domainInfo.Domain
+			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
+				return lo.FromPtr(domainInfo.Domain)
 			})
 			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
 				return xcerthostname.IsMatchByCertificatePEM(certPEM, domain)
@@ -176,58 +173,45 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// Batch deploy domains
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no edgeone makers domains to deploy")
 	} else {
 		d.logger.Info("found edgeone makers domains to deploy", slog.Any("domains", domains))
 
-		// In Tencent Cloud Makers, all domains belong to a same special zone
-		// You can find this at the console: https://console.cloud.tencent.com/edgeone/makers
+		// 获取站点 ID
 		zoneId := domainsInMakers[0].ZoneId
 
-		// Get host certificates
+		// 获取证书列表
 		describeHostCertificatesReq := tceo.NewDescribeHostCertificatesRequest()
 		describeHostCertificatesReq.ZoneId = zoneId
-		describeHostCertificatesResp, err := d.sdkClient.DescribeHostCertificatesWithContext(
-			ctx, describeHostCertificatesReq,
-		)
-		d.logger.Debug(
-			"sdk request 'teo.DescribeHostCertificates'",
-			slog.Any("request", describeHostCertificatesReq),
-			slog.Any("response", describeHostCertificatesResp),
-		)
+		describeHostCertificatesResp, err := d.sdkClients.TEO.DescribeHostCertificatesWithContext(ctx, describeHostCertificatesReq)
+		d.logger.Debug("sdk request 'teo.DescribeHostCertificates'", slog.Any("request", describeHostCertificatesReq), slog.Any("response", describeHostCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeHostCertificates': %w", err)
 		}
 
-		// Skip deployed domains
+		// 跳过已部署过的域名
 		domains = lo.Filter(domains, func(domain string, _ int) bool {
 			var deployed bool
 
-			domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *teom.DescribePagesZoneCustomDomains) bool {
-				return domain == domainInfo.Domain
+			domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
+				return domain == lo.FromPtr(domainInfo.Domain)
 			})
-			if domainInfo != nil && len(describeHostCertificatesResp.Response.HostCertificates) != 0 {
-				var certList []tceo.HostCertInfoItem
-				for _, v := range describeHostCertificatesResp.Response.HostCertificates {
-					if v.Host == domainInfo.Domain {
-						certList = v.HostCertInfo
-						break
-					}
-				}
-
-				deployed = lo.SomeBy(certList, func(certInfo tceo.HostCertInfoItem) bool {
-					return upres.CertId == certInfo.CertId
+			if domainInfo != nil && describeHostCertificatesResp.Response != nil {
+				deployed = lo.SomeBy(describeHostCertificatesResp.Response.HostCertificates, func(hostInfo *tceo.HostCertificate) bool {
+					return domain == lo.FromPtr(hostInfo.Host) &&
+						lo.SomeBy(hostInfo.HostCertInfo, func(certInfo *tceo.CertificateInfo) bool {
+							return upres.CertId == lo.FromPtr(certInfo.CertId)
+						})
 				})
 			}
 
 			return !deployed
 		})
 
-		// Configure certificate of domains
+		// 配置域名证书
 		// REF: https://cloud.tencent.com/document/api/1552/80764
-		// REF: https://docs.edgeone.site/#/?id=modifyhostscertificate
 		modifyHostsCertificateReqs := make([]*tceo.ModifyHostsCertificateRequest, 0)
 
 		if d.config.EnableMultipleSSL {
@@ -250,40 +234,36 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 			for _, domain := range domains {
 				modifyHostsCertificateReq := tceo.NewModifyHostsCertificateRequest()
-				modifyHostsCertificateReq.ZoneId = common.StringPtr(zoneId)
+				modifyHostsCertificateReq.ZoneId = zoneId
 				modifyHostsCertificateReq.Mode = common.StringPtr("sslcert")
 				modifyHostsCertificateReq.Hosts = common.StringPtrs([]string{domain})
 				modifyHostsCertificateReq.ServerCertInfo = []*tceo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
 
-				domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *teom.DescribePagesZoneCustomDomains) bool {
-					return domain == domainInfo.Domain
+				domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
+					return domain == lo.FromPtr(domainInfo.Domain)
 				})
-				if domainInfo != nil && len(describeHostCertificatesResp.Response.HostCertificates) != 0 {
-					var certList []tceo.HostCertInfoItem
-					for _, v := range describeHostCertificatesResp.Response.HostCertificates {
-						if v.Host == domainInfo.Domain {
-							certList = v.HostCertInfo
-							break
-						}
-					}
-
-					for _, certInfo := range certList {
-						if certInfo.CertId == upres.CertId {
+				if domainInfo != nil && describeHostCertificatesResp.Response != nil {
+					for _, hostInfo := range describeHostCertificatesResp.Response.HostCertificates {
+						if lo.FromPtr(hostInfo.Host) != domain {
 							continue
 						}
 
-						if strings.Split(certInfo.SignAlgo, " ")[0] == privkeyAlgStr {
-							continue
-						}
+						for _, certInfo := range hostInfo.HostCertInfo {
+							if lo.FromPtr(certInfo.CertId) == upres.CertId {
+								continue
+							}
 
-						certExpireTime, _ := time.Parse("2006-01-02T15:04:05Z", certInfo.ExpireTime)
-						if certExpireTime.Before(time.Now()) {
-							continue
-						}
+							if strings.Split(lo.FromPtr(certInfo.SignAlgo), " ")[0] == privkeyAlgStr {
+								continue
+							}
 
-						modifyHostsCertificateReq.ServerCertInfo = append(
-							modifyHostsCertificateReq.ServerCertInfo, &tceo.ServerCertInfo{CertId: common.StringPtr(certInfo.CertId)},
-						)
+							certExpireTime, _ := time.Parse("2006-01-02T15:04:05Z", lo.FromPtr(certInfo.ExpireTime))
+							if certExpireTime.Before(time.Now()) {
+								continue
+							}
+
+							modifyHostsCertificateReq.ServerCertInfo = append(modifyHostsCertificateReq.ServerCertInfo, &tceo.ServerCertInfo{CertId: certInfo.CertId})
+						}
 					}
 				}
 
@@ -291,7 +271,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			}
 		} else {
 			modifyHostsCertificateReq := tceo.NewModifyHostsCertificateRequest()
-			modifyHostsCertificateReq.ZoneId = common.StringPtr(zoneId)
+			modifyHostsCertificateReq.ZoneId = zoneId
 			modifyHostsCertificateReq.Mode = common.StringPtr("sslcert")
 			modifyHostsCertificateReq.Hosts = common.StringPtrs(domains)
 			modifyHostsCertificateReq.ServerCertInfo = []*tceo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
@@ -305,11 +285,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			case <-ctx.Done():
 				return nil, ctx.Err()
 			default:
-				modifyHostsCertificateResp, err := d.sdkClient.ModifyHostsCertificateWithContext(ctx, modifyHostsCertificateReq)
-				d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'",
-					slog.Any("request", modifyHostsCertificateReq),
-					slog.Any("response", modifyHostsCertificateResp),
-				)
+				modifyHostsCertificateResp, err := d.sdkClients.TEO.ModifyHostsCertificateWithContext(ctx, modifyHostsCertificateReq)
+				d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'", slog.Any("request", modifyHostsCertificateReq), slog.Any("response", modifyHostsCertificateResp))
 				if err != nil {
 					err = fmt.Errorf("failed to execute sdk request 'teo.ModifyHostsCertificate': %w", err)
 					errs = append(errs, err)
@@ -324,48 +301,57 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func (d *Deployer) getAllDomainsInMakers(ctx context.Context, makersId string) (
-	[]*teom.DescribePagesZoneCustomDomains, error,
-) {
-	// Get list of custom maker domains
+func (d *Deployer) getAllDomainsInProject(ctx context.Context, makersProjectId string) ([]*tceomakersssdk.PagesZoneCustomDomain, error) {
+	// 查询创建过的 Pages 自定义域名列表
 	// REF: https://docs.edgeone.site/#/?id=describepageszonecustomdomains
-	describeMakersZoneCustomDomainsReq := teom.NewDescribeMakersZoneCustomDomainsReq()
-	describeMakersZoneCustomDomainsReq.ProjectId = makersId
-	describeMakersZoneCustomDomainsResp, err := d.apiClient.DescribeMakersZoneCustomDomains(
-		ctx, describeMakersZoneCustomDomainsReq,
-	)
-	d.logger.Debug(
-		"api request 'eomakers.DescribeMakersZoneCustomDomains'",
-		slog.Any("request", describeMakersZoneCustomDomainsReq),
-		slog.Any("response", describeMakersZoneCustomDomainsResp),
-	)
+	describeMakersZoneCustomDomainsReq := &tceomakersssdk.DescribePagesZoneCustomDomainsRequest{
+		ProjectId: common.StringPtr(makersProjectId),
+	}
+	describeMakersZoneCustomDomainsResp, err := d.sdkClients.TEOMakers.DescribePagesZoneCustomDomainsWithContext(ctx, describeMakersZoneCustomDomainsReq)
+	d.logger.Debug("api request 'teo.makers.DescribePagesZoneCustomDomains'", slog.Any("request", describeMakersZoneCustomDomainsReq), slog.Any("response", describeMakersZoneCustomDomainsResp))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute sdk request 'teo.makers.DescribePagesZoneCustomDomains': %w", err)
 	}
 
-	result := make([]*teom.DescribePagesZoneCustomDomains, 0)
-	for i := range describeMakersZoneCustomDomainsResp.Data.Response.PagesDomains {
-		data := &describeMakersZoneCustomDomainsResp.Data.Response.PagesDomains[i]
-		if data.Type == "Custom" && data.ZoneId != "" {
-			result = append(result, data)
+	domains := make([]*tceomakersssdk.PagesZoneCustomDomain, 0)
+	for _, domainItem := range describeMakersZoneCustomDomainsResp.Data.Response.PagesDomains {
+		if lo.FromPtr(domainItem.Type) == "Custom" && lo.FromPtr(domainItem.ZoneId) != "" {
+			domains = append(domains, domainItem)
 		}
 	}
 
-	return result, nil
+	return domains, nil
 }
 
-func createSDKClient(secretId, secretKey, endpoint string) (*tceo.Client, error) {
-	credential := common.NewCredential(secretId, secretKey)
+func createSDKClients(secretId, secretKey, endpoint, makersApiToken string) (*wSDKClients, error) {
+	wsdk := &wSDKClients{}
 
-	cpf := profile.NewClientProfile()
-	if endpoint != "" {
-		cpf.HttpProfile.Endpoint = endpoint
+	{
+		credential := common.NewCredential(secretId, secretKey)
+
+		cpf := profile.NewClientProfile()
+		if endpoint != "" {
+			cpf.HttpProfile.Endpoint = endpoint
+		}
+
+		client, err := tceo.NewClient(credential, "", cpf)
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.TEO = client
 	}
 
-	client, err := tceo.NewClient(credential, "", cpf)
-	if err != nil {
-		return nil, err
+	{
+		client, err := tceomakersssdk.NewClient(
+			tceomakersssdk.WithApiToken(makersApiToken),
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		wsdk.TEOMakers = client
 	}
 
-	return client, nil
+	return wsdk, nil
 }
