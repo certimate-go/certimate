@@ -233,6 +233,7 @@
   "s3_upload": "Upload to S3-compatible object storage",
   "safeline": "SafeLine",
   "samwaf": "SamWAF",
+  "samwaf_console": "SamWAF - Console itself",
   "sectigo": "Sectigo",
   "simplycom": "Simply.com",
   "slackbot": "Slack Bot",

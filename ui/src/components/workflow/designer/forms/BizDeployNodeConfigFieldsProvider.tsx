@@ -101,6 +101,7 @@ import BizDeployNodeConfigFieldsProviderRatPanel from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderS3 from "./BizDeployNodeConfigFieldsProviderS3";
 import BizDeployNodeConfigFieldsProviderSafeLine from "./BizDeployNodeConfigFieldsProviderSafeLine";
 import BizDeployNodeConfigFieldsProviderSamWAF from "./BizDeployNodeConfigFieldsProviderSamWAF";
+import BizDeployNodeConfigFieldsProviderSamWAFConsole from "./BizDeployNodeConfigFieldsProviderSamWAFConsole";
 import BizDeployNodeConfigFieldsProviderSSH from "./BizDeployNodeConfigFieldsProviderSSH";
 import BizDeployNodeConfigFieldsProviderSynologyDSM from "./BizDeployNodeConfigFieldsProviderSynologyDSM";
 import BizDeployNodeConfigFieldsProviderTencentCloudCDN from "./BizDeployNodeConfigFieldsProviderTencentCloudCDN";
@@ -249,6 +250,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.S3]: BizDeployNodeConfigFieldsProviderS3,
   [DEPLOYMENT_PROVIDERS.SAFELINE]: BizDeployNodeConfigFieldsProviderSafeLine,
   [DEPLOYMENT_PROVIDERS.SAMWAF]: BizDeployNodeConfigFieldsProviderSamWAF,
+  [DEPLOYMENT_PROVIDERS.SAMWAF_CONSOLE]: BizDeployNodeConfigFieldsProviderSamWAFConsole,
   [DEPLOYMENT_PROVIDERS.SSH]: BizDeployNodeConfigFieldsProviderSSH,
   [DEPLOYMENT_PROVIDERS.SYNOLOGYDSM]: BizDeployNodeConfigFieldsProviderSynologyDSM,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_CDN]: BizDeployNodeConfigFieldsProviderTencentCloudCDN,

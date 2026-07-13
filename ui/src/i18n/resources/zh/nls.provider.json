@@ -233,6 +233,7 @@
   "s3_upload": "上传到 S3 兼容的对象存储",
   "safeline": "雷池",
   "samwaf": "SamWAF",
+  "samwaf_console": "SamWAF - 面板自身",
   "sectigo": "Sectigo",
   "simplycom": "Simply.com",
   "slackbot": "Slack 机器人",

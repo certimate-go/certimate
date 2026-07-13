@@ -2171,6 +2171,12 @@
         "placeholder": "请输入 SamWAF 证书 ID",
         "tooltip": "请登录 SamWAF 控制台查看"
       },
+      "samwaf_console": {
+        "guide": "需要 SamWAF v1.3.21 或更高版本。"
+      },
+      "samwaf_console_auto_restart": {
+        "label": "部署后自动重启 SamWAF 服务"
+      },
       "ssh_pre_command": {
         "label": "前置命令（可选）",
         "placeholder": "请输入上传文件前执行的命令"

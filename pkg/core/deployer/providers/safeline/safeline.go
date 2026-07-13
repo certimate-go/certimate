@@ -63,7 +63,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
-	// 根据部署目标决定业务流程``
+	// 根据部署目标决定业务流程
 	switch d.config.DeployTarget {
 	case DEPLOY_TARGET_CERTIFICATE:
 		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {

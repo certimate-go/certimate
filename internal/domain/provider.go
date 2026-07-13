@@ -420,6 +420,7 @@ const (
 	DeploymentProviderTypeS3                            = DeploymentProviderType(AccessProviderTypeS3)
 	DeploymentProviderTypeSafeLine                      = DeploymentProviderType(AccessProviderTypeSafeLine)
 	DeploymentProviderTypeSamWAF                        = DeploymentProviderType(AccessProviderTypeSamWAF)
+	DeploymentProviderTypeSamWAFConsole                 = DeploymentProviderType(AccessProviderTypeSamWAF + "-console")
 	DeploymentProviderTypeSSH                           = DeploymentProviderType(AccessProviderTypeSSH)
 	DeploymentProviderTypeSynologyDSM                   = DeploymentProviderType(AccessProviderTypeSynologyDSM)
 	DeploymentProviderTypeTencentCloudCDN               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-cdn")

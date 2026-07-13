@@ -2172,6 +2172,12 @@
         "placeholder": "Please enter SamWAF certificate ID",
         "tooltip": "You can find it on SamWAF dashboard."
       },
+      "samwaf_console": {
+        "guide": "Requires SamWAF v1.3.21 or higher."
+      },
+      "samwaf_console_auto_restart": {
+        "label": "Auto restart SamWAF after deployment"
+      },
       "ssh_pre_command": {
         "label": "Pre-command (Optional)",
         "placeholder": "Please enter command to be executed before uploading files"

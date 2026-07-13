@@ -1,4 +1,4 @@
-package samwaf
+package samwafconsole
 
 import (
 	"context"
@@ -22,11 +22,8 @@ type DeployerConfig struct {
 	ApiKey string `json:"apiKey"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
-	// 部署目标。
-	DeployTarget string `json:"deployTarget"`
-	// 证书 ID。
-	// 部署目标为 [DEPLOY_TARGET_CERTIFICATE] 时必填。
-	CertificateId string `json:"certificateId,omitempty"`
+	// 是否自动重启。
+	AutoRestart bool `json:"autoRestart"`
 }
 
 type Deployer struct {
@@ -63,49 +60,39 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
-	// 根据部署目标决定业务流程
-	switch d.config.DeployTarget {
-	case DEPLOY_TARGET_CERTIFICATE:
-		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
-			return nil, err
-		}
-
-	default:
-		return nil, fmt.Errorf("unsupported deploy target '%s'", d.config.DeployTarget)
-	}
-
-	return &DeployResult{}, nil
-}
-
-func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM string) error {
-	if d.config.CertificateId == "" {
-		return fmt.Errorf("config `certificateId` is required")
-	}
-
-	// 获取 SSL 证书 详情
+	// 上传管理端 SSL 证书
 	// REF: https://doc.samwaf.com/api/
-	sslConfigDetailResp, err := d.sdkClient.SslConfigDetailWithContext(ctx, d.config.CertificateId)
-	d.logger.Debug("sdk request 'sslconfig.Detail'", slog.Any("params.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
-	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'sslconfig.Detail': %w", err)
-	} else if sslConfigDetailResp.Data == nil || sslConfigDetailResp.Data.Id == "" {
-		return fmt.Errorf("could not find ssl config: '%s'", d.config.CertificateId)
-	}
-
-	// 编辑 SSL 证书
-	// REF: https://doc.samwaf.com/api/
-	sslConfigEditReq := &samwafsdk.SslConfigEditRequest{
-		Id:          d.config.CertificateId,
+	vipConfigUploadSslCertReq := &samwafsdk.VipConfigUploadSslCertRequest{
 		CertContent: certPEM,
 		KeyContent:  privkeyPEM,
 	}
-	sslConfigEditResp, err := d.sdkClient.SslConfigEditWithContext(ctx, sslConfigEditReq)
-	d.logger.Debug("sdk request 'sslconfig.Edit'", slog.Any("request", sslConfigEditReq), slog.Any("response", sslConfigEditResp))
+	vipConfigUploadSslCertResp, err := d.sdkClient.VipConfigUploadSslCertWithContext(ctx, vipConfigUploadSslCertReq)
+	d.logger.Debug("sdk request 'vipconfig.UploadSslCert'", slog.Any("request", vipConfigUploadSslCertReq), slog.Any("response", vipConfigUploadSslCertResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'sslconfig.Edit': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'vipconfig.UploadSslCert': %w", err)
 	}
 
-	return nil
+	// 更新管理端 SSL 启用状态
+	// REF: https://doc.samwaf.com/api/
+	vipConfigUpdateSslEnableReq := &samwafsdk.VipConfigUpdateSslEnableRequest{
+		SslEnable: true,
+	}
+	vipConfigUpdateSslEnableResp, err := d.sdkClient.VipConfigUpdateSslEnableWithContext(ctx, vipConfigUpdateSslEnableReq)
+	d.logger.Debug("sdk request 'vipconfig.UpdateSslEnable'", slog.Any("request", vipConfigUpdateSslEnableReq), slog.Any("response", vipConfigUpdateSslEnableResp))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute sdk request 'vipconfig.UpdateSslEnable': %w", err)
+	}
+
+	if d.config.AutoRestart {
+		// 重启管理端
+		vipConfigRestartManagerResp, err := d.sdkClient.VipConfigRestartManagerWithContext(ctx)
+		d.logger.Debug("sdk request 'vipconfig.RestartManager'", slog.Any("response", vipConfigRestartManagerResp))
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute sdk request 'vipconfig.RestartManager': %w", err)
+		}
+	}
+
+	return &DeployResult{}, nil
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*samwafsdk.Client, error) {
