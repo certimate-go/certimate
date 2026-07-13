@@ -13,7 +13,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
-	aliapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/apig-20240327/v7/client"
+	aliapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/apig-20240327/v9/client"
 	alicloudapi "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/cloudapi-20160714/v5/client"
 
 	"github.com/certimate-go/certimate/pkg/core"

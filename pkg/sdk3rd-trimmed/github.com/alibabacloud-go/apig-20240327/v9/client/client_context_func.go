@@ -51,6 +51,10 @@ func (client *Client) ListDomainsWithContext(ctx context.Context, request *ListD
 		}
 	}
 	query := map[string]interface{}{}
+	if !dara.IsNil(request.DomainScope) {
+		query["domainScope"] = request.DomainScope
+	}
+
 	if !dara.IsNil(request.GatewayId) {
 		query["gatewayId"] = request.GatewayId
 	}
@@ -117,6 +121,10 @@ func (client *Client) UpdateDomainWithContext(ctx context.Context, domainId *str
 
 	if !dara.IsNil(request.ClientCACert) {
 		body["clientCACert"] = request.ClientCACert
+	}
+
+	if !dara.IsNil(request.DomainScope) {
+		body["domainScope"] = request.DomainScope
 	}
 
 	if !dara.IsNil(request.ForceHttps) {
