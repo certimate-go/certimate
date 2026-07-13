@@ -301,7 +301,7 @@
       "huaweicloud_dns_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud DNS region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/dns?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/dns</a>"
       },
       "jdcloud_dns_region_id": {
         "label": "JD Cloud region ID",
@@ -1584,7 +1584,7 @@
       "huaweicloud_aad_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud AAD region (e.g. cn-north-4)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/aad?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/aad</a>"
       },
       "huaweicloud_aad_instance_id": {
         "label": "Huawei Cloud AAD instance ID",
@@ -1598,7 +1598,7 @@
       "huaweicloud_apig_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud API gateway region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/apig?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/apig</a>"
       },
       "huaweicloud_apig_deploy_target": {
         "option": {
@@ -1615,7 +1615,7 @@
       "huaweicloud_cdn_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud CDN region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/cdn?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/cdn</a>"
       },
       "huaweicloud_cdn_domain": {
         "label": "Huawei Cloud CDN domain",
@@ -1624,7 +1624,7 @@
       "huaweicloud_obs_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud OBS region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/obs?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/obs</a>"
       },
       "huaweicloud_obs_bucket": {
         "label": "Huawei Cloud OBS bucket name",
@@ -1637,7 +1637,7 @@
       "huaweicloud_elb_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
       },
       "huaweicloud_elb_deploy_target": {
         "option": {
@@ -1670,7 +1670,7 @@
       "huaweicloud_live_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud Live region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/live?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/live</a>"
       },
       "huaweicloud_live_domain": {
         "label": "Huawei Cloud Live streaming domain",
@@ -1679,7 +1679,7 @@
       "huaweicloud_vod_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud VOD region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/vod?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/vod</a>"
       },
       "huaweicloud_vod_domain": {
         "label": "Huawei Cloud VOD domain",
@@ -1688,7 +1688,7 @@
       "huaweicloud_waf_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
       },
       "huaweicloud_waf_deploy_target": {
         "option": {

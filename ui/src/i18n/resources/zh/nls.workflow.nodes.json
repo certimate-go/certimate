@@ -300,7 +300,7 @@
       "huaweicloud_dns_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 DNS 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/dns\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/dns</a>"
       },
       "jdcloud_dns_region_id": {
         "label": "京东云服务地域 ID",
@@ -1583,7 +1583,7 @@
       "huaweicloud_aad_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 DDoS 高防服务区域（例如：cn-north-4）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/aad\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/aad</a>"
       },
       "huaweicloud_aad_instance_id": {
         "label": "华为云 DDoS 高防实例 ID",
@@ -1597,7 +1597,7 @@
       "huaweicloud_apig_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 API 网关服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/apig\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/apig</a>"
       },
       "huaweicloud_apig_deploy_target": {
         "option": {
@@ -1614,7 +1614,7 @@
       "huaweicloud_cdn_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 CDN 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/cdn\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/cdn</a>"
       },
       "huaweicloud_cdn_domain": {
         "label": "华为云 CDN 加速域名",
@@ -1623,7 +1623,7 @@
       "huaweicloud_obs_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 OBS 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/obs\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/obs</a>"
       },
       "huaweicloud_obs_bucket": {
         "label": "华为云 OBS 存储桶名",
@@ -1636,7 +1636,7 @@
       "huaweicloud_elb_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/elb\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
       },
       "huaweicloud_elb_deploy_target": {
         "option": {
@@ -1669,7 +1669,7 @@
       "huaweicloud_live_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云视频直播服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/live\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/live</a>"
       },
       "huaweicloud_live_domain": {
         "label": "华为云视频直播流域名",
@@ -1678,7 +1678,7 @@
       "huaweicloud_vod_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云视频点播服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/vod\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/vod</a>"
       },
       "huaweicloud_vod_domain": {
         "label": "华为云视频点播加速域名",
@@ -1687,7 +1687,7 @@
       "huaweicloud_waf_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 WAF 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/waf\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
       },
       "huaweicloud_waf_deploy_target": {
         "option": {
