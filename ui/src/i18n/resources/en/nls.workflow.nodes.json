@@ -1581,14 +1581,19 @@
         "placeholder": "Please enter GoEdge certificate ID",
         "tooltip": "You can find it on GoEdge dashboard. <br><br>(Please open the browser devtools, and visit the \"网站列表 -> 证书管理 -> 证书\" page to capture network requests, then you can get the certificate ID.)"
       },
-      "huaweicloud_aad_domain": {
-        "label": "Huawei Cloud AAD domain",
-        "placeholder": "Please enter Huawei Cloud AAD domain name"
+      "huaweicloud_aad_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud AAD region (e.g. cn-north-4)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
       },
       "huaweicloud_aad_instance_id": {
         "label": "Huawei Cloud AAD instance ID",
         "placeholder": "Please enter Huawei Cloud AAD instance ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list\" target=\"_blank\">https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list</a>"
+      },
+      "huaweicloud_aad_domain": {
+        "label": "Huawei Cloud AAD domain",
+        "placeholder": "Please enter Huawei Cloud AAD domain name"
       },
       "huaweicloud_apig_region": {
         "label": "Huawei Cloud region",
@@ -1670,6 +1675,15 @@
       "huaweicloud_live_domain": {
         "label": "Huawei Cloud Live streaming domain",
         "placeholder": "Please enter Huawei Cloud Live streaming domain name"
+      },
+      "huaweicloud_vod_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud VOD region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+      },
+      "huaweicloud_vod_domain": {
+        "label": "Huawei Cloud VOD domain",
+        "placeholder": "Please enter Huawei Cloud VOD domain name"
       },
       "huaweicloud_waf_region": {
         "label": "Huawei Cloud region",

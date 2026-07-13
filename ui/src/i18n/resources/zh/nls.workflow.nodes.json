@@ -1580,6 +1580,11 @@
         "placeholder": "请输入 GoEdge 证书 ID",
         "tooltip": "请登录 GoEdge 控制台查看<br><br>（目前需要在「网站列表 -> 证书管理 -> 证书」页面，并打开浏览器开发者工具抓取网络请求后得到证书 ID）"
       },
+      "huaweicloud_aad_region": {
+        "label": "华为云服务区域",
+        "placeholder": "请输入华为云 DDoS 高防服务区域（例如：cn-north-4）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+      },
       "huaweicloud_aad_instance_id": {
         "label": "华为云 DDoS 高防实例 ID",
         "placeholder": "请输入华为云 DDoS 高防实例 ID",
@@ -1669,6 +1674,15 @@
       "huaweicloud_live_domain": {
         "label": "华为云视频直播流域名",
         "placeholder": "请输入华为云视频直播流域名"
+      },
+      "huaweicloud_vod_region": {
+        "label": "华为云服务区域",
+        "placeholder": "请输入华为云视频点播服务区域（例如：cn-north-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint</a>"
+      },
+      "huaweicloud_vod_domain": {
+        "label": "华为云视频点播加速域名",
+        "placeholder": "请输入华为云视频点播加速域名"
       },
       "huaweicloud_waf_region": {
         "label": "华为云服务区域",

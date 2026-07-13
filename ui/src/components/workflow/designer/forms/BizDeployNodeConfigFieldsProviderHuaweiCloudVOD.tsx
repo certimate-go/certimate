@@ -3,15 +3,13 @@ import { Form, Input, Radio } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import Show from "@/components/Show";
 import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
 const DOMAIN_MATCH_PATTERN_EXACT = "exact" as const;
-const DOMAIN_MATCH_PATTERN_CERTSAN = "certsan" as const;
 
-const BizDeployNodeConfigFieldsProviderHuaweiCloudLive = () => {
+const BizDeployNodeConfigFieldsProviderHuaweiCloudVOD = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -19,21 +17,18 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudLive = () => {
     [parentNamePath]: getSchema({ i18n }),
   });
   const formRule = createSchemaFieldRule(formSchema);
-  const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
-
-  const fieldDomainMatchPattern = Form.useWatch([parentNamePath, "domainMatchPattern"], { form: formInst, preserve: true });
 
   return (
     <>
       <Form.Item
         name={[parentNamePath, "region"]}
         initialValue={initialValues.region}
-        label={t("workflow_node.deploy.form.huaweicloud_live_region.label")}
+        label={t("workflow_node.deploy.form.huaweicloud_vod_region.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_live_region.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_vod_region.tooltip") }}></span>}
       >
-        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_live_region.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_vod_region.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -43,23 +38,21 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudLive = () => {
         rules={[formRule]}
       >
         <Radio.Group
-          options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
+          options={[DOMAIN_MATCH_PATTERN_EXACT].map((s) => ({
             label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
             value: s,
           }))}
         />
       </Form.Item>
 
-      <Show when={fieldDomainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN}>
-        <Form.Item
-          name={[parentNamePath, "domain"]}
-          initialValue={initialValues.domain}
-          label={t("workflow_node.deploy.form.huaweicloud_live_domain.label")}
-          rules={[formRule]}
-        >
-          <Input placeholder={t("workflow_node.deploy.form.huaweicloud_live_domain.placeholder")} />
-        </Form.Item>
-      </Show>
+      <Form.Item
+        name={[parentNamePath, "domain"]}
+        initialValue={initialValues.domain}
+        label={t("workflow_node.deploy.form.huaweicloud_vod_domain.label")}
+        rules={[formRule]}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_vod_domain.placeholder")} />
+      </Form.Item>
     </>
   );
 };
@@ -102,7 +95,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderHuaweiCloudLive, {
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderHuaweiCloudVOD, {
   getInitialValues,
   getSchema,
 });

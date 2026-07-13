@@ -168,6 +168,7 @@
   "huaweicloud_live": "Huawei Cloud - Cloud Live",
   "huaweicloud_obs": "Huawei Cloud - OBS (Object Storage Service)",
   "huaweicloud_scm_upload": "Huawei Cloud - Upload to SCM (SSL Certificate Manager)",
+  "huaweicloud_vod": "Huawei Cloud - VOD (Video on Demand)",
   "huaweicloud_waf": "Huawei Cloud - WAF (Web Application Firewall)",
   "infomaniak": "Infomaniak",
   "ionos": "IONOS",

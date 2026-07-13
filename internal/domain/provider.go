@@ -388,6 +388,7 @@ const (
 	DeploymentProviderTypeHuaweiCloudLive               = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-live")
 	DeploymentProviderTypeHuaweiCloudOBS                = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-obs")
 	DeploymentProviderTypeHuaweiCloudSCM                = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-scm")
+	DeploymentProviderTypeHuaweiCloudVOD                = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-vod")
 	DeploymentProviderTypeHuaweiCloudWAF                = DeploymentProviderType(AccessProviderTypeHuaweiCloud + "-waf")
 	DeploymentProviderTypeJDCloudALB                    = DeploymentProviderType(AccessProviderTypeJDCloud + "-alb")
 	DeploymentProviderTypeJDCloudCDN                    = DeploymentProviderType(AccessProviderTypeJDCloud + "-cdn")

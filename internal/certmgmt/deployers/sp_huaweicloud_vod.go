@@ -5,12 +5,12 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-aad"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweicloud-vod"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
-	Registries.MustRegister(domain.DeploymentProviderTypeHuaweiCloudAAD, func(options *ProviderFactoryOptions) (core.Deployer, error) {
+	Registries.MustRegister(domain.DeploymentProviderTypeHuaweiCloudVOD, func(options *ProviderFactoryOptions) (core.Deployer, error) {
 		credentials := domain.AccessConfigForHuaweiCloud{}
 		if err := xmaps.Populate(options.ProviderAccessConfig, &credentials); err != nil {
 			return nil, fmt.Errorf("failed to populate provider access config: %w", err)
@@ -21,7 +21,6 @@ func init() {
 			SecretAccessKey:     credentials.SecretAccessKey,
 			EnterpriseProjectId: credentials.EnterpriseProjectId,
 			Region:              xmaps.GetString(options.ProviderExtendedConfig, "region"),
-			InstanceId:          xmaps.GetString(options.ProviderExtendedConfig, "instanceId"),
 			DomainMatchPattern:  xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			Domain:              xmaps.GetString(options.ProviderExtendedConfig, "domain"),
 		})

@@ -32,6 +32,8 @@ type DeployerConfig struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 	// 华为云企业项目 ID。
 	EnterpriseProjectId string `json:"enterpriseProjectId,omitempty"`
+	// 华为云区域。
+	Region string `json:"region"`
 	// DDoS 高防实例 ID。
 	InstanceId string `json:"instanceId"`
 	// 域名匹配模式。
@@ -59,7 +61,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.AccessKeyId, config.SecretAccessKey)
+	clients, err := createSDKClients(config.AccessKeyId, config.SecretAccessKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -251,12 +253,14 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 	return nil
 }
 
-func createSDKClients(accessKeyId, secretAccessKey string) (*wSDKClients, error) {
+func createSDKClients(accessKeyId, secretAccessKey, region string) (*wSDKClients, error) {
 	wsdk := &wSDKClients{}
 
-	{
-		region := "cn-north-4" // AAD 服务默认区域：华北北京四
+	if region == "" {
+		region = "cn-north-4" // AAD 服务默认区域：华北北京四
+	}
 
+	{
 		auth, err := global.NewCredentialsBuilder().
 			WithAk(accessKeyId).
 			WithSk(secretAccessKey).
@@ -283,8 +287,6 @@ func createSDKClients(accessKeyId, secretAccessKey string) (*wSDKClients, error)
 	}
 
 	{
-		region := "cn-north-4" // AAD 服务默认区域：华北北京四
-
 		auth, err := global.NewCredentialsBuilder().
 			WithAk(accessKeyId).
 			WithSk(secretAccessKey).

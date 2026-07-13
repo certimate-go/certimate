@@ -168,6 +168,7 @@
   "huaweicloud_live": "华为云 - 视频直播 Live",
   "huaweicloud_obs": "华为云 - 对象储存服务 OBS",
   "huaweicloud_scm_upload": "华为云 - 上传到云证书管理服务 SCM",
+  "huaweicloud_vod": "华为云 - 视频点播 VOD",
   "huaweicloud_waf": "华为云 - Web 应用防火墙 WAF",
   "infomaniak": "Infomaniak",
   "ionos": "IONOS",
