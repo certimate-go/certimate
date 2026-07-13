@@ -107,7 +107,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
 			if rStatus := res.GetStatus(); rStatus == 0 {
-				return resp, fmt.Errorf("sdkerr: status='%d', messages='%s', warnings='%s', errors='%s'", rStatus, strings.Join(res.GetMessages(), ", "), strings.Join(res.GetWarnings(), ", "), strings.Join(res.GetErrors(), ", "))
+				return resp, fmt.Errorf("sdkerr: api error: status='%d', messages='%s', warnings='%s', errors='%s'", rStatus, strings.Join(res.GetMessages(), ", "), strings.Join(res.GetWarnings(), ", "), strings.Join(res.GetErrors(), ", "))
 			}
 		}
 	}

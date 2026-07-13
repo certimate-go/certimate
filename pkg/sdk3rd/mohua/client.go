@@ -115,7 +115,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Respon
 		var errRes *sdkResponseBase
 		if err := json.Unmarshal(resp.Body(), &errRes); err == nil {
 			if rStatus := errRes.GetStatus(); rStatus != 200 {
-				return resp, fmt.Errorf("sdkerr: error='%d', msg='%s'", rStatus, errRes.GetMsg())
+				return resp, fmt.Errorf("sdkerr: api error: error='%d', msg='%s'", rStatus, errRes.GetMsg())
 			}
 		}
 

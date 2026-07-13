@@ -104,7 +104,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		var errRes *sdkResponseBase
 		if err := json.Unmarshal(resp.Body(), &errRes); err == nil {
 			if tcode := errRes.GetCode(); tcode != 0 {
-				return resp, fmt.Errorf("sdkerr: code='%d', msg='%s'", tcode, errRes.GetMsg())
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', msg='%s'", tcode, errRes.GetMsg())
 			}
 		}
 

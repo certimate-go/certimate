@@ -202,7 +202,7 @@ func (c *Client) invokeServerlessWithResult(ctx context.Context, endpoint, clien
 	if err := json.Unmarshal(resp.Body(), &result); err != nil {
 		return fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
 	} else if rSuccess := result.GetSuccess(); !rSuccess {
-		return fmt.Errorf("sdkerr: code='%s', message='%s'", result.GetErrorCode(), result.GetErrorMessage())
+		return fmt.Errorf("sdkerr: api error: code='%s', message='%s'", result.GetErrorCode(), result.GetErrorMessage())
 	}
 
 	return nil

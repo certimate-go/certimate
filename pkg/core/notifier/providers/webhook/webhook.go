@@ -75,7 +75,10 @@ func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	client := resty.New().
 		SetTimeout(30 * time.Second).
 		SetRetryCount(3).
-		SetRetryWaitTime(5 * time.Second)
+		SetRetryWaitTime(5 * time.Second).
+		AddRetryCondition(func(resp *resty.Response, _ error) bool {
+			return resp == nil || resp.StatusCode() >= 500
+		})
 	if config.Timeout > 0 {
 		client.SetTimeout(time.Duration(config.Timeout) * time.Second)
 	}

@@ -73,13 +73,13 @@ func (c *Client) Login(req *LoginRequest) (*LoginResponse, error) {
 		if result.GetErrorCode() > 0 {
 			errcode := result.GetErrorCode()
 			errdesc := getAuthErrorDescription(errcode)
-			return result, fmt.Errorf("sdkerr: code='%d', desc='%s'", errcode, errdesc)
+			return result, fmt.Errorf("sdkerr: api error: code='%d', desc='%s'", errcode, errdesc)
 		}
 		return result, err
 	}
 
 	if result.Data.Sid == "" || result.Data.SynoToken == "" {
-		return result, fmt.Errorf("sdkerr: login succeeded but the sid or synotoken is empty")
+		return result, fmt.Errorf("sdkerr: received empty synotoken")
 	}
 
 	c.synoTokenMtx.Lock()

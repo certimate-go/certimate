@@ -117,7 +117,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 			} else if tdata := tresp.GetData(); tdata == nil {
 				return resp, fmt.Errorf("sdkerr: received empty data")
 			} else if terrcode := tdata.GetErrorCode(); terrcode != 0 {
-				return resp, fmt.Errorf("sdkerr: code='%d', message='%s'", terrcode, tdata.GetMessage())
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', message='%s'", terrcode, tdata.GetMessage())
 			}
 		}
 	}
