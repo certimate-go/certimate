@@ -241,7 +241,7 @@ const SettingsDiagnosticsCrons = ({ className, style }: { className?: string; st
         loading={loading}
         locale={{
           emptyText: (
-            <Empty description={loadError ? unwrapErrMsg(loadError) : t("common.text.nodata")} image={Empty.PRESENTED_IMAGE_SIMPLE}>
+            <Empty description={loadError ? unwrapErrMsg(loadError) : t("common.text.nodata")}>
               {loadError && (
                 <Button ghost icon={<IconReload size="1.25em" />} type="primary" onClick={handleReloadClick}>
                   {t("common.button.reload")}

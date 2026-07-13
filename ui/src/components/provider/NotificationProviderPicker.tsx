@@ -79,7 +79,7 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
           </div>
         </Show>
 
-        <Show when={dataSources.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} image={Empty.PRESENTED_IMAGE_SIMPLE} />}>
+        <Show when={dataSources.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
           <div
             className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
               "gap-4": gap === "large",
