@@ -15,6 +15,7 @@ import (
 	"github.com/go-resty/resty/v2"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 type (
@@ -134,7 +135,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	}
 
 	// 处理 Webhook 请求数据
-	var webhookData interface{}
+	var webhookData any
 	if n.config.WebhookData == "" {
 		webhookData = map[string]string{
 			"subject": subject,
@@ -160,12 +161,13 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	}
 
 	// 替换变量值
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
 
 	// 兼容旧版变量
-	replaceJsonValueRecursively(webhookData, "${SUBJECT}", subject)
-	replaceJsonValueRecursively(webhookData, "${MESSAGE}", message)
+	// TODO: remove in future version
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${SUBJECT}", subject)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${MESSAGE}", message)
 
 	// 生成请求
 	// 其中 GET 请求需转换为查询参数
@@ -196,26 +198,4 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	n.logger.Debug("webhook responded", slog.String("response", resp.String()))
 
 	return &NotifyResult{}, nil
-}
-
-func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {
-	switch v := data.(type) {
-	case map[string]any:
-		for k, val := range v {
-			v[k] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []any:
-		for i, val := range v {
-			v[i] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []string:
-		for i, s := range v {
-			var val interface{} = s
-			var newVal interface{} = replaceJsonValueRecursively(val, oldStr, newStr)
-			v[i] = newVal.(string)
-		}
-	case string:
-		return strings.ReplaceAll(v, oldStr, newStr)
-	}
-	return data
 }

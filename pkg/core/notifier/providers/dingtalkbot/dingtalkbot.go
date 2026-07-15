@@ -10,13 +10,13 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/pkg/core"
+	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 type (
@@ -107,11 +107,13 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 			return nil, fmt.Errorf("failed to unmarshal custom payload: %w", err)
 		}
 
-		replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
-		replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
+		xmaps.DeepReplaceValue(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
+		xmaps.DeepReplaceValue(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
 
-		replaceJsonValueRecursively(webhookData, "${SUBJECT}", subject)
-		replaceJsonValueRecursively(webhookData, "${MESSAGE}", message)
+		// 兼容旧版变量
+		// TODO: remove in future version
+		xmaps.DeepReplaceValue(webhookData, "${SUBJECT}", subject)
+		xmaps.DeepReplaceValue(webhookData, "${MESSAGE}", message)
 	}
 
 	// REF: https://open.dingtalk.com/document/development/custom-robots-send-group-messages
@@ -134,26 +136,4 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	}
 
 	return &NotifyResult{}, nil
-}
-
-func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {
-	switch v := data.(type) {
-	case map[string]any:
-		for k, val := range v {
-			v[k] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []any:
-		for i, val := range v {
-			v[i] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []string:
-		for i, s := range v {
-			var val interface{} = s
-			var newVal interface{} = replaceJsonValueRecursively(val, oldStr, newStr)
-			v[i] = newVal.(string)
-		}
-	case string:
-		return strings.ReplaceAll(v, oldStr, newStr)
-	}
-	return data
 }

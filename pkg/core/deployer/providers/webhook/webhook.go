@@ -17,6 +17,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"
+	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 type (
@@ -148,7 +149,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	// 处理 Webhook 请求数据
-	var webhookData interface{}
+	var webhookData any
 	if d.config.WebhookData == "" {
 		webhookData = map[string]string{
 			"name":    strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"),
@@ -176,21 +177,22 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 替换变量值
 	webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${CERTIMATE_DEPLOYER_COMMONNAME}", url.PathEscape(xcertx509.GetSubjectCommonName(certX509)))
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_COMMONNAME}", xcertx509.GetSubjectCommonName(certX509))
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}", strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"))
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE}", certPEM)
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}", serverCertPEM)
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}", issuerCertPEM)
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_DEPLOYER_PRIVATEKEY}", privkeyPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_DEPLOYER_COMMONNAME}", xcertx509.GetSubjectCommonName(certX509))
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}", strings.Join(xcertx509.GetSubjectAltNames(certX509), ";"))
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE}", certPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}", serverCertPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}", issuerCertPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_DEPLOYER_PRIVATEKEY}", privkeyPEM)
 
 	// 兼容旧版变量
+	// TODO: remove in future version
 	webhookUrl.Path = strings.ReplaceAll(webhookUrl.Path, "${DOMAIN}", url.PathEscape(certX509.Subject.CommonName))
-	replaceJsonValueRecursively(webhookData, "${DOMAIN}", certX509.Subject.CommonName)
-	replaceJsonValueRecursively(webhookData, "${DOMAINS}", strings.Join(certX509.DNSNames, ";"))
-	replaceJsonValueRecursively(webhookData, "${CERTIFICATE}", certPEM)
-	replaceJsonValueRecursively(webhookData, "${SERVER_CERTIFICATE}", serverCertPEM)
-	replaceJsonValueRecursively(webhookData, "${INTERMEDIA_CERTIFICATE}", issuerCertPEM)
-	replaceJsonValueRecursively(webhookData, "${PRIVATE_KEY}", privkeyPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${DOMAIN}", certX509.Subject.CommonName)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${DOMAINS}", strings.Join(certX509.DNSNames, ";"))
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIFICATE}", certPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${SERVER_CERTIFICATE}", serverCertPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${INTERMEDIA_CERTIFICATE}", issuerCertPEM)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${PRIVATE_KEY}", privkeyPEM)
 
 	// 生成请求
 	// 其中 GET 请求需转换为查询参数
@@ -221,20 +223,4 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	d.logger.Debug("webhook responded", slog.Any("response", resp.String()))
 
 	return &DeployResult{}, nil
-}
-
-func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {
-	switch v := data.(type) {
-	case map[string]any:
-		for k, val := range v {
-			v[k] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []any:
-		for i, val := range v {
-			v[i] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case string:
-		return strings.ReplaceAll(v, oldStr, newStr)
-	}
-	return data
 }
