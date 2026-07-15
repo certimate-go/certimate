@@ -2,7 +2,6 @@ package byteplusapig
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-certcenter"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -166,26 +166,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domainIds) == 0 {
 		d.logger.Info("no apig domains to deploy")
 	} else {
 		d.logger.Info("found apig domains to deploy", slog.Any("domainIds", domainIds))
-		var errs []error
 
-		for _, domainId := range domainIds {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domainId, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domainIds, func(ctx context.Context, domainId string, _ int) error {
+			return d.updateDomainCertificate(ctx, domainId, upres.CertId)
+		}); err != nil {
+			return nil, err
 		}
 	}
 

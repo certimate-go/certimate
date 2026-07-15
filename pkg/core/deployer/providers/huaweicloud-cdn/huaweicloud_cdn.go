@@ -2,7 +2,6 @@ package huaweicloudcdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -17,6 +16,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-scm"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -153,28 +153,18 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no cdn domains to deploy")
 	} else {
 		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		const MAX_DOMAIN_PER_REQUEST = 50
-		domainChunks := lo.Chunk(domains, MAX_DOMAIN_PER_REQUEST)
-		for _, domains := range domainChunks {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainsCertificate(ctx, domains, upres.CertId, upres.CertName); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		const MAX_DOMAINS_PER_REQUEST = 50
+		domainChunks := lo.Chunk(domains, MAX_DOMAINS_PER_REQUEST)
+		if err := xloop.ForRangeAllWithContext(ctx, domainChunks, func(ctx context.Context, domains []string, _ int) error {
+			return d.updateDomainsCertificate(ctx, domains, upres.CertId, upres.CertName)
+		}); err != nil {
+			return nil, err
 		}
 	}
 

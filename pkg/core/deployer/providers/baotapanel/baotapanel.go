@@ -12,6 +12,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	btpanelsdk "github.com/certimate-go/certimate/pkg/sdk3rd/btpanel"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -93,22 +94,17 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				}
 			}
 
-			// 遍历更新站点证书
-			var errs []error
-			for i, siteName := range d.config.SiteNames {
-				select {
-				case <-ctx.Done():
-					return nil, ctx.Err()
-				default:
-					if err := d.updateSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM); err != nil {
-						errs = append(errs, err)
-					} else if i < len(d.config.SiteNames)-1 {
-						xwait.DelayWithContext(ctx, 5*time.Second)
+			// 批量更新站点证书
+			if err := xloop.ForRangeAllWithContext(ctx, d.config.SiteNames, func(ctx context.Context, siteName string, i int) error {
+				if i > 0 {
+					if err := xwait.DelayWithContext(ctx, 3*time.Second); err != nil {
+						return err
 					}
 				}
-			}
-			if len(errs) > 0 {
-				return nil, errors.Join(errs...)
+
+				return d.updateSiteCertificate(ctx, d.config.SiteType, siteName, certPEM, privkeyPEM)
+			}); err != nil {
+				return nil, err
 			}
 		}
 	}

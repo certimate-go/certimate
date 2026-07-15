@@ -2,7 +2,6 @@ package qingcloudlb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/qingcloud-lb"
 	qclbsdk "github.com/certimate-go/certimate/pkg/sdk3rd/qingcloud/lb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -154,26 +154,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, certPEM, privkeyPEM
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// 遍历更新监听器证书
+	// 批量更新监听器证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no lb listeners to deploy")
 	} else {
 		d.logger.Info("found lb listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, upres.CertId)
+		}); err != nil {
+			return err
 		}
 	}
 

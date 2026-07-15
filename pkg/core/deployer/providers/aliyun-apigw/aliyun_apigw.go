@@ -2,7 +2,6 @@ package aliyunapigw
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -19,6 +18,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
 )
 
@@ -181,26 +181,16 @@ func (d *Deployer) deployToTraditional(ctx context.Context, certPEM, privkeyPEM 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no apigw domains to deploy")
 	} else {
 		d.logger.Info("found apigw domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateTraditionalDomainCertificate(ctx, d.config.GroupId, domain, certPEM, privkeyPEM); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateTraditionalDomainCertificate(ctx, d.config.GroupId, domain, certPEM, privkeyPEM)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -274,27 +264,17 @@ func (d *Deployer) deployToCloudNative(ctx context.Context, certPEM, privkeyPEM 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no apigw domains to deploy")
 	} else {
 		d.logger.Info("found apigw domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				certId := upres.ExtendedData["CertIdentifier"].(string)
-				if err := d.updateCloudNativeDomainCertificate(ctx, d.config.GatewayId, domain, certId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			certId := upres.ExtendedData["CertIdWithRegion"].(string)
+			return d.updateCloudNativeDomainCertificate(ctx, d.config.GatewayId, domain, certId)
+		}); err != nil {
+			return err
 		}
 	}
 

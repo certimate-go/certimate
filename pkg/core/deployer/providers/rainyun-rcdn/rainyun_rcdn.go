@@ -90,9 +90,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// RCDN SSL 绑定域名
 	// REF: https://api.rainyun.com/#/paths/product-rcdn-instance-:id-ssl_bind/post
-	certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+	certIdAsInt, _ := strconv.ParseInt(upres.CertId, 10, 64)
 	rcdnInstanceSslBindReq := &rainyunsdk.RcdnInstanceSslBindRequest{
-		CertId:  certId,
+		CertId:  certIdAsInt,
 		Domains: []string{d.config.Domain},
 	}
 	rcdnInstanceSslBindResp, err := d.sdkClient.RcdnInstanceSslBindWithContext(ctx, d.config.InstanceId, rcdnInstanceSslBindReq)

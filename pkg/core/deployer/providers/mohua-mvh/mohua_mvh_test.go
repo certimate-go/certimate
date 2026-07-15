@@ -13,8 +13,8 @@ var (
 	fTestKeyPath  string
 	fUsername     string
 	fApiPassword  string
-	fHostID       string
-	fDomainID     string
+	fHostId       string
+	fDomainId     int64
 )
 
 func init() {
@@ -22,8 +22,8 @@ func init() {
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fUsername, "USERNAME")
 	fp.DefineString(&fApiPassword, "APIPASSWORD")
-	fp.DefineString(&fHostID, "HOSTID")
-	fp.DefineString(&fDomainID, "DOMAINID")
+	fp.DefineString(&fHostId, "HOSTID")
+	fp.DefineInt64(&fDomainId, "DOMAINID")
 }
 
 /*
@@ -44,8 +44,8 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			Username:    fUsername,
 			ApiPassword: fApiPassword,
-			HostId:      fHostID,
-			DomainId:    fDomainID,
+			HostId:      fHostId,
+			DomainId:    fDomainId,
 		})
 		if err != nil {
 			t.Errorf("err: %+v", err)

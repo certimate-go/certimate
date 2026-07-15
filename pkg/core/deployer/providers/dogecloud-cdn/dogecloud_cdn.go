@@ -2,7 +2,6 @@ package dogecloudcdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -13,6 +12,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/dogecloud"
 	dogecloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/dogecloud"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -117,27 +117,17 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no cdn domains to deploy")
 	} else {
 		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
-				if err := d.updateDomainCertificate(ctx, domain, certId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+			return d.updateDomainCertificate(ctx, domain, certId)
+		}); err != nil {
+			return nil, err
 		}
 	}
 

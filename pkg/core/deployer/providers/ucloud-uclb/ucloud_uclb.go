@@ -2,7 +2,6 @@ package uclouduclb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"sync"
@@ -15,6 +14,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
 	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -166,26 +166,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		describeVServerOffset += describeVServerLimit
 	}
 
-	// 遍历更新 VServer 证书
+	// 批量更新 VServer 证书
 	if len(vserverIds) == 0 {
 		d.logger.Info("no clb vservers to deploy")
 	} else {
 		d.logger.Info("found clb vservers to deploy", slog.Any("vserverIds", vserverIds))
-		var errs []error
 
-		for _, vserverId := range vserverIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateVServerCertificate(ctx, d.config.LoadbalancerId, vserverId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, vserverIds, func(ctx context.Context, vserverId string, _ int) error {
+			return d.updateVServerCertificate(ctx, d.config.LoadbalancerId, vserverId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 

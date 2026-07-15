@@ -2,7 +2,6 @@ package ctcccloudelb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-elb"
 	ctyunelb "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/elb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -136,26 +136,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		}
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no elb listeners to deploy")
 	} else {
 		d.logger.Info("found elb listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 

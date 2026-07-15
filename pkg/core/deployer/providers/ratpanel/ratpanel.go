@@ -3,13 +3,15 @@ package ratpanel
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	ratpanelsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ratpanel"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
+	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
 type (
@@ -94,20 +96,17 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 		return fmt.Errorf("config `siteNames` is required")
 	}
 
-	// 遍历更新站点证书
-	var errs []error
-	for _, siteName := range d.config.SiteNames {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-			if err := d.updateSiteCertificate(ctx, siteName, certPEM, privkeyPEM); err != nil {
-				errs = append(errs, err)
+	// 批量更新站点证书
+	if err := xloop.ForRangeAllWithContext(ctx, d.config.SiteNames, func(ctx context.Context, siteName string, i int) error {
+		if i > 0 {
+			if err := xwait.DelayWithContext(ctx, 3*time.Second); err != nil {
+				return err
 			}
 		}
-	}
-	if len(errs) > 0 {
-		return errors.Join(errs...)
+
+		return d.updateSiteCertificate(ctx, siteName, certPEM, privkeyPEM)
+	}); err != nil {
+		return err
 	}
 
 	return nil

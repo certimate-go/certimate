@@ -3,7 +3,6 @@ package nginxproxymanager
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -15,6 +14,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/nginxproxymanager"
 	npmsdk "github.com/certimate-go/certimate/pkg/sdk3rd/nginxproxymanager"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -179,41 +179,36 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 		return fmt.Errorf("unsupported host match pattern: '%s'", d.config.HostMatchPattern)
 	}
 
-	// 遍历更新主机证书
+	// 批量更新主机证书
 	if len(hostIds) == 0 {
 		d.logger.Info("no hosts to deploy")
 	} else {
 		d.logger.Info("found hosts to deploy", slog.Any("hostIds", hostIds))
 
 		// 跳过已部署过的主机
-		certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
 		hostIds = lo.Filter(hostIds, func(hostId int64, _ int) bool {
 			hostInfo, _ := lo.Find(hostsByType, func(hostItem *npmsdk.Host) bool {
 				return hostId == hostItem.Id
 			})
 			if hostInfo != nil {
+				certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
 				return hostInfo.CertificateId != certId
 			}
 
 			return true
 		})
 
-		var errs []error
-		for i, hostId := range hostIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateHostCertificate(ctx, d.config.HostType, hostId, certId); err != nil {
-					errs = append(errs, err)
-				} else if i < len(hostIds)-1 {
-					xwait.DelayWithContext(ctx, 5*time.Second)
+		if err := xloop.ForRangeAllWithContext(ctx, hostIds, func(ctx context.Context, hostId int64, i int) error {
+			if i > 0 {
+				if err := xwait.DelayWithContext(ctx, 3*time.Second); err != nil {
+					return err
 				}
 			}
-		}
 
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+			certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+			return d.updateHostCertificate(ctx, d.config.HostType, hostId, certId)
+		}); err != nil {
+			return err
 		}
 	}
 

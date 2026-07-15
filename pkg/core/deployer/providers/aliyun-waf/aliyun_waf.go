@@ -130,13 +130,13 @@ func (d *Deployer) deployToWAF3(ctx context.Context, certPEM, privkeyPEM string)
 	// 根据接入方式决定部署方式
 	switch d.config.ServiceType {
 	case SERVICE_TYPE_CLOUDRESOURCE:
-		certId := upres.ExtendedData["CertIdentifier"].(string)
+		certId := upres.ExtendedData["CertIdWithRegion"].(string)
 		if err := d.deployToWAF3WithCloudResource(ctx, certId); err != nil {
 			return err
 		}
 
 	case SERVICE_TYPE_CNAME:
-		certId := upres.ExtendedData["CertIdentifier"].(string)
+		certId := upres.ExtendedData["CertIdWithRegion"].(string)
 		if err := d.deployToWAF3WithCNAME(ctx, certId); err != nil {
 			return err
 		}

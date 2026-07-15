@@ -16,7 +16,7 @@ func Delay(wait time.Duration) error {
 	return DelayWithContext(context.Background(), wait)
 }
 
-// 等待一段时间，或上下文被取消。
+// 等待一段时间，支持传入 context.Context 上下文。
 //
 // 入参：
 //   - ctx: 上下文。

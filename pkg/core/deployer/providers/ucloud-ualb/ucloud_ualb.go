@@ -2,7 +2,6 @@ package ucloudualb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -15,6 +14,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
 	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -159,26 +159,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		describeListenersOffset += describeListenersLimit
 	}
 
-	// 遍历更新 Listener 证书
+	// 批量更新 Listener 证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no alb listeners to deploy")
 	} else {
 		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 

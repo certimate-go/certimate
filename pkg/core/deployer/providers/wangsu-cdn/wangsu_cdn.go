@@ -105,9 +105,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 批量修改域名证书配置
 	// REF: https://www.wangsu.com/document/api-doc/37447
-	certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+	certIdAsInt, _ := strconv.ParseInt(upres.CertId, 10, 64)
 	batchUpdateCertificateConfigReq := &wangsucdn.BatchUpdateCertificateConfigRequest{
-		CertificateId: certId,
+		CertificateId: certIdAsInt,
 		DomainNames:   domains,
 	}
 	batchUpdateCertificateConfigResp, err := d.sdkClient.BatchUpdateCertificateConfigWithContext(ctx, batchUpdateCertificateConfigReq)

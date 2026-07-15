@@ -2,7 +2,6 @@ package aliyunclb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -14,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-slb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -174,26 +174,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		describeLoadBalancerListenersToken = describeLoadBalancerListenersResp.Body.NextToken
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listenerPorts) == 0 {
 		d.logger.Info("no clb listeners to deploy")
 	} else {
 		d.logger.Info("found clb listeners to deploy", slog.Any("listenerPorts", listenerPorts))
-		var errs []error
 
-		for _, listenerPort := range listenerPorts {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listenerPort, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerPorts, func(ctx context.Context, listenerPort int32, _ int) error {
+			return d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listenerPort, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -274,36 +264,37 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadba
 		return fmt.Errorf("failed to execute sdk request 'slb.DescribeDomainExtensions': %w", err)
 	}
 
-	// 遍历修改扩展域名证书
+	// 修改扩展域名证书
 	// REF: https://help.aliyun.com/zh/slb/classic-load-balancer/developer-reference/api-slb-2014-05-15-setdomainextensionattribute
 	if describeDomainExtensionsResp.Body.DomainExtensions != nil && describeDomainExtensionsResp.Body.DomainExtensions.DomainExtension != nil {
-		var errs []error
-
+		domainExtensionIds := make([]string, 0)
 		for _, domainExtension := range describeDomainExtensionsResp.Body.DomainExtensions.DomainExtension {
 			if tea.StringValue(domainExtension.Domain) != d.config.Domain {
 				continue
 			}
 
 			if tea.StringValue(domainExtension.ServerCertificateId) == cloudCertId {
-				d.logger.Info("no need to deploy clb listener sni certificate")
 				continue
 			}
 
+			domainExtensionIds = append(domainExtensionIds, tea.StringValue(domainExtension.DomainExtensionId))
+		}
+
+		if err := xloop.ForRangeAllWithContext(ctx, domainExtensionIds, func(ctx context.Context, domainExtensionId string, _ int) error {
 			setDomainExtensionAttributeReq := &alislb.SetDomainExtensionAttributeRequest{
 				RegionId:            tea.String(d.config.Region),
-				DomainExtensionId:   domainExtension.DomainExtensionId,
+				DomainExtensionId:   tea.String(domainExtensionId),
 				ServerCertificateId: tea.String(cloudCertId),
 			}
 			setDomainExtensionAttributeResp, err := d.sdkClient.SetDomainExtensionAttributeWithContext(ctx, setDomainExtensionAttributeReq, &dara.RuntimeOptions{})
 			d.logger.Debug("sdk request 'slb.SetDomainExtensionAttribute'", slog.Any("request", setDomainExtensionAttributeReq), slog.Any("response", setDomainExtensionAttributeResp))
 			if err != nil {
-				errs = append(errs, fmt.Errorf("failed to execute sdk request 'slb.SetDomainExtensionAttribute': %w", err))
-				continue
+				return fmt.Errorf("failed to execute sdk request 'slb.SetDomainExtensionAttribute': %w", err)
 			}
-		}
 
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+			return nil
+		}); err != nil {
+			return err
 		}
 	}
 

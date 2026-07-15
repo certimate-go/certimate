@@ -110,7 +110,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书序列号
-			// 注意阿里云 CAS 会在序列号前补零，需去除后再比较
+			// 注意，阿里云 CAS 会在序列号前补零，需去除后再比较
 			oldCertSN := strings.TrimPrefix(tea.StringValue(certItem.SerialNo), "0")
 			newCertSN := strings.TrimPrefix(certX509.SerialNumber.Text(16), "0")
 			if !strings.EqualFold(newCertSN, oldCertSN) {
@@ -144,8 +144,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				CertId:   fmt.Sprintf("%d", tea.Int64Value(certItem.CertificateId)),
 				CertName: tea.StringValue(certItem.Name),
 				ExtendedData: map[string]any{
-					"InstanceId":     tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
-					"CertIdentifier": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
+					"InstanceId":       tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
+					"CertIdWithRegion": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
 				},
 			}, nil
 		}
@@ -190,8 +190,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		CertId:   fmt.Sprintf("%d", tea.Int64Value(getUserCertificateDetailResp.Body.Id)),
 		CertName: certName,
 		ExtendedData: map[string]any{
-			"InstanceId":     tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
-			"CertIdentifier": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
+			"InstanceId":       tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
+			"CertIdWithRegion": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
 		},
 	}, nil
 }

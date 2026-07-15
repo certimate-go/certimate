@@ -3,7 +3,6 @@ package tencentcloudeo
 import (
 	"context"
 	"crypto/x509"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -20,6 +19,7 @@ import (
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
 )
 
@@ -189,8 +189,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 		// 配置域名证书
 		// REF: https://cloud.tencent.com/document/api/1552/80764
-		modifyHostsCertificateReqs := make([]*tceo.ModifyHostsCertificateRequest, 0)
-
+		requests := make([]*tceo.ModifyHostsCertificateRequest, 0)
 		if d.config.EnableMultipleSSL {
 			const algRSA = "RSA"
 			const algECC = "ECC"
@@ -238,7 +237,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 					}
 				}
 
-				modifyHostsCertificateReqs = append(modifyHostsCertificateReqs, modifyHostsCertificateReq)
+				requests = append(requests, modifyHostsCertificateReq)
 			}
 		} else {
 			modifyHostsCertificateReq := tceo.NewModifyHostsCertificateRequest()
@@ -247,25 +246,19 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			modifyHostsCertificateReq.Hosts = common.StringPtrs(domains)
 			modifyHostsCertificateReq.ServerCertInfo = []*tceo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
 
-			modifyHostsCertificateReqs = append(modifyHostsCertificateReqs, modifyHostsCertificateReq)
+			requests = append(requests, modifyHostsCertificateReq)
 		}
 
-		var errs []error
-		for _, modifyHostsCertificateReq := range modifyHostsCertificateReqs {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				modifyHostsCertificateResp, err := d.sdkClient.ModifyHostsCertificateWithContext(ctx, modifyHostsCertificateReq)
-				d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'", slog.Any("request", modifyHostsCertificateReq), slog.Any("response", modifyHostsCertificateResp))
-				if err != nil {
-					err = fmt.Errorf("failed to execute sdk request 'teo.ModifyHostsCertificate': %w", err)
-					errs = append(errs, err)
-				}
+		if err := xloop.ForRangeAllWithContext(ctx, requests, func(ctx context.Context, modifyHostsCertificateReq *tceo.ModifyHostsCertificateRequest, _ int) error {
+			modifyHostsCertificateResp, err := d.sdkClient.ModifyHostsCertificateWithContext(ctx, modifyHostsCertificateReq)
+			d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'", slog.Any("request", modifyHostsCertificateReq), slog.Any("response", modifyHostsCertificateResp))
+			if err != nil {
+				return fmt.Errorf("failed to execute sdk request 'teo.ModifyHostsCertificate': %w", err)
 			}
-		}
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+
+			return nil
+		}); err != nil {
+			return nil, err
 		}
 	}
 

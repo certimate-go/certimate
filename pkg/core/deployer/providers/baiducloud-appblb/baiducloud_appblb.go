@@ -2,7 +2,6 @@ package baiducloudappblb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/baiducloud-cert"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -128,10 +128,11 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 	}
 
 	// 获取全部 HTTPS/SSL 监听端口
-	listeners := make([]struct {
+	type listenerEntry struct {
 		Type string
 		Port int32
-	}, 0)
+	}
+	listeners := make([]listenerEntry, 0)
 	for _, listener := range describeLoadBalancerDetailResp.Listener {
 		if listener.Type == "HTTPS" || listener.Type == "SSL" {
 			listenerPort, err := strconv.Atoi(listener.Port)
@@ -139,37 +140,23 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 				continue
 			}
 
-			listeners = append(listeners, struct {
-				Type string
-				Port int32
-			}{
+			listeners = append(listeners, listenerEntry{
 				Type: listener.Type,
 				Port: int32(listenerPort),
 			})
 		}
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listeners) == 0 {
 		d.logger.Info("no appblb listeners to deploy")
 	} else {
 		d.logger.Info("found appblb listeners to deploy", slog.Any("listeners", listeners))
-		var errs []error
 
-		for _, listener := range listeners {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-
-			default:
-				if err := d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listener.Type, listener.Port, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listeners, func(ctx context.Context, listener listenerEntry, _ int) error {
+			return d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listener.Type, listener.Port, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -196,44 +183,25 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 	}
 
 	// 获取全部 HTTPS/SSL 监听端口
-	listeners := make([]struct {
+	type listenerEntry struct {
 		Type string
 		Port int32
-	}, 0)
+	}
+	listeners := make([]listenerEntry, 0)
 	for _, listener := range describeAppAllListenersResp.ListenerList {
 		if listener.ListenerType == "HTTPS" || listener.ListenerType == "SSL" {
-			listeners = append(listeners, struct {
-				Type string
-				Port int32
-			}{
+			listeners = append(listeners, listenerEntry{
 				Type: listener.ListenerType,
 				Port: int32(listener.ListenerPort),
 			})
 		}
 	}
 
-	// 遍历更新监听证书
-	if len(listeners) == 0 {
-		d.logger.Info("no blb listeners to deploy")
-	} else {
-		d.logger.Info("found appblb listeners to deploy", slog.Any("listeners", listeners))
-		var errs []error
-
-		for _, listener := range listeners {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-
-			default:
-				if err := d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listener.Type, listener.Port, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
-		}
+	// 更新监听证书
+	if err := xloop.ForRangeAllWithContext(ctx, listeners, func(ctx context.Context, listener listenerEntry, _ int) error {
+		return d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listener.Type, listener.Port, cloudCertId)
+	}); err != nil {
+		return err
 	}
 
 	return nil

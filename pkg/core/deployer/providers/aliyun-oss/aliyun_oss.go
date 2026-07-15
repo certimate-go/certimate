@@ -103,7 +103,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		Cname: &osssdk.PutCnameRequestCname{
 			Domain: tea.String(d.config.Domain),
 			CertificateConfiguration: &osssdk.PutCnameRequestCnameCertificateConfiguration{
-				CertId:      tea.String(upres.ExtendedData["CertIdentifier"].(string)),
+				CertId:      tea.String(upres.ExtendedData["CertIdWithRegion"].(string)),
 				Certificate: tea.String(certPEM),
 				PrivateKey:  tea.String(privkeyPEM),
 				Force:       tea.Bool(true),

@@ -2,7 +2,6 @@ package aliyundcdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -18,6 +17,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
 )
 
@@ -153,34 +153,21 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no dcdn domains to deploy")
 	} else {
 		d.logger.Info("found dcdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		certIdentifier := upres.ExtendedData["CertIdentifier"].(string)
+		certIdentifier := upres.ExtendedData["CertIdWithRegion"].(string)
 		certIdentifierSeps := strings.SplitN(certIdentifier, "-", 2)
-		if len(certIdentifierSeps) != 2 {
-			return nil, fmt.Errorf("received invalid certificate identifier: '%s'", certIdentifier)
-		}
-
 		certId, _ := strconv.ParseInt(certIdentifierSeps[0], 10, 64)
 		certRegion := certIdentifierSeps[1]
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, certId, certRegion); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
 
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, certId, certRegion)
+		}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -236,14 +223,14 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64, certRegion string) error {
+func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId int64, cloudCertRegion string) error {
 	// 配置域名证书
 	// REF: https://help.aliyun.com/zh/edge-security-acceleration/dcdn/developer-reference/api-dcdn-2018-01-15-setdcdndomainsslcertificate
 	setDcdnDomainSSLCertificateReq := &alidcdn.SetDcdnDomainSSLCertificateRequest{
 		DomainName:  tea.String(domain),
 		CertType:    tea.String("cas"),
 		CertId:      tea.Int64(cloudCertId),
-		CertRegion:  tea.String(certRegion),
+		CertRegion:  tea.String(cloudCertRegion),
 		SSLProtocol: tea.String("on"),
 	}
 	setDcdnDomainSSLCertificateResp, err := d.sdkClient.SetDcdnDomainSSLCertificateWithContext(ctx, setDcdnDomainSSLCertificateReq, &dara.RuntimeOptions{})

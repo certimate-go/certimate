@@ -2,7 +2,6 @@ package aliyunfc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -18,6 +17,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -156,26 +156,16 @@ func (d *Deployer) deployToFC3(ctx context.Context, certPEM, privkeyPEM string) 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no fc domains to deploy")
 	} else {
 		d.logger.Info("found fc domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateFC3DomainCertificate(ctx, domain, certPEM, privkeyPEM); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateFC3DomainCertificate(ctx, domain, certPEM, privkeyPEM)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -237,26 +227,16 @@ func (d *Deployer) deployToFC2(ctx context.Context, certPEM, privkeyPEM string) 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no fc domains to deploy")
 	} else {
 		d.logger.Info("found fc domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateFC2DomainCertificate(ctx, domain, certPEM, privkeyPEM); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateFC2DomainCertificate(ctx, domain, certPEM, privkeyPEM)
+		}); err != nil {
+			return err
 		}
 	}
 

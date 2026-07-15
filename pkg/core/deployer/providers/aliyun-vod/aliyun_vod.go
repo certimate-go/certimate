@@ -2,7 +2,6 @@ package aliyunvod
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -18,6 +17,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
 )
 
@@ -152,35 +152,22 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no vod domains to deploy")
 	} else {
 		d.logger.Info("found vod domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		certIdentifier := upres.ExtendedData["CertIdentifier"].(string)
+		certIdentifier := upres.ExtendedData["CertIdWithRegion"].(string)
 		certIdentifierSeps := strings.SplitN(certIdentifier, "-", 2)
-		if len(certIdentifierSeps) != 2 {
-			return nil, fmt.Errorf("received invalid certificate identifier: '%s'", certIdentifier)
-		}
-
 		certId, _ := strconv.ParseInt(certIdentifierSeps[0], 10, 64)
 		certName := upres.CertName
 		certRegion := certIdentifierSeps[1]
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, certId, certName, certRegion); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
 
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, certId, certName, certRegion)
+		}); err != nil {
+			return nil, err
 		}
 	}
 

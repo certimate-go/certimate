@@ -2,7 +2,6 @@ package aliyunga
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -16,6 +15,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -101,12 +101,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// 根据部署目标决定业务流程
 	switch d.config.DeployTarget {
 	case DEPLOY_TARGET_ACCELERATOR:
-		if err := d.deployToAccelerator(ctx, upres.ExtendedData["CertIdentifier"].(string)); err != nil {
+		if err := d.deployToAccelerator(ctx, upres.ExtendedData["CertIdWithRegion"].(string)); err != nil {
 			return nil, err
 		}
 
 	case DEPLOY_TARGET_LISTENER:
-		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdentifier"].(string)); err != nil {
+		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdWithRegion"].(string)); err != nil {
 			return nil, err
 		}
 
@@ -163,26 +163,16 @@ func (d *Deployer) deployToAccelerator(ctx context.Context, cloudCertId string) 
 		listListenersPageNumber++
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no ga listeners to deploy")
 	} else {
-		var errs []error
 		d.logger.Info("found ga listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, d.config.AcceleratorId, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, d.config.AcceleratorId, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 

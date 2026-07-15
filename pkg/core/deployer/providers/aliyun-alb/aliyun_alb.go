@@ -2,7 +2,6 @@ package aliyunalb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -20,6 +19,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
@@ -121,12 +121,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// 根据部署目标决定业务流程
 	switch d.config.DeployTarget {
 	case DEPLOY_TARGET_LOADBALANCER:
-		if err := d.deployToLoadbalancer(ctx, upres.ExtendedData["CertIdentifier"].(string), certX509.DNSNames); err != nil {
+		if err := d.deployToLoadbalancer(ctx, upres.ExtendedData["CertIdWithRegion"].(string), certX509.DNSNames); err != nil {
 			return nil, err
 		}
 
 	case DEPLOY_TARGET_LISTENER:
-		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdentifier"].(string), certX509.DNSNames); err != nil {
+		if err := d.deployToListener(ctx, upres.ExtendedData["CertIdWithRegion"].(string), certX509.DNSNames); err != nil {
 			return nil, err
 		}
 
@@ -228,26 +228,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string,
 		listListenersToken = listListenersResp.Body.NextToken
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no alb listeners to deploy")
 	} else {
-		var errs []error
 		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId, cloudCertSANs); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, cloudCertId, cloudCertSANs)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -357,54 +347,56 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 	certificateIdsToDissociate := make([]string, 0)
 	if len(listenerExtCertificates) > 0 {
 		d.logger.Info("found alb listener certificates in used", slog.Any("certificates", listenerExtCertificates))
-		var errs []error
 
+		certIdWithRegions := make([]string, 0)
 		for _, listenerCertificate := range listenerExtCertificates {
 			certIdWithRegion := tea.StringValue(listenerCertificate.CertificateId)
 			if certIdWithRegion == cloudCertId {
 				certificateIsAlreadyAssociated = true
-				break
-			}
-
-			certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
-			certIdBareAsInt64, err := strconv.ParseInt(certIdBare, 10, 64)
-			if err != nil {
-				errs = append(errs, err)
 				continue
 			}
 
+			certIdWithRegions = append(certIdWithRegions, certIdWithRegion)
+		}
+
+		if err := xloop.ForRangeAllWithContext(ctx, certIdWithRegions, func(ctx context.Context, certIdWithRegion string, _ int) error {
+			certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
+			certIdBareAsInt, err := strconv.ParseInt(certIdBare, 10, 64)
+			if err != nil {
+				return err
+			}
+
 			getCertificateDetailReq := &alicas.GetCertificateDetailRequest{
-				CertificateId: tea.Int64(certIdBareAsInt64),
+				CertificateId: tea.Int64(certIdBareAsInt),
 			}
 			getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
 			d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
 			if err != nil {
 				if sdkErr, ok := err.(*tea.SDKError); ok {
 					if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
-						continue
+						return nil
 					}
 				}
 
-				errs = append(errs, fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err))
-				continue
+				return fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err)
 			} else {
 				// 注意，虽然文档中存在 SubjectAlternativeNames 字段，但实际返回的数据结构中不包含
 				certSANMatched := lo.ElementsMatch(strings.Split(tea.StringValue(getCertificateDetailResp.Body.Domain), ","), cloudCertSANs)
 				if certSANMatched && lo.Contains(cloudCertSANs, d.config.Domain) { // 同域名证书需要删除
 					certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
-					continue
+					return nil
 				}
 
 				certNotAfter := time.Unix(tea.Int64Value(getCertificateDetailResp.Body.NotAfter)/1000, 0)
 				if !certNotAfter.IsZero() && certNotAfter.Before(time.Now()) { // 过期证书需要删除。TODO: remove on v0.5
 					certificateIdsToDissociate = append(certificateIdsToDissociate, certIdWithRegion)
-					continue
+					return nil
 				}
 			}
-		}
 
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+			return nil
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -438,31 +430,30 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 	if len(certificateIdsToDissociate) > 0 {
 		d.logger.Info("found alb listener certificates to dissociate", slog.Any("certificateIds", certificateIdsToDissociate))
 
-		const MAX_CERT_PER_REQUEST = 10
-		certIdChunks := lo.Chunk(certificateIdsToDissociate, MAX_CERT_PER_REQUEST)
-		for _, certIds := range certIdChunks {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
-					return err
-				}
-
-				dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
-					ListenerId: tea.String(cloudListenerId),
-					Certificates: lo.Map(certIds, func(certId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {
-						return &alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates{
-							CertificateId: tea.String(certId),
-						}
-					}),
-				}
-				dissociateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.DissociateAdditionalCertificatesFromListenerWithContext(ctx, dissociateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
-				d.logger.Debug("sdk request 'alb.DissociateAdditionalCertificatesFromListener'", slog.Any("request", dissociateAdditionalCertificatesFromListenerReq), slog.Any("response", dissociateAdditionalCertificatesFromListenerResp))
-				if err != nil {
-					return fmt.Errorf("failed to execute sdk request 'alb.DissociateAdditionalCertificatesFromListener': %w", err)
-				}
+		const MAX_CERTS_PER_REQUEST = 10
+		certIdChunks := lo.Chunk(certificateIdsToDissociate, MAX_CERTS_PER_REQUEST)
+		if err := xloop.ForRangeAllWithContext(ctx, certIdChunks, func(ctx context.Context, certIds []string, _ int) error {
+			if err := d.waitForListenerReady(ctx, cloudListenerId); err != nil {
+				return err
 			}
+
+			dissociateAdditionalCertificatesFromListenerReq := &alialb.DissociateAdditionalCertificatesFromListenerRequest{
+				ListenerId: tea.String(cloudListenerId),
+				Certificates: lo.Map(certIds, func(certId string, _ int) *alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates {
+					return &alialb.DissociateAdditionalCertificatesFromListenerRequestCertificates{
+						CertificateId: tea.String(certId),
+					}
+				}),
+			}
+			dissociateAdditionalCertificatesFromListenerResp, err := d.sdkClients.ALB.DissociateAdditionalCertificatesFromListenerWithContext(ctx, dissociateAdditionalCertificatesFromListenerReq, &dara.RuntimeOptions{})
+			d.logger.Debug("sdk request 'alb.DissociateAdditionalCertificatesFromListener'", slog.Any("request", dissociateAdditionalCertificatesFromListenerReq), slog.Any("response", dissociateAdditionalCertificatesFromListenerResp))
+			if err != nil {
+				return fmt.Errorf("failed to execute sdk request 'alb.DissociateAdditionalCertificatesFromListener': %w", err)
+			}
+
+			return nil
+		}); err != nil {
+			return err
 		}
 	}
 

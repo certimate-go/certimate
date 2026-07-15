@@ -20,7 +20,7 @@ func ForRange[T any](collection []T, iter func(item T, index int) error) error {
 	return ForRangeWithContext(context.Background(), collection, iterWithContext)
 }
 
-// 遍历集合并执行迭代函数，或上下文被取消。
+// 遍历集合并执行迭代函数，支持传入 context.Context 上下文。
 //
 // 入参：
 //   - ctx: 上下文。
@@ -37,7 +37,7 @@ func ForRangeWithContext[T any](ctx context.Context, collection []T, iter func(c
 
 		default:
 			if err := iter(ctx, item, i); err != nil {
-				return nil
+				return err
 			}
 		}
 	}
