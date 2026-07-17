@@ -209,6 +209,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 			return !deployed
 		})
+		if len(domains) == 0 {
+			d.logger.Info("no need to deploy edgeone custom domain certificate")
+			return &DeployResult{}, nil
+		}
 
 		// 配置域名证书
 		// REF: https://cloud.tencent.com/document/api/1552/80764
