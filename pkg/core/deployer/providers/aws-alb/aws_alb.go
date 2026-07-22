@@ -6,14 +6,12 @@ import (
 	"log/slog"
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
 	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2/types"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
 	cmgrimpliam "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-iam"
+	awselbsdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/elasticloadbalancingv2"
 )
 
 type (
@@ -42,7 +40,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *elasticloadbalancingv2.Client
+	sdkClient  *awselbsdk.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -121,10 +119,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 查询负载均衡器
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeLoadBalancers.html
-	describeLoadBalancersReq := &elasticloadbalancingv2.DescribeLoadBalancersInput{
+	describeLoadBalancersReq := &awselbsdk.DescribeLoadBalancersRequest{
 		LoadBalancerArns: []string{d.config.LoadbalancerArn},
 	}
-	describeLoadBalancersResp, err := d.sdkClient.DescribeLoadBalancers(ctx, describeLoadBalancersReq)
+	describeLoadBalancersResp, err := d.sdkClient.DescribeLoadBalancersWithContext(ctx, describeLoadBalancersReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.DescribeLoadBalancers'", slog.Any("request", describeLoadBalancersReq), slog.Any("response", describeLoadBalancersResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.DescribeLoadBalancers': %w", err)
@@ -134,11 +132,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 查询侦听器
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeListeners.html
-	describeListenersReq := &elasticloadbalancingv2.DescribeListenersInput{
+	describeListenersReq := &awselbsdk.DescribeListenersRequest{
 		LoadBalancerArn: aws.String(d.config.LoadbalancerArn),
 		ListenerArns:    []string{d.config.ListenerArn},
 	}
-	describeListenersResp, err := d.sdkClient.DescribeListeners(ctx, describeListenersReq)
+	describeListenersResp, err := d.sdkClient.DescribeListenersWithContext(ctx, describeListenersReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenersResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.DescribeListeners': %w", err)
@@ -183,7 +181,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerArn string, cloudCertArn string) error {
 	// 更新 HTTPS 侦听器
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_ModifyListener.html
-	modifyListenerReq := &elasticloadbalancingv2.ModifyListenerInput{
+	modifyListenerReq := &awselbsdk.ModifyListenerRequest{
 		ListenerArn: aws.String(cloudListenerArn),
 		Certificates: []types.Certificate{
 			{
@@ -191,7 +189,7 @@ func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudLi
 			},
 		},
 	}
-	modifyListenerResp, err := d.sdkClient.ModifyListener(ctx, modifyListenerReq)
+	modifyListenerResp, err := d.sdkClient.ModifyListenerWithContext(ctx, modifyListenerReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.ModifyListener'", slog.Any("request", modifyListenerReq), slog.Any("response", modifyListenerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.ModifyListener': %w", err)
@@ -203,7 +201,7 @@ func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudLi
 func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerArn string, cloudCertArn string) error {
 	// 将证书添加到证书列表
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_AddListenerCertificates.html
-	addListenerCertificatesReq := &elasticloadbalancingv2.AddListenerCertificatesInput{
+	addListenerCertificatesReq := &awselbsdk.AddListenerCertificatesRequest{
 		ListenerArn: aws.String(cloudListenerArn),
 		Certificates: []types.Certificate{
 			{
@@ -211,7 +209,7 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 			},
 		},
 	}
-	addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificates(ctx, addListenerCertificatesReq)
+	addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificatesWithContext(ctx, addListenerCertificatesReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.AddListenerCertificates'", slog.Any("request", addListenerCertificatesReq), slog.Any("response", addListenerCertificatesResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.AddListenerCertificates': %w", err)
@@ -220,15 +218,14 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 	return nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*elasticloadbalancingv2.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
-		awscfg.WithRegion(region),
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*awselbsdk.Client, error) {
+	client, err := awselbsdk.NewClient(
+		awselbsdk.WithAkSk(accessKeyId, secretAccessKey),
+		awselbsdk.WithRegion(region),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := elasticloadbalancingv2.NewFromConfig(cfg)
 	return client, nil
 }

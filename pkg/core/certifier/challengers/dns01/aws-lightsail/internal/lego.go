@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/lightsail"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/lightsail/types"
 	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/challenge/dns01"
 	"github.com/go-acme/lego/v5/platform/env"
+
+	awslightsailsdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/lightsail"
 )
 
 const (
@@ -24,8 +23,6 @@ const (
 	EnvPropagationTimeout = envNamespace + "PROPAGATION_TIMEOUT"
 	EnvPollingInterval    = envNamespace + "POLLING_INTERVAL"
 )
-
-const maxRetries = 5
 
 var _ challenge.ProviderTimeout = (*DNSProvider)(nil)
 
@@ -49,7 +46,7 @@ func NewDefaultConfig() *Config {
 // 这里有意不使用 lego 提供的 lightsail 实现，
 // 因为它只支持单个域，无法签发多域名证书。
 type DNSProvider struct {
-	client *lightsail.Client
+	client *awslightsailsdk.Client
 	config *Config
 }
 
@@ -65,10 +62,9 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("lightsail: the configuration of the DNS provider is nil")
 	}
 
-	ctx := context.Background()
-	cfg, err := awscfg.LoadDefaultConfig(ctx,
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(config.AccessKeyID, config.SecretAccessKey, config.SessionToken)),
-		awscfg.WithRegion(config.Region),
+	client, err := awslightsailsdk.NewClient(
+		awslightsailsdk.WithAkSk(config.AccessKeyID, config.SecretAccessKey),
+		awslightsailsdk.WithRegion(config.Region),
 	)
 	if err != nil {
 		return nil, err
@@ -76,7 +72,7 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 
 	return &DNSProvider{
 		config: config,
-		client: lightsail.NewFromConfig(cfg),
+		client: client,
 	}, nil
 }
 
@@ -88,7 +84,8 @@ func (d *DNSProvider) Present(ctx context.Context, domain, _, keyAuth string) er
 		return fmt.Errorf("lightsail: could not find zone for domain %q: %w", domain, err)
 	}
 
-	if _, err := d.client.CreateDomainEntry(ctx, &lightsail.CreateDomainEntryInput{
+	// REF: https://docs.aws.amazon.com/lightsail/2016-11-28/api-reference/API_CreateDomainEntry.html
+	if _, err := d.client.CreateDomainEntryWithContext(ctx, &awslightsailsdk.CreateDomainEntryRequest{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
 		DomainEntry: &types.DomainEntry{
 			Type:   aws.String("TXT"),
@@ -110,7 +107,8 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, _, keyAuth string) er
 		return fmt.Errorf("lightsail: could not find zone for domain %q: %w", domain, err)
 	}
 
-	if _, err := d.client.DeleteDomainEntry(ctx, &lightsail.DeleteDomainEntryInput{
+	// REF: https://docs.aws.amazon.com/lightsail/2016-11-28/api-reference/API_DeleteDomainEntry.html
+	if _, err := d.client.DeleteDomainEntryWithContext(ctx, &awslightsailsdk.DeleteDomainEntryRequest{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
 		DomainEntry: &types.DomainEntry{
 			Type:   aws.String("TXT"),
