@@ -1,5 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 
+import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
+import SchemaConfigFields from "@/components/workflow/designer/forms/SchemaConfigFields";
 import { ACCESS_PROVIDERS, type AccessProviderType } from "@/domain/provider";
 
 import AccessConfigFieldsProvider1Panel from "./AccessConfigFieldsProvider1Panel";
@@ -10,7 +12,6 @@ import AccessConfigFieldsProviderACMEDNS from "./AccessConfigFieldsProviderACMED
 import AccessConfigFieldsProviderACMEHttpReq from "./AccessConfigFieldsProviderACMEHttpReq";
 import AccessConfigFieldsProviderActalisSSL from "./AccessConfigFieldsProviderActalisSSL";
 import AccessConfigFieldsProviderAkamai from "./AccessConfigFieldsProviderAkamai";
-import AccessConfigFieldsProviderAliyun from "./AccessConfigFieldsProviderAliyun";
 import AccessConfigFieldsProviderAPISIX from "./AccessConfigFieldsProviderAPISIX";
 import AccessConfigFieldsProviderArvanCloud from "./AccessConfigFieldsProviderArvanCloud";
 import AccessConfigFieldsProviderAWS from "./AccessConfigFieldsProviderAWS";
@@ -136,7 +137,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.ACMEHTTPREQ]: AccessConfigFieldsProviderACMEHttpReq,
   [ACCESS_PROVIDERS.ACTALISSSL]: AccessConfigFieldsProviderActalisSSL,
   [ACCESS_PROVIDERS.AKAMAI]: AccessConfigFieldsProviderAkamai,
-  [ACCESS_PROVIDERS.ALIYUN]: AccessConfigFieldsProviderAliyun,
   [ACCESS_PROVIDERS.APISIX]: AccessConfigFieldsProviderAPISIX,
   [ACCESS_PROVIDERS.ARVANCLOUD]: AccessConfigFieldsProviderArvanCloud,
   [ACCESS_PROVIDERS.AWS]: AccessConfigFieldsProviderAWS,
@@ -251,6 +251,24 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
+  const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setEnvelope(null);
+    if (!provider) {
+      return;
+    }
+    void getProviderSchema(provider).then((env) => {
+      if (!cancelled) {
+        setEnvelope(env);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [provider]);
+
   const initComponent = () => {
     const Component = providerComponentMap[provider as AccessProviderType];
     if (!Component) return null;
@@ -263,9 +281,12 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     return <Component />;
   };
 
-  const [component, setComponent] = useState(() => initComponent());
+  const [component, setComponent] = useState<React.ReactNode>(() => initComponent());
 
-  useEffect(() => setComponent(initComponent()), [provider]);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider, envelope]);
   useEffect(() => setComponent(initComponent()), deps);
 
   return component;

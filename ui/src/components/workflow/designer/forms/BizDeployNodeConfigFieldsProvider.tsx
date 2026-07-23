@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
 import { DEPLOYMENT_PROVIDERS, type DeploymentProviderType } from "@/domain/provider";
 
 import BizDeployNodeConfigFieldsProvider1Panel from "./BizDeployNodeConfigFieldsProvider1Panel";
@@ -8,7 +9,6 @@ import BizDeployNodeConfigFieldsProviderAliyunALB from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderAliyunAPIGW from "./BizDeployNodeConfigFieldsProviderAliyunAPIGW";
 import BizDeployNodeConfigFieldsProviderAliyunCAS from "./BizDeployNodeConfigFieldsProviderAliyunCAS";
 import BizDeployNodeConfigFieldsProviderAliyunCASDeploy from "./BizDeployNodeConfigFieldsProviderAliyunCASDeploy";
-import BizDeployNodeConfigFieldsProviderAliyunCDN from "./BizDeployNodeConfigFieldsProviderAliyunCDN";
 import BizDeployNodeConfigFieldsProviderAliyunCLB from "./BizDeployNodeConfigFieldsProviderAliyunCLB";
 import BizDeployNodeConfigFieldsProviderAliyunDCDN from "./BizDeployNodeConfigFieldsProviderAliyunDCDN";
 import BizDeployNodeConfigFieldsProviderAliyunDDoSPro from "./BizDeployNodeConfigFieldsProviderAliyunDDoSPro";
@@ -146,6 +146,7 @@ import BizDeployNodeConfigFieldsProviderWangsuCertificate from "./BizDeployNodeC
 import BizDeployNodeConfigFieldsProviderWebhook from "./BizDeployNodeConfigFieldsProviderWebhook";
 import BizDeployNodeConfigFieldsProviderZenlayerCDN from "./BizDeployNodeConfigFieldsProviderZenlayerCDN";
 import BizDeployNodeConfigFieldsProviderZenlayerGA from "./BizDeployNodeConfigFieldsProviderZenlayerGA";
+import SchemaConfigFields from "./SchemaConfigFields";
 
 const providerComponentMap: Partial<Record<DeploymentProviderType, React.ComponentType<any>>> = {
   /*
@@ -159,7 +160,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.ALIYUN_CAS]: BizDeployNodeConfigFieldsProviderAliyunCAS,
   [DEPLOYMENT_PROVIDERS.ALIYUN_CAS_DEPLOY]: BizDeployNodeConfigFieldsProviderAliyunCASDeploy,
   [DEPLOYMENT_PROVIDERS.ALIYUN_CLB]: BizDeployNodeConfigFieldsProviderAliyunCLB,
-  [DEPLOYMENT_PROVIDERS.ALIYUN_CDN]: BizDeployNodeConfigFieldsProviderAliyunCDN,
   [DEPLOYMENT_PROVIDERS.ALIYUN_DCDN]: BizDeployNodeConfigFieldsProviderAliyunDCDN,
   [DEPLOYMENT_PROVIDERS.ALIYUN_DDOSPRO]: BizDeployNodeConfigFieldsProviderAliyunDDoSPro,
   [DEPLOYMENT_PROVIDERS.ALIYUN_ESA]: BizDeployNodeConfigFieldsProviderAliyunESA,
@@ -299,6 +299,24 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
+  const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setEnvelope(null);
+    if (!provider) {
+      return;
+    }
+    void getProviderSchema(provider).then((env) => {
+      if (!cancelled) {
+        setEnvelope(env);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [provider]);
+
   const initComponent = () => {
     const Component = providerComponentMap[provider as DeploymentProviderType];
     if (!Component) return null;
@@ -311,9 +329,12 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     return <Component />;
   };
 
-  const [component, setComponent] = useState(() => initComponent());
+  const [component, setComponent] = useState<React.ReactNode>(() => initComponent());
 
-  useEffect(() => setComponent(initComponent()), [provider]);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider, envelope]);
   useEffect(() => setComponent(initComponent()), deps);
 
   return component;

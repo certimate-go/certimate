@@ -21,6 +21,7 @@ import (
 	"github.com/certimate-go/certimate/internal/workflow"
 	"github.com/certimate-go/certimate/ui"
 
+	_ "github.com/certimate-go/certimate/internal/accessschema"
 	_ "github.com/certimate-go/certimate/migrations"
 )
 
