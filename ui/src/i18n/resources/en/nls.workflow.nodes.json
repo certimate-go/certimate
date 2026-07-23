@@ -2700,7 +2700,7 @@
       "volcengine_alb_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine ALB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
       },
       "volcengine_alb_deploy_target": {
         "option": {
@@ -2730,7 +2730,7 @@
       "volcengine_apig_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine API gateway region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
       },
       "volcengine_apig_domain": {
         "label": "VolcEngine API gateway custom domain",
@@ -2747,7 +2747,7 @@
       "volcengine_clb_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine CLB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
       },
       "volcengine_clb_deploy_target": {
         "option": {
@@ -2776,7 +2776,7 @@
       "volcengine_imagex_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine ImageX region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/508/23757\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/508/23757?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>"
       },
       "volcengine_imagex_service_id": {
         "label": "VolcEngine ImageX service ID",
@@ -2794,7 +2794,7 @@
       "volcengine_tos_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine TOS region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
       },
       "volcengine_tos_bucket": {
         "label": "VolcEngine TOS bucket",
@@ -2807,7 +2807,7 @@
       "volcengine_vod_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine VOD region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.volcengine.com/docs/4/1215505\" target=\"_blank\">https://docs.volcengine.com/docs/4/1215505</a>"
+        "tooltip": "For more information, see <a href=\"https://docs.volcengine.com/docs/4/1215505?lang=en\" target=\"_blank\">https://docs.volcengine.com/docs/4/1215505</a>"
       },
       "volcengine_vod_space_name": {
         "label": "VolcEngine VOD space name",
@@ -2836,7 +2836,7 @@
       "volcengine_waf_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine WAF region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6511/1594024\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6511/1594024?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>"
       },
       "volcengine_waf_access_mode": {
         "label": "VolcEngine WAF access mode",

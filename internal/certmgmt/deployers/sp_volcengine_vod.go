@@ -20,11 +20,11 @@ func init() {
 			AccessKeyId:        credentials.AccessKeyId,
 			SecretAccessKey:    credentials.SecretAccessKey,
 			ProjectName:        credentials.ProjectName,
+			Region:             xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			SpaceName:          xmaps.GetString(options.ProviderExtendedConfig, "spaceName"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			DomainType:         xmaps.GetString(options.ProviderExtendedConfig, "domainType"),
 			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),
-			Region:             xmaps.GetString(options.ProviderExtendedConfig, "region"),
 		})
 		return provider, err
 	})

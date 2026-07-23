@@ -52,7 +52,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -61,7 +61,6 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		AccessKeyId:     config.AccessKeyId,
 		SecretAccessKey: config.SecretAccessKey,
 		ProjectName:     config.ProjectName,
-		Region:          config.Region,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -209,14 +208,10 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	return domains, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*vedcdn.DCDN, error) {
-	if region == "" {
-		region = "cn-beijing" // DCDN 服务默认区域：北京
-	}
-
+func createSDKClient(accessKeyId, secretAccessKey string) (*vedcdn.DCDN, error) {
 	config := ve.NewConfig().
 		WithAkSk(accessKeyId, secretAccessKey).
-		WithRegion(region)
+		WithRegion("cn-beijing")
 
 	session, err := vesession.NewSession(config)
 	if err != nil {

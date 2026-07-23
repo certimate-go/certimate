@@ -243,6 +243,7 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*vevod.VOD202
 	if region == "" {
 		region = "cn-north-1" // VOD 服务默认区域：华北
 	}
+
 	config := ve.NewConfig().
 		WithAkSk(accessKeyId, secretAccessKey).
 		WithRegion(region)
