@@ -79,7 +79,7 @@ func (c *Client) SetTimeout(timeout time.Duration) *Client {
 	return c
 }
 
-func (c *Client) newRequest(method string, path string, params any, ossResource string) (*resty.Request, error) {
+func (c *Client) newRequest(method string, path string, params any, xOssResource string) (*resty.Request, error) {
 	if method == "" {
 		return nil, fmt.Errorf("sdkerr: unset method")
 	}
@@ -115,7 +115,7 @@ func (c *Client) newRequest(method string, path string, params any, ossResource 
 	req.QueryParam = requestUrl.Query()
 	req.SetHeader("Content-MD5", payloadMd5Encoded)
 	req.SetHeader("Content-Type", contentType)
-	req.SetHeader("X-API-Resource", ossResource)
+	req.SetHeader("X-API-Resource", xOssResource)
 	req.SetBody(payloadStr)
 
 	// WARN:

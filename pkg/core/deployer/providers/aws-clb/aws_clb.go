@@ -6,13 +6,11 @@ import (
 	"log/slog"
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
 	cmgrimpliam "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-iam"
+	awselbsdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/elasticloadbalancing"
 )
 
 type (
@@ -39,7 +37,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *elasticloadbalancing.Client
+	sdkClient  *awselbsdk.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -118,12 +116,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 替换 HTTPS 侦听器 SSL 证书
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/2012-06-01/APIReference/API_SetLoadBalancerListenerSSLCertificate.html
-	setLoadBalancerListenerSSLCertificateReq := &elasticloadbalancing.SetLoadBalancerListenerSSLCertificateInput{
+	setLoadBalancerListenerSSLCertificateReq := &awselbsdk.SetLoadBalancerListenerSSLCertificateRequest{
 		LoadBalancerName: aws.String(d.config.LoadbalancerName),
 		LoadBalancerPort: d.config.LoadbalancerPort,
 		SSLCertificateId: aws.String(upres.ExtendedData["Arn"].(string)),
 	}
-	setLoadBalancerListenerSSLCertificateResp, err := d.sdkClient.SetLoadBalancerListenerSSLCertificate(ctx, setLoadBalancerListenerSSLCertificateReq)
+	setLoadBalancerListenerSSLCertificateResp, err := d.sdkClient.SetLoadBalancerListenerSSLCertificateWithContext(ctx, setLoadBalancerListenerSSLCertificateReq)
 	d.logger.Debug("sdk request 'elasticloadbalancing.SetLoadBalancerListenerSSLCertificate'", slog.Any("request", setLoadBalancerListenerSSLCertificateReq), slog.Any("response", setLoadBalancerListenerSSLCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancing.SetLoadBalancerListenerSSLCertificate': %w", err)
@@ -132,15 +130,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*elasticloadbalancing.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
-		awscfg.WithRegion(region),
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*awselbsdk.Client, error) {
+	client, err := awselbsdk.NewClient(
+		awselbsdk.WithAkSk(accessKeyId, secretAccessKey),
+		awselbsdk.WithRegion(region),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := elasticloadbalancing.NewFromConfig(cfg)
 	return client, nil
 }
