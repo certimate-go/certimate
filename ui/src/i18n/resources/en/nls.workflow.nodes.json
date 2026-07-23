@@ -2804,6 +2804,11 @@
         "label": "VolcEngine TOS custom domain",
         "placeholder": "Please enter VolcEngine TOS bucket custom domain name"
       },
+      "volcengine_vod_region": {
+        "label": "VolcEngine region",
+        "placeholder": "Please enter VolcEngine VOD region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.volcengine.com/docs/4/1215505\" target=\"_blank\">https://docs.volcengine.com/docs/4/1215505</a>"
+      },
       "volcengine_vod_space_name": {
         "label": "VolcEngine VOD space name",
         "placeholder": "Please enter VolcEngine VOD space name",

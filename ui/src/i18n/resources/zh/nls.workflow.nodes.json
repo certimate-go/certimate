@@ -2803,6 +2803,11 @@
         "label": "火山引擎 TOS 自定义域名",
         "placeholder": "请输入火山引擎 TOS 自定义域名"
       },
+      "volcengine_vod_region": {
+        "label": "火山引擎服务地域",
+        "placeholder": "请输入火山引擎 VOD 服务地域（例如：cn-north-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.volcengine.com/docs/4/1215505\" target=\"_blank\">https://docs.volcengine.com/docs/4/1215505</a>"
+      },
       "volcengine_vod_space_name": {
         "label": "火山引擎 VOD 空间名称",
         "placeholder": "请输入火山引擎 VOD 空间名称",

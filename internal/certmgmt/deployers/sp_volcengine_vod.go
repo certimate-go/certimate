@@ -24,6 +24,7 @@ func init() {
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			DomainType:         xmaps.GetString(options.ProviderExtendedConfig, "domainType"),
 			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),
+			Region:             xmaps.GetString(options.ProviderExtendedConfig, "region"),
 		})
 		return provider, err
 	})
