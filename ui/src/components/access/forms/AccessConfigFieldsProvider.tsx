@@ -48,6 +48,7 @@ import AccessConfigFieldsProviderDynadot from "./AccessConfigFieldsProviderDynad
 import AccessConfigFieldsProviderDynu from "./AccessConfigFieldsProviderDynu";
 import AccessConfigFieldsProviderDynv6 from "./AccessConfigFieldsProviderDynv6";
 import AccessConfigFieldsProviderEmail from "./AccessConfigFieldsProviderEmail";
+import AccessConfigFieldsProviderF5BigIP from "./AccessConfigFieldsProviderF5BigIP";
 import AccessConfigFieldsProviderFlexCDN from "./AccessConfigFieldsProviderFlexCDN";
 import AccessConfigFieldsProviderFlyIO from "./AccessConfigFieldsProviderFlyIO";
 import AccessConfigFieldsProviderFTP from "./AccessConfigFieldsProviderFTP";
@@ -174,6 +175,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.DYNU]: AccessConfigFieldsProviderDynu,
   [ACCESS_PROVIDERS.DYNV6]: AccessConfigFieldsProviderDynv6,
   [ACCESS_PROVIDERS.EMAIL]: AccessConfigFieldsProviderEmail,
+  [ACCESS_PROVIDERS.F5BIGIP]: AccessConfigFieldsProviderF5BigIP,
   [ACCESS_PROVIDERS.FLEXCDN]: AccessConfigFieldsProviderFlexCDN,
   [ACCESS_PROVIDERS.FLYIO]: AccessConfigFieldsProviderFlyIO,
   [ACCESS_PROVIDERS.FTP]: AccessConfigFieldsProviderFTP,

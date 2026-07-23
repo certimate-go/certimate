@@ -267,6 +267,13 @@ type AccessConfigForEmail struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForF5BigIP struct {
+	ServerUrl                string `json:"serverUrl"`
+	Username                 string `json:"username"`
+	Password                 string `json:"password"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForFlexCDN struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiRole                  string `json:"apiRole"`
