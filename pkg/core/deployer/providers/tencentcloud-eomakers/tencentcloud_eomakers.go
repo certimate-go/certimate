@@ -117,9 +117,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	// 获取全部可部署的域名列表
-	domainsInMakers, err := d.getAllDomainsInProject(ctx, d.config.MakersProjectId)
+	domainsInProject, err := d.getAllDomainsInProject(ctx, d.config.MakersProjectId)
 	if err != nil {
 		return nil, err
+	}
+	if len(domainsInProject) == 0 {
+		return nil, fmt.Errorf("could not find domains in project '%s'", d.config.MakersProjectId)
 	}
 
 	// 获取待部署的域名列表
@@ -140,7 +143,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return nil, fmt.Errorf("config `domains` is required")
 			}
 
-			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
+			domainCandidates := lo.Map(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
 				return lo.FromPtr(domainInfo.Domain)
 			})
 			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
@@ -158,7 +161,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	case DomainMatchPatternCertSan:
 		{
-			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
+			domainCandidates := lo.Map(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
 				return lo.FromPtr(domainInfo.Domain)
 			})
 			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
@@ -180,7 +183,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		d.logger.Info("found edgeone makers domains to deploy", slog.Any("domains", domains))
 
 		// 获取站点 ID
-		zoneId := domainsInMakers[0].ZoneId
+		zoneId := domainsInProject[0].ZoneId
 
 		// 获取证书列表
 		describeHostCertificatesReq := tceo.NewDescribeHostCertificatesRequest()
@@ -195,7 +198,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		domains = lo.Filter(domains, func(domain string, _ int) bool {
 			var deployed bool
 
-			domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
+			domainInfo, _ := lo.Find(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
 				return domain == lo.FromPtr(domainInfo.Domain)
 			})
 			if domainInfo != nil && describeHostCertificatesResp.Response != nil {
@@ -242,7 +245,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				modifyHostsCertificateReq.Hosts = common.StringPtrs([]string{domain})
 				modifyHostsCertificateReq.ServerCertInfo = []*tceo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
 
-				domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
+				domainInfo, _ := lo.Find(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
 					return domain == lo.FromPtr(domainInfo.Domain)
 				})
 				if domainInfo != nil && describeHostCertificatesResp.Response != nil {
