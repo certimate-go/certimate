@@ -16,6 +16,10 @@ type CatalogEntry struct {
 	AccessDisplayNameKey string                       `json:"accessDisplayNameKey"`
 	Icon                 string                       `json:"icon,omitempty"`
 	I18n                 map[string]map[string]string `json:"i18n,omitempty"`
+	AccessUsages         []string                     `json:"accessUsages,omitempty"`
+	Priority             int                          `json:"priority"`
+	Description          string                       `json:"description,omitempty"`
+	Deployers            []string                     `json:"deployers,omitempty"`
 }
 
 type Catalog struct {
@@ -32,12 +36,26 @@ func (c *Catalog) Add(entry *CatalogEntry) {
 	defer c.mu.Unlock()
 	c.entries = append(c.entries, entry)
 	c.sortLocked()
+	c.buildDeployersLocked()
 }
 
 func (c *Catalog) sortLocked() {
 	sort.SliceStable(c.entries, func(i, j int) bool {
+		if c.entries[i].Priority != c.entries[j].Priority {
+			return c.entries[i].Priority > c.entries[j].Priority
+		}
 		return c.entries[i].ProviderType < c.entries[j].ProviderType
 	})
+}
+
+func (c *Catalog) buildDeployersLocked() {
+	byAccess := make(map[string][]string)
+	for _, e := range c.entries {
+		byAccess[e.AccessProviderType] = append(byAccess[e.AccessProviderType], e.ProviderType)
+	}
+	for _, e := range c.entries {
+		e.Deployers = byAccess[e.ProviderType]
+	}
 }
 
 func (c *Catalog) Entries() []CatalogEntry {

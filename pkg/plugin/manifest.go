@@ -7,20 +7,30 @@ import (
 	"strings"
 )
 
+var validAccessUsages = map[string]bool{
+	"dns":          true,
+	"hosting":      true,
+	"notification": true,
+	"ca":           true,
+}
+
 type Manifest struct {
-	Version            string `json:"version"`
-	ProviderType       string `json:"provider_type"`
-	AccessProviderType string `json:"access_provider_type"`
-	DisplayNameKey     string `json:"display_name_key"`
-	DeployCategory     string `json:"deploy_category"`
-	ProtocolVersion    uint32 `json:"protocol_version"`
-	MinCoreVersion     string `json:"min_core_version"`
-	MaxCoreVersion     string `json:"max_core_version"`
-	OS                 string `json:"os"`
-	Arch               string `json:"arch"`
-	Binary             string `json:"binary"`
-	Icon               string `json:"icon"`
-	SHA256             string `json:"sha256"`
+	Version            string   `json:"version"`
+	ProviderType       string   `json:"provider_type"`
+	AccessProviderType string   `json:"access_provider_type"`
+	DisplayNameKey     string   `json:"display_name_key"`
+	DeployCategory     string   `json:"deploy_category"`
+	ProtocolVersion    uint32   `json:"protocol_version"`
+	MinCoreVersion     string   `json:"min_core_version"`
+	MaxCoreVersion     string   `json:"max_core_version"`
+	OS                 string   `json:"os"`
+	Arch               string   `json:"arch"`
+	Binary             string   `json:"binary"`
+	Icon               string   `json:"icon"`
+	SHA256             string   `json:"sha256"`
+	Usages             []string `json:"usages"`
+	Priority           int      `json:"priority"`
+	Description        string   `json:"description"`
 }
 
 func ParseManifest(data []byte) (*Manifest, error) {
@@ -48,6 +58,11 @@ func (m *Manifest) Validate() error {
 	if m.OS != "" || m.Arch != "" {
 		if m.OS == "" || m.Arch == "" {
 			problems = append(problems, "os and arch must be specified together")
+		}
+	}
+	for _, u := range m.Usages {
+		if !validAccessUsages[u] {
+			problems = append(problems, fmt.Sprintf("usages contains invalid value %q", u))
 		}
 	}
 	if len(problems) > 0 {

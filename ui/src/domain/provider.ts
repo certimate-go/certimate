@@ -156,6 +156,7 @@ export type AccessUsageType = (typeof ACCESS_USAGES)[keyof typeof ACCESS_USAGES]
 
 export interface AccessProvider extends BaseProvider<AccessProviderType> {
   usages: AccessUsageType[];
+  deployers?: string[];
 }
 
 export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProvider> = new Map(

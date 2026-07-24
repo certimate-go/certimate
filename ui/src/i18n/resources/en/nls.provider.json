@@ -1,6 +1,10 @@
 {
   "$ns": "provider",
 
+  "access": {
+    "usedBy": "Used by:"
+  },
+
   "text": {
     "nodata": "No providers available",
     "default_ca": "(Default) Follow global settings",

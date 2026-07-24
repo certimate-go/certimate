@@ -1,6 +1,6 @@
 ﻿import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, Card, Empty, Input, type InputRef, Tag, Typography } from "antd";
+import { Avatar, Card, Empty, Input, type InputRef, Tag, Tooltip, Typography } from "antd";
 
 import Show from "@/components/Show";
 import { ACCESS_USAGES, type AccessProvider, type AccessUsageType, accessProvidersMap } from "@/domain/provider";
@@ -8,6 +8,11 @@ import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { mergeCls } from "@/utils/css";
 
 import { type SharedPickerProps, usePickerDataSource, usePickerWrapperCols } from "./_shared";
+
+const formatDeployers = (deployers: string[], limit = 3) => {
+  if (deployers.length <= limit) return deployers.join(", ");
+  return `${deployers.slice(0, limit).join(", ")} +${deployers.length - limit} more`;
+};
 
 export interface AccessProviderPickerProps extends SharedPickerProps<AccessProvider> {
   showOptionTags?: boolean | { [key in AccessUsageType | "builtin"]?: boolean };
@@ -56,7 +61,8 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
     });
 
     const renderOption = (provider: AccessProvider) => {
-      return (
+      const hasDeployers = provider.deployers && provider.deployers.length > 0;
+      const card = (
         <div className="group/provider size-full" key={provider.type}>
           <Card
             className={mergeCls("size-full overflow-hidden shadow", provider.builtin ? "cursor-not-allowed" : void 0)}
@@ -117,6 +123,16 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
           </Card>
         </div>
       );
+
+      if (hasDeployers) {
+        return (
+          <Tooltip key={provider.type} title={`${t("provider.access.usedBy")} ${formatDeployers(provider.deployers!)}`}>
+            {card}
+          </Tooltip>
+        );
+      }
+
+      return card;
     };
 
     const handleProviderTypeSelect = (value: string) => {

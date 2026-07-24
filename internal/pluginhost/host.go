@@ -88,6 +88,11 @@ func registerOne(ctx context.Context, manager *plugin.Manager, dp *plugin.Discov
 	registerAccessEnvelope(deployType, accessType, schema.AccessSchemaJSON, logger)
 	registerEnvelope(deployType, schema.DeploySchemaJSON, providerschema.CategoryDeploy, logger)
 
+	usages := dp.Manifest.Usages
+	if len(usages) == 0 {
+		usages = []string{"hosting"}
+	}
+
 	catalog.Add(&CatalogEntry{
 		Source:               SourcePlugin,
 		ProviderType:         deployType,
@@ -97,6 +102,9 @@ func registerOne(ctx context.Context, manager *plugin.Manager, dp *plugin.Discov
 		AccessDisplayNameKey: meta.AccessDisplayNameKey,
 		Icon:                 readIcon(dp, logger),
 		I18n:                 schema.I18n,
+		AccessUsages:         usages,
+		Priority:             dp.Manifest.Priority,
+		Description:          dp.Manifest.Description,
 	})
 
 	return nil
@@ -176,21 +184,29 @@ func readIcon(dp *plugin.DiscoveredPlugin, logger *slog.Logger) string {
 			slog.String("icon", iconPath))
 		return ""
 	}
-	mime := mimeForExt(filepath.Ext(iconName))
+	mime, ok := mimeForExt(filepath.Ext(iconName))
+	if !ok {
+		logger.Debug("plugin icon format unsupported, using placeholder",
+			slog.String("provider", dp.Manifest.ProviderType),
+			slog.String("icon", iconPath))
+		return ""
+	}
 	return "data:" + mime + ";base64," + base64.StdEncoding.EncodeToString(data)
 }
 
-func mimeForExt(ext string) string {
+func mimeForExt(ext string) (string, bool) {
 	switch strings.ToLower(ext) {
 	case ".png":
-		return "image/png"
+		return "image/png", true
 	case ".jpg", ".jpeg":
-		return "image/jpeg"
+		return "image/jpeg", true
 	case ".gif":
-		return "image/gif"
+		return "image/gif", true
 	case ".webp":
-		return "image/webp"
+		return "image/webp", true
+	case ".svg":
+		return "image/svg+xml", true
 	default:
-		return "image/svg+xml"
+		return "", false
 	}
 }

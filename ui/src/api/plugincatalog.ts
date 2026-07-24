@@ -9,6 +9,10 @@ export interface PluginCatalogEntry {
   accessDisplayNameKey: string;
   icon?: string;
   i18n?: Record<string, Record<string, string>>;
+  accessUsages?: string[];
+  priority?: number;
+  description?: string;
+  deployers?: string[];
 }
 
 export const listPluginCatalog = async (): Promise<PluginCatalogEntry[]> => {

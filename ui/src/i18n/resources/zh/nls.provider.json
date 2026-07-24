@@ -1,6 +1,10 @@
 {
   "$ns": "provider",
 
+  "access": {
+    "usedBy": "使用者："
+  },
+
   "text": {
     "nodata": "暂无提供商",
     "default_ca": "（默认）不指定，跟随全局设置",
