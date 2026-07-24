@@ -32,6 +32,9 @@ func (f *fakeDeployer) GetMetadata(ctx context.Context) (*plugin.Metadata, error
 }
 
 func (f *fakeDeployer) GetConfigSchema(ctx context.Context) (*plugin.ConfigSchema, error) {
+	// NOTE: Real plugins use //go:embed to bundle schema JSON files at compile time.
+	// This fakeplugin uses inline JSON for testing simplicity.
+	// See plugins/webhook-deployer/embed.go for the canonical pattern.
 	return &plugin.ConfigSchema{
 		AccessSchemaJSON: []byte(`{"schemaVersion":"form/v1","provider":"fake","category":"access"}`),
 		DeploySchemaJSON: []byte(`{"schemaVersion":"form/v1","provider":"fake","category":"deploy"}`),
