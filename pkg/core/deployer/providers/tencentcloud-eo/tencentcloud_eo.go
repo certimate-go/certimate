@@ -113,6 +113,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	if err != nil {
 		return nil, err
 	}
+	if len(domainsInZone) == 0 {
+		return nil, fmt.Errorf("could not find domains in zone '%s'", d.config.ZoneId)
+	}
 
 	// 获取待部署的域名列表
 	var domains []string
