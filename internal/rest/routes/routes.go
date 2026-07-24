@@ -7,6 +7,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/certificate"
 	"github.com/certimate-go/certimate/internal/notify"
+	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/handlers"
@@ -44,4 +45,5 @@ func BindRouter(router *router.Router[*core.RequestEvent]) {
 	handlers.NewStatisticsHandler(group, statisticsSvc)
 	handlers.NewNotificationsHandler(group, notifySvc)
 	handlers.NewProviderSchemaHandler(group, providerSchemaSvc)
+	handlers.NewPluginCatalogHandler(group, pluginhost.GlobalCatalog())
 }

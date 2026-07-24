@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package certimate.plugin.v1;
+
+option go_package = "github.com/certimate-go/certimate/pkg/plugin/proto";
+
+service DeployerPlugin {
+  rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse);
+  rpc GetConfigSchema(GetConfigSchemaRequest) returns (GetConfigSchemaResponse);
+  rpc Deploy(DeployRequest) returns (DeployResponse);
+}
+
+message GetMetadataRequest {}
+
+message GetMetadataResponse {
+  string provider_type = 1;
+  string access_provider_type = 2;
+  uint32 protocol_version = 3;
+  string deploy_category = 4;
+  string deploy_display_name_key = 5;
+  string access_display_name_key = 6;
+}
+
+message GetConfigSchemaRequest {}
+
+message StringMap {
+  map<string, string> entries = 1;
+}
+
+message GetConfigSchemaResponse {
+  bytes access_schema_json = 1;
+  bytes deploy_schema_json = 2;
+  map<string, StringMap> i18n_resources = 3;
+}
+
+message DeployRequest {
+  string log_level = 1;
+  string access_config_json = 2;
+  string extended_config_json = 3;
+  string certificate_pem = 4;
+  string private_key_pem = 5;
+}
+
+message DeployResponse {
+  string extended_data_json = 1;
+}

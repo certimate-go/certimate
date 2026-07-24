@@ -34,6 +34,50 @@ func (f *fakeRepo) List(_ context.Context) ([]*Schema, error) {
 	return out, nil
 }
 
+func (f *fakeRepo) GetEnvelope(_ context.Context, _ string) (*Envelope, bool, error) {
+	return nil, false, nil
+}
+
+func (f *fakeRepo) ListEnvelopes(_ context.Context) ([]*Envelope, error) {
+	return nil, nil
+}
+
+type envelopeRepo struct {
+	fakeRepo
+	envelopes map[string]*Envelope
+}
+
+func (e *envelopeRepo) GetEnvelope(_ context.Context, providerType string) (*Envelope, bool, error) {
+	env, ok := e.envelopes[providerType]
+	return env, ok, nil
+}
+
+func (e *envelopeRepo) ListEnvelopes(_ context.Context) ([]*Envelope, error) {
+	out := make([]*Envelope, 0, len(e.envelopes))
+	for _, env := range e.envelopes {
+		out = append(out, env)
+	}
+	return out, nil
+}
+
+func TestService_GetByProviderType_PrefersEnvelope(t *testing.T) {
+	builtIn, _ := New("plugin-demo", CategoryDeploy).Field("a", ValueTypeText).Build()
+	env := &Envelope{SchemaVersion: "form/v1", Provider: "plugin-demo", Category: CategoryDeploy, Schema: EnvelopeSchema{Columns: []Column{{Name: "envelopeField"}}}}
+	repo := &envelopeRepo{
+		fakeRepo:  fakeRepo{schemas: map[string]*Schema{"plugin-demo": builtIn}},
+		envelopes: map[string]*Envelope{"plugin-demo": env},
+	}
+	svc := NewProviderSchemaService(repo)
+
+	got, err := svc.GetByProviderType(context.Background(), "plugin-demo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Schema.Columns) != 1 || got.Schema.Columns[0].Name != "envelopeField" {
+		t.Fatalf("expected envelope to win, got %+v", got.Schema.Columns)
+	}
+}
+
 func TestService_GetByProviderType_Emits(t *testing.T) {
 	s, _ := New("aliyun-cdn", CategoryDeploy).Field("region", ValueTypeText).Build()
 	repo := &fakeRepo{schemas: map[string]*Schema{"aliyun-cdn": s}}

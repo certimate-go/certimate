@@ -4,6 +4,7 @@ import { Avatar, Card, Empty, Input, type InputRef, Tag, Typography } from "antd
 
 import Show from "@/components/Show";
 import { ACCESS_USAGES, type AccessProvider, type AccessUsageType, accessProvidersMap } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { mergeCls } from "@/utils/css";
 
 import { type SharedPickerProps, usePickerDataSource, usePickerWrapperCols } from "./_shared";
@@ -41,11 +42,15 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
 
     const { wrapperElRef, cols } = usePickerWrapperCols(showOptionTagAnyhow ? 240 : 200);
 
+    const pluginCatalogLoaded = usePluginCatalogStore((s) => s.loaded);
+
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
+    const allProviders = useMemo(() => Array.from(accessProvidersMap.values()), [pluginCatalogLoaded]);
+
     const dataSources = usePickerDataSource({
-      dataSource: Array.from(accessProvidersMap.values()),
+      dataSource: allProviders,
       filters: [onFilter!],
       keyword: keyword,
     });

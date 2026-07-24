@@ -58,7 +58,8 @@ func TestEmit_ConditionalsAndDependencies(t *testing.T) {
 	s, _ := New("ssh", CategoryDeploy).
 		Field("useSCP", ValueTypeSwitch).
 		Field("fileFormat", ValueTypeSelect, Options("PEM", "PFX")).
-		Field("pfxPassword", ValueTypeSecret,
+		Field(
+			"pfxPassword", ValueTypeSecret,
 			VisibleWhen("fileFormat").Equals("PFX"),
 			RequiredWhen("fileFormat").Equals("PFX"),
 			VisibleWhen("useSCP").Equals("true"),

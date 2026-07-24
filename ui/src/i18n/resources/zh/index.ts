@@ -1,4 +1,4 @@
-﻿import nlsAccess from "./nls.access.json";
+import nlsAccess from "./nls.access.json";
 import nlsCertificate from "./nls.certificate.json";
 import nlsCommon from "./nls.common.json";
 import nlsDashboard from "./nls.dashboard.json";
@@ -11,18 +11,16 @@ import nlsWorkflowNodes from "./nls.workflow.nodes.json";
 import nlsWorkflowRuns from "./nls.workflow.runs.json";
 import { buildTranslations } from "../utils";
 
-export default Object.freeze(
-  buildTranslations(
-    nlsCommon,
-    nlsLogin,
-    nlsDashboard,
-    nlsSettings,
-    nlsProvider,
-    nlsAccess,
-    nlsPreset,
-    nlsCertificate,
-    nlsWorkflow,
-    nlsWorkflowNodes,
-    nlsWorkflowRuns
-  )
+export default buildTranslations(
+  nlsCommon,
+  nlsLogin,
+  nlsDashboard,
+  nlsSettings,
+  nlsProvider,
+  nlsAccess,
+  nlsPreset,
+  nlsCertificate,
+  nlsWorkflow,
+  nlsWorkflowNodes,
+  nlsWorkflowRuns
 );

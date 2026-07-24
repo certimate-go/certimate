@@ -11,6 +11,10 @@
     "unavailable_divider": "以下提供商不可用（即未添加过授权凭据）"
   },
 
+  "tag": {
+    "plugin": "插件"
+  },
+
   "category": {
     "all": "全部",
     "cdn": "CDN",

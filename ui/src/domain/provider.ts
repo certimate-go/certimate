@@ -1,8 +1,11 @@
+export type ProviderSource = "core" | "plugin";
+
 interface BaseProvider<P> {
   type: P;
   name: string;
   icon: string;
   builtin: boolean;
+  source?: ProviderSource;
 }
 
 interface BaseProviderWithAccess<P> extends BaseProvider<P> {
@@ -753,7 +756,6 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   WANGSU_CDN: `${ACCESS_PROVIDERS.WANGSU}-cdn`,
   WANGSU_CDNPRO: `${ACCESS_PROVIDERS.WANGSU}-cdnpro`,
   WANGSU_CERTIFICATE: `${ACCESS_PROVIDERS.WANGSU}-certificate`,
-  WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
   ZENLAYER_CDN: `${ACCESS_PROVIDERS.ZENLAYER}-cdn`,
   ZENLAYER_GA: `${ACCESS_PROVIDERS.ZENLAYER}-ga`,
 } as const);
@@ -791,7 +793,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.LOCAL, "provider.local", DEPLOYMENT_CATEGORIES.OTHER, "builtin"],
       [DEPLOYMENT_PROVIDERS.SSH, "provider.ssh", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.FTP, "provider.ftp", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.WEBHOOK, "provider.webhook", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.KUBERNETES_SECRET, "provider.kubernetes_secret", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.S3, "provider.s3_upload", DEPLOYMENT_CATEGORIES.STORAGE],
       [DEPLOYMENT_PROVIDERS.ALIYUN_OSS, "provider.aliyun_oss", DEPLOYMENT_CATEGORIES.STORAGE],

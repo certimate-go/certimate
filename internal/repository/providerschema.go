@@ -33,3 +33,12 @@ func (r *ProviderSchemaRepository) List(_ context.Context) ([]*providerschema.Sc
 	}
 	return out, nil
 }
+
+func (r *ProviderSchemaRepository) GetEnvelope(_ context.Context, providerType string) (*providerschema.Envelope, bool, error) {
+	env, ok := providerschema.Envelopes.GetEnvelope(providerType)
+	return env, ok, nil
+}
+
+func (r *ProviderSchemaRepository) ListEnvelopes(_ context.Context) ([]*providerschema.Envelope, error) {
+	return providerschema.Envelopes.ListEnvelopes(), nil
+}

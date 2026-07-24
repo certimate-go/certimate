@@ -11,6 +11,9 @@ func NewProviderSchemaService(repo providerSchemaRepository) *ProviderSchemaServ
 }
 
 func (s *ProviderSchemaService) GetByProviderType(ctx context.Context, providerType string) (*Envelope, error) {
+	if env, ok, _ := s.repo.GetEnvelope(ctx, providerType); ok && env != nil {
+		return env, nil
+	}
 	schema, err := s.repo.Get(ctx, providerType)
 	if err != nil {
 		return nil, err
@@ -19,13 +22,16 @@ func (s *ProviderSchemaService) GetByProviderType(ctx context.Context, providerT
 }
 
 func (s *ProviderSchemaService) List(ctx context.Context) ([]*Envelope, error) {
-	schemas, err := s.repo.List(ctx)
+	builtIn, err := s.repo.List(ctx)
 	if err != nil {
 		return nil, err
 	}
-	out := make([]*Envelope, len(schemas))
-	for i, sc := range schemas {
-		out[i] = Emit(sc)
+	out := make([]*Envelope, 0, len(builtIn))
+	for _, sc := range builtIn {
+		out = append(out, Emit(sc))
+	}
+	if envs, err := s.repo.ListEnvelopes(ctx); err == nil {
+		out = append(out, envs...)
 	}
 	return out, nil
 }

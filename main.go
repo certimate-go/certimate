@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 	_ "time/tzdata"
 
@@ -15,10 +17,12 @@ import (
 
 	"github.com/certimate-go/certimate/cmd"
 	"github.com/certimate-go/certimate/internal/app"
+	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
 	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/workflow"
+	"github.com/certimate-go/certimate/pkg/plugin"
 	"github.com/certimate-go/certimate/ui"
 
 	_ "github.com/certimate-go/certimate/internal/accessschema"
@@ -56,6 +60,7 @@ func main() {
 			}
 
 			settings.Setup()
+			scanPlugins()
 			return nil
 		})
 
@@ -98,4 +103,32 @@ func main() {
 			slog.Error("[CERTIMATE] Start failed.", slog.Any("error", err))
 		}
 	}
+}
+
+func scanPlugins() {
+	pluginDir := resolvePluginDir()
+	if pluginDir == "" {
+		return
+	}
+	cfg := plugin.PluginConfig{
+		PluginDir:   pluginDir,
+		CoreVersion: app.AppVersion,
+	}
+	logger := slog.Default().With(slog.String("component", "pluginhost"))
+	catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, logger)
+	pluginhost.SetGlobalCatalog(catalog)
+	for _, err := range errs {
+		logger.Warn("[CERTIMATE] plugin registration error", slog.Any("error", err))
+	}
+}
+
+func resolvePluginDir() string {
+	if dir := strings.TrimSpace(os.Getenv("CERTIMATE_PLUGIN_DIR")); dir != "" {
+		return dir
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(cwd, "plugins")
 }

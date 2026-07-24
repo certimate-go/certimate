@@ -11,6 +11,10 @@
     "unavailable_divider": "The following providers are not available (without added credentials)"
   },
 
+  "tag": {
+    "plugin": "Plugin"
+  },
+
   "category": {
     "all": "All",
     "cdn": "CDN",

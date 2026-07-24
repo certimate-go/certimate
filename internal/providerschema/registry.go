@@ -62,3 +62,48 @@ func newRegistry[T comparable]() Registry[T] {
 }
 
 var Registries = newRegistry[string]()
+
+type EnvelopeRegistry interface {
+	RegisterEnvelope(name string, env *Envelope) error
+	GetEnvelope(name string) (*Envelope, bool)
+	ListEnvelopes() []*Envelope
+}
+
+type envelopeRegistry struct {
+	envelopes map[string]*Envelope
+}
+
+func (r *envelopeRegistry) RegisterEnvelope(name string, env *Envelope) error {
+	if env == nil {
+		return fmt.Errorf("providerschema: envelope must not be nil")
+	}
+	if _, exists := r.envelopes[name]; exists {
+		return fmt.Errorf("providerschema: envelope for %q already registered", name)
+	}
+	r.envelopes[name] = env
+	return nil
+}
+
+func (r *envelopeRegistry) GetEnvelope(name string) (*Envelope, bool) {
+	env, ok := r.envelopes[name]
+	return env, ok
+}
+
+func (r *envelopeRegistry) ListEnvelopes() []*Envelope {
+	keys := make([]string, 0, len(r.envelopes))
+	for k := range r.envelopes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	out := make([]*Envelope, 0, len(keys))
+	for _, k := range keys {
+		out = append(out, r.envelopes[k])
+	}
+	return out
+}
+
+func newEnvelopeRegistry() EnvelopeRegistry {
+	return &envelopeRegistry{envelopes: make(map[string]*Envelope)}
+}
+
+var Envelopes = newEnvelopeRegistry()
