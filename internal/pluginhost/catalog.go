@@ -68,6 +68,18 @@ func (c *Catalog) Entries() []CatalogEntry {
 	return out
 }
 
+func (c *Catalog) Remove(providerType string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for i, e := range c.entries {
+		if e.ProviderType == providerType {
+			c.entries = append(c.entries[:i], c.entries[i+1:]...)
+			c.buildDeployersLocked()
+			return
+		}
+	}
+}
+
 func (c *Catalog) I18nBundles() map[string]map[string]map[string]string {
 	c.mu.RLock()
 	defer c.mu.RUnlock()

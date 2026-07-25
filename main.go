@@ -115,11 +115,20 @@ func scanPlugins() {
 		CoreVersion: app.AppVersion,
 	}
 	logger := slog.Default().With(slog.String("component", "pluginhost"))
+
 	catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, logger)
 	pluginhost.SetGlobalCatalog(catalog)
 	for _, err := range errs {
 		logger.Warn("[CERTIMATE] plugin registration error", slog.Any("error", err))
 	}
+
+	reloader := pluginhost.NewReloader(cfg, catalog, logger)
+	reloader.InitFromCatalog()
+	pluginhost.SetGlobalReloader(reloader)
+
+	watcher := pluginhost.NewWatcher(pluginDir, logger)
+	watcher.Start(context.Background())
+	reloader.Start(context.Background(), watcher)
 }
 
 func resolvePluginDir() string {
