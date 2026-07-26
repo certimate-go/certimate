@@ -15,6 +15,7 @@ type sdkResponse interface {
 
 type sdkResponseBase struct {
 	StatusCode   json.RawMessage `json:"statusCode,omitempty"`
+	Code         json.RawMessage `json:"code,omitempty"`
 	Message      *string         `json:"message,omitempty"`
 	Error        *string         `json:"error,omitempty"`
 	ErrorMessage *string         `json:"errorMessage,omitempty"`
@@ -22,11 +23,15 @@ type sdkResponseBase struct {
 }
 
 func (r *sdkResponseBase) GetStatusCode() string {
-	if r.StatusCode == nil {
+	statusCode := r.StatusCode
+	if statusCode == nil {
+		statusCode = r.Code
+	}
+	if statusCode == nil {
 		return ""
 	}
 
-	decoder := json.NewDecoder(bytes.NewReader(r.StatusCode))
+	decoder := json.NewDecoder(bytes.NewReader(statusCode))
 	token, err := decoder.Token()
 	if err != nil {
 		return ""

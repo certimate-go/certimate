@@ -371,7 +371,7 @@ const (
 	DeploymentProviderTypeCTCCCloudELB                  = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-elb")
 	DeploymentProviderTypeCTCCCloudFaaS                 = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-faas")
 	DeploymentProviderTypeCTCCCloudICDN                 = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-icdn")
-	DeploymentProviderTypeCTCCCloudLVDN                 = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-ldvn")
+	DeploymentProviderTypeCTCCCloudLVDN                 = DeploymentProviderType(AccessProviderTypeCTCCCloud + "-lvdn")
 	DeploymentProviderTypeDigitalOceanCertificate       = DeploymentProviderType(AccessProviderTypeDigitalOcean + "-certificate")
 	DeploymentProviderTypeDogeCloudCDN                  = DeploymentProviderType(AccessProviderTypeDogeCloud + "-cdn")
 	DeploymentProviderTypeDokploy                       = DeploymentProviderType(AccessProviderTypeDokploy)

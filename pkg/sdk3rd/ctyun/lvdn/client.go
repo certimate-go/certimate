@@ -11,10 +11,14 @@ import (
 	common "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/zz-shared-common"
 )
 
-const endpoint = "https://ctlvdn-global.ctapi.ctyun.cn"
+const (
+	endpoint       = "https://ctlvdn-global.ctapi.ctyun.cn"
+	domainEndpoint = "https://cdnapi-global.ctapi.ctyun.cn"
+)
 
 type Client struct {
-	client *common.Client
+	client       *common.Client
+	domainClient *common.Client
 }
 
 func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
@@ -23,7 +27,15 @@ func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{client: client}, nil
+	domainClient, err := common.NewClient(domainEndpoint, optFns...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		client:       client,
+		domainClient: domainClient,
+	}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -41,6 +53,15 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 
 func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*resty.Response, error) {
 	resp, err := c.client.DoRequestWithResult(req, res)
+	return validateSDKResponse(resp, res, err)
+}
+
+func (c *Client) doDomainRequestWithResult(req *resty.Request, res sdkResponse) (*resty.Response, error) {
+	resp, err := c.domainClient.DoRequestWithResult(req, res)
+	return validateSDKResponse(resp, res, err)
+}
+
+func validateSDKResponse(resp *resty.Response, res sdkResponse, err error) (*resty.Response, error) {
 	if err == nil {
 		rStatusCode := res.GetStatusCode()
 		rError := res.GetError()

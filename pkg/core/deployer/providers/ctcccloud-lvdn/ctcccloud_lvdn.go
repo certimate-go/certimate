@@ -152,9 +152,9 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			ProductCode: lo.ToPtr("005"),
 		}
 		queryDomainListResp, err := d.sdkClient.QueryDomainListWithContext(ctx, queryDomainListReq)
-		d.logger.Debug("sdk request 'cdn.QueryDomainList'", slog.Any("request", queryDomainListReq), slog.Any("response", queryDomainListResp))
+		d.logger.Debug("sdk request 'lvdn.QueryDomainList'", slog.Any("request", queryDomainListReq), slog.Any("response", queryDomainListResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'cdn.QueryDomainList': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'lvdn.QueryDomainList': %w", err)
 		}
 
 		if queryDomainListResp.ReturnObj == nil {

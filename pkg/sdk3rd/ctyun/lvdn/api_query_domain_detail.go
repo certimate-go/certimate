@@ -3,8 +3,6 @@ package lvdn
 import (
 	"context"
 	"net/http"
-
-	qs "github.com/google/go-querystring/query"
 )
 
 type QueryDomainDetailRequest struct {
@@ -23,21 +21,16 @@ func (c *Client) QueryDomainDetail(req *QueryDomainDetailRequest) (*QueryDomainD
 }
 
 func (c *Client) QueryDomainDetailWithContext(ctx context.Context, req *QueryDomainDetailRequest) (*QueryDomainDetailResponse, error) {
-	httpreq, err := c.newRequest(http.MethodGet, "/live/domain/query-domain-detail")
+	httpreq, err := c.domainClient.NewRequest(http.MethodPost, "/live/domain/query-domain-detail")
 	if err != nil {
 		return nil, err
 	} else {
-		values, err := qs.Values(req)
-		if err != nil {
-			return nil, err
-		}
-
-		httpreq.SetQueryParamsFromValues(values)
+		httpreq.SetBody(req)
 		httpreq.SetContext(ctx)
 	}
 
 	result := &QueryDomainDetailResponse{}
-	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
+	if _, err := c.doDomainRequestWithResult(httpreq, result); err != nil {
 		return result, err
 	}
 

@@ -21,7 +21,7 @@ func (c *Client) UpdateDomain(req *UpdateDomainRequest) (*UpdateDomainResponse, 
 }
 
 func (c *Client) UpdateDomainWithContext(ctx context.Context, req *UpdateDomainRequest) (*UpdateDomainResponse, error) {
-	httpreq, err := c.newRequest(http.MethodPost, "/live/domain/update-domain")
+	httpreq, err := c.domainClient.NewRequest(http.MethodPost, "/live/domain/update-domain")
 	if err != nil {
 		return nil, err
 	} else {
@@ -30,7 +30,7 @@ func (c *Client) UpdateDomainWithContext(ctx context.Context, req *UpdateDomainR
 	}
 
 	result := &UpdateDomainResponse{}
-	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
+	if _, err := c.doDomainRequestWithResult(httpreq, result); err != nil {
 		return result, err
 	}
 
