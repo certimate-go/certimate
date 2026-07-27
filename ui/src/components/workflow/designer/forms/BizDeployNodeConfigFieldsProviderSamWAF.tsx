@@ -52,7 +52,7 @@ const BizDeployNodeConfigFieldsProviderSamWAF = () => {
           rules={[formRule]}
           tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.samwaf_certificate_id.tooltip") }}></span>}
         >
-          <Input type="number" placeholder={t("workflow_node.deploy.form.samwaf_certificate_id.placeholder")} />
+          <Input placeholder={t("workflow_node.deploy.form.samwaf_certificate_id.placeholder")} />
         </Form.Item>
       </Show>
     </>
@@ -71,13 +71,13 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       deployTarget: z.enum([DEPLOY_TARGET_CERTIFICATE]),
-      certificateId: z.union([z.string(), z.int().positive()]).nullish(),
+      certificateId: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.deployTarget) {
         case DEPLOY_TARGET_CERTIFICATE:
           {
-            const scCertificateId = z.coerce.number().int().positive();
+            const scCertificateId = z.guid();
             const spCertificateId = scCertificateId.safeParse(values.certificateId);
             if (!spCertificateId.success) {
               ctx.addIssue({
