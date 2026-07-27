@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	"os"
+	"slices"
 	"strings"
 	_ "time/tzdata"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/spf13/pflag"
 
 	"github.com/certimate-go/certimate/cmd"
 	"github.com/certimate-go/certimate/internal/app"
@@ -40,15 +40,9 @@ func main() {
 	pb.RootCmd.AddCommand(cmd.NewVersionCommand(pb))
 	pb.RootCmd.AddCommand(cmd.NewWinscCommand(pb))
 
-	isServeCmd := os.Args[1] == "serve"
+	isServeCmd := slices.Contains(os.Args[1:], "serve")
 
 	if isServeCmd {
-		var flagHttp string
-		pflag.CommandLine = pflag.NewFlagSet(os.Args[0], pflag.ContinueOnError)
-		pflag.CommandLine.Parse(os.Args[2:]) // skip the first two arguments: "main.go serve"
-		pflag.StringVar(&flagHttp, "http", "127.0.0.1:8090", "HTTP server address")
-		pflag.Parse()
-
 		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
 			if err := e.Next(); err != nil {
 				return err
@@ -77,7 +71,7 @@ func main() {
 				return err
 			}
 
-			slog.Info("[CERTIMATE] Visit the website: http://" + flagHttp)
+			slog.Info("[CERTIMATE] Serving on " + e.Server.Addr)
 			return nil
 		})
 
