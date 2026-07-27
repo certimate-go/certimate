@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMount } from "ahooks";
-import { App, Button, Flex, Form } from "antd";
+import { App, Button, Flex, Form, Alert } from "antd";
 
 import AccessForm, { type AccessFormUsages } from "@/components/access/AccessForm";
 import AccessProviderPicker, { type AccessProviderPickerInstance } from "@/components/provider/AccessProviderPicker";
@@ -80,6 +80,17 @@ const AccessNew = () => {
 
       <div className="container">
         <Show when={!fieldProvider}>
+          <Alert
+            type="info"
+            message={t("plugin.market.nudge")}
+            action={
+              <Button size="small" onClick={() => navigate("/settings/plugins")}>
+                {t("plugin.market.browse")}
+              </Button>
+            }
+            closable
+            className="mb-4"
+          />
           <AccessProviderPicker
             ref={providerPickerRef}
             gap="large"

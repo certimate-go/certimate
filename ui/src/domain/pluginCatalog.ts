@@ -19,6 +19,13 @@ const usageMap: Record<string, string> = {
 };
 
 export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
+  for (const [key, val] of deploymentProvidersMap) {
+    if (val.source === "plugin") deploymentProvidersMap.delete(key);
+  }
+  for (const [key, val] of accessProvidersMap) {
+    if (val.source === "plugin") accessProvidersMap.delete(key);
+  }
+
   for (const entry of entries) {
     const accessType = entry.accessProviderType || entry.providerType;
 

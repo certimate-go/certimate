@@ -1,0 +1,40 @@
+{
+  "$ns": "plugin",
+
+  "market": {
+    "nudge": "Didn't find the provider you need? Browse the plugin marketplace for more.",
+    "browse": "Browse marketplace",
+
+    "empty": "No plugins available",
+    "error": {
+      "load_failed": "Failed to load plugin marketplace",
+      "install_failed": "Failed to install plugin",
+      "delete_failed": "Failed to delete plugin",
+      "update_failed": "Failed to update plugin"
+    },
+    "msg": {
+      "installed": "Plugin installed",
+      "deleted": "Plugin removed",
+      "updated": "Plugin updated"
+    },
+    "action": {
+      "install": "Install",
+      "delete": "Delete",
+      "update": "Update to",
+      "retry": "Retry",
+      "refresh": "Refresh"
+    },
+    "label": {
+      "update_available": "Update available",
+      "manual": "Manual",
+      "unsupported_platform": "Unsupported platform"
+    },
+    "status": {
+      "not_installed": "Not installed",
+      "installed": "Installed",
+      "update_available": "Update available",
+      "installed_manual": "Manual",
+      "unsupported_platform": "Unsupported"
+    }
+  }
+}

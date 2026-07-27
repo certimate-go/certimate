@@ -126,6 +126,12 @@ func scanPlugins() {
 	reloader.InitFromCatalog()
 	pluginhost.SetGlobalReloader(reloader)
 
+	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
+		PluginDir: pluginDir,
+		Logger:    logger,
+	})
+	pluginhost.SetGlobalMarketService(marketSvc)
+
 	watcher := pluginhost.NewWatcher(pluginDir, logger)
 	watcher.Start(context.Background())
 	reloader.Start(context.Background(), watcher)

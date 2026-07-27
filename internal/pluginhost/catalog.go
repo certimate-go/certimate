@@ -5,7 +5,10 @@ import (
 	"sync"
 )
 
-const SourcePlugin = "plugin"
+const (
+	SourcePlugin      = "plugin"
+	SourceMarketplace = "marketplace"
+)
 
 type CatalogEntry struct {
 	Source               string                       `json:"source"`

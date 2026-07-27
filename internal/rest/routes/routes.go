@@ -47,4 +47,5 @@ func BindRouter(router *router.Router[*core.RequestEvent]) {
 	handlers.NewProviderSchemaHandler(group, providerSchemaSvc)
 	handlers.NewPluginCatalogHandler(group, pluginhost.GlobalCatalog())
 	handlers.NewPluginAdminHandler(group)
+	handlers.NewPluginMarketHandler(group, pluginhost.GlobalMarketService())
 }
