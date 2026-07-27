@@ -28,6 +28,8 @@ type Column struct {
 	Options        []Option         `json:"options,omitempty"`
 	Min            *float64         `json:"min,omitempty"`
 	Max            *float64         `json:"max,omitempty"`
+	Language       string           `json:"language,omitempty"`
+	UnitKey        string           `json:"unitKey,omitempty"`
 	FilterMode     FilterMode       `json:"filterMode,omitempty"`
 	Span           int              `json:"span,omitempty"`
 	Dependencies   []string         `json:"dependencies,omitempty"`

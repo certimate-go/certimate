@@ -37,6 +37,8 @@ export interface SchemaColumn {
   options?: SchemaOption[];
   min?: number;
   max?: number;
+  language?: string;
+  unitKey?: string;
   filterMode?: SchemaFilterMode;
   span?: number;
   dependencies?: string[];

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { SchemaColumn } from "@/api/providerschema";
 
-import { buildValueEnum, discriminatorFields, isColumnVisible, mapValueType } from "./schemaValueTypes";
+import { buildValueEnum, discriminatorFields, isColumnVisible, mapValueType, unitFieldProps } from "./schemaValueTypes";
 
 describe("mapValueType", () => {
   it("maps known valueTypes to ProComponents valueTypes", () => {
@@ -65,5 +65,23 @@ describe("discriminatorFields", () => {
       { name: "b", valueType: "text", dependencies: ["fmt"] },
     ];
     expect(discriminatorFields(cols).sort()).toEqual(["fmt", "useSCP"]);
+  });
+});
+
+describe("unitFieldProps", () => {
+  const t = (k: string) => `T(${k})`;
+
+  it("returns addonAfter for digit (number) fields", () => {
+    expect(unitFieldProps("digit", "unit.seconds", t)).toEqual({ addonAfter: "T(unit.seconds)" });
+  });
+
+  it("returns suffix for non-digit fields", () => {
+    expect(unitFieldProps("text", "unit.seconds", t)).toEqual({ suffix: "T(unit.seconds)" });
+    expect(unitFieldProps("textarea", "unit.seconds", t)).toEqual({ suffix: "T(unit.seconds)" });
+  });
+
+  it("returns nothing when no unitKey is provided", () => {
+    expect(unitFieldProps("digit", undefined, t)).toEqual({});
+    expect(unitFieldProps("text", undefined, t)).toEqual({});
   });
 });
