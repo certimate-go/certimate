@@ -9,13 +9,12 @@ import (
 	"time"
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/smithy-go"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	awsiamsdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/iam"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -40,7 +39,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *iam.Client
+	sdkClient *awsiamsdk.Client
 }
 
 var _ Provider = (*Certmgr)(nil)
@@ -99,7 +98,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			Marker:     listServerCertificatesMarker,
 			MaxItems:   aws.Int32(1000),
 		}
-		listServerCertificatesResp, err := c.sdkClient.ListServerCertificates(ctx, listServerCertificatesReq)
+		listServerCertificatesResp, err := c.sdkClient.ListServerCertificatesWithContext(ctx, listServerCertificatesReq)
 		c.logger.Debug("sdk request 'iam.ListServerCertificates'", slog.Any("request", listServerCertificatesReq), slog.Any("response", listServerCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'iam.ListServerCertificates': %w", err)
@@ -112,15 +111,15 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
-			if certItem.Expiration == nil || !certX509.NotAfter.Equal(*certItem.Expiration) {
+			if certItem.Expiration == nil || certX509.NotAfter.Unix() != certItem.Expiration.Unix() {
 				continue
 			}
 
 			// 对比证书内容
-			getServerCertificateReq := &iam.GetServerCertificateInput{
+			getServerCertificateReq := &awsiamsdk.GetServerCertificateRequest{
 				ServerCertificateName: certItem.ServerCertificateName,
 			}
-			getServerCertificateResp, err := c.sdkClient.GetServerCertificate(ctx, getServerCertificateReq)
+			getServerCertificateResp, err := c.sdkClient.GetServerCertificateWithContext(ctx, getServerCertificateReq)
 			if err != nil {
 				var sdkErr smithy.APIError
 				if errors.As(err, &sdkErr) {
@@ -160,14 +159,14 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 	// 导入证书
 	// REF: https://docs.aws.amazon.com/IAM/latest/APIReference/API_UploadServerCertificate.html
-	uploadServerCertificateReq := &iam.UploadServerCertificateInput{
+	uploadServerCertificateReq := &awsiamsdk.UploadServerCertificateRequest{
 		ServerCertificateName: aws.String(certName),
 		Path:                  aws.String(cmp.Or(c.config.CertificatePath, "/")),
 		CertificateBody:       aws.String(serverCertPEM),
 		CertificateChain:      aws.String(issuerCertPEM),
 		PrivateKey:            aws.String(privkeyPEM),
 	}
-	uploadServerCertificateResp, err := c.sdkClient.UploadServerCertificate(ctx, uploadServerCertificateReq)
+	uploadServerCertificateResp, err := c.sdkClient.UploadServerCertificateWithContext(ctx, uploadServerCertificateReq)
 	c.logger.Debug("sdk request 'iam.UploadServerCertificate'", slog.Any("request", uploadServerCertificateReq), slog.Any("response", uploadServerCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'iam.UploadServerCertificate': %w", err)
@@ -187,15 +186,14 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return nil, core.ErrUnsupported
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*iam.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
-		awscfg.WithRegion(region),
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*awsiamsdk.Client, error) {
+	client, err := awsiamsdk.NewClient(
+		awsiamsdk.WithAkSk(accessKeyId, secretAccessKey),
+		awsiamsdk.WithRegion(region),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := iam.NewFromConfig(cfg)
 	return client, nil
 }

@@ -6,13 +6,11 @@ import (
 	"log/slog"
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/apigatewayv2"
 	"github.com/aws/aws-sdk-go-v2/service/apigatewayv2/types"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
+	awsapigatewaysdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/apigatewayv2"
 )
 
 type (
@@ -37,7 +35,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *apigatewayv2.Client
+	sdkClient  *awsapigatewaysdk.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -102,7 +100,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 更新自定义域名
 	// REF: https://docs.aws.amazon.com/apigateway/latest/api/API_UpdateDomainName.html
-	updateDomainNameReq := &apigatewayv2.UpdateDomainNameInput{
+	updateDomainNameReq := &awsapigatewaysdk.UpdateDomainNameRequest{
 		DomainName: aws.String(d.config.Domain),
 		DomainNameConfigurations: []types.DomainNameConfiguration{
 			{
@@ -110,7 +108,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			},
 		},
 	}
-	updateDomainNameResp, err := d.sdkClient.UpdateDomainName(ctx, updateDomainNameReq)
+	updateDomainNameResp, err := d.sdkClient.UpdateDomainNameWithContext(ctx, updateDomainNameReq)
 	d.logger.Debug("sdk request 'apigatewayv2.UpdateDomainName'", slog.Any("request", updateDomainNameReq), slog.Any("response", updateDomainNameResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'apigatewayv2.UpdateDomainName': %w", err)
@@ -119,15 +117,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*apigatewayv2.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
-		awscfg.WithRegion(region),
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*awsapigatewaysdk.Client, error) {
+	client, err := awsapigatewaysdk.NewClient(
+		awsapigatewaysdk.WithAkSk(accessKeyId, secretAccessKey),
+		awsapigatewaysdk.WithRegion(region),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := apigatewayv2.NewFromConfig(cfg)
 	return client, nil
 }
