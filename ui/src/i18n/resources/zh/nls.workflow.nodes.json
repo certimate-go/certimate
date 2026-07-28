@@ -1543,10 +1543,6 @@
         "label": "天翼云 LVDN 加速域名",
         "placeholder": "请输入天翼云 LVDN 加速域名"
       },
-      "dogecloud_cdn_domain": {
-        "label": "多吉云 CDN 加速域名",
-        "placeholder": "请输入多吉云 CDN 加速域名"
-      },
       "flexcdn_deploy_target": {
         "option": {
           "certificate": {
@@ -1777,59 +1773,6 @@
       "jdcloud_waf_domain": {
         "label": "京东云 WAF 防护域名",
         "placeholder": "请输入京东云 WAF 防护域名"
-      },
-      "k8s_namespace": {
-        "label": "Kubernetes 命名空间",
-        "placeholder": "请输入 Kubernetes 命名空间",
-        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/namespaces/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/overview/working-with-objects/namespaces/</a>"
-      },
-      "k8s_secret_name": {
-        "label": "Kubernetes Secret 名称",
-        "placeholder": "请输入 Kubernetes Secret 名称",
-        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_type": {
-        "label": "Kubernetes Secret 类型",
-        "placeholder": "请输入 Kubernetes Secret 类型",
-        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_key": {
-        "label": "Kubernetes Secret 数据键（用于存放私钥的字段）",
-        "placeholder": "请输入 Kubernetes Secret 中用于存放私钥的数据键",
-        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_crt": {
-        "label": "Kubernetes Secret 数据键之存放证书的字段",
-        "placeholder": "请输入 Kubernetes Secret 中用于存放证书的数据键",
-        "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_servercrt": {
-        "label": "Kubernetes Secret 数据键之存放仅服务器证书的字段（可选）",
-        "placeholder": "请输入 Kubernetes Secret 中用于存放服务器证书的数据键",
-        "help": "提示：不填写时将不会保存服务器证书。"
-      },
-      "k8s_secret_data_key_for_intermediacrt": {
-        "label": "Kubernetes Secret 数据键之存放仅中间证书的字段（可选）",
-        "placeholder": "请输入 Kubernetes Secret 中用于存放中间证书的数据键",
-        "help": "提示：不填写时将不会保存中间证书。"
-      },
-      "k8s_secret_annotations": {
-        "label": "Kubernetes Secret 注解（可选）",
-        "placeholder": "请输入 Kubernetes Secret 注解",
-        "help": "提示：每行一个键值对，以分号分隔。",
-        "errmsg": {
-          "invalid": "无效的注解键值对"
-        },
-        "tooltip": "示例：<br><i>environment: production<br>app: nginx</i>"
-      },
-      "k8s_secret_labels": {
-        "label": "Kubernetes Secret 标签（可选）",
-        "placeholder": "请输入 Kubernetes Secret 标签",
-        "help": "提示：每行一个键值对，以分号分隔。",
-        "errmsg": {
-          "invalid": "无效的标签键值对"
-        },
-        "tooltip": "示例：<br><i>environment: production<br>app: nginx</i>"
       },
       "kong": {
         "guide": "需要 Kong v2.0 或更高版本。"

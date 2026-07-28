@@ -1544,10 +1544,6 @@
         "label": "CTCC StateCloud LVDN domain",
         "placeholder": "Please enter CTCC StateCloud LVDN domain name"
       },
-      "dogecloud_cdn_domain": {
-        "label": "Doge Cloud CDN domain",
-        "placeholder": "Please enter Doge Cloud CDN domain name"
-      },
       "flexcdn_deploy_target": {
         "option": {
           "certificate": {
@@ -1778,59 +1774,6 @@
       "jdcloud_waf_domain": {
         "label": "JD Cloud WAF domain",
         "placeholder": "Please enter JD Cloud WAF domain name"
-      },
-      "k8s_namespace": {
-        "label": "Kubernetes Namespace",
-        "placeholder": "Please enter Kubernetes Namespace",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/\" target=\"_blank\">https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</a>"
-      },
-      "k8s_secret_name": {
-        "label": "Kubernetes Secret name",
-        "placeholder": "Please enter Kubernetes Secret name",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_type": {
-        "label": "Kubernetes Secret type",
-        "placeholder": "Please enter Kubernetes Secret type",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_key": {
-        "label": "Kubernetes Secret data key for private key",
-        "placeholder": "Please enter Kubernetes Secret data key for private key",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_crt": {
-        "label": "Kubernetes Secret data key for certificate",
-        "placeholder": "Please enter Kubernetes Secret data key for certificate",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_servercrt": {
-        "label": "Kubernetes Secret data key for certificate (includes the end-entity parts only) (Optional)",
-        "placeholder": "Please enter Kubernetes Secret data key for server certificate",
-        "help": ""
-      },
-      "k8s_secret_data_key_for_intermediacrt": {
-        "label": "Kubernetes Secret data key for certificate (includes the CA parts only) (Optional)",
-        "placeholder": "Please enter Kubernetes Secret data key for intermediate certificate",
-        "help": ""
-      },
-      "k8s_secret_annotations": {
-        "label": "Kubernetes Secret annotations (Optional)",
-        "placeholder": "Please enter Kubernetes Secret annotations",
-        "help": "Notes: One key value pair per line, separated by colon.",
-        "errmsg": {
-          "invalid": "Invalid annotations"
-        },
-        "tooltip": "Example: <br><i>environment: production<br>app: nginx</i>"
-      },
-      "k8s_secret_labels": {
-        "label": "Kubernetes Secret labels (Optional)",
-        "placeholder": "Please enter Kubernetes Secret labels",
-        "help": "Notes: One key value pair per line, separated by colon.",
-        "errmsg": {
-          "invalid": "Invalid labels"
-        },
-        "tooltip": "Example: <br><i>environment: production<br>app: nginx</i>"
       },
       "kong": {
         "guide": "Requires Kong v2.0 or higher."
