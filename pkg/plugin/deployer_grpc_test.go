@@ -3,7 +3,9 @@ package plugin
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net"
+	"sync"
 	"testing"
 
 	"google.golang.org/grpc"
@@ -20,6 +22,7 @@ type fakeDeployer struct {
 	deployRequest *DeployRequest
 	deployResult  *DeployResult
 	deployErr     error
+	deployLogs    []string
 	metadataCalls int
 	schemaCalls   int
 	deployCalls   int
@@ -35,9 +38,14 @@ func (f *fakeDeployer) GetConfigSchema(ctx context.Context) (*ConfigSchema, erro
 	return f.configSchema, nil
 }
 
-func (f *fakeDeployer) Deploy(ctx context.Context, req *DeployRequest) (*DeployResult, error) {
+func (f *fakeDeployer) Deploy(ctx context.Context, req *DeployRequest, logger *slog.Logger) (*DeployResult, error) {
 	f.deployCalls++
 	f.deployRequest = req
+	for _, msg := range f.deployLogs {
+		if logger != nil {
+			logger.Info(msg)
+		}
+	}
 	if f.deployErr != nil {
 		return nil, f.deployErr
 	}
@@ -136,7 +144,7 @@ func TestDeployerGRPC_DeployRoundTrip(t *testing.T) {
 		CertificatePEM:     "CERT",
 		PrivateKeyPEM:      "KEY",
 	}
-	res, err := client.Deploy(context.Background(), req)
+	res, err := client.Deploy(context.Background(), req, nil)
 	if err != nil {
 		t.Fatalf("Deploy: %v", err)
 	}
@@ -159,7 +167,7 @@ func TestDeployerGRPC_PluginErrorPreserved(t *testing.T) {
 	client, cleanup := newRoundTrip(t, impl)
 	defer cleanup()
 
-	_, err := client.Deploy(context.Background(), &DeployRequest{})
+	_, err := client.Deploy(context.Background(), &DeployRequest{}, nil)
 	if err == nil {
 		t.Fatal("expected plugin error, got nil")
 	}
@@ -169,5 +177,78 @@ func TestDeployerGRPC_PluginErrorPreserved(t *testing.T) {
 	}
 	if st.Message() != "boom from plugin" {
 		t.Fatalf("expected message preserved across RPC, got %q", st.Message())
+	}
+}
+
+type captureHandler struct {
+	mu      sync.Mutex
+	records []capturedRecord
+}
+
+type capturedRecord struct {
+	Level   slog.Level
+	Message string
+	Attrs   map[string]string
+}
+
+func (h *captureHandler) Enabled(_ context.Context, _ slog.Level) bool { return true }
+
+func (h *captureHandler) Handle(_ context.Context, r slog.Record) error {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	attrs := map[string]string{}
+	r.Attrs(func(a slog.Attr) bool {
+		attrs[a.Key] = a.Value.String()
+		return true
+	})
+	h.records = append(h.records, capturedRecord{Level: r.Level, Message: r.Message, Attrs: attrs})
+	return nil
+}
+
+func (h *captureHandler) WithAttrs(_ []slog.Attr) slog.Handler { return h }
+func (h *captureHandler) WithGroup(_ string) slog.Handler      { return h }
+
+func TestDeployerGRPC_DeployStreamsLogsThenResult(t *testing.T) {
+	impl := &fakeDeployer{
+		deployLogs:   []string{"sending webhook", "got status 200"},
+		deployResult: &DeployResult{ExtendedDataJSON: `{"foo":"bar"}`},
+	}
+	client, cleanup := newRoundTrip(t, impl)
+	defer cleanup()
+
+	cap := &captureHandler{}
+	res, err := client.Deploy(context.Background(), &DeployRequest{LogLevel: "INFO"}, slog.New(cap))
+	if err != nil {
+		t.Fatalf("Deploy: %v", err)
+	}
+	if res.ExtendedDataJSON != `{"foo":"bar"}` {
+		t.Fatalf("result mismatch: %v", res)
+	}
+	if len(cap.records) != 2 {
+		t.Fatalf("expected 2 forwarded log records, got %d: %+v", len(cap.records), cap.records)
+	}
+	if cap.records[0].Message != "sending webhook" || cap.records[1].Message != "got status 200" {
+		t.Fatalf("log order/content mismatch: %+v", cap.records)
+	}
+	if cap.records[0].Level != slog.LevelInfo {
+		t.Fatalf("level not preserved: %+v", cap.records)
+	}
+}
+
+func TestDeployerGRPC_DeployNoLogsStillReturnsResult(t *testing.T) {
+	impl := &fakeDeployer{deployResult: &DeployResult{ExtendedDataJSON: `{"ok":true}`}}
+	client, cleanup := newRoundTrip(t, impl)
+	defer cleanup()
+
+	cap := &captureHandler{}
+	res, err := client.Deploy(context.Background(), &DeployRequest{}, slog.New(cap))
+	if err != nil {
+		t.Fatalf("Deploy: %v", err)
+	}
+	if res.ExtendedDataJSON != `{"ok":true}` {
+		t.Fatalf("result mismatch: %v", res)
+	}
+	if len(cap.records) != 0 {
+		t.Fatalf("expected no log records, got %+v", cap.records)
 	}
 }

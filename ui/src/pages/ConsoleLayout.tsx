@@ -24,6 +24,7 @@ import Show from "@/components/Show";
 import { APP_DOCUMENT_URL, APP_REPO_URL } from "@/domain/app";
 import { useTriggerElement } from "@/hooks";
 import { getAuthStore } from "@/repository/admin";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { isBrowserHappy } from "@/utils/browser";
 
 const ConsoleLayout = () => {
@@ -226,6 +227,10 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
       navigate(menuSelectedKey);
     }
   }, [menuSelectedKey]);
+
+  useEffect(() => {
+    void usePluginCatalogStore.getState().reload();
+  }, []);
 
   return (
     <>

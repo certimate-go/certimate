@@ -58,7 +58,7 @@ func (d *pluginDeployer) Deploy(ctx context.Context, certPEM, privkeyPEM string)
 		PrivateKeyPEM:      privkeyPEM,
 	}
 
-	res, err := d.factory.manager.Deploy(ctx, d.factory.dp, req)
+	res, err := d.factory.manager.Deploy(ctx, d.factory.dp, req, d.logger)
 	if err != nil {
 		return nil, err
 	}

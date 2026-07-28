@@ -30,7 +30,7 @@ const (
 type DeployerPluginClient interface {
 	GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
 	GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error)
-	Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*DeployResponse, error)
+	Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DeployFrame], error)
 }
 
 type deployerPluginClient struct {
@@ -61,15 +61,24 @@ func (c *deployerPluginClient) GetConfigSchema(ctx context.Context, in *GetConfi
 	return out, nil
 }
 
-func (c *deployerPluginClient) Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*DeployResponse, error) {
+func (c *deployerPluginClient) Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DeployFrame], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeployResponse)
-	err := c.cc.Invoke(ctx, DeployerPlugin_Deploy_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &DeployerPlugin_ServiceDesc.Streams[0], DeployerPlugin_Deploy_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[DeployRequest, DeployFrame]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type DeployerPlugin_DeployClient = grpc.ServerStreamingClient[DeployFrame]
 
 // DeployerPluginServer is the server API for DeployerPlugin service.
 // All implementations must embed UnimplementedDeployerPluginServer
@@ -77,7 +86,7 @@ func (c *deployerPluginClient) Deploy(ctx context.Context, in *DeployRequest, op
 type DeployerPluginServer interface {
 	GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
 	GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error)
-	Deploy(context.Context, *DeployRequest) (*DeployResponse, error)
+	Deploy(*DeployRequest, grpc.ServerStreamingServer[DeployFrame]) error
 	mustEmbedUnimplementedDeployerPluginServer()
 }
 
@@ -94,8 +103,8 @@ func (UnimplementedDeployerPluginServer) GetMetadata(context.Context, *GetMetada
 func (UnimplementedDeployerPluginServer) GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetConfigSchema not implemented")
 }
-func (UnimplementedDeployerPluginServer) Deploy(context.Context, *DeployRequest) (*DeployResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Deploy not implemented")
+func (UnimplementedDeployerPluginServer) Deploy(*DeployRequest, grpc.ServerStreamingServer[DeployFrame]) error {
+	return status.Error(codes.Unimplemented, "method Deploy not implemented")
 }
 func (UnimplementedDeployerPluginServer) mustEmbedUnimplementedDeployerPluginServer() {}
 func (UnimplementedDeployerPluginServer) testEmbeddedByValue()                        {}
@@ -154,23 +163,16 @@ func _DeployerPlugin_GetConfigSchema_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DeployerPlugin_Deploy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeployRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _DeployerPlugin_Deploy_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(DeployRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(DeployerPluginServer).Deploy(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DeployerPlugin_Deploy_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeployerPluginServer).Deploy(ctx, req.(*DeployRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(DeployerPluginServer).Deploy(m, &grpc.GenericServerStream[DeployRequest, DeployFrame]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type DeployerPlugin_DeployServer = grpc.ServerStreamingServer[DeployFrame]
 
 // DeployerPlugin_ServiceDesc is the grpc.ServiceDesc for DeployerPlugin service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -187,11 +189,13 @@ var DeployerPlugin_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetConfigSchema",
 			Handler:    _DeployerPlugin_GetConfigSchema_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Deploy",
-			Handler:    _DeployerPlugin_Deploy_Handler,
+			StreamName:    "Deploy",
+			Handler:       _DeployerPlugin_Deploy_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "pkg/plugin/proto/plugin.proto",
 }

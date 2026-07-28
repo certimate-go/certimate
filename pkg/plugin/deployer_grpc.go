@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"log/slog"
 
 	githubplugin "github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
@@ -41,7 +42,7 @@ type DeployResult struct {
 type Deployer interface {
 	GetMetadata(ctx context.Context) (*Metadata, error)
 	GetConfigSchema(ctx context.Context) (*ConfigSchema, error)
-	Deploy(ctx context.Context, req *DeployRequest) (*DeployResult, error)
+	Deploy(ctx context.Context, req *DeployRequest, logger *slog.Logger) (*DeployResult, error)
 }
 
 type PluginSet = githubplugin.PluginSet
@@ -101,18 +102,24 @@ func (s *deployerGRPCServer) GetConfigSchema(ctx context.Context, _ *proto.GetCo
 	}, nil
 }
 
-func (s *deployerGRPCServer) Deploy(ctx context.Context, req *proto.DeployRequest) (*proto.DeployResponse, error) {
+func (s *deployerGRPCServer) Deploy(req *proto.DeployRequest, stream proto.DeployerPlugin_DeployServer) error {
+	ctx := stream.Context()
+	logger := NewStreamLogger(stream, parseLogLevel(req.LogLevel))
 	res, err := s.impl.Deploy(ctx, &DeployRequest{
 		LogLevel:           req.LogLevel,
 		AccessConfigJSON:   req.AccessConfigJson,
 		ExtendedConfigJSON: req.ExtendedConfigJson,
 		CertificatePEM:     req.CertificatePem,
 		PrivateKeyPEM:      req.PrivateKeyPem,
-	})
+	}, logger)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &proto.DeployResponse{ExtendedDataJson: res.ExtendedDataJSON}, nil
+	return stream.Send(&proto.DeployFrame{
+		Frame: &proto.DeployFrame_Result{
+			Result: &proto.DeployResponse{ExtendedDataJson: res.ExtendedDataJSON},
+		},
+	})
 }
 
 type deployerGRPCClient struct {
@@ -150,8 +157,8 @@ func (c *deployerGRPCClient) GetConfigSchema(ctx context.Context) (*ConfigSchema
 	}, nil
 }
 
-func (c *deployerGRPCClient) Deploy(ctx context.Context, req *DeployRequest) (*DeployResult, error) {
-	resp, err := c.raw.Deploy(ctx, &proto.DeployRequest{
+func (c *deployerGRPCClient) Deploy(ctx context.Context, req *DeployRequest, logger *slog.Logger) (*DeployResult, error) {
+	stream, err := c.raw.Deploy(ctx, &proto.DeployRequest{
 		LogLevel:           req.LogLevel,
 		AccessConfigJson:   req.AccessConfigJSON,
 		ExtendedConfigJson: req.ExtendedConfigJSON,
@@ -161,5 +168,27 @@ func (c *deployerGRPCClient) Deploy(ctx context.Context, req *DeployRequest) (*D
 	if err != nil {
 		return nil, err
 	}
-	return &DeployResult{ExtendedDataJSON: resp.ExtendedDataJson}, nil
+	for {
+		frame, err := stream.Recv()
+		if err != nil {
+			return nil, err
+		}
+		switch f := frame.Frame.(type) {
+		case *proto.DeployFrame_Log:
+			forwardLog(ctx, logger, f.Log)
+		case *proto.DeployFrame_Result:
+			return &DeployResult{ExtendedDataJSON: f.Result.ExtendedDataJson}, nil
+		}
+	}
+}
+
+func forwardLog(ctx context.Context, logger *slog.Logger, e *proto.LogEntry) {
+	if logger == nil || e == nil {
+		return
+	}
+	attrs := make([]any, 0, len(e.Data))
+	for k, v := range e.Data {
+		attrs = append(attrs, slog.String(k, v))
+	}
+	logger.Log(ctx, slog.Level(e.Level), e.Message, attrs...)
 }

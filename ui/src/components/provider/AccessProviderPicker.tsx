@@ -47,12 +47,12 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
 
     const { wrapperElRef, cols } = usePickerWrapperCols(showOptionTagAnyhow ? 240 : 200);
 
-    const pluginCatalogLoaded = usePluginCatalogStore((s) => s.loaded);
+    const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
 
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
-    const allProviders = useMemo(() => Array.from(accessProvidersMap.values()), [pluginCatalogLoaded]);
+    const allProviders = useMemo(() => Array.from(accessProvidersMap.values()), [pluginCatalogVersion]);
 
     const dataSources = usePickerDataSource({
       dataSource: allProviders,

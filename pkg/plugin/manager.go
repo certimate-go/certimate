@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os/exec"
 	"strings"
+	"sync"
 
 	githubplugin "github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc/codes"
@@ -52,11 +53,18 @@ func (m *Manager) Bootstrap(ctx context.Context, dp *DiscoveredPlugin) (*Metadat
 	return meta, schema, nil
 }
 
-func (m *Manager) Deploy(ctx context.Context, dp *DiscoveredPlugin, req *DeployRequest) (*DeployResult, error) {
+func (m *Manager) Deploy(ctx context.Context, dp *DiscoveredPlugin, req *DeployRequest, forward *slog.Logger) (*DeployResult, error) {
+	if m.cfg.DeployTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, m.cfg.DeployTimeout)
+		defer cancel()
+	}
+	redact := redactorFor(req)
+	sink := newForwardLogger(forward, redact, m.cfg.MaxLogFrames)
 	var res *DeployResult
-	err := m.withPlugin(ctx, dp, redactorFor(req), func(d Deployer) error {
+	err := m.withPlugin(ctx, dp, redact, func(d Deployer) error {
 		var err error
-		res, err = d.Deploy(ctx, req)
+		res, err = d.Deploy(ctx, req, sink)
 		return err
 	})
 	return res, err
@@ -189,6 +197,8 @@ func redactorFor(req *DeployRequest) secretRedactor {
 	if req != nil {
 		collect(req.AccessConfigJSON)
 		collect(req.ExtendedConfigJSON)
+		collectPEM(&secrets, req.CertificatePEM)
+		collectPEM(&secrets, req.PrivateKeyPEM)
 	}
 	return func(s string) string {
 		for _, sec := range secrets {
@@ -212,5 +222,67 @@ func flattenValues(v any) []any {
 	default:
 		out = append(out, v)
 	}
+	return out
+}
+
+func collectPEM(secrets *[]string, pem string) {
+	pem = strings.TrimSpace(pem)
+	if len(pem) >= 4 {
+		*secrets = append(*secrets, pem)
+	}
+	for _, line := range strings.Split(pem, "\n") {
+		line = strings.TrimSpace(line)
+		if len(line) >= 32 && !strings.HasPrefix(line, "-----") {
+			*secrets = append(*secrets, line)
+		}
+	}
+}
+
+type forwardHandler struct {
+	mu     sync.Mutex
+	inner  slog.Handler
+	redact secretRedactor
+	cap    int
+	count  int
+}
+
+func newForwardLogger(forward *slog.Logger, redact secretRedactor, cap int) *slog.Logger {
+	if forward == nil {
+		return nil
+	}
+	return slog.New(&forwardHandler{inner: forward.Handler(), redact: redact, cap: cap})
+}
+
+func (h *forwardHandler) Enabled(ctx context.Context, l slog.Level) bool {
+	return h.inner.Enabled(ctx, l)
+}
+
+func (h *forwardHandler) Handle(ctx context.Context, r slog.Record) error {
+	h.mu.Lock()
+	if h.cap > 0 && h.count >= h.cap {
+		h.mu.Unlock()
+		return nil
+	}
+	h.count++
+	h.mu.Unlock()
+	attrs := redactAttrs(r, h.redact)
+	rec := slog.NewRecord(r.Time, r.Level, h.redact(r.Message), r.PC)
+	rec.AddAttrs(attrs...)
+	return h.inner.Handle(ctx, rec)
+}
+
+func (h *forwardHandler) WithAttrs(_ []slog.Attr) slog.Handler { return h }
+func (h *forwardHandler) WithGroup(_ string) slog.Handler      { return h }
+
+func redactAttrs(r slog.Record, redact secretRedactor) []slog.Attr {
+	out := make([]slog.Attr, 0, r.NumAttrs())
+	r.Attrs(func(a slog.Attr) bool {
+		a.Value = a.Value.Resolve()
+		if a.Value.Kind() == slog.KindString {
+			a.Value = slog.StringValue(redact(a.Value.String()))
+		}
+		out = append(out, a)
+		return true
+	})
 	return out
 }

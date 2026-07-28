@@ -21,7 +21,7 @@ const DeploymentProviderPicker = forwardRef<DeploymentProviderPickerInstance, De
   ({ className, style, gap = "medium", placeholder, showAvailability = false, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
-    const pluginCatalogLoaded = usePluginCatalogStore((s) => s.loaded);
+    const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
 
     const { wrapperElRef, cols } = usePickerWrapperCols(320);
 
@@ -30,7 +30,7 @@ const DeploymentProviderPicker = forwardRef<DeploymentProviderPickerInstance, De
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
-    const allProviders = useMemo(() => Array.from(deploymentProvidersMap.values()), [pluginCatalogLoaded]);
+    const allProviders = useMemo(() => Array.from(deploymentProvidersMap.values()), [pluginCatalogVersion]);
 
     const dataSources = usePickerDataSource({
       dataSource: allProviders,

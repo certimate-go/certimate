@@ -2,10 +2,17 @@ package pluginhost_test
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"io"
 	"log/slog"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -15,6 +22,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -133,8 +141,8 @@ func TestE2E_PilotDeploysThroughFullStack(t *testing.T) {
 	if err != nil {
 		t.Fatalf("pilot not in deployer registry: %v", err)
 	}
-	access, _ := json.Marshal(map[string]string{"url": srv.URL, "headers": "Authorization: Bearer e2e-secret"})
-	extended, _ := json.Marshal(map[string]string{"method": "POST", "path": "cert"})
+	access, _ := json.Marshal(map[string]string{"url": srv.URL, "method": "POST", "headers": "Authorization: Bearer e2e-secret"})
+	extended, _ := json.Marshal(map[string]string{})
 
 	deployer, err := factory(&deployers.ProviderFactoryOptions{
 		ProviderAccessConfig:   jsonMap(access),
@@ -143,20 +151,56 @@ func TestE2E_PilotDeploysThroughFullStack(t *testing.T) {
 	if err != nil {
 		t.Fatalf("factory: %v", err)
 	}
-	deployer.SetLogger(slog.Default())
-	if _, err := deployer.Deploy(context.Background(), "E2E_CERT", "E2E_KEY"); err != nil {
+	sink := &captureSink{}
+	deployer.SetLogger(slog.New(sink))
+	certPEM, keyPEM := e2eSelfSignedCert(t, "e2e.example.com")
+	if _, err := deployer.Deploy(context.Background(), certPEM, keyPEM); err != nil {
 		t.Fatalf("deploy through full stack: %v", err)
 	}
 
-	if seen.method != "POST" || seen.path != "/cert" {
-		t.Fatalf("webhook target saw %s %s", seen.method, seen.path)
+	if !sink.has("webhook responded") {
+		t.Fatalf("plugin logs did not reach the deployer sink (parity with built-in); records=%+v", sink.records)
+	}
+
+	if seen.method != "POST" {
+		t.Fatalf("webhook target saw %s", seen.method)
 	}
 	if seen.auth != "Bearer e2e-secret" {
 		t.Fatalf("auth = %q", seen.auth)
 	}
-	if !strings.Contains(seen.body, "E2E_CERT") {
+	var gotBody map[string]string
+	if err := json.Unmarshal([]byte(seen.body), &gotBody); err != nil {
+		t.Fatalf("body not json: %v (%s)", err, seen.body)
+	}
+	if gotBody["cert"] != certPEM {
 		t.Fatalf("cert not forwarded: %s", seen.body)
 	}
+}
+
+func e2eSelfSignedCert(t *testing.T, commonName string) (certPEM, keyPEM string) {
+	t.Helper()
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatalf("generate key: %v", err)
+	}
+	tmpl := &x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject:      pkix.Name{CommonName: commonName},
+		DNSNames:     []string{commonName},
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(time.Hour),
+	}
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &priv.PublicKey, priv)
+	if err != nil {
+		t.Fatalf("create certificate: %v", err)
+	}
+	certPEM = string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}))
+	keyDER, err := x509.MarshalECPrivateKey(priv)
+	if err != nil {
+		t.Fatalf("marshal key: %v", err)
+	}
+	keyPEM = string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: keyDER}))
+	return certPEM, keyPEM
 }
 
 func TestE2E_SchemaEndpointServesPluginEnvelope(t *testing.T) {
@@ -238,4 +282,37 @@ func jsonMap(raw []byte) map[string]any {
 		panic(err)
 	}
 	return m
+}
+
+type captureSink struct {
+	mu      sync.Mutex
+	records []sinkRecord
+}
+
+type sinkRecord struct {
+	Level   slog.Level
+	Message string
+}
+
+func (c *captureSink) Enabled(_ context.Context, _ slog.Level) bool { return true }
+
+func (c *captureSink) Handle(_ context.Context, r slog.Record) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.records = append(c.records, sinkRecord{Level: r.Level, Message: r.Message})
+	return nil
+}
+
+func (c *captureSink) WithAttrs(_ []slog.Attr) slog.Handler { return c }
+func (c *captureSink) WithGroup(_ string) slog.Handler      { return c }
+
+func (c *captureSink) has(msg string) bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for _, r := range c.records {
+		if r.Message == msg {
+			return true
+		}
+	}
+	return false
 }

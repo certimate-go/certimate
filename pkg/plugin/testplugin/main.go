@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	githubplugin "github.com/hashicorp/go-plugin"
@@ -44,8 +45,11 @@ func (f *fakeDeployer) GetConfigSchema(ctx context.Context) (*plugin.ConfigSchem
 	}, nil
 }
 
-func (f *fakeDeployer) Deploy(ctx context.Context, req *plugin.DeployRequest) (*plugin.DeployResult, error) {
+func (f *fakeDeployer) Deploy(ctx context.Context, req *plugin.DeployRequest, logger *slog.Logger) (*plugin.DeployResult, error) {
 	fmt.Fprintf(os.Stderr, "fakeplugin deploy behavior=%s access=%s\n", f.behavior, req.AccessConfigJSON)
+	if logger != nil {
+		logger.Info("fakeplugin deploy starting", slog.String("behavior", f.behavior))
+	}
 	switch f.behavior {
 	case "crash":
 		fmt.Fprintln(os.Stderr, "fakeplugin crashing now")

@@ -401,6 +401,156 @@ func (x *DeployResponse) GetExtendedDataJson() string {
 	return ""
 }
 
+type LogEntry struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	TimestampMilli int64                  `protobuf:"varint,1,opt,name=timestamp_milli,json=timestampMilli,proto3" json:"timestamp_milli,omitempty"`
+	Level          int32                  `protobuf:"varint,2,opt,name=level,proto3" json:"level,omitempty"`
+	Message        string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Data           map[string]string      `protobuf:"bytes,4,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LogEntry) Reset() {
+	*x = LogEntry{}
+	mi := &file_pkg_plugin_proto_plugin_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogEntry) ProtoMessage() {}
+
+func (x *LogEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_plugin_proto_plugin_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogEntry.ProtoReflect.Descriptor instead.
+func (*LogEntry) Descriptor() ([]byte, []int) {
+	return file_pkg_plugin_proto_plugin_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *LogEntry) GetTimestampMilli() int64 {
+	if x != nil {
+		return x.TimestampMilli
+	}
+	return 0
+}
+
+func (x *LogEntry) GetLevel() int32 {
+	if x != nil {
+		return x.Level
+	}
+	return 0
+}
+
+func (x *LogEntry) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *LogEntry) GetData() map[string]string {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type DeployFrame struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Frame:
+	//
+	//	*DeployFrame_Log
+	//	*DeployFrame_Result
+	Frame         isDeployFrame_Frame `protobuf_oneof:"frame"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeployFrame) Reset() {
+	*x = DeployFrame{}
+	mi := &file_pkg_plugin_proto_plugin_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeployFrame) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeployFrame) ProtoMessage() {}
+
+func (x *DeployFrame) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_plugin_proto_plugin_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeployFrame.ProtoReflect.Descriptor instead.
+func (*DeployFrame) Descriptor() ([]byte, []int) {
+	return file_pkg_plugin_proto_plugin_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DeployFrame) GetFrame() isDeployFrame_Frame {
+	if x != nil {
+		return x.Frame
+	}
+	return nil
+}
+
+func (x *DeployFrame) GetLog() *LogEntry {
+	if x != nil {
+		if x, ok := x.Frame.(*DeployFrame_Log); ok {
+			return x.Log
+		}
+	}
+	return nil
+}
+
+func (x *DeployFrame) GetResult() *DeployResponse {
+	if x != nil {
+		if x, ok := x.Frame.(*DeployFrame_Result); ok {
+			return x.Result
+		}
+	}
+	return nil
+}
+
+type isDeployFrame_Frame interface {
+	isDeployFrame_Frame()
+}
+
+type DeployFrame_Log struct {
+	Log *LogEntry `protobuf:"bytes,1,opt,name=log,proto3,oneof"`
+}
+
+type DeployFrame_Result struct {
+	Result *DeployResponse `protobuf:"bytes,2,opt,name=result,proto3,oneof"`
+}
+
+func (*DeployFrame_Log) isDeployFrame_Frame() {}
+
+func (*DeployFrame_Result) isDeployFrame_Frame() {}
+
 var File_pkg_plugin_proto_plugin_proto protoreflect.FileDescriptor
 
 const file_pkg_plugin_proto_plugin_proto_rawDesc = "" +
@@ -434,11 +584,23 @@ const file_pkg_plugin_proto_plugin_proto_rawDesc = "" +
 	"\x0fcertificate_pem\x18\x04 \x01(\tR\x0ecertificatePem\x12&\n" +
 	"\x0fprivate_key_pem\x18\x05 \x01(\tR\rprivateKeyPem\">\n" +
 	"\x0eDeployResponse\x12,\n" +
-	"\x12extended_data_json\x18\x01 \x01(\tR\x10extendedDataJson2\xb3\x02\n" +
+	"\x12extended_data_json\x18\x01 \x01(\tR\x10extendedDataJson\"\xd9\x01\n" +
+	"\bLogEntry\x12'\n" +
+	"\x0ftimestamp_milli\x18\x01 \x01(\x03R\x0etimestampMilli\x12\x14\n" +
+	"\x05level\x18\x02 \x01(\x05R\x05level\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x12;\n" +
+	"\x04data\x18\x04 \x03(\v2'.certimate.plugin.v1.LogEntry.DataEntryR\x04data\x1a7\n" +
+	"\tDataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x01\n" +
+	"\vDeployFrame\x121\n" +
+	"\x03log\x18\x01 \x01(\v2\x1d.certimate.plugin.v1.LogEntryH\x00R\x03log\x12=\n" +
+	"\x06result\x18\x02 \x01(\v2#.certimate.plugin.v1.DeployResponseH\x00R\x06resultB\a\n" +
+	"\x05frame2\xb2\x02\n" +
 	"\x0eDeployerPlugin\x12`\n" +
 	"\vGetMetadata\x12'.certimate.plugin.v1.GetMetadataRequest\x1a(.certimate.plugin.v1.GetMetadataResponse\x12l\n" +
-	"\x0fGetConfigSchema\x12+.certimate.plugin.v1.GetConfigSchemaRequest\x1a,.certimate.plugin.v1.GetConfigSchemaResponse\x12Q\n" +
-	"\x06Deploy\x12\".certimate.plugin.v1.DeployRequest\x1a#.certimate.plugin.v1.DeployResponseB4Z2github.com/certimate-go/certimate/pkg/plugin/protob\x06proto3"
+	"\x0fGetConfigSchema\x12+.certimate.plugin.v1.GetConfigSchemaRequest\x1a,.certimate.plugin.v1.GetConfigSchemaResponse\x12P\n" +
+	"\x06Deploy\x12\".certimate.plugin.v1.DeployRequest\x1a .certimate.plugin.v1.DeployFrame0\x01B4Z2github.com/certimate-go/certimate/pkg/plugin/protob\x06proto3"
 
 var (
 	file_pkg_plugin_proto_plugin_proto_rawDescOnce sync.Once
@@ -452,7 +614,7 @@ func file_pkg_plugin_proto_plugin_proto_rawDescGZIP() []byte {
 	return file_pkg_plugin_proto_plugin_proto_rawDescData
 }
 
-var file_pkg_plugin_proto_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_pkg_plugin_proto_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_pkg_plugin_proto_plugin_proto_goTypes = []any{
 	(*GetMetadataRequest)(nil),      // 0: certimate.plugin.v1.GetMetadataRequest
 	(*GetMetadataResponse)(nil),     // 1: certimate.plugin.v1.GetMetadataResponse
@@ -461,24 +623,30 @@ var file_pkg_plugin_proto_plugin_proto_goTypes = []any{
 	(*GetConfigSchemaResponse)(nil), // 4: certimate.plugin.v1.GetConfigSchemaResponse
 	(*DeployRequest)(nil),           // 5: certimate.plugin.v1.DeployRequest
 	(*DeployResponse)(nil),          // 6: certimate.plugin.v1.DeployResponse
-	nil,                             // 7: certimate.plugin.v1.StringMap.EntriesEntry
-	nil,                             // 8: certimate.plugin.v1.GetConfigSchemaResponse.I18nResourcesEntry
+	(*LogEntry)(nil),                // 7: certimate.plugin.v1.LogEntry
+	(*DeployFrame)(nil),             // 8: certimate.plugin.v1.DeployFrame
+	nil,                             // 9: certimate.plugin.v1.StringMap.EntriesEntry
+	nil,                             // 10: certimate.plugin.v1.GetConfigSchemaResponse.I18nResourcesEntry
+	nil,                             // 11: certimate.plugin.v1.LogEntry.DataEntry
 }
 var file_pkg_plugin_proto_plugin_proto_depIdxs = []int32{
-	7, // 0: certimate.plugin.v1.StringMap.entries:type_name -> certimate.plugin.v1.StringMap.EntriesEntry
-	8, // 1: certimate.plugin.v1.GetConfigSchemaResponse.i18n_resources:type_name -> certimate.plugin.v1.GetConfigSchemaResponse.I18nResourcesEntry
-	3, // 2: certimate.plugin.v1.GetConfigSchemaResponse.I18nResourcesEntry.value:type_name -> certimate.plugin.v1.StringMap
-	0, // 3: certimate.plugin.v1.DeployerPlugin.GetMetadata:input_type -> certimate.plugin.v1.GetMetadataRequest
-	2, // 4: certimate.plugin.v1.DeployerPlugin.GetConfigSchema:input_type -> certimate.plugin.v1.GetConfigSchemaRequest
-	5, // 5: certimate.plugin.v1.DeployerPlugin.Deploy:input_type -> certimate.plugin.v1.DeployRequest
-	1, // 6: certimate.plugin.v1.DeployerPlugin.GetMetadata:output_type -> certimate.plugin.v1.GetMetadataResponse
-	4, // 7: certimate.plugin.v1.DeployerPlugin.GetConfigSchema:output_type -> certimate.plugin.v1.GetConfigSchemaResponse
-	6, // 8: certimate.plugin.v1.DeployerPlugin.Deploy:output_type -> certimate.plugin.v1.DeployResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	9,  // 0: certimate.plugin.v1.StringMap.entries:type_name -> certimate.plugin.v1.StringMap.EntriesEntry
+	10, // 1: certimate.plugin.v1.GetConfigSchemaResponse.i18n_resources:type_name -> certimate.plugin.v1.GetConfigSchemaResponse.I18nResourcesEntry
+	11, // 2: certimate.plugin.v1.LogEntry.data:type_name -> certimate.plugin.v1.LogEntry.DataEntry
+	7,  // 3: certimate.plugin.v1.DeployFrame.log:type_name -> certimate.plugin.v1.LogEntry
+	6,  // 4: certimate.plugin.v1.DeployFrame.result:type_name -> certimate.plugin.v1.DeployResponse
+	3,  // 5: certimate.plugin.v1.GetConfigSchemaResponse.I18nResourcesEntry.value:type_name -> certimate.plugin.v1.StringMap
+	0,  // 6: certimate.plugin.v1.DeployerPlugin.GetMetadata:input_type -> certimate.plugin.v1.GetMetadataRequest
+	2,  // 7: certimate.plugin.v1.DeployerPlugin.GetConfigSchema:input_type -> certimate.plugin.v1.GetConfigSchemaRequest
+	5,  // 8: certimate.plugin.v1.DeployerPlugin.Deploy:input_type -> certimate.plugin.v1.DeployRequest
+	1,  // 9: certimate.plugin.v1.DeployerPlugin.GetMetadata:output_type -> certimate.plugin.v1.GetMetadataResponse
+	4,  // 10: certimate.plugin.v1.DeployerPlugin.GetConfigSchema:output_type -> certimate.plugin.v1.GetConfigSchemaResponse
+	8,  // 11: certimate.plugin.v1.DeployerPlugin.Deploy:output_type -> certimate.plugin.v1.DeployFrame
+	9,  // [9:12] is the sub-list for method output_type
+	6,  // [6:9] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_pkg_plugin_proto_plugin_proto_init() }
@@ -486,13 +654,17 @@ func file_pkg_plugin_proto_plugin_proto_init() {
 	if File_pkg_plugin_proto_plugin_proto != nil {
 		return
 	}
+	file_pkg_plugin_proto_plugin_proto_msgTypes[8].OneofWrappers = []any{
+		(*DeployFrame_Log)(nil),
+		(*DeployFrame_Result)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pkg_plugin_proto_plugin_proto_rawDesc), len(file_pkg_plugin_proto_plugin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

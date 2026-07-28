@@ -7,7 +7,7 @@ option go_package = "github.com/certimate-go/certimate/pkg/plugin/proto";
 service DeployerPlugin {
   rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse);
   rpc GetConfigSchema(GetConfigSchemaRequest) returns (GetConfigSchemaResponse);
-  rpc Deploy(DeployRequest) returns (DeployResponse);
+  rpc Deploy(DeployRequest) returns (stream DeployFrame);
 }
 
 message GetMetadataRequest {}
@@ -43,4 +43,18 @@ message DeployRequest {
 
 message DeployResponse {
   string extended_data_json = 1;
+}
+
+message LogEntry {
+  int64 timestamp_milli = 1;
+  int32 level = 2;
+  string message = 3;
+  map<string, string> data = 4;
+}
+
+message DeployFrame {
+  oneof frame {
+    LogEntry log = 1;
+    DeployResponse result = 2;
+  }
 }

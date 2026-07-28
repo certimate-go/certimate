@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -96,14 +97,14 @@ func TestManager_Deploy_OnDemandLifecycle(t *testing.T) {
 	dp := discoveredFake(t, "deploy-demo")
 
 	mgr := NewManager(PluginConfig{}, nil)
-	res1, err := mgr.Deploy(context.Background(), dp, sampleDeployReq())
+	res1, err := mgr.Deploy(context.Background(), dp, sampleDeployReq(), nil)
 	if err != nil {
 		t.Fatalf("first deploy: %v", err)
 	}
 	if res1.ExtendedDataJSON == "" {
 		t.Fatal("empty deploy result")
 	}
-	res2, err := mgr.Deploy(context.Background(), dp, sampleDeployReq())
+	res2, err := mgr.Deploy(context.Background(), dp, sampleDeployReq(), nil)
 	if err != nil {
 		t.Fatalf("second deploy (fresh client): %v", err)
 	}
@@ -117,7 +118,7 @@ func TestManager_Deploy_PluginConfigError_Mapped(t *testing.T) {
 	dp := discoveredFake(t, "cfgerr-demo")
 
 	mgr := NewManager(PluginConfig{}, nil)
-	_, err := mgr.Deploy(context.Background(), dp, sampleDeployReq())
+	_, err := mgr.Deploy(context.Background(), dp, sampleDeployReq(), nil)
 	if err == nil {
 		t.Fatal("expected config error")
 	}
@@ -131,7 +132,7 @@ func TestManager_Deploy_CrashIsolated_ReturnsErrPluginCrashed(t *testing.T) {
 	dp := discoveredFake(t, "crash-demo")
 
 	mgr := NewManager(PluginConfig{}, nil)
-	_, err := mgr.Deploy(context.Background(), dp, sampleDeployReq())
+	_, err := mgr.Deploy(context.Background(), dp, sampleDeployReq(), nil)
 	if err == nil {
 		t.Fatal("expected crash error")
 	}
@@ -161,13 +162,49 @@ func TestManager_Deploy_CrashRedactsCredentials(t *testing.T) {
 	}
 
 	mgr := NewManager(PluginConfig{}, nil)
-	_, err := mgr.Deploy(context.Background(), dp, req)
+	_, err := mgr.Deploy(context.Background(), dp, req, nil)
 	var crashed *ErrPluginCrashed
 	if !errors.As(err, &crashed) {
 		t.Fatalf("expected ErrPluginCrashed, got %T: %v", err, err)
 	}
 	if strings.Contains(crashed.StderrTail, secret) {
 		t.Fatalf("secret leaked into crash stderr tail:\n%s", crashed.StderrTail)
+	}
+}
+
+func TestRedactorFor_RedactsPEM(t *testing.T) {
+	body := strings.Repeat("A", 64)
+	key := "-----BEGIN PRIVATE KEY-----\n" + body + "\n-----END PRIVATE KEY-----"
+	redact := redactorFor(&DeployRequest{PrivateKeyPEM: key})
+
+	fullOut := redact("leaked: " + key)
+	if strings.Contains(fullOut, body) {
+		t.Fatalf("private key body not redacted when full PEM logged: %q", fullOut)
+	}
+	bodyOut := redact("leaked body: " + body)
+	if strings.Contains(bodyOut, body) {
+		t.Fatalf("private key body line not redacted: %q", bodyOut)
+	}
+}
+
+func TestManager_Deploy_ForwardsPluginLogs(t *testing.T) {
+	defer withFakeEnv("forward-demo", "ok")()
+	dp := discoveredFake(t, "forward-demo")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	cap := &captureHandler{}
+	_, err := mgr.Deploy(context.Background(), dp, sampleDeployReq(), slog.New(cap))
+	if err != nil {
+		t.Fatalf("deploy: %v", err)
+	}
+	found := false
+	for _, r := range cap.records {
+		if r.Message == "fakeplugin deploy starting" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("plugin log not forwarded to sink: %+v", cap.records)
 	}
 }
 
