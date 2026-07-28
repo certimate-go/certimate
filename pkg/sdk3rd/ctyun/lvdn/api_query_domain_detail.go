@@ -13,7 +13,7 @@ type QueryDomainDetailRequest struct {
 type QueryDomainDetailResponse struct {
 	sdkResponseBase
 
-	ReturnObj *DomainDetail `json:"returnObj,omitempty"`
+	DomainDetail `json:",inline"`
 }
 
 func (c *Client) QueryDomainDetail(req *QueryDomainDetailRequest) (*QueryDomainDetailResponse, error) {
@@ -21,7 +21,7 @@ func (c *Client) QueryDomainDetail(req *QueryDomainDetailRequest) (*QueryDomainD
 }
 
 func (c *Client) QueryDomainDetailWithContext(ctx context.Context, req *QueryDomainDetailRequest) (*QueryDomainDetailResponse, error) {
-	httpreq, err := c.domainClient.NewRequest(http.MethodPost, "/live/domain/query-domain-detail")
+	httpreq, err := c.newRequest(http.MethodPost, "/live/domain/query-domain-detail")
 	if err != nil {
 		return nil, err
 	} else {
@@ -30,7 +30,7 @@ func (c *Client) QueryDomainDetailWithContext(ctx context.Context, req *QueryDom
 	}
 
 	result := &QueryDomainDetailResponse{}
-	if _, err := c.doDomainRequestWithResult(httpreq, result); err != nil {
+	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return result, err
 	}
 

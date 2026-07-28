@@ -24,16 +24,6 @@ type QueryDomainListResponse struct {
 	PageSize  int32     `json:"page_size,omitempty"`
 	PageCount int32     `json:"page_count,omitempty"`
 	Total     int32     `json:"total,omitempty"`
-
-	ReturnObj *QueryDomainListResult `json:"returnObj,omitempty"`
-}
-
-type QueryDomainListResult struct {
-	Results   []*Domain `json:"result,omitempty"`
-	Page      int32     `json:"page,omitempty"`
-	PageSize  int32     `json:"page_size,omitempty"`
-	PageCount int32     `json:"page_count,omitempty"`
-	Total     int32     `json:"total,omitempty"`
 }
 
 func (c *Client) QueryDomainList(req *QueryDomainListRequest) (*QueryDomainListResponse, error) {
@@ -41,7 +31,7 @@ func (c *Client) QueryDomainList(req *QueryDomainListRequest) (*QueryDomainListR
 }
 
 func (c *Client) QueryDomainListWithContext(ctx context.Context, req *QueryDomainListRequest) (*QueryDomainListResponse, error) {
-	httpreq, err := c.domainClient.NewRequest(http.MethodGet, "/domain/query-domain-list")
+	httpreq, err := c.newRequest(http.MethodGet, "/domain/query-domain-list")
 	if err != nil {
 		return nil, err
 	} else {
@@ -55,16 +45,8 @@ func (c *Client) QueryDomainListWithContext(ctx context.Context, req *QueryDomai
 	}
 
 	result := &QueryDomainListResponse{}
-	if _, err := c.doDomainRequestWithResult(httpreq, result); err != nil {
+	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return result, err
-	}
-
-	result.ReturnObj = &QueryDomainListResult{
-		Results:   result.Results,
-		Page:      result.Page,
-		PageSize:  result.PageSize,
-		PageCount: result.PageCount,
-		Total:     result.Total,
 	}
 
 	return result, nil

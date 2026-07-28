@@ -218,6 +218,13 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	d.logger.Debug("sdk request 'cdn.QueryDomainDetail'", slog.Any("request", queryDomainDetailReq), slog.Any("response", queryDomainDetailResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.QueryDomainDetail': %w", err)
+	} else {
+		// 已部署过，直接返回
+		if queryDomainDetailResp.ReturnObj != nil &&
+			queryDomainDetailResp.ReturnObj.HttpsStatus == "on" &&
+			queryDomainDetailResp.ReturnObj.CertName == cloudCertName {
+			return nil
+		}
 	}
 
 	// 修改域名配置

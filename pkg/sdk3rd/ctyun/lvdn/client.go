@@ -1,5 +1,5 @@
 // A simple SDK client for StateCloud LVDN.
-// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&vid=261
+// API documentation: https://www.ctyun.cn/document/10000093/10023755
 package lvdn
 
 import (
@@ -12,13 +12,11 @@ import (
 )
 
 const (
-	endpoint       = "https://ctlvdn-global.ctapi.ctyun.cn"
-	domainEndpoint = "https://cdnapi-global.ctapi.ctyun.cn"
+	endpoint = "https://cdnapi-global.ctapi.ctyun.cn"
 )
 
 type Client struct {
-	client       *common.Client
-	domainClient *common.Client
+	client *common.Client
 }
 
 func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
@@ -27,15 +25,7 @@ func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
 		return nil, err
 	}
 
-	domainClient, err := common.NewClient(domainEndpoint, optFns...)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Client{
-		client:       client,
-		domainClient: domainClient,
-	}, nil
+	return &Client{client: client}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -56,17 +46,12 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return validateSDKResponse(resp, res, err)
 }
 
-func (c *Client) doDomainRequestWithResult(req *resty.Request, res sdkResponse) (*resty.Response, error) {
-	resp, err := c.domainClient.DoRequestWithResult(req, res)
-	return validateSDKResponse(resp, res, err)
-}
-
 func validateSDKResponse(resp *resty.Response, res sdkResponse, err error) (*resty.Response, error) {
 	if err == nil {
-		rStatusCode := res.GetStatusCode()
+		rCode := res.GetCode()
 		rError := res.GetError()
-		if rStatusCode != "" && rStatusCode != "100000" {
-			return resp, fmt.Errorf("sdkerr: api error: code='%s', message='%s', error='%s', errorMessage='%s'", rStatusCode, res.GetMessage(), rError, res.GetErrorMessage())
+		if rCode != "" && rCode != "100000" {
+			return resp, fmt.Errorf("sdkerr: api error: code='%s', message='%s', error='%s', errorMessage='%s'", rCode, res.GetMessage(), rError, res.GetErrorMessage())
 		}
 	}
 
