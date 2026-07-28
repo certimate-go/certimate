@@ -7,26 +7,26 @@ import (
 )
 
 type sdkResponse interface {
-	GetStatusCode() string
+	GetCode() string
 	GetMessage() string
 	GetError() string
 	GetErrorMessage() string
 }
 
 type sdkResponseBase struct {
-	StatusCode   json.RawMessage `json:"statusCode,omitempty"`
+	Code         json.RawMessage `json:"code,omitempty"`
 	Message      *string         `json:"message,omitempty"`
 	Error        *string         `json:"error,omitempty"`
 	ErrorMessage *string         `json:"errorMessage,omitempty"`
 	RequestId    *string         `json:"requestId,omitempty"`
 }
 
-func (r *sdkResponseBase) GetStatusCode() string {
-	if r.StatusCode == nil {
+func (r *sdkResponseBase) GetCode() string {
+	if r.Code == nil {
 		return ""
 	}
 
-	decoder := json.NewDecoder(bytes.NewReader(r.StatusCode))
+	decoder := json.NewDecoder(bytes.NewReader(r.Code))
 	token, err := decoder.Token()
 	if err != nil {
 		return ""

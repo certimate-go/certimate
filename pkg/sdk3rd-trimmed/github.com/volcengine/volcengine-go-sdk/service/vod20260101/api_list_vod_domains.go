@@ -36,6 +36,6 @@ func (c *VOD20260101) ListVodDomainsWithContext(ctx volcengine.Context, input *L
 
 type ListVodDomainsInput = vod20260101.ListVodDomainsInput
 
-type ListVodDomainsOutput = vod20260101.VodInfoForListVodDomainsOutput
+type ListVodDomainsOutput = vod20260101.ListVodDomainsOutput
 
 type ListCdnDomainsParamForListVodDomainsInput = vod20260101.ListCdnDomainsParamForListVodDomainsInput

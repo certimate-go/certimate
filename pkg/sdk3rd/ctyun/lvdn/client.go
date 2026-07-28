@@ -1,5 +1,5 @@
 // A simple SDK client for StateCloud LVDN.
-// API documentation: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&vid=261
+// API documentation: https://www.ctyun.cn/document/10000093/10023755
 package lvdn
 
 import (
@@ -11,7 +11,9 @@ import (
 	common "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/zz-shared-common"
 )
 
-const endpoint = "https://ctlvdn-global.ctapi.ctyun.cn"
+const (
+	endpoint = "https://cdnapi-global.ctapi.ctyun.cn"
+)
 
 type Client struct {
 	client *common.Client
@@ -41,11 +43,15 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 
 func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*resty.Response, error) {
 	resp, err := c.client.DoRequestWithResult(req, res)
+	return validateSDKResponse(resp, res, err)
+}
+
+func validateSDKResponse(resp *resty.Response, res sdkResponse, err error) (*resty.Response, error) {
 	if err == nil {
-		rStatusCode := res.GetStatusCode()
+		rCode := res.GetCode()
 		rError := res.GetError()
-		if rStatusCode != "" && rStatusCode != "100000" {
-			return resp, fmt.Errorf("sdkerr: api error: code='%s', message='%s', error='%s', errorMessage='%s'", rStatusCode, res.GetMessage(), rError, res.GetErrorMessage())
+		if rCode != "" && rCode != "100000" {
+			return resp, fmt.Errorf("sdkerr: api error: code='%s', message='%s', error='%s', errorMessage='%s'", rCode, res.GetMessage(), rError, res.GetErrorMessage())
 		}
 	}
 

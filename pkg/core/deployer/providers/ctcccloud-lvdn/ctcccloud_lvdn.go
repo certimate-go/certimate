@@ -136,7 +136,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	domains := make([]string, 0)
 
 	// 查询域名列表
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11559&data=183&isNormal=1&vid=261
+	// REF: https://www.ctyun.cn/document/10000093/10041903
 	queryDomainsPage := 1
 	queryDomainsPageSize := 100
 	for {
@@ -152,17 +152,13 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			ProductCode: lo.ToPtr("005"),
 		}
 		queryDomainListResp, err := d.sdkClient.QueryDomainListWithContext(ctx, queryDomainListReq)
-		d.logger.Debug("sdk request 'cdn.QueryDomainList'", slog.Any("request", queryDomainListReq), slog.Any("response", queryDomainListResp))
+		d.logger.Debug("sdk request 'lvdn.QueryDomainList'", slog.Any("request", queryDomainListReq), slog.Any("response", queryDomainListResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'cdn.QueryDomainList': %w", err)
-		}
-
-		if queryDomainListResp.ReturnObj == nil {
-			break
+			return nil, fmt.Errorf("failed to execute sdk request 'lvdn.QueryDomainList': %w", err)
 		}
 
 		ignoredStatuses := []int32{1, 5, 6, 7, 8, 9, 11, 12}
-		for _, domainItem := range queryDomainListResp.ReturnObj.Results {
+		for _, domainItem := range queryDomainListResp.Results {
 			if lo.Contains(ignoredStatuses, domainItem.Status) {
 				continue
 			}
@@ -170,7 +166,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			domains = append(domains, domainItem.Domain)
 		}
 
-		if len(queryDomainListResp.ReturnObj.Results) < queryDomainsPageSize {
+		if len(queryDomainListResp.Results) < queryDomainsPageSize {
 			break
 		}
 
@@ -182,7 +178,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertName string) error {
 	// 查询域名配置信息
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11473&data=183&isNormal=1&vid=261
+	// REF: https://www.ctyun.cn/document/10000093/10042886
 	queryDomainDetailReq := &ctyunlvdn.QueryDomainDetailRequest{
 		Domain:      lo.ToPtr(domain),
 		ProductCode: lo.ToPtr("005"),
@@ -191,10 +187,16 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	d.logger.Debug("sdk request 'lvdn.QueryDomainDetail'", slog.Any("request", queryDomainDetailReq), slog.Any("response", queryDomainDetailResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'lvdn.QueryDomainDetail': %w", err)
+	} else {
+		// 已部署过，直接返回
+		if queryDomainDetailResp.HttpsSwitch == 1 &&
+			queryDomainDetailResp.CertName == cloudCertName {
+			return nil
+		}
 	}
 
 	// 修改域名配置
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=108&api=11308&data=161&isNormal=1&vid=154
+	// REF: https://www.ctyun.cn/document/10000093/10041347
 	updateDomainReq := &ctyunlvdn.UpdateDomainRequest{
 		Domain:      lo.ToPtr(domain),
 		ProductCode: lo.ToPtr("005"),

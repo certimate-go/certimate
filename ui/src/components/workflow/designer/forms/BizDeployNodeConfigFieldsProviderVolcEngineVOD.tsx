@@ -35,6 +35,16 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "region"]}
+        initialValue={initialValues.region}
+        label={t("workflow_node.deploy.form.volcengine_vod_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.volcengine_vod_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.volcengine_vod_region.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "spaceName"]}
         initialValue={initialValues.spaceName}
         label={t("workflow_node.deploy.form.volcengine_vod_space_name.label")}
@@ -89,6 +99,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    region: "cn-north-1",
     spaceName: "",
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domainType: DOMAIN_TYPE_PLAY,
@@ -101,7 +112,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      spaceName: z.string().nonempty().nullish(),
+      region: z.string().nonempty(),
+      spaceName: z.string().nonempty(),
       domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domainType: z.enum([DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE, DOMAIN_TYPE_THIRD]),
       domain: z.string().nullish(),

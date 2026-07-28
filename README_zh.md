@@ -18,6 +18,14 @@
 </div>
 
 <div align="center">
+  
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/daily" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/weekly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/monthly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+
+</div>
+
+<div align="center">
 
 [English](README.md) ｜ 简体中文
 
