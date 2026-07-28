@@ -92,9 +92,6 @@ import BizDeployNodeConfigFieldsProviderNginxProxyManager from "./BizDeployNodeC
 import BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt from "./BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt";
 import BizDeployNodeConfigFieldsProviderProxmoxVE from "./BizDeployNodeConfigFieldsProviderProxmoxVE";
 import BizDeployNodeConfigFieldsProviderQingCloudLB from "./BizDeployNodeConfigFieldsProviderQingCloudLB";
-import BizDeployNodeConfigFieldsProviderQiniuCDN from "./BizDeployNodeConfigFieldsProviderQiniuCDN";
-import BizDeployNodeConfigFieldsProviderQiniuKodo from "./BizDeployNodeConfigFieldsProviderQiniuKodo";
-import BizDeployNodeConfigFieldsProviderQiniuPili from "./BizDeployNodeConfigFieldsProviderQiniuPili";
 import BizDeployNodeConfigFieldsProviderRainYunRCDN from "./BizDeployNodeConfigFieldsProviderRainYunRCDN";
 import BizDeployNodeConfigFieldsProviderRainYunSSLCenter from "./BizDeployNodeConfigFieldsProviderRainYunSSLCenter";
 import BizDeployNodeConfigFieldsProviderRatPanel from "./BizDeployNodeConfigFieldsProviderRatPanel";
@@ -143,6 +140,7 @@ import BizDeployNodeConfigFieldsProviderVolcEngineWAF from "./BizDeployNodeConfi
 import BizDeployNodeConfigFieldsProviderWangsuCDN from "./BizDeployNodeConfigFieldsProviderWangsuCDN";
 import BizDeployNodeConfigFieldsProviderWangsuCDNPro from "./BizDeployNodeConfigFieldsProviderWangsuCDNPro";
 import BizDeployNodeConfigFieldsProviderWangsuCertificate from "./BizDeployNodeConfigFieldsProviderWangsuCertificate";
+import BizDeployNodeConfigFieldsProviderWebhook from "./BizDeployNodeConfigFieldsProviderWebhook";
 import BizDeployNodeConfigFieldsProviderZenlayerCDN from "./BizDeployNodeConfigFieldsProviderZenlayerCDN";
 import BizDeployNodeConfigFieldsProviderZenlayerGA from "./BizDeployNodeConfigFieldsProviderZenlayerGA";
 import SchemaConfigFields from "./SchemaConfigFields";
@@ -241,9 +239,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.ORACLECLOUD_CERTIFICATESMGMT]: BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt,
   [DEPLOYMENT_PROVIDERS.PROXMOXVE]: BizDeployNodeConfigFieldsProviderProxmoxVE,
   [DEPLOYMENT_PROVIDERS.QINGCLOUD_LB]: BizDeployNodeConfigFieldsProviderQingCloudLB,
-  [DEPLOYMENT_PROVIDERS.QINIU_CDN]: BizDeployNodeConfigFieldsProviderQiniuCDN,
-  [DEPLOYMENT_PROVIDERS.QINIU_KODO]: BizDeployNodeConfigFieldsProviderQiniuKodo,
-  [DEPLOYMENT_PROVIDERS.QINIU_PILI]: BizDeployNodeConfigFieldsProviderQiniuPili,
   [DEPLOYMENT_PROVIDERS.RAINYUN_RCDN]: BizDeployNodeConfigFieldsProviderRainYunRCDN,
   [DEPLOYMENT_PROVIDERS.RAINYUN_SSLCENTER]: BizDeployNodeConfigFieldsProviderRainYunSSLCenter,
   [DEPLOYMENT_PROVIDERS.RATPANEL]: BizDeployNodeConfigFieldsProviderRatPanel,
@@ -292,6 +287,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.WANGSU_CDN]: BizDeployNodeConfigFieldsProviderWangsuCDN,
   [DEPLOYMENT_PROVIDERS.WANGSU_CDNPRO]: BizDeployNodeConfigFieldsProviderWangsuCDNPro,
   [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE]: BizDeployNodeConfigFieldsProviderWangsuCertificate,
+  [DEPLOYMENT_PROVIDERS.WEBHOOK]: BizDeployNodeConfigFieldsProviderWebhook,
   [DEPLOYMENT_PROVIDERS.ZENLAYER_CDN]: BizDeployNodeConfigFieldsProviderZenlayerCDN,
   [DEPLOYMENT_PROVIDERS.ZENLAYER_GA]: BizDeployNodeConfigFieldsProviderZenlayerGA,
 };
@@ -333,7 +329,9 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider, envelope]);
-  useEffect(() => setComponent(initComponent()), deps);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+  }, deps);
 
   return component;
 };

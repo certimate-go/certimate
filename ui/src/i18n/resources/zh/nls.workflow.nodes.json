@@ -456,6 +456,17 @@
       }
     },
     "form": {
+      "webhook_data": {
+        "label": "Webhook 回调数据（可选）",
+        "placeholder": "请输入 Webhook 回调数据以覆盖默认值",
+        "help": "提示：不填写时，将使用所选提供商授权的默认 Webhook 回调数据。",
+        "vartips": "支持的变量：<br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>：<br>证书的主域名或 IP。</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>：<br>证书的多域名或 IP，以半角分号隔开。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>：<br>证书文件 PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>：<br>证书文件（仅含服务器证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>：<br>证书文件（仅含中间证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>：<br>私钥文件 PEM 格式内容。</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Webhook 超时时间（可选）",
+        "placeholder": "请输入 Webhook 超时时间",
+        "unit": "秒"
+      },
       "certificate_output_node_id": {
         "label": "待部署证书",
         "placeholder": "请选择待部署证书",
@@ -2047,27 +2058,6 @@
         "label": "青云 LB 监听器 ID",
         "placeholder": "请输入青云 LB 监听器 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
-      },
-      "qiniu_cdn_domain": {
-        "label": "七牛云 CDN 加速域名",
-        "placeholder": "请输入七牛云 CDN 加速域名"
-      },
-      "qiniu_kodo_bucket": {
-        "label": "七牛云对象存储桶名",
-        "placeholder": "请输入七牛云对象存储桶名"
-      },
-      "qiniu_kodo_domain": {
-        "label": "七牛云对象存储自定义域名",
-        "placeholder": "请输入七牛云对象存储自定义域名"
-      },
-      "qiniu_pili_hub": {
-        "label": "七牛云视频直播空间名",
-        "placeholder": "请输入七牛云视频直播空间名",
-        "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/hub\" target=\"_blank\">https://portal.qiniu.com/hub</a>"
-      },
-      "qiniu_pili_domain": {
-        "label": "七牛云视频直播流域名",
-        "placeholder": "请输入七牛云视频直播流域名"
       },
       "rainyun_rcdn_instance_id": {
         "label": "雨云 RCDN 实例 ID",

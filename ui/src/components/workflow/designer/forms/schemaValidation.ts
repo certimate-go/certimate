@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { ProviderSchemaEnvelope, SchemaColumn, SchemaCondition, SchemaValidationRule } from "@/api/providerschema";
+import i18n from "@/i18n";
 import {
   isCron,
   isDomain,
@@ -17,7 +18,7 @@ import {
 const isEmpty = (v: unknown) => v == null || v === "";
 
 export const matchCondition = (cond: SchemaCondition, value: unknown): boolean => {
-  const present = cond.values.includes(String(value));
+  const present = (cond.values ?? []).includes(String(value));
   switch (cond.op) {
     case "eq":
     case "in":
@@ -98,7 +99,7 @@ const fieldBaseType = (col: SchemaColumn): z.ZodType => {
 const applyRules = (schema: z.ZodType, rules: SchemaValidationRule[], allowEmpty: boolean): z.ZodType => {
   for (const rule of rules) {
     const ok = (v: unknown) => (allowEmpty && isEmpty(v)) || runValidator(rule.validator, rule.params, v);
-    schema = schema.refine(ok, { message: `common.errmsg.${rule.validator}_invalid` });
+    schema = schema.refine(ok, { message: i18n.t(`common.errmsg.${rule.validator}_invalid`) });
   }
   return schema;
 };
@@ -159,13 +160,13 @@ const buildPlainObject = (columns: SchemaColumn[]): z.ZodType => {
       for (const cond of col.requiredWhen ?? []) {
         if (!matchCondition(cond, record[cond.field])) continue;
         if (isEmpty(value)) {
-          ctx.addIssue({ code: "custom", message: `common.errmsg.required`, path: [col.name] });
+          ctx.addIssue({ code: "custom", message: i18n.t("common.errmsg.required"), path: [col.name] });
         }
       }
       for (const rule of col.validateWhen ?? []) {
         if (!matchCondition(rule, record[rule.field])) continue;
         if (!isEmpty(value) && !runValidator(rule.validator, rule.params, value)) {
-          ctx.addIssue({ code: "custom", message: `common.errmsg.${rule.validator}_invalid`, path: [col.name] });
+          ctx.addIssue({ code: "custom", message: i18n.t(`common.errmsg.${rule.validator}_invalid`), path: [col.name] });
         }
       }
     }

@@ -1128,16 +1128,6 @@
       "placeholder": "请输入青云 SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>"
     },
-    "qiniu_access_key": {
-      "label": "七牛云 AccessKey",
-      "placeholder": "请输入七牛云 AccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
-    "qiniu_secret_key": {
-      "label": "七牛云 SecretKey",
-      "placeholder": "请输入七牛云 SecretKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
     "rainyun_api_key": {
       "label": "雨云 API 密钥",
       "placeholder": "请输入雨云 API 密钥",

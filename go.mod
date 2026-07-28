@@ -43,6 +43,7 @@ require (
 	github.com/baidubce/bce-sdk-go v0.9.270
 	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.71
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.71
+	github.com/fsnotify/fsnotify v1.10.1
 	github.com/go-acme/lego/v5 v5.2.2
 	github.com/go-cmd/cmd v1.4.3
 	github.com/go-resty/resty/v2 v2.17.2
@@ -63,7 +64,6 @@ require (
 	github.com/pocketbase/pocketbase v0.39.6
 	github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df
 	github.com/pquerna/otp v1.5.0
-	github.com/qiniu/go-sdk/v7 v7.26.15
 	github.com/samber/lo v1.53.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
@@ -122,9 +122,6 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-openapi/jsonreference v0.21.5 // indirect
 	github.com/go-openapi/swag v0.25.5 // indirect
-	github.com/go-playground/locales v0.14.1 // indirect
-	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.30.2 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
@@ -134,7 +131,6 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
-	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/namedotcom/go/v4 v4.0.2 // indirect
@@ -146,8 +142,6 @@ require (
 	github.com/peterhellberg/link v1.2.0 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/qiniu/dyn v1.3.0 // indirect
-	github.com/qiniu/x v1.17.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
@@ -174,7 +168,6 @@ require (
 	cloud.google.com/go/auth v0.20.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/alexbrainman/sspi v0.0.0-20250919150558-7d374ff0d59e // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5 // indirect
 	github.com/alibabacloud-go/debug v1.0.1 // indirect
@@ -204,7 +197,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/ganigeorgiev/fexpr v0.5.0 // indirect
 	github.com/go-acme/alidns-20150109/v5 v5.4.1 // indirect

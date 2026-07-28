@@ -1128,16 +1128,6 @@
       "placeholder": "Please enter QingCloud SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>"
     },
-    "qiniu_access_key": {
-      "label": "Qiniu AccessKey",
-      "placeholder": "Please enter Qiniu AccessKey",
-      "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
-    "qiniu_secret_key": {
-      "label": "Qiniu SecretKey",
-      "placeholder": "Please enter Qiniu SecretKey",
-      "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
     "rainyun_api_key": {
       "label": "Rain Yun API key",
       "placeholder": "Please enter Rain Yun API key",

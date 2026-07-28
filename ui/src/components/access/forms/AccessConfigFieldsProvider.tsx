@@ -90,7 +90,6 @@ import AccessConfigFieldsProviderPorkbun from "./AccessConfigFieldsProviderPorkb
 import AccessConfigFieldsProviderPowerDNS from "./AccessConfigFieldsProviderPowerDNS";
 import AccessConfigFieldsProviderProxmoxVE from "./AccessConfigFieldsProviderProxmoxVE";
 import AccessConfigFieldsProviderQingCloud from "./AccessConfigFieldsProviderQingCloud";
-import AccessConfigFieldsProviderQiniu from "./AccessConfigFieldsProviderQiniu";
 import AccessConfigFieldsProviderRainYun from "./AccessConfigFieldsProviderRainYun";
 import AccessConfigFieldsProviderRatPanel from "./AccessConfigFieldsProviderRatPanel";
 import AccessConfigFieldsProviderRegru from "./AccessConfigFieldsProviderRegru";
@@ -215,7 +214,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.POWERDNS]: AccessConfigFieldsProviderPowerDNS,
   [ACCESS_PROVIDERS.PROXMOXVE]: AccessConfigFieldsProviderProxmoxVE,
   [ACCESS_PROVIDERS.QINGCLOUD]: AccessConfigFieldsProviderQingCloud,
-  [ACCESS_PROVIDERS.QINIU]: AccessConfigFieldsProviderQiniu,
   [ACCESS_PROVIDERS.RAINYUN]: AccessConfigFieldsProviderRainYun,
   [ACCESS_PROVIDERS.RATPANEL]: AccessConfigFieldsProviderRatPanel,
   [ACCESS_PROVIDERS.REGRU]: AccessConfigFieldsProviderRegru,
@@ -287,7 +285,9 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider, envelope]);
-  useEffect(() => setComponent(initComponent()), deps);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+  }, deps);
 
   return component;
 };

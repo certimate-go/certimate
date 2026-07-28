@@ -69,13 +69,13 @@ const DeploymentProviderPicker = forwardRef<DeploymentProviderPickerInstance, De
                     <Tooltip title={t(provider.name)} mouseEnterDelay={1}>
                       <Typography.Text>{t(provider.name) || "\u00A0"}</Typography.Text>
                     </Tooltip>
-                    {provider.source === "plugin" ? (
-                      <Tag className="ml-1" color="orange">
-                        {t("provider.tag.plugin")}
-                      </Tag>
-                    ) : null}
                   </div>
                 </div>
+                {provider.source === "plugin" ? (
+                  <Tag className="shrink-0" color="orange">
+                    {t("provider.tag.plugin")}
+                  </Tag>
+                ) : null}
               </div>
             </div>
           </Card>
