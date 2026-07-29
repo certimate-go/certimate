@@ -136,6 +136,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   WECOMBOT: "wecombot",
   WESTCN: "westcn",
   XINNET: "xinnet",
+  YANDEXCLOUD: "yandexcloud",
   ZENLAYER: "zenlayer",
   ZEROSSL: "zerossl",
 } as const);
@@ -257,6 +258,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.SIMPLYCOM, "provider.simplycom", "/imgs/providers/simplycom.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.SPACESHIP, "provider.spaceship", "/imgs/providers/spaceship.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.VULTR, "provider.vultr", "/imgs/providers/vultr.svg", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.YANDEXCLOUD, "provider.yandexcloud", "/imgs/providers/yandexcloud.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS["35CN"], "provider.35cn", "/imgs/providers/35cn.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS["51DNSCOM"], "provider.51dnscom", "/imgs/providers/51dnscom.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DNSLA, "provider.dnsla", "/imgs/providers/dnsla.svg", [ACCESS_USAGES.DNS]],

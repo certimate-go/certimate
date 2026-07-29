@@ -183,7 +183,7 @@
       },
       "key_content": {
         "label": "私钥文件（PEM 格式）",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "请输入私钥文件内容\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "无效的 PEM 格式私钥文件",
           "not_matched": "私钥内容与算法不匹配（预期：{{expected}}，实际：{{actual}}）"
@@ -378,7 +378,7 @@
       },
       "certificate_pem": {
         "label": "证书文件（PEM 格式）",
-        "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
+        "placeholder": "请输入证书文件内容\r\n\r\n-----BEGIN CERTIFICATE-----\r\n...\r\n-----END CERTIFICATE-----",
         "errmsg": {
           "invalid": "无效的 PEM 格式证书文件"
         }
@@ -393,7 +393,7 @@
       },
       "private_key_pem": {
         "label": "私钥文件（PEM 格式）",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "请输入私钥文件内容\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "无效的 PEM 格式私钥文件"
         }

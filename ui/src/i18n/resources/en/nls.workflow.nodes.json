@@ -183,7 +183,7 @@
       },
       "key_content": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key",
           "not_matched": "Private key does not match the key algorithm (Expected: {{expected}}, Actual: {{actual}})"
@@ -375,11 +375,11 @@
       },
       "name": {
         "label": "Domains / IP addresses",
-        "placholder": "Please select certificate file"
+        "placeholder": "Please select certificate file"
       },
       "certificate_pem": {
         "label": "Certificate (PEM format)",
-        "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
+        "placeholder": "Please enter certificate\r\n\r\n-----BEGIN CERTIFICATE-----\r\n...\r\n-----END CERTIFICATE-----",
         "errmsg": {
           "invalid": "Invalid PEM certificate"
         }
@@ -394,7 +394,7 @@
       },
       "private_key_pem": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key"
         }

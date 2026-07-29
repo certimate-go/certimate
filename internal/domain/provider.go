@@ -136,6 +136,7 @@ const (
 	AccessProviderTypeWeComBot            = AccessProviderType("wecombot")
 	AccessProviderTypeWestcn              = AccessProviderType("westcn")
 	AccessProviderTypeXinnet              = AccessProviderType("xinnet")
+	AccessProviderTypeYandexCloud         = AccessProviderType("yandexcloud")
 	AccessProviderTypeZenlayer            = AccessProviderType("zenlayer")
 	AccessProviderTypeZeroSSL             = AccessProviderType("zerossl")
 )
@@ -275,6 +276,8 @@ const (
 	ACMEDns01ProviderTypeVultr             = ACMEDns01ProviderType(AccessProviderTypeVultr)
 	ACMEDns01ProviderTypeWestcn            = ACMEDns01ProviderType(AccessProviderTypeWestcn)
 	ACMEDns01ProviderTypeXinnet            = ACMEDns01ProviderType(AccessProviderTypeXinnet)
+	ACMEDns01ProviderTypeYandexCloud       = ACMEDns01ProviderType(AccessProviderTypeYandexCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeYandexCloudDNS]
+	ACMEDns01ProviderTypeYandexCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeYandexCloud + "-dns")
 )
 
 type ACMEHttp01ProviderType ACMEChallengeProviderType

@@ -8,7 +8,7 @@ import { isJsonObject } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const AccessConfigFieldsProviderGoogleCloud = () => {
+const AccessConfigFieldsProviderYandexCloud = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -21,23 +21,23 @@ const AccessConfigFieldsProviderGoogleCloud = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "projectId"]}
-        initialValue={initialValues.projectId}
-        label={t("access.form.googlecloud_project_id.label")}
+        name={[parentNamePath, "folderId"]}
+        initialValue={initialValues.folderId}
+        label={t("access.form.yandexcloud_folder_id.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.googlecloud_project_id.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.yandexcloud_folder_id.tooltip") }}></span>}
       >
-        <Input type="url" placeholder={t("access.form.googlecloud_project_id.placeholder")} />
+        <Input type="url" placeholder={t("access.form.yandexcloud_folder_id.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "serviceAccountKey"]}
         initialValue={initialValues.serviceAccountKey}
-        label={t("access.form.googlecloud_service_account_key.label")}
+        label={t("access.form.yandexcloud_service_account_key.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.googlecloud_service_account_key.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.yandexcloud_service_account_key.tooltip") }}></span>}
       >
-        <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("access.form.googlecloud_service_account_key.placeholder")} />
+        <FileTextInput autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t("access.form.yandexcloud_service_account_key.placeholder")} />
       </Form.Item>
     </>
   );
@@ -45,7 +45,7 @@ const AccessConfigFieldsProviderGoogleCloud = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    projectId: "",
+    folderId: "",
     serviceAccountKey: "",
   };
 };
@@ -54,12 +54,12 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t } = i18n;
 
   return z.object({
-    projectId: z.string().nonempty(),
+    folderId: z.string().nonempty(),
     serviceAccountKey: z.string().refine((v) => isJsonObject(v), t("common.errmsg.json_invalid")),
   });
 };
 
-const _default = Object.assign(AccessConfigFieldsProviderGoogleCloud, {
+const _default = Object.assign(AccessConfigFieldsProviderYandexCloud, {
   getInitialValues,
   getSchema,
 });

@@ -688,6 +688,11 @@ type AccessConfigForXinnet struct {
 	ApiPassword string `json:"apiPassword"`
 }
 
+type AccessConfigForYandexCloud struct {
+	FolderId          string `json:"folderId"`
+	ServiceAccountKey string `json:"serviceAccountKey"`
+}
+
 type AccessConfigForZenlayer struct {
 	AccessKeyId       string `json:"accessKeyId"`
 	AccessKeyPassword string `json:"accessKeyPassword"`
