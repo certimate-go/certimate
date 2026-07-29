@@ -42,7 +42,6 @@ import AccessConfigFieldsProviderDiscordBot from "./AccessConfigFieldsProviderDi
 import AccessConfigFieldsProviderDNSExit from "./AccessConfigFieldsProviderDNSExit";
 import AccessConfigFieldsProviderDNSLA from "./AccessConfigFieldsProviderDNSLA";
 import AccessConfigFieldsProviderDNSMadeEasy from "./AccessConfigFieldsProviderDNSMadeEasy";
-import AccessConfigFieldsProviderDogeCloud from "./AccessConfigFieldsProviderDogeCloud";
 import AccessConfigFieldsProviderDokploy from "./AccessConfigFieldsProviderDokploy";
 import AccessConfigFieldsProviderDuckDNS from "./AccessConfigFieldsProviderDuckDNS";
 import AccessConfigFieldsProviderDynadot from "./AccessConfigFieldsProviderDynadot";
@@ -69,7 +68,6 @@ import AccessConfigFieldsProviderIONOS from "./AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./AccessConfigFieldsProviderJDCloud";
 import AccessConfigFieldsProviderKong from "./AccessConfigFieldsProviderKong";
 import AccessConfigFieldsProviderKsyun from "./AccessConfigFieldsProviderKsyun";
-import AccessConfigFieldsProviderKubernetes from "./AccessConfigFieldsProviderKubernetes";
 import AccessConfigFieldsProviderLarkBot from "./AccessConfigFieldsProviderLarkBot";
 import AccessConfigFieldsProviderLeCDN from "./AccessConfigFieldsProviderLeCDN";
 import AccessConfigFieldsProviderLinode from "./AccessConfigFieldsProviderLinode";
@@ -167,7 +165,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.DNSLA]: AccessConfigFieldsProviderDNSLA,
   [ACCESS_PROVIDERS.DNSMADEEASY]: AccessConfigFieldsProviderDNSMadeEasy,
   [ACCESS_PROVIDERS.DOKPLOY]: AccessConfigFieldsProviderDokploy,
-  [ACCESS_PROVIDERS.DOGECLOUD]: AccessConfigFieldsProviderDogeCloud,
   [ACCESS_PROVIDERS.DUCKDNS]: AccessConfigFieldsProviderDuckDNS,
   [ACCESS_PROVIDERS.DYNADOT]: AccessConfigFieldsProviderDynadot,
   [ACCESS_PROVIDERS.DYNU]: AccessConfigFieldsProviderDynu,
@@ -191,7 +188,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.IONOS]: AccessConfigFieldsProviderIONOS,
   [ACCESS_PROVIDERS.JDCLOUD]: AccessConfigFieldsProviderJDCloud,
   [ACCESS_PROVIDERS.KONG]: AccessConfigFieldsProviderKong,
-  [ACCESS_PROVIDERS.KUBERNETES]: AccessConfigFieldsProviderKubernetes,
   [ACCESS_PROVIDERS.KSYUN]: AccessConfigFieldsProviderKsyun,
   [ACCESS_PROVIDERS.LARKBOT]: AccessConfigFieldsProviderLarkBot,
   [ACCESS_PROVIDERS.LECDN]: AccessConfigFieldsProviderLeCDN,

@@ -227,11 +227,6 @@ type AccessConfigForDNSMadeEasy struct {
 	ApiSecret string `json:"apiSecret"`
 }
 
-type AccessConfigForDogeCloud struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
-}
-
 type AccessConfigForDokploy struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
@@ -368,10 +363,6 @@ type AccessConfigForKong struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForKubernetes struct {
-	KubeConfig string `json:"kubeConfig,omitempty"`
-}
-
 type AccessConfigForKsyun struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
@@ -496,11 +487,6 @@ type AccessConfigForProxmoxVE struct {
 type AccessConfigForQingCloud struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
-}
-
-type AccessConfigForQiniu struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
 }
 
 type AccessConfigForRainYun struct {

@@ -57,7 +57,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   DNSEXIT: "dnsexit",
   DNSLA: "dnsla",
   DNSMADEEASY: "dnsmadeeasy",
-  DOGECLOUD: "dogecloud",
   DOKPLOY: "dokploy",
   DUCKDNS: "duckdns",
   DYNADOT: "dynadot",
@@ -83,7 +82,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   IONOS: "ionos",
   JDCLOUD: "jdcloud",
   KONG: "kong",
-  KUBERNETES: "k8s",
   KSYUN: "ksyun",
   LARKBOT: "larkbot",
   LECDN: "lecdn",
@@ -169,7 +167,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.SSH, "provider.ssh", "/imgs/providers/ssh.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.FTP, "provider.ftp", "/imgs/providers/ftp.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WEBHOOK, "provider.webhook", "/imgs/providers/webhook.svg", [ACCESS_USAGES.HOSTING, ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.KUBERNETES, "provider.kubernetes", "/imgs/providers/kubernetes.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.S3, "provider.s3", "/imgs/providers/s3.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.ALIYUN, "provider.aliyun", "/imgs/providers/aliyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -198,7 +195,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.CPANEL, "provider.cpanel", "/imgs/providers/cpanel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.BAISHAN, "provider.baishan", "/imgs/providers/baishan.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.DOGECLOUD, "provider.dogecloud", "/imgs/providers/dogecloud.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.KSYUN, "provider.ksyun", "/imgs/providers/ksyun.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.UPYUN, "provider.upyun", "/imgs/providers/upyun.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WANGSU, "provider.wangsu", "/imgs/providers/wangsu.svg", [ACCESS_USAGES.HOSTING]],
