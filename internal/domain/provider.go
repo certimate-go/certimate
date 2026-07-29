@@ -467,6 +467,7 @@ const (
 	DeploymentProviderTypeWangsuCDNPro                  = DeploymentProviderType(AccessProviderTypeWangsu + "-cdnpro")
 	DeploymentProviderTypeWangsuCertificate             = DeploymentProviderType(AccessProviderTypeWangsu + "-certificate")
 	DeploymentProviderTypeWebhook                       = DeploymentProviderType(AccessProviderTypeWebhook)
+	DeploymentProviderTypeYandexCloudCertificateManager = DeploymentProviderType(AccessProviderTypeYandexCloud + "-certificatemanager")
 	DeploymentProviderTypeZenlayerCDN                   = DeploymentProviderType(AccessProviderTypeZenlayer + "-cdn")
 	DeploymentProviderTypeZenlayerGA                    = DeploymentProviderType(AccessProviderTypeZenlayer + "-ga")
 )

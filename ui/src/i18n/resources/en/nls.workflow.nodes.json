@@ -963,7 +963,7 @@
       "aws_acm_certificate_arn": {
         "label": "AWS ACM certificate ARN (Optional)",
         "placeholder": "Please enter AWS ACM certificate ARN",
-        "help": "Notes: Leave it blank to import a new certificate."
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "aws_alb_region": {
         "label": "AWS Region",
@@ -2903,6 +2903,11 @@
         "label": "Webhook timeout (Optional)",
         "placeholder": "Please enter Webhook timeout",
         "unit": "seconds"
+      },
+      "yandexcloud_certificatemanager_certificate_id": {
+        "label": "Yandex Cloud Certificate Manager certificate ID (Optional)",
+        "placeholder": "Please enter Yandex Cloud Certificate Manager certificate ID",
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "zenlayer_cdn_deploy_target": {
         "option": {

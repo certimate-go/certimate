@@ -1,36 +1,36 @@
-package googlecloudcertificatemanager_test
+package yandexcloudcertificatemanager_test
 
 import (
 	"os"
 	"testing"
 
-	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/googlecloud-certificatemanager"
+	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/yandexcloud-certificatemanager"
 	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp                 = tester.Args("GOOGLECLOUDCERTIFICATEMANAGER_")
+	fp                 = tester.Args("YANDEXCLOUDCERTIFICATEMANAGER_")
 	fTestCertPath      string
 	fTestKeyPath       string
-	fProjectId         string
+	fFolderId          string
 	fServiceAccountKey string
 )
 
 func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
-	fp.DefineString(&fProjectId, "PROJECTID")
+	fp.DefineString(&fFolderId, "FOLDERID")
 	fp.DefineString(&fServiceAccountKey, "SERVICEACCOUNTKEY")
 }
 
 /*
 Shell command to run this test:
 
-	go test -v ./googlecloud_certificatemanager_test.go -args \
-	--GOOGLECLOUDCERTIFICATEMANAGER_TESTCERTPATH="/path/to/your-test-cert.pem" \
-	--GOOGLECLOUDCERTIFICATEMANAGER_TESTKEYPATH="/path/to/your-test-key.pem" \
-	--GOOGLECLOUDCERTIFICATEMANAGER_PROJECTID="your-project-id" \
-	--GOOGLECLOUDCERTIFICATEMANAGER_SERVICEACCOUNTKEY="{...}"
+	go test -v ./yandexcloud_certificatemanager_test.go -args \
+	--YANDEXCLOUDCERTIFICATEMANAGER_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--YANDEXCLOUDCERTIFICATEMANAGER_TESTKEYPATH="/path/to/your-test-key.pem" \
+	--YANDEXCLOUDCERTIFICATEMANAGER_FOLDERID="your-folder-id" \
+	--YANDEXCLOUDCERTIFICATEMANAGER_SERVICEACCOUNTKEY="{...}"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -42,7 +42,7 @@ func TestProvider(t *testing.T) {
 
 	t.Run("Upload", func(t *testing.T) {
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
-			ProjectId:         fProjectId,
+			FolderId:          fFolderId,
 			ServiceAccountKey: fServiceAccountKey,
 		})
 		if err != nil {

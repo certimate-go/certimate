@@ -82,6 +82,9 @@ require (
 	github.com/volcengine/volcengine-go-sdk v1.2.42
 	github.com/wneessen/go-mail v0.8.1
 	github.com/xhit/go-str2duration/v2 v2.1.0
+	github.com/yandex-cloud/go-genproto v0.99.0
+	github.com/yandex-cloud/go-sdk/services/certificatemanager v0.0.81
+	github.com/yandex-cloud/go-sdk/v2 v2.142.0
 	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
 	github.com/zenlayer/zenlayercloud-sdk-go v0.2.46
 	gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0
@@ -257,9 +260,7 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
-	github.com/yandex-cloud/go-genproto v0.84.0 // indirect
 	github.com/yandex-cloud/go-sdk/services/dns v0.0.65 // indirect
-	github.com/yandex-cloud/go-sdk/v2 v2.114.0 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	github.com/zeebo/xxh3 v1.1.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect

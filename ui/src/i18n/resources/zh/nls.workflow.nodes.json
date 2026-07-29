@@ -2903,6 +2903,11 @@
         "placeholder": "请输入 Webhook 超时时间",
         "unit": "秒"
       },
+      "yandexcloud_certificatemanager_certificate_id": {
+        "label": "Yandex Cloud 证书管理器证书 ID（可选）",
+        "placeholder": "请输入 Yandex Cloud 证书管理器证书 ID",
+        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
+      },
       "zenlayer_cdn_deploy_target": {
         "option": {
           "domain": {
