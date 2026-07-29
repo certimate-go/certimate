@@ -3,12 +3,14 @@ package email_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/email"
-	tester "github.com/certimate-go/certimate/pkg/core/notifier/testing"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp               = tester.Args("EMAIL_")
+	fp               = it.Args("EMAIL_")
 	fSmtpHost        string
 	fSmtpPort        int64
 	fSmtpTLS         bool
@@ -53,12 +55,9 @@ func TestProvider(t *testing.T) {
 			SenderAddress:   fSenderAddress,
 			ReceiverAddress: fReceiverAddress,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 
 	t.Run("Notify_Html", func(t *testing.T) {
@@ -78,6 +77,6 @@ func TestProvider(t *testing.T) {
 		}
 
 		const mockHtml = "<h1>Hello Certimate！</h1><a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>"
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{Message: mockHtml})
+		it.TestNotify(t, provider, it.TestNotifyArgs{Message: mockHtml})
 	})
 }

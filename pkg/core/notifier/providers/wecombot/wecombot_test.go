@@ -3,12 +3,14 @@ package wecombot_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/wecombot"
-	tester "github.com/certimate-go/certimate/pkg/core/notifier/testing"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp          = tester.Args("WECOMBOT_")
+	fp          = it.Args("WECOMBOT_")
 	fWebhookUrl string
 )
 
@@ -29,11 +31,8 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewNotifier(&impl.NotifierConfig{
 			WebhookUrl: fWebhookUrl,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 }

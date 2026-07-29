@@ -3,12 +3,14 @@ package tencentcloudtse_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-tse"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("TENCENTCLOUDTSE_")
+	fp            = it.Args("TENCENTCLOUDTSE_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fSecretId     string
@@ -51,11 +53,8 @@ func TestProvider(t *testing.T) {
 			ServiceType: fServiceType,
 			GatewayId:   fGatewayId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

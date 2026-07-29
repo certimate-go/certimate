@@ -3,12 +3,14 @@ package ucloudussl_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ussl"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("UCLOUDUSSL_")
+	fp            = it.Args("UCLOUDUSSL_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fPrivateKey   string
@@ -39,11 +41,8 @@ func TestProvider(t *testing.T) {
 			PrivateKey: fPrivateKey,
 			PublicKey:  fPublicKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -3,12 +3,14 @@ package awsapigateway_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/aws-apigateway"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp               = tester.Args("AWSAPIGATEWAY_")
+	fp               = it.Args("AWSAPIGATEWAY_")
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
@@ -48,11 +50,8 @@ func TestProvider(t *testing.T) {
 			Domain:            fDomain,
 			CertificateSource: impl.CERTIFICATE_SOURCE_ACM,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -3,12 +3,14 @@ package dogecloud_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/dogecloud"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("DOGECLOUD_")
+	fp            = it.Args("DOGECLOUD_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fAccessKey    string
@@ -39,11 +41,8 @@ func TestProvider(t *testing.T) {
 			AccessKey: fAccessKey,
 			SecretKey: fSecretKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

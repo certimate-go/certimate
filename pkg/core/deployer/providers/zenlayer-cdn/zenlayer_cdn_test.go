@@ -3,12 +3,14 @@ package zenlayercdn_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/zenlayer-cdn"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp                 = tester.Args("ZENLAYERCDN_")
+	fp                 = it.Args("ZENLAYERCDN_")
 	fTestCertPath      string
 	fTestKeyPath       string
 	fAccessKeyId       string
@@ -48,12 +50,9 @@ func TestProvider(t *testing.T) {
 			DomainMatchPattern: impl.DOMAIN_MATCH_PATTERN_EXACT,
 			Domain:             fDomain,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_ToCertificate", func(t *testing.T) {
@@ -63,11 +62,8 @@ func TestProvider(t *testing.T) {
 			DeployTarget:      impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:     fCertificateId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

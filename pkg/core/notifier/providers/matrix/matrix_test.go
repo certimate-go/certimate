@@ -3,12 +3,14 @@ package matrix_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/matrix"
-	tester "github.com/certimate-go/certimate/pkg/core/notifier/testing"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp           = tester.Args("MATRIX_")
+	fp           = it.Args("MATRIX_")
 	fServerUrl   string
 	fUserId      string
 	fAccessToken string
@@ -41,11 +43,8 @@ func TestProvider(t *testing.T) {
 			AccessToken: fAccessToken,
 			RoomId:      fRoomId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 }

@@ -1,16 +1,16 @@
 package aliyunslb_test
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-slb"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp               = tester.Args("ALIYUNSLB_")
+	fp               = it.Args("ALIYUNSLB_")
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
@@ -40,25 +40,13 @@ func TestProvider(t *testing.T) {
 	fp.Parse()
 
 	t.Run("Upload", func(t *testing.T) {
-		t.Log(strings.Join([]string{
-			"args:",
-			fmt.Sprintf("TESTCERTPATH: %v", fTestCertPath),
-			fmt.Sprintf("TESTKEYPATH: %v", fTestKeyPath),
-			fmt.Sprintf("ACCESSKEYID: %v", fAccessKeyId),
-			fmt.Sprintf("ACCESSKEYSECRET: %v", fAccessKeySecret),
-			fmt.Sprintf("REGION: %v", fRegion),
-		}, "\n"))
-
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			AccessKeyId:     fAccessKeyId,
 			AccessKeySecret: fAccessKeySecret,
 			Region:          fRegion,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

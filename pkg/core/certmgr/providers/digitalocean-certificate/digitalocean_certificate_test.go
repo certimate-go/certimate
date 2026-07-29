@@ -3,12 +3,14 @@ package digitaloceancertificate_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/digitalocean-certificate"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("DIGITALOCEANCERTIFICATE_")
+	fp            = it.Args("DIGITALOCEANCERTIFICATE_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fAccessToken  string
@@ -35,11 +37,8 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			AccessToken: fAccessToken,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -3,12 +3,14 @@ package dogecloudcdn_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/dogecloud-cdn"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("DOGECLOUDCDN_")
+	fp            = it.Args("DOGECLOUDCDN_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fAccessKey    string
@@ -43,11 +45,8 @@ func TestProvider(t *testing.T) {
 			SecretKey: fSecretKey,
 			Domain:    fDomain,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

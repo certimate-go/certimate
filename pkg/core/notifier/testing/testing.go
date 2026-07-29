@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/samber/lo"
+	"github.com/stretchr/testify/require"
 
 	"github.com/certimate-go/certimate/pkg/core/notifier"
 )
@@ -31,10 +32,8 @@ func TestNotify(t *testing.T, testProvider notifier.Provider, testArgs TestNotif
 	testProvider.SetLogger(logger)
 
 	res, err := testProvider.Notify(ctx, message, subject)
-	if err != nil {
-		t.Errorf("err: %+v", err)
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, res)
 
 	resjson, _ := json.Marshal(res)
 	t.Logf("ok: %s", string(resjson))

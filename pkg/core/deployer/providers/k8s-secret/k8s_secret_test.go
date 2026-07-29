@@ -4,12 +4,14 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/k8s-secret"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp                   = tester.Args("K8SSECRET_")
+	fp                   = it.Args("K8SSECRET_")
 	fTestCertPath        string
 	fTestKeyPath         string
 	fKubeConfig          string
@@ -57,11 +59,8 @@ func TestProvider(t *testing.T) {
 			SecretDataKeyForCrt: fSecretDataKeyForCrt,
 			SecretDataKeyForKey: fSecretDataKeyForKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

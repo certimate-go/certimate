@@ -3,12 +3,14 @@ package cachefly_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/cachefly"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("CACHEFLY_")
+	fp            = it.Args("CACHEFLY_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fApiToken     string
@@ -35,11 +37,8 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			ApiToken: fApiToken,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

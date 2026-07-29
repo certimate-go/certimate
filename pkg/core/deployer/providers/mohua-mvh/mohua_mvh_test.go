@@ -3,12 +3,14 @@ package mohuamvh_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/mohua-mvh"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("MOHUAMVH_")
+	fp            = it.Args("MOHUAMVH_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fUsername     string
@@ -47,11 +49,8 @@ func TestProvider(t *testing.T) {
 			HostId:      fHostId,
 			DomainId:    fDomainId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }
