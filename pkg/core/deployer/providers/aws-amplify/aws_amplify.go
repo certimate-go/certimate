@@ -6,13 +6,11 @@ import (
 	"log/slog"
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/amplify"
 	"github.com/aws/aws-sdk-go-v2/service/amplify/types"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimplacm "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aws-acm"
+	awsamplifysdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/amplify"
 )
 
 type (
@@ -39,7 +37,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *amplify.Client
+	sdkClient  *awsamplifysdk.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -107,7 +105,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 更新域名关联
 	// REF: https://docs.aws.amazon.com/amplify/latest/APIReference/API_UpdateDomainAssociation.html
-	updateDomainAssociationReq := &amplify.UpdateDomainAssociationInput{
+	updateDomainAssociationReq := &awsamplifysdk.UpdateDomainAssociationRequest{
 		AppId:      aws.String(d.config.AppId),
 		DomainName: aws.String(d.config.Domain),
 		CertificateSettings: &types.CertificateSettings{
@@ -115,7 +113,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			CustomCertificateArn: aws.String(upres.ExtendedData["Arn"].(string)),
 		},
 	}
-	updateDomainAssociationResp, err := d.sdkClient.UpdateDomainAssociation(ctx, updateDomainAssociationReq)
+	updateDomainAssociationResp, err := d.sdkClient.UpdateDomainAssociationWithContext(ctx, updateDomainAssociationReq)
 	d.logger.Debug("sdk request 'amplify.UpdateDomainAssociation'", slog.Any("request", updateDomainAssociationReq), slog.Any("response", updateDomainAssociationResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'amplify.UpdateDomainAssociation': %w", err)
@@ -124,15 +122,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*amplify.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
-		awscfg.WithRegion(region),
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*awsamplifysdk.Client, error) {
+	client, err := awsamplifysdk.NewClient(
+		awsamplifysdk.WithAkSk(accessKeyId, secretAccessKey),
+		awsamplifysdk.WithRegion(region),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := amplify.NewFromConfig(cfg)
 	return client, nil
 }

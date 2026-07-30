@@ -8,12 +8,11 @@ import (
 	"strings"
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
-	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/acm"
+	"github.com/aws/aws-sdk-go-v2/service/acm/types"
 	"github.com/aws/smithy-go"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	awsacmsdk "github.com/certimate-go/certimate/pkg/sdk3rd/aws/acm"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -35,7 +34,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *acm.Client
+	sdkClient *awsacmsdk.Client
 }
 
 var _ Provider = (*Certmgr)(nil)
@@ -89,34 +88,37 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		default:
 		}
 
-		listCertificatesReq := &acm.ListCertificatesInput{
+		listCertificatesReq := &awsacmsdk.ListCertificatesRequest{
 			NextToken: listCertificatesNextToken,
 			MaxItems:  aws.Int32(1000),
+			SortBy:    types.SortByCreatedAt,
+			SortOrder: types.SortOrderDescending,
 		}
-		listCertificatesResp, err := c.sdkClient.ListCertificates(ctx, listCertificatesReq)
+		listCertificatesResp, err := c.sdkClient.ListCertificatesWithContext(ctx, listCertificatesReq)
 		c.logger.Debug("sdk request 'acm.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'acm.ListCertificates': %w", err)
 		}
 
 		for _, certItem := range listCertificatesResp.CertificateSummaryList {
-			// 对比证书备用名称
-			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), strings.Join(certItem.SubjectAlternativeNameSummaries, ",")) {
+			// 对比证书通用名称
+			// 注意，虽然文档中描述为包含了备用名称字段，但实际值不完整，因此不能用于判断证书是否相同
+			if certItem.DomainName == nil || !strings.EqualFold(certX509.Subject.CommonName, *certItem.DomainName) {
 				continue
 			}
 
 			// 对比证书有效期
-			if certItem.NotBefore == nil || !certX509.NotBefore.Equal(*certItem.NotBefore) {
+			if certItem.NotBefore == nil || certX509.NotBefore.Unix() != certItem.NotBefore.Unix() {
 				continue
-			} else if certItem.NotAfter == nil || !certX509.NotAfter.Equal(*certItem.NotAfter) {
+			} else if certItem.NotAfter == nil || certX509.NotAfter.Unix() != certItem.NotAfter.Unix() {
 				continue
 			}
 
 			// 对比证书内容
-			getCertificateReq := &acm.GetCertificateInput{
+			getCertificateReq := &awsacmsdk.GetCertificateRequest{
 				CertificateArn: certItem.CertificateArn,
 			}
-			getCertificateResp, err := c.sdkClient.GetCertificate(ctx, getCertificateReq)
+			getCertificateResp, err := c.sdkClient.GetCertificateWithContext(ctx, getCertificateReq)
 			if err != nil {
 				var sdkErr smithy.APIError
 				if errors.As(err, &sdkErr) {
@@ -151,12 +153,12 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 	// 导入证书
 	// REF: https://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html
-	importCertificateReq := &acm.ImportCertificateInput{
+	importCertificateReq := &awsacmsdk.ImportCertificateRequest{
 		Certificate:      ([]byte)(serverCertPEM),
 		CertificateChain: ([]byte)(issuerCertPEM),
 		PrivateKey:       ([]byte)(privkeyPEM),
 	}
-	importCertificateResp, err := c.sdkClient.ImportCertificate(ctx, importCertificateReq)
+	importCertificateResp, err := c.sdkClient.ImportCertificateWithContext(ctx, importCertificateReq)
 	c.logger.Debug("sdk request 'acm.ImportCertificate'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'acm.ImportCertificate': %w", err)
@@ -179,13 +181,13 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 
 	// 导入证书
 	// REF: https://docs.aws.amazon.com/acm/latest/APIReference/API_ImportCertificate.html
-	importCertificateReq := &acm.ImportCertificateInput{
+	importCertificateReq := &awsacmsdk.ImportCertificateRequest{
 		CertificateArn:   aws.String(certIdOrName),
 		Certificate:      ([]byte)(serverCertPEM),
 		CertificateChain: ([]byte)(issuerCertPEM),
 		PrivateKey:       ([]byte)(privkeyPEM),
 	}
-	importCertificateResp, err := c.sdkClient.ImportCertificate(ctx, importCertificateReq)
+	importCertificateResp, err := c.sdkClient.ImportCertificateWithContext(ctx, importCertificateReq)
 	c.logger.Debug("sdk request 'acm.ImportCertificate'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'acm.ImportCertificate': %w", err)
@@ -194,15 +196,14 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return &ReplaceResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*acm.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
-		awscfg.WithRegion(region),
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*awsacmsdk.Client, error) {
+	client, err := awsacmsdk.NewClient(
+		awsacmsdk.WithAkSk(accessKeyId, secretAccessKey),
+		awsacmsdk.WithRegion(region),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	client := acm.NewFromConfig(cfg)
 	return client, nil
 }

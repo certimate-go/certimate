@@ -50,6 +50,7 @@ func TestProvider(t *testing.T) {
 			AccessKeyId:       fAccessKeyId,
 			SecretAccessKey:   fSecretAccessKey,
 			Region:            fRegion,
+			AppId:             fAppId,
 			Domain:            fDomain,
 			CertificateSource: impl.CERTIFICATE_SOURCE_ACM,
 		})
