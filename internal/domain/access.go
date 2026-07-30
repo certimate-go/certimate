@@ -82,6 +82,7 @@ type AccessConfigForArvanCloud struct {
 }
 
 type AccessConfigForAWS struct {
+	AuthMethod      string `json:"authMethod"`
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 }

@@ -10,6 +10,7 @@ import (
 )
 
 type ChallengerConfig struct {
+	AuthMethod            string `json:"authMethod"` // not used for now
 	AccessKeyId           string `json:"accessKeyId"`
 	SecretAccessKey       string `json:"secretAccessKey"`
 	Region                string `json:"region"`

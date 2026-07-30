@@ -17,6 +17,7 @@ func init() {
 		}
 
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
+			AuthMethod:      credentials.AuthMethod,
 			AccessKeyId:     credentials.AccessKeyId,
 			SecretAccessKey: credentials.SecretAccessKey,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),

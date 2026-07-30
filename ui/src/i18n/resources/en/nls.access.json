@@ -220,6 +220,19 @@
       "placeholder": "Please enter ArvanCloud API key",
       "tooltip": "For more information, see <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
     },
+    "aws_auth_method": {
+      "label": "AWS API authentication method",
+      "placeholder": "Please select AWS API authentication method",
+      "option": {
+        "accesskey": {
+          "label": "Access key"
+        },
+        "imds": {
+          "label": "IMDS",
+          "guide": "If you are running Certimate in Docker, please ensure that the metadata option <em>http-put-response-hop-limit</em> is configured correctly for the EC2 instance. Learn more about this: <br><a href=\"https://docs.aws.amazon.com/en_us/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
+    },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
       "placeholder": "Please enter AWS AccessKeyID",

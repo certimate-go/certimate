@@ -220,6 +220,19 @@
       "placeholder": "请输入 ArvanCloud API 密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
     },
+    "aws_auth_method": {
+      "label": "AWS API 认证方式",
+      "placeholder": "请选择 AWS API 认证方式",
+      "option": {
+        "accesskey": {
+          "label": "访问密钥"
+        },
+        "imds": {
+          "label": "EC2 IMDS",
+          "guide": "如果你正在使用容器化运行 Certimate，请确保已为 EC2 实例配置了正确的 <em>http-put-response-hop-limit</em> 元数据。点击下方链接了解更多：<br><a href=\"https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
+    },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
       "placeholder": "请输入 AWS AccessKeyID",

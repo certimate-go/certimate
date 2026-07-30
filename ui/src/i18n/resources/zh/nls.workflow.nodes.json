@@ -1903,7 +1903,7 @@
         "placeholder": "请输入 Linode 对象存储桶名"
       },
       "local": {
-        "guide": "如果你正在使用 Docker 运行 Certimate，「本地」指的是容器内而非宿主机。"
+        "guide": "如果你正在使用容器化运行 Certimate，「本地」指的是容器内而非宿主机。"
       },
       "local_shell_env": {
         "label": "命令执行环境",
