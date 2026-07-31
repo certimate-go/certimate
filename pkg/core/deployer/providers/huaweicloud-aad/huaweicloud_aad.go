@@ -61,7 +61,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	clientsV1, err := createSDKClientV1(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientsV2, err := createSDKClientV2(config.AccessKeyId, config.SecretAccessKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -69,7 +74,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{AADv1: clientsV1, AADv2: clientsV2},
 	}, nil
 }
 
@@ -243,64 +248,62 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 	return nil
 }
 
-func createSDKClients(accessKeyId, secretAccessKey, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
-
+func createSDKClientV1(accessKeyId, secretAccessKey, region string) (*hwaadv1.AadClient, error) {
 	if region == "" {
 		region = "cn-north-4" // AAD 服务默认区域：华北北京四
 	}
 
-	{
-		auth, err := global.NewCredentialsBuilder().
-			WithAk(accessKeyId).
-			WithSk(secretAccessKey).
-			SafeBuild()
-		if err != nil {
-			return nil, err
-		}
-
-		hcRegion, err := hwaadregion.SafeValueOf(region)
-		if err != nil {
-			return nil, err
-		}
-
-		hcClient, err := hwaadv1.AadClientBuilder().
-			WithRegion(hcRegion).
-			WithCredential(auth).
-			SafeBuild()
-		if err != nil {
-			return nil, err
-		}
-
-		client := hwaadv1.NewAadClient(hcClient)
-		wsdk.AADv1 = client
+	auth, err := global.NewCredentialsBuilder().
+		WithAk(accessKeyId).
+		WithSk(secretAccessKey).
+		SafeBuild()
+	if err != nil {
+		return nil, err
 	}
 
-	{
-		auth, err := global.NewCredentialsBuilder().
-			WithAk(accessKeyId).
-			WithSk(secretAccessKey).
-			SafeBuild()
-		if err != nil {
-			return nil, err
-		}
-
-		hcRegion, err := hwaadregion.SafeValueOf(region)
-		if err != nil {
-			return nil, err
-		}
-
-		hcClient, err := hwaadv2.AadClientBuilder().
-			WithRegion(hcRegion).
-			WithCredential(auth).
-			SafeBuild()
-		if err != nil {
-			return nil, err
-		}
-
-		client := hwaadv2.NewAadClient(hcClient)
-		wsdk.AADv2 = client
+	hcRegion, err := hwaadregion.SafeValueOf(region)
+	if err != nil {
+		return nil, err
 	}
 
-	return wsdk, nil
+	hcClient, err := hwaadv1.AadClientBuilder().
+		WithRegion(hcRegion).
+		WithCredential(auth).
+		SafeBuild()
+	if err != nil {
+		return nil, err
+	}
+
+	client := hwaadv1.NewAadClient(hcClient)
+	return client, nil
+}
+
+func createSDKClientV2(accessKeyId, secretAccessKey, region string) (*hwaadv2.AadClient, error) {
+	if region == "" {
+		region = "cn-north-4" // AAD 服务默认区域：华北北京四
+	}
+
+	auth, err := global.NewCredentialsBuilder().
+		WithAk(accessKeyId).
+		WithSk(secretAccessKey).
+		SafeBuild()
+	if err != nil {
+		return nil, err
+	}
+
+	hcRegion, err := hwaadregion.SafeValueOf(region)
+	if err != nil {
+		return nil, err
+	}
+
+	hcClient, err := hwaadv2.AadClientBuilder().
+		WithRegion(hcRegion).
+		WithCredential(auth).
+		SafeBuild()
+	if err != nil {
+		return nil, err
+	}
+
+	client := hwaadv2.NewAadClient(hcClient)
+	return client, nil
 }

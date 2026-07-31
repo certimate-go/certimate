@@ -70,7 +70,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	clientALB, err := createSDKClientALB(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientCAS, err := createSDKClientCAS(config.AccessKeyId, config.AccessKeySecret, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -88,7 +93,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{ALB: clientALB, CAS: clientCAS},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -486,55 +491,49 @@ func (d *Deployer) waitForListenerReady(ctx context.Context, cloudListenerId str
 	return nil
 }
 
-func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
-
-	{
-		// 接入点一览 https://api.aliyun.com/product/Alb
-		var endpoint string
-		switch region {
-		case "", "cn-hangzhou-finance":
-			endpoint = "alb.cn-hangzhou.aliyuncs.com"
-		default:
-			endpoint = fmt.Sprintf("alb.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := alialb.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.ALB = client
+func createSDKClientALB(accessKeyId, accessKeySecret, region string) (*alialb.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/Alb
+	var endpoint string
+	switch region {
+	case "", "cn-hangzhou-finance":
+		endpoint = "alb.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("alb.%s.aliyuncs.com", region)
 	}
 
-	{
-		// 接入点一览 https://api.aliyun.com/product/cas
-		var endpoint string
-		if !strings.HasPrefix(region, "cn-") {
-			endpoint = "cas.ap-southeast-1.aliyuncs.com"
-		} else {
-			endpoint = "cas.aliyuncs.com"
-		}
-
-		config := &aliopen.Config{
-			Endpoint:        tea.String(endpoint),
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-		}
-
-		client, err := alicas.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.CAS = client
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
 	}
 
-	return wsdk, nil
+	client, err := alialb.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func createSDKClientCAS(accessKeyId, accessKeySecret, region string) (*alicas.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/cas
+	var endpoint string
+	if !strings.HasPrefix(region, "cn-") {
+		endpoint = "cas.ap-southeast-1.aliyuncs.com"
+	} else {
+		endpoint = "cas.aliyuncs.com"
+	}
+
+	config := &aliopen.Config{
+		Endpoint:        tea.String(endpoint),
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+	}
+
+	client, err := alicas.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

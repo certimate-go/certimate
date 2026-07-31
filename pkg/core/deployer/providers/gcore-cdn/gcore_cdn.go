@@ -51,7 +51,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.ApiToken)
+	clientRES, err := createSDKClientRES(config.ApiToken)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientSSL, err := createSDKClientSSL(config.ApiToken)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -66,7 +71,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{Resources: clientRES, SSLCerts: clientSSL},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -142,19 +147,26 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClients(apiToken string) (*wSDKClients, error) {
+func createSDKClientRES(apiToken string) (*resources.Service, error) {
 	if apiToken == "" {
 		return nil, fmt.Errorf("gcore: invalid api token")
 	}
 
 	requester := provider.NewClient(
-		xgcore.BASE_URL,
+		xgcore.BaseURL,
 		provider.WithSigner(xgcore.NewAuthRequestSigner(apiToken)),
 	)
-	resourcesSrv := resources.NewService(requester)
-	sslCertsSrv := sslcerts.NewService(requester)
-	return &wSDKClients{
-		Resources: resourcesSrv,
-		SSLCerts:  sslCertsSrv,
-	}, nil
+	return resources.NewService(requester), nil
+}
+
+func createSDKClientSSL(apiToken string) (*sslcerts.Service, error) {
+	if apiToken == "" {
+		return nil, fmt.Errorf("gcore: invalid api token")
+	}
+
+	requester := provider.NewClient(
+		xgcore.BaseURL,
+		provider.WithSigner(xgcore.NewAuthRequestSigner(apiToken)),
+	)
+	return sslcerts.NewService(requester), nil
 }

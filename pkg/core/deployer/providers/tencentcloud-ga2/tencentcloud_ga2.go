@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
@@ -63,7 +62,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint)
+	clientGA2, err := createSDKClientGA2(config.SecretId, config.SecretKey, config.Endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientSSL, err := createSDKClientSSL(config.SecretId, config.SecretKey, lo.Ternary(xtencentcloud.IsIntlAPIEndpoint(config.Endpoint), "ssl.intl.tencentcloudapi.com", ""))
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -81,7 +85,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{GA2: clientGA2, SSL: clientSSL},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -207,40 +211,34 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 	return nil
 }
 
-func createSDKClients(secretId, secretKey, endpoint string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
+func createSDKClientGA2(secretId, secretKey, endpoint string) (*tcga2.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-		if endpoint != "" {
-			cpf.HttpProfile.Endpoint = endpoint
-		}
-
-		client, err := tcga2.NewClient(credential, "", cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.GA2 = client
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-		if strings.HasSuffix(endpoint, "intl.tencentcloudapi.com") {
-			cpf.HttpProfile.Endpoint = "ssl.intl.tencentcloudapi.com"
-		}
-
-		client, err := tcssl.NewClient(credential, "", cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.SSL = client
+	client, err := tcga2.NewClient(credential, "", cpf)
+	if err != nil {
+		return nil, err
 	}
 
-	return wsdk, nil
+	return client, nil
+}
+
+func createSDKClientSSL(secretId, secretKey, endpoint string) (*tcssl.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
+
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcssl.NewClient(credential, "", cpf)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

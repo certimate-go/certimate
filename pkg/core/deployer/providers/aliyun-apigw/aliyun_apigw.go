@@ -70,7 +70,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	clientAPIG, err := createSDKClientAPIG(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientCAPI, err := createSDKClientCAPI(config.AccessKeyId, config.AccessKeySecret, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -88,7 +93,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{CloudNativeAPIGateway: clientAPIG, TraditionalAPIGateway: clientCAPI},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -451,56 +456,50 @@ func (d *Deployer) findCloudNativeDomainIdByDomain(ctx context.Context, cloudGat
 	return "", fmt.Errorf("could not find domain '%s'", domain)
 }
 
-func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
-
-	{
-		// 接入点一览 https://api.aliyun.com/product/APIG
-		var endpoint string
-		switch region {
-		case "":
-			endpoint = "apig.cn-hangzhou.aliyuncs.com"
-		default:
-			endpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := aliapig.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.CloudNativeAPIGateway = client
+func createSDKClientCAPI(accessKeyId, accessKeySecret, region string) (*alicloudapi.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/CloudAPI
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "apigateway.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
 	}
 
-	{
-		// 接入点一览 https://api.aliyun.com/product/CloudAPI
-		var endpoint string
-		switch region {
-		case "":
-			endpoint = "apigateway.cn-hangzhou.aliyuncs.com"
-		default:
-			endpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := alicloudapi.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.TraditionalAPIGateway = client
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
 	}
 
-	return wsdk, nil
+	client, err := alicloudapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func createSDKClientAPIG(accessKeyId, accessKeySecret, region string) (*aliapig.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/APIG
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "apig.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
+	}
+
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
+	}
+
+	client, err := aliapig.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
