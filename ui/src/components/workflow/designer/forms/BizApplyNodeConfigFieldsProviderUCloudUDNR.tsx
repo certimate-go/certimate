@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const BizDeployNodeConfigFieldsProviderUCloudUCDN = () => {
+const BizApplyNodeConfigFieldsProviderUCloudUDNR = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -20,30 +20,18 @@ const BizDeployNodeConfigFieldsProviderUCloudUCDN = () => {
       <Form.Item
         name={[parentNamePath, "endpoint"]}
         initialValue={initialValues.endpoint}
-        label={t("workflow_node.deploy.form.ucloud_ucdn_endpoint.label")}
+        label={t("workflow_node.apply.form.ucloud_udnr_endpoint.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ucloud_ucdn_endpoint.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.apply.form.ucloud_udnr_endpoint.tooltip") }}></span>}
       >
-        <Input allowClear placeholder={t("workflow_node.deploy.form.ucloud_ucdn_endpoint.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
-        name={[parentNamePath, "domainId"]}
-        initialValue={initialValues.domainId}
-        label={t("workflow_node.deploy.form.ucloud_ucdn_domain_id.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ucloud_ucdn_domain_id.tooltip") }}></span>}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.ucloud_ucdn_domain_id.placeholder")} />
+        <Input placeholder={t("workflow_node.apply.form.ucloud_udnr_endpoint.placeholder")} />
       </Form.Item>
     </>
   );
 };
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
-  return {
-    domainId: "",
-  };
+  return {};
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
@@ -51,11 +39,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z.object({
     endpoint: z.string().nullish(),
-    domainId: z.string().nonempty(),
   });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderUCloudUCDN, {
+const _default = Object.assign(BizApplyNodeConfigFieldsProviderUCloudUDNR, {
   getInitialValues,
   getSchema,
 });

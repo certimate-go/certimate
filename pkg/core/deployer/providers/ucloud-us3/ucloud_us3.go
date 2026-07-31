@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
@@ -25,6 +26,8 @@ type DeployerConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 优刻得地域。
 	Region string `json:"region"`
 	// 存储桶名。
@@ -47,7 +50,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -56,6 +59,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		PrivateKey: config.PrivateKey,
 		PublicKey:  config.PublicKey,
 		ProjectId:  config.ProjectId,
+		Endpoint:   config.Endpoint,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -111,7 +115,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.UFileClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint, region string) (*ucloudsdk.UFileClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -122,6 +126,13 @@ func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsd
 	cfg := ucloud.NewConfig()
 	cfg.ProjectId = projectId
 	cfg.Region = region
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

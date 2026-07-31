@@ -28,6 +28,8 @@ type CertmgrConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 优刻得地域。
 	Region string `json:"region"`
 }
@@ -45,7 +47,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -179,7 +181,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint, region string) (*ucloudsdk.ULBClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -190,6 +192,13 @@ func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsd
 	cfg := ucloud.NewConfig()
 	cfg.ProjectId = projectId
 	cfg.Region = region
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

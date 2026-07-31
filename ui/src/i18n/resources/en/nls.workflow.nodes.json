@@ -344,6 +344,11 @@
       "ssh_use_scp": {
         "label": "Fallback to use SCP",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
+      },
+      "ucloud_udnr_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UDNR API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
       }
     }
   },
@@ -2565,6 +2570,11 @@
         "placeholder": "Please enter Tencent Cloud WAF domain ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/waf\" target=\"_blank\">https://console.tencentcloud.com/waf</a>"
       },
+      "ucloud_ualb_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UALB API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
+      },
       "ucloud_ualb_region": {
         "label": "UCloud region",
         "placeholder": "Please enter UCloud ALB region (e.g. cn-bj2)",
@@ -2595,10 +2605,20 @@
         "placeholder": "Please enter UCloud UALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
+      "ucloud_ucdn_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UCDN API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
+      },
       "ucloud_ucdn_domain_id": {
         "label": "UCloud UCDN domain ID",
         "placeholder": "Please enter UCloud UCDN domain ID",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ucdn\" target=\"_blank\">https://console.ucloud-global.com/ucdn</a>"
+      },
+      "ucloud_uclb_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UCLB API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
       },
       "ucloud_uclb_region": {
         "label": "UCloud region",
@@ -2625,6 +2645,11 @@
         "placeholder": "Please enter UCloud UCLB VServer ID",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>"
       },
+      "ucloud_upathx_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UPathX API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
+      },
       "ucloud_upathx_accelerator_id": {
         "label": "UCloud UPathX accelerator ID",
         "placeholder": "Please enter UCloud UPathX accelerator ID",
@@ -2634,6 +2659,11 @@
         "label": "UCloud UPathX listener port",
         "placeholder": "Please enter UCloud UPathX listener port",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>"
+      },
+      "ucloud_us3_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud US3 API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
       },
       "ucloud_us3_region": {
         "label": "UCloud region",
@@ -2647,6 +2677,11 @@
       "ucloud_us3_domain": {
         "label": "UCloud US3 custom domain",
         "placeholder": "Please enter UCloud US3 bucket custom domain name"
+      },
+      "ucloud_uewaf_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UEWAF API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China</li></ul>"
       },
       "ucloud_uewaf_domain": {
         "label": "UCloud UEWAF domain",

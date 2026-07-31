@@ -32,6 +32,8 @@ type CertmgrConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 }
 
 type Certmgr struct {
@@ -47,7 +49,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -230,7 +232,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.USSLClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint string) (*ucloudsdk.USSLClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -240,6 +242,13 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.USSLCl
 
 	cfg := ucloud.NewConfig()
 	cfg.ProjectId = projectId
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

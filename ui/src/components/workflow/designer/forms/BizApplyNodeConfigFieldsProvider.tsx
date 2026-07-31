@@ -12,6 +12,7 @@ import BizApplyNodeConfigFieldsProviderLocal from "./BizApplyNodeConfigFieldsPro
 import BizApplyNodeConfigFieldsProviderOracleCloudDNS from "./BizApplyNodeConfigFieldsProviderOracleCloudDNS";
 import BizApplyNodeConfigFieldsProviderS3 from "./BizApplyNodeConfigFieldsProviderS3";
 import BizApplyNodeConfigFieldsProviderSSH from "./BizApplyNodeConfigFieldsProviderSSH";
+import BizApplyNodeConfigFieldsProviderUCloudUDNR from "./BizApplyNodeConfigFieldsProviderUCloudUDNR";
 
 const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React.ComponentType<any>>> = {
   /*
@@ -28,6 +29,8 @@ const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React
   [ACME_DNS01_PROVIDERS.JDCLOUD_DNS]: BizApplyNodeConfigFieldsProviderJDCloudDNS,
   [ACME_DNS01_PROVIDERS.ORACLECLOUD]: BizApplyNodeConfigFieldsProviderOracleCloudDNS,
   [ACME_DNS01_PROVIDERS.ORACLECLOUD_DNS]: BizApplyNodeConfigFieldsProviderOracleCloudDNS,
+  [ACME_DNS01_PROVIDERS.UCLOUD]: BizApplyNodeConfigFieldsProviderUCloudUDNR,
+  [ACME_DNS01_PROVIDERS.UCLOUD_UDNR]: BizApplyNodeConfigFieldsProviderUCloudUDNR,
 };
 
 const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, React.ComponentType<any>>> = {

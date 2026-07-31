@@ -1,6 +1,6 @@
-// An extension SDK client for UCloud CDN service.
+// An extension SDK client for UCloud DNR service.
 // Based on github.com/ucloud/ucloud-sdk-go.
-package ucdn
+package udnr
 
 import (
 	"io"
@@ -9,15 +9,15 @@ import (
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 )
 
-type UCDNClient struct {
+type UDNRClient struct {
 	*ucloud.Client
 }
 
-func NewClient(config *ucloud.Config, credential *auth.Credential) *UCDNClient {
-	meta := ucloud.ClientMeta{Product: "UCDN"}
+func NewClient(config *ucloud.Config, credential *auth.Credential) *UDNRClient {
+	meta := ucloud.ClientMeta{Product: "UDNR"}
 	client := ucloud.NewClientWithMeta(config, credential, meta)
 	client.GetLogger().SetOutput(io.Discard)
-	return &UCDNClient{
+	return &UDNRClient{
 		client,
 	}
 }

@@ -26,6 +26,16 @@ const BizDeployNodeConfigFieldsProviderUCloudUCLB = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "endpoint"]}
+        initialValue={initialValues.endpoint}
+        label={t("workflow_node.deploy.form.ucloud_uclb_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ucloud_uclb_endpoint.tooltip") }}></span>}
+      >
+        <Input allowClear placeholder={t("workflow_node.deploy.form.ucloud_uclb_endpoint.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "region"]}
         initialValue={initialValues.region}
         label={t("workflow_node.deploy.form.ucloud_uclb_region.label")}
@@ -90,8 +100,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_VSERVER]),
       region: z.string().nonempty(),
+      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_VSERVER]),
       loadbalancerId: z.string().nonempty(),
       vserverId: z.string().nullish(),
     })

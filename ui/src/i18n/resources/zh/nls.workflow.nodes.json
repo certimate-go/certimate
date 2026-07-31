@@ -343,6 +343,11 @@
       "ssh_use_scp": {
         "label": "回退使用 SCP",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
+      },
+      "ucloud_udnr_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UDNR 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
       }
     }
   },
@@ -2401,12 +2406,12 @@
       },
       "tencentcloud_scf_region": {
         "label": "腾讯云服务地域",
-        "placeholder": "输入腾讯云 SCF 服务地域（例如：ap-guangzhou）",
+        "placeholder": "请输入腾讯云 SCF 服务地域（例如：ap-guangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/583/17299\" target=\"_blank\">https://cloud.tencent.com/document/product/583/17299</a>"
       },
       "tencentcloud_scf_domain": {
         "label": "腾讯云 SCF 自定义域名",
-        "placeholder": "输入腾讯云 SCF 自定义域名"
+        "placeholder": "请输入腾讯云 SCF 自定义域名"
       },
       "tencentcloud_ssl_endpoint": {
         "label": "腾讯云接口端点（可选）",
@@ -2494,7 +2499,7 @@
       },
       "tencentcloud_tse_region": {
         "label": "腾讯云服务地域",
-        "placeholder": "输入腾讯云 TSE 服务地域（例如：ap-guangzhou）",
+        "placeholder": "请输入腾讯云 TSE 服务地域（例如：ap-guangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com.cn/document/product/1364/54618\" target=\"_blank\">https://cloud.tencent.com.cn/document/product/1364/54618</a>"
       },
       "tencentcloud_tse_service_type": {
@@ -2513,7 +2518,7 @@
       },
       "tencentcloud_tse_domains": {
         "label": "腾讯云 TSE 云原生网关绑定域名",
-        "placeholder": "输入腾讯云 TSE 云原生网关绑定域名（多个值请用半角分号隔开）",
+        "placeholder": "请输入腾讯云 TSE 云原生网关绑定域名（多个值请用半角分号隔开）",
         "help": "提示：支持多个域名，以半角分号隔开。",
         "multiple_input_modal": {
           "title": "修改腾讯云 TSE 云原生网关绑定域名",
@@ -2564,9 +2569,14 @@
         "placeholder": "请输入腾讯云 WAF 域名 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/waf\" target=\"_blank\">https://console.cloud.tencent.com/waf</a>"
       },
+      "ucloud_ualb_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UALB 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_ualb_region": {
         "label": "优刻得服务地域",
-        "placeholder": "优刻得 UALB 服务地域（例如：cn-bj2）",
+        "placeholder": "请输入优刻得 UALB 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
       "ucloud_ualb_deploy_target": {
@@ -2594,14 +2604,24 @@
         "placeholder": "请输入优刻得 UALB 扩展域名",
         "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
       },
+      "ucloud_ucdn_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UCDN 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_ucdn_domain_id": {
         "label": "优刻得 UCDN 域名 ID",
         "placeholder": "请输入优刻得 UCDN 域名 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ucdn\" target=\"_blank\">https://console.ucloud.cn/ucdn</a>"
       },
+      "ucloud_uclb_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UCLB 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_uclb_region": {
         "label": "优刻得服务地域",
-        "placeholder": "优刻得 UCLB 服务地域（例如：cn-bj2）",
+        "placeholder": "请输入优刻得 UCLB 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
       "ucloud_uclb_deploy_target": {
@@ -2624,6 +2644,11 @@
         "placeholder": "请输入优刻得 UCLB VServer ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ulb/ulb\" target=\"_blank\">https://console.ucloud.cn/ulb/ulb</a>"
       },
+      "ucloud_upathx_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UPathX 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_upathx_accelerator_id": {
         "label": "优刻得 UPathX 加速器实例 ID",
         "placeholder": "请输入优刻得 UPathX 加速器实例 ID",
@@ -2634,9 +2659,14 @@
         "placeholder": "请输入优刻得 UPathX 加速器监听端口",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/upathx/accelerate\" target=\"_blank\">https://console.ucloud.cn/upathx/accelerate</a>"
       },
+      "ucloud_us3_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 US3 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_us3_region": {
         "label": "优刻得服务地域",
-        "placeholder": "优刻得 US3 服务地域（例如：cn-bj2）",
+        "placeholder": "请输入优刻得 US3 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
       "ucloud_us3_bucket": {
@@ -2646,6 +2676,11 @@
       "ucloud_us3_domain": {
         "label": "优刻得 US3 自定义域名",
         "placeholder": "请输入优刻得 US3 自定义域名"
+      },
+      "ucloud_uewaf_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UEWAF 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
       },
       "ucloud_uewaf_domain": {
         "label": "优刻得 UEWAF 防护域名",
