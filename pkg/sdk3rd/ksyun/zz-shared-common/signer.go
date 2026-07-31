@@ -22,6 +22,14 @@ type signer struct {
 	service         string
 }
 
+func NewSigner(ak, sk, service string) *signer {
+	return &signer{
+		accessKeyId:     ak,
+		secretAccessKey: sk,
+		service:         service,
+	}
+}
+
 func (s *signer) Sign(req *http.Request) error {
 	// API 签名机制：
 	// https://docs.ksyun.com/documents/40298

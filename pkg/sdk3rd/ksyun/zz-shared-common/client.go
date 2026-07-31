@@ -40,11 +40,7 @@ func NewClient(baseUrl string, service string, optFns ...OptionsFunc) (*Client, 
 		return nil, fmt.Errorf("sdkerr: unset secretAccessKey")
 	}
 
-	signer := &signer{
-		accessKeyId:     options.AccessKeyId,
-		secretAccessKey: options.SecretAccessKey,
-		service:         service,
-	}
+	signer := NewSigner(options.AccessKeyId, options.SecretAccessKey, service)
 	httper := resty.New().
 		SetBaseURL(baseUrl).
 		SetHeader("Accept", "application/json").

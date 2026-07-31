@@ -19,6 +19,13 @@ type signer struct {
 	secretKey string
 }
 
+func NewSigner(ak, sk string) *signer {
+	return &signer{
+		accessKey: ak,
+		secretKey: sk,
+	}
+}
+
 func (s *signer) Sign(req *http.Request) error {
 	// API 签名机制：
 	// https://www.wangsu.com/document/openapi/api-authentication
