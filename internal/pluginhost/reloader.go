@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"sync"
+	"time"
 
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -68,7 +69,41 @@ func (r *Reloader) ReloadNow(ctx context.Context) *ReloadResult {
 		return &ReloadResult{Errors: []string{"reload already in progress"}}
 	}
 	defer r.mu.Unlock()
+	return r.reloadLocked(ctx)
+}
 
+func (r *Reloader) ReloadWait(ctx context.Context) *ReloadResult {
+	backoff := 50 * time.Millisecond
+	deadline := time.Now().Add(10 * time.Second)
+	for {
+		if r.mu.TryLock() {
+			res := r.reloadLocked(ctx)
+			r.mu.Unlock()
+			return res
+		}
+		if !time.Now().Before(deadline) {
+			break
+		}
+		wait := backoff
+		if d := time.Until(deadline); d < wait {
+			wait = d
+		}
+		select {
+		case <-ctx.Done():
+			return &ReloadResult{Errors: []string{"reload wait cancelled: " + ctx.Err().Error()}}
+		case <-time.After(wait):
+		}
+		backoff *= 2
+		if backoff > time.Second {
+			backoff = time.Second
+		}
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.reloadLocked(ctx)
+}
+
+func (r *Reloader) reloadLocked(ctx context.Context) *ReloadResult {
 	result := &ReloadResult{}
 
 	discovered, failures := plugin.Discover(ctx, r.cfg)

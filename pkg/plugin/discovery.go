@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 type DiscoveredPlugin struct {
@@ -43,6 +44,9 @@ func Discover(ctx context.Context, cfg PluginConfig) ([]*DiscoveredPlugin, []Dis
 			break
 		}
 		if !entry.IsDir() {
+			continue
+		}
+		if strings.HasPrefix(entry.Name(), ".") {
 			continue
 		}
 		dir := filepath.Join(cfg.PluginDir, entry.Name())

@@ -7,15 +7,17 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
 
+	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/rest/resp"
 )
 
 type marketService interface {
 	ListMarket(ctx context.Context) ([]pluginhost.MarketEntry, error)
-	Install(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
+	Install(ctx context.Context, providerType string) (*pluginhost.InstallJob, error)
 	Delete(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
 	Update(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
+	JobStatus(providerType string) (pluginhost.JobStatus, bool)
 }
 
 type PluginMarketHandler struct {
@@ -26,6 +28,7 @@ func NewPluginMarketHandler(rg *router.RouterGroup[*core.RequestEvent], service 
 	h := &PluginMarketHandler{service: service}
 	rg.GET("/plugin/market", h.listMarket)
 	rg.POST("/plugin/market/install", h.install)
+	rg.GET("/plugin/market/install/status/{providerType}", h.installStatus)
 	rg.DELETE("/plugin/market/{providerType}", h.delete)
 	rg.POST("/plugin/market/update/{providerType}", h.updatePlugin)
 }
@@ -50,11 +53,23 @@ func (h *PluginMarketHandler) install(e *core.RequestEvent) error {
 	if req.ProviderType == "" {
 		return resp.Err(e, pluginhost.ErrMissingProviderType)
 	}
-	result, err := h.service.Install(e.Request.Context(), req.ProviderType)
+	job, err := h.service.Install(e.Request.Context(), req.ProviderType)
 	if err != nil {
 		return resp.Err(e, err)
 	}
-	return resp.Ok(e, result)
+	return resp.Ok(e, job.Status())
+}
+
+func (h *PluginMarketHandler) installStatus(e *core.RequestEvent) error {
+	providerType := e.Request.PathValue("providerType")
+	if providerType == "" {
+		return resp.Err(e, pluginhost.ErrMissingProviderType)
+	}
+	status, ok := h.service.JobStatus(providerType)
+	if !ok {
+		return resp.Err(e, domain.NewError(404, "market: no install job for "+providerType))
+	}
+	return resp.Ok(e, status)
 }
 
 func (h *PluginMarketHandler) delete(e *core.RequestEvent) error {

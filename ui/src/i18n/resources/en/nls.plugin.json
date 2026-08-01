@@ -4,8 +4,10 @@
   "market": {
     "nudge": "Didn't find the provider you need? Browse the plugin marketplace for more.",
     "browse": "Browse marketplace",
+    "heading": "Plugin marketplace",
 
     "empty": "No plugins available",
+    "empty_filtered": "No plugins match your search",
     "error": {
       "load_failed": "Failed to load plugin marketplace",
       "install_failed": "Failed to install plugin",
@@ -20,9 +22,26 @@
     "action": {
       "install": "Install",
       "delete": "Delete",
-      "update": "Update to",
+      "update": "Update",
       "retry": "Retry",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "search_placeholder": "Search plugins",
+      "delete_modal_title": "Remove plugin",
+      "delete_modal_content": "This removes the plugin <b>{{name}}</b> from this server. Any access or workflow using it will stop working until it is reinstalled."
+    },
+    "filter": {
+      "all": "All",
+      "installed": "Installed",
+      "not_installed": "Not installed"
+    },
+    "job": {
+      "installing": "Installing…",
+      "queued": "Queued…",
+      "downloading": "Downloading…",
+      "verifying": "Verifying…",
+      "extracting": "Extracting…",
+      "reloading": "Reloading…",
+      "failed": "Install failed"
     },
     "label": {
       "update_available": "Update available",

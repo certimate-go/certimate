@@ -4,8 +4,10 @@
   "market": {
     "nudge": "没找到你需要的提供商？前往插件市场发现更多。",
     "browse": "浏览插件市场",
+    "heading": "插件市场",
 
     "empty": "暂无可用插件",
+    "empty_filtered": "没有匹配的插件",
     "error": {
       "load_failed": "加载插件市场失败",
       "install_failed": "安装插件失败",
@@ -20,9 +22,26 @@
     "action": {
       "install": "安装",
       "delete": "删除",
-      "update": "更新到",
+      "update": "更新",
       "retry": "重试",
-      "refresh": "刷新"
+      "refresh": "刷新",
+      "search_placeholder": "搜索插件",
+      "delete_modal_title": "移除插件",
+      "delete_modal_content": "将从本机移除插件 <b>{{name}}</b>。依赖该插件的授权配置和工作流在重新安装前将无法正常工作。"
+    },
+    "filter": {
+      "all": "全部",
+      "installed": "已安装",
+      "not_installed": "未安装"
+    },
+    "job": {
+      "installing": "安装中…",
+      "queued": "排队中…",
+      "downloading": "下载中…",
+      "verifying": "校验中…",
+      "extracting": "解压中…",
+      "reloading": "重新加载中…",
+      "failed": "安装失败"
     },
     "label": {
       "update_available": "有新版本",

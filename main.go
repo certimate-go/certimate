@@ -110,6 +110,8 @@ func scanPlugins() {
 	}
 	logger := slog.Default().With(slog.String("component", "pluginhost"))
 
+	pluginhost.SweepOrphans(pluginDir, logger)
+
 	catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, logger)
 	pluginhost.SetGlobalCatalog(catalog)
 	for _, err := range errs {
@@ -121,8 +123,9 @@ func scanPlugins() {
 	pluginhost.SetGlobalReloader(reloader)
 
 	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
-		PluginDir: pluginDir,
-		Logger:    logger,
+		PluginDir:      pluginDir,
+		DownloadMirror: os.Getenv("CERTIMATE_PLUGIN_DOWNLOAD_MIRROR"),
+		Logger:         logger,
 	})
 	pluginhost.SetGlobalMarketService(marketSvc)
 
