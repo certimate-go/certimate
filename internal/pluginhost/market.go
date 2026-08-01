@@ -28,6 +28,7 @@ type MarketEntry struct {
 
 type MarketService struct {
 	marketRepo string
+	indexURL   string
 	pluginDir  string
 	cache      []MarketEntry
 	cachedAt   time.Time
@@ -39,6 +40,7 @@ type MarketService struct {
 
 type MarketConfig struct {
 	MarketRepo string
+	IndexURL   string
 	PluginDir  string
 	CacheTTL   time.Duration
 	Logger     *slog.Logger
@@ -54,8 +56,12 @@ func NewMarketService(cfg MarketConfig) *MarketService {
 	if cfg.MarketRepo == "" {
 		cfg.MarketRepo = "certimate-go/plugins"
 	}
+	if cfg.IndexURL == "" {
+		cfg.IndexURL = fmt.Sprintf("https://raw.githubusercontent.com/%s/main/index.json", cfg.MarketRepo)
+	}
 	return &MarketService{
 		marketRepo: cfg.MarketRepo,
+		indexURL:   cfg.IndexURL,
 		pluginDir:  cfg.PluginDir,
 		cacheTTL:   cfg.CacheTTL,
 		httpClient: &http.Client{Timeout: 30 * time.Second},
@@ -100,85 +106,41 @@ func (s *MarketService) fetchAndCache(ctx context.Context) ([]MarketEntry, error
 }
 
 func (s *MarketService) fetchMarketListing(ctx context.Context) ([]MarketEntry, error) {
-	url := fmt.Sprintf("https://api.github.com/repos/%s/contents/", s.marketRepo)
+	url := s.indexURL
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("market: create request: %w", err)
 	}
-	req.Header.Set("Accept", "application/vnd.github+json")
-	s.setAuth(req)
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("market: fetch directory listing: %w", err)
+		return nil, fmt.Errorf("market: fetch index: %w", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusTooManyRequests {
-		return nil, fmt.Errorf("market: GitHub API rate limit reached (status %d)", resp.StatusCode)
-	}
-	if resp.StatusCode != http.StatusOK {
+	switch resp.StatusCode {
+	case http.StatusOK:
+	case http.StatusNotFound:
+		return nil, fmt.Errorf("market: index not available at %s", url)
+	case http.StatusForbidden, http.StatusTooManyRequests:
+		return nil, fmt.Errorf("market: rate limited (status %d)", resp.StatusCode)
+	default:
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		return nil, fmt.Errorf("market: GitHub API returned status %d: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("market: index fetch returned status %d: %s", resp.StatusCode, string(body))
 	}
 
-	var dirEntries []struct {
-		Name string `json:"name"`
-		Type string `json:"type"`
+	var idx struct {
+		Plugins []*plugin.MarketManifest `json:"plugins"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&dirEntries); err != nil {
-		return nil, fmt.Errorf("market: decode directory listing: %w", err)
-	}
-
-	var entries []MarketEntry
-	for _, de := range dirEntries {
-		if de.Type != "dir" {
-			continue
-		}
-		entry, err := s.fetchPluginManifest(ctx, de.Name)
-		if err != nil {
-			s.logger.Warn("market: skipping plugin directory",
-				slog.String("dir", de.Name),
-				slog.Any("error", err))
-			continue
-		}
-		entries = append(entries, *entry)
+	if err := json.NewDecoder(resp.Body).Decode(&idx); err != nil {
+		return nil, fmt.Errorf("market: decode index: %w", err)
 	}
 
+	entries := make([]MarketEntry, 0, len(idx.Plugins))
+	for _, mm := range idx.Plugins {
+		entries = append(entries, MarketEntry{MarketManifest: mm, Status: s.computeStatus(mm)})
+	}
 	return entries, nil
-}
-
-func (s *MarketService) fetchPluginManifest(ctx context.Context, dirName string) (*MarketEntry, error) {
-	url := fmt.Sprintf("https://api.github.com/repos/%s/contents/%s/manifest.json", s.marketRepo, dirName)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("market: create manifest request for %s: %w", dirName, err)
-	}
-	req.Header.Set("Accept", "application/vnd.github.raw+json")
-	s.setAuth(req)
-
-	resp, err := s.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("market: fetch manifest for %s: %w", dirName, err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("market: manifest fetch for %s returned status %d", dirName, resp.StatusCode)
-	}
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("market: read manifest for %s: %w", dirName, err)
-	}
-
-	mm, err := plugin.ParseMarketManifest(data)
-	if err != nil {
-		return nil, fmt.Errorf("market: parse manifest for %s: %w", dirName, err)
-	}
-
-	status := s.computeStatus(mm)
-	return &MarketEntry{MarketManifest: mm, Status: status}, nil
 }
 
 func (s *MarketService) computeStatus(mm *plugin.MarketManifest) string {
@@ -202,13 +164,6 @@ func (s *MarketService) computeStatus(mm *plugin.MarketManifest) string {
 		return "update_available"
 	}
 	return "installed"
-}
-
-func (s *MarketService) setAuth(req *http.Request) {
-	token := os.Getenv("CERTIMATE_GITHUB_TOKEN")
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
-	}
 }
 
 func (s *MarketService) GetMarketManifest(ctx context.Context, providerType string) (*plugin.MarketManifest, error) {
