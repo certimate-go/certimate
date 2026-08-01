@@ -1,9 +1,11 @@
 import PocketBase from "pocketbase";
 
+import { getBasePath } from "@/utils/url";
+
 let pb: PocketBase;
 export const getPocketBase = () => {
   if (pb) return pb;
-  pb = new PocketBase("/");
+  pb = new PocketBase(getBasePath());
   pb.afterSend = (res, data) => {
     if ((res.status === 401 || res.status === 403) && pb.authStore?.isValid) {
       pb.authStore.clear();

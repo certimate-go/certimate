@@ -383,14 +383,16 @@ func createSDKClient(serverUrl, authMethod, username, password, apiToken string,
 	switch authMethod {
 	case "", AUTH_METHOD_PASSWORD:
 		{
-			client, err = npmsdk.NewClient(serverUrl,
+			client, err = npmsdk.NewClient(
+				serverUrl,
 				npmsdk.WithLogins(username, password),
 			)
 		}
 
 	case AUTH_METHOD_TOKEN:
 		{
-			client, err = npmsdk.NewClient(serverUrl,
+			client, err = npmsdk.NewClient(
+				serverUrl,
 				npmsdk.WithJwtToken(apiToken),
 			)
 		}

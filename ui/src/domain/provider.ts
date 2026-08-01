@@ -1,3 +1,5 @@
+import { withBasePath } from "@/utils/url";
+
 export type ProviderSource = "core" | "plugin";
 
 interface BaseProvider<P> {
@@ -136,6 +138,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   WECOMBOT: "wecombot",
   WESTCN: "westcn",
   XINNET: "xinnet",
+  YANDEXCLOUD: "yandexcloud",
   ZENLAYER: "zenlayer",
   ZEROSSL: "zerossl",
 } as const);
@@ -183,6 +186,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.DIGITALOCEAN, "provider.digitalocean", "/imgs/providers/digitalocean.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.GCORE, "provider.gcore", "/imgs/providers/gcore.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.LINODE, "provider.linode", "/imgs/providers/linode.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.YANDEXCLOUD, "provider.yandexcloud", "/imgs/providers/yandexcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BAIDUCLOUD, "provider.baiducloud", "/imgs/providers/baiducloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CMCCCLOUD, "provider.cmcccloud", "/imgs/providers/cmcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CTCCCLOUD, "provider.ctcccloud", "/imgs/providers/ctcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -294,7 +298,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
     {
       type: type,
       name: name,
-      icon: icon,
+      icon: withBasePath(icon),
       usages: usages,
       builtin: builtin === "builtin",
     },
@@ -454,6 +458,8 @@ export const ACME_DNS01_PROVIDERS = Object.freeze({
   VULTR: `${ACCESS_PROVIDERS.VULTR}`,
   WESTCN: `${ACCESS_PROVIDERS.WESTCN}`,
   XINNET: `${ACCESS_PROVIDERS.XINNET}`,
+  YANDEXCLOUD: `${ACCESS_PROVIDERS.YANDEXCLOUD}`, // 兼容旧值，等同于 `YANDEXCLOUD_DNS`
+  YANDEXCLOUD_DNS: `${ACCESS_PROVIDERS.YANDEXCLOUD}-dns`,
 } as const);
 
 export type ACMEDns01ProviderType = (typeof ACME_DNS01_PROVIDERS)[keyof typeof ACME_DNS01_PROVIDERS];
@@ -519,6 +525,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.SPACESHIP, "provider.spaceship"],
       [ACME_DNS01_PROVIDERS.VERCEL, "provider.vercel"],
       [ACME_DNS01_PROVIDERS.VULTR, "provider.vultr"],
+      [ACME_DNS01_PROVIDERS.YANDEXCLOUD_DNS, "provider.yandexcloud_dns"],
       [ACME_DNS01_PROVIDERS.BAIDUCLOUD_DNS, "provider.baiducloud_dns"],
       [ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS, "provider.cmcccloud_dns"],
       [ACME_DNS01_PROVIDERS.CTCCCLOUD_SMARTDNS, "provider.ctcccloud_smartdns"],
@@ -747,6 +754,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   WANGSU_CDNPRO: `${ACCESS_PROVIDERS.WANGSU}-cdnpro`,
   WANGSU_CERTIFICATE: `${ACCESS_PROVIDERS.WANGSU}-certificate`,
   WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
+  YANDEXCLOUD_CERTIFICATEMANAGER: `${ACCESS_PROVIDERS.YANDEXCLOUD}-certificatemanager`,
   ZENLAYER_CDN: `${ACCESS_PROVIDERS.ZENLAYER}-cdn`,
   ZENLAYER_GA: `${ACCESS_PROVIDERS.ZENLAYER}-ga`,
 } as const);
@@ -866,6 +874,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.FLYIO, "provider.flyio", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.NETLIFY, "provider.netlify", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.VERCEL, "provider.vercel", DEPLOYMENT_CATEGORIES.WEBSITE],
+      [DEPLOYMENT_PROVIDERS.YANDEXCLOUD_CERTIFICATEMANAGER, "provider.yandexcloud_certificatemanager", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.ZENLAYER_CDN, "provider.zenlayer_cdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.ZENLAYER_GA, "provider.zenlayer_ga", DEPLOYMENT_CATEGORIES.ACCELERATOR],
       [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_CDN, "provider.baiducloud_cdn", DEPLOYMENT_CATEGORIES.CDN],

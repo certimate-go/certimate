@@ -3,12 +3,14 @@ package tencentcloudga2_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-ga2"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp             = tester.Args("TENCENTCLOUDGA2_")
+	fp             = it.Args("TENCENTCLOUDGA2_")
 	fTestCertPath  string
 	fTestKeyPath   string
 	fSecretId      string
@@ -48,11 +50,8 @@ func TestProvider(t *testing.T) {
 			AcceleratorId: fAcceleratorId,
 			ListenerId:    fListenerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

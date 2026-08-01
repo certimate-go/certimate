@@ -3,12 +3,14 @@ package tencentcloudgaap_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-gaap"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("TENCENTCLOUDGAAP_")
+	fp            = it.Args("TENCENTCLOUDGAAP_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fSecretId     string
@@ -39,11 +41,8 @@ func TestProvider(t *testing.T) {
 			SecretId:  fSecretId,
 			SecretKey: fSecretKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

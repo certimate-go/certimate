@@ -40,6 +40,7 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	providerConfig.SignatureVersion = config.SignatureVersion
 	providerConfig.UsePathStyle = config.UsePathStyle
 	providerConfig.Region = config.Region
+	providerConfig.Bucket = config.Bucket
 	providerConfig.SkipTlsVerify = config.AllowInsecureConnections
 
 	provider, err := internal.NewHTTPProviderConfig(providerConfig)

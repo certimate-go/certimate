@@ -145,7 +145,7 @@
     },
     "acmedns_credentials": {
       "label": "ACME-DNS 凭证文件",
-      "placeholder": "请输入 ACME-DNS 凭证文件",
+      "placeholder": "请输入 ACME-DNS 凭证文件\r\n\r\n{\r\n  \"allowfrom\": [\r\n    \"192.168.100.1/24\",\r\n    \"1.2.3.4/32\",\r\n    \"2002:c0a8:2a00::0/40\"\r\n  ],\r\n  \"fulldomain\": \"SUBDOMAIN.auth.acme-dns.io\",\r\n  \"subdomain\": \"SUBDOMAIN\",\r\n  \"username\": \"USERNAME\",\r\n  \"password\": \"PASSWORD\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://github.com/joohoi/acme-dns\" target=\"_blank\">https://github.com/joohoi/acme-dns</a>"
     },
     "acmehttpreq_endpoint": {
@@ -219,6 +219,19 @@
       "label": "ArvanCloud API 密钥",
       "placeholder": "请输入 ArvanCloud API 密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
+    },
+    "aws_auth_method": {
+      "label": "AWS API 认证方式",
+      "placeholder": "请选择 AWS API 认证方式",
+      "option": {
+        "accesskey": {
+          "label": "访问密钥"
+        },
+        "imds": {
+          "label": "EC2 IMDS",
+          "guide": "如果你正在使用容器化运行 Certimate，请确保已为 EC2 实例配置了正确的 <em>http-put-response-hop-limit</em> 元数据。点击下方链接了解更多：<br><a href=\"https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
     },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
@@ -742,7 +755,7 @@
     },
     "googlecloud_service_account_key": {
       "label": "GCP 服务账号密钥",
-      "placeholder": "请输入 GCP 服务账号密钥",
+      "placeholder": "请输入 GCP 服务账号密钥\r\n\r\n{\r\n  \"name\": \"projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL/keys/KEY_ID\",\r\n  \"privateKeyType\": \"TYPE_GOOGLE_CREDENTIALS_FILE\",\r\n  \"privateKeyData\": \"ENCODED_PRIVATE_KEY\",\r\n  \"validAfterTime\": \"DATE\",\r\n  \"validBeforeTime\": \"DATE\",\r\n  \"keyAlgorithm\": \"KEY_ALG_RSA_2048\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -1343,7 +1356,7 @@
     },
     "ssh_key": {
       "label": "SSH 密钥",
-      "placeholder": "请输入 SSH 密钥文件内容"
+      "placeholder": "请输入 SSH 密钥文件内容\r\n\r\n-----BEGIN OPENSSH PRIVATE KEY-----\r\n...\r\n-----END OPENSSH PRIVATE KEY-----"
     },
     "ssh_key_passphrase": {
       "label": "SSH 密钥口令（可选）",
@@ -1574,6 +1587,16 @@
     },
     "xinnet_agent": {
       "guide": "新网数码 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>"
+    },
+    "yandexcloud_folder_id": {
+      "label": "Yandex Cloud 项目文件夹 ID",
+      "placeholder": "请输入 Yandex Cloud 项目文件夹 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id\" target=\"_blank\">https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id</a>"
+    },
+    "yandexcloud_service_account_key": {
+      "label": "Yandex Cloud 服务账号授权密钥",
+      "placeholder": "请输入Yandex Cloud 服务账号授权密钥\r\n\r\n{\r\n  \"id\": \"AUTHORIZED_KEY_ID\",\r\n  \"service_account_id\": \"SERVICE_ACCOUNT_ID\",\r\n  \"created_at\": \"DATE\",\r\n  \"key_algorithm\": \"RSA_2048\",\r\n  \"public_key\": \"ENCODED_PUBLIC_KEY\",\r\n  \"private_key\": \"ENCODED_PRIVATE_KEY\"\r\n}",
+      "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys\" target=\"_blank\">https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys</a>"
     },
     "zenlayer_access_key_id": {
       "label": "Zenlayer AccessKeyID",

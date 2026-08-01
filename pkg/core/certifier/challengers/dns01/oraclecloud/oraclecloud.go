@@ -32,7 +32,7 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	providerConfig := oraclecloud.NewDefaultConfig()
 	providerConfig.CompartmentID = config.CompartmentOcid
 	switch config.AuthMethod {
-	case AUTH_METHOD_APIKEY:
+	case "", AUTH_METHOD_APIKEY:
 		pkpwd := (*string)(nil)
 		if config.PrivateKeyPassphrase != "" {
 			pkpwd = &config.PrivateKeyPassphrase

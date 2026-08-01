@@ -3,12 +3,14 @@ package vercel_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/vercel"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp              = tester.Args("VERCEL_")
+	fp              = it.Args("VERCEL_")
 	fTestCertPath   string
 	fTestKeyPath    string
 	fApiAccessToken string
@@ -39,11 +41,8 @@ func TestProvider(t *testing.T) {
 			ApiAccessToken: fApiAccessToken,
 			TeamId:         fTeamId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -118,6 +118,7 @@ import AccessConfigFieldsProviderWebhook from "./AccessConfigFieldsProviderWebho
 import AccessConfigFieldsProviderWeComBot from "./AccessConfigFieldsProviderWeComBot";
 import AccessConfigFieldsProviderWestcn from "./AccessConfigFieldsProviderWestcn";
 import AccessConfigFieldsProviderXinnet from "./AccessConfigFieldsProviderXinnet";
+import AccessConfigFieldsProviderYandexCloud from "./AccessConfigFieldsProviderYandexCloud";
 import AccessConfigFieldsProviderZenlayer from "./AccessConfigFieldsProviderZenlayer";
 import AccessConfigFieldsProviderZeroSSL from "./AccessConfigFieldsProviderZeroSSL";
 
@@ -240,6 +241,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.WECOMBOT]: AccessConfigFieldsProviderWeComBot,
   [ACCESS_PROVIDERS.WESTCN]: AccessConfigFieldsProviderWestcn,
   [ACCESS_PROVIDERS.XINNET]: AccessConfigFieldsProviderXinnet,
+  [ACCESS_PROVIDERS.YANDEXCLOUD]: AccessConfigFieldsProviderYandexCloud,
   [ACCESS_PROVIDERS.ZENLAYER]: AccessConfigFieldsProviderZenlayer,
   [ACCESS_PROVIDERS.ZEROSSL]: AccessConfigFieldsProviderZeroSSL,
 };

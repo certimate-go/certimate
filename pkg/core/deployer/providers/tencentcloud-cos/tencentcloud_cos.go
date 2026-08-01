@@ -55,7 +55,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Region)
+	clientSSL, err := createSDKClientSSL(config.SecretId, config.SecretKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -72,7 +72,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClient:  clients,
+		sdkClient:  &wSDKClients{SSL: clientSSL},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -211,18 +211,15 @@ func (d *Deployer) checkIsBind(ctx context.Context, cloudCertId string) (bool, e
 	return false, nil
 }
 
-func createSDKClients(secretId, secretKey, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
+func createSDKClientSSL(secretId, secretKey, region string) (*tcssl.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-		client, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
-		if err != nil {
-			return nil, err
-		}
+	cpf := profile.NewClientProfile()
 
-		wsdk.SSL = client
+	client, err := tcssl.NewClient(credential, region, cpf)
+	if err != nil {
+		return nil, err
 	}
 
-	return wsdk, nil
+	return client, nil
 }

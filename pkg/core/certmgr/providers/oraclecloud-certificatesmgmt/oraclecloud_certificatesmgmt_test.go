@@ -3,12 +3,14 @@ package oraclecloudcertificatesmgmt_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/oraclecloud-certificatesmgmt"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp                    = tester.Args("ORACLECLOUDCERTIFICATESMGMT_")
+	fp                    = it.Args("ORACLECLOUDCERTIFICATESMGMT_")
 	fTestCertPath         string
 	fTestKeyPath          string
 	fPrivateKey           string
@@ -56,11 +58,8 @@ func TestProvider(t *testing.T) {
 			UserOcid:             fUserOcid,
 			CompartmentOcid:      fCompartmentOcid,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

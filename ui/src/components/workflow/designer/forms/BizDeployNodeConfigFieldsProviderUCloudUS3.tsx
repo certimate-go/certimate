@@ -20,6 +20,16 @@ const BizDeployNodeConfigFieldsProviderUCloudUS3 = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "endpoint"]}
+        initialValue={initialValues.endpoint}
+        label={t("workflow_node.deploy.form.ucloud_us3_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ucloud_us3_endpoint.tooltip") }}></span>}
+      >
+        <Input allowClear placeholder={t("workflow_node.deploy.form.ucloud_us3_endpoint.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "region"]}
         initialValue={initialValues.region}
         label={t("workflow_node.deploy.form.ucloud_us3_region.label")}
@@ -62,6 +72,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
+    endpoint: z.string().nullish(),
     region: z.string().nonempty(),
     bucket: z.string().nonempty(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),

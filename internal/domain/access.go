@@ -82,6 +82,7 @@ type AccessConfigForArvanCloud struct {
 }
 
 type AccessConfigForAWS struct {
+	AuthMethod      string `json:"authMethod"`
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 }
@@ -672,6 +673,11 @@ type AccessConfigForWestcn struct {
 type AccessConfigForXinnet struct {
 	AgentId     string `json:"agentId"`
 	ApiPassword string `json:"apiPassword"`
+}
+
+type AccessConfigForYandexCloud struct {
+	FolderId          string `json:"folderId"`
+	ServiceAccountKey string `json:"serviceAccountKey"`
 }
 
 type AccessConfigForZenlayer struct {

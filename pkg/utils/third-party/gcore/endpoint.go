@@ -1,3 +1,3 @@
 package gcore
 
-const BASE_URL = "https://api.gcore.com"
+const BaseURL = "https://api.gcore.com"

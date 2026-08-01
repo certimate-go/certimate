@@ -20,6 +20,7 @@ func init() {
 			PrivateKey:    credentials.PrivateKey,
 			PublicKey:     credentials.PublicKey,
 			ProjectId:     credentials.ProjectId,
+			Endpoint:      xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			AcceleratorId: xmaps.GetString(options.ProviderExtendedConfig, "acceleratorId"),
 			ListenerPort:  xmaps.GetInt32(options.ProviderExtendedConfig, "listenerPort"),
 		})

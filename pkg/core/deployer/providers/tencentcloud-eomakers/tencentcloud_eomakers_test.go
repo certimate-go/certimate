@@ -4,12 +4,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-eomakers"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp               = tester.Args("TENCENTCLOUDEOMAKERS_")
+	fp               = it.Args("TENCENTCLOUDEOMAKERS_")
 	fTestCertPath    string
 	fTestKeyPath     string
 	fSecretId        string
@@ -54,11 +56,8 @@ func TestProvider(t *testing.T) {
 			Domains:            strings.Split(fDomains, ";"),
 			EnableMultipleSSL:  true,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

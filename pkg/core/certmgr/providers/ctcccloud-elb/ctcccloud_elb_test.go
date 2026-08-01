@@ -3,12 +3,14 @@ package ctcccloudelb_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-elb"
-	tester "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp               = tester.Args("CTCCCLOUDELB_")
+	fp               = it.Args("CTCCCLOUDELB_")
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
@@ -43,11 +45,8 @@ func TestProvider(t *testing.T) {
 			SecretAccessKey: fSecretAccessKey,
 			RegionId:        fRegionId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

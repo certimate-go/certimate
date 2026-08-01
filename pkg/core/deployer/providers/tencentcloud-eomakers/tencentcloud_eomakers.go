@@ -54,13 +54,13 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClients *wSDKClients
+	sdkClient  *wSDKClient
 	sdkCertmgr core.Certmgr
 }
 
 var _ Provider = (*Deployer)(nil)
 
-type wSDKClients struct {
+type wSDKClient struct {
 	TEO       *tceo.Client
 	TEOMakers *tceomakersssdk.Client
 }
@@ -70,7 +70,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint, config.MakersApiToken)
+	clientTEO, err := createSDKClientTEO(config.SecretId, config.SecretKey, config.Endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientTEOMakers, err := createSDKClientTEOMakers(config.MakersApiToken, xtencentcloud.IsIntlAPIEndpoint(config.Endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -88,7 +93,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClient:  &wSDKClient{TEO: clientTEO, TEOMakers: clientTEOMakers},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -117,9 +122,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	// 获取全部可部署的域名列表
-	domainsInMakers, err := d.getAllDomainsInProject(ctx, d.config.MakersProjectId)
+	domainsInProject, err := d.getAllDomainsInProject(ctx, d.config.MakersProjectId)
 	if err != nil {
 		return nil, err
+	}
+	if len(domainsInProject) == 0 {
+		return nil, fmt.Errorf("could not find domains in project '%s'", d.config.MakersProjectId)
 	}
 
 	// 获取待部署的域名列表
@@ -140,7 +148,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return nil, fmt.Errorf("config `domains` is required")
 			}
 
-			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
+			domainCandidates := lo.Map(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
 				return lo.FromPtr(domainInfo.Domain)
 			})
 			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
@@ -158,7 +166,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	case DomainMatchPatternCertSan:
 		{
-			domainCandidates := lo.Map(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
+			domainCandidates := lo.Map(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain, _ int) string {
 				return lo.FromPtr(domainInfo.Domain)
 			})
 			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
@@ -180,12 +188,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		d.logger.Info("found edgeone makers domains to deploy", slog.Any("domains", domains))
 
 		// 获取站点 ID
-		zoneId := domainsInMakers[0].ZoneId
+		zoneId := domainsInProject[0].ZoneId
 
 		// 获取证书列表
 		describeHostCertificatesReq := tceo.NewDescribeHostCertificatesRequest()
 		describeHostCertificatesReq.ZoneId = zoneId
-		describeHostCertificatesResp, err := d.sdkClients.TEO.DescribeHostCertificatesWithContext(ctx, describeHostCertificatesReq)
+		describeHostCertificatesResp, err := d.sdkClient.TEO.DescribeHostCertificatesWithContext(ctx, describeHostCertificatesReq)
 		d.logger.Debug("sdk request 'teo.DescribeHostCertificates'", slog.Any("request", describeHostCertificatesReq), slog.Any("response", describeHostCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'teo.DescribeHostCertificates': %w", err)
@@ -195,7 +203,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		domains = lo.Filter(domains, func(domain string, _ int) bool {
 			var deployed bool
 
-			domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
+			domainInfo, _ := lo.Find(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
 				return domain == lo.FromPtr(domainInfo.Domain)
 			})
 			if domainInfo != nil && describeHostCertificatesResp.Response != nil {
@@ -242,7 +250,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				modifyHostsCertificateReq.Hosts = common.StringPtrs([]string{domain})
 				modifyHostsCertificateReq.ServerCertInfo = []*tceo.ServerCertInfo{{CertId: common.StringPtr(upres.CertId)}}
 
-				domainInfo, _ := lo.Find(domainsInMakers, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
+				domainInfo, _ := lo.Find(domainsInProject, func(domainInfo *tceomakersssdk.PagesZoneCustomDomain) bool {
 					return domain == lo.FromPtr(domainInfo.Domain)
 				})
 				if domainInfo != nil && describeHostCertificatesResp.Response != nil {
@@ -283,7 +291,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		}
 
 		if err := xloop.ForRangeAllWithContext(ctx, requests, func(ctx context.Context, modifyHostsCertificateReq *tceo.ModifyHostsCertificateRequest, _ int) error {
-			modifyHostsCertificateResp, err := d.sdkClients.TEO.ModifyHostsCertificateWithContext(ctx, modifyHostsCertificateReq)
+			modifyHostsCertificateResp, err := d.sdkClient.TEO.ModifyHostsCertificateWithContext(ctx, modifyHostsCertificateReq)
 			d.logger.Debug("sdk request 'teo.ModifyHostsCertificate'", slog.Any("request", modifyHostsCertificateReq), slog.Any("response", modifyHostsCertificateResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'teo.ModifyHostsCertificate': %w", err)
@@ -304,7 +312,7 @@ func (d *Deployer) getAllDomainsInProject(ctx context.Context, makersProjectId s
 	describeMakersZoneCustomDomainsReq := &tceomakersssdk.DescribePagesZoneCustomDomainsRequest{
 		ProjectId: common.StringPtr(makersProjectId),
 	}
-	describeMakersZoneCustomDomainsResp, err := d.sdkClients.TEOMakers.DescribePagesZoneCustomDomainsWithContext(ctx, describeMakersZoneCustomDomainsReq)
+	describeMakersZoneCustomDomainsResp, err := d.sdkClient.TEOMakers.DescribePagesZoneCustomDomainsWithContext(ctx, describeMakersZoneCustomDomainsReq)
 	d.logger.Debug("api request 'teo.makers.DescribePagesZoneCustomDomains'", slog.Any("request", describeMakersZoneCustomDomainsReq), slog.Any("response", describeMakersZoneCustomDomainsResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'teo.makers.DescribePagesZoneCustomDomains': %w", err)
@@ -320,35 +328,34 @@ func (d *Deployer) getAllDomainsInProject(ctx context.Context, makersProjectId s
 	return domains, nil
 }
 
-func createSDKClients(secretId, secretKey, endpoint, makersApiToken string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
+func createSDKClientTEO(secretId, secretKey, endpoint string) (*tceo.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-		if endpoint != "" {
-			cpf.HttpProfile.Endpoint = endpoint
-		}
-
-		client, err := tceo.NewClient(credential, "", cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.TEO = client
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	{
-		client, err := tceomakersssdk.NewClient(
-			tceomakersssdk.WithApiToken(makersApiToken),
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.TEOMakers = client
+	client, err := tceo.NewClient(credential, "", cpf)
+	if err != nil {
+		return nil, err
 	}
 
-	return wsdk, nil
+	return client, nil
+}
+
+func createSDKClientTEOMakers(apiToken string, isIntl bool) (*tceomakersssdk.Client, error) {
+	opts := []tceomakersssdk.OptionsFunc{
+		tceomakersssdk.WithApiToken(apiToken),
+	}
+	if isIntl {
+		opts = append(opts, tceomakersssdk.WithGlobalEndpoint())
+	}
+
+	client, err := tceomakersssdk.NewClient(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -183,7 +183,7 @@
       },
       "key_content": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key",
           "not_matched": "Private key does not match the key algorithm (Expected: {{expected}}, Actual: {{actual}})"
@@ -344,6 +344,11 @@
       "ssh_use_scp": {
         "label": "Fallback to use SCP",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
+      },
+      "ucloud_udnr_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UDNR API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       }
     }
   },
@@ -375,11 +380,11 @@
       },
       "name": {
         "label": "Domains / IP addresses",
-        "placholder": "Please select certificate file"
+        "placeholder": "Please select certificate file"
       },
       "certificate_pem": {
         "label": "Certificate (PEM format)",
-        "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
+        "placeholder": "Please enter certificate\r\n\r\n-----BEGIN CERTIFICATE-----\r\n...\r\n-----END CERTIFICATE-----",
         "errmsg": {
           "invalid": "Invalid PEM certificate"
         }
@@ -394,7 +399,7 @@
       },
       "private_key_pem": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key"
         }
@@ -974,7 +979,7 @@
       "aws_acm_certificate_arn": {
         "label": "AWS ACM certificate ARN (Optional)",
         "placeholder": "Please enter AWS ACM certificate ARN",
-        "help": "Notes: Leave it blank to import a new certificate."
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "aws_alb_region": {
         "label": "AWS Region",
@@ -2149,7 +2154,7 @@
       "tencentcloud_cdn_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CDN API endpoint (e.g. cdn.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_cdn_domain": {
         "label": "Tencent Cloud CDN domain",
@@ -2158,7 +2163,7 @@
       "tencentcloud_clb_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CLB API endpoint (e.g. clb.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_clb_region": {
         "label": "Tencent Cloud region",
@@ -2208,7 +2213,7 @@
       "tencentcloud_css_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CSS API endpoint (e.g. live.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>live.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>live.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_css_domain": {
         "label": "Tencent Cloud CSS streaming domain",
@@ -2217,7 +2222,7 @@
       "tencentcloud_ecdn_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud ECDN API endpoint (e.g. cdn.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ecdn_domain": {
         "label": "Tencent Cloud ECDN domain",
@@ -2226,7 +2231,7 @@
       "tencentcloud_eo_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_eo_zone_id": {
         "label": "Tencent Cloud EdgeOne zone ID",
@@ -2254,7 +2259,7 @@
       "tencentcloud_eomakers_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>teo.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>teo.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_eomakers_api_token": {
         "label": "Tencent Cloud EdgeOne Makers API Token",
@@ -2287,7 +2292,7 @@
       "tencentcloud_ga2_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GA2 API endpoint (e.g. ga2.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ga2.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ga2.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ga2.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ga2.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ga2_deploy_target": {
         "option": {
@@ -2309,7 +2314,7 @@
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_gaap_deploy_target": {
         "option": {
@@ -2331,7 +2336,7 @@
       "tencentcloud_scf_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SCF API endpoint (e.g. scf.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>scf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>scf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_scf_region": {
         "label": "Tencent Cloud region",
@@ -2345,7 +2350,7 @@
       "tencentcloud_ssl_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ssldeploy": {
         "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>DeployCertificateInstance</em> to create an asynchronously deployment task."
@@ -2353,7 +2358,7 @@
       "tencentcloud_ssldeploy_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ssldeploy_resource_region": {
         "label": "Tencent Cloud resource region (Optional)",
@@ -2384,7 +2389,7 @@
       "tencentcloud_sslupdate_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_sslupdate_certificate_id": {
         "label": "Tencent Cloud SSL certificate ID",
@@ -2424,7 +2429,7 @@
       "tencentcloud_tse_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud TSE API endpoint (e.g. tse.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_tse_region": {
         "label": "Tencent Cloud region",
@@ -2463,7 +2468,7 @@
       "tencentcloud_vod_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud VOD API endpoint (e.g. vod.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>vod.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>vod.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_vod_sub_app_id": {
         "label": "Tencent Cloud VOD App ID",
@@ -2477,7 +2482,7 @@
       "tencentcloud_waf_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud WAF API endpoint (e.g. waf.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>waf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>waf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_waf_region": {
         "label": "Tencent Cloud region",
@@ -2497,6 +2502,11 @@
         "label": "Tencent Cloud WAF domain ID",
         "placeholder": "Please enter Tencent Cloud WAF domain ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/waf\" target=\"_blank\">https://console.tencentcloud.com/waf</a>"
+      },
+      "ucloud_ualb_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UALB API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_ualb_region": {
         "label": "UCloud region",
@@ -2528,10 +2538,20 @@
         "placeholder": "Please enter UCloud UALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
+      "ucloud_ucdn_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UCDN API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
       "ucloud_ucdn_domain_id": {
         "label": "UCloud UCDN domain ID",
         "placeholder": "Please enter UCloud UCDN domain ID",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ucdn\" target=\"_blank\">https://console.ucloud-global.com/ucdn</a>"
+      },
+      "ucloud_uclb_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UCLB API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_uclb_region": {
         "label": "UCloud region",
@@ -2558,6 +2578,11 @@
         "placeholder": "Please enter UCloud UCLB VServer ID",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>"
       },
+      "ucloud_upathx_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UPathX API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
       "ucloud_upathx_accelerator_id": {
         "label": "UCloud UPathX accelerator ID",
         "placeholder": "Please enter UCloud UPathX accelerator ID",
@@ -2567,6 +2592,11 @@
         "label": "UCloud UPathX listener port",
         "placeholder": "Please enter UCloud UPathX listener port",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>"
+      },
+      "ucloud_us3_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud US3 API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_us3_region": {
         "label": "UCloud region",
@@ -2580,6 +2610,11 @@
       "ucloud_us3_domain": {
         "label": "UCloud US3 custom domain",
         "placeholder": "Please enter UCloud US3 bucket custom domain name"
+      },
+      "ucloud_uewaf_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UEWAF API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_uewaf_domain": {
         "label": "UCloud UEWAF domain",
@@ -2825,6 +2860,22 @@
         "placeholder": "Please enter Wangsu Cloud certificate ID",
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
         "tooltip": "For more information, see <a href=\"https://cdn.console.wangsu.com/v2/index#/certificate/list?code=cert_mylist&parentCode=cert_ssl&productCode=certificatemanagement\" target=\"_blank\">https://cdn.console.wangsu.com/v2/index#/certificate/list</a>"
+      },
+      "webhook_data": {
+        "label": "Webhook data (Optional)",
+        "placeholder": "Please enter Webhook data",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
+        "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>: <br>The primary domain or IP address of the certificate.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>: <br>The domains or IP addresses of the certificate, separated by semicolons.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>: <br>The PEM format content of the certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>: <br>The PEM format content of the server certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>: <br>The PEM format content of the intermediate CA certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>: <br>The PEM format content of the private key file.</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Webhook timeout (Optional)",
+        "placeholder": "Please enter Webhook timeout",
+        "unit": "seconds"
+      },
+      "yandexcloud_certificatemanager_certificate_id": {
+        "label": "Yandex Cloud Certificate Manager certificate ID (Optional)",
+        "placeholder": "Please enter Yandex Cloud Certificate Manager certificate ID",
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "zenlayer_cdn_deploy_target": {
         "option": {

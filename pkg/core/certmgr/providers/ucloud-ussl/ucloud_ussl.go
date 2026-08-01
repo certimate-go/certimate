@@ -1,13 +1,17 @@
 package ucloudussl
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"log/slog"
+	"net/http"
 	"strings"
 	"time"
 
@@ -32,6 +36,8 @@ type CertmgrConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 }
 
 type Certmgr struct {
@@ -47,7 +53,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -123,9 +129,10 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 
 	// 查询用户证书列表
 	// REF: https://docs.ucloud.cn/api/usslcertificate-api/get_certificate_list
+	// REF: https://docs.ucloud.cn/api/usslcertificate-api/get_certificate_detail_info
 	// REF: https://docs.ucloud.cn/api/usslcertificate-api/download_certificate
 	getCertificateListPage := 1
-	getCertificateListLimit := 1000
+	getCertificateListPageSize := 1000
 	for {
 		select {
 		case <-ctx.Done():
@@ -138,7 +145,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		getCertificateListReq.Domain = ucloud.String(certX509.Subject.CommonName)
 		getCertificateListReq.Sort = ucloud.String("2")
 		getCertificateListReq.Page = ucloud.Int(getCertificateListPage)
-		getCertificateListReq.PageSize = ucloud.Int(getCertificateListLimit)
+		getCertificateListReq.PageSize = ucloud.Int(getCertificateListPageSize)
 		getCertificateListResp, err := c.sdkClient.GetCertificateList(getCertificateListReq)
 		c.logger.Debug("sdk request 'ussl.GetCertificateList'", slog.Any("request", getCertificateListReq), slog.Any("response", getCertificateListResp))
 		if err != nil {
@@ -151,15 +158,10 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 				continue
 			}
 
-			// 对比证书颁发者
-			if len(certX509.Issuer.Organization) == 0 || certItem.Brand != certX509.Issuer.Organization[0] {
-				continue
-			}
-
 			// 对比证书有效期
-			if certX509.NotBefore.UnixMilli() != int64(certItem.NotBefore) {
+			if certX509.NotBefore.UnixMilli() != certItem.NotBefore {
 				continue
-			} else if certX509.NotAfter.UnixMilli() != int64(certItem.NotAfter) {
+			} else if certX509.NotAfter.UnixMilli() != certItem.NotAfter {
 				continue
 			}
 
@@ -211,6 +213,23 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 				continue
 			}
 
+			// 对比证书内容
+			downloadCertificateReq := c.sdkClient.NewDownloadCertificateRequest()
+			downloadCertificateReq.CertificateID = ucloud.Int(certItem.CertificateID)
+			downloadCertificateResp, err := c.sdkClient.DownloadCertificate(downloadCertificateReq)
+			c.logger.Debug("sdk request 'ussl.DownloadCertificate'", slog.Any("request", downloadCertificateReq), slog.Any("response", downloadCertificateResp))
+			if err != nil {
+				return nil, false, fmt.Errorf("failed to execute sdk request 'ussl.DownloadCertificate': %w", err)
+			} else {
+				oldCertPEM, err := downloadCertificateFromUCloud(downloadCertificateResp.CertificateUrl)
+				if err != nil {
+					c.logger.Warn("could not download certificate from ucloud", slog.String("url", downloadCertificateResp.CertificateUrl), slog.Any("error", err))
+				}
+				if oldCertPEM != nil && !xcert.EqualCertificatesFromPEM(certPEM, string(oldCertPEM)) {
+					continue
+				}
+			}
+
 			return &UploadResult{
 				CertId:   fmt.Sprintf("%d", certItem.CertificateID),
 				CertName: certItem.Name,
@@ -220,7 +239,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			}, true, nil
 		}
 
-		if len(getCertificateListResp.CertificateList) < getCertificateListLimit {
+		if len(getCertificateListResp.CertificateList) < getCertificateListPageSize ||
+			getCertificateListPage*getCertificateListPageSize >= getCertificateListResp.TotalCount {
 			break
 		}
 
@@ -230,7 +250,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.USSLClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint string) (*ucloudsdk.USSLClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -239,7 +259,16 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.USSLCl
 	}
 
 	cfg := ucloud.NewConfig()
-	cfg.ProjectId = projectId
+	if projectId != "" {
+		cfg.ProjectId = projectId
+	}
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey
@@ -247,4 +276,54 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.USSLCl
 
 	client := ucloudsdk.NewClient(&cfg, &credential)
 	return client, nil
+}
+
+func downloadCertificateFromUCloud(url string) ([]byte, error) {
+	url = strings.ReplaceAll(url, "\\u0026", "&")
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	contentType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "application/zip") {
+		return nil, fmt.Errorf("unexpected content type: %s", contentType)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	reader, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return nil, err
+	}
+
+	const targetFileName = "Nginx/public.pem"
+	var pemData []byte
+
+	for _, f := range reader.File {
+		if strings.EqualFold(f.Name, "ALL/public.crt") || strings.EqualFold(f.Name, "Nginx/public.pem") {
+			rc, err := f.Open()
+			if err != nil {
+				return nil, err
+			}
+			defer rc.Close()
+
+			pemData, err = io.ReadAll(rc)
+			if err != nil {
+				return nil, err
+			}
+			break
+		}
+	}
+
+	if len(pemData) == 0 {
+		return nil, fmt.Errorf("could not find the certificate file in the zip archive")
+	}
+
+	return pemData, nil
 }

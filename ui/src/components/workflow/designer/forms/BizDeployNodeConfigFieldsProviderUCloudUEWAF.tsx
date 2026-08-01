@@ -20,6 +20,16 @@ const BizDeployNodeConfigFieldsProviderUCloudUEWAF = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "endpoint"]}
+        initialValue={initialValues.endpoint}
+        label={t("workflow_node.deploy.form.ucloud_uewaf_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ucloud_uewaf_endpoint.tooltip") }}></span>}
+      >
+        <Input allowClear placeholder={t("workflow_node.deploy.form.ucloud_uewaf_endpoint.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "domain"]}
         initialValue={initialValues.domain}
         label={t("workflow_node.deploy.form.ucloud_uewaf_domain.label")}
@@ -41,6 +51,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
+    endpoint: z.string().nullish(),
     domain: z.string().refine((v) => isDomain(v), t("common.errmsg.domain_invalid")),
   });
 };

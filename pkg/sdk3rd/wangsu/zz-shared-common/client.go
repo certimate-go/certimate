@@ -28,10 +28,7 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset secretKey")
 	}
 
-	signer := &signer{
-		accessKey: options.AccessKey,
-		secretKey: options.SecretKey,
-	}
+	signer := NewSigner(options.AccessKey, options.SecretKey)
 	httper := resty.New().
 		SetBaseURL("https://open.chinanetcenter.com").
 		SetHeader("Accept", "application/json").

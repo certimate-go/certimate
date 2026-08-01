@@ -31,6 +31,7 @@ func (c *USSLClient) NewGetCertificateListRequest() *GetCertificateListRequest {
 	c.Client.SetupRequest(req)
 
 	req.SetRetryable(true)
+	req.SetEncoder(request.NewJSONEncoder(c.GetConfig(), c.GetCredential()))
 	return req
 }
 

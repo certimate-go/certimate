@@ -183,7 +183,7 @@
       },
       "key_content": {
         "label": "私钥文件（PEM 格式）",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "请输入私钥文件内容\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "无效的 PEM 格式私钥文件",
           "not_matched": "私钥内容与算法不匹配（预期：{{expected}}，实际：{{actual}}）"
@@ -343,6 +343,11 @@
       "ssh_use_scp": {
         "label": "回退使用 SCP",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
+      },
+      "ucloud_udnr_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UDNR 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
       }
     }
   },
@@ -378,7 +383,7 @@
       },
       "certificate_pem": {
         "label": "证书文件（PEM 格式）",
-        "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
+        "placeholder": "请输入证书文件内容\r\n\r\n-----BEGIN CERTIFICATE-----\r\n...\r\n-----END CERTIFICATE-----",
         "errmsg": {
           "invalid": "无效的 PEM 格式证书文件"
         }
@@ -393,7 +398,7 @@
       },
       "private_key_pem": {
         "label": "私钥文件（PEM 格式）",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "请输入私钥文件内容\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "无效的 PEM 格式私钥文件"
         }
@@ -1857,7 +1862,7 @@
         "placeholder": "请输入 Linode 对象存储桶名"
       },
       "local": {
-        "guide": "如果你正在使用 Docker 运行 Certimate，「本地」指的是容器内而非宿主机。"
+        "guide": "如果你正在使用容器化运行 Certimate，「本地」指的是容器内而非宿主机。"
       },
       "local_shell_env": {
         "label": "命令执行环境",
@@ -2334,12 +2339,12 @@
       },
       "tencentcloud_scf_region": {
         "label": "腾讯云服务地域",
-        "placeholder": "输入腾讯云 SCF 服务地域（例如：ap-guangzhou）",
+        "placeholder": "请输入腾讯云 SCF 服务地域（例如：ap-guangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/583/17299\" target=\"_blank\">https://cloud.tencent.com/document/product/583/17299</a>"
       },
       "tencentcloud_scf_domain": {
         "label": "腾讯云 SCF 自定义域名",
-        "placeholder": "输入腾讯云 SCF 自定义域名"
+        "placeholder": "请输入腾讯云 SCF 自定义域名"
       },
       "tencentcloud_ssl_endpoint": {
         "label": "腾讯云接口端点（可选）",
@@ -2427,7 +2432,7 @@
       },
       "tencentcloud_tse_region": {
         "label": "腾讯云服务地域",
-        "placeholder": "输入腾讯云 TSE 服务地域（例如：ap-guangzhou）",
+        "placeholder": "请输入腾讯云 TSE 服务地域（例如：ap-guangzhou）",
         "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com.cn/document/product/1364/54618\" target=\"_blank\">https://cloud.tencent.com.cn/document/product/1364/54618</a>"
       },
       "tencentcloud_tse_service_type": {
@@ -2446,7 +2451,7 @@
       },
       "tencentcloud_tse_domains": {
         "label": "腾讯云 TSE 云原生网关绑定域名",
-        "placeholder": "输入腾讯云 TSE 云原生网关绑定域名（多个值请用半角分号隔开）",
+        "placeholder": "请输入腾讯云 TSE 云原生网关绑定域名（多个值请用半角分号隔开）",
         "help": "提示：支持多个域名，以半角分号隔开。",
         "multiple_input_modal": {
           "title": "修改腾讯云 TSE 云原生网关绑定域名",
@@ -2497,9 +2502,14 @@
         "placeholder": "请输入腾讯云 WAF 域名 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/waf\" target=\"_blank\">https://console.cloud.tencent.com/waf</a>"
       },
+      "ucloud_ualb_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UALB 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_ualb_region": {
         "label": "优刻得服务地域",
-        "placeholder": "优刻得 UALB 服务地域（例如：cn-bj2）",
+        "placeholder": "请输入优刻得 UALB 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
       "ucloud_ualb_deploy_target": {
@@ -2527,14 +2537,24 @@
         "placeholder": "请输入优刻得 UALB 扩展域名",
         "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
       },
+      "ucloud_ucdn_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UCDN 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_ucdn_domain_id": {
         "label": "优刻得 UCDN 域名 ID",
         "placeholder": "请输入优刻得 UCDN 域名 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ucdn\" target=\"_blank\">https://console.ucloud.cn/ucdn</a>"
       },
+      "ucloud_uclb_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UCLB 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_uclb_region": {
         "label": "优刻得服务地域",
-        "placeholder": "优刻得 UCLB 服务地域（例如：cn-bj2）",
+        "placeholder": "请输入优刻得 UCLB 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
       "ucloud_uclb_deploy_target": {
@@ -2557,6 +2577,11 @@
         "placeholder": "请输入优刻得 UCLB VServer ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ulb/ulb\" target=\"_blank\">https://console.ucloud.cn/ulb/ulb</a>"
       },
+      "ucloud_upathx_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UPathX 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_upathx_accelerator_id": {
         "label": "优刻得 UPathX 加速器实例 ID",
         "placeholder": "请输入优刻得 UPathX 加速器实例 ID",
@@ -2567,9 +2592,14 @@
         "placeholder": "请输入优刻得 UPathX 加速器监听端口",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/upathx/accelerate\" target=\"_blank\">https://console.ucloud.cn/upathx/accelerate</a>"
       },
+      "ucloud_us3_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 US3 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
       "ucloud_us3_region": {
         "label": "优刻得服务地域",
-        "placeholder": "优刻得 US3 服务地域（例如：cn-bj2）",
+        "placeholder": "请输入优刻得 US3 服务地域（例如：cn-bj2）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
       },
       "ucloud_us3_bucket": {
@@ -2579,6 +2609,11 @@
       "ucloud_us3_domain": {
         "label": "优刻得 US3 自定义域名",
         "placeholder": "请输入优刻得 US3 自定义域名"
+      },
+      "ucloud_uewaf_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 UEWAF 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
       },
       "ucloud_uewaf_domain": {
         "label": "优刻得 UEWAF 防护域名",
@@ -2824,6 +2859,22 @@
         "placeholder": "请输入网宿云证书 ID",
         "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
         "tooltip": "这是什么？请参阅 <a href=\"https://cdn.console.wangsu.com/v2/index#/certificate/list?code=cert_mylist&parentCode=cert_ssl&productCode=certificatemanagement\" target=\"_blank\">https://cdn.console.wangsu.com/v2/index#/certificate/list</a>"
+      },
+      "webhook_data": {
+        "label": "Webhook 回调数据（可选）",
+        "placeholder": "请输入 Webhook 回调数据以覆盖默认值",
+        "help": "提示：不填写时，将使用所选提供商授权的默认 Webhook 回调数据。",
+        "vartips": "支持的变量：<br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>：<br>证书的主域名或 IP。</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>：<br>证书的多域名或 IP，以半角分号隔开。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>：<br>证书文件 PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>：<br>证书文件（仅含服务器证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>：<br>证书文件（仅含中间证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>：<br>私钥文件 PEM 格式内容。</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Webhook 超时时间（可选）",
+        "placeholder": "请输入 Webhook 超时时间",
+        "unit": "秒"
+      },
+      "yandexcloud_certificatemanager_certificate_id": {
+        "label": "Yandex Cloud 证书管理器证书 ID（可选）",
+        "placeholder": "请输入 Yandex Cloud 证书管理器证书 ID",
+        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
       },
       "zenlayer_cdn_deploy_target": {
         "option": {

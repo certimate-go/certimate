@@ -3,12 +3,14 @@ package ucloudualb_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ucloud-ualb"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp              = tester.Args("UCLOUDUALB_")
+	fp              = it.Args("UCLOUDUALB_")
 	fTestCertPath   string
 	fTestKeyPath    string
 	fPrivateKey     string
@@ -52,11 +54,8 @@ func TestProvider(t *testing.T) {
 			LoadbalancerId: fLoadbalancerId,
 			ListenerId:     fListenerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

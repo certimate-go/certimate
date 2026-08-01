@@ -117,7 +117,7 @@ func createSDKClient(apiToken string) (*sslcerts.Service, error) {
 	}
 
 	requester := gcore.NewClient(
-		xgcore.BASE_URL,
+		xgcore.BaseURL,
 		gcore.WithSigner(xgcore.NewAuthRequestSigner(apiToken)),
 	)
 	service := sslcerts.NewService(requester)

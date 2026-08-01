@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -27,8 +28,13 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset apiToken")
 	}
 
+	baseUrl := options.BaseEndpoint
+	if baseUrl == "" {
+		baseUrl = endpointChinaBaseURL
+	}
+
 	httper := resty.New().
-		SetBaseURL("https://pages-api.cloud.tencent.com/v1").
+		SetBaseURL(strings.TrimSuffix(baseUrl, "/")+"/v1").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", "Bearer "+options.ApiToken).
 		SetHeader("Content-Type", "application/json").
@@ -42,18 +48,18 @@ func (c *Client) SetTimeout(timeout time.Duration) *Client {
 	return c
 }
 
-func (c *Client) newRequest(params any, teoAction string) (*resty.Request, error) {
-	if teoAction == "" {
+func (c *Client) newRequest(params any, xAction string) (*resty.Request, error) {
+	if xAction == "" {
 		return nil, fmt.Errorf("sdkerr: unset action")
 	}
 
 	paramsMap := map[string]any{}
-	paramsMap["Action"] = teoAction
+	paramsMap["Action"] = xAction
 	if params != nil {
 		jsonb, _ := json.Marshal(params)
 		json.Unmarshal(jsonb, &paramsMap)
-		if paramsMap["Action"] != teoAction {
-			return nil, fmt.Errorf("sdkerr: bad request: action mismatch: expected '%s', got '%s'", teoAction, paramsMap["Action"])
+		if paramsMap["Action"] != xAction {
+			return nil, fmt.Errorf("sdkerr: bad request: action mismatch: expected '%s', got '%s'", xAction, paramsMap["Action"])
 		}
 	}
 

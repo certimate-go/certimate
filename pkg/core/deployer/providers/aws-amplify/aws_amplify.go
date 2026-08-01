@@ -8,6 +8,7 @@ import (
 	aws "github.com/aws/aws-sdk-go-v2/aws"
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	awscred "github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go-v2/service/amplify"
 	"github.com/aws/aws-sdk-go-v2/service/amplify/types"
 
@@ -21,6 +22,10 @@ type (
 )
 
 type DeployerConfig struct {
+	// AWS API 认证方式。
+	// 可取值 "accesskey"、"imds"。
+	// 零值时默认值 [AUTH_METHOD_ACCESSKEY]。
+	AuthMethod string `json:"authMethod,omitempty"`
 	// AWS AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
 	// AWS SecretAccessKey。
@@ -50,7 +55,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	client, err := createSDKClient(config.AuthMethod, config.AccessKeyId, config.SecretAccessKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -59,6 +64,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	switch config.CertificateSource {
 	case CERTIFICATE_SOURCE_ACM:
 		pcertmgr, err = cmgrimplacm.NewCertmgr(&cmgrimplacm.CertmgrConfig{
+			AuthMethod:      config.AuthMethod,
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,
@@ -124,11 +130,27 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*amplify.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background(),
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")),
+func createSDKClient(authMethod, accessKeyId, secretAccessKey, region string) (*amplify.Client, error) {
+	opts := []func(options *awscfg.LoadOptions) error{
 		awscfg.WithRegion(region),
-	)
+	}
+
+	staticCredsProvider := awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")
+	imdsCredsProvider := aws.NewCredentialsCache(ec2rolecreds.New())
+	switch authMethod {
+	case "":
+		if accessKeyId != "" && secretAccessKey != "" {
+			opts = append(opts, awscfg.WithCredentialsProvider(staticCredsProvider))
+		}
+	case AUTH_METHOD_ACCESSKEY:
+		opts = append(opts, awscfg.WithCredentialsProvider(staticCredsProvider))
+	case AUTH_METHOD_IMDS:
+		opts = append(opts, awscfg.WithCredentialsProvider(imdsCredsProvider))
+	default:
+		return nil, fmt.Errorf("unsupported auth method '%s'", authMethod)
+	}
+
+	cfg, err := awscfg.LoadDefaultConfig(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}

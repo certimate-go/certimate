@@ -3,12 +3,14 @@ package ctcccloudelb_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ctcccloud-elb"
-	tester "github.com/certimate-go/certimate/pkg/core/deployer/testing"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp               = tester.Args("CTCCCLOUDELB_")
+	fp               = it.Args("CTCCCLOUDELB_")
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
@@ -51,12 +53,9 @@ func TestProvider(t *testing.T) {
 			DeployTarget:    impl.DEPLOY_TARGET_LOADBALANCER,
 			LoadbalancerId:  fLoadbalancerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_ToListener", func(t *testing.T) {
@@ -67,11 +66,8 @@ func TestProvider(t *testing.T) {
 			DeployTarget:    impl.DEPLOY_TARGET_LISTENER,
 			ListenerId:      fListenerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

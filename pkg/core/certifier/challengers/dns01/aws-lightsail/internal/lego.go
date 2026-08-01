@@ -8,7 +8,6 @@ import (
 
 	aws "github.com/aws/aws-sdk-go-v2/aws"
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
-	awscred "github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/lightsail"
 	"github.com/aws/aws-sdk-go-v2/service/lightsail/types"
 	"github.com/go-acme/lego/v5/challenge"
@@ -25,15 +24,11 @@ const (
 	EnvPollingInterval    = envNamespace + "POLLING_INTERVAL"
 )
 
-const maxRetries = 5
-
 var _ challenge.ProviderTimeout = (*DNSProvider)(nil)
 
 type Config struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	SessionToken    string
-	Region          string
+	AWSCredentialsProvider aws.CredentialsProvider
+	Region                 string
 
 	PropagationTimeout time.Duration
 	PollingInterval    time.Duration
@@ -65,11 +60,14 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("lightsail: the configuration of the DNS provider is nil")
 	}
 
-	ctx := context.Background()
-	cfg, err := awscfg.LoadDefaultConfig(ctx,
-		awscfg.WithCredentialsProvider(awscred.NewStaticCredentialsProvider(config.AccessKeyID, config.SecretAccessKey, config.SessionToken)),
+	opts := []func(options *awscfg.LoadOptions) error{
 		awscfg.WithRegion(config.Region),
-	)
+	}
+	if config.AWSCredentialsProvider != nil {
+		opts = append(opts, awscfg.WithCredentialsProvider(config.AWSCredentialsProvider))
+	}
+
+	cfg, err := awscfg.LoadDefaultConfig(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}
