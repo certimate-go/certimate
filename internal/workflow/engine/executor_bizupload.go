@@ -72,6 +72,13 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	if skippable, reason := ne.checkCanSkip(execCtx, lastOutput, lastCertificate); skippable {
 		ne.logger.Info(fmt.Sprintf("skip this uploading, because %s", reason))
 
+		// Persist so skip runs keep a durable trail for the next skip decision.
+		// workflow_output rows cascade-delete with history cleanup; without a
+		// recent output the node would re-upload despite an existing certificate.
+		if lastCertificate != nil {
+			ne.setOuputsOfResult(execCtx, execRes, lastCertificate, true)
+		}
+
 		execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, true, stateValTypeBoolean)
 		return execRes, nil
 	} else if reason != "" {
@@ -202,16 +209,12 @@ func (ne *bizUploadNodeExecutor) getLastOutputArtifacts(execCtx *NodeExecutionCo
 		return nil, nil, fmt.Errorf("failed to get last output record of node #%s: %w", execCtx.Node.Id, err)
 	}
 
-	if lastOutput != nil {
-		lastCertificate, err := ne.certificateRepo.GetByWorkflowRunIdAndNodeId(execCtx.Context(), lastOutput.RunId, lastOutput.NodeId)
-		if err != nil && !domain.IsRecordNotFoundError(err) {
-			return lastOutput, nil, fmt.Errorf("failed to get last certificate record of node #%s: %w", execCtx.Node.Id, err)
-		}
-
-		return lastOutput, lastCertificate, nil
+	lastCertificate, err := resolveLastCertificateForNode(execCtx, ne.certificateRepo, lastOutput)
+	if err != nil {
+		return lastOutput, nil, err
 	}
 
-	return lastOutput, nil, nil
+	return lastOutput, lastCertificate, nil
 }
 
 func (ne *bizUploadNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, lastOutput *domain.WorkflowOutput, lastCertificate *domain.Certificate) (_skip bool, _reason string) {

@@ -12,6 +12,7 @@ type accessRepository interface {
 
 type certificateRepository interface {
 	GetById(ctx context.Context, id string) (*domain.Certificate, error)
+	GetByWorkflowIdAndNodeId(ctx context.Context, workflowId string, workflowNodeId string) (*domain.Certificate, error)
 	GetByWorkflowRunIdAndNodeId(ctx context.Context, workflowRunId string, workflowNodeId string) (*domain.Certificate, error)
 	Save(ctx context.Context, certificate *domain.Certificate) (*domain.Certificate, error)
 }
