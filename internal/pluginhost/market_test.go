@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -654,6 +655,84 @@ func TestFetchZip_ResumesAfterTruncation(t *testing.T) {
 	}
 	if attempts.Load() < 2 {
 		t.Fatalf("expected at least 2 attempts (one truncated, one resumed), got %d", attempts.Load())
+	}
+}
+
+func TestFetchZip_ResumesAfterStall(t *testing.T) {
+	payload := bytes.Repeat([]byte("z"), 200*1024)
+	cut := int64(100 * 1024)
+	stall := 80 * time.Millisecond
+
+	var attempts atomic.Int32
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		n := attempts.Add(1)
+		var start int64
+		if rng := r.Header.Get("Range"); strings.HasPrefix(rng, "bytes=") {
+			fmt.Sscanf(rng, "bytes=%d-", &start)
+		}
+		if n == 1 && start == 0 {
+			w.Header().Set("Content-Length", strconv.Itoa(len(payload)))
+			_, _ = w.Write(payload[:cut])
+			if fl, ok := w.(http.Flusher); ok {
+				fl.Flush()
+			}
+			select {
+			case <-r.Context().Done():
+			case <-time.After(stall * 30):
+			}
+			return
+		}
+		end := int64(len(payload)) - 1
+		w.Header().Set("Content-Range", fmt.Sprintf("bytes %d-%d/%d", start, end, len(payload)))
+		w.Header().Set("Content-Length", strconv.FormatInt(int64(len(payload))-start, 10))
+		w.WriteHeader(http.StatusPartialContent)
+		_, _ = w.Write(payload[start:])
+	}))
+	t.Cleanup(srv.Close)
+
+	svc := NewMarketService(MarketConfig{
+		IndexURL:     srv.URL,
+		PluginDir:    t.TempDir(),
+		StallTimeout: stall,
+	})
+	dest := filepath.Join(svc.pluginDir, "test.zip")
+	if err := svc.fetchZip(context.Background(), srv.URL, dest, nil); err != nil {
+		t.Fatalf("fetchZip failed: %v", err)
+	}
+	got, err := os.ReadFile(dest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(got, payload) {
+		t.Fatalf("resumed download produced wrong content: got %d bytes, want %d", len(got), len(payload))
+	}
+	if attempts.Load() < 2 {
+		t.Fatalf("expected at least 2 attempts (one stalled, one resumed), got %d", attempts.Load())
+	}
+}
+
+func TestIsRetryableDownloadError(t *testing.T) {
+	cases := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{"generic", errors.New("boom"), true},
+		{"deadline exceeded", context.DeadlineExceeded, true},
+		{"wrapped deadline", fmt.Errorf("fetch: %w", context.DeadlineExceeded), true},
+		{"stalled", errDownloadStalled, true},
+		{"wrapped stalled", fmt.Errorf("market: %w", errDownloadStalled), true},
+		{"canceled", context.Canceled, false},
+		{"wrapped canceled", fmt.Errorf("ctx: %w", context.Canceled), false},
+		{"non-retryable", errDownloadNotRetryable, false},
+		{"wrapped non-retryable", fmt.Errorf("size: %w", errDownloadNotRetryable), false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := isRetryableDownloadError(c.err); got != c.want {
+				t.Fatalf("isRetryableDownloadError(%v) = %v, want %v", c.err, got, c.want)
+			}
+		})
 	}
 }
 

@@ -17,16 +17,20 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/plugin"
+	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 )
 
 const (
 	maxDownloadBytes     int64 = 512 * 1024 * 1024
 	maxUncompressedBytes int64 = 1024 * 1024 * 1024
 	maxZipEntries              = 64
+
+	defaultDownloadStallTimeout = 60 * time.Second
 )
 
 var (
@@ -52,6 +56,7 @@ type MarketService struct {
 	mu             sync.RWMutex
 	httpClient     *http.Client
 	downloadClient *http.Client
+	stallTimeout   time.Duration
 	logger         *slog.Logger
 	jobs           *jobStore
 	ops            *pluginOps
@@ -63,6 +68,7 @@ type MarketConfig struct {
 	DownloadMirror string
 	PluginDir      string
 	CacheTTL       time.Duration
+	StallTimeout   time.Duration
 	Logger         *slog.Logger
 }
 
@@ -79,6 +85,11 @@ func NewMarketService(cfg MarketConfig) *MarketService {
 	if cfg.IndexURL == "" {
 		cfg.IndexURL = fmt.Sprintf("https://raw.githubusercontent.com/%s/main/index.json", cfg.MarketRepo)
 	}
+	if cfg.StallTimeout <= 0 {
+		cfg.StallTimeout = defaultDownloadStallTimeout
+	}
+	dlTransport := xhttp.NewDefaultTransport()
+	dlTransport.ResponseHeaderTimeout = 30 * time.Second
 	return &MarketService{
 		marketRepo:     cfg.MarketRepo,
 		indexURL:       cfg.IndexURL,
@@ -86,7 +97,8 @@ func NewMarketService(cfg MarketConfig) *MarketService {
 		pluginDir:      cfg.PluginDir,
 		cacheTTL:       cfg.CacheTTL,
 		httpClient:     &http.Client{Timeout: 30 * time.Second},
-		downloadClient: &http.Client{Timeout: 5 * time.Minute},
+		downloadClient: &http.Client{Transport: dlTransport},
+		stallTimeout:   cfg.StallTimeout,
 		logger:         cfg.Logger.With(slog.String("component", "market")),
 		jobs:           newJobStore(),
 		ops:            newPluginOps(),
@@ -465,7 +477,10 @@ func (s *MarketService) installPipeline(ctx context.Context, providerType string
 
 const maxDownloadRetries = 3
 
-var errDownloadNotRetryable = errors.New("market: download failed (non-retryable)")
+var (
+	errDownloadNotRetryable = errors.New("market: download failed (non-retryable)")
+	errDownloadStalled      = errors.New("market: download stalled (no progress within timeout)")
+)
 
 func (s *MarketService) fetchZip(ctx context.Context, url, destPath string, onProgress func(downloaded, total int64)) error {
 	var lastErr error
@@ -488,6 +503,9 @@ func (s *MarketService) fetchZip(ctx context.Context, url, destPath string, onPr
 }
 
 func (s *MarketService) downloadAttempt(ctx context.Context, url, destPath string, onProgress func(downloaded, total int64)) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	f, err := os.OpenFile(destPath, os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {
 		return fmt.Errorf("market: open download file: %w", err)
@@ -541,13 +559,22 @@ func (s *MarketService) downloadAttempt(ctx context.Context, url, destPath strin
 		return fmt.Errorf("market: download size %d exceeds max %d: %w", total, maxDownloadBytes, errDownloadNotRetryable)
 	}
 
+	var activity atomic.Int64
+	activity.Store(time.Now().UnixNano())
+	stalled, stopWatchdog := s.watchDownloadStall(ctx, cancel, &activity)
+	defer stopWatchdog()
+
 	pr := &progressReader{
-		r:     io.LimitReader(resp.Body, maxDownloadBytes+1),
-		total: total,
-		base:  offset,
-		on:    onProgress,
+		r:        io.LimitReader(resp.Body, maxDownloadBytes+1),
+		total:    total,
+		base:     offset,
+		on:       onProgress,
+		activity: &activity,
 	}
 	if _, err := io.Copy(f, pr); err != nil {
+		if stalled.Load() {
+			return fmt.Errorf("market: %w", errDownloadStalled)
+		}
 		return err
 	}
 
@@ -566,11 +593,47 @@ func (s *MarketService) downloadAttempt(ctx context.Context, url, destPath strin
 	return nil
 }
 
+func (s *MarketService) watchDownloadStall(ctx context.Context, cancel context.CancelFunc, activity *atomic.Int64) (*atomic.Bool, func()) {
+	stalled := &atomic.Bool{}
+	done := make(chan struct{})
+	tick := time.NewTicker(stallTickInterval(s.stallTimeout))
+	go func() {
+		defer tick.Stop()
+		for {
+			select {
+			case <-done:
+				return
+			case <-ctx.Done():
+				return
+			case <-tick.C:
+				last := time.Unix(0, activity.Load())
+				if time.Since(last) >= s.stallTimeout {
+					stalled.Store(true)
+					cancel()
+					return
+				}
+			}
+		}
+	}()
+	return stalled, func() { close(done) }
+}
+
+func stallTickInterval(stall time.Duration) time.Duration {
+	t := stall / 4
+	if t < 10*time.Millisecond {
+		t = 10 * time.Millisecond
+	}
+	if t > 15*time.Second {
+		t = 15 * time.Second
+	}
+	return t
+}
+
 func isRetryableDownloadError(err error) bool {
 	if errors.Is(err, errDownloadNotRetryable) {
 		return false
 	}
-	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+	if errors.Is(err, context.Canceled) {
 		return false
 	}
 	return true
@@ -597,18 +660,22 @@ func parseFullSize(contentRange string) int64 {
 }
 
 type progressReader struct {
-	r     io.Reader
-	total int64
-	base  int64
-	read  int64
-	last  int64
-	on    func(downloaded, total int64)
+	r        io.Reader
+	total    int64
+	base     int64
+	read     int64
+	last     int64
+	on       func(downloaded, total int64)
+	activity *atomic.Int64
 }
 
 func (pr *progressReader) Read(p []byte) (int, error) {
 	n, err := pr.r.Read(p)
 	if n > 0 {
 		pr.read += int64(n)
+		if pr.activity != nil {
+			pr.activity.Store(time.Now().UnixNano())
+		}
 		abs := pr.base + pr.read
 		if pr.on != nil && (abs-pr.last >= 64*1024 || err != nil) {
 			pr.last = abs
