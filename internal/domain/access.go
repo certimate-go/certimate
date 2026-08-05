@@ -87,6 +87,10 @@ type AccessConfigForAWS struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
+type AccessConfigForAxisNow struct {
+	ApiToken string `json:"apiToken"`
+}
+
 type AccessConfigForAzure struct {
 	TenantId          string `json:"tenantId"`
 	ClientId          string `json:"clientId"`
