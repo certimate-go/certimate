@@ -17,12 +17,12 @@ func init() {
 		}
 
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
-			AccessKeyId:         credentials.AccessKeyId,
-			SecretAccessKey:     credentials.SecretAccessKey,
-			ZoneId:              xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
-			DeployTarget:        xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
-			LoadbalancerId:      xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),
-			ListenerId:          xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
+			AccessKeyId:     credentials.AccessKeyId,
+			SecretAccessKey: credentials.SecretAccessKey,
+			ZoneId:          xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
+			DeployTarget:    xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
+			LoadbalancerId:  xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),
+			ListenerId:      xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
 		})
 		return provider, err
 	})
