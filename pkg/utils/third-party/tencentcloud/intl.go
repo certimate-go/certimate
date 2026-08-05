@@ -1,4 +1,4 @@
-﻿package tencentcloud
+package tencentcloud
 
 import (
 	"strings"

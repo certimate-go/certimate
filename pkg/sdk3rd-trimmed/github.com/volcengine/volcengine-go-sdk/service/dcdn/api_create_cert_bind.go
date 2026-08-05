@@ -1,4 +1,4 @@
-﻿package dcdn
+package dcdn
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/dcdn"

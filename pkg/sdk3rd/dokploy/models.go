@@ -1,4 +1,4 @@
-﻿package dokploy
+package dokploy
 
 type Certificate struct {
 	CertificateId   string `json:"certificateId"`

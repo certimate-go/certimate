@@ -1,4 +1,4 @@
-﻿package axisnow
+package axisnow
 
 type Options struct {
 	ApiToken string

@@ -1,4 +1,4 @@
-﻿package client
+package client
 
 import (
 	"github.com/alibabacloud-go/slb-20140515/v4/client"

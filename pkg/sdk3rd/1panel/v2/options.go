@@ -1,4 +1,4 @@
-﻿package v2
+package v2
 
 type Options struct {
 	ApiKey      string

@@ -1,4 +1,4 @@
-﻿package v2
+package v2
 
 import (
 	v1 "github.com/certimate-go/certimate/pkg/sdk3rd/1panel"

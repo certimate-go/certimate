@@ -1,4 +1,4 @@
-﻿package cachefly
+package cachefly
 
 type Options struct {
 	ApiToken string

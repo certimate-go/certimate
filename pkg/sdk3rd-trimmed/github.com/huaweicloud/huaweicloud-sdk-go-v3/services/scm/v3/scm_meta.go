@@ -1,4 +1,4 @@
-﻿package v3
+package v3
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"

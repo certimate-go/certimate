@@ -1,4 +1,4 @@
-﻿package dogecloud
+package dogecloud
 
 import (
 	"bytes"

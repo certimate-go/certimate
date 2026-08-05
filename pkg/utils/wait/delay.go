@@ -1,4 +1,4 @@
-﻿package wait
+package wait
 
 import (
 	"context"

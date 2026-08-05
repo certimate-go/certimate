@@ -1,4 +1,4 @@
-﻿// An extension SDK client for QingCloud LB service.
+// An extension SDK client for QingCloud LB service.
 // Based on github.com/yunify/qingcloud-sdk-go.
 package lb
 

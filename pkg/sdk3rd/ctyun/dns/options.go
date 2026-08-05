@@ -1,4 +1,4 @@
-﻿package dns
+package dns
 
 import (
 	common "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/zz-shared-common"

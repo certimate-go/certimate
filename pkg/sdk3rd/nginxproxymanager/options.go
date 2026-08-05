@@ -1,4 +1,4 @@
-﻿package nginxproxymanager
+package nginxproxymanager
 
 type Options struct {
 	Username string

@@ -1,4 +1,4 @@
-﻿package digitalocean
+package digitalocean
 
 type Options struct {
 	AccessToken string

@@ -1,4 +1,4 @@
-﻿package apisix
+package apisix
 
 type Options struct {
 	ApiKey string

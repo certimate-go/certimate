@@ -1,4 +1,4 @@
-﻿package safeline
+package safeline
 
 type Options struct {
 	ApiToken string

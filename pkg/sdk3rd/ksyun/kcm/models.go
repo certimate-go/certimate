@@ -1,4 +1,4 @@
-﻿package kcm
+package kcm
 
 type UserCertificate struct {
 	CertId            string   `json:"CertID"`

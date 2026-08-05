@@ -1,4 +1,4 @@
-﻿package cdn
+package cdn
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/cdn"

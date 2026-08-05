@@ -1,4 +1,4 @@
-﻿package vod20260101
+package vod20260101
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/vod20260101"

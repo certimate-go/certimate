@@ -1,4 +1,4 @@
-﻿package obs
+package obs
 
 type Options struct {
 	AccessKeyId     string

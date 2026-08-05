@@ -1,4 +1,4 @@
-﻿package waf
+package waf
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/waf"

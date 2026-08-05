@@ -1,4 +1,4 @@
-﻿package console
+package console
 
 type Options struct {
 	Username string

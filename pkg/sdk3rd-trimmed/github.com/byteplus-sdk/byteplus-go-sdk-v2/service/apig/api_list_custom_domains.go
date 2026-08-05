@@ -1,4 +1,4 @@
-﻿package apig
+package apig
 
 import (
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"

@@ -1,4 +1,4 @@
-﻿package goedge
+package goedge
 
 type Options struct {
 	Role        string

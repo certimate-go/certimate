@@ -1,4 +1,4 @@
-﻿package v2
+package v2
 
 import (
 	"crypto/md5"

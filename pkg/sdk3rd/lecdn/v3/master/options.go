@@ -1,4 +1,4 @@
-﻿package master
+package master
 
 type Options struct {
 	Username string

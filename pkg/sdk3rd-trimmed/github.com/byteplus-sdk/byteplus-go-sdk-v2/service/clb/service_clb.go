@@ -1,4 +1,4 @@
-﻿package clb
+package clb
 
 import (
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"

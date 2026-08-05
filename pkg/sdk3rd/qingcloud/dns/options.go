@@ -1,4 +1,4 @@
-﻿package dns
+package dns
 
 type Options struct {
 	AccessKeyId     string

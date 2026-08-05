@@ -1,4 +1,4 @@
-﻿package certificateservice
+package certificateservice
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/certificateservice"

@@ -1,4 +1,4 @@
-﻿package cdn
+package cdn
 
 type CDNDomain struct {
 	Region       string `json:"Region"`

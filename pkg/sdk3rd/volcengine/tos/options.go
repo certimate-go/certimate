@@ -1,4 +1,4 @@
-﻿package tos
+package tos
 
 type Options struct {
 	AccessKeyId     string

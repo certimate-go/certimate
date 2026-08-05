@@ -1,4 +1,4 @@
-﻿package snaps
+package snaps
 
 // This is a definition backup of WorkflowNode for v0.3.
 type WorkflowNode struct {
