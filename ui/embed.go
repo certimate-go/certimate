@@ -1,4 +1,3 @@
-// Package ui handles the PocketBase Admin frontend embedding.
 package ui
 
 import (
@@ -10,5 +9,4 @@ import (
 //go:embed all:dist
 var distDir embed.FS
 
-// DistDirFS contains the embedded dist directory files (without the "dist" prefix)
 var DistDirFS = apis.MustSubFS(distDir, "dist")

@@ -58,7 +58,7 @@ require (
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/pkg/sftp v1.13.11
 	github.com/pocketbase/dbx v1.12.0
-	github.com/pocketbase/pocketbase v0.39.9
+	github.com/pocketbase/pocketbase v0.39.10
 	github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df
 	github.com/pquerna/otp v1.5.0
 	github.com/qiniu/go-sdk/v7 v7.26.18
@@ -287,7 +287,7 @@ require (
 	modernc.org/libc v1.74.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.54.0 // indirect
+	modernc.org/sqlite v1.55.0 // indirect
 )
 
 replace gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcloudcore@v1.0.0+mod
