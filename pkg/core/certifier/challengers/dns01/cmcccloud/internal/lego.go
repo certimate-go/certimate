@@ -1,3 +1,6 @@
+//nolint:composites
+//nolint:govet
+
 package internal
 
 import (
