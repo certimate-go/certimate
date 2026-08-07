@@ -3,12 +3,14 @@ package gcorecdn_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/gcore-cdn"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("GCORECDN_")
+	fp            = it.Args("GCORECDN_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fApiToken     string
@@ -39,11 +41,8 @@ func TestProvider(t *testing.T) {
 			ApiToken:   fApiToken,
 			ResourceId: fResourceId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

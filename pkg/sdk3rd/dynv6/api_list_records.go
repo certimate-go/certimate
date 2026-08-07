@@ -14,7 +14,7 @@ func (c *Client) ListRecords(zoneID int64) (*ListRecordsResponse, error) {
 
 func (c *Client) ListRecordsWithContext(ctx context.Context, zoneID int64) (*ListRecordsResponse, error) {
 	if zoneID == 0 {
-		return nil, fmt.Errorf("sdkerr: unset zoneID")
+		return nil, fmt.Errorf("sdkerr: bad request: unset zoneID")
 	}
 
 	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("/zones/%d/records", zoneID))

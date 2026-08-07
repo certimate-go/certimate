@@ -25,6 +25,7 @@ const AccessConfigFieldsProviderGoogleCloud = () => {
         initialValue={initialValues.projectId}
         label={t("access.form.googlecloud_project_id.label")}
         rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.googlecloud_project_id.tooltip") }}></span>}
       >
         <Input type="url" placeholder={t("access.form.googlecloud_project_id.placeholder")} />
       </Form.Item>

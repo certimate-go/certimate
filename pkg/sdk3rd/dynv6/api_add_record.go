@@ -25,7 +25,7 @@ func (c *Client) AddRecord(zoneID int64, req *AddRecordRequest) (*AddRecordRespo
 
 func (c *Client) AddRecordWithContext(ctx context.Context, zoneID int64, req *AddRecordRequest) (*AddRecordResponse, error) {
 	if zoneID == 0 {
-		return nil, fmt.Errorf("sdkerr: unset zoneID")
+		return nil, fmt.Errorf("sdkerr: bad request: unset zoneID")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPost, fmt.Sprintf("/zones/%d/records", zoneID))

@@ -37,7 +37,7 @@ func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	}
 
 	client := resty.New().
-		SetHeader("Authorization", fmt.Sprintf("Bearer %s", config.BotToken)).
+		SetHeader("Authorization", "Bearer "+config.BotToken).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 

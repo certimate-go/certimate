@@ -1,0 +1,18 @@
+name: "GitHub Issues Translator"
+
+on:
+  issues:
+    types:
+      - opened
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  add-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Translate issue to English
+        uses: usthe/issues-translate-action@v2.7
+        with:
+          IS_MODIFY_TITLE: false

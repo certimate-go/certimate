@@ -2,9 +2,9 @@ package uclouduclb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"sync"
 
 	"github.com/samber/lo"
@@ -15,6 +15,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-ulb"
 	ucloudsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ucloud/ulb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -29,6 +30,8 @@ type DeployerConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 优刻得地域。
 	Region string `json:"region"`
 	// 部署目标。
@@ -58,7 +61,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -67,6 +70,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		PrivateKey: config.PrivateKey,
 		PublicKey:  config.PublicKey,
 		ProjectId:  config.ProjectId,
+		Endpoint:   config.Endpoint,
 		Region:     config.Region,
 	})
 	if err != nil {
@@ -166,26 +170,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		describeVServerOffset += describeVServerLimit
 	}
 
-	// 遍历更新 VServer 证书
+	// 批量更新 VServer 证书
 	if len(vserverIds) == 0 {
 		d.logger.Info("no clb vservers to deploy")
 	} else {
-		d.logger.Info("found https vservers to deploy", slog.Any("vserverIds", vserverIds))
-		var errs []error
+		d.logger.Info("found clb vservers to deploy", slog.Any("vserverIds", vserverIds))
 
-		for _, vserverId := range vserverIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateVServerCertificate(ctx, d.config.LoadbalancerId, vserverId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, vserverIds, func(ctx context.Context, vserverId string, _ int) error {
+			return d.updateVServerCertificate(ctx, d.config.LoadbalancerId, vserverId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -219,12 +213,12 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ulb.DescribeVServer': %w", err)
 	} else if len(describeVServerResp.DataSet) == 0 {
-		return fmt.Errorf("could not find vserver '%s'", cloudVServerId)
+		return fmt.Errorf("could not find uclb vserver '%s'", cloudVServerId)
 	}
 
-	// 跳过已部署过的 VServer
+	// 已部署过，直接返回
 	vserverInfo := describeVServerResp.DataSet[0]
-	if lo.ContainsBy(vserverInfo.SSLSet, func(item ulb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
+	if lo.SomeBy(vserverInfo.SSLSet, func(item ulb.ULBSSLSet) bool { return item.SSLId == cloudCertId }) {
 		return nil
 	}
 
@@ -260,7 +254,7 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	return nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint, region string) (*ucloudsdk.ULBClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -269,8 +263,19 @@ func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsd
 	}
 
 	cfg := ucloud.NewConfig()
-	cfg.ProjectId = projectId
-	cfg.Region = region
+	if projectId != "" {
+		cfg.ProjectId = projectId
+	}
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
+	if region != "" {
+		cfg.Region = region
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

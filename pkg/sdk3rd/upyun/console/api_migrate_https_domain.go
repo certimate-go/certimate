@@ -25,7 +25,7 @@ func (c *Client) MigrateHttpsDomain(req *MigrateHttpsDomainRequest) (*MigrateHtt
 }
 
 func (c *Client) MigrateHttpsDomainWithContext(ctx context.Context, req *MigrateHttpsDomainRequest) (*MigrateHttpsDomainResponse, error) {
-	if err := c.ensureCookieExists(); err != nil {
+	if err := c.ensureCookies(ctx); err != nil {
 		return nil, err
 	}
 

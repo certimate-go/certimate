@@ -7,7 +7,7 @@ import (
 
 type GetDomainConfigRequest struct {
 	Domains *string   `json:"domains,omitempty" url:"domains,omitempty"`
-	Config  *[]string `json:"config,omitempty"  url:"config,omitempty"`
+	Config  []*string `json:"config,omitempty"  url:"config,omitempty"`
 }
 
 type GetDomainConfigResponse struct {
@@ -32,8 +32,10 @@ func (c *Client) GetDomainConfigWithContext(ctx context.Context, req *GetDomainC
 			httpreq.SetQueryParam("domains", *req.Domains)
 		}
 		if req.Config != nil {
-			for _, config := range *req.Config {
-				httpreq.QueryParam.Add("config[]", config)
+			for _, config := range req.Config {
+				if config != nil {
+					httpreq.QueryParam.Add("config[]", *config)
+				}
 			}
 		}
 

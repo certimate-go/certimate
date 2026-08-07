@@ -27,12 +27,3 @@ func (r *sdkResponseBase) GetMessage() string {
 
 	return *r.Message
 }
-
-type CertificateRecord struct {
-	CertificateId string `json:"certificate-id"`
-	Name          string `json:"name"`
-	Comment       string `json:"comment"`
-	ValidityFrom  string `json:"certificate-validity-from"`
-	ValidityTo    string `json:"certificate-validity-to"`
-	Serial        string `json:"certificate-serial"`
-}

@@ -20,7 +20,7 @@ func init() {
 			Username:    credentials.Username,
 			ApiPassword: credentials.ApiPassword,
 			HostId:      xmaps.GetString(options.ProviderExtendedConfig, "hostId"),
-			DomainId:    xmaps.GetString(options.ProviderExtendedConfig, "domainId"),
+			DomainId:    xmaps.GetInt64(options.ProviderExtendedConfig, "domainId"),
 		})
 		return provider, err
 	})

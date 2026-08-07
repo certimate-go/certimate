@@ -28,6 +28,7 @@ func (c *USSLClient) NewUploadNormalCertificateRequest() *UploadNormalCertificat
 	c.Client.SetupRequest(req)
 
 	req.SetRetryable(false)
+	req.SetEncoder(request.NewJSONEncoder(c.GetConfig(), c.GetCredential()))
 	return req
 }
 

@@ -20,7 +20,7 @@ type QueryRecordListResponse struct {
 	sdkResponseBase
 
 	ReturnObj *struct {
-		Records []*DnsRecord `json:"records,omitempty"`
+		Records []*DNSRecord `json:"records,omitempty"`
 	} `json:"returnObj,omitempty"`
 }
 

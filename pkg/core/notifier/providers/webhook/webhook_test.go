@@ -3,12 +3,14 @@ package webhook_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/webhook"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp                  = tester.Args("WEBHOOK_")
+	fp                  = it.Args("WEBHOOK_")
 	fWebhookUrl         string
 	fWebhookContentType string
 )
@@ -37,11 +39,8 @@ func TestProvider(t *testing.T) {
 			},
 			AllowInsecureConnections: true,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 }

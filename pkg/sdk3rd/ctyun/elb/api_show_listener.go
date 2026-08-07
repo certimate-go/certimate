@@ -16,7 +16,7 @@ type ShowListenerRequest struct {
 type ShowListenerResponse struct {
 	sdkResponseBase
 
-	ReturnObj []*ListenerRecord `json:"returnObj,omitempty"`
+	ReturnObj []*Listener `json:"returnObj,omitempty"`
 }
 
 func (c *Client) ShowListener(req *ShowListenerRequest) (*ShowListenerResponse, error) {

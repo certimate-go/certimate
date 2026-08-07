@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strconv"
-
-	mohuasdk "github.com/mohuatech/mohuacloud-go-sdk"
-	mohuasdktypes "github.com/mohuatech/mohuacloud-go-sdk/types"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	mohuasdk "github.com/certimate-go/certimate/pkg/sdk3rd/mohua"
 )
 
 type (
@@ -25,7 +22,7 @@ type DeployerConfig struct {
 	// 虚拟主机 ID。
 	HostId string `json:"hostId"`
 	// 域名 ID。
-	DomainId string `json:"domainId"`
+	DomainId int64 `json:"domainId"`
 }
 
 type Deployer struct {
@@ -65,28 +62,17 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	if d.config.HostId == "" {
 		return nil, fmt.Errorf("config `hostId` is required")
 	}
-	if d.config.DomainId == "" {
+	if d.config.DomainId == 0 {
 		return nil, fmt.Errorf("config `domainId` is required")
 	}
 
-	domainId, err := strconv.ParseInt(d.config.DomainId, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	// 登录获取 Token
-	_, err = d.sdkClient.Auth.Login("", "")
-	if err != nil {
-		return nil, fmt.Errorf("failed to login mohua: %w", err)
-	}
-
 	// 设置 SSL 证书
-	setSSLReq := &mohuasdktypes.SetSSLRequest{
-		ID:      int(domainId),
+	setSSLReq := &mohuasdk.SetVirtualHostSSLRequest{
+		ID:      int(d.config.DomainId),
 		SSLCert: certPEM,
 		SSLKey:  privkeyPEM,
 	}
-	setSSLResp, err := d.sdkClient.VirtualHost.SetSSL(d.config.HostId, setSSLReq)
+	setSSLResp, err := d.sdkClient.SetVirtualHostSSL(d.config.HostId, setSSLReq)
 	d.logger.Debug("sdk request 'mvh.SetSSL'", slog.Any("request", setSSLReq), slog.Any("response", setSSLResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'mvh.SetSSL': %w", err)
@@ -96,15 +82,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(username, apiPassword string) (*mohuasdk.Client, error) {
-	if username == "" {
-		return nil, fmt.Errorf("mohua: invalid username")
-	}
-	if apiPassword == "" {
-		return nil, fmt.Errorf("mohua: invalid api password")
+	client, err := mohuasdk.NewClient(
+		mohuasdk.WithLogins(username, apiPassword),
+	)
+	if err != nil {
+		return nil, err
 	}
 
-	client := mohuasdk.NewClient(
-		mohuasdk.WithCredentials(username, apiPassword),
-	)
 	return client, nil
 }

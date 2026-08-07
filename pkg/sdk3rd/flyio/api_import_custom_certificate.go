@@ -35,7 +35,7 @@ func (c *Client) ImportCustomCertificate(req *ImportCustomCertificateRequest) (*
 
 func (c *Client) ImportCustomCertificateWithContext(ctx context.Context, req *ImportCustomCertificateRequest) (*ImportCustomCertificateResponse, error) {
 	if req.AppName == "" {
-		return nil, fmt.Errorf("sdkerr: unset appName")
+		return nil, fmt.Errorf("sdkerr: bad request: unset appName")
 	}
 
 	path := fmt.Sprintf("/apps/%s/certificates/custom", url.PathEscape(req.AppName))

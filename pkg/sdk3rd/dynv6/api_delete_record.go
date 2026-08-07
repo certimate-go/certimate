@@ -14,10 +14,10 @@ func (c *Client) DeleteRecord(zoneID int64, recordID int64) (*DeleteRecordRespon
 
 func (c *Client) DeleteRecordWithContext(ctx context.Context, zoneID int64, recordID int64) (*DeleteRecordResponse, error) {
 	if zoneID == 0 {
-		return nil, fmt.Errorf("sdkerr: unset zoneID")
+		return nil, fmt.Errorf("sdkerr: bad request: unset zoneID")
 	}
 	if recordID == 0 {
-		return nil, fmt.Errorf("sdkerr: unset recordID")
+		return nil, fmt.Errorf("sdkerr: bad request: unset recordID")
 	}
 
 	httpreq, err := c.newRequest(http.MethodDelete, fmt.Sprintf("/zones/%d/records/%d", zoneID, recordID))

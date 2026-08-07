@@ -2,7 +2,6 @@ package ctcccloudcdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-cdn"
 	ctyuncdn "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/cdn"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -73,6 +73,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -138,26 +140,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no cdn domains to deploy")
 	} else {
 		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertName); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, upres.CertName)
+		}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -226,6 +218,13 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	d.logger.Debug("sdk request 'cdn.QueryDomainDetail'", slog.Any("request", queryDomainDetailReq), slog.Any("response", queryDomainDetailResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.QueryDomainDetail': %w", err)
+	} else {
+		// 已部署过，直接返回
+		if queryDomainDetailResp.ReturnObj != nil &&
+			queryDomainDetailResp.ReturnObj.HttpsStatus == "on" &&
+			queryDomainDetailResp.ReturnObj.CertName == cloudCertName {
+			return nil
+		}
 	}
 
 	// 修改域名配置
@@ -245,5 +244,12 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 }
 
 func createSDKClient(accessKeyId, secretAccessKey string) (*ctyuncdn.Client, error) {
-	return ctyuncdn.NewClient(accessKeyId, secretAccessKey)
+	client, err := ctyuncdn.NewClient(
+		ctyuncdn.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

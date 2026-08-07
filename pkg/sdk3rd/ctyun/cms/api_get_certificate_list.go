@@ -17,8 +17,8 @@ type GetCertificateListResponse struct {
 	sdkResponseBase
 
 	ReturnObj *struct {
-		List      []*CertificateRecord `json:"list,omitempty"`
-		TotalSize int32                `json:"totalSize,omitempty"`
+		List      []*Certificate `json:"list,omitempty"`
+		TotalSize int32          `json:"totalSize,omitempty"`
 	} `json:"returnObj,omitempty"`
 }
 

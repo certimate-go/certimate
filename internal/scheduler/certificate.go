@@ -1,11 +1,13 @@
 package scheduler
 
-import "context"
+import (
+	"context"
+)
 
 type certificateService interface {
 	InitSchedule(ctx context.Context) error
 }
 
-func InitCertificateScheduler(service certificateService) error {
+func initCertificateScheduler(service certificateService) error {
 	return service.InitSchedule(context.Background())
 }

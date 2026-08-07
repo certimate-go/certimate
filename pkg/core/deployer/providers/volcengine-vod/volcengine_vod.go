@@ -2,21 +2,20 @@ package volcenginevod
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
 
 	"github.com/samber/lo"
-	vevodbiz "github.com/volcengine/volc-sdk-golang/service/vod/models/business"
-	vevodreq "github.com/volcengine/volc-sdk-golang/service/vod/models/request"
 	ve "github.com/volcengine/volcengine-go-sdk/volcengine"
+	vesession "github.com/volcengine/volcengine-go-sdk/volcengine/session"
 
-	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volc-sdk-golang/service/vod"
+	vevod "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/volcengine/volcengine-go-sdk/service/vod20260101"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -31,6 +30,8 @@ type DeployerConfig struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 	// 火山引擎项目名称。
 	ProjectName string `json:"projectName,omitempty"`
+	// 火山引擎地域。
+	Region string `json:"region"`
 	// 点播空间名称。
 	SpaceName string `json:"spaceName"`
 	// 域名匹配模式。
@@ -45,7 +46,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *vevod.Vod
+	sdkClient  *vevod.VOD20260101
 	sdkCertmgr core.Certmgr
 }
 
@@ -56,9 +57,10 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client := vevod.NewInstance()
-	client.SetAccessKey(config.AccessKeyId)
-	client.SetSecretKey(config.SecretAccessKey)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
 
 	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
 		AccessKeyId:     config.AccessKeyId,
@@ -150,26 +152,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no vod domains to deploy")
 	} else {
 		d.logger.Info("found vod domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, upres.CertId)
+		}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -179,10 +171,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	domains := make([]string, 0)
 
-	// 获取空间域名列表
-	// REF: https://www.volcengine.com/docs/4/106062
-	listDomainDetailOffset := 0
-	listDomainDetailLimit := 1000
+	// 获取域名列表
+	// REF: https://www.volcengine.com/docs/4/2389927
+	listVodDomainPageNum := 1
+	listVodDomainPageSize := 100
 	for {
 		select {
 		case <-ctx.Done():
@@ -190,73 +182,115 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 		default:
 		}
 
-		listDomainReq := &vevodreq.VodListDomainRequest{
-			SpaceName:         d.config.SpaceName,
-			DomainType:        d.config.DomainType,
-			SourceStationType: 1,
-			Offset:            int32(listDomainDetailOffset),
-			Limit:             int32(listDomainDetailLimit),
+		listVodDomainReq := &vevod.ListVodDomainsInput{
+			SpaceName:  ve.String(d.config.SpaceName),
+			DomainType: ve.String(convertDomainType2CloudDomainType(d.config.DomainType)),
+			ListCdnDomainsParam: &vevod.ListCdnDomainsParamForListVodDomainsInput{
+				PageNum:  ve.Int64(int64(listVodDomainPageNum)),
+				PageSize: ve.Int64(int64(listVodDomainPageSize)),
+			},
 		}
-		listDomainResp, _, err := d.sdkClient.ListDomain(listDomainReq)
-		d.logger.Debug("sdk request 'vod.ListDomain'", slog.Any("request", listDomainReq), slog.Any("response", listDomainResp))
+		listVodDomainResp, err := d.sdkClient.ListVodDomainsWithContext(ctx, listVodDomainReq)
+		d.logger.Debug("sdk request 'vod.ListVodDomain'", slog.Any("request", listVodDomainReq), slog.Any("response", listVodDomainResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'vod.ListDomain': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'vod.ListVodDomain': %w", err)
 		}
 
-		if listDomainResp.Result == nil {
+		if listVodDomainResp.VodInfo == nil {
 			break
 		}
 
-		var domainInstances []*vevodbiz.VodDomainInstanceInfo
-		switch d.config.DomainType {
-		case DOMAIN_TYPE_PLAY:
-			domainInstances = listDomainResp.GetResult().GetPlayInstanceInfo().GetByteInstances()
-		case DOMAIN_TYPE_IMAGE:
-			domainInstances = listDomainResp.GetResult().GetImageInstanceInfo().GetByteInstances()
-		default:
-			return nil, fmt.Errorf("unsupported domain type: '%s'", d.config.DomainType)
+		for _, domainItem := range listVodDomainResp.VodInfo.Domains {
+			domains = append(domains, ve.StringValue(domainItem.Domain))
 		}
 
-		for _, domainInstance := range domainInstances {
-			if domainInstance.Domains == nil {
-				continue
-			}
-			for _, domainItem := range domainInstance.Domains {
-				domains = append(domains, domainItem.Domain)
-			}
-		}
-
-		if listDomainResp.Result.Total <= int64(listDomainDetailOffset+listDomainDetailLimit) {
+		if len(listVodDomainResp.VodInfo.Domains) < listVodDomainPageSize {
 			break
 		}
 
-		listDomainDetailOffset += listDomainDetailLimit
+		listVodDomainPageNum++
 	}
 
 	return domains, nil
 }
 
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId string) error {
+	// 获取域名配置
+	// REF: https://www.volcengine.com/docs/4/2392644
+	describeVodDomainConfigReq := &vevod.DescribeVodDomainConfigInput{
+		SpaceName:  ve.String(d.config.SpaceName),
+		DomainType: ve.String(convertDomainType2CloudDomainType(d.config.DomainType)),
+		DescribeCdnDomainParam: &vevod.DescribeCdnDomainParamForDescribeVodDomainConfigInput{
+			Domain: ve.String(domain),
+		},
+	}
+	describeVodDomainConfigResp, err := d.sdkClient.DescribeVodDomainConfigWithContext(ctx, describeVodDomainConfigReq)
+	d.logger.Debug("sdk request 'vod.DescribeVodDomainConfig'", slog.Any("request", describeVodDomainConfigReq), slog.Any("response", describeVodDomainConfigResp))
+	if err != nil {
+		return err
+	} else {
+		// 已部署过，直接返回
+		if describeVodDomainConfigResp.DomainInfo != nil &&
+			describeVodDomainConfigResp.DomainInfo.DomainConfig != nil &&
+			describeVodDomainConfigResp.DomainInfo.DomainConfig.HTTPS != nil &&
+			describeVodDomainConfigResp.DomainInfo.DomainConfig.HTTPS.CertInfo != nil &&
+			ve.BoolValue(describeVodDomainConfigResp.DomainInfo.DomainConfig.HTTPS.Switch) &&
+			ve.StringValue(describeVodDomainConfigResp.DomainInfo.DomainConfig.HTTPS.CertInfo.CertId) == cloudCertId {
+			return nil
+		}
+	}
+
 	// 更新域名配置
-	// REF: https://www.volcengine.com/docs/4/1317310
-	updateDomainConfigReq := &vevodreq.VodUpdateDomainConfigRequest{
-		SpaceName:  d.config.SpaceName,
-		DomainType: d.config.DomainType,
-		Domain:     domain,
-		Config: &vevodbiz.VodDomainConfig{
-			HTTPS: &vevodbiz.HTTPS{
+	// REF: https://www.volcengine.com/docs/4/2389907
+	updateVodDomainConfigReq := &vevod.UpdateVodDomainConfigInput{
+		SpaceName:  ve.String(d.config.SpaceName),
+		DomainType: ve.String(convertDomainType2CloudDomainType(d.config.DomainType)),
+		UpdateCdnConfigParam: &vevod.UpdateCdnConfigParamForUpdateVodDomainConfigInput{
+			Domain: ve.String(domain),
+			HTTPS: &vevod.HTTPSForUpdateVodDomainConfigInput{
 				Switch: ve.Bool(true),
-				CertInfo: &vevodbiz.CertInfo{
+				CertInfo: &vevod.CertInfoForUpdateVodDomainConfigInput{
 					CertId: ve.String(cloudCertId),
 				},
 			},
 		},
 	}
-	updateDomainConfigResp, _, err := d.sdkClient.UpdateDomainConfig(updateDomainConfigReq)
-	d.logger.Debug("sdk request 'vod.UpdateDomainConfig'", slog.Any("request", updateDomainConfigReq), slog.Any("response", updateDomainConfigResp))
+	updateVodDomainConfigResp, err := d.sdkClient.UpdateVodDomainConfigWithContext(ctx, updateVodDomainConfigReq)
+	d.logger.Debug("sdk request 'vod.UpdateVodDomainConfig'", slog.Any("request", updateVodDomainConfigReq), slog.Any("response", updateVodDomainConfigResp))
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*vevod.VOD20260101, error) {
+	if region == "" {
+		region = "cn-north-1" // VOD 服务默认区域：华北
+	}
+
+	config := ve.NewConfig().
+		WithAkSk(accessKeyId, secretAccessKey).
+		WithRegion(region)
+
+	session, err := vesession.NewSession(config)
+	if err != nil {
+		return nil, err
+	}
+
+	client := vevod.New(session)
+	return client, nil
+}
+
+func convertDomainType2CloudDomainType(domainType string) string {
+	switch domainType {
+	case DOMAIN_TYPE_PLAY:
+		return "vod_play"
+	case DOMAIN_TYPE_IMAGE:
+		return "vod_image"
+	case DOMAIN_TYPE_THIRD:
+		return "third"
+	default:
+		return domainType
+	}
 }

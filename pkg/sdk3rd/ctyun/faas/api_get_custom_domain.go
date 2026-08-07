@@ -18,7 +18,7 @@ type GetCustomDomainRequest struct {
 type GetCustomDomainResponse struct {
 	sdkResponseBase
 
-	ReturnObj *CustomDomainRecord `json:"returnObj,omitempty"`
+	ReturnObj *CustomDomain `json:"returnObj,omitempty"`
 }
 
 func (c *Client) GetCustomDomain(req *GetCustomDomainRequest) (*GetCustomDomainResponse, error) {

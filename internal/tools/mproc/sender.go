@@ -165,7 +165,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	} else {
 		errData, _ := os.ReadFile(tempErr.Name())
 		if len(errData) > 0 {
-			return nil, fmt.Errorf(string(errData))
+			return nil, fmt.Errorf("%s", string(errData))
 		}
 	}
 

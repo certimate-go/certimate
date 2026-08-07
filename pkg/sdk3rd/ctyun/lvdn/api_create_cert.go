@@ -14,9 +14,7 @@ type CreateCertRequest struct {
 type CreateCertResponse struct {
 	sdkResponseBase
 
-	ReturnObj *struct {
-		Id int64 `json:"id"`
-	} `json:"returnObj,omitempty"`
+	Id int64 `json:"id"`
 }
 
 func (c *Client) CreateCert(req *CreateCertRequest) (*CreateCertResponse, error) {

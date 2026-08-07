@@ -145,7 +145,7 @@
     },
     "acmedns_credentials": {
       "label": "ACME-DNS credentials",
-      "placeholder": "Please enter ACME-DNS credentials",
+      "placeholder": "Please enter ACME-DNS credentials\r\n\r\n{\r\n  \"allowfrom\": [\r\n    \"192.168.100.1/24\",\r\n    \"1.2.3.4/32\",\r\n    \"2002:c0a8:2a00::0/40\"\r\n  ],\r\n  \"fulldomain\": \"SUBDOMAIN.auth.acme-dns.io\",\r\n  \"subdomain\": \"SUBDOMAIN\",\r\n  \"username\": \"USERNAME\",\r\n  \"password\": \"PASSWORD\"\r\n}",
       "tooltip": "For more information, see <a href=\"https://github.com/joohoi/acme-dns\" target=\"_blank\">https://github.com/joohoi/acme-dns</a>"
     },
     "acmehttpreq_endpoint": {
@@ -219,6 +219,19 @@
       "label": "ArvanCloud API key",
       "placeholder": "Please enter ArvanCloud API key",
       "tooltip": "For more information, see <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
+    },
+    "aws_auth_method": {
+      "label": "AWS API authentication method",
+      "placeholder": "Please select AWS API authentication method",
+      "option": {
+        "accesskey": {
+          "label": "Access key"
+        },
+        "imds": {
+          "label": "IMDS",
+          "guide": "If you are running Certimate in Docker, please ensure that the metadata option <em>http-put-response-hop-limit</em> is configured correctly for the EC2 instance. Learn more about this: <br><a href=\"https://docs.aws.amazon.com/en_us/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
     },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
@@ -736,13 +749,13 @@
       "tooltip": "For more information, see <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
     },
     "googlecloud_project_id": {
-      "label": "Google Cloud project ID",
-      "placeholder": "Please enter Google Cloud project ID",
+      "label": "GCP project ID",
+      "placeholder": "Please enter GCP project ID\r\n\r\n{\r\n  \"name\": \"projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL/keys/KEY_ID\",\r\n  \"privateKeyType\": \"TYPE_GOOGLE_CREDENTIALS_FILE\",\r\n  \"privateKeyData\": \"ENCODED_PRIVATE_KEY\",\r\n  \"validAfterTime\": \"DATE\",\r\n  \"validBeforeTime\": \"DATE\",\r\n  \"keyAlgorithm\": \"KEY_ALG_RSA_2048\"\r\n}",
       "tooltip": "For more information, see <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
     },
     "googlecloud_service_account_key": {
-      "label": "Google Cloud service account key",
-      "placeholder": "Please enter Google Cloud service account key",
+      "label": "GCP service account key",
+      "placeholder": "Please enter GCP service account key",
       "tooltip": "For more information, see <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -879,6 +892,26 @@
     "litessl_eab": {
       "guide": "Learn more about using EAB key in LiteSSL: <br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
+    "matrix_server_url": {
+      "label": "Matrix server URL",
+      "placeholder": "Please enter Matrix server URL"
+    },
+    "matrix_user_id": {
+      "label": "Matrix user ID",
+      "placeholder": "Please enter Matrix user ID",
+      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
+    },
+    "matrix_access_token": {
+      "label": "Matrix access token",
+      "placeholder": "Please enter Matrix access token",
+      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
+    },
+    "matrix_room_id": {
+      "label": "Matrix room ID (Optional)",
+      "placeholder": "Please enter the default Matrix room ID",
+      "help": "Notes: It can be overrided in the workflows. Invite the bot to the room first.",
+      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
+    },
     "mattermost_server_url": {
       "label": "Mattermost server URL",
       "placeholder": "Please enter Mattermost server URL"
@@ -895,7 +928,7 @@
       "label": "Mattermost channel ID (Optional)",
       "placeholder": "Please enter the default Mattermost channel ID",
       "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details.” You can directly see the channel ID on the pop-up page."
+      "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details”. You can directly see the channel ID on the pop-up page."
     },
     "mohua_username": {
       "label": "Mohua Cloud username",
@@ -984,6 +1017,46 @@
       "placeholder": "Please enter NS1 API key",
       "tooltip": "For more information, see <a href=\"https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api\" target=\"_blank\">https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api</a>"
     },
+    "oraclecloud_auth_method": {
+      "label": "OCI API authentication method",
+      "placeholder": "Please select OCI API authentication method",
+      "option": {
+        "apikey": {
+          "label": "API key"
+        },
+        "instanceprincipal": {
+          "label": "Instance principal"
+        },
+        "resourceprincipal": {
+          "label": "Resource principal"
+        }
+      }
+    },
+    "oraclecloud_private_key": {
+      "label": "OCI API signing private key",
+      "placeholder": "Please enter OCI API signing private key",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_private_key_passphrase": {
+      "label": "OCI API signing private key passphrase (Optional)",
+      "placeholder": "Please enter OCI API signing private key passphrase",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_public_key_fingerprint": {
+      "label": "OCI API signing public key fingerprint",
+      "placeholder": "Please enter OCI API signing public key fingerprint",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_tenancy_ocid": {
+      "label": "OCI tenancy OCID",
+      "placeholder": "Please enter OCI tenancy OCID",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_user_ocid": {
+      "label": "OCI user OCID",
+      "placeholder": "Please enter OCI user OCID",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
     "ovhcloud_endpoint": {
       "label": "OVHcloud API endpoint",
       "placeholder": "Please enter OVHcloud API endpoint"
@@ -1068,16 +1141,6 @@
       "placeholder": "Please enter QingCloud SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>"
     },
-    "qiniu_access_key": {
-      "label": "Qiniu AccessKey",
-      "placeholder": "Please enter Qiniu AccessKey",
-      "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
-    "qiniu_secret_key": {
-      "label": "Qiniu SecretKey",
-      "placeholder": "Please enter Qiniu SecretKey",
-      "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
     "rainyun_api_key": {
       "label": "Rain Yun API key",
       "placeholder": "Please enter Rain Yun API key",
@@ -1141,6 +1204,18 @@
     "rfc2136_tsig_secret": {
       "label": "TSIG authentication secret (Optional)",
       "placeholder": "Please enter TSIG authentication secret"
+    },
+    "rfc2136_tsig_gss_realm": {
+      "label": "GSS-TSIG Kerberos realm (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos realm"
+    },
+    "rfc2136_tsig_gss_username": {
+      "label": "GSS-TSIG Kerberos username (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos username"
+    },
+    "rfc2136_tsig_gss_password": {
+      "label": "GSS-TSIG Kerberos password (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos password"
     },
     "rucenter_username": {
       "label": "Ru-Center username",
@@ -1217,6 +1292,16 @@
     "sectigo_eab": {
       "guide": "Learn more about using EAB key in Sectigo: <br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>"
     },
+    "simplycom_account_number": {
+      "label": "Simply.com account number",
+      "placeholder": "Please enter Simply.com account number",
+      "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
+    "simplycom_api_key": {
+      "label": "Simply.com API key",
+      "placeholder": "Please enter Simply.com API key",
+      "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
     "slackbot_token": {
       "label": "Slack bot token",
       "placeholder": "Please enter Slack bot token",
@@ -1271,7 +1356,7 @@
     },
     "ssh_key": {
       "label": "SSH key",
-      "placeholder": "Please enter SSH key"
+      "placeholder": "Please enter SSH key\r\n\r\n-----BEGIN OPENSSH PRIVATE KEY-----\r\n...\r\n-----END OPENSSH PRIVATE KEY-----"
     },
     "ssh_key_passphrase": {
       "label": "SSH key passphrase (Optional)",
@@ -1503,6 +1588,16 @@
     },
     "xinnet_agent": {
       "guide": "Xinnet.com API only supports calls from agents. Learn more about this: <br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>"
+    },
+    "yandexcloud_folder_id": {
+      "label": "Yandex Cloud folder ID",
+      "placeholder": "Please enter Yandex Cloud folder ID",
+      "tooltip": "For more information, see <a href=\"https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id\" target=\"_blank\">https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id</a>"
+    },
+    "yandexcloud_service_account_key": {
+      "label": "Yandex Cloud service account authorized key",
+      "placeholder": "Please enter Yandex Cloud service account authorized key\r\n\r\n{\r\n  \"id\": \"AUTHORIZED_KEY_ID\",\r\n  \"service_account_id\": \"SERVICE_ACCOUNT_ID\",\r\n  \"created_at\": \"DATE\",\r\n  \"key_algorithm\": \"RSA_2048\",\r\n  \"public_key\": \"ENCODED_PUBLIC_KEY\",\r\n  \"private_key\": \"ENCODED_PRIVATE_KEY\"\r\n}",
+      "tooltip": "For more information, see <a href=\"https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys\" target=\"_blank\">https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys</a>"
     },
     "zenlayer_access_key_id": {
       "label": "Zenlayer AccessKeyID",

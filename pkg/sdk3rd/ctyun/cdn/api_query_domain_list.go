@@ -20,11 +20,11 @@ type QueryDomainListResponse struct {
 	sdkResponseBase
 
 	ReturnObj *struct {
-		Results   []*DomainRecord `json:"result,omitempty"`
-		Page      int32           `json:"page,omitempty"`
-		PageSize  int32           `json:"page_size,omitempty"`
-		PageCount int32           `json:"page_count,omitempty"`
-		Total     int32           `json:"total,omitempty"`
+		Results   []*Domain `json:"result,omitempty"`
+		Page      int32     `json:"page,omitempty"`
+		PageSize  int32     `json:"page_size,omitempty"`
+		PageCount int32     `json:"page_count,omitempty"`
+		Total     int32     `json:"total,omitempty"`
 	} `json:"returnObj,omitempty"`
 }
 

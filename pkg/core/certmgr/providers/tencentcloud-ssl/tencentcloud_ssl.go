@@ -68,7 +68,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	// 上传新证书
 	// REF: https://cloud.tencent.com/document/api/400/41665
 	uploadCertificateReq := tcssl.NewUploadCertificateRequest()
-	uploadCertificateReq.ProjectId = lo.IfF(c.config.ProjectId != 0, func() *uint64 { return common.Uint64Ptr(uint64(c.config.ProjectId)) }).Else(nil)
+	uploadCertificateReq.ProjectId = lo.EmptyableToPtr(uint64(c.config.ProjectId))
 	uploadCertificateReq.CertificatePublicKey = common.StringPtr(certPEM)
 	uploadCertificateReq.CertificatePrivateKey = common.StringPtr(privkeyPEM)
 	uploadCertificateReq.Repeatable = common.BoolPtr(false)

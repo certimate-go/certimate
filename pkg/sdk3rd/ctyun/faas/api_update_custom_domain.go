@@ -19,7 +19,7 @@ type UpdateCustomDomainRequest struct {
 type UpdateCustomDomainResponse struct {
 	sdkResponseBase
 
-	ReturnObj *CustomDomainRecord `json:"returnObj,omitempty"`
+	ReturnObj *CustomDomain `json:"returnObj,omitempty"`
 }
 
 func (c *Client) UpdateCustomDomain(req *UpdateCustomDomainRequest) (*UpdateCustomDomainResponse, error) {

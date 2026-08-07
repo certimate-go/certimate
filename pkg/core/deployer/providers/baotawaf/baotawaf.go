@@ -3,7 +3,6 @@ package baotawaf
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	btwafsdk "github.com/certimate-go/certimate/pkg/sdk3rd/btwaf"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -72,28 +72,23 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("config `siteNames` is required")
 	}
 
-	// 遍历更新站点证书
-	var errs []error
-	for i, siteName := range d.config.SiteNames {
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err()
-		default:
-			if err := d.updateSiteCertificate(ctx, siteName, d.config.SitePort, certPEM, privkeyPEM); err != nil {
-				errs = append(errs, err)
-			} else if i < len(d.config.SiteNames)-1 {
-				xwait.DelayWithContext(ctx, 5*time.Second)
+	// 批量更新站点证书
+	if err := xloop.ForRangeAllWithContext(ctx, d.config.SiteNames, func(ctx context.Context, siteName string, i int) error {
+		if i > 0 {
+			if err := xwait.DelayWithContext(ctx, 3*time.Second); err != nil {
+				return err
 			}
 		}
-	}
-	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
+
+		return d.updateSiteCertificate(ctx, siteName, d.config.SitePort, certPEM, privkeyPEM)
+	}); err != nil {
+		return nil, err
 	}
 
 	return &DeployResult{}, nil
 }
 
-func (d *Deployer) findSiteByName(ctx context.Context, siteName string) (*btwafsdk.SiteRecord, error) {
+func (d *Deployer) findSiteByName(ctx context.Context, siteName string) (*btwafsdk.SiteData, error) {
 	// 查询网站列表
 	getSiteListPage := 1
 	getSiteListPageSize := 100
@@ -151,7 +146,7 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, s
 		SiteId: lo.ToPtr(siteData.SiteId),
 		Type:   lo.ToPtr("openCert"),
 		Server: &btwafsdk.SiteServerInfoMod{
-			ListenSSLPorts: lo.ToPtr([]string{fmt.Sprintf("%d", d.config.SitePort)}),
+			ListenSSLPorts: []*string{lo.ToPtr(fmt.Sprintf("%d", d.config.SitePort))},
 			SSL: &btwafsdk.SiteServerSSLInfo{
 				IsSSL:      lo.ToPtr(int32(1)),
 				FullChain:  lo.ToPtr(certPEM),
@@ -169,7 +164,9 @@ func (d *Deployer) updateSiteCertificate(ctx context.Context, siteName string, s
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*btwafsdk.Client, error) {
-	client, err := btwafsdk.NewClient(serverUrl, apiKey)
+	client, err := btwafsdk.NewClient(serverUrl,
+		btwafsdk.WithApiKey(apiKey),
+	)
 	if err != nil {
 		return nil, err
 	}

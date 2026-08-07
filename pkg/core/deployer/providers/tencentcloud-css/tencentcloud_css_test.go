@@ -3,12 +3,14 @@ package tencentcloudcss_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-css"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("TENCENTCLOUDCSS_")
+	fp            = it.Args("TENCENTCLOUDCSS_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fSecretId     string
@@ -43,11 +45,8 @@ func TestProvider(t *testing.T) {
 			SecretKey: fSecretKey,
 			Domain:    fDomain,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

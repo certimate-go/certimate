@@ -85,8 +85,8 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 		SetHeader("Authorization", "Bearer "+loginResp.Header().Get("Token")).
 		SetBody(map[string]any{
 			"channel_id": n.config.ChannelId,
-			"props": map[string]interface{}{
-				"attachments": []map[string]interface{}{
+			"props": map[string]any{
+				"attachments": []map[string]any{
 					{
 						"title": subject,
 						"text":  message,

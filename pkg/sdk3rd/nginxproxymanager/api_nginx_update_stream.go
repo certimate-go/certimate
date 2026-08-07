@@ -11,7 +11,7 @@ type NginxUpdateStreamRequest struct {
 }
 
 type NginxUpdateStreamResponse struct {
-	StreamHostRecord
+	StreamHost
 }
 
 func (c *Client) NginxUpdateStream(hostId int64, req *NginxUpdateStreamRequest) (*NginxUpdateStreamResponse, error) {
@@ -20,10 +20,10 @@ func (c *Client) NginxUpdateStream(hostId int64, req *NginxUpdateStreamRequest) 
 
 func (c *Client) NginxUpdateStreamWithContext(ctx context.Context, hostId int64, req *NginxUpdateStreamRequest) (*NginxUpdateStreamResponse, error) {
 	if hostId == 0 {
-		return nil, fmt.Errorf("sdkerr: unset hostId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset hostId")
 	}
 
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

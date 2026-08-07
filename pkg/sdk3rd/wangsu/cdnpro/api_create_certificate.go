@@ -7,12 +7,12 @@ import (
 )
 
 type CreateCertificateRequest struct {
-	Timestamp   int64                   `json:"-"`
-	Name        *string                 `json:"name,omitempty"`
-	Description *string                 `json:"description,omitempty"`
-	AutoRenew   *string                 `json:"autoRenew,omitempty"`
-	ForceRenew  *bool                   `json:"forceRenew,omitempty"`
-	NewVersion  *CertificateVersionInfo `json:"newVersion,omitempty"`
+	Timestamp   int64               `json:"-"`
+	Name        *string             `json:"name,omitempty"`
+	Description *string             `json:"description,omitempty"`
+	AutoRenew   *string             `json:"autoRenew,omitempty"`
+	ForceRenew  *bool               `json:"forceRenew,omitempty"`
+	NewVersion  *CertificateVersion `json:"newVersion,omitempty"`
 }
 
 type CreateCertificateResponse struct {

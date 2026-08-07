@@ -1,6 +1,9 @@
+// A simple SDK client for ConoHa VPS v3.
+// API documentation: https://doc.conoha.jp/reference/api-vps3/
 package v3
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -20,38 +23,43 @@ type Client struct {
 	tenantId     string
 	tenantName   string
 
-	accessToken    string
-	accessTokenExp time.Time
-	accessTokenMtx sync.Mutex
+	token   string
+	tokenAt time.Time
+	tokenMu sync.Mutex
 
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(userId, userName, userPassword, tenantId, tenantName string) (*Client, error) {
-	if userId == "" && userName == "" {
+func NewClient(optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
+	if opts.UserId == "" && opts.UserName == "" {
 		return nil, fmt.Errorf("sdkerr: unset userId or userName")
 	}
-	if userPassword == "" {
+	if opts.UserPassword == "" {
 		return nil, fmt.Errorf("sdkerr: unset userPassword")
 	}
-	if tenantId == "" || tenantName == "" {
+	if opts.TenantId == "" || opts.TenantName == "" {
 		return nil, fmt.Errorf("sdkerr: unset tenantId or tenantName")
 	}
 
 	client := &Client{
-		userId:       userId,
-		userName:     userName,
-		userPassword: userPassword,
-		tenantId:     tenantId,
-		tenantName:   tenantName,
+		userId:       opts.UserId,
+		userName:     opts.UserName,
+		userPassword: opts.UserPassword,
+		tenantId:     opts.TenantId,
+		tenantName:   opts.TenantName,
 	}
-	client.client = resty.New().
+	client.rc = resty.New().
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			if client.accessToken != "" {
-				req.Header.Set("X-Auth-Token", client.accessToken)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if client.token != "" {
+				req.Header.Set("X-Auth-Token", client.token)
 			}
 
 			return nil
@@ -61,12 +69,12 @@ func NewClient(userId, userName, userPassword, tenantId, tenantName string) (*Cl
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -78,9 +86,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -88,9 +99,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -119,8 +127,8 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
-			if tcode := res.GetCode(); tcode == 0 {
-				return resp, fmt.Errorf("sdkerr: code='%d', error='%s'", tcode, res.GetError())
+			if rCode := res.GetCode(); rCode == 0 {
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', error='%s'", rCode, res.GetError())
 			}
 		}
 	}
@@ -128,14 +136,14 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureAccessTokenExists() error {
-	c.accessTokenMtx.Lock()
-	defer c.accessTokenMtx.Unlock()
-	if c.accessToken != "" && c.accessTokenExp.After(time.Now()) {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" && c.tokenAt.After(time.Now()) {
 		return nil
 	}
 
-	httpreq, err := c.newRequest(http.MethodPost, fmt.Sprintf("%s/v3/auth/tokens", identityBaseURL))
+	httpreq, err := c.newRequest(http.MethodPost, identityBaseURL+"/v3/auth/tokens")
 	if err != nil {
 		return err
 	} else {
@@ -168,6 +176,7 @@ func (c *Client) ensureAccessTokenExists() error {
 				},
 			},
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type createAuthTokenResponse struct {
@@ -181,21 +190,21 @@ func (c *Client) ensureAccessTokenExists() error {
 	result := &createAuthTokenResponse{}
 	if httpresp, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
-	} else if code := result.GetCode(); code != 0 {
-		return fmt.Errorf("sdkerr: failed to get conoha access token: code='%d', error='%s'", code, result.GetError())
+	} else if rCode := result.GetCode(); rCode != 0 {
+		return fmt.Errorf("sdkerr: auth error: code='%d', error='%s'", rCode, result.GetError())
 	} else {
 		token := httpresp.Header().Get("X-Subject-Token")
 		if token == "" {
-			return fmt.Errorf("sdkerr: api error: received empty auth token")
+			return fmt.Errorf("sdkerr: auth error: received empty token")
 		}
 
-		tokenExp, err := time.Parse(time.RFC3339Nano, result.Token.ExpiresAt)
+		tokenAt, err := time.Parse(time.RFC3339Nano, result.Token.ExpiresAt)
 		if err != nil {
-			return fmt.Errorf("sdkerr: api error: received invalid auth token expiration: %w", err)
+			return fmt.Errorf("sdkerr: auth error: received invalid token expiration: %w", err)
 		}
 
-		c.accessToken = token
-		c.accessTokenExp = tokenExp
+		c.token = token
+		c.tokenAt = tokenAt
 	}
 
 	return nil

@@ -19,7 +19,7 @@ type UpdateListenerRequest struct {
 type UpdateListenerResponse struct {
 	sdkResponseBase
 
-	ReturnObj []*ListenerRecord `json:"returnObj,omitempty"`
+	ReturnObj []*Listener `json:"returnObj,omitempty"`
 }
 
 func (c *Client) UpdateListener(req *UpdateListenerRequest) (*UpdateListenerResponse, error) {

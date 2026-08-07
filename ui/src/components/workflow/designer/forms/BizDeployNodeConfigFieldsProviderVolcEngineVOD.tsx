@@ -14,6 +14,7 @@ const DOMAIN_MATCH_PATTERN_CERTSAN = "certsan" as const;
 
 const DOMAIN_TYPE_PLAY = "play" as const;
 const DOMAIN_TYPE_IMAGE = "image" as const;
+const DOMAIN_TYPE_THIRD = "third" as const;
 
 const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
   const { i18n, t } = useTranslation();
@@ -34,6 +35,16 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "region"]}
+        initialValue={initialValues.region}
+        label={t("workflow_node.deploy.form.volcengine_vod_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.volcengine_vod_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.volcengine_vod_region.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "spaceName"]}
         initialValue={initialValues.spaceName}
         label={t("workflow_node.deploy.form.volcengine_vod_space_name.label")}
@@ -50,7 +61,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
         rules={[formRule]}
       >
         <Select
-          options={[DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE].map((s) => ({
+          options={[DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE, DOMAIN_TYPE_THIRD].map((s) => ({
             label: t(`workflow_node.deploy.form.volcengine_vod_domain_type.option.${s}.label`),
             value: s,
           }))}
@@ -88,6 +99,7 @@ const BizDeployNodeConfigFieldsProviderVolcEngineVOD = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    region: "cn-north-1",
     spaceName: "",
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domainType: DOMAIN_TYPE_PLAY,
@@ -100,9 +112,10 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      spaceName: z.string().nonempty().nullish(),
+      region: z.string().nonempty(),
+      spaceName: z.string().nonempty(),
       domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
-      domainType: z.enum([DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE]),
+      domainType: z.enum([DOMAIN_TYPE_PLAY, DOMAIN_TYPE_IMAGE, DOMAIN_TYPE_THIRD]),
       domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {

@@ -8,7 +8,7 @@ import (
 type ListCertificatesResponse struct {
 	sdkResponseBase
 
-	Certificates []*CertificateRecord `json:"ssl-certificates,omitempty"`
+	Certificates []*Certificate `json:"ssl-certificates,omitempty"`
 }
 
 func (c *Client) ListCertificates() (*ListCertificatesResponse, error) {

@@ -8,12 +8,12 @@ import (
 )
 
 type UpdateCertificateRequest struct {
-	Timestamp   int64                   `json:"-"`
-	Name        *string                 `json:"name,omitempty"`
-	Description *string                 `json:"description,omitempty"`
-	AutoRenew   *string                 `json:"autoRenew,omitempty"`
-	ForceRenew  *bool                   `json:"forceRenew,omitempty"`
-	NewVersion  *CertificateVersionInfo `json:"newVersion,omitempty"`
+	Timestamp   int64               `json:"-"`
+	Name        *string             `json:"name,omitempty"`
+	Description *string             `json:"description,omitempty"`
+	AutoRenew   *string             `json:"autoRenew,omitempty"`
+	ForceRenew  *bool               `json:"forceRenew,omitempty"`
+	NewVersion  *CertificateVersion `json:"newVersion,omitempty"`
 }
 
 type UpdateCertificateResponse struct {
@@ -28,7 +28,7 @@ func (c *Client) UpdateCertificate(certificateId string, req *UpdateCertificateR
 
 func (c *Client) UpdateCertificateWithContext(ctx context.Context, certificateId string, req *UpdateCertificateRequest) (*UpdateCertificateResponse, error) {
 	if certificateId == "" {
-		return nil, fmt.Errorf("sdkerr: unset certificateId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset certificateId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPatch, fmt.Sprintf("/cdn/certificates/%s", url.PathEscape(certificateId)))

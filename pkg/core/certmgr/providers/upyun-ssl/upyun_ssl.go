@@ -77,5 +77,12 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func createSDKClient(username, password string) (*upyunsdk.Client, error) {
-	return upyunsdk.NewClient(username, password)
+	client, err := upyunsdk.NewClient(
+		upyunsdk.WithLogins(username, password),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

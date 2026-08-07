@@ -20,7 +20,3 @@ type workflowRunRepository interface {
 	SaveWithCascading(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
 	DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error)
 }
-
-type settingsRepository interface {
-	GetByName(ctx context.Context, name string) (*domain.Settings, error)
-}

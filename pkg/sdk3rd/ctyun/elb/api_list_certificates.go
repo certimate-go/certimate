@@ -18,7 +18,7 @@ type ListCertificatesRequest struct {
 type ListCertificatesResponse struct {
 	sdkResponseBase
 
-	ReturnObj []*CertificateRecord `json:"returnObj,omitempty"`
+	ReturnObj []*Certificate `json:"returnObj,omitempty"`
 }
 
 func (c *Client) ListCertificates(req *ListCertificatesRequest) (*ListCertificatesResponse, error) {

@@ -68,7 +68,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// SSL 证书上传
-	// REF: https://apifox.com/apidoc/shared/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943046
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter/post
 	sslCenterCreateReq := &rainyunsdk.SslCenterCreateRequest{
 		Cert: certPEM,
 		Key:  privkeyPEM,
@@ -96,13 +96,13 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	}
 
 	// SSL 证书替换操作
-	// REF: https://s.apifox.cn/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943049
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter-:id/put
 	sslCenterUpdateReq := &rainyunsdk.SslCenterUpdateRequest{
 		Cert: certPEM,
 		Key:  privkeyPEM,
 	}
 	sslCenterUpdateResp, err := c.sdkClient.SslCenterUpdateWithContext(ctx, certId, sslCenterUpdateReq)
-	c.logger.Debug("sdk request 'sslcenter.Update'", slog.Int64("certId", certId), slog.Any("request", sslCenterUpdateReq), slog.Any("response", sslCenterUpdateResp))
+	c.logger.Debug("sdk request 'sslcenter.Update'", slog.Int64("params.certId", certId), slog.Any("request", sslCenterUpdateReq), slog.Any("response", sslCenterUpdateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'sslcenter.Update': %w", err)
 	}
@@ -118,8 +118,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 	}
 
 	// 获取 SSL 证书列表
-	// REF: https://apifox.com/apidoc/shared/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943046
-	// REF: https://apifox.com/apidoc/shared/a4595cc8-44c5-4678-a2a3-eed7738dab03/api-69943048
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter/get
+	// REF: https://api.rainyun.com/#/paths/product-sslcenter-:id/get
 	sslCenterListPage := 1
 	sslCenterListPerPage := 100
 	for {
@@ -147,13 +147,15 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		}
 
 		for _, sslItem := range sslCenterListResp.Data.Records {
-			// 对比证书的多域名
+			// 对比证书备用名称
 			if sslItem.Domain != strings.Join(certX509.DNSNames, ", ") {
 				continue
 			}
 
-			// 对比证书的有效期
-			if sslItem.StartDate != certX509.NotBefore.Unix() || sslItem.ExpireDate != certX509.NotAfter.Unix() {
+			// 对比证书有效期
+			if certX509.NotBefore.Unix() != sslItem.StartDate {
+				continue
+			} else if certX509.NotAfter.Unix() != sslItem.ExpireDate {
 				continue
 			}
 
@@ -184,5 +186,12 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 }
 
 func createSDKClient(apiKey string) (*rainyunsdk.Client, error) {
-	return rainyunsdk.NewClient(apiKey)
+	client, err := rainyunsdk.NewClient(
+		rainyunsdk.WithApiKey(apiKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

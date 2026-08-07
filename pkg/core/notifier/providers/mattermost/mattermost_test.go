@@ -3,12 +3,14 @@ package mattermost_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/mattermost"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp         = tester.Args("MATTERMOST_")
+	fp         = it.Args("MATTERMOST_")
 	fServerUrl string
 	fChannelId string
 	fUsername  string
@@ -41,11 +43,8 @@ func TestProvider(t *testing.T) {
 			Username:  fUsername,
 			Password:  fPassword,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 }

@@ -1,6 +1,10 @@
+// An extension SDK client for UCloud WAF service.
+// Based on github.com/ucloud/ucloud-sdk-go.
 package uewaf
 
 import (
+	"io"
+
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 )
@@ -12,6 +16,7 @@ type UEWAFClient struct {
 func NewClient(config *ucloud.Config, credential *auth.Credential) *UEWAFClient {
 	meta := ucloud.ClientMeta{Product: "UEWAF"}
 	client := ucloud.NewClientWithMeta(config, credential, meta)
+	client.GetLogger().SetOutput(io.Discard)
 	return &UEWAFClient{
 		client,
 	}

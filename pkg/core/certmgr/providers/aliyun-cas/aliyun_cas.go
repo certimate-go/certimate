@@ -110,7 +110,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书序列号
-			// 注意阿里云 CAS 会在序列号前补零，需去除后再比较
+			// 注意，阿里云 CAS 会在序列号前补零，需去除后再比较
 			oldCertSN := strings.TrimPrefix(tea.StringValue(certItem.SerialNo), "0")
 			newCertSN := strings.TrimPrefix(certX509.SerialNumber.Text(16), "0")
 			if !strings.EqualFold(newCertSN, oldCertSN) {
@@ -119,11 +119,18 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 			// 对比证书内容
 			getUserCertificateDetailReq := &alicas.GetUserCertificateDetailRequest{
-				CertId: certItem.CertificateId,
+				CertId:     certItem.CertificateId,
+				CertFilter: tea.Bool(true),
 			}
 			getUserCertificateDetailResp, err := c.sdkClient.GetUserCertificateDetailWithContext(ctx, getUserCertificateDetailReq, &dara.RuntimeOptions{})
 			c.logger.Debug("sdk request 'cas.GetUserCertificateDetail'", slog.Any("request", getUserCertificateDetailReq), slog.Any("response", getUserCertificateDetailResp))
 			if err != nil {
+				if sdkErr, ok := err.(*tea.SDKError); ok {
+					if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'cas.GetUserCertificateDetail': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, tea.StringValue(getUserCertificateDetailResp.Body.Cert)) {
@@ -137,8 +144,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				CertId:   fmt.Sprintf("%d", tea.Int64Value(certItem.CertificateId)),
 				CertName: tea.StringValue(certItem.Name),
 				ExtendedData: map[string]any{
-					"InstanceId":     tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
-					"CertIdentifier": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
+					"InstanceId":       tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
+					"CertIdWithRegion": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
 				},
 			}, nil
 		}
@@ -183,8 +190,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		CertId:   fmt.Sprintf("%d", tea.Int64Value(getUserCertificateDetailResp.Body.Id)),
 		CertName: certName,
 		ExtendedData: map[string]any{
-			"InstanceId":     tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
-			"CertIdentifier": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
+			"InstanceId":       tea.StringValue(getUserCertificateDetailResp.Body.InstanceId),
+			"CertIdWithRegion": tea.StringValue(getUserCertificateDetailResp.Body.CertIdentifier),
 		},
 	}, nil
 }

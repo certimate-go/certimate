@@ -18,10 +18,10 @@ type GetDomainListResponse struct {
 	sdkResponseBase
 
 	Data []*struct {
-		List        []*DomainRecord `json:"list"`
-		PageNumber  json.Number     `json:"page_number"`
-		PageSize    json.Number     `json:"page_size"`
-		TotalNumber json.Number     `json:"total_number"`
+		List        []*Domain   `json:"list"`
+		PageNumber  json.Number `json:"page_number"`
+		PageSize    json.Number `json:"page_size"`
+		TotalNumber json.Number `json:"total_number"`
 	} `json:"data,omitempty"`
 }
 

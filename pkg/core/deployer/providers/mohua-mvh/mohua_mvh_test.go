@@ -3,18 +3,20 @@ package mohuamvh_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/mohua-mvh"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("MOHUAMVH_")
+	fp            = it.Args("MOHUAMVH_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fUsername     string
 	fApiPassword  string
-	fHostID       string
-	fDomainID     string
+	fHostId       string
+	fDomainId     int64
 )
 
 func init() {
@@ -22,8 +24,8 @@ func init() {
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fUsername, "USERNAME")
 	fp.DefineString(&fApiPassword, "APIPASSWORD")
-	fp.DefineString(&fHostID, "HOSTID")
-	fp.DefineString(&fDomainID, "DOMAINID")
+	fp.DefineString(&fHostId, "HOSTID")
+	fp.DefineInt64(&fDomainId, "DOMAINID")
 }
 
 /*
@@ -44,14 +46,11 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			Username:    fUsername,
 			ApiPassword: fApiPassword,
-			HostId:      fHostID,
-			DomainId:    fDomainID,
+			HostId:      fHostId,
+			DomainId:    fDomainId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

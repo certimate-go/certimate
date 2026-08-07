@@ -93,25 +93,27 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 
 	// 更新 SSL 证书
 	// REF: https://apisix.apache.org/zh/docs/apisix/admin-api/#ssl
-	sslUpdateReq := &apisixsdk.SslUpdateRequest{
+	updateSSLReq := &apisixsdk.UpdateSSLRequest{
 		ID:          lo.ToPtr(d.config.CertificateId),
 		Certificate: lo.ToPtr(certPEM),
 		PrivateKey:  lo.ToPtr(privkeyPEM),
-		SNIs:        lo.ToPtr(certX509.DNSNames),
+		SNIs:        lo.ToSlicePtr(certX509.DNSNames),
 		Type:        lo.ToPtr("server"),
 		Status:      lo.ToPtr(int32(1)),
 	}
-	sslUpdateResp, err := d.sdkClient.SslUpdateWithContext(ctx, d.config.CertificateId, sslUpdateReq)
-	d.logger.Debug("sdk request 'SslUpdate'", slog.Any("request", sslUpdateReq), slog.Any("response", sslUpdateResp))
+	updateSSLResp, err := d.sdkClient.UpdateSSLWithContext(ctx, d.config.CertificateId, updateSSLReq)
+	d.logger.Debug("sdk request 'UpdateSSL'", slog.Any("request", updateSSLReq), slog.Any("response", updateSSLResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'SslUpdate': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'UpdateSSL': %w", err)
 	}
 
 	return nil
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*apisixsdk.Client, error) {
-	client, err := apisixsdk.NewClient(serverUrl, apiKey)
+	client, err := apisixsdk.NewClient(serverUrl,
+		apisixsdk.WithApiKey(apiKey),
+	)
 	if err != nil {
 		return nil, err
 	}

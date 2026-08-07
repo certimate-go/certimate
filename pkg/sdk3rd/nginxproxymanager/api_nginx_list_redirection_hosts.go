@@ -11,14 +11,14 @@ type NginxListRedirectionHostsRequest struct {
 	Expand *string `json:"expand,omitempty" url:"expand,omitempty"`
 }
 
-type NginxListRedirectionHostsResponse = []*RedirectionHostRecord
+type NginxListRedirectionHostsResponse = []*RedirectionHost
 
 func (c *Client) NginxListRedirectionHosts(req *NginxListRedirectionHostsRequest) (*NginxListRedirectionHostsResponse, error) {
 	return c.NginxListRedirectionHostsWithContext(context.Background(), req)
 }
 
 func (c *Client) NginxListRedirectionHostsWithContext(ctx context.Context, req *NginxListRedirectionHostsRequest) (*NginxListRedirectionHostsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

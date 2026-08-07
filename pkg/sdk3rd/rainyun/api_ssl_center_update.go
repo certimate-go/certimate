@@ -21,7 +21,7 @@ func (c *Client) SslCenterUpdate(certId int64, req *SslCenterUpdateRequest) (*Ss
 
 func (c *Client) SslCenterUpdateWithContext(ctx context.Context, certId int64, req *SslCenterUpdateRequest) (*SslCenterUpdateResponse, error) {
 	if certId == 0 {
-		return nil, fmt.Errorf("sdkerr: unset certId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset certId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPut, fmt.Sprintf("/product/sslcenter/%d", certId))

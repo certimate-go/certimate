@@ -2,9 +2,6 @@ package deployers
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
@@ -24,8 +21,8 @@ func init() {
 			AccessKeySecret: credentials.AccessKeySecret,
 			ResourceGroupId: credentials.ResourceGroupId,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
-			ResourceIds:     lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceIds"), ";"), func(s string, _ int) bool { return s != "" }),
-			ContactIds:      lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "contactIds"), ";"), func(s string, _ int) bool { return s != "" }),
+			ResourceIds:     xmaps.GetStringsBySplit(options.ProviderExtendedConfig, "resourceIds", ";"),
+			ContactIds:      xmaps.GetStringsBySplit(options.ProviderExtendedConfig, "contactIds", ";"),
 		})
 		return provider, err
 	})

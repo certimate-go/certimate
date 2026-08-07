@@ -94,7 +94,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		ClientToken: lo.ToPtr(security.RandomString(32)),
 		RegionID:    lo.ToPtr(c.config.RegionId),
 		Name:        lo.ToPtr(certName),
-		Description: lo.ToPtr("upload from certimate"),
+		Description: lo.ToPtr("upload from Certimate"),
 		Type:        lo.ToPtr("Server"),
 		Certificate: lo.ToPtr(certPEM),
 		PrivateKey:  lo.ToPtr(privkeyPEM),
@@ -116,5 +116,12 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func createSDKClient(accessKeyId, secretAccessKey string) (*ctyunelb.Client, error) {
-	return ctyunelb.NewClient(accessKeyId, secretAccessKey)
+	client, err := ctyunelb.NewClient(
+		ctyunelb.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

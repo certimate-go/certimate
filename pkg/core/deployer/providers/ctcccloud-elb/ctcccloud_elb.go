@@ -2,7 +2,6 @@ package ctcccloudelb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-elb"
 	ctyunelb "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/elb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -78,6 +78,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -134,26 +136,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		}
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no elb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
+		d.logger.Info("found elb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -176,13 +168,13 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
 	// 更新监听器
 	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=24&api=5652&data=88&isNormal=1&vid=82
-	setLoadBalancerHTTPSListenerAttributeReq := &ctyunelb.UpdateListenerRequest{
+	updateListenerReq := &ctyunelb.UpdateListenerRequest{
 		RegionID:      lo.ToPtr(d.config.RegionId),
 		ListenerID:    lo.ToPtr(cloudListenerId),
 		CertificateID: lo.ToPtr(cloudCertId),
 	}
-	setLoadBalancerHTTPSListenerAttributeResp, err := d.sdkClient.UpdateListenerWithContext(ctx, setLoadBalancerHTTPSListenerAttributeReq)
-	d.logger.Debug("sdk request 'elb.UpdateListener'", slog.Any("request", setLoadBalancerHTTPSListenerAttributeReq), slog.Any("response", setLoadBalancerHTTPSListenerAttributeResp))
+	updateListenerResp, err := d.sdkClient.UpdateListenerWithContext(ctx, updateListenerReq)
+	d.logger.Debug("sdk request 'elb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'elb.UpdateListener': %w", err)
 	}
@@ -191,5 +183,12 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 }
 
 func createSDKClient(accessKeyId, secretAccessKey string) (*ctyunelb.Client, error) {
-	return ctyunelb.NewClient(accessKeyId, secretAccessKey)
+	client, err := ctyunelb.NewClient(
+		ctyunelb.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

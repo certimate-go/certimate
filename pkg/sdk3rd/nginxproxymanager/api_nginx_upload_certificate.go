@@ -21,10 +21,10 @@ func (c *Client) NginxUploadCertificate(certId int64, req *NginxUploadCertificat
 
 func (c *Client) NginxUploadCertificateWithContext(ctx context.Context, certId int64, req *NginxUploadCertificateRequest) (*NginxUploadCertificateResponse, error) {
 	if certId == 0 {
-		return nil, fmt.Errorf("sdkerr: unset certId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset certId")
 	}
 
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

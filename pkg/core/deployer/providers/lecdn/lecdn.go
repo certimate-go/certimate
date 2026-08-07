@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/pkg/core"
-	leclientsdkv3 "github.com/certimate-go/certimate/pkg/sdk3rd/lecdn/v3/client"
-	lemastersdkv3 "github.com/certimate-go/certimate/pkg/sdk3rd/lecdn/v3/master"
+	lecdnclientv3 "github.com/certimate-go/certimate/pkg/sdk3rd/lecdn/v3/client"
+	lecdnmasterv3 "github.com/certimate-go/certimate/pkg/sdk3rd/lecdn/v3/master"
 )
 
 type (
@@ -98,36 +98,36 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	// 修改证书
 	// REF: https://wdk0pwf8ul.feishu.cn/wiki/YE1XwCRIHiLYeKkPupgcXrlgnDd
 	switch sdkClient := d.sdkClient.(type) {
-	case *leclientsdkv3.Client:
+	case *lecdnclientv3.Client:
 		{
-			updateSSLCertReq := &leclientsdkv3.UpdateCertificateRequest{
+			updateSSLCertReq := &lecdnclientv3.UpdateCertificateRequest{
 				Name:        fmt.Sprintf("certimate-%d", time.Now().UnixMilli()),
-				Description: "upload from certimate",
+				Description: "upload from Certimate",
 				Type:        "upload",
 				SSLPEM:      certPEM,
 				SSLKey:      privkeyPEM,
 				AutoRenewal: false,
 			}
 			updateSSLCertResp, err := sdkClient.UpdateCertificateWithContext(ctx, d.config.CertificateId, updateSSLCertReq)
-			d.logger.Debug("sdk request 'UpdateCertificate'", slog.Int64("certId", d.config.CertificateId), slog.Any("request", updateSSLCertReq), slog.Any("response", updateSSLCertResp))
+			d.logger.Debug("sdk request 'UpdateCertificate'", slog.Int64("params.certId", d.config.CertificateId), slog.Any("request", updateSSLCertReq), slog.Any("response", updateSSLCertResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'UpdateCertificate': %w", err)
 			}
 		}
 
-	case *lemastersdkv3.Client:
+	case *lecdnmasterv3.Client:
 		{
-			updateSSLCertReq := &lemastersdkv3.UpdateCertificateRequest{
+			updateSSLCertReq := &lecdnmasterv3.UpdateCertificateRequest{
 				ClientId:    d.config.ClientId,
 				Name:        fmt.Sprintf("certimate-%d", time.Now().UnixMilli()),
-				Description: "upload from certimate",
+				Description: "upload from Certimate",
 				Type:        "upload",
 				SSLPEM:      certPEM,
 				SSLKey:      privkeyPEM,
 				AutoRenewal: false,
 			}
 			updateSSLCertResp, err := sdkClient.UpdateCertificateWithContext(ctx, d.config.CertificateId, updateSSLCertReq)
-			d.logger.Debug("sdk request 'UpdateCertificate'", slog.Int64("certId", d.config.CertificateId), slog.Any("request", updateSSLCertReq), slog.Any("response", updateSSLCertResp))
+			d.logger.Debug("sdk request 'UpdateCertificate'", slog.Int64("params.certId", d.config.CertificateId), slog.Any("request", updateSSLCertReq), slog.Any("response", updateSSLCertResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'UpdateCertificate': %w", err)
 			}
@@ -150,7 +150,9 @@ const (
 func createSDKClient(serverUrl, apiVersion, apiRole, username, password string, skipTlsVerify bool) (any, error) {
 	if apiVersion == sdkVersionV3 && apiRole == sdkRoleClient {
 		// v3 版客户端
-		client, err := leclientsdkv3.NewClient(serverUrl, username, password)
+		client, err := lecdnclientv3.NewClient(serverUrl,
+			lecdnclientv3.WithLogins(username, password),
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -162,7 +164,9 @@ func createSDKClient(serverUrl, apiVersion, apiRole, username, password string, 
 		return client, nil
 	} else if apiVersion == sdkVersionV3 && apiRole == sdkRoleMaster {
 		// v3 版主控端
-		client, err := lemastersdkv3.NewClient(serverUrl, username, password)
+		client, err := lecdnmasterv3.NewClient(serverUrl,
+			lecdnmasterv3.WithLogins(username, password),
+		)
 		if err != nil {
 			return nil, err
 		}

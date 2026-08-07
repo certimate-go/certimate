@@ -1,3 +1,5 @@
+// A simple SDK client for SamWAF.
+// API documentation: https://doc.samwaf.com/api/
 package samwaf
 
 import (
@@ -14,37 +16,42 @@ import (
 )
 
 type Client struct {
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(serverUrl, apiKey string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	options := &Options{}
+	for _, fn := range optFns {
+		fn(options)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if apiKey == "" {
+	if options.ApiKey == "" {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	client := resty.New().
-		SetBaseURL(strings.TrimRight(serverUrl, "/")+"/api/v1").
+	httper := resty.New().
+		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api/v1").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetHeader("X-API-Key", apiKey)
+		SetHeader("X-API-Key", options.ApiKey)
 
-	return &Client{client}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -56,9 +63,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -66,9 +76,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -97,7 +104,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		var errRes *sdkResponseBase
 		if err := json.Unmarshal(resp.Body(), &errRes); err == nil {
 			if tcode := errRes.GetCode(); tcode != 0 {
-				return resp, fmt.Errorf("sdkerr: code='%d', msg='%s'", tcode, errRes.GetMsg())
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', msg='%s'", tcode, errRes.GetMsg())
 			}
 		}
 

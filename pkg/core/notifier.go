@@ -6,7 +6,7 @@ import (
 
 // 表示定义消息通知器的抽象类型接口。
 type Notifier interface {
-	WithLogger
+	LoggerSetter
 
 	// 发送通知。
 	//

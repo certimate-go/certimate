@@ -2,7 +2,6 @@ package volcenginealb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -14,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/volcengine-certcenter"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -170,26 +170,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		describeListenersPageNumber++
 	}
 
-	// 遍历更新监听证书
+	// 批量更新监听证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no alb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
+		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -222,48 +212,57 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 
 	if d.config.Domain == "" {
 		// 未指定 SNI，只需部署到监听器
-
-		// 修改指定监听器
-		// REF: https://www.volcengine.com/docs/6767/113683
-		modifyListenerAttributesReq := &vealb.ModifyListenerAttributesInput{
-			ListenerId:              ve.String(cloudListenerId),
-			CertificateSource:       ve.String("cert_center"),
-			CertCenterCertificateId: ve.String(cloudCertId),
+		if ve.StringValue(describeListenerAttributesResp.CertificateId) == cloudCertId {
+			d.logger.Info("no need to deploy alb listener default certificate")
+			return nil
 		}
-		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
-		d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
-		}
+		return d.updateListenerDefaultCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
+		return d.updateListenerSniCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
+	}
+}
 
-		// 修改指定监听器
-		// REF: https://www.volcengine.com/docs/6767/113683
-		modifyListenerAttributesReq := &vealb.ModifyListenerAttributesInput{
-			ListenerId: ve.String(cloudListenerId),
-			DomainExtensions: lo.Map(
-				lo.Filter(
-					describeListenerAttributesResp.DomainExtensions,
-					func(domain *vealb.DomainExtensionForDescribeListenerAttributesOutput, _ int) bool {
-						return *domain.Domain == d.config.Domain
-					},
-				),
-				func(domain *vealb.DomainExtensionForDescribeListenerAttributesOutput, _ int) *vealb.DomainExtensionForModifyListenerAttributesInput {
-					return &vealb.DomainExtensionForModifyListenerAttributesInput{
-						DomainExtensionId:       domain.DomainExtensionId,
-						Domain:                  domain.Domain,
-						CertificateSource:       ve.String("cert_center"),
-						CertCenterCertificateId: ve.String(cloudCertId),
-						Action:                  ve.String("modify"),
-					}
-				}),
-		}
-		modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
-		d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
-		}
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerInfo vealb.DescribeListenerAttributesOutput, cloudCertId string) error {
+	// 修改指定监听器
+	// REF: https://www.volcengine.com/docs/6767/113683
+	modifyListenerAttributesReq := &vealb.ModifyListenerAttributesInput{
+		ListenerId:              cloudListenerInfo.ListenerId,
+		CertificateSource:       ve.String("cert_center"),
+		CertCenterCertificateId: ve.String(cloudCertId),
+	}
+	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
+	d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerInfo vealb.DescribeListenerAttributesOutput, cloudCertId string) error {
+	// 修改指定监听器
+	// REF: https://www.volcengine.com/docs/6767/113683
+	modifyListenerAttributesReq := &vealb.ModifyListenerAttributesInput{
+		ListenerId: cloudListenerInfo.ListenerId,
+		DomainExtensions: lo.Map(
+			lo.Filter(cloudListenerInfo.DomainExtensions, func(domain *vealb.DomainExtensionForDescribeListenerAttributesOutput, _ int) bool {
+				return *domain.Domain == d.config.Domain
+			}),
+			func(domain *vealb.DomainExtensionForDescribeListenerAttributesOutput, _ int) *vealb.DomainExtensionForModifyListenerAttributesInput {
+				return &vealb.DomainExtensionForModifyListenerAttributesInput{
+					DomainExtensionId:       domain.DomainExtensionId,
+					Domain:                  domain.Domain,
+					CertificateSource:       ve.String("cert_center"),
+					CertCenterCertificateId: ve.String(cloudCertId),
+					Action:                  ve.String("modify"),
+				}
+			}),
+	}
+	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
+	d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'alb.ModifyListenerAttributes': %w", err)
 	}
 
 	return nil

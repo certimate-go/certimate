@@ -5,13 +5,12 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log/slog"
-	"net/http"
 
-	"github.com/kong/go-kong/kong"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	kongsdk "github.com/certimate-go/certimate/pkg/sdk3rd/kong"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
-	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 )
 
 type (
@@ -39,7 +38,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *kong.Client
+	sdkClient *kongsdk.Client
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -98,48 +97,33 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	// 更新证书
 	// REF: https://developer.konghq.com/api/gateway/admin-ee/3.10/#/operations/upsert-certificate
 	// REF: https://developer.konghq.com/api/gateway/admin-ee/3.10/#/operations/upsert-certificate-in-workspace
-	updateCertificateReq := &kong.Certificate{
-		ID:   kong.String(d.config.CertificateId),
-		Cert: kong.String(certPEM),
-		Key:  kong.String(privkeyPEM),
-		SNIs: kong.StringSlice(certX509.DNSNames...),
+	upsertCertificateReq := &kongsdk.UpsertCertificateRequest{
+		Id:   lo.ToPtr(d.config.CertificateId),
+		Cert: lo.ToPtr(certPEM),
+		Key:  lo.ToPtr(privkeyPEM),
+		SNIs: lo.ToSlicePtr(certX509.DNSNames),
 	}
-	updateCertificateResp, err := d.sdkClient.Certificates.Update(ctx, updateCertificateReq)
-	d.logger.Debug("sdk request 'UpdateCertificate'", slog.String("sslId", d.config.CertificateId), slog.Any("request", updateCertificateReq), slog.Any("response", updateCertificateResp))
+	upsertCertificateResp, err := d.sdkClient.UpsertCertificateWithContext(ctx, d.config.CertificateId, upsertCertificateReq)
+	d.logger.Debug("sdk request 'UpsertCertificate'", slog.String("params.certificateId", d.config.CertificateId), slog.Any("request", upsertCertificateReq), slog.Any("response", upsertCertificateResp))
 	if err != nil {
-		return fmt.Errorf("failed to execute sdk request 'UpdateCertificate': %w", err)
+		return fmt.Errorf("failed to execute sdk request 'UpsertCertificate': %w", err)
 	}
 
 	return nil
 }
 
-func createSDKClient(serverUrl, workspace, apiToken string, skipTlsVerify bool) (*kong.Client, error) {
-	httpClient := &http.Client{
-		Transport: xhttp.NewDefaultTransport(),
-		Timeout:   http.DefaultClient.Timeout,
-	}
-	if skipTlsVerify {
-		transport := xhttp.NewDefaultTransport()
-		transport.DisableKeepAlives = true
-		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		httpClient.Transport = transport
-	} else {
-		httpClient.Transport = http.DefaultTransport
-	}
-
-	httpHeaders := http.Header{}
-	if apiToken != "" {
-		httpHeaders.Set("Kong-Admin-Token", apiToken)
-	}
-
-	client, err := kong.NewClient(kong.String(serverUrl), kong.HTTPClientWithHeaders(httpClient, httpHeaders))
+func createSDKClient(serverUrl, workspace, apiToken string, skipTlsVerify bool) (*kongsdk.Client, error) {
+	client, err := kongsdk.NewClient(serverUrl,
+		kongsdk.WithWorkspace(workspace),
+		kongsdk.WithApiToken(apiToken),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	if workspace != "" {
-		client.SetWorkspace(workspace)
+	if skipTlsVerify {
+		client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
 	}
 
-	return client, nil
+	return client, err
 }

@@ -3,16 +3,13 @@ package internal
 import (
 	"context"
 	"fmt"
-	"math/rand/v2"
 	"strconv"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/retry"
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
+	aws "github.com/aws/aws-sdk-go-v2/aws"
+	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/lightsail"
-	awstypes "github.com/aws/aws-sdk-go-v2/service/lightsail/types"
+	"github.com/aws/aws-sdk-go-v2/service/lightsail/types"
 	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/challenge/dns01"
 	"github.com/go-acme/lego/v5/platform/env"
@@ -27,15 +24,11 @@ const (
 	EnvPollingInterval    = envNamespace + "POLLING_INTERVAL"
 )
 
-const maxRetries = 5
-
 var _ challenge.ProviderTimeout = (*DNSProvider)(nil)
 
 type Config struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	SessionToken    string
-	Region          string
+	AWSCredentialsProvider aws.CredentialsProvider
+	Region                 string
 
 	PropagationTimeout time.Duration
 	PollingInterval    time.Duration
@@ -48,6 +41,8 @@ func NewDefaultConfig() *Config {
 	}
 }
 
+// 这里有意不使用 lego 提供的 lightsail 实现，
+// 因为它只支持单个域，无法签发多域名证书。
 type DNSProvider struct {
 	client *lightsail.Client
 	config *Config
@@ -65,21 +60,14 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("lightsail: the configuration of the DNS provider is nil")
 	}
 
-	ctx := context.Background()
-	cfg, err := awsconfig.LoadDefaultConfig(ctx,
-		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(config.AccessKeyID, config.SecretAccessKey, config.SessionToken)),
-		awsconfig.WithRegion(config.Region),
-		awsconfig.WithRetryer(func() aws.Retryer {
-			return retry.NewStandard(func(options *retry.StandardOptions) {
-				options.MaxAttempts = maxRetries
-				options.Backoff = retry.BackoffDelayerFunc(func(attempt int, err error) (time.Duration, error) {
-					retryCount := min(attempt, 7)
-					delay := (1 << uint(retryCount)) * (rand.IntN(50) + 200)
-					return time.Duration(delay) * time.Millisecond, nil
-				})
-			})
-		}),
-	)
+	opts := []func(options *awscfg.LoadOptions) error{
+		awscfg.WithRegion(config.Region),
+	}
+	if config.AWSCredentialsProvider != nil {
+		opts = append(opts, awscfg.WithCredentialsProvider(config.AWSCredentialsProvider))
+	}
+
+	cfg, err := awscfg.LoadDefaultConfig(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +88,7 @@ func (d *DNSProvider) Present(ctx context.Context, domain, _, keyAuth string) er
 
 	if _, err := d.client.CreateDomainEntry(ctx, &lightsail.CreateDomainEntryInput{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
-		DomainEntry: &awstypes.DomainEntry{
+		DomainEntry: &types.DomainEntry{
 			Type:   aws.String("TXT"),
 			Name:   aws.String(info.EffectiveFQDN),
 			Target: aws.String(strconv.Quote(info.Value)),
@@ -122,7 +110,7 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, _, keyAuth string) er
 
 	if _, err := d.client.DeleteDomainEntry(ctx, &lightsail.DeleteDomainEntryInput{
 		DomainName: aws.String(dns01.UnFqdn(authZone)),
-		DomainEntry: &awstypes.DomainEntry{
+		DomainEntry: &types.DomainEntry{
 			Type:   aws.String("TXT"),
 			Name:   aws.String(info.EffectiveFQDN),
 			Target: aws.String(strconv.Quote(info.Value)),

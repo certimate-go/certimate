@@ -25,6 +25,16 @@ const BizDeployNodeConfigFieldsProviderKsyunSLB = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "region"]}
+        initialValue={initialValues.region}
+        label={t("workflow_node.deploy.form.ksyun_slb_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ksyun_slb_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.ksyun_slb_region.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "deployTarget"]}
         initialValue={initialValues.deployTarget}
         label={t("workflow_node.deploy.form.shared_deploy_target.label")}
@@ -56,6 +66,7 @@ const BizDeployNodeConfigFieldsProviderKsyunSLB = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    region: "",
     deployTarget: DEPLOY_TARGET_CERTIFICATE,
     certificateId: "",
   };
@@ -66,6 +77,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
+      region: z.string().nonempty(),
       deployTarget: z.enum([DEPLOY_TARGET_CERTIFICATE]),
       certificateId: z.string().nullish(),
     })

@@ -113,5 +113,12 @@ func (d *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func createSDKClient(apiToken string) (*baishansdk.Client, error) {
-	return baishansdk.NewClient(apiToken)
+	client, err := baishansdk.NewClient(
+		baishansdk.WithApiToken(apiToken),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

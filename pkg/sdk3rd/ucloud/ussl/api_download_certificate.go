@@ -15,8 +15,6 @@ type DownloadCertificateResponse struct {
 	response.CommonBase
 
 	CertificateUrl string
-	CertCA         *CertificateDownloadInfo
-	Certificate    *CertificateDownloadInfo
 }
 
 func (c *USSLClient) NewDownloadCertificateRequest() *DownloadCertificateRequest {
@@ -25,6 +23,7 @@ func (c *USSLClient) NewDownloadCertificateRequest() *DownloadCertificateRequest
 	c.Client.SetupRequest(req)
 
 	req.SetRetryable(true)
+	req.SetEncoder(request.NewJSONEncoder(c.GetConfig(), c.GetCredential()))
 	return req
 }
 

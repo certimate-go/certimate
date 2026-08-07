@@ -75,7 +75,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*btwafsdk.Client, error) {
-	client, err := btwafsdk.NewClient(serverUrl, apiKey)
+	client, err := btwafsdk.NewClient(serverUrl,
+		btwafsdk.WithApiKey(apiKey),
+	)
 	if err != nil {
 		return nil, err
 	}

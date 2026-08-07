@@ -33,7 +33,7 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
 
   const formSchema = z.object({
     name: z.string().nonempty().max(64),
-    provider: z.enum(ACCESS_PROVIDERS),
+    provider: z.string().nonempty(),
     config: z.any(),
     reserve: z.string().nullish(),
   });

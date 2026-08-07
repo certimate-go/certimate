@@ -1,7 +1,6 @@
 .vscode/**
 !.vscode/extensions.json
 !.vscode/settings.json
-!.vscode/settings.tailwind.json
 .idea
 .DS_Store
 *.suo
@@ -21,3 +20,4 @@ build
 /certimate.exe
 /docker/data
 /pb_data
+/plugins

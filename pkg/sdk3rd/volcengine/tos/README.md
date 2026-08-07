@@ -1,0 +1,5 @@
+﻿本模块存在相应的社区 SDK：`github.com/volcengine/ve-tos-golang-sdk`。
+
+但会使得依赖体积显著膨胀，故没有使用。
+
+具体细节见 [PR #1341](https://github.com/certimate-go/certimate/pull/1341)。

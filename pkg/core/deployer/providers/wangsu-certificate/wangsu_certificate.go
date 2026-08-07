@@ -7,7 +7,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/wangsu-certificate"
-	wangsusdk "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/certificate"
+	wangsucertificate "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/certificate"
 )
 
 type (
@@ -28,7 +28,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *wangsusdk.Client
+	sdkClient  *wangsucertificate.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -66,6 +66,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -90,6 +92,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret string) (*wangsusdk.Client, error) {
-	return wangsusdk.NewClient(accessKeyId, accessKeySecret)
+func createSDKClient(accessKeyId, accessKeySecret string) (*wangsucertificate.Client, error) {
+	client, err := wangsucertificate.NewClient(
+		wangsucertificate.WithAkSk(accessKeyId, accessKeySecret),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

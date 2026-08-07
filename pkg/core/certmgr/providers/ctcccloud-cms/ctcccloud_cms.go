@@ -72,7 +72,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -85,7 +85,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	uploadCertificateReq := &ctyuncms.UploadCertificateRequest{
 		Name:               lo.ToPtr(certName),
 		Certificate:        lo.ToPtr(serverCertPEM),
-		CertificateChain:   lo.ToPtr(intermediaCertPEM),
+		CertificateChain:   lo.ToPtr(issuerCertPEM),
 		PrivateKey:         lo.ToPtr(privkeyPEM),
 		EncryptionStandard: lo.ToPtr("INTERNATIONAL"),
 	}
@@ -154,25 +154,25 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			break
 		}
 
+		fingerprintSha1 := sha1.Sum(certX509.Raw)
+		fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
 		for _, certItem := range getCertificateListResp.ReturnObj.List {
-			// 对比证书名称
+			// 对比证书备用名称
 			if !strings.EqualFold(strings.Join(certX509.DNSNames, ","), certItem.DomainName) {
 				continue
 			}
 
 			// 对比证书有效期
+			newCertNotBefore := certX509.NotBefore
+			newCertNotAfter := certX509.NotAfter
 			oldCertNotBefore, _ := time.Parse("2006-01-02T15:04:05Z", certItem.IssueTime)
 			oldCertNotAfter, _ := time.Parse("2006-01-02T15:04:05Z", certItem.ExpireTime)
-			if !certX509.NotBefore.Equal(oldCertNotBefore) {
-				continue
-			} else if !certX509.NotAfter.Equal(oldCertNotAfter) {
+			if !newCertNotBefore.Equal(oldCertNotBefore) || !newCertNotAfter.Equal(oldCertNotAfter) {
 				continue
 			}
 
 			// 对比证书指纹
-			fingerprint := sha1.Sum(certX509.Raw)
-			fingerprintHex := hex.EncodeToString(fingerprint[:])
-			if !strings.EqualFold(fingerprintHex, certItem.Fingerprint) {
+			if !strings.EqualFold(fingerprintSha1Hex, certItem.Fingerprint) {
 				continue
 			}
 
@@ -195,5 +195,12 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 }
 
 func createSDKClient(accessKeyId, secretAccessKey string) (*ctyuncms.Client, error) {
-	return ctyuncms.NewClient(accessKeyId, secretAccessKey)
+	client, err := ctyuncms.NewClient(
+		ctyuncms.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

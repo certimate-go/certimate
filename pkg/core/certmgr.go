@@ -7,7 +7,7 @@ import (
 // 表示定义 SSL 证书管理器的抽象类型接口。
 // 云服务商通常会提供 SSL 证书管理服务，可供用户集中管理证书。
 type Certmgr interface {
-	WithLogger
+	LoggerSetter
 
 	// 上传证书。
 	//

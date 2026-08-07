@@ -1,9 +1,9 @@
+// A simple SDK client for aaWAF.
+// API documentation: https://github.com/aaPanel/aaWAF/blob/main/API.md
 package btwaf
 
 import (
-	"crypto/md5"
 	"crypto/tls"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,47 +17,51 @@ import (
 )
 
 type Client struct {
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(serverUrl, apiKey string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if apiKey == "" {
+	if opts.ApiKey == "" {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	client := resty.New().
+	signer := &signer{
+		apiKey: opts.ApiKey,
+	}
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			timestamp := fmt.Sprintf("%d", time.Now().Unix())
-			keyMd5 := md5.Sum([]byte(apiKey))
-			keyMd5Hex := strings.ToLower(hex.EncodeToString(keyMd5[:]))
-			signMd5 := md5.Sum([]byte(timestamp + keyMd5Hex))
-			signMd5Hex := strings.ToLower(hex.EncodeToString(signMd5[:]))
-			req.Header.Set("waf_request_time", timestamp)
-			req.Header.Set("waf_request_token", signMd5Hex)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if err := signer.Sign(req); err != nil {
+				return fmt.Errorf("sdkerr: sign error: %w", err)
+			}
 
 			return nil
 		})
 
-	return &Client{client}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -69,9 +73,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -79,9 +86,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -110,8 +114,8 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
-			if code := res.GetCode(); code != 0 {
-				return resp, fmt.Errorf("sdkerr: api error: code='%d'", code)
+			if rCode := res.GetCode(); rCode != 0 {
+				return resp, fmt.Errorf("sdkerr: api error: code='%d'", rCode)
 			}
 		}
 	}

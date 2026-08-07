@@ -5,16 +5,16 @@ import (
 	"fmt"
 )
 
-// 从 PEM 编码的证书字符串解析并提取服务器证书和中间证书。
+// 从 PEM 编码的证书字符串解析并提取叶子证书和中间证书。
 //
 // 入参:
 //   - certPEM: 证书 PEM 内容。
 //
 // 出参:
-//   - serverCertPEM: 服务器证书的 PEM 内容。
-//   - intermediaCertPEM: 中间证书的 PEM 内容。
+//   - leafCertPEM: 叶子证书的 PEM 内容。
+//   - intermediateCertPEM: 中间证书的 PEM 内容。
 //   - err: 错误。
-func ExtractCertificatesFromPEM(certPEM string) (_serverCertPEM string, _intermediaCertPEM string, _err error) {
+func ExtractCertificatesFromPEM(certPEM string) (_leafCertPEM string, _intermediateCertPEM string, _err error) {
 	blocks := decodePEMBlocks([]byte(certPEM))
 	for i, block := range blocks {
 		if block.Type != "CERTIFICATE" {
@@ -22,22 +22,22 @@ func ExtractCertificatesFromPEM(certPEM string) (_serverCertPEM string, _interme
 		}
 	}
 
-	serverCertPEM := ""
-	intermediaCertPEM := ""
+	_leafCertPEM = ""
+	_intermediateCertPEM = ""
 
 	if len(blocks) == 0 {
 		return "", "", fmt.Errorf("failed to decode PEM block")
 	}
 
 	if len(blocks) > 0 {
-		serverCertPEM = string(pem.EncodeToMemory(blocks[0]))
+		_leafCertPEM = string(pem.EncodeToMemory(blocks[0]))
 	}
 
 	if len(blocks) > 1 {
 		for i := 1; i < len(blocks); i++ {
-			intermediaCertPEM += string(pem.EncodeToMemory(blocks[i]))
+			_intermediateCertPEM += string(pem.EncodeToMemory(blocks[i]))
 		}
 	}
 
-	return serverCertPEM, intermediaCertPEM, nil
+	return _leafCertPEM, _intermediateCertPEM, nil
 }

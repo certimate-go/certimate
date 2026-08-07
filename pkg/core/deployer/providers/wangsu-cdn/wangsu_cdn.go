@@ -11,7 +11,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/wangsu-certificate"
-	wangsusdk "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/cdn"
+	wangsucdn "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/cdn"
 )
 
 type (
@@ -34,7 +34,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *wangsusdk.Client
+	sdkClient  *wangsucdn.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -72,6 +72,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -92,9 +94,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return nil, fmt.Errorf("config `domains` is required")
 			}
 
-			// "*.example.com" → ".example.com"，适配网宿云 CDN 要求的泛域名格式
 			domains = lo.Map(d.config.Domains, func(domain string, _ int) string {
-				return strings.TrimPrefix(domain, "*")
+				return normalizeDomain(domain)
 			})
 		}
 
@@ -104,9 +105,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 批量修改域名证书配置
 	// REF: https://www.wangsu.com/document/api-doc/37447
-	certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
-	batchUpdateCertificateConfigReq := &wangsusdk.BatchUpdateCertificateConfigRequest{
-		CertificateId: certId,
+	certIdAsInt, _ := strconv.ParseInt(upres.CertId, 10, 64)
+	batchUpdateCertificateConfigReq := &wangsucdn.BatchUpdateCertificateConfigRequest{
+		CertificateId: certIdAsInt,
 		DomainNames:   domains,
 	}
 	batchUpdateCertificateConfigResp, err := d.sdkClient.BatchUpdateCertificateConfigWithContext(ctx, batchUpdateCertificateConfigReq)
@@ -118,6 +119,21 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, accessKeySecret string) (*wangsusdk.Client, error) {
-	return wangsusdk.NewClient(accessKeyId, accessKeySecret)
+func createSDKClient(accessKeyId, accessKeySecret string) (*wangsucdn.Client, error) {
+	client, err := wangsucdn.NewClient(
+		wangsucdn.WithAkSk(accessKeyId, accessKeySecret),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func normalizeDomain(domain string) string {
+	// "*.example.com" → ".example.com"，适配网宿云 CDN 的泛域名参数要求
+	if strings.HasPrefix(domain, "*.") {
+		return strings.TrimPrefix(domain, "*")
+	}
+	return domain
 }

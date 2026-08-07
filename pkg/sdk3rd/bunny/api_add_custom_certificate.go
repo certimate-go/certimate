@@ -19,7 +19,7 @@ func (c *Client) AddCustomCertificate(pullZoneId string, req *AddCustomCertifica
 
 func (c *Client) AddCustomCertificateWithContext(ctx context.Context, pullZoneId string, req *AddCustomCertificateRequest) error {
 	if pullZoneId == "" {
-		return fmt.Errorf("sdkerr: unset pullZoneId")
+		return fmt.Errorf("sdkerr: bad request: unset pullZoneId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPost, fmt.Sprintf("/pullzone/%s/addCertificate", url.PathEscape(pullZoneId)))

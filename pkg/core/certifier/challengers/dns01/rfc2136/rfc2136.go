@@ -17,6 +17,9 @@ type ChallengerConfig struct {
 	TsigAlgorithm         string `json:"tsigAlgorithm,omitempty"`
 	TsigKey               string `json:"tsigKey,omitempty"`
 	TsigSecret            string `json:"tsigSecret,omitempty"`
+	TsigGssRealm          string `json:"tsigGssRealm,omitempty"`
+	TsigGssUsername       string `json:"tsigGssUsername,omitempty"`
+	TsigGssPassword       string `json:"tsigGssPassword,omitempty"`
 	DnsPropagationTimeout int    `json:"dnsPropagationTimeout,omitempty"`
 	DnsTTL                int    `json:"dnsTTL,omitempty"`
 }
@@ -39,6 +42,10 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	providerConfig.TSIGAlgorithm = config.TsigAlgorithm
 	providerConfig.TSIGKey = config.TsigKey
 	providerConfig.TSIGSecret = config.TsigSecret
+	providerConfig.TSIGGSSRealm = config.TsigGssRealm
+	providerConfig.TSIGGSSUsername = config.TsigGssUsername
+	providerConfig.TSIGGSSPassword = config.TsigGssPassword
+	providerConfig.TSIGGSSKeytabFile = ""
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second
 	}

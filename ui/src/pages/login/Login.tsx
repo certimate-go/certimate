@@ -11,9 +11,9 @@ import AppLocale from "@/components/AppLocale";
 import AppTheme from "@/components/AppTheme";
 import AppVersion from "@/components/AppVersion";
 import { useAntdForm, useBrowserTheme } from "@/hooks";
-
 import { authWithPassword } from "@/repository/admin";
 import { unwrapErrMsg } from "@/utils/error";
+import { withBasePath } from "@/utils/url";
 
 const Login = () => {
   const navigage = useNavigate();
@@ -74,7 +74,7 @@ const Login = () => {
         <Card className="w-120 max-w-full rounded-md shadow-md max-sm:size-full max-sm:rounded-none">
           <div className="px-4 py-8">
             <div className="mb-12 flex items-center justify-center">
-              <img src="/logo.svg" className="w-16" />
+              <img src={withBasePath("/logo.svg")} className="w-16" />
             </div>
 
             <Form {...formProps} form={formInst} disabled={formPending} layout="vertical" validateTrigger="onBlur">

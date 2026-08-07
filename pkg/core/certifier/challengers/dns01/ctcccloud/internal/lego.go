@@ -72,7 +72,9 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("ctyun: the configuration of the DNS provider is nil")
 	}
 
-	client, err := ctyundns.NewClient(config.AccessKeyId, config.SecretAccessKey)
+	client, err := ctyundns.NewClient(
+		ctyundns.WithAkSk(config.AccessKeyId, config.SecretAccessKey),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("ctyun: %w", err)
 	} else {
@@ -100,7 +102,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("ctyun: %w", err)
 	}
 
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&api=11259&data=181&isNormal=1&vid=259
 	request := &ctyundns.AddRecordRequest{
 		Domain:   lo.ToPtr(dns01.UnFqdn(authZone)),
 		Host:     lo.ToPtr(subDomain),
@@ -132,13 +133,16 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("tencentcloud-eo: unknown record ID for '%s'", info.EffectiveFQDN)
 	}
 
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&api=11262&data=181&isNormal=1&vid=259
 	request := &ctyundns.DeleteRecordRequest{
 		RecordId: lo.ToPtr(recordID),
 	}
 	if _, err := d.client.DeleteRecordWithContext(ctx, request); err != nil {
 		return fmt.Errorf("ctyun: error when delete record: %w", err)
 	}
+
+	d.recordIDsMu.Lock()
+	delete(d.recordIDs, token)
+	d.recordIDsMu.Unlock()
 
 	return nil
 }

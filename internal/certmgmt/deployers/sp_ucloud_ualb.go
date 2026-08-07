@@ -20,6 +20,7 @@ func init() {
 			PrivateKey:     credentials.PrivateKey,
 			PublicKey:      credentials.PublicKey,
 			ProjectId:      credentials.ProjectId,
+			Endpoint:       xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			Region:         xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			DeployTarget:   xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			LoadbalancerId: xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),

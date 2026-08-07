@@ -3,12 +3,14 @@ package telegrambot_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/telegrambot"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp        = tester.Args("TELEGRAMBOT_")
+	fp        = it.Args("TELEGRAMBOT_")
 	fApiToken string
 	fChatId   string
 )
@@ -33,11 +35,8 @@ func TestProvider(t *testing.T) {
 			BotToken: fApiToken,
 			ChatId:   fChatId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 }

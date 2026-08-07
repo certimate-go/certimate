@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-
-	"github.com/volcengine/ve-tos-golang-sdk/v2/tos"
+	"net/url"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/byteplus-certcenter"
+	tossdk "github.com/certimate-go/certimate/pkg/sdk3rd/volcengine/tos"
 )
 
 type (
@@ -34,7 +34,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config     *DeployerConfig
 	logger     *slog.Logger
-	sdkClient  *tos.ClientV2
+	sdkClient  *tossdk.Client
 	sdkCertmgr core.Certmgr
 }
 
@@ -45,7 +45,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region, config.Bucket)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -96,16 +96,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 设置自定义域名
 	// REF: https://docs.byteplus.com/en/docs/tos/Putbucketcustomdomain
-	// REF: https://docs.byteplus.com/en/docs/tos/Manage-custom-domain-names-go-sdk
-	putBucketCustomDomainReq := &tos.PutBucketCustomDomainInput{
-		Bucket: d.config.Bucket,
-		Rule: tos.CustomDomainRule{
+	putBucketCustomDomainReq := &tossdk.PutBucketCustomDomainRequest{
+		CustomDomainRule: &tossdk.PutBucketCustomDomainRequestCustomDomainRule{
 			Domain: d.config.Domain,
-			CertID: upres.CertId,
+			CertId: upres.CertId,
 		},
 	}
-	putBucketCustomDomainResp, err := d.sdkClient.PutBucketCustomDomain(ctx, putBucketCustomDomainReq)
-	d.logger.Debug("sdk request 'tos.PutBucketCustomDomain'", slog.Any("request", putBucketCustomDomainReq), slog.Any("response", putBucketCustomDomainResp))
+	putBucketCustomDomainResp, err := d.sdkClient.PutBucketCustomDomainWithContext(ctx, putBucketCustomDomainReq)
+	d.logger.Debug("sdk request 'tos.PutBucketCustomDomain'", slog.String("params.bucket", d.config.Bucket), slog.Any("request", putBucketCustomDomainReq), slog.Any("response", putBucketCustomDomainResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'tos.PutBucketCustomDomain': %w", err)
 	}
@@ -113,13 +111,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*tos.ClientV2, error) {
-	endpoint := fmt.Sprintf("tos-%s.bytepluses.com", region)
+func createSDKClient(accessKeyId, secretAccessKey, region, bucket string) (*tossdk.Client, error) {
+	endpoint := fmt.Sprintf("https://%s.tos-%s.bytepluses.com", url.PathEscape(bucket), url.PathEscape(region))
 
-	client, err := tos.NewClientV2(
-		endpoint,
-		tos.WithRegion(region),
-		tos.WithCredentials(tos.NewStaticCredentials(accessKeyId, secretAccessKey)),
+	client, err := tossdk.NewClient(endpoint,
+		tossdk.WithAkSk(accessKeyId, secretAccessKey),
+		tossdk.WithRegion(region),
+		tossdk.WithBucket(bucket),
 	)
 	if err != nil {
 		return nil, err

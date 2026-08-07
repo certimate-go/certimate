@@ -1,6 +1,8 @@
+// A mock HTTP client for Upyun Console.
 package console
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -16,32 +18,37 @@ type Client struct {
 	username string
 	password string
 
-	loginCookie    string
-	loginCookieMtx sync.Mutex
+	cookies   string
+	cookiesMu sync.Mutex
 
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(username, password string) (*Client, error) {
-	if username == "" {
+func NewClient(optFns ...OptionsFunc) (*Client, error) {
+	options := &Options{}
+	for _, fn := range optFns {
+		fn(options)
+	}
+
+	if options.Username == "" {
 		return nil, fmt.Errorf("sdkerr: unset username")
 	}
-	if password == "" {
+	if options.Password == "" {
 		return nil, fmt.Errorf("sdkerr: unset password")
 	}
 
 	client := &Client{
-		username: username,
-		password: password,
+		username: options.Username,
+		password: options.Password,
 	}
-	client.client = resty.New().
+	client.rc = resty.New().
 		SetBaseURL("https://console.upyun.com").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			if client.loginCookie != "" {
-				req.Header.Set("Cookie", client.loginCookie)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if client.cookies != "" {
+				req.Header.Set("Cookie", client.cookies)
 			}
 
 			return nil
@@ -51,7 +58,7 @@ func NewClient(username, password string) (*Client, error) {
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
@@ -63,9 +70,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -73,9 +83,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -110,7 +117,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 			} else if tdata := tresp.GetData(); tdata == nil {
 				return resp, fmt.Errorf("sdkerr: received empty data")
 			} else if terrcode := tdata.GetErrorCode(); terrcode != 0 {
-				return resp, fmt.Errorf("sdkerr: code='%d', message='%s'", terrcode, tdata.GetMessage())
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', message='%s'", terrcode, tdata.GetMessage())
 			}
 		}
 	}
@@ -118,10 +125,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureCookieExists() error {
-	c.loginCookieMtx.Lock()
-	defer c.loginCookieMtx.Unlock()
-	if c.loginCookie != "" {
+func (c *Client) ensureCookies(ctx context.Context) error {
+	c.cookiesMu.Lock()
+	defer c.cookiesMu.Unlock()
+	if c.cookies != "" {
 		return nil
 	}
 
@@ -133,6 +140,7 @@ func (c *Client) ensureCookieExists() error {
 			"username": c.username,
 			"password": c.password,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type signinResponse struct {
@@ -148,9 +156,14 @@ func (c *Client) ensureCookieExists() error {
 	if err != nil {
 		return err
 	} else if !result.Data.Result {
-		return fmt.Errorf("sdkerr: failed to signin upyun console")
+		return fmt.Errorf("sdkerr: auth error")
 	} else {
-		c.loginCookie = httpresp.Header().Get("Set-Cookie")
+		cookies := httpresp.Header().Get("Set-Cookie")
+		if cookies == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty cookies")
+		}
+
+		c.cookies = cookies
 	}
 
 	return nil

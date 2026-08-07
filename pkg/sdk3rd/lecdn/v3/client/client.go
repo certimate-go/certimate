@@ -1,6 +1,8 @@
+// A simple SDK client for LeCDN v3 as user.
 package client
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -19,36 +21,41 @@ type Client struct {
 	username string
 	password string
 
-	accessToken    string
-	accessTokenMtx sync.Mutex
+	token   string
+	tokenMu sync.Mutex
 
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(serverUrl, username, password string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if username == "" {
+	if opts.Username == "" {
 		return nil, fmt.Errorf("sdkerr: unset username")
 	}
-	if password == "" {
+	if opts.Password == "" {
 		return nil, fmt.Errorf("sdkerr: unset password")
 	}
 
 	client := &Client{
-		username: username,
-		password: password,
+		username: opts.Username,
+		password: opts.Password,
 	}
-	client.client = resty.New().
+	client.rc = resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/prod-api").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			if client.accessToken != "" {
-				req.Header.Set("Authorization", "Bearer "+client.accessToken)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if client.token != "" {
+				req.Header.Set("Authorization", "Bearer "+client.token)
 			}
 
 			return nil
@@ -58,12 +65,12 @@ func NewClient(serverUrl, username, password string) (*Client, error) {
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -75,9 +82,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -85,9 +95,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -116,8 +123,8 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
-			if tcode := res.GetCode(); tcode != 200 {
-				return resp, fmt.Errorf("sdkerr: code='%d', message='%s'", tcode, res.GetMessage())
+			if rCode := res.GetCode(); rCode != 200 {
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', message='%s'", rCode, res.GetMessage())
 			}
 		}
 	}
@@ -125,10 +132,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureAccessTokenExists() error {
-	c.accessTokenMtx.Lock()
-	defer c.accessTokenMtx.Unlock()
-	if c.accessToken != "" {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" {
 		return nil
 	}
 
@@ -141,6 +148,7 @@ func (c *Client) ensureAccessTokenExists() error {
 			"username": c.username,
 			"password": c.password,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type loginResponse struct {
@@ -156,7 +164,11 @@ func (c *Client) ensureAccessTokenExists() error {
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
 	} else {
-		c.accessToken = result.Data.Token
+		if result.Data == nil || result.Data.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
+
+		c.token = result.Data.Token
 	}
 
 	return nil

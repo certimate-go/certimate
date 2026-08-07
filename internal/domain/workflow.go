@@ -3,10 +3,7 @@ package domain
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
-
-	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/domain/expr"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
@@ -144,13 +141,9 @@ func (c WorkflowNodeConfig) AsBranchBlock() WorkflowNodeConfigForBranchBlock {
 }
 
 func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
-	domains := lo.Filter(strings.Split(xmaps.GetString(c, "domains"), ";"), func(s string, _ int) bool { return s != "" })
-	ipaddrs := lo.Filter(strings.Split(xmaps.GetString(c, "ipaddrs"), ";"), func(s string, _ int) bool { return s != "" })
-	nameservers := lo.Filter(strings.Split(xmaps.GetString(c, "nameservers"), ";"), func(s string, _ int) bool { return s != "" })
-
 	return WorkflowNodeConfigForBizApply{
-		Domains:               domains,
-		IPAddrs:               ipaddrs,
+		Domains:               xmaps.GetStringsBySplit(c, "domains", ";"),
+		IPAddrs:               xmaps.GetStringsBySplit(c, "ipaddrs", ";"),
 		ContactEmail:          xmaps.GetString(c, "contactEmail"),
 		ChallengeType:         xmaps.GetString(c, "challengeType"),
 		Provider:              xmaps.GetString(c, "provider"),
@@ -165,7 +158,7 @@ func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
 		ValidityLifetime:      xmaps.GetString(c, "validityLifetime"),
 		PreferredChain:        xmaps.GetString(c, "preferredChain"),
 		ACMEProfile:           xmaps.GetString(c, "acmeProfile"),
-		Nameservers:           nameservers,
+		Nameservers:           xmaps.GetStringsBySplit(c, "nameservers", ";"),
 		DnsPropagationWait:    xmaps.GetInt(c, "dnsPropagationWait"),
 		DnsPropagationTimeout: xmaps.GetInt(c, "dnsPropagationTimeout"),
 		DnsTTL:                xmaps.GetInt(c, "dnsTTL"),

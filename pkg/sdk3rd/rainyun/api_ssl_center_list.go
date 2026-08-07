@@ -21,8 +21,8 @@ type SslCenterListResponse struct {
 	sdkResponseBase
 
 	Data *struct {
-		TotalRecords int32        `json:"TotalRecords"`
-		Records      []*SslRecord `json:"Records"`
+		TotalRecords int32             `json:"TotalRecords"`
+		Records      []*SSLCertificate `json:"Records"`
 	} `json:"data,omitempty"`
 }
 

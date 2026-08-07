@@ -1,6 +1,8 @@
+// A mock HTTP client for uniCloud.
 package unicloud
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/md5"
 	"encoding/hex"
@@ -17,22 +19,22 @@ import (
 	"github.com/go-resty/resty/v2"
 
 	"github.com/certimate-go/certimate/internal/app"
+	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 type Client struct {
 	username string
 	password string
 
-	serverlessJwtToken    string
-	serverlessJwtTokenExp time.Time
-	serverlessJwtTokenMtx sync.Mutex
+	serverlessToken   string
+	serverlessTokenAt time.Time
+	serverlessTokenMu sync.Mutex
 
-	serverlessClient *resty.Client
+	apiUserToken   string
+	apiUserTokenMu sync.Mutex
 
-	apiUserToken    string
-	apiUserTokenMtx sync.Mutex
-
-	apiClient *resty.Client
+	rcForServerless *resty.Client
+	rcForApiUser    *resty.Client
 }
 
 const (
@@ -46,28 +48,33 @@ const (
 	uniConsoleSpaceId       = "dc-6nfabcn6ada8d3dd"
 )
 
-func NewClient(username, password string) (*Client, error) {
-	if username == "" {
+func NewClient(optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
+	if opts.Username == "" {
 		return nil, fmt.Errorf("sdkerr: unset username")
 	}
-	if password == "" {
+	if opts.Password == "" {
 		return nil, fmt.Errorf("sdkerr: unset password")
 	}
 
 	client := &Client{
-		username: username,
-		password: password,
+		username: opts.Username,
+		password: opts.Password,
 	}
-	client.serverlessClient = resty.New().
+	client.rcForServerless = resty.New().
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
-	client.apiClient = resty.New().
+	client.rcForApiUser = resty.New().
 		SetBaseURL("https://unicloud-api.dcloud.net.cn/unicloud/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if client.apiUserToken != "" {
 				req.Header.Set("Token", client.apiUserToken)
 			}
@@ -79,7 +86,7 @@ func NewClient(username, password string) (*Client, error) {
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.serverlessClient.SetTimeout(timeout)
+	c.rcForServerless.SetTimeout(timeout)
 	return c
 }
 
@@ -101,7 +108,7 @@ func (c *Client) buildServerlessClientInfo(appId string) (_clientInfo map[string
 	}, nil
 }
 
-func (c *Client) buildServerlessPayloadInfo(appId, spaceId, target, method, action string, params, data interface{}) (map[string]any, error) {
+func (c *Client) buildServerlessPayloadInfo(appId, spaceId, target, method, action string, params, data any) (map[string]any, error) {
 	clientInfo, err := c.buildServerlessClientInfo(appId)
 	if err != nil {
 		return nil, err
@@ -114,7 +121,7 @@ func (c *Client) buildServerlessPayloadInfo(appId, spaceId, target, method, acti
 
 	functionArgs := map[string]any{
 		"clientInfo": clientInfo,
-		"uniIdToken": c.serverlessJwtToken,
+		"uniIdToken": c.serverlessToken,
 	}
 	if method != "" {
 		functionArgs["method"] = method
@@ -150,14 +157,14 @@ func (c *Client) buildServerlessPayloadInfo(appId, spaceId, target, method, acti
 	return payload, nil
 }
 
-func (c *Client) invokeServerless(endpoint, clientSecret, appId, spaceId, target, method, action string, params, data interface{}) (*resty.Response, error) {
+func (c *Client) invokeServerless(ctx context.Context, endpoint, clientSecret, appId, spaceId, target, method, action string, params, data any) (*resty.Response, error) {
 	if endpoint == "" {
-		return nil, fmt.Errorf("unicloud api error: endpoint cannot be empty")
+		return nil, fmt.Errorf("sdkerr: bad request: endpoint cannot be empty")
 	}
 
 	payload, err := c.buildServerlessPayloadInfo(appId, spaceId, target, method, action, params, data)
 	if err != nil {
-		return nil, fmt.Errorf("unicloud api error: failed to build request: %w", err)
+		return nil, fmt.Errorf("sdkerr: bad request: failed to build request: %w", err)
 	}
 
 	clientInfo, _ := c.buildServerlessClientInfo(appId)
@@ -165,26 +172,27 @@ func (c *Client) invokeServerless(endpoint, clientSecret, appId, spaceId, target
 
 	sign := generateSignature(payload, clientSecret)
 
-	req := c.serverlessClient.R().
+	req := c.rcForServerless.R().
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Origin", "https://unicloud.dcloud.net.cn").
 		SetHeader("Referer", "https://unicloud.dcloud.net.cn").
 		SetHeader("X-Client-Info", string(clientInfoJsonb)).
-		SetHeader("X-Client-Token", c.serverlessJwtToken).
+		SetHeader("X-Client-Token", c.serverlessToken).
 		SetHeader("X-Serverless-Sign", sign).
-		SetBody(payload)
+		SetBody(payload).
+		SetContext(ctx)
 	resp, err := req.Post(endpoint)
 	if err != nil {
-		return resp, fmt.Errorf("unicloud api error: failed to send request: %w", err)
+		return resp, fmt.Errorf("sdkerr: failed to send request: %w", err)
 	} else if resp.IsError() {
-		return resp, fmt.Errorf("unicloud api error: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
+		return resp, fmt.Errorf("sdkerr: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
 	}
 
 	return resp, nil
 }
 
-func (c *Client) invokeServerlessWithResult(endpoint, clientSecret, appId, spaceId, target, method, action string, params, data interface{}, result sdkResponse) error {
-	resp, err := c.invokeServerless(endpoint, clientSecret, appId, spaceId, target, method, action, params, data)
+func (c *Client) invokeServerlessWithResult(ctx context.Context, endpoint, clientSecret, appId, spaceId, target, method, action string, params, data any, result sdkResponse) error {
+	resp, err := c.invokeServerless(ctx, endpoint, clientSecret, appId, spaceId, target, method, action, params, data)
 	if err != nil {
 		if resp != nil {
 			json.Unmarshal(resp.Body(), &result)
@@ -193,16 +201,17 @@ func (c *Client) invokeServerlessWithResult(endpoint, clientSecret, appId, space
 	}
 
 	if err := json.Unmarshal(resp.Body(), &result); err != nil {
-		return fmt.Errorf("unicloud api error: failed to unmarshal response: %w", err)
-	} else if success := result.GetSuccess(); !success {
-		return fmt.Errorf("unicloud api error: code='%s', message='%s'", result.GetErrorCode(), result.GetErrorMessage())
+		return fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
+	} else if rSuccess := result.GetSuccess(); !rSuccess {
+		return fmt.Errorf("sdkerr: api error: code='%s', message='%s'", result.GetErrorCode(), result.GetErrorMessage())
 	}
 
 	return nil
 }
 
-func (c *Client) sendRequest(method string, path string, params interface{}) (*resty.Response, error) {
-	req := c.apiClient.R()
+func (c *Client) sendRequest(ctx context.Context, method string, path string, params any) (*resty.Response, error) {
+	req := c.rcForApiUser.R().
+		SetContext(ctx)
 	if strings.EqualFold(method, http.MethodGet) {
 		qs := make(map[string]string)
 		if params != nil {
@@ -223,16 +232,16 @@ func (c *Client) sendRequest(method string, path string, params interface{}) (*r
 
 	resp, err := req.Execute(method, path)
 	if err != nil {
-		return resp, fmt.Errorf("unicloud api error: failed to send request: %w", err)
+		return resp, fmt.Errorf("sdkerr: failed to send request: %w", err)
 	} else if resp.IsError() {
-		return resp, fmt.Errorf("unicloud api error: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
+		return resp, fmt.Errorf("sdkerr: unexpected status code: %d (resp: %s)", resp.StatusCode(), resp.String())
 	}
 
 	return resp, nil
 }
 
-func (c *Client) sendRequestWithResult(method string, path string, params interface{}, result sdkResponse) error {
-	resp, err := c.sendRequest(method, path, params)
+func (c *Client) sendRequestWithResult(ctx context.Context, method string, path string, params any, result sdkResponse) error {
+	resp, err := c.sendRequest(ctx, method, path, params)
 	if err != nil {
 		if resp != nil {
 			json.Unmarshal(resp.Body(), &result)
@@ -241,18 +250,18 @@ func (c *Client) sendRequestWithResult(method string, path string, params interf
 	}
 
 	if err := json.Unmarshal(resp.Body(), &result); err != nil {
-		return fmt.Errorf("unicloud api error: failed to unmarshal response: %w", err)
-	} else if retcode := result.GetReturnCode(); retcode != 0 {
-		return fmt.Errorf("unicloud api error: ret='%d', desc='%s'", retcode, result.GetReturnDesc())
+		return fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
+	} else if rReturnCode := result.GetReturnCode(); rReturnCode != 0 {
+		return fmt.Errorf("sdkerr: ret='%d', desc='%s'", rReturnCode, result.GetReturnDesc())
 	}
 
 	return nil
 }
 
-func (c *Client) ensureServerlessJwtTokenExists() error {
-	c.serverlessJwtTokenMtx.Lock()
-	defer c.serverlessJwtTokenMtx.Unlock()
-	if c.serverlessJwtToken != "" && c.serverlessJwtTokenExp.After(time.Now()) {
+func (c *Client) ensureServerlessToken(ctx context.Context) error {
+	c.serverlessTokenMu.Lock()
+	defer c.serverlessTokenMu.Unlock()
+	if c.serverlessToken != "" && c.serverlessTokenAt.After(time.Now()) {
 		return nil
 	}
 
@@ -280,28 +289,35 @@ func (c *Client) ensureServerlessJwtTokenExists() error {
 	}
 
 	resp := &loginResponse{}
-	if err := c.invokeServerlessWithResult(
+	if err := c.invokeServerlessWithResult(ctx,
 		uniIdentityEndpoint, uniIdentityClientSecret, uniIdentityAppId, uniIdentitySpaceId,
 		"uni-id-co", "login", "", params, nil,
 		resp); err != nil {
 		return err
-	} else if resp.Data == nil || resp.Data.NewToken == nil || resp.Data.NewToken.Token == "" {
-		return fmt.Errorf("unicloud api error: received empty token")
-	}
+	} else {
+		if resp.Data == nil || resp.Data.NewToken == nil || resp.Data.NewToken.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
 
-	c.serverlessJwtToken = resp.Data.NewToken.Token
-	c.serverlessJwtTokenExp = time.UnixMilli(resp.Data.NewToken.TokenExpired)
+		tokenAt := time.UnixMilli(resp.Data.NewToken.TokenExpired)
+		if tokenAt.IsZero() {
+			return fmt.Errorf("sdkerr: auth error: received invalid token expiration")
+		}
+
+		c.serverlessToken = resp.Data.NewToken.Token
+		c.serverlessTokenAt = tokenAt
+	}
 
 	return nil
 }
 
-func (c *Client) ensureApiUserTokenExists() error {
-	if err := c.ensureServerlessJwtTokenExists(); err != nil {
+func (c *Client) ensureApiUserToken(ctx context.Context) error {
+	if err := c.ensureServerlessToken(ctx); err != nil {
 		return err
 	}
 
-	c.apiUserTokenMtx.Lock()
-	defer c.apiUserTokenMtx.Unlock()
+	c.apiUserTokenMu.Lock()
+	defer c.apiUserTokenMu.Unlock()
 	if c.apiUserToken != "" {
 		return nil
 	}
@@ -322,25 +338,24 @@ func (c *Client) ensureApiUserTokenExists() error {
 	}
 
 	resp := &getUserTokenResponse{}
-	if err := c.invokeServerlessWithResult(
+	if err := c.invokeServerlessWithResult(ctx,
 		uniConsoleEndpoint, uniConsoleClientSecret, uniConsoleAppId, uniConsoleSpaceId,
 		"uni-cloud-kernel", "", "user/getUserToken", nil, map[string]any{"isLogin": true},
 		resp); err != nil {
 		return err
-	} else if resp.Data == nil || resp.Data.Data == nil || resp.Data.Data.Data == nil || resp.Data.Data.Data.Token == "" {
-		return fmt.Errorf("unicloud api error: received empty user token")
-	}
+	} else {
+		if resp.Data == nil || resp.Data.Data == nil || resp.Data.Data.Data == nil || resp.Data.Data.Data.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
 
-	c.apiUserToken = resp.Data.Data.Data.Token
+		c.apiUserToken = resp.Data.Data.Data.Token
+	}
 
 	return nil
 }
 
 func generateSignature(params map[string]any, secret string) string {
-	keys := make([]string, 0, len(params))
-	for k := range params {
-		keys = append(keys, k)
-	}
+	keys := xmaps.Keys(params)
 	sort.Strings(keys)
 
 	canonicalStr := ""

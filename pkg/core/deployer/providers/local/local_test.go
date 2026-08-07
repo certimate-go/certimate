@@ -3,12 +3,14 @@ package local_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/local"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp              = tester.Args("LOCAL_")
+	fp              = it.Args("LOCAL_")
 	fTestCertPath   string
 	fTestKeyPath    string
 	fFilePathForCrt string
@@ -67,12 +69,9 @@ func TestProvider(t *testing.T) {
 			PreCommand:     fPreCommand,
 			PostCommand:    fPostCommand,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_PFX", func(t *testing.T) {
@@ -82,12 +81,9 @@ func TestProvider(t *testing.T) {
 			PfxPassword:    fPfxPassword,
 			PfxEncoder:     fPfxEncoder,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_JKS", func(t *testing.T) {
@@ -98,11 +94,8 @@ func TestProvider(t *testing.T) {
 			JksKeypass:     fJksKeypass,
 			JksStorepass:   fJksStorepass,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -3,12 +3,14 @@ package ucloudulb_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ucloud-upathx"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("UCLOUDUPATHX_")
+	fp            = it.Args("UCLOUDUPATHX_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fPrivateKey   string
@@ -39,11 +41,8 @@ func TestProvider(t *testing.T) {
 			PrivateKey: fPrivateKey,
 			PublicKey:  fPublicKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

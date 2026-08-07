@@ -3,12 +3,14 @@ package tencentcloudclb_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-clb"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp              = tester.Args("TENCENTCLOUDCLB_")
+	fp              = it.Args("TENCENTCLOUDCLB_")
 	fTestCertPath   string
 	fTestKeyPath    string
 	fSecretId       string
@@ -54,12 +56,9 @@ func TestProvider(t *testing.T) {
 			DeployTarget:   impl.DEPLOY_TARGET_LOADBALANCER,
 			LoadbalancerId: fLoadbalancerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_ToListener", func(t *testing.T) {
@@ -71,12 +70,9 @@ func TestProvider(t *testing.T) {
 			LoadbalancerId: fLoadbalancerId,
 			ListenerId:     fListenerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 
 	t.Run("Deploy_ToRuleDomain", func(t *testing.T) {
@@ -89,11 +85,8 @@ func TestProvider(t *testing.T) {
 			ListenerId:     fListenerId,
 			Domain:         fDomain,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

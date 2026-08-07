@@ -12,15 +12,17 @@ body:
         1. Yes, I'm using the latest release.
         2. Yes, I've searched for [existing issues](https://github.com/certimate-go/certimate/issues) (including closed ones) on GitHub and didn't find any similar.
         3. Yes, I've read the [documentation](https://docs.certimate.me/) and didn't find any similar.
-        4. Please describe the problem in detail according to the template specification, otherwise the issue will be closed directly.
-        5. Please limit one request per issue.
+        4. Yes, I've starred this repository to help others find it.
+        5. Please describe the problem in detail according to the template specification, otherwise the issue will be closed directly.
+        6. Please limit one request per issue.
 
         **在提交 Issue 之前，请确认以下事项**：
         1. 我**确认**是基于当前最新大版本而提出的新功能请求或改进意见。
         2. 我**确认**已搜索过[已有的 Issues](https://github.com/certimate-go/certimate/issues)（包括已关闭的），没有类似的问题。
         3. 我**确认**已阅读过[文档](https://docs.certimate.me/)，没有类似的问题。
-        4. 请**务必**按照模板规范详细描述问题，否则 Issue 将会被直接关闭。
-        5. 请保持每个 Issue 只包含一个功能请求。如果有多个需求，请分别提交 Issue。
+        4. 我**确认**已给该项目点亮星标，以帮助其他人发现它。
+        5. 请**务必**按照模板规范详细描述问题，否则 Issue 将会被直接关闭。
+        6. 请保持每个 Issue 只包含一个功能请求。如果有多个需求，请分别提交 Issue。
 
   - type: textarea
     attributes:

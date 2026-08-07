@@ -84,7 +84,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 获取域名证书配置
 	getHttpsServiceManagerResp, err := d.sdkClient.GetHttpsServiceManagerWithContext(ctx, d.config.Domain)
-	d.logger.Debug("sdk request 'console.GetHttpsServiceManager'", slog.String("request.domain", d.config.Domain), slog.Any("response", getHttpsServiceManagerResp))
+	d.logger.Debug("sdk request 'console.GetHttpsServiceManager'", slog.String("params.domain", d.config.Domain), slog.Any("response", getHttpsServiceManagerResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'console.GetHttpsServiceManager': %w", err)
 	}
@@ -122,5 +122,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(username, password string) (*upyunsdk.Client, error) {
-	return upyunsdk.NewClient(username, password)
+	client, err := upyunsdk.NewClient(
+		upyunsdk.WithLogins(username, password),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

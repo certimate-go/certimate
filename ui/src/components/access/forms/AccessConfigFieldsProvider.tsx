@@ -1,5 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 
+import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
+import SchemaConfigFields from "@/components/workflow/designer/forms/SchemaConfigFields";
 import { ACCESS_PROVIDERS, type AccessProviderType } from "@/domain/provider";
 
 import AccessConfigFieldsProvider1Panel from "./AccessConfigFieldsProvider1Panel";
@@ -10,7 +12,6 @@ import AccessConfigFieldsProviderACMEDNS from "./AccessConfigFieldsProviderACMED
 import AccessConfigFieldsProviderACMEHttpReq from "./AccessConfigFieldsProviderACMEHttpReq";
 import AccessConfigFieldsProviderActalisSSL from "./AccessConfigFieldsProviderActalisSSL";
 import AccessConfigFieldsProviderAkamai from "./AccessConfigFieldsProviderAkamai";
-import AccessConfigFieldsProviderAliyun from "./AccessConfigFieldsProviderAliyun";
 import AccessConfigFieldsProviderAPISIX from "./AccessConfigFieldsProviderAPISIX";
 import AccessConfigFieldsProviderArvanCloud from "./AccessConfigFieldsProviderArvanCloud";
 import AccessConfigFieldsProviderAWS from "./AccessConfigFieldsProviderAWS";
@@ -41,7 +42,6 @@ import AccessConfigFieldsProviderDiscordBot from "./AccessConfigFieldsProviderDi
 import AccessConfigFieldsProviderDNSExit from "./AccessConfigFieldsProviderDNSExit";
 import AccessConfigFieldsProviderDNSLA from "./AccessConfigFieldsProviderDNSLA";
 import AccessConfigFieldsProviderDNSMadeEasy from "./AccessConfigFieldsProviderDNSMadeEasy";
-import AccessConfigFieldsProviderDogeCloud from "./AccessConfigFieldsProviderDogeCloud";
 import AccessConfigFieldsProviderDokploy from "./AccessConfigFieldsProviderDokploy";
 import AccessConfigFieldsProviderDuckDNS from "./AccessConfigFieldsProviderDuckDNS";
 import AccessConfigFieldsProviderDynadot from "./AccessConfigFieldsProviderDynadot";
@@ -68,11 +68,11 @@ import AccessConfigFieldsProviderIONOS from "./AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./AccessConfigFieldsProviderJDCloud";
 import AccessConfigFieldsProviderKong from "./AccessConfigFieldsProviderKong";
 import AccessConfigFieldsProviderKsyun from "./AccessConfigFieldsProviderKsyun";
-import AccessConfigFieldsProviderKubernetes from "./AccessConfigFieldsProviderKubernetes";
 import AccessConfigFieldsProviderLarkBot from "./AccessConfigFieldsProviderLarkBot";
 import AccessConfigFieldsProviderLeCDN from "./AccessConfigFieldsProviderLeCDN";
 import AccessConfigFieldsProviderLinode from "./AccessConfigFieldsProviderLinode";
 import AccessConfigFieldsProviderLiteSSL from "./AccessConfigFieldsProviderLiteSSL";
+import AccessConfigFieldsProviderMatrix from "./AccessConfigFieldsProviderMatrix";
 import AccessConfigFieldsProviderMattermost from "./AccessConfigFieldsProviderMattermost";
 import AccessConfigFieldsProviderMohua from "./AccessConfigFieldsProviderMohua";
 import AccessConfigFieldsProviderNamecheap from "./AccessConfigFieldsProviderNamecheap";
@@ -82,12 +82,12 @@ import AccessConfigFieldsProviderNetcup from "./AccessConfigFieldsProviderNetcup
 import AccessConfigFieldsProviderNetlify from "./AccessConfigFieldsProviderNetlify";
 import AccessConfigFieldsProviderNginxProxyManager from "./AccessConfigFieldsProviderNginxProxyManager";
 import AccessConfigFieldsProviderNS1 from "./AccessConfigFieldsProviderNS1";
+import AccessConfigFieldsProviderOracleCloud from "./AccessConfigFieldsProviderOracleCloud";
 import AccessConfigFieldsProviderOVHcloud from "./AccessConfigFieldsProviderOVHcloud";
 import AccessConfigFieldsProviderPorkbun from "./AccessConfigFieldsProviderPorkbun";
 import AccessConfigFieldsProviderPowerDNS from "./AccessConfigFieldsProviderPowerDNS";
 import AccessConfigFieldsProviderProxmoxVE from "./AccessConfigFieldsProviderProxmoxVE";
 import AccessConfigFieldsProviderQingCloud from "./AccessConfigFieldsProviderQingCloud";
-import AccessConfigFieldsProviderQiniu from "./AccessConfigFieldsProviderQiniu";
 import AccessConfigFieldsProviderRainYun from "./AccessConfigFieldsProviderRainYun";
 import AccessConfigFieldsProviderRatPanel from "./AccessConfigFieldsProviderRatPanel";
 import AccessConfigFieldsProviderRegru from "./AccessConfigFieldsProviderRegru";
@@ -97,6 +97,7 @@ import AccessConfigFieldsProviderS3 from "./AccessConfigFieldsProviderS3";
 import AccessConfigFieldsProviderSafeLine from "./AccessConfigFieldsProviderSafeLine";
 import AccessConfigFieldsProviderSamWAF from "./AccessConfigFieldsProviderSamWAF";
 import AccessConfigFieldsProviderSectigo from "./AccessConfigFieldsProviderSectigo";
+import AccessConfigFieldsProviderSimplyCom from "./AccessConfigFieldsProviderSimplyCom";
 import AccessConfigFieldsProviderSlackBot from "./AccessConfigFieldsProviderSlackBot";
 import AccessConfigFieldsProviderSpaceship from "./AccessConfigFieldsProviderSpaceship";
 import AccessConfigFieldsProviderSSH from "./AccessConfigFieldsProviderSSH";
@@ -117,6 +118,7 @@ import AccessConfigFieldsProviderWebhook from "./AccessConfigFieldsProviderWebho
 import AccessConfigFieldsProviderWeComBot from "./AccessConfigFieldsProviderWeComBot";
 import AccessConfigFieldsProviderWestcn from "./AccessConfigFieldsProviderWestcn";
 import AccessConfigFieldsProviderXinnet from "./AccessConfigFieldsProviderXinnet";
+import AccessConfigFieldsProviderYandexCloud from "./AccessConfigFieldsProviderYandexCloud";
 import AccessConfigFieldsProviderZenlayer from "./AccessConfigFieldsProviderZenlayer";
 import AccessConfigFieldsProviderZeroSSL from "./AccessConfigFieldsProviderZeroSSL";
 
@@ -133,7 +135,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.ACMEHTTPREQ]: AccessConfigFieldsProviderACMEHttpReq,
   [ACCESS_PROVIDERS.ACTALISSSL]: AccessConfigFieldsProviderActalisSSL,
   [ACCESS_PROVIDERS.AKAMAI]: AccessConfigFieldsProviderAkamai,
-  [ACCESS_PROVIDERS.ALIYUN]: AccessConfigFieldsProviderAliyun,
   [ACCESS_PROVIDERS.APISIX]: AccessConfigFieldsProviderAPISIX,
   [ACCESS_PROVIDERS.ARVANCLOUD]: AccessConfigFieldsProviderArvanCloud,
   [ACCESS_PROVIDERS.AWS]: AccessConfigFieldsProviderAWS,
@@ -165,7 +166,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.DNSLA]: AccessConfigFieldsProviderDNSLA,
   [ACCESS_PROVIDERS.DNSMADEEASY]: AccessConfigFieldsProviderDNSMadeEasy,
   [ACCESS_PROVIDERS.DOKPLOY]: AccessConfigFieldsProviderDokploy,
-  [ACCESS_PROVIDERS.DOGECLOUD]: AccessConfigFieldsProviderDogeCloud,
   [ACCESS_PROVIDERS.DUCKDNS]: AccessConfigFieldsProviderDuckDNS,
   [ACCESS_PROVIDERS.DYNADOT]: AccessConfigFieldsProviderDynadot,
   [ACCESS_PROVIDERS.DYNU]: AccessConfigFieldsProviderDynu,
@@ -189,13 +189,13 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.IONOS]: AccessConfigFieldsProviderIONOS,
   [ACCESS_PROVIDERS.JDCLOUD]: AccessConfigFieldsProviderJDCloud,
   [ACCESS_PROVIDERS.KONG]: AccessConfigFieldsProviderKong,
-  [ACCESS_PROVIDERS.KUBERNETES]: AccessConfigFieldsProviderKubernetes,
   [ACCESS_PROVIDERS.KSYUN]: AccessConfigFieldsProviderKsyun,
   [ACCESS_PROVIDERS.LARKBOT]: AccessConfigFieldsProviderLarkBot,
   [ACCESS_PROVIDERS.LECDN]: AccessConfigFieldsProviderLeCDN,
   [ACCESS_PROVIDERS.INFOMANIAK]: AccessConfigFieldsProviderInfomaniak,
   [ACCESS_PROVIDERS.LINODE]: AccessConfigFieldsProviderLinode,
   [ACCESS_PROVIDERS.LITESSL]: AccessConfigFieldsProviderLiteSSL,
+  [ACCESS_PROVIDERS.MATRIX]: AccessConfigFieldsProviderMatrix,
   [ACCESS_PROVIDERS.MATTERMOST]: AccessConfigFieldsProviderMattermost,
   [ACCESS_PROVIDERS.MOHUA]: AccessConfigFieldsProviderMohua,
   [ACCESS_PROVIDERS.NAMECHEAP]: AccessConfigFieldsProviderNamecheap,
@@ -205,12 +205,12 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.NETLIFY]: AccessConfigFieldsProviderNetlify,
   [ACCESS_PROVIDERS.NGINXPROXYMANAGER]: AccessConfigFieldsProviderNginxProxyManager,
   [ACCESS_PROVIDERS.NS1]: AccessConfigFieldsProviderNS1,
+  [ACCESS_PROVIDERS.ORACLECLOUD]: AccessConfigFieldsProviderOracleCloud,
   [ACCESS_PROVIDERS.OVHCLOUD]: AccessConfigFieldsProviderOVHcloud,
   [ACCESS_PROVIDERS.PORKBUN]: AccessConfigFieldsProviderPorkbun,
   [ACCESS_PROVIDERS.POWERDNS]: AccessConfigFieldsProviderPowerDNS,
   [ACCESS_PROVIDERS.PROXMOXVE]: AccessConfigFieldsProviderProxmoxVE,
   [ACCESS_PROVIDERS.QINGCLOUD]: AccessConfigFieldsProviderQingCloud,
-  [ACCESS_PROVIDERS.QINIU]: AccessConfigFieldsProviderQiniu,
   [ACCESS_PROVIDERS.RAINYUN]: AccessConfigFieldsProviderRainYun,
   [ACCESS_PROVIDERS.RATPANEL]: AccessConfigFieldsProviderRatPanel,
   [ACCESS_PROVIDERS.REGRU]: AccessConfigFieldsProviderRegru,
@@ -220,6 +220,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.SAFELINE]: AccessConfigFieldsProviderSafeLine,
   [ACCESS_PROVIDERS.SAMWAF]: AccessConfigFieldsProviderSamWAF,
   [ACCESS_PROVIDERS.SECTIGO]: AccessConfigFieldsProviderSectigo,
+  [ACCESS_PROVIDERS.SIMPLYCOM]: AccessConfigFieldsProviderSimplyCom,
   [ACCESS_PROVIDERS.SLACKBOT]: AccessConfigFieldsProviderSlackBot,
   [ACCESS_PROVIDERS.SPACESHIP]: AccessConfigFieldsProviderSpaceship,
   [ACCESS_PROVIDERS.SSLCOM]: AccessConfigFieldsProviderSSLCom,
@@ -240,11 +241,30 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.WECOMBOT]: AccessConfigFieldsProviderWeComBot,
   [ACCESS_PROVIDERS.WESTCN]: AccessConfigFieldsProviderWestcn,
   [ACCESS_PROVIDERS.XINNET]: AccessConfigFieldsProviderXinnet,
+  [ACCESS_PROVIDERS.YANDEXCLOUD]: AccessConfigFieldsProviderYandexCloud,
   [ACCESS_PROVIDERS.ZENLAYER]: AccessConfigFieldsProviderZenlayer,
   [ACCESS_PROVIDERS.ZEROSSL]: AccessConfigFieldsProviderZeroSSL,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
+  const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setEnvelope(null);
+    if (!provider) {
+      return;
+    }
+    void getProviderSchema(provider).then((env) => {
+      if (!cancelled) {
+        setEnvelope(env);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [provider]);
+
   const initComponent = () => {
     const Component = providerComponentMap[provider as AccessProviderType];
     if (!Component) return null;
@@ -257,10 +277,15 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     return <Component />;
   };
 
-  const [component, setComponent] = useState(() => initComponent());
+  const [component, setComponent] = useState<React.ReactNode>(() => initComponent());
 
-  useEffect(() => setComponent(initComponent()), [provider]);
-  useEffect(() => setComponent(initComponent()), deps);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider, envelope]);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+  }, deps);
 
   return component;
 };

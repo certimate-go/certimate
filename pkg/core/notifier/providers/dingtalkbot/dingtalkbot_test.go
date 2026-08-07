@@ -3,12 +3,14 @@ package dingtalkbot_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/notifier/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/notifier/providers/dingtalkbot"
+	it "github.com/certimate-go/certimate/pkg/core/notifier/testing"
 )
 
 var (
-	fp          = tester.Args("DINGTALKBOT_")
+	fp          = it.Args("DINGTALKBOT_")
 	fWebhookUrl string
 	fSecret     string
 )
@@ -33,11 +35,8 @@ func TestProvider(t *testing.T) {
 			WebhookUrl: fWebhookUrl,
 			Secret:     fSecret,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestNotify(t, provider, tester.TestNotifyArgs{})
+		it.TestNotify(t, provider, it.TestNotifyArgs{})
 	})
 }

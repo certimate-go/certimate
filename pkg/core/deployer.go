@@ -6,7 +6,7 @@ import (
 
 // 表示定义 SSL 证书部署器的抽象类型接口。
 type Deployer interface {
-	WithLogger
+	LoggerSetter
 
 	// 部署证书。
 	//

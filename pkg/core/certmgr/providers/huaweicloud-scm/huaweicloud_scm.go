@@ -125,6 +125,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				if exportCertificateResp != nil && exportCertificateResp.HttpStatusCode == 404 {
 					continue
 				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'scm.ExportCertificate': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, lo.FromPtr(exportCertificateResp.Certificate)) {

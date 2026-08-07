@@ -11,14 +11,14 @@ type NginxListProxyHostsRequest struct {
 	Expand *string `json:"expand,omitempty" url:"expand,omitempty"`
 }
 
-type NginxListProxyHostsResponse = []*ProxyHostRecord
+type NginxListProxyHostsResponse = []*ProxyHost
 
 func (c *Client) NginxListProxyHosts(req *NginxListProxyHostsRequest) (*NginxListProxyHostsResponse, error) {
 	return c.NginxListProxyHostsWithContext(context.Background(), req)
 }
 
 func (c *Client) NginxListProxyHostsWithContext(ctx context.Context, req *NginxListProxyHostsRequest) (*NginxListProxyHostsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

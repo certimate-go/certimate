@@ -3,6 +3,7 @@ package awsiam
 import (
 	"cmp"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -10,7 +11,10 @@ import (
 	aws "github.com/aws/aws-sdk-go-v2/aws"
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	awscred "github.com/aws/aws-sdk-go-v2/credentials"
-	awsiam "github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds"
+	"github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/smithy-go"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
@@ -23,6 +27,10 @@ type (
 )
 
 type CertmgrConfig struct {
+	// AWS API 认证方式。
+	// 可取值 "accesskey"、"imds"。
+	// 零值时默认值 [AUTH_METHOD_ACCESSKEY]。
+	AuthMethod string `json:"authMethod,omitempty"`
 	// AWS AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
 	// AWS SecretAccessKey。
@@ -37,7 +45,7 @@ type CertmgrConfig struct {
 type Certmgr struct {
 	config    *CertmgrConfig
 	logger    *slog.Logger
-	sdkClient *awsiam.Client
+	sdkClient *iam.Client
 }
 
 var _ Provider = (*Certmgr)(nil)
@@ -47,7 +55,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	client, err := createSDKClient(config.AuthMethod, config.AccessKeyId, config.SecretAccessKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -75,7 +83,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -91,12 +99,10 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		default:
 		}
 
-		listServerCertificatesReq := &awsiam.ListServerCertificatesInput{
-			Marker:   listServerCertificatesMarker,
-			MaxItems: aws.Int32(1000),
-		}
-		if c.config.CertificatePath != "" {
-			listServerCertificatesReq.PathPrefix = aws.String(c.config.CertificatePath)
+		listServerCertificatesReq := &iam.ListServerCertificatesInput{
+			PathPrefix: lo.EmptyableToPtr(c.config.CertificatePath),
+			Marker:     listServerCertificatesMarker,
+			MaxItems:   aws.Int32(1000),
 		}
 		listServerCertificatesResp, err := c.sdkClient.ListServerCertificates(ctx, listServerCertificatesReq)
 		c.logger.Debug("sdk request 'iam.ListServerCertificates'", slog.Any("request", listServerCertificatesReq), slog.Any("response", listServerCertificatesResp))
@@ -111,16 +117,23 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
-			if certItem.Expiration == nil || !certItem.Expiration.Equal(certX509.NotAfter) {
+			if certItem.Expiration == nil || !certX509.NotAfter.Equal(*certItem.Expiration) {
 				continue
 			}
 
 			// 对比证书内容
-			getServerCertificateReq := &awsiam.GetServerCertificateInput{
+			getServerCertificateReq := &iam.GetServerCertificateInput{
 				ServerCertificateName: certItem.ServerCertificateName,
 			}
 			getServerCertificateResp, err := c.sdkClient.GetServerCertificate(ctx, getServerCertificateReq)
 			if err != nil {
+				var sdkErr smithy.APIError
+				if errors.As(err, &sdkErr) {
+					if sdkErrCode := sdkErr.ErrorCode(); sdkErrCode == "NoSuchEntity" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'iam.GetServerCertificate': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, aws.ToString(getServerCertificateResp.ServerCertificate.CertificateBody)) {
@@ -152,11 +165,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 	// 导入证书
 	// REF: https://docs.aws.amazon.com/IAM/latest/APIReference/API_UploadServerCertificate.html
-	uploadServerCertificateReq := &awsiam.UploadServerCertificateInput{
+	uploadServerCertificateReq := &iam.UploadServerCertificateInput{
 		ServerCertificateName: aws.String(certName),
 		Path:                  aws.String(cmp.Or(c.config.CertificatePath, "/")),
 		CertificateBody:       aws.String(serverCertPEM),
-		CertificateChain:      aws.String(intermediaCertPEM),
+		CertificateChain:      aws.String(issuerCertPEM),
 		PrivateKey:            aws.String(privkeyPEM),
 	}
 	uploadServerCertificateResp, err := c.sdkClient.UploadServerCertificate(ctx, uploadServerCertificateReq)
@@ -179,15 +192,31 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	return nil, core.ErrUnsupported
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*awsiam.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background())
+func createSDKClient(authMethod, accessKeyId, secretAccessKey, region string) (*iam.Client, error) {
+	opts := []func(options *awscfg.LoadOptions) error{
+		awscfg.WithRegion(region),
+	}
+
+	staticCredsProvider := awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")
+	imdsCredsProvider := aws.NewCredentialsCache(ec2rolecreds.New())
+	switch authMethod {
+	case "":
+		if accessKeyId != "" && secretAccessKey != "" {
+			opts = append(opts, awscfg.WithCredentialsProvider(staticCredsProvider))
+		}
+	case AUTH_METHOD_ACCESSKEY:
+		opts = append(opts, awscfg.WithCredentialsProvider(staticCredsProvider))
+	case AUTH_METHOD_IMDS:
+		opts = append(opts, awscfg.WithCredentialsProvider(imdsCredsProvider))
+	default:
+		return nil, fmt.Errorf("unsupported auth method '%s'", authMethod)
+	}
+
+	cfg, err := awscfg.LoadDefaultConfig(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	client := awsiam.NewFromConfig(cfg, func(o *awsiam.Options) {
-		o.Region = region
-		o.Credentials = aws.NewCredentialsCache(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, ""))
-	})
+	client := iam.NewFromConfig(cfg)
 	return client, nil
 }

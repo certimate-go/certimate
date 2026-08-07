@@ -1,3 +1,5 @@
+// An extension SDK client for BaiduCloud SSL service.
+// Based on github.com/baidubce/bce-sdk-go.
 package cert
 
 import (

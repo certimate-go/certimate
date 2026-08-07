@@ -14,4 +14,6 @@ const (
 	DOMAIN_TYPE_PLAY = "play"
 	// 域名类型：封面加速域名。
 	DOMAIN_TYPE_IMAGE = "image"
+	// 域名类型：自定义源站加速域名。
+	DOMAIN_TYPE_THIRD = "third"
 )

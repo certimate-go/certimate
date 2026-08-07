@@ -1,3 +1,5 @@
+// A simple SDK client for WangsuCloud CDN.
+// API documentation: https://www.wangsu.com/document/api-doc/product
 package cdn
 
 import (
@@ -6,15 +8,15 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/openapi"
+	common "github.com/certimate-go/certimate/pkg/sdk3rd/wangsu/zz-shared-common"
 )
 
 type Client struct {
-	client *openapi.Client
+	client *common.Client
 }
 
-func NewClient(accessKey, secretKey string) (*Client, error) {
-	client, err := openapi.NewClient(accessKey, secretKey)
+func NewClient(optFns ...common.OptionsFunc) (*Client, error) {
+	client, err := common.NewClient(optFns...)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +40,8 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*resty.Response, error) {
 	resp, err := c.client.DoRequestWithResult(req, res)
 	if err == nil {
-		if tcode := res.GetCode(); tcode != "" && tcode != "0" {
-			return resp, fmt.Errorf("sdkerr: api error: code='%s', message='%s'", tcode, res.GetMessage())
+		if rCode := res.GetCode(); rCode != "" && rCode != "0" {
+			return resp, fmt.Errorf("sdkerr: api error: code='%s', message='%s'", rCode, res.GetMessage())
 		}
 	}
 

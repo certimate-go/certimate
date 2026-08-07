@@ -1,3 +1,5 @@
+// A simple SDK client for aaPanel Windows Go version.
+// API documentation: https://www.aapanel.com/docs/api/api-list.html
 package btpanelgo
 
 import (
@@ -20,39 +22,44 @@ import (
 type Client struct {
 	apiKey string
 
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(serverUrl, apiKey string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if apiKey == "" {
+	if opts.ApiKey == "" {
 		return nil, fmt.Errorf("sdkerr: unset apiKey")
 	}
 
-	client := resty.New().
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
 		SetHeader("User-Agent", app.AppUserAgent)
 
 	return &Client{
-		apiKey: apiKey,
-		client: client,
+		apiKey: opts.ApiKey,
+		rc:     httper,
 	}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -64,7 +71,7 @@ func (c *Client) newRequest(method string, path string, params any, multipart bo
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	data := make(map[string]string)
+	paramsMap := make(map[string]string)
 	if params != nil {
 		temp := make(map[string]any)
 		jsonb, _ := json.Marshal(params)
@@ -76,31 +83,31 @@ func (c *Client) newRequest(method string, path string, params any, multipart bo
 
 			switch reflect.Indirect(reflect.ValueOf(v)).Kind() {
 			case reflect.String:
-				data[k] = v.(string)
+				paramsMap[k] = v.(string)
 
 			case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64:
-				data[k] = fmt.Sprintf("%v", v)
+				paramsMap[k] = fmt.Sprintf("%v", v)
 
 			default:
 				if t, ok := v.(time.Time); ok {
-					data[k] = t.Format(time.RFC3339)
+					paramsMap[k] = t.Format(time.RFC3339)
 				} else {
 					jsonb, _ := json.Marshal(v)
-					data[k] = string(jsonb)
+					paramsMap[k] = string(jsonb)
 				}
 			}
 		}
 	}
 
-	timestamp := time.Now().Unix()
-	data["request_time"] = fmt.Sprintf("%d", timestamp)
-	data["request_token"] = generateSignature(fmt.Sprintf("%d", timestamp), c.apiKey)
+	timestamp := fmt.Sprintf("%d", time.Now().Unix())
+	paramsMap["request_time"] = timestamp
+	paramsMap["request_token"] = generateSignature(timestamp, c.apiKey)
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
 	if multipart {
-		req.SetMultipartFormData(data)
+		req.SetMultipartFormData(paramsMap)
 
 		if params != nil {
 			vparams := reflect.ValueOf(params)
@@ -133,9 +140,12 @@ func (c *Client) newRequest(method string, path string, params any, multipart bo
 			}
 		}
 	} else {
-		req.SetFormData(data)
+		req.SetFormData(paramsMap)
 	}
 
+	// WARN:
+	//   DO NOT CALL `req.SetBody` or `req.SetFormData` AGAIN! USE `newRequest` INSTEAD.
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -143,10 +153,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetBody` or `req.SetFormData` HERE! USE `newRequest` INSTEAD.
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -175,17 +181,17 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
-			if tstatus := res.GetStatus(); tstatus != nil {
+			if rStatus := res.GetStatus(); rStatus != nil {
 				var errored bool
 
-				var bstatus bool
-				if err := json.Unmarshal(tstatus, &bstatus); err == nil {
-					errored = !bstatus
+				var rStatusAsBool bool
+				if err := json.Unmarshal(rStatus, &rStatusAsBool); err == nil {
+					errored = !rStatusAsBool
 				}
 
-				var istatus int
-				if err := json.Unmarshal(tstatus, &istatus); err == nil {
-					errored = istatus != 0
+				var rStatusAsInt int
+				if err := json.Unmarshal(rStatus, &rStatusAsInt); err == nil {
+					errored = rStatusAsInt != 0
 				}
 
 				if errored {
@@ -208,5 +214,6 @@ func generateSignature(timestamp string, apiKey string) string {
 
 	signMd5 := md5.Sum([]byte(timestamp + keyMd5Hex))
 	signMd5Hex := strings.ToLower(hex.EncodeToString(signMd5[:]))
+
 	return signMd5Hex
 }

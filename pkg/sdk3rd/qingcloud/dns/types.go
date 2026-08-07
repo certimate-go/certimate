@@ -27,18 +27,3 @@ func (r *sdkResponseBase) GetMessage() string {
 }
 
 var _ sdkResponse = (*sdkResponseBase)(nil)
-
-type DnsRecord struct {
-	GroupId     *int64            `json:"group_id,omitempty"`
-	GroupStatus *int32            `json:"group_status,omitempty"`
-	Value       []*DnsRecordValue `json:"value,omitempty"`
-	Weight      *int32            `json:"weight,omitempty"`
-}
-
-type DnsRecordValue struct {
-	Id    *int64  `json:"id,omitempty"`
-	Type  *string `json:"type,omitempty"`
-	Value *string `json:"value,omitempty"`
-	Line  *string `json:"line,omitempty"`
-	Ttl   *int32  `json:"ttl,omitempty"`
-}

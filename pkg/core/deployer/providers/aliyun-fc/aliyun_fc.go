@@ -2,7 +2,6 @@ package aliyunfc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -18,6 +17,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -62,7 +62,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	clientV2, err := createSDKClientV2(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientV3, err := createSDKClientV3(config.AccessKeyId, config.AccessKeySecret, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -70,7 +75,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{FC2: clientV2, FC3: clientV3},
 	}, nil
 }
 
@@ -156,26 +161,16 @@ func (d *Deployer) deployToFC3(ctx context.Context, certPEM, privkeyPEM string) 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no fc domains to deploy")
 	} else {
 		d.logger.Info("found fc domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateFC3DomainCertificate(ctx, domain, certPEM, privkeyPEM); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateFC3DomainCertificate(ctx, domain, certPEM, privkeyPEM)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -237,26 +232,16 @@ func (d *Deployer) deployToFC2(ctx context.Context, certPEM, privkeyPEM string) 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no fc domains to deploy")
 	} else {
 		d.logger.Info("found fc domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateFC2DomainCertificate(ctx, domain, certPEM, privkeyPEM); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateFC2DomainCertificate(ctx, domain, certPEM, privkeyPEM)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -419,60 +404,54 @@ func (d *Deployer) updateFC2DomainCertificate(ctx context.Context, domain string
 	return nil
 }
 
-func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
-
-	{
-		// 接入点一览 https://api.aliyun.com/product/FC-Open
-		var endpoint string
-		switch region {
-		case "":
-			endpoint = "fc.aliyuncs.com"
-		case "cn-hangzhou-finance":
-			endpoint = fmt.Sprintf("%s.fc.aliyuncs.com", region)
-		default:
-			endpoint = fmt.Sprintf("fc.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := alifcopen.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.FC2 = client
+func createSDKClientV2(accessKeyId, accessKeySecret, region string) (*alifcopen.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/FC-Open
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "fc.aliyuncs.com"
+	case "cn-hangzhou-finance":
+		endpoint = fmt.Sprintf("%s.fc.aliyuncs.com", region)
+	default:
+		endpoint = fmt.Sprintf("fc.%s.aliyuncs.com", region)
 	}
 
-	{
-		// 接入点一览 https://api.aliyun.com/product/FC
-		var endpoint string
-		switch region {
-		case "":
-			endpoint = "fcv3.cn-hangzhou.aliyuncs.com"
-		case "me-central-1", "cn-hangzhou-finance", "cn-shanghai-finance-1", "cn-heyuan-acdr-1":
-			endpoint = fmt.Sprintf("%s.fc.aliyuncs.com", region)
-		default:
-			endpoint = fmt.Sprintf("fcv3.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := alifc.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.FC3 = client
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
 	}
 
-	return wsdk, nil
+	client, err := alifcopen.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func createSDKClientV3(accessKeyId, accessKeySecret, region string) (*alifc.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/FC
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "fcv3.cn-hangzhou.aliyuncs.com"
+	case "me-central-1", "cn-hangzhou-finance", "cn-shanghai-finance-1", "cn-heyuan-acdr-1":
+		endpoint = fmt.Sprintf("%s.fc.aliyuncs.com", region)
+	default:
+		endpoint = fmt.Sprintf("fcv3.%s.aliyuncs.com", region)
+	}
+
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
+	}
+
+	client, err := alifc.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -3,6 +3,7 @@ import { Form, Input, InputNumber, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import Show from "@/components/Show";
 import { isHostname, isPortNumber } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
@@ -15,7 +16,10 @@ const AccessConfigFormFieldsProviderRFC2136 = () => {
     [parentNamePath]: getSchema({ i18n }),
   });
   const formRule = createSchemaFieldRule(formSchema);
+  const formInst = Form.useFormInstance<z.infer<typeof formSchema>>();
   const initialValues = getInitialValues();
+
+  const fieldTsigAlgorithm = Form.useWatch([parentNamePath, "tsigAlgorithm"], formInst);
 
   return (
     <>
@@ -46,23 +50,41 @@ const AccessConfigFormFieldsProviderRFC2136 = () => {
             { label: "HMAC-SHA-256", value: "hmac-sha256." },
             { label: "HMAC-SHA-384", value: "hmac-sha384." },
             { label: "HMAC-SHA-512", value: "hmac-sha512." },
+            { label: "HMAC-SHA-512", value: "hmac-sha512." },
+            { label: "GSS-TSIG", value: "gss-tsig." },
           ]}
           placeholder={t("access.form.rfc2136_tsig_algorithm.placeholder")}
         />
       </Form.Item>
 
-      <Form.Item name={[parentNamePath, "tsigKey"]} initialValue={initialValues.tsigKey} label={t("access.form.rfc2136_tsig_key.label")} rules={[formRule]}>
-        <Input allowClear autoComplete="new-password" placeholder={t("access.form.rfc2136_tsig_key.placeholder")} />
-      </Form.Item>
+      <Show when={fieldTsigAlgorithm !== "gss-tsig."}>
+        <Form.Item name={[parentNamePath, "tsigKey"]} initialValue={initialValues.tsigKey} label={t("access.form.rfc2136_tsig_key.label")} rules={[formRule]}>
+          <Input allowClear autoComplete="new-password" placeholder={t("access.form.rfc2136_tsig_key.placeholder")} />
+        </Form.Item>
 
-      <Form.Item
-        name={[parentNamePath, "tsigSecret"]}
-        initialValue={initialValues.tsigSecret}
-        label={t("access.form.rfc2136_tsig_secret.label")}
-        rules={[formRule]}
-      >
-        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.rfc2136_tsig_secret.placeholder")} />
-      </Form.Item>
+        <Form.Item
+          name={[parentNamePath, "tsigSecret"]}
+          initialValue={initialValues.tsigSecret}
+          label={t("access.form.rfc2136_tsig_secret.label")}
+          rules={[formRule]}
+        >
+          <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.rfc2136_tsig_secret.placeholder")} />
+        </Form.Item>
+      </Show>
+
+      <Show when={fieldTsigAlgorithm === "gss-tsig."}>
+        <Form.Item name={[parentNamePath, "tsigGssRealm"]} label={t("access.form.rfc2136_tsig_gss_realm.label")} rules={[formRule]}>
+          <Input allowClear placeholder={t("access.form.rfc2136_tsig_gss_realm.placeholder")} />
+        </Form.Item>
+
+        <Form.Item name={[parentNamePath, "tsigGssUsername"]} label={t("access.form.rfc2136_tsig_gss_username.label")} rules={[formRule]}>
+          <Input allowClear autoComplete="new-password" placeholder={t("access.form.rfc2136_tsig_gss_username.placeholder")} />
+        </Form.Item>
+
+        <Form.Item name={[parentNamePath, "tsigGssPassword"]} label={t("access.form.rfc2136_tsig_gss_password.label")} rules={[formRule]}>
+          <Input allowClear autoComplete="new-password" placeholder={t("access.form.rfc2136_tsig_gss_password.placeholder")} />
+        </Form.Item>
+      </Show>
     </>
   );
 };
@@ -86,6 +108,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
     tsigAlgorithm: z.string().nonempty(),
     tsigKey: z.string().nullish(),
     tsigSecret: z.string().nullish(),
+    tsigGssRealm: z.string().nullish(),
+    tsigGssUsername: z.string().nullish(),
+    tsigGssPassword: z.string().nullish(),
   });
 };
 

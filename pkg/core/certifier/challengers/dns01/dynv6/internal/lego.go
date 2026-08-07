@@ -72,7 +72,9 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("dynv6: the configuration of the DNS provider is nil")
 	}
 
-	client, err := dynv6sdk.NewClient(config.HTTPToken)
+	client, err := dynv6sdk.NewClient(
+		dynv6sdk.WithHttpToken(config.HTTPToken),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("dynv6: %w", err)
 	} else {
@@ -107,7 +109,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("dynv6: error when list zones: %w", err)
 	}
 
-	// REF: https://dynv6.github.io/api-spec/#tag/records/operation/addRecord
 	response, err := d.client.AddRecordWithContext(ctx, zoneInfo.ID, &dynv6sdk.AddRecordRequest{
 		Type: lo.ToPtr("TXT"),
 		Name: lo.ToPtr(subDomain),
@@ -154,6 +155,14 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("dynv6: error when delete record: %w", err)
 	}
 
+	d.zoneIDsMu.Lock()
+	delete(d.zoneIDs, authZone)
+	d.zoneIDsMu.Unlock()
+
+	d.recordIDsMu.Lock()
+	delete(d.recordIDs, token)
+	d.recordIDsMu.Unlock()
+
 	return nil
 }
 
@@ -162,7 +171,6 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 }
 
 func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*dynv6sdk.ZoneRecord, error) {
-	// REF: https://dynv6.github.io/api-spec/#tag/zones/operation/findZones
 	zones, err := d.client.ListZonesWithContext(ctx)
 	if err != nil {
 		return nil, err

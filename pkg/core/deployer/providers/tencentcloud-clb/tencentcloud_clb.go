@@ -2,10 +2,8 @@ package tencentcloudclb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
 	"github.com/samber/lo"
@@ -16,6 +14,8 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
+	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -71,9 +71,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		ProjectId: config.ProjectId,
-		Endpoint: lo.
-			If(strings.HasSuffix(config.Endpoint, "intl.tencentcloudapi.com"), "ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
-			Else(""),
+		Endpoint:  lo.Ternary(xtencentcloud.IsIntlAPIEndpoint(config.Endpoint), "ssl.intl.tencentcloudapi.com", ""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -156,26 +154,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		}
 	}
 
-	// 遍历更新监听器证书
+	// 批量更新监听器证书
 	if len(listenerIds) == 0 {
 		d.logger.Info("no clb listeners to deploy")
 	} else {
-		d.logger.Info("found https/tcpssl/quic listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
+		d.logger.Info("found clb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, d.config.LoadbalancerId, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -240,10 +228,10 @@ func (d *Deployer) deployToRuleDomain(ctx context.Context, cloudCertId string) e
 		case 0:
 			return true, nil
 		case 1:
-			return false, fmt.Errorf("unexpected tencentcloud task status")
+			return false, fmt.Errorf("unexpected deployment task status")
 		}
 
-		d.logger.Info("waiting for tencentcloud task completion ...")
+		d.logger.Info("waiting for deployment task completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err
@@ -263,7 +251,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'clb.DescribeListeners': %w", err)
 	} else if len(describeListenersResp.Response.Listeners) == 0 {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find clb listener '%s'", cloudListenerId)
 	}
 
 	// 修改监听器属性
@@ -299,10 +287,10 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 		case 0:
 			return true, nil
 		case 1:
-			return false, fmt.Errorf("unexpected tencentcloud task status")
+			return false, fmt.Errorf("unexpected deployment task status")
 		}
 
-		d.logger.Info("waiting for tencentcloud task completion ...")
+		d.logger.Info("waiting for deployment task completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err

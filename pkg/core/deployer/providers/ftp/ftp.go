@@ -84,7 +84,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -147,7 +147,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				if err := ftpClient.ChangeDir(ctx, filepath.Dir(d.config.FilePathForCrtOnlyIntermedia)); err != nil {
 					return nil, fmt.Errorf("failed to upload intermedia certificate file: %w", err)
 				}
-				if err := ftpClient.StoreString(ctx, filepath.Base(d.config.FilePathForCrtOnlyIntermedia), intermediaCertPEM); err != nil {
+				if err := ftpClient.StoreString(ctx, filepath.Base(d.config.FilePathForCrtOnlyIntermedia), issuerCertPEM); err != nil {
 					return nil, fmt.Errorf("failed to upload intermedia certificate file: %w", err)
 				}
 				d.logger.Info("ssl intermedia certificate file uploaded", slog.String("path", d.config.FilePathForCrtOnlyIntermedia))

@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 const CollectionNameAccess = "access"
 
@@ -80,6 +82,7 @@ type AccessConfigForArvanCloud struct {
 }
 
 type AccessConfigForAWS struct {
+	AuthMethod      string `json:"authMethod"`
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 }
@@ -225,11 +228,6 @@ type AccessConfigForDNSMadeEasy struct {
 	ApiSecret string `json:"apiSecret"`
 }
 
-type AccessConfigForDogeCloud struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
-}
-
 type AccessConfigForDokploy struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
@@ -366,10 +364,6 @@ type AccessConfigForKong struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForKubernetes struct {
-	KubeConfig string `json:"kubeConfig,omitempty"`
-}
-
 type AccessConfigForKsyun struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
@@ -396,6 +390,13 @@ type AccessConfigForLinode struct {
 
 type AccessConfigForLiteSSL struct {
 	AccessConfigForACMEExternalAccountBinding
+}
+
+type AccessConfigForMatrix struct {
+	ServerUrl   string `json:"serverUrl"`
+	UserId      string `json:"userId"`
+	AccessToken string `json:"accessToken"`
+	RoomId      string `json:"roomId,omitempty"`
 }
 
 type AccessConfigForMattermost struct {
@@ -447,6 +448,15 @@ type AccessConfigForNS1 struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type AccessConfigForOracleCloud struct {
+	AuthMethod           string `json:"authMethod"`
+	PrivateKey           string `json:"privateKey,omitempty"`
+	PrivateKeyPassphrase string `json:"privateKeyPassphrase,omitempty"`
+	PublicKeyFingerprint string `json:"publicKeyFingerprint,omitempty"`
+	TenancyOcid          string `json:"tenancyOcid,omitempty"`
+	UserOcid             string `json:"userOcid,omitempty"`
+}
+
 type AccessConfigForOVHcloud struct {
 	Endpoint          string `json:"endpoint"`
 	AuthMethod        string `json:"authMethod"`
@@ -480,11 +490,6 @@ type AccessConfigForQingCloud struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
-type AccessConfigForQiniu struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
-}
-
 type AccessConfigForRainYun struct {
 	ApiKey string `json:"apiKey"`
 }
@@ -504,11 +509,14 @@ type AccessConfigForRegru struct {
 }
 
 type AccessConfigForRFC2136 struct {
-	Host          string `json:"host"`
-	Port          int32  `json:"port"`
-	TsigAlgorithm string `json:"tsigAlgorithm,omitempty"`
-	TsigKey       string `json:"tsigKey,omitempty"`
-	TsigSecret    string `json:"tsigSecret,omitempty"`
+	Host            string `json:"host"`
+	Port            int32  `json:"port"`
+	TsigAlgorithm   string `json:"tsigAlgorithm,omitempty"`
+	TsigKey         string `json:"tsigKey,omitempty"`
+	TsigSecret      string `json:"tsigSecret,omitempty"`
+	TsigGssRealm    string `json:"tsigGssRealm,omitempty"`
+	TsigGssUsername string `json:"tsigGssUsername,omitempty"`
+	TsigGssPassword string `json:"tsigGssPassword,omitempty"`
 }
 
 type AccessConfigForRuCenter struct {
@@ -537,6 +545,11 @@ type AccessConfigForSamWAF struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
+type AccessConfigForSimplyCom struct {
+	AccountNumber string `json:"accountNumber"`
+	ApiKey        string `json:"apiKey"`
 }
 
 type AccessConfigForSlackBot struct {
@@ -660,6 +673,11 @@ type AccessConfigForWestcn struct {
 type AccessConfigForXinnet struct {
 	AgentId     string `json:"agentId"`
 	ApiPassword string `json:"apiPassword"`
+}
+
+type AccessConfigForYandexCloud struct {
+	FolderId          string `json:"folderId"`
+	ServiceAccountKey string `json:"serviceAccountKey"`
 }
 
 type AccessConfigForZenlayer struct {

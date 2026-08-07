@@ -57,7 +57,7 @@ func (c *Client) GetBuckets(req *GetBucketsRequest) (*GetBucketsResponse, error)
 }
 
 func (c *Client) GetBucketsWithContext(ctx context.Context, req *GetBucketsRequest) (*GetBucketsResponse, error) {
-	if err := c.ensureCookieExists(); err != nil {
+	if err := c.ensureCookies(ctx); err != nil {
 		return nil, err
 	}
 

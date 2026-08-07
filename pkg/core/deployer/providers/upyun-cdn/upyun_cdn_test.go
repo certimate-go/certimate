@@ -3,12 +3,14 @@ package upyuncdn_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/upyun-cdn"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("UPYUNCDN_")
+	fp            = it.Args("UPYUNCDN_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fUsername     string
@@ -43,11 +45,8 @@ func TestProvider(t *testing.T) {
 			Password: fPassword,
 			Domain:   fDomain,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

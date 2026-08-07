@@ -78,6 +78,7 @@
         "placeholder": "搜索提供商……"
       }
     },
+
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "请输入 ACME EAB KID"
@@ -89,6 +90,7 @@
     "shared_allow_insecure_conns": {
       "label": "忽略 SSL/TLS 证书验证"
     },
+
     "1panel_server_url": {
       "label": "1Panel 服务地址",
       "placeholder": "请输入 1Panel 服务地址",
@@ -143,7 +145,7 @@
     },
     "acmedns_credentials": {
       "label": "ACME-DNS 凭证文件",
-      "placeholder": "请输入 ACME-DNS 凭证文件",
+      "placeholder": "请输入 ACME-DNS 凭证文件\r\n\r\n{\r\n  \"allowfrom\": [\r\n    \"192.168.100.1/24\",\r\n    \"1.2.3.4/32\",\r\n    \"2002:c0a8:2a00::0/40\"\r\n  ],\r\n  \"fulldomain\": \"SUBDOMAIN.auth.acme-dns.io\",\r\n  \"subdomain\": \"SUBDOMAIN\",\r\n  \"username\": \"USERNAME\",\r\n  \"password\": \"PASSWORD\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://github.com/joohoi/acme-dns\" target=\"_blank\">https://github.com/joohoi/acme-dns</a>"
     },
     "acmehttpreq_endpoint": {
@@ -217,6 +219,19 @@
       "label": "ArvanCloud API 密钥",
       "placeholder": "请输入 ArvanCloud API 密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
+    },
+    "aws_auth_method": {
+      "label": "AWS API 认证方式",
+      "placeholder": "请选择 AWS API 认证方式",
+      "option": {
+        "accesskey": {
+          "label": "访问密钥"
+        },
+        "imds": {
+          "label": "EC2 IMDS",
+          "guide": "如果你正在使用容器化运行 Certimate，请确保已为 EC2 实例配置了正确的 <em>http-put-response-hop-limit</em> 元数据。点击下方链接了解更多：<br><a href=\"https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
     },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
@@ -734,13 +749,13 @@
       "tooltip": "这是什么？请参阅 <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
     },
     "googlecloud_project_id": {
-      "label": "Google Cloud 项目 ID",
-      "placeholder": "请输入 Google Cloud 项目 ID",
+      "label": "GCP 项目 ID",
+      "placeholder": "请输入 GCP 项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
     },
     "googlecloud_service_account_key": {
-      "label": "Google Cloud 服务账号密钥",
-      "placeholder": "请输入 Google Cloud 服务账号密钥",
+      "label": "GCP 服务账号密钥",
+      "placeholder": "请输入 GCP 服务账号密钥\r\n\r\n{\r\n  \"name\": \"projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL/keys/KEY_ID\",\r\n  \"privateKeyType\": \"TYPE_GOOGLE_CREDENTIALS_FILE\",\r\n  \"privateKeyData\": \"ENCODED_PRIVATE_KEY\",\r\n  \"validAfterTime\": \"DATE\",\r\n  \"validBeforeTime\": \"DATE\",\r\n  \"keyAlgorithm\": \"KEY_ALG_RSA_2048\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -877,6 +892,26 @@
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
+    "matrix_server_url": {
+      "label": "Matrix 服务地址",
+      "placeholder": "请输入 Matrix 服务地址"
+    },
+    "matrix_user_id": {
+      "label": "Matrix 用户 ID",
+      "placeholder": "请输入 Matrix 用户 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
+    },
+    "matrix_access_token": {
+      "label": "Matrix Access token",
+      "placeholder": "请输入 Matrix Access token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
+    },
+    "matrix_room_id": {
+      "label": "Matrix 房间 ID（可选）",
+      "placeholder": "请输入默认的 Matrix 房间 ID",
+      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
+    },
     "mattermost_server_url": {
       "label": "Mattermost 服务地址",
       "placeholder": "请输入 Mattermost 服务地址"
@@ -977,6 +1012,46 @@
       "label": "NPM API Token",
       "placeholder": "请输入 NPM API Token"
     },
+    "oraclecloud_auth_method": {
+      "label": "OCI API 认证方式",
+      "placeholder": "请选择 OCI API 认证方式",
+      "option": {
+        "apikey": {
+          "label": "API Key"
+        },
+        "instanceprincipal": {
+          "label": "Instance Principal"
+        },
+        "resourceprincipal": {
+          "label": "Resource Principal"
+        }
+      }
+    },
+    "oraclecloud_private_key": {
+      "label": "OCI API 签名私钥",
+      "placeholder": "请输入 OCI API 签名私钥",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_private_key_passphrase": {
+      "label": "OCI API 签名私钥口令（可选）",
+      "placeholder": "请输入 OCI API 签名私钥口令",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_public_key_fingerprint": {
+      "label": "OCI API 签名公钥指纹",
+      "placeholder": "请输入 OCI API 签名公钥指纹",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_tenancy_ocid": {
+      "label": "OCI 租户 OCID",
+      "placeholder": "请输入 OCI 租户 OCID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_user_ocid": {
+      "label": "OCI 用户 OCID",
+      "placeholder": "请输入 OCI 用户 OCID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
     "ns1_api_key": {
       "label": "NS1 API Key",
       "placeholder": "请输入 NS1 API Key",
@@ -1066,16 +1141,6 @@
       "placeholder": "请输入青云 SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>"
     },
-    "qiniu_access_key": {
-      "label": "七牛云 AccessKey",
-      "placeholder": "请输入七牛云 AccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
-    "qiniu_secret_key": {
-      "label": "七牛云 SecretKey",
-      "placeholder": "请输入七牛云 SecretKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
     "rainyun_api_key": {
       "label": "雨云 API 密钥",
       "placeholder": "请输入雨云 API 密钥",
@@ -1139,6 +1204,18 @@
     "rfc2136_tsig_secret": {
       "label": "TSIG 认证密钥 Secret（可选）",
       "placeholder": "请输入 TSIG 认证密钥 Secret"
+    },
+    "rfc2136_tsig_gss_realm": {
+      "label": "GSS-TSIG Kerberos 领域（可选）",
+      "placeholder": "请输入 GSS-TSIG Kerberos 领域"
+    },
+    "rfc2136_tsig_gss_username": {
+      "label": "GSS-TSIG Kerberos 用户名（可选）",
+      "placeholder": "请输入 GSS-TSIG Kerberos 用户名"
+    },
+    "rfc2136_tsig_gss_password": {
+      "label": "GSS-TSIG Kerberos 密码（可选）",
+      "placeholder": "请输入 GSS-TSIG Kerberos 密码"
     },
     "rucenter_username": {
       "label": "Ru-Center 用户名",
@@ -1215,6 +1292,16 @@
     "sectigo_eab": {
       "guide": "点击下方链接了解如何获取 Sectigo EAB：<br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>"
     },
+    "simplycom_account_number": {
+      "label": "Simply.com 账号",
+      "placeholder": "请输入 Simply.com 账号",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
+    "simplycom_api_key": {
+      "label": "Simply.com API Key",
+      "placeholder": "请输入 Simply.com API Key",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
+    },
     "slackbot_token": {
       "label": "Slack 机器人 Token",
       "placeholder": "请输入 Slack 机器人 Token",
@@ -1269,7 +1356,7 @@
     },
     "ssh_key": {
       "label": "SSH 密钥",
-      "placeholder": "请输入 SSH 密钥文件内容"
+      "placeholder": "请输入 SSH 密钥文件内容\r\n\r\n-----BEGIN OPENSSH PRIVATE KEY-----\r\n...\r\n-----END OPENSSH PRIVATE KEY-----"
     },
     "ssh_key_passphrase": {
       "label": "SSH 密钥口令（可选）",
@@ -1500,6 +1587,16 @@
     },
     "xinnet_agent": {
       "guide": "新网数码 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>"
+    },
+    "yandexcloud_folder_id": {
+      "label": "Yandex Cloud 项目文件夹 ID",
+      "placeholder": "请输入 Yandex Cloud 项目文件夹 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id\" target=\"_blank\">https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id</a>"
+    },
+    "yandexcloud_service_account_key": {
+      "label": "Yandex Cloud 服务账号授权密钥",
+      "placeholder": "请输入Yandex Cloud 服务账号授权密钥\r\n\r\n{\r\n  \"id\": \"AUTHORIZED_KEY_ID\",\r\n  \"service_account_id\": \"SERVICE_ACCOUNT_ID\",\r\n  \"created_at\": \"DATE\",\r\n  \"key_algorithm\": \"RSA_2048\",\r\n  \"public_key\": \"ENCODED_PUBLIC_KEY\",\r\n  \"private_key\": \"ENCODED_PRIVATE_KEY\"\r\n}",
+      "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys\" target=\"_blank\">https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys</a>"
     },
     "zenlayer_access_key_id": {
       "label": "Zenlayer AccessKeyID",

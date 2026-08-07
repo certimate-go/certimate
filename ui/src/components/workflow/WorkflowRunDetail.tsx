@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditorState, FlowLayoutDefault } from "@flowgram.ai/fixed-layout-editor";
-import { IconBrowserShare, IconBug, IconCheck, IconClock, IconDots, IconDownload, IconMinus, IconSettings2, IconTransferOut } from "@tabler/icons-react";
+import { IconBrowserShare, IconBug, IconCheck, IconDots, IconDownload, IconSettings2, IconTransferOut } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
 import { Alert, App, Button, Card, Divider, Dropdown, Empty, Skeleton, Table, type TableProps, Tag, Tooltip, Typography, theme } from "antd";
 import dayjs from "dayjs";
@@ -443,26 +443,6 @@ const WorkflowRunArtifacts = ({ runData }: { runData: WorkflowRunModel }) => {
       },
     },
     {
-      key: "ari",
-      align: "center",
-      width: 56,
-      render: (_, record) => {
-        if (record.ariSupported) {
-          return (
-            <Tooltip title={t("certificate.props.ari_supported.supported")}>
-              <IconClock className="text-green-600" size="1.25em" />
-            </Tooltip>
-          );
-        }
-
-        return (
-          <Tooltip title={t("certificate.props.ari_supported.not_supported")}>
-            <IconMinus className="text-stone-400" size="1.25em" />
-          </Tooltip>
-        );
-      },
-    },
-    {
       key: "$action",
       align: "end",
       width: 64,
@@ -510,7 +490,7 @@ const WorkflowRunArtifacts = ({ runData }: { runData: WorkflowRunModel }) => {
       dataSource={tableData}
       loading={loading}
       locale={{
-        emptyText: <Empty description={t("common.text.nodata")} image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+        emptyText: <Empty description={t("common.text.nodata")} />,
       }}
       pagination={false}
       rowKey={(record) => record.id}

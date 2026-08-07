@@ -24,7 +24,7 @@ func (c *Client) UpdateCertificate(certificateId string, req *UpdateCertificateR
 
 func (c *Client) UpdateCertificateWithContext(ctx context.Context, certificateId string, req *UpdateCertificateRequest) (*UpdateCertificateResponse, error) {
 	if certificateId == "" {
-		return nil, fmt.Errorf("sdkerr: unset certificateId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset certificateId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPut, fmt.Sprintf("/api/certificate/%s", url.PathEscape(certificateId)))

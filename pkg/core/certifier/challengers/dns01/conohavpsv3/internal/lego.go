@@ -84,7 +84,13 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("conohavpsv3: the configuration of the DNS provider is nil")
 	}
 
-	client, err := conohavpssdk.NewClient(config.UserID, config.UserName, config.Password, config.TenantID, config.TenantName)
+	client, err := conohavpssdk.NewClient(
+		conohavpssdk.WithUserId(config.UserID),
+		conohavpssdk.WithUserName(config.UserName),
+		conohavpssdk.WithUserPassword(config.Password),
+		conohavpssdk.WithTenantId(config.TenantID),
+		conohavpssdk.WithTenantName(config.TenantName),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("conohavpsv3: %w", err)
 	} else {
@@ -114,7 +120,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("conohavpsv3: error when list zones: %w", err)
 	}
 
-	// REF: https://doc.conoha.jp/reference/api-vps3/api-dns-vps3/dnsaas-create_record-v3/
 	response, err := d.client.DnsCreateRecordWithContext(ctx, zoneInfo.UUID, &conohavpssdk.DnsCreateRecordRequest{
 		Name: lo.ToPtr(info.EffectiveFQDN),
 		Type: lo.ToPtr("TXT"),
@@ -162,6 +167,14 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("conohavpsv3: error when delete record: %w", err)
 	}
 
+	d.zoneIDsMu.Lock()
+	delete(d.zoneIDs, authZone)
+	d.zoneIDsMu.Unlock()
+
+	d.recordIDsMu.Lock()
+	delete(d.recordIDs, token)
+	d.recordIDsMu.Unlock()
+
 	return nil
 }
 
@@ -169,11 +182,10 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 	return d.config.PropagationTimeout, d.config.PollingInterval
 }
 
-func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*conohavpssdk.DnsDomainRecord, error) {
+func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*conohavpssdk.Domain, error) {
 	offset := 0
 	limit := 10
 	for {
-		// REF: https://doc.conoha.jp/reference/api-vps3/api-dns-vps3/dnsaas-get_domains_list-v3/
 		request := &conohavpssdk.DnsGetDomainsListRequest{
 			Offset: lo.ToPtr(offset),
 			Limit:  lo.ToPtr(limit),

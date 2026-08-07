@@ -17,17 +17,8 @@ type WebsiteSSLSearchResponse struct {
 	sdkResponseBase
 
 	Data *struct {
-		Items []*struct {
-			ID          int64  `json:"id"`
-			PEM         string `json:"pem"`
-			PrivateKey  string `json:"privateKey"`
-			Domains     string `json:"domains"`
-			Description string `json:"description"`
-			Status      string `json:"status"`
-			UpdatedAt   string `json:"updatedAt"`
-			CreatedAt   string `json:"createdAt"`
-		} `json:"items"`
-		Total int32 `json:"total"`
+		Items []*SSLCertificate `json:"items"`
+		Total int32             `json:"total"`
 	} `json:"data,omitempty"`
 }
 

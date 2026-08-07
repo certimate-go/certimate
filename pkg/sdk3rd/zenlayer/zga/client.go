@@ -1,4 +1,6 @@
-﻿package zga
+﻿// An extension SDK client for ZenlayerCloud CDN service.
+// Based on github.com/zenlayer/zenlayercloud-sdk-go.
+package zga
 
 import (
 	"github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"

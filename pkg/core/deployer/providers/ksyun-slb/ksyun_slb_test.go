@@ -3,16 +3,19 @@ package ksyunslb_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ksyun-slb"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp               = tester.Args("KSYUNSLB_")
+	fp               = it.Args("KSYUNSLB_")
 	fTestCertPath    string
 	fTestKeyPath     string
 	fAccessKeyId     string
 	fSecretAccessKey string
+	fRegion          string
 	fCertificateId   string
 )
 
@@ -21,6 +24,7 @@ func init() {
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
 	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
+	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fCertificateId, "CERTIFICATEID")
 }
 
@@ -32,6 +36,7 @@ Shell command to run this test:
 	--KSYUNSLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--KSYUNSLB_ACCESSKEYID="your-access-key-id" \
 	--KSYUNSLB_SECRETACCESSKEY="your-secret-access-key" \
+	--KSYUNSLB_REGION="cn-beijing-6" \
 	--KSYUNSLB_CERTIFICATEID="your-certificate-id"
 */
 func TestProvider(t *testing.T) {
@@ -41,14 +46,12 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewDeployer(&impl.DeployerConfig{
 			AccessKeyId:     fAccessKeyId,
 			SecretAccessKey: fSecretAccessKey,
+			Region:          fRegion,
 			DeployTarget:    impl.DEPLOY_TARGET_CERTIFICATE,
 			CertificateId:   fCertificateId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

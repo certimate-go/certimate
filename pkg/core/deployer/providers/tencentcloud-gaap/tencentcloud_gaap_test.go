@@ -3,12 +3,14 @@ package tencentcloudgaap_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/tencentcloud-gaap"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("TENCENTCLOUDCDN_")
+	fp            = it.Args("TENCENTCLOUGAAP_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fSecretId     string
@@ -35,7 +37,7 @@ Shell command to run this test:
 	--TENCENTCLOUDGAAP_SECRETID="your-secret-id" \
 	--TENCENTCLOUDGAAP_SECRETKEY="your-secret-key" \
 	--TENCENTCLOUDGAAP_PROXYID="your-gaap-group-id" \
-	--TENCENTCLOUDGAAP_LISTENERID="your-clb-listener-id"
+	--TENCENTCLOUDGAAP_LISTENERID="your-gaap-listener-id"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -48,11 +50,8 @@ func TestProvider(t *testing.T) {
 			ProxyId:      fProxyId,
 			ListenerId:   fListenerId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

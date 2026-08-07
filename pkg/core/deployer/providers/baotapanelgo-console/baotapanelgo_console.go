@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
-	btsdk "github.com/certimate-go/certimate/pkg/sdk3rd/btpanelgo"
+	btpanelgosdk "github.com/certimate-go/certimate/pkg/sdk3rd/btpanelgo"
 )
 
 type (
@@ -29,7 +29,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *btsdk.Client
+	sdkClient *btpanelgosdk.Client
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -61,7 +61,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	// 设置面板 SSL 证书
-	configSetPanelSSLReq := &btsdk.ConfigSetPanelSSLRequest{
+	configSetPanelSSLReq := &btpanelgosdk.ConfigSetPanelSSLRequest{
 		SSLStatus: lo.ToPtr(int32(1)),
 		SSLKey:    lo.ToPtr(privkeyPEM),
 		SSLPem:    lo.ToPtr(certPEM),
@@ -75,8 +75,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*btsdk.Client, error) {
-	client, err := btsdk.NewClient(serverUrl, apiKey)
+func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*btpanelgosdk.Client, error) {
+	client, err := btpanelgosdk.NewClient(serverUrl,
+		btpanelgosdk.WithApiKey(apiKey),
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -81,5 +81,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(apiKey string) (*bunnysdk.Client, error) {
-	return bunnysdk.NewClient(apiKey)
+	client, err := bunnysdk.NewClient(
+		bunnysdk.WithApiKey(apiKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, err
 }

@@ -1,17 +1,22 @@
 {
-  "css.customData": [
-    ".vscode/settings.tailwind.json"
-  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.formatOnSave": true,
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "Dockerfile_*": "dockerfile"
+  },
   "go.useLanguageServer": true,
   "gopls": {
     "formatting.gofumpt": true,
   },
-  "typescript.tsdk": "ui/node_modules/typescript/lib",
+  "js/ts.tsdk.path": "ui/node_modules/typescript/lib",
+  "search.exclude": {
+    "/pkg/sdk3rd-forked/*": true,
+    "/pkg/sdk3rd-trimmed/*": true,
+  },
   "[go]": {
     "editor.defaultFormatter": "golang.go"
   },

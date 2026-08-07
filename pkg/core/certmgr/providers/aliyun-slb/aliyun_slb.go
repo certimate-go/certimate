@@ -92,10 +92,10 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	if describeServerCertificatesResp.Body.ServerCertificates != nil && describeServerCertificatesResp.Body.ServerCertificates.ServerCertificate != nil {
-		fingerprintSha256 := sha256.Sum256(certX509.Raw)
-		fingerprintSha256Hex := hex.EncodeToString(fingerprintSha256[:])
 		fingerprintSha1 := sha1.Sum(certX509.Raw)
 		fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
+		fingerprintSha256 := sha256.Sum256(certX509.Raw)
+		fingerprintSha256Hex := hex.EncodeToString(fingerprintSha256[:])
 		for _, certItem := range describeServerCertificatesResp.Body.ServerCertificates.ServerCertificate {
 			if tea.Int32Value(certItem.IsAliCloudCertificate) != 0 {
 				continue
@@ -106,9 +106,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 				continue
 			}
 
-			// 对比证书 SHA-1 或 SHA-256 摘要
+			// 对比证书指纹
+			//
+			// 注意，虽然文档中描述为 SHA-256 摘要，但示例给出的是 SHA-1 摘要，因此这里都尝试对比一下
 			oldFingerprint := strings.ReplaceAll(tea.StringValue(certItem.Fingerprint), ":", "")
-			if !strings.EqualFold(fingerprintSha256Hex, oldFingerprint) && !strings.EqualFold(fingerprintSha1Hex, oldFingerprint) {
+			if !strings.EqualFold(fingerprintSha1Hex, oldFingerprint) && !strings.EqualFold(fingerprintSha256Hex, oldFingerprint) {
 				continue
 			}
 

@@ -23,7 +23,7 @@ const winscName = "certimate"
 func NewWinscCommand(app core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "winsc",
-		Short: "Install/Uninstall Windows service",
+		Short: "Manages Windows service",
 	}
 
 	command.AddCommand(winscInstallCommand(app))

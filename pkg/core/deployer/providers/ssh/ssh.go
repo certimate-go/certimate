@@ -107,7 +107,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -165,7 +165,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			}
 
 			if d.config.FilePathForCrtOnlyIntermedia != "" {
-				if err := xssh.WriteRemoteString(sshClient.RawClient(), d.config.FilePathForCrtOnlyIntermedia, intermediaCertPEM, d.config.UseSCP); err != nil {
+				if err := xssh.WriteRemoteString(sshClient.RawClient(), d.config.FilePathForCrtOnlyIntermedia, issuerCertPEM, d.config.UseSCP); err != nil {
 					return nil, fmt.Errorf("failed to save intermedia certificate file: %w", err)
 				}
 				d.logger.Info("ssl intermedia certificate file uploaded", slog.String("path", d.config.FilePathForCrtOnlyIntermedia))

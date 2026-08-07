@@ -12,6 +12,7 @@ import (
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/domain/dtos"
+	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/workflow/dispatcher"
 )
 
@@ -20,16 +21,14 @@ type WorkflowService struct {
 
 	workflowRepo    workflowRepository
 	workflowRunRepo workflowRunRepository
-	settingsRepo    settingsRepository
 }
 
-func NewWorkflowService(workflowRepo workflowRepository, workflowRunRepo workflowRunRepository, settingsRepo settingsRepository) *WorkflowService {
+func NewWorkflowService(workflowRepo workflowRepository, workflowRunRepo workflowRunRepository) *WorkflowService {
 	srv := &WorkflowService{
 		dispatcher: dispatcher.GetSingletonDispatcher(),
 
 		workflowRepo:    workflowRepo,
 		workflowRunRepo: workflowRunRepo,
-		settingsRepo:    settingsRepo,
 	}
 	return srv
 }
@@ -136,23 +135,12 @@ func (s *WorkflowService) Shutdown(ctx context.Context) {
 }
 
 func (s *WorkflowService) cleanupHistoryRuns(ctx context.Context) error {
-	settings, err := s.settingsRepo.GetByName(ctx, domain.SettingsNamePersistence)
-	if err != nil {
-		if errors.Is(err, domain.ErrRecordNotFound) {
-			return nil
-		}
-
-		app.GetLogger().Error("failed to get persistence settings", slog.Any("error", err))
-		return err
-	}
-
-	persistenceSettings := settings.Content.AsPersistence()
-	if persistenceSettings.WorkflowRunsRetentionMaxDays != 0 {
-		ret, err := s.workflowRunRepo.DeleteWithExprs(
-			ctx,
+	globalSettingsForPersistence := settings.GetGlobalSettingsForPersistence()
+	if globalSettingsForPersistence.WorkflowRunsRetentionMaxDays != 0 {
+		ret, err := s.workflowRunRepo.DeleteWithExprs(ctx,
 			dbx.NewExp(fmt.Sprintf("status!='%s'", domain.WorkflowRunStatusTypePending)),
 			dbx.NewExp(fmt.Sprintf("status!='%s'", domain.WorkflowRunStatusTypeProcessing)),
-			dbx.NewExp(fmt.Sprintf("endedAt<DATETIME('now', '-%d days')", persistenceSettings.WorkflowRunsRetentionMaxDays)),
+			dbx.NewExp(fmt.Sprintf("endedAt<DATETIME('now', '-%d days')", globalSettingsForPersistence.WorkflowRunsRetentionMaxDays)),
 		)
 		if err != nil {
 			app.GetLogger().Error("failed to delete workflow history runs", slog.Any("error", err))

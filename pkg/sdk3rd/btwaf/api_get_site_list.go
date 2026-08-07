@@ -15,8 +15,8 @@ type GetSiteListResponse struct {
 	sdkResponseBase
 
 	Result *struct {
-		List  []*SiteRecord `json:"list"`
-		Total int32         `json:"total"`
+		List  []*SiteData `json:"list"`
+		Total int32       `json:"total"`
 	} `json:"res,omitempty"`
 }
 

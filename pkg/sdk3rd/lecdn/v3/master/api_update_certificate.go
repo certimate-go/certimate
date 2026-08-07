@@ -26,10 +26,10 @@ func (c *Client) UpdateCertificate(certId int64, req *UpdateCertificateRequest) 
 
 func (c *Client) UpdateCertificateWithContext(ctx context.Context, certId int64, req *UpdateCertificateRequest) (*UpdateCertificateResponse, error) {
 	if certId == 0 {
-		return nil, fmt.Errorf("sdkerr: unset certId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset certId")
 	}
 
-	if err := c.ensureAccessTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

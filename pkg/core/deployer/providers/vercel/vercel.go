@@ -57,7 +57,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -65,7 +65,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// 上传证书
 	// REF: https://vercel.com/docs/rest-api/certs/upload-a-cert
 	uploadCertReq := &vercelsdk.UploadCertRequest{
-		CA:             intermediaCertPEM,
+		CA:             issuerCertPEM,
 		Cert:           serverCertPEM,
 		Key:            privkeyPEM,
 		SkipValidation: true,
@@ -80,5 +80,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(apiToken, teamId string) (*vercelsdk.Client, error) {
-	return vercelsdk.NewClientWithTeam(apiToken, teamId)
+	client, err := vercelsdk.NewClient(
+		vercelsdk.WithApiToken(apiToken),
+		vercelsdk.WithTeamId(teamId),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

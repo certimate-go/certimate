@@ -29,6 +29,8 @@ type CertmgrConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 }
 
 type Certmgr struct {
@@ -44,7 +46,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -74,7 +76,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -88,7 +90,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	createPathXSSLReq.SSLName = ucloud.String(certName)
 	createPathXSSLReq.SSLType = ucloud.String("Pem")
 	createPathXSSLReq.UserCert = ucloud.String(serverCertPEM)
-	createPathXSSLReq.CACert = ucloud.String(intermediaCertPEM)
+	createPathXSSLReq.CACert = ucloud.String(issuerCertPEM)
 	createPathXSSLReq.PrivateKey = ucloud.String(privkeyPEM)
 	createPathXSSLResp, err := c.sdkClient.CreatePathXSSL(createPathXSSLReq)
 	c.logger.Debug("sdk request 'pathx.CreatePathXSSL'", slog.Any("request", createPathXSSLReq), slog.Any("response", createPathXSSLResp))
@@ -132,13 +134,13 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 
 		for _, sslItem := range describePathXSSLResp.DataSet {
 			// 对比证书有效期
-			if int64(sslItem.ExpireTime) != certX509.NotAfter.Unix() {
+			if certX509.NotAfter.Unix() != int64(sslItem.ExpireTime) {
 				continue
 			}
 
 			// 对比证书及私钥内容
 			// 按照“私钥、证书链”的方式拼接
-			serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+			serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 			if err != nil {
 				continue
 			} else {
@@ -148,7 +150,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 				oldSSLContent = strings.ReplaceAll(oldSSLContent, "\t", "")
 				oldSSLContent = strings.ReplaceAll(oldSSLContent, " ", "")
 
-				newSSLContent := privkeyPEM + serverCertPEM + intermediaCertPEM
+				newSSLContent := privkeyPEM + serverCertPEM + issuerCertPEM
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\r", "")
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\n", "")
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\t", "")
@@ -176,7 +178,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathXClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint string) (*ucloudsdk.UPathXClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -185,11 +187,20 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathX
 	}
 
 	cfg := ucloud.NewConfig()
-	cfg.ProjectId = projectId
+	if projectId != "" {
+		cfg.ProjectId = projectId
+	}
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	// PathX 相关接口要求必传 ProjectId 参数
 	if cfg.ProjectId == "" {
-		defaultProjectId, err := getSDKDefaultProjectId(privateKey, publicKey)
+		defaultProjectId, err := getSDKDefaultProjectId(privateKey, publicKey, endpoint)
 		if err != nil {
 			return nil, err
 		}
@@ -205,8 +216,15 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathX
 	return client, nil
 }
 
-func getSDKDefaultProjectId(privateKey, publicKey string) (string, error) {
+func getSDKDefaultProjectId(privateKey, publicKey, endpoint string) (string, error) {
 	cfg := ucloud.NewConfig()
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

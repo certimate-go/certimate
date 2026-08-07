@@ -28,6 +28,8 @@ type CertmgrConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 优刻得地域。
 	Region string `json:"region"`
 }
@@ -45,7 +47,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Region)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -75,7 +77,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -89,7 +91,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	createSSLReq.SSLName = ucloud.String(certName)
 	createSSLReq.SSLType = ucloud.String("Pem")
 	createSSLReq.UserCert = ucloud.String(serverCertPEM)
-	createSSLReq.CaCert = ucloud.String(intermediaCertPEM)
+	createSSLReq.CaCert = ucloud.String(issuerCertPEM)
 	createSSLReq.PrivateKey = ucloud.String(privkeyPEM)
 	createSSLResp, err := c.sdkClient.CreateSSL(createSSLReq)
 	c.logger.Debug("sdk request 'ulb.CreateSSL'", slog.Any("request", createSSLReq), slog.Any("response", createSSLResp))
@@ -133,13 +135,15 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 
 		for _, sslItem := range describeSSLResp.DataSet {
 			// 对比证书有效期
-			if int64(sslItem.NotBefore) != certX509.NotBefore.Unix() || int64(sslItem.NotAfter) != certX509.NotAfter.Unix() {
+			if certX509.NotBefore.Unix() != int64(sslItem.NotBefore) {
+				continue
+			} else if certX509.NotAfter.Unix() != int64(sslItem.NotAfter) {
 				continue
 			}
 
 			// 对比证书及私钥内容
 			// 按照“网站证书、私钥、中间证书”的方式拼接
-			serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+			serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 			if err != nil {
 				continue
 			} else {
@@ -149,7 +153,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 				oldSSLContent = strings.ReplaceAll(oldSSLContent, "\t", "")
 				oldSSLContent = strings.ReplaceAll(oldSSLContent, " ", "")
 
-				newSSLContent := serverCertPEM + privkeyPEM + intermediaCertPEM
+				newSSLContent := serverCertPEM + privkeyPEM + issuerCertPEM
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\r", "")
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\n", "")
 				newSSLContent = strings.ReplaceAll(newSSLContent, "\t", "")
@@ -177,7 +181,7 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM, privkey
 	return nil, false, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsdk.ULBClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint, region string) (*ucloudsdk.ULBClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -186,8 +190,19 @@ func createSDKClient(privateKey, publicKey, projectId, region string) (*ucloudsd
 	}
 
 	cfg := ucloud.NewConfig()
-	cfg.ProjectId = projectId
-	cfg.Region = region
+	if projectId != "" {
+		cfg.ProjectId = projectId
+	}
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
+	if region != "" {
+		cfg.Region = region
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

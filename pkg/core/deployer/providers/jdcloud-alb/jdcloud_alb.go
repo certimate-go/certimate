@@ -2,7 +2,6 @@ package jdcloudalb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -17,6 +16,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/jdcloud-ssl"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -169,27 +169,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, cloudCertId string)
 		describeListenersPageNumber++
 	}
 
-	// 遍历更新监听器证书
+	// 批量更新监听器证书
 	if len(listenerIds) == 0 {
-		d.logger.Info("no listeners to deploy")
+		d.logger.Info("no alb listeners to deploy")
 	} else {
-		d.logger.Info("found https/tls listeners to deploy", slog.Any("listenerIds", listenerIds))
+		d.logger.Info("found alb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		var errs []error
-
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, cloudCertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, cloudCertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -210,6 +199,32 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 }
 
 func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
+	if d.config.Domain == "" {
+		// 未指定 SNI，只需部署到监听器
+		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
+	} else {
+		// 指定 SNI，需部署到扩展证书
+		return d.updateListenerSniCertificate(ctx, cloudListenerId, cloudCertId)
+	}
+}
+
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
+	// 修改监听器信息
+	// REF: https://docs.jdcloud.com/cn/load-balancer/api/updatelistener
+	updateListenerReq := jdlbapis.NewUpdateListenerRequestWithoutParam()
+	updateListenerReq.SetRegionId(d.config.RegionId)
+	updateListenerReq.SetListenerId(cloudListenerId)
+	updateListenerReq.SetCertificateSpecs([]jdlbmodels.CertificateSpec{{CertificateId: cloudCertId}})
+	updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
+	d.logger.Debug("sdk request 'lb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'lb.UpdateListener': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
 	// 查询监听器详情
 	// REF: https://docs.jdcloud.com/cn/load-balancer/api/describelistener
 	describeListenerReq := jdlbapis.NewDescribeListenerRequestWithoutParam()
@@ -221,47 +236,44 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		return fmt.Errorf("failed to execute sdk request 'lb.DescribeListener': %w", err)
 	}
 
-	if d.config.Domain == "" {
-		// 未指定 SNI，只需部署到监听器
-
-		// 修改监听器信息
-		// REF: https://docs.jdcloud.com/cn/load-balancer/api/updatelistener
-		updateListenerReq := jdlbapis.NewUpdateListenerRequestWithoutParam()
-		updateListenerReq.SetRegionId(d.config.RegionId)
-		updateListenerReq.SetListenerId(cloudListenerId)
-		updateListenerReq.SetCertificateSpecs([]jdlbmodels.CertificateSpec{{CertificateId: cloudCertId}})
-		updateListenerResp, err := d.sdkClient.UpdateListener(updateListenerReq)
-		d.logger.Debug("sdk request 'lb.UpdateListener'", slog.Any("request", updateListenerReq), slog.Any("response", updateListenerResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'lb.UpdateListener': %w", err)
-		}
-	} else {
-		// 指定 SNI，需部署到扩展证书
-
-		extCertSpecs := lo.Filter(describeListenerResp.Result.Listener.ExtensionCertificateSpecs, func(extCertSpec jdlbmodels.ExtensionCertificateSpec, _ int) bool {
-			return extCertSpec.Domain == d.config.Domain
+	// 如果不存在，则添加扩展证书
+	// REF: https://docs.jdcloud.com/cn/load-balancer/api/addlistenercertificates
+	extCertSpecs := lo.Filter(describeListenerResp.Result.Listener.ExtensionCertificateSpecs, func(extCertSpec jdlbmodels.ExtensionCertificateSpec, _ int) bool {
+		return extCertSpec.Domain == d.config.Domain
+	})
+	if len(extCertSpecs) == 0 {
+		addListenerCertificatesReq := jdlbapis.NewAddListenerCertificatesRequestWithoutParam()
+		addListenerCertificatesReq.SetRegionId(d.config.RegionId)
+		addListenerCertificatesReq.SetListenerId(cloudListenerId)
+		addListenerCertificatesReq.SetCertificates([]jdlbmodels.ExtCertificateSpec{
+			{
+				CertificateId: cloudCertId,
+				Domain:        d.config.Domain,
+			},
 		})
-		if len(extCertSpecs) == 0 {
-			return fmt.Errorf("could not find any extension certificates")
-		}
-
-		// 批量修改扩展证书
-		// REF: https://docs.jdcloud.com/cn/load-balancer/api/updatelistenercertificates
-		updateListenerCertificatesReq := jdlbapis.NewUpdateListenerCertificatesRequestWithoutParam()
-		updateListenerCertificatesReq.SetRegionId(d.config.RegionId)
-		updateListenerCertificatesReq.SetListenerId(cloudListenerId)
-		updateListenerCertificatesReq.SetCertificates(lo.Map(extCertSpecs, func(extCertSpec jdlbmodels.ExtensionCertificateSpec, _ int) jdlbmodels.ExtCertificateUpdateSpec {
-			return jdlbmodels.ExtCertificateUpdateSpec{
-				CertificateBindId: extCertSpec.CertificateBindId,
-				CertificateId:     &cloudCertId,
-				Domain:            &extCertSpec.Domain,
-			}
-		}))
-		updateListenerCertificatesResp, err := d.sdkClient.UpdateListenerCertificates(updateListenerCertificatesReq)
-		d.logger.Debug("sdk request 'lb.UpdateListenerCertificates'", slog.Any("request", updateListenerCertificatesReq), slog.Any("response", updateListenerCertificatesResp))
+		addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificates(addListenerCertificatesReq)
+		d.logger.Debug("sdk request 'lb.AddListenerCertificates'", slog.Any("request", addListenerCertificatesReq), slog.Any("response", addListenerCertificatesResp))
 		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'lb.UpdateListenerCertificates': %w", err)
+			return fmt.Errorf("failed to execute sdk request 'lb.AddListenerCertificates': %w", err)
 		}
+	}
+
+	// 批量修改扩展证书
+	// REF: https://docs.jdcloud.com/cn/load-balancer/api/updatelistenercertificates
+	updateListenerCertificatesReq := jdlbapis.NewUpdateListenerCertificatesRequestWithoutParam()
+	updateListenerCertificatesReq.SetRegionId(d.config.RegionId)
+	updateListenerCertificatesReq.SetListenerId(cloudListenerId)
+	updateListenerCertificatesReq.SetCertificates(lo.Map(extCertSpecs, func(extCertSpec jdlbmodels.ExtensionCertificateSpec, _ int) jdlbmodels.ExtCertificateUpdateSpec {
+		return jdlbmodels.ExtCertificateUpdateSpec{
+			CertificateBindId: extCertSpec.CertificateBindId,
+			CertificateId:     &cloudCertId,
+			Domain:            &extCertSpec.Domain,
+		}
+	}))
+	updateListenerCertificatesResp, err := d.sdkClient.UpdateListenerCertificates(updateListenerCertificatesReq)
+	d.logger.Debug("sdk request 'lb.UpdateListenerCertificates'", slog.Any("request", updateListenerCertificatesReq), slog.Any("response", updateListenerCertificatesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'lb.UpdateListenerCertificates': %w", err)
 	}
 
 	return nil

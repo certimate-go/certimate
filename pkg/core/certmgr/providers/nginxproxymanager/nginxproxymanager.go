@@ -71,7 +71,7 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 
 func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -86,7 +86,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		for _, certItem := range *listCertificatesResp {
 			if certItem.Meta.Certificate == serverCertPEM &&
 				certItem.Meta.CertificateKey == privkeyPEM &&
-				certItem.Meta.IntermediateCertificate == intermediaCertPEM {
+				certItem.Meta.IntermediateCertificate == issuerCertPEM {
 				// 如果已存在相同证书，直接返回
 				c.logger.Info("ssl certificate already exists")
 				return &UploadResult{
@@ -113,11 +113,11 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		CertificateMeta: npmsdk.CertificateMeta{
 			Certificate:             serverCertPEM,
 			CertificateKey:          privkeyPEM,
-			IntermediateCertificate: intermediaCertPEM,
+			IntermediateCertificate: issuerCertPEM,
 		},
 	}
 	ngincxUploadCertificateResp, err := c.sdkClient.NginxUploadCertificateWithContext(ctx, nginxCreateCertificateResp.Id, ngincxUploadCertificateReq)
-	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("request.certId", nginxCreateCertificateResp.Id), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
+	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("params.certId", nginxCreateCertificateResp.Id), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'nginx.UploadCertificate': %w", err)
 	}
@@ -135,7 +135,7 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 	}
 
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -145,11 +145,11 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 		CertificateMeta: npmsdk.CertificateMeta{
 			Certificate:             serverCertPEM,
 			CertificateKey:          privkeyPEM,
-			IntermediateCertificate: intermediaCertPEM,
+			IntermediateCertificate: issuerCertPEM,
 		},
 	}
 	ngincxUploadCertificateResp, err := c.sdkClient.NginxUploadCertificateWithContext(ctx, certId, ngincxUploadCertificateReq)
-	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("request.certId", certId), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
+	c.logger.Debug("sdk request 'nginx.UploadCertificate'", slog.Int64("params.certId", certId), slog.Any("request", ngincxUploadCertificateReq), slog.Any("response", ngincxUploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'nginx.UploadCertificate': %w", err)
 	}
@@ -164,12 +164,16 @@ func createSDKClient(serverUrl, authMethod, username, password, apiToken string,
 	switch authMethod {
 	case "", AUTH_METHOD_PASSWORD:
 		{
-			client, err = npmsdk.NewClient(serverUrl, username, password)
+			client, err = npmsdk.NewClient(serverUrl,
+				npmsdk.WithLogins(username, password),
+			)
 		}
 
 	case AUTH_METHOD_TOKEN:
 		{
-			client, err = npmsdk.NewClientWithJwtToken(serverUrl, apiToken)
+			client, err = npmsdk.NewClient(serverUrl,
+				npmsdk.WithJwtToken(apiToken),
+			)
 		}
 	}
 

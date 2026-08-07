@@ -55,9 +55,11 @@ const WorkflowList = () => {
       render: (_, record) => (
         <div className="flex max-w-full flex-col gap-1 truncate">
           <Typography.Text ellipsis>{record.name || "\u00A0"}</Typography.Text>
-          <Typography.Text ellipsis type="secondary">
-            {record.description}
-          </Typography.Text>
+          {record.description && (
+            <Typography.Text ellipsis type="secondary">
+              {record.description}
+            </Typography.Text>
+          )}
         </div>
       ),
     },

@@ -11,7 +11,7 @@ import (
 	hwapigmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/model"
 	hwapigregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/apig/v2/region"
 	hwiam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
-	hwiamModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
+	hwiammodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
 	hwiamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
 	"github.com/samber/lo"
 
@@ -188,7 +188,7 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 
 	client := hwiam.NewIamClient(hcClient)
 
-	request := &hwiamModel.KeystoneListProjectsRequest{
+	request := &hwiammodel.KeystoneListProjectsRequest{
 		Name: &region,
 	}
 	response, err := client.KeystoneListProjects(request)

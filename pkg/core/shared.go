@@ -4,6 +4,6 @@ import (
 	"log/slog"
 )
 
-type WithLogger interface {
+type LoggerSetter interface {
 	SetLogger(logger *slog.Logger)
 }

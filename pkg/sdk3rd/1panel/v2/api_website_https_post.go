@@ -28,7 +28,7 @@ func (c *Client) WebsiteHttpsPost(websiteId int64, req *WebsiteHttpsPostRequest)
 
 func (c *Client) WebsiteHttpsPostWithContext(ctx context.Context, websiteId int64, req *WebsiteHttpsPostRequest) (*WebsiteHttpsPostResponse, error) {
 	if websiteId == 0 {
-		return nil, fmt.Errorf("sdkerr: unset websiteId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset websiteId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPost, fmt.Sprintf("/websites/%d/https", websiteId))

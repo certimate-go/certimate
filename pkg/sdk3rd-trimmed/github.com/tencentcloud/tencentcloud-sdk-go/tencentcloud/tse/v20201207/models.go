@@ -1,0 +1,17 @@
+package v20201207
+
+import (
+	tse "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tse/v20201207"
+)
+
+type CreateCloudNativeAPIGatewayCertificateRequest = tse.CreateCloudNativeAPIGatewayCertificateRequest
+
+type CreateCloudNativeAPIGatewayCertificateResponse = tse.CreateCloudNativeAPIGatewayCertificateResponse
+
+type DescribeCloudNativeAPIGatewayCertificatesRequest = tse.DescribeCloudNativeAPIGatewayCertificatesRequest
+
+type DescribeCloudNativeAPIGatewayCertificatesResponse = tse.DescribeCloudNativeAPIGatewayCertificatesResponse
+
+type ModifyCloudNativeAPIGatewayCertificateRequest = tse.ModifyCloudNativeAPIGatewayCertificateRequest
+
+type ModifyCloudNativeAPIGatewayCertificateResponse = tse.ModifyCloudNativeAPIGatewayCertificateResponse

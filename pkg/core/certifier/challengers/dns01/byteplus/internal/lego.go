@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -73,11 +72,11 @@ func NewDNSProvider() (*DNSProvider, error) {
 
 func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 	if config == nil {
-		return nil, errors.New("byteplus: the configuration of the DNS provider is nil")
+		return nil, fmt.Errorf("byteplus: the configuration of the DNS provider is nil")
 	}
 
 	if config.AccessKey == "" || config.SecretKey == "" {
-		return nil, errors.New("byteplus: missing credentials")
+		return nil, fmt.Errorf("byteplus: missing credentials")
 	}
 
 	client := bpdns.InitDNSBytePlusClient()

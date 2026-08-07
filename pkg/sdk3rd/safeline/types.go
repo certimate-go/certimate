@@ -27,8 +27,3 @@ func (r *sdkResponseBase) GetErrMsg() string {
 }
 
 var _ sdkResponse = (*sdkResponseBase)(nil)
-
-type CertificateManul struct {
-	Crt string `json:"crt"`
-	Key string `json:"key"`
-}

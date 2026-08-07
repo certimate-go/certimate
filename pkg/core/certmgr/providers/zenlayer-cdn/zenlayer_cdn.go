@@ -95,6 +95,10 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			return nil, fmt.Errorf("failed to execute sdk request 'cdn.DescribeCertificates': %w", err)
 		}
 
+		fingerprintMd5 := md5.Sum(certX509.Raw)
+		fingerprintMd5Hex := hex.EncodeToString(fingerprintMd5[:])
+		fingerprintSha1 := sha1.Sum(certX509.Raw)
+		fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
 		for _, certItem := range describeCertificatesResp.Response.DataSet {
 			// 对比证书通用名称
 			if !strings.EqualFold(certX509.Subject.CommonName, certItem.Common) {
@@ -107,21 +111,17 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
+			newCertNotBefore := certX509.NotBefore
+			newCertNotAfter := certX509.NotAfter
 			oldCertNotBefore, _ := time.Parse("2006-01-02T15:04:05Z", certItem.StartTime)
 			oldCertNotAfter, _ := time.Parse("2006-01-02T15:04:05Z", certItem.EndTime)
-			if !certX509.NotBefore.Equal(oldCertNotBefore) {
-				continue
-			} else if !certX509.NotAfter.Equal(oldCertNotAfter) {
+			if !newCertNotBefore.Equal(oldCertNotBefore) || !newCertNotAfter.Equal(oldCertNotAfter) {
 				continue
 			}
 
 			// 对比证书指纹
 			//
 			// 注意，虽然文档中描述为 MD5 摘要，但示例给出的是 SHA-1 摘要，因此这里都尝试对比一下
-			fingerprintMd5 := md5.Sum(certX509.Raw)
-			fingerprintMd5Hex := hex.EncodeToString(fingerprintMd5[:])
-			fingerprintSha1 := sha1.Sum(certX509.Raw)
-			fingerprintSha1Hex := hex.EncodeToString(fingerprintSha1[:])
 			if !strings.EqualFold(fingerprintMd5Hex, certItem.Fingerprint) && !strings.EqualFold(fingerprintSha1Hex, certItem.Fingerprint) {
 				continue
 			}
@@ -137,7 +137,6 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 					continue
 				}
 			default:
-				// 未知算法，跳过
 				continue
 			}
 

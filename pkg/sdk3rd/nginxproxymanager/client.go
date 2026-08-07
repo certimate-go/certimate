@@ -1,6 +1,9 @@
+// A simple SDK client for NginxProxyManager.
+// API documentation: https://github.com/NginxProxyManager/nginx-proxy-manager/discussions/3265
 package nginxproxymanager
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -16,85 +19,59 @@ import (
 )
 
 type Client struct {
-	identity string
-	secret   string
+	username string
+	password string
 
-	jwtToken    string
-	jwtTokenMtx sync.Mutex
+	token   string
+	tokenMu sync.Mutex
 
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(serverUrl, identity, secret string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if identity == "" {
-		return nil, fmt.Errorf("sdkerr: unset identity")
-	}
-	if secret == "" {
-		return nil, fmt.Errorf("sdkerr: unset secret")
+	if opts.JwtToken == "" && (opts.Username == "" || opts.Password == "") {
+		return nil, fmt.Errorf("sdkerr: unset password or jwtToken")
 	}
 
 	client := &Client{
-		identity: identity,
-		secret:   secret,
+		username: opts.Username,
+		password: opts.Password,
+		token:    opts.JwtToken,
 	}
-	client.client = resty.New().
+	client.rc = resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			if client.jwtToken != "" {
-				req.Header.Set("Authorization", "Bearer "+client.jwtToken)
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
+			if client.token != "" {
+				req.Header.Set("Authorization", "Bearer "+client.token)
 			}
 
 			return nil
 		})
 
-	return client, nil
-}
-
-func NewClientWithJwtToken(serverUrl, jwtToken string) (*Client, error) {
-	if serverUrl == "" {
-		return nil, fmt.Errorf("sdkerr: unset serverUrl")
-	}
-	if _, err := url.Parse(serverUrl); err != nil {
-		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
-	}
-	if jwtToken == "" {
-		return nil, fmt.Errorf("sdkerr: unset jwtToken")
-	}
-
-	client := &Client{
-		jwtToken: jwtToken,
-	}
-	client.client = resty.New().
-		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
-		SetHeader("Accept", "application/json").
-		SetHeader("Content-Type", "application/json").
-		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
-			if client.jwtToken != "" {
-				req.Header.Set("Authorization", "Bearer "+client.jwtToken)
-			}
-
-			return nil
-		})
 	return client, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -106,9 +83,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -116,9 +96,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -130,7 +107,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) doRequestWithResult(req *resty.Request, res interface{}) (*resty.Response, error) {
+func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
@@ -146,8 +123,8 @@ func (c *Client) doRequestWithResult(req *resty.Request, res interface{}) (*rest
 	if len(resp.Body()) != 0 {
 		var errRes *sdkResponseBase
 		if err := json.Unmarshal(resp.Body(), &errRes); err == nil {
-			if terror := errRes.GetError(); terror != "" {
-				return resp, fmt.Errorf("sdkerr: error='%s'", terror)
+			if rError := errRes.GetError(); rError != "" {
+				return resp, fmt.Errorf("sdkerr: api error: error='%s'", rError)
 			}
 		}
 
@@ -159,10 +136,10 @@ func (c *Client) doRequestWithResult(req *resty.Request, res interface{}) (*rest
 	return resp, nil
 }
 
-func (c *Client) ensureJwtTokenExists() error {
-	c.jwtTokenMtx.Lock()
-	defer c.jwtTokenMtx.Unlock()
-	if c.jwtToken != "" {
+func (c *Client) ensureToken(ctx context.Context) error {
+	c.tokenMu.Lock()
+	defer c.tokenMu.Unlock()
+	if c.token != "" {
 		return nil
 	}
 
@@ -171,9 +148,10 @@ func (c *Client) ensureJwtTokenExists() error {
 		return err
 	} else {
 		httpreq.SetBody(map[string]string{
-			"identity": c.identity,
-			"secret":   c.secret,
+			"identity": c.username,
+			"secret":   c.password,
 		})
+		httpreq.SetContext(ctx)
 	}
 
 	type tokensResponse struct {
@@ -185,10 +163,14 @@ func (c *Client) ensureJwtTokenExists() error {
 	result := &tokensResponse{}
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
-	} else if terror := result.GetError(); terror != "" {
-		return fmt.Errorf("sdkerr: failed to create npm token: error='%s'", terror)
+	} else if rError := result.GetError(); rError != "" {
+		return fmt.Errorf("sdkerr: auth error: error='%s'", rError)
 	} else {
-		c.jwtToken = result.Token
+		if result.Token == "" {
+			return fmt.Errorf("sdkerr: auth error: received empty token")
+		}
+
+		c.token = result.Token
 	}
 
 	return nil

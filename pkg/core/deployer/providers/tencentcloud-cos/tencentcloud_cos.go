@@ -55,7 +55,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Region)
+	clientSSL, err := createSDKClientSSL(config.SecretId, config.SecretKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -72,7 +72,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClient:  clients,
+		sdkClient:  &wSDKClients{SSL: clientSSL},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -105,7 +105,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 避免多次部署，否则会报错 https://github.com/certimate-go/certimate/issues/897#issuecomment-3182904098
 	if bind, _ := d.checkIsBind(ctx, upres.CertId); bind {
-		d.logger.Info("ssl certificate already deployed")
+		d.logger.Info("no need to deploy cos custom domain certificate")
 		return &DeployResult{}, nil
 	}
 
@@ -135,7 +135,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 		var pendingCount, runningCount, succeededCount, failedCount, totalCount int64
 		if describeHostDeployRecordDetailResp.Response.TotalCount == nil {
-			return false, fmt.Errorf("unexpected tencentcloud deployment job status")
+			return false, fmt.Errorf("unexpected deployment deployment job status")
 		} else {
 			pendingCount = lo.FromPtr(describeHostDeployRecordDetailResp.Response.PendingTotalCount)
 			runningCount = lo.FromPtr(describeHostDeployRecordDetailResp.Response.RunningTotalCount)
@@ -145,13 +145,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 			if succeededCount+failedCount == totalCount {
 				if failedCount > 0 {
-					return false, fmt.Errorf("tencentcloud deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+					return false, fmt.Errorf("unexpected deployment deployment job status (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
 				}
 				return true, nil
 			}
 		}
 
-		d.logger.Info(fmt.Sprintf("waiting for tencentcloud deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
+		d.logger.Info(fmt.Sprintf("waiting for deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return nil, err
@@ -211,14 +211,15 @@ func (d *Deployer) checkIsBind(ctx context.Context, cloudCertId string) (bool, e
 	return false, nil
 }
 
-func createSDKClients(secretId, secretKey, region string) (*wSDKClients, error) {
+func createSDKClientSSL(secretId, secretKey, region string) (*tcssl.Client, error) {
 	credential := common.NewCredential(secretId, secretKey)
-	client, err := tcssl.NewClient(credential, region, profile.NewClientProfile())
+
+	cpf := profile.NewClientProfile()
+
+	client, err := tcssl.NewClient(credential, region, cpf)
 	if err != nil {
 		return nil, err
 	}
 
-	return &wSDKClients{
-		SSL: client,
-	}, nil
+	return client, nil
 }

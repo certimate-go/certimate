@@ -2,7 +2,6 @@ package zenlayercdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -14,6 +13,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/zenlayer-cdn"
 	zcdnsdk "github.com/certimate-go/certimate/pkg/sdk3rd/zenlayer/cdn"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -136,8 +136,9 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 			if err != nil {
 				return err
 			}
+
 			domains := lo.Filter(domainCandidates, func(domainItem *zcdnsdk.DomainInfo, _ int) bool {
-				return domainItem.DomainName == d.config.Domain
+				return d.config.Domain == domainItem.DomainName
 			})
 			if len(domains) == 0 {
 				return fmt.Errorf("could not find domain")
@@ -194,26 +195,16 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历绑定证书
+	// 批量绑定证书
 	if len(domainIds) == 0 {
 		d.logger.Info("no cdn domains to deploy")
 	} else {
 		d.logger.Info("found cdn domains to deploy", slog.Any("domainIds", domainIds))
-		var errs []error
 
-		for _, domainId := range domainIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domainId, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domainIds, func(ctx context.Context, domainId string, _ int) error {
+			return d.updateDomainCertificate(ctx, domainId, upres.CertId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -317,10 +308,10 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 		case "DEPLOYED":
 			return true, nil
 		case "FAILED":
-			return false, fmt.Errorf("unexpected zenlayer domain status")
+			return false, fmt.Errorf("unexpected domain status")
 		}
 
-		d.logger.Info("waiting for zenlayer domain deploying completion ...")
+		d.logger.Info("waiting for domain deploying completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err

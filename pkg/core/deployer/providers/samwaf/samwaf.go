@@ -63,7 +63,7 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
-	// 根据部署目标决定业务流程``
+	// 根据部署目标决定业务流程
 	switch d.config.DeployTarget {
 	case DEPLOY_TARGET_CERTIFICATE:
 		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
@@ -85,7 +85,7 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	// 获取 SSL 证书 详情
 	// REF: https://doc.samwaf.com/api/
 	sslConfigDetailResp, err := d.sdkClient.SslConfigDetailWithContext(ctx, d.config.CertificateId)
-	d.logger.Debug("sdk request 'sslconfig.Detail'", slog.Any("request.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
+	d.logger.Debug("sdk request 'sslconfig.Detail'", slog.Any("params.sslId", d.config.CertificateId), slog.Any("response", sslConfigDetailResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'sslconfig.Detail': %w", err)
 	} else if sslConfigDetailResp.Data == nil || sslConfigDetailResp.Data.Id == "" {
@@ -109,7 +109,9 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*samwafsdk.Client, error) {
-	client, err := samwafsdk.NewClient(serverUrl, apiKey)
+	client, err := samwafsdk.NewClient(serverUrl,
+		samwafsdk.WithApiKey(apiKey),
+	)
 	if err != nil {
 		return nil, err
 	}

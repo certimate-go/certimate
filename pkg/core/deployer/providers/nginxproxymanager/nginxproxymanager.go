@@ -3,7 +3,6 @@ package nginxproxymanager
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -15,6 +14,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/nginxproxymanager"
 	npmsdk "github.com/certimate-go/certimate/pkg/sdk3rd/nginxproxymanager"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
@@ -138,6 +138,12 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
+	// 获取全部可部署的主机列表
+	hostsByType, err := d.getAllHosts(ctx, d.config.HostType)
+	if err != nil {
+		return err
+	}
+
 	// 获取待部署的主机列表
 	var hostIds []int64
 	switch d.config.HostMatchPattern {
@@ -152,66 +158,57 @@ func (d *Deployer) deployToHost(ctx context.Context, certPEM, privkeyPEM string)
 
 	case HOST_MATCH_PATTERN_CERTSAN:
 		{
-			hostCandidates, err := d.getAllHosts(ctx, d.config.HostType)
-			if err != nil {
-				return err
-			}
-
+			hostCandidates := hostsByType
 			hostIds = lo.Map(
-				lo.Filter(hostCandidates, func(hostItem *npmsdk.HostRecord, _ int) bool {
+				lo.Filter(hostCandidates, func(hostItem *npmsdk.Host, _ int) bool {
 					return len(hostItem.DomainNames) > 0 &&
 						lo.EveryBy(hostItem.DomainNames, func(domain string) bool {
 							return certX509.VerifyHostname(domain) == nil
 						})
 				}),
-				func(hostItem *npmsdk.HostRecord, _ int) int64 {
+				func(hostItem *npmsdk.Host, _ int) int64 {
 					return hostItem.Id
 				},
 			)
 			if len(hostIds) == 0 {
 				return fmt.Errorf("could not find any hosts matched by certificate")
 			}
-
-			// 跳过已部署过的主机
-			hostIds = lo.Filter(hostIds, func(hostId int64, _ int) bool {
-				hostInfo, _ := lo.Find(hostCandidates, func(hostItem *npmsdk.HostRecord) bool {
-					return hostId == hostItem.Id
-				})
-				if hostInfo != nil {
-					return strconv.FormatInt(hostInfo.CertificateId, 10) != upres.CertId
-				}
-
-				return true
-			})
 		}
 
 	default:
 		return fmt.Errorf("unsupported host match pattern: '%s'", d.config.HostMatchPattern)
 	}
 
-	// 遍历更新主机证书
+	// 批量更新主机证书
 	if len(hostIds) == 0 {
 		d.logger.Info("no hosts to deploy")
 	} else {
 		d.logger.Info("found hosts to deploy", slog.Any("hostIds", hostIds))
-		var errs []error
 
-		certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
-		for i, hostId := range hostIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateHostCertificate(ctx, d.config.HostType, hostId, certId); err != nil {
-					errs = append(errs, err)
-				} else if i < len(hostIds)-1 {
-					xwait.DelayWithContext(ctx, 5*time.Second)
+		// 跳过已部署过的主机
+		hostIds = lo.Filter(hostIds, func(hostId int64, _ int) bool {
+			hostInfo, _ := lo.Find(hostsByType, func(hostItem *npmsdk.Host) bool {
+				return hostId == hostItem.Id
+			})
+			if hostInfo != nil {
+				certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+				return hostInfo.CertificateId != certId
+			}
+
+			return true
+		})
+
+		if err := xloop.ForRangeAllWithContext(ctx, hostIds, func(ctx context.Context, hostId int64, i int) error {
+			if i > 0 {
+				if err := xwait.DelayWithContext(ctx, 3*time.Second); err != nil {
+					return err
 				}
 			}
-		}
 
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+			certId, _ := strconv.ParseInt(upres.CertId, 10, 64)
+			return d.updateHostCertificate(ctx, d.config.HostType, hostId, certId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -252,8 +249,8 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 	return nil
 }
 
-func (d *Deployer) getAllHosts(ctx context.Context, cloudHostType string) ([]*npmsdk.HostRecord, error) {
-	var hosts []*npmsdk.HostRecord
+func (d *Deployer) getAllHosts(ctx context.Context, cloudHostType string) ([]*npmsdk.Host, error) {
+	var hosts []*npmsdk.Host
 	switch cloudHostType {
 	case HOST_TYPE_PROXY:
 		{
@@ -264,9 +261,9 @@ func (d *Deployer) getAllHosts(ctx context.Context, cloudHostType string) ([]*np
 				return nil, fmt.Errorf("failed to execute sdk request 'nginx.ListProxyHosts': %w", err)
 			}
 
-			hosts = make([]*npmsdk.HostRecord, 0, len(*nginxListProxyHostsResp))
+			hosts = make([]*npmsdk.Host, 0, len(*nginxListProxyHostsResp))
 			for _, hostItem := range *nginxListProxyHostsResp {
-				hosts = append(hosts, &hostItem.HostRecord)
+				hosts = append(hosts, &hostItem.Host)
 			}
 		}
 
@@ -279,9 +276,9 @@ func (d *Deployer) getAllHosts(ctx context.Context, cloudHostType string) ([]*np
 				return nil, fmt.Errorf("failed to execute sdk request 'nginx.ListRedirectionHosts': %w", err)
 			}
 
-			hosts = make([]*npmsdk.HostRecord, 0, len(*nginxListRedirectionHostsResp))
+			hosts = make([]*npmsdk.Host, 0, len(*nginxListRedirectionHostsResp))
 			for _, hostItem := range *nginxListRedirectionHostsResp {
-				hosts = append(hosts, &hostItem.HostRecord)
+				hosts = append(hosts, &hostItem.Host)
 			}
 		}
 
@@ -294,9 +291,9 @@ func (d *Deployer) getAllHosts(ctx context.Context, cloudHostType string) ([]*np
 				return nil, fmt.Errorf("failed to execute sdk request 'nginx.ListStreams': %w", err)
 			}
 
-			hosts = make([]*npmsdk.HostRecord, 0, len(*nginxListStreamsResp))
+			hosts = make([]*npmsdk.Host, 0, len(*nginxListStreamsResp))
 			for _, hostItem := range *nginxListStreamsResp {
-				hosts = append(hosts, &hostItem.HostRecord)
+				hosts = append(hosts, &hostItem.Host)
 			}
 		}
 
@@ -309,9 +306,9 @@ func (d *Deployer) getAllHosts(ctx context.Context, cloudHostType string) ([]*np
 				return nil, fmt.Errorf("failed to execute sdk request 'nginx.ListDeadHosts': %w", err)
 			}
 
-			hosts = make([]*npmsdk.HostRecord, 0, len(*nginxListDeadHostsResp))
+			hosts = make([]*npmsdk.Host, 0, len(*nginxListDeadHostsResp))
 			for _, hostItem := range *nginxListDeadHostsResp {
-				hosts = append(hosts, &hostItem.HostRecord)
+				hosts = append(hosts, &hostItem.Host)
 			}
 		}
 
@@ -330,7 +327,7 @@ func (d *Deployer) updateHostCertificate(ctx context.Context, cloudHostType stri
 				CertificateId: lo.ToPtr(cloudCertId),
 			}
 			nginxUpdateProxyHostResp, err := d.sdkClient.NginxUpdateProxyHostWithContext(ctx, cloudHostId, nginxUpdateProxyHostReq)
-			d.logger.Debug("sdk request 'nginx.UpdateProxyHost'", slog.Int64("request.hostId", cloudHostId), slog.Any("request", nginxUpdateProxyHostReq), slog.Any("response", nginxUpdateProxyHostResp))
+			d.logger.Debug("sdk request 'nginx.UpdateProxyHost'", slog.Int64("params.hostId", cloudHostId), slog.Any("request", nginxUpdateProxyHostReq), slog.Any("response", nginxUpdateProxyHostResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'nginx.UpdateProxyHost': %w", err)
 			}
@@ -342,7 +339,7 @@ func (d *Deployer) updateHostCertificate(ctx context.Context, cloudHostType stri
 				CertificateId: lo.ToPtr(cloudCertId),
 			}
 			nginxUpdateRedirectionHostResp, err := d.sdkClient.NginxUpdateRedirectionHostWithContext(ctx, cloudHostId, nginxUpdateRedirectionHostReq)
-			d.logger.Debug("sdk request 'nginx.UpdateRedirectionHost'", slog.Int64("request.hostId", cloudHostId), slog.Any("request", nginxUpdateRedirectionHostReq), slog.Any("response", nginxUpdateRedirectionHostResp))
+			d.logger.Debug("sdk request 'nginx.UpdateRedirectionHost'", slog.Int64("params.hostId", cloudHostId), slog.Any("request", nginxUpdateRedirectionHostReq), slog.Any("response", nginxUpdateRedirectionHostResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'nginx.UpdateRedirectionHost': %w", err)
 			}
@@ -354,7 +351,7 @@ func (d *Deployer) updateHostCertificate(ctx context.Context, cloudHostType stri
 				CertificateId: lo.ToPtr(cloudCertId),
 			}
 			nginxUpdateStreamResp, err := d.sdkClient.NginxUpdateStreamWithContext(ctx, cloudHostId, nginxUpdateStreamReq)
-			d.logger.Debug("sdk request 'nginx.UpdateStream'", slog.Int64("request.hostId", cloudHostId), slog.Any("request", nginxUpdateStreamReq), slog.Any("response", nginxUpdateStreamResp))
+			d.logger.Debug("sdk request 'nginx.UpdateStream'", slog.Int64("params.hostId", cloudHostId), slog.Any("request", nginxUpdateStreamReq), slog.Any("response", nginxUpdateStreamResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'nginx.UpdateStream': %w", err)
 			}
@@ -366,7 +363,7 @@ func (d *Deployer) updateHostCertificate(ctx context.Context, cloudHostType stri
 				CertificateId: lo.ToPtr(cloudCertId),
 			}
 			nginxUpdateDeadHostResp, err := d.sdkClient.NginxUpdateDeadHostWithContext(ctx, cloudHostId, nginxUpdateDeadHostReq)
-			d.logger.Debug("sdk request 'nginx.UpdateDeadHost'", slog.Int64("request.hostId", cloudHostId), slog.Any("request", nginxUpdateDeadHostReq), slog.Any("response", nginxUpdateDeadHostResp))
+			d.logger.Debug("sdk request 'nginx.UpdateDeadHost'", slog.Int64("params.hostId", cloudHostId), slog.Any("request", nginxUpdateDeadHostReq), slog.Any("response", nginxUpdateDeadHostResp))
 			if err != nil {
 				return fmt.Errorf("failed to execute sdk request 'nginx.UpdateDeadHost': %w", err)
 			}
@@ -386,12 +383,18 @@ func createSDKClient(serverUrl, authMethod, username, password, apiToken string,
 	switch authMethod {
 	case "", AUTH_METHOD_PASSWORD:
 		{
-			client, err = npmsdk.NewClient(serverUrl, username, password)
+			client, err = npmsdk.NewClient(
+				serverUrl,
+				npmsdk.WithLogins(username, password),
+			)
 		}
 
 	case AUTH_METHOD_TOKEN:
 		{
-			client, err = npmsdk.NewClientWithJwtToken(serverUrl, apiToken)
+			client, err = npmsdk.NewClient(
+				serverUrl,
+				npmsdk.WithJwtToken(apiToken),
+			)
 		}
 	}
 

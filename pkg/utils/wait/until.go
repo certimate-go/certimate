@@ -21,7 +21,7 @@ func Until(condition func(index int) (bool, error), interval time.Duration) (boo
 	return UntilWithContext(context.Background(), conditionWithContext, interval)
 }
 
-// 等待直到条件满足，或上下文被取消。
+// 等待直到条件满足，支持传入 context.Context 上下文。
 //
 // 入参：
 //   - ctx: 上下文。
@@ -68,7 +68,7 @@ func UntilTimeout(condition func(index int) (bool, error), timeout time.Duration
 	return UntilTimeoutWithContext(context.Background(), conditionWithContext, timeout, interval)
 }
 
-// 等待直到条件满足或超时，或上下文被取消。
+// 等待直到条件满足或超时，支持传入 context.Context 上下文。
 //
 // 入参：
 //   - ctx: 上下文。

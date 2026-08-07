@@ -20,6 +20,16 @@ const BizDeployNodeConfigFieldsProviderUCloudUPathX = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "endpoint"]}
+        initialValue={initialValues.endpoint}
+        label={t("workflow_node.deploy.form.ucloud_upathx_endpoint.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ucloud_upathx_endpoint.tooltip") }}></span>}
+      >
+        <Input allowClear placeholder={t("workflow_node.deploy.form.ucloud_upathx_endpoint.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "acceleratorId"]}
         initialValue={initialValues.acceleratorId}
         label={t("workflow_node.deploy.form.ucloud_upathx_accelerator_id.label")}
@@ -53,6 +63,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t } = i18n;
 
   return z.object({
+    endpoint: z.string().nullish(),
     acceleratorId: z.string().nonempty(),
     listenerPort: z.coerce.number().refine((v) => isPortNumber(v), t("common.errmsg.port_invalid")),
   });

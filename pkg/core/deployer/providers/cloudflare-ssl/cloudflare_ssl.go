@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 
-	cf "github.com/cloudflare/cloudflare-go/v7"
-	cfcertificates "github.com/cloudflare/cloudflare-go/v7/custom_certificates"
-	cfhostnames "github.com/cloudflare/cloudflare-go/v7/custom_hostnames"
-	cfoption "github.com/cloudflare/cloudflare-go/v7/option"
+	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	cloudflaresdk "github.com/certimate-go/certimate/pkg/sdk3rd/cloudflare"
 )
 
 type (
@@ -36,7 +34,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *cfcertificates.CustomCertificateService
+	sdkClient *cloudflaresdk.Client
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -74,29 +72,30 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	if d.config.CertificateId == "" {
 		// 新建自定义证书
 		// REF: https://developers.cf.com/api/resources/custom_certificates/methods/create
-		customCertificateNewReq := cfcertificates.CustomCertificateNewParams{
-			ZoneID:       cf.F(d.config.ZoneId),
-			Certificate:  cf.F(certPEM),
-			PrivateKey:   cf.F(privkeyPEM),
-			BundleMethod: cf.F(cfhostnames.BundleMethodUbiquitous),
-			Deploy:       cf.F(cfcertificates.CustomCertificateNewParamsDeploy(cmp.Or(d.config.Environment, "production"))),
+		customCertificateCreateReq := &cloudflaresdk.CustomCertificateCreateRequest{
+			ZoneId:       d.config.ZoneId,
+			Certificate:  lo.ToPtr(certPEM),
+			PrivateKey:   lo.ToPtr(privkeyPEM),
+			BundleMethod: lo.ToPtr("ubiquitous"),
+			Deploy:       lo.ToPtr(cmp.Or(d.config.Environment, "production")),
 		}
-		customCertificateNewResp, err := d.sdkClient.New(ctx, customCertificateNewReq)
-		d.logger.Debug("sdk request 'CustomCertificates.New'", slog.Any("request", customCertificateNewReq), slog.Any("response", customCertificateNewResp))
+		customCertificateCreateResp, err := d.sdkClient.CustomCertificateCreateWithContext(ctx, customCertificateCreateReq)
+		d.logger.Debug("sdk request 'CustomCertificates.Create'", slog.Any("request", customCertificateCreateReq), slog.Any("response", customCertificateCreateResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'CustomCertificates.New': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'CustomCertificates.Create': %w", err)
 		}
 	} else {
 		// 编辑自定义证书
 		// REF: https://developers.cloudflare.com/api/resources/custom_certificates/methods/edit
-		customCertificateEditReq := cfcertificates.CustomCertificateEditParams{
-			ZoneID:       cf.F(d.config.ZoneId),
-			Certificate:  cf.F(certPEM),
-			PrivateKey:   cf.F(privkeyPEM),
-			BundleMethod: cf.F(cfhostnames.BundleMethodUbiquitous),
-			Deploy:       cf.F(cfcertificates.CustomCertificateEditParamsDeploy(cmp.Or(d.config.Environment, "production"))),
+		customCertificateEditReq := &cloudflaresdk.CustomCertificateEditRequest{
+			ZoneId:        d.config.ZoneId,
+			CertificateId: d.config.CertificateId,
+			Certificate:   lo.ToPtr(certPEM),
+			PrivateKey:    lo.ToPtr(privkeyPEM),
+			BundleMethod:  lo.ToPtr("ubiquitous"),
+			Deploy:        lo.ToPtr(cmp.Or(d.config.Environment, "production")),
 		}
-		customCertificateEditResp, err := d.sdkClient.Edit(ctx, d.config.CertificateId, customCertificateEditReq)
+		customCertificateEditResp, err := d.sdkClient.CustomCertificateEditWithContext(ctx, customCertificateEditReq)
 		d.logger.Debug("sdk request 'CustomCertificates.Edit'", slog.Any("request", customCertificateEditReq), slog.Any("response", customCertificateEditResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'CustomCertificates.Edit': %w", err)
@@ -106,14 +105,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(apiToken string) (*cfcertificates.CustomCertificateService, error) {
-	if apiToken == "" {
-		return nil, fmt.Errorf("cloudflare: invalid api token")
+func createSDKClient(apiToken string) (*cloudflaresdk.Client, error) {
+	client, err := cloudflaresdk.NewClient(
+		cloudflaresdk.WithApiToken(apiToken),
+	)
+	if err != nil {
+		return nil, err
 	}
 
-	opts := append(cf.DefaultClientOptions(), cfoption.WithAPIToken(apiToken))
-
-	srv := cfcertificates.NewCustomCertificateService(opts...)
-
-	return srv, nil
+	return client, err
 }

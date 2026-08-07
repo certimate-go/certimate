@@ -116,7 +116,9 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func createSDKClient(serverUrl, apiKey string, skipTlsVerify bool) (*dokploysdk.Client, error) {
-	client, err := dokploysdk.NewClient(serverUrl, apiKey)
+	client, err := dokploysdk.NewClient(serverUrl,
+		dokploysdk.WithApiKey(apiKey),
+	)
 	if err != nil {
 		return nil, err
 	}

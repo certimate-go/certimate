@@ -28,7 +28,7 @@ func (c *Client) ProvisionSiteTLSCertificate(siteId string, req *ProvisionSiteTL
 
 func (c *Client) ProvisionSiteTLSCertificateWithContext(ctx context.Context, siteId string, req *ProvisionSiteTLSCertificateRequest) (*ProvisionSiteTLSCertificateResponse, error) {
 	if siteId == "" {
-		return nil, fmt.Errorf("sdkerr: unset siteId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset siteId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPost, fmt.Sprintf("/sites/%s/ssl", url.PathEscape(siteId)))

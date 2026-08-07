@@ -16,6 +16,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
+	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
 )
 
 type (
@@ -75,9 +76,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
-		Region: lo.
-			If(config.Region == "" || strings.HasPrefix(config.Region, "cn-"), "cn-hangzhou").
-			Else("ap-southeast-1"),
+		Region:          lo.Ternary(xalibabacloud.IsIntlRegion(config.Region), "ap-southeast-1", ""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -131,13 +130,13 @@ func (d *Deployer) deployToWAF3(ctx context.Context, certPEM, privkeyPEM string)
 	// 根据接入方式决定部署方式
 	switch d.config.ServiceType {
 	case SERVICE_TYPE_CLOUDRESOURCE:
-		certId := upres.ExtendedData["CertIdentifier"].(string)
+		certId := upres.ExtendedData["CertIdWithRegion"].(string)
 		if err := d.deployToWAF3WithCloudResource(ctx, certId); err != nil {
 			return err
 		}
 
 	case SERVICE_TYPE_CNAME:
-		certId := upres.ExtendedData["CertIdentifier"].(string)
+		certId := upres.ExtendedData["CertIdWithRegion"].(string)
 		if err := d.deployToWAF3WithCNAME(ctx, certId); err != nil {
 			return err
 		}
@@ -215,10 +214,11 @@ func (d *Deployer) deployToWAF3WithCloudResource(ctx context.Context, cloudCertI
 		// 未指定扩展域名，只需替换默认证书
 		const certAppliedTypeDefault = "default"
 
-		// 已部署过，直接跳过更新
+		// 已部署过，直接返回
 		for _, certItem := range wafCloudResourceCertificates {
 			if tea.StringValue(certItem.AppliedType) == certAppliedTypeDefault &&
 				tea.StringValue(certItem.CertificateId) == cloudCertId {
+				d.logger.Info("no need to deploy waf default certificate")
 				return nil
 			}
 		}
@@ -245,10 +245,11 @@ func (d *Deployer) deployToWAF3WithCloudResource(ctx context.Context, cloudCertI
 		// 指定扩展域名，替换或新增扩展证书
 		const certAppliedTypeExtension = "extension"
 
-		// 已部署过，直接跳过更新
+		// 已部署过，直接返回
 		for _, certItem := range wafCloudResourceCertificates {
 			if tea.StringValue(certItem.AppliedType) == certAppliedTypeExtension &&
 				tea.StringValue(certItem.CertificateId) == cloudCertId {
+				d.logger.Info("no need to deploy waf extension certificate")
 				return nil
 			}
 		}

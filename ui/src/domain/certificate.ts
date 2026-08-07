@@ -13,10 +13,6 @@ export interface CertificateModel extends BaseModel {
   validationPolicy: string;
   validityNotBefore: ISO8601String;
   validityNotAfter: ISO8601String;
-  ariWindowStart?: ISO8601String;
-  ariWindowEnd?: ISO8601String;
-  ariNextRefreshAt?: ISO8601String;
-  ariSupported?: boolean;
   isRenewed: boolean;
   isRevoked: boolean;
   workflowRef: string;

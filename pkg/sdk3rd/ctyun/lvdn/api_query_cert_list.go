@@ -8,21 +8,18 @@ import (
 )
 
 type QueryCertListRequest struct {
-	Page      *int32 `json:"page,omitempty"       url:"page,omitempty"`
-	PerPage   *int32 `json:"per_page,omitempty"   url:"per_page,omitempty"`
-	UsageMode *int32 `json:"usage_mode,omitempty" url:"usage_mode,omitempty"`
+	Page    *int32 `json:"page,omitempty"     url:"page,omitempty"`
+	PerPage *int32 `json:"per_page,omitempty" url:"per_page,omitempty"`
 }
 
 type QueryCertListResponse struct {
 	sdkResponseBase
 
-	ReturnObj *struct {
-		Results      []*CertRecord `json:"result,omitempty"`
-		Page         int32         `json:"page,omitempty"`
-		PerPage      int32         `json:"per_page,omitempty"`
-		TotalPage    int32         `json:"total_page,omitempty"`
-		TotalRecords int32         `json:"total_records,omitempty"`
-	} `json:"returnObj,omitempty"`
+	Results      []*Cert `json:"result,omitempty"`
+	Page         int32   `json:"page,omitempty"`
+	PerPage      int32   `json:"per_page,omitempty"`
+	TotalPage    int32   `json:"total_page,omitempty"`
+	TotalRecords int32   `json:"total_records,omitempty"`
 }
 
 func (c *Client) QueryCertList(req *QueryCertListRequest) (*QueryCertListResponse, error) {

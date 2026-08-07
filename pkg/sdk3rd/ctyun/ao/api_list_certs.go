@@ -17,11 +17,11 @@ type ListCertsResponse struct {
 	sdkResponseBase
 
 	ReturnObj *struct {
-		Results      []*CertRecord `json:"result,omitempty"`
-		Page         int32         `json:"page,omitempty"`
-		PerPage      int32         `json:"per_page,omitempty"`
-		TotalPage    int32         `json:"total_page,omitempty"`
-		TotalRecords int32         `json:"total_records,omitempty"`
+		Results      []*Cert `json:"result,omitempty"`
+		Page         int32   `json:"page,omitempty"`
+		PerPage      int32   `json:"per_page,omitempty"`
+		TotalPage    int32   `json:"total_page,omitempty"`
+		TotalRecords int32   `json:"total_records,omitempty"`
 	} `json:"returnObj,omitempty"`
 }
 

@@ -19,13 +19,11 @@ type QueryDomainListRequest struct {
 type QueryDomainListResponse struct {
 	sdkResponseBase
 
-	ReturnObj *struct {
-		Results   []*DomainRecord `json:"result,omitempty"`
-		Page      int32           `json:"page,omitempty"`
-		PageSize  int32           `json:"page_size,omitempty"`
-		PageCount int32           `json:"page_count,omitempty"`
-		Total     int32           `json:"total,omitempty"`
-	} `json:"returnObj,omitempty"`
+	Results   []*Domain `json:"result,omitempty"`
+	Page      int32     `json:"page,omitempty"`
+	PageSize  int32     `json:"page_size,omitempty"`
+	PageCount int32     `json:"page_count,omitempty"`
+	Total     int32     `json:"total,omitempty"`
 }
 
 func (c *Client) QueryDomainList(req *QueryDomainListRequest) (*QueryDomainListResponse, error) {
@@ -33,7 +31,7 @@ func (c *Client) QueryDomainList(req *QueryDomainListRequest) (*QueryDomainListR
 }
 
 func (c *Client) QueryDomainListWithContext(ctx context.Context, req *QueryDomainListRequest) (*QueryDomainListResponse, error) {
-	httpreq, err := c.newRequest(http.MethodGet, "/v1/domain/query-domain-list")
+	httpreq, err := c.newRequest(http.MethodGet, "/domain/query-domain-list")
 	if err != nil {
 		return nil, err
 	} else {

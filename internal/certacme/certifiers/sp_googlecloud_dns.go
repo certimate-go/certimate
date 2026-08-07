@@ -5,7 +5,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/googlecloud-dns"
+	chlgimpl "github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/googlecloud"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -17,6 +17,7 @@ func init() {
 		}
 
 		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
+			ProjectId:             credentials.ProjectId,
 			ServiceAccountKey:     credentials.ServiceAccountKey,
 			DnsPropagationTimeout: options.DnsPropagationTimeout,
 			DnsTTL:                options.DnsTTL,

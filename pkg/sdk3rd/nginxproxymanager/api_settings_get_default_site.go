@@ -23,7 +23,7 @@ func (c *Client) SettingsGetDefaultSite(req *SettingsGetDefaultSiteRequest) (*Se
 }
 
 func (c *Client) SettingsGetDefaultSiteWithContext(ctx context.Context, req *SettingsGetDefaultSiteRequest) (*SettingsGetDefaultSiteResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

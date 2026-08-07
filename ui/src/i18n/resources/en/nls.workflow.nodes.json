@@ -183,7 +183,7 @@
       },
       "key_content": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key",
           "not_matched": "Private key does not match the key algorithm (Expected: {{expected}}, Actual: {{actual}})"
@@ -302,7 +302,7 @@
       "huaweicloud_dns_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud DNS region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/dns?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/dns</a>"
       },
       "jdcloud_dns_region_id": {
         "label": "JD Cloud region ID",
@@ -318,6 +318,16 @@
         "label": "Web root path",
         "placeholder": "Please enter web root path",
         "tooltip": "It's the main directory where the website's files are stored on the local device."
+      },
+      "oraclecloud_dns_region": {
+        "label": "OCI region",
+        "placeholder": "Please enter OCI DNS region (e.g. us-phoenix-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm</a>"
+      },
+      "oraclecloud_dns_compartment_ocid": {
+        "label": "OCI compartment OCID",
+        "placeholder": "Please enter OCI compartment OCID",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
       },
       "s3_region": {
         "label": "Object storage (S3-compatible) region",
@@ -335,6 +345,11 @@
       "ssh_use_scp": {
         "label": "Fallback to use SCP",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
+      },
+      "ucloud_udnr_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UDNR API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       }
     }
   },
@@ -366,11 +381,11 @@
       },
       "name": {
         "label": "Domains / IP addresses",
-        "placholder": "Please select certificate file"
+        "placeholder": "Please select certificate file"
       },
       "certificate_pem": {
         "label": "Certificate (PEM format)",
-        "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
+        "placeholder": "Please enter certificate\r\n\r\n-----BEGIN CERTIFICATE-----\r\n...\r\n-----END CERTIFICATE-----",
         "errmsg": {
           "invalid": "Invalid PEM certificate"
         }
@@ -385,7 +400,7 @@
       },
       "private_key_pem": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key"
         }
@@ -448,6 +463,17 @@
       }
     },
     "form": {
+      "webhook_data": {
+        "label": "Webhook data (Optional)",
+        "placeholder": "Please enter Webhook data",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
+        "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>: <br>The primary domain or IP address of the certificate.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>: <br>The domains or IP addresses of the certificate, separated by semicolons.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>: <br>The PEM format content of the certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>: <br>The PEM format content of the server certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>: <br>The PEM format content of the intermediate CA certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>: <br>The PEM format content of the private key file.</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Webhook timeout (Optional)",
+        "placeholder": "Please enter Webhook timeout",
+        "unit": "seconds"
+      },
       "certificate_output_node_id": {
         "label": "Certificate to deploy",
         "placeholder": "Please select certificate to deploy",
@@ -954,7 +980,7 @@
       "aws_acm_certificate_arn": {
         "label": "AWS ACM certificate ARN (Optional)",
         "placeholder": "Please enter AWS ACM certificate ARN",
-        "help": "Notes: Leave it blank to import a new certificate."
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "aws_alb_region": {
         "label": "AWS Region",
@@ -1174,7 +1200,7 @@
         "tooltip": "For more information, see <a href=\"https://cdnx.console.baishan.com/#/cdn/cert\" target=\"_blank\">https://cdnx.console.baishan.com/#/cdn/cert</a>"
       },
       "baotapanel": {
-        "guide": "Requires aaPanel v7.0 or higher."
+        "guide": "Requires aaPanel v7.0 / BaotaPanel v8.3 or higher."
       },
       "baotapanel_site_type": {
         "label": "aaPanel website type",
@@ -1205,7 +1231,7 @@
             "label": "General Project"
           },
           "any": {
-            "label": "Any Project (aaPanel v7.26+)"
+            "label": "Any Project (aaPanel v7.26+ / BaotaPanel v9.4+)"
           }
         }
       },
@@ -1429,6 +1455,40 @@
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
         "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
       },
+      "cmcccloud_cdn_domain": {
+        "label": "CMCC ECloud CDN domain",
+        "placeholder": "Please enter CMCC ECloud CDN domain name"
+      },
+      "cmcccloud_vlb_pool_id": {
+        "label": "CMCC ECloud pool ID",
+        "placeholder": "Please enter CMCC ECloud VLB pool ID  (e.g. CIDC-RP-29)",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/54462\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/54462</a>"
+      },
+      "cmcccloud_vlb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "VLB load balancer"
+          },
+          "listener": {
+            "label": "VLB listener"
+          }
+        }
+      },
+      "cmcccloud_vlb_loadbalancer_id": {
+        "label": "CMCC ECloud VLB load balancer ID",
+        "placeholder": "Please enter CMCC ECloud VLB load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_listener_id": {
+        "label": "CMCC ECloud VLB listener ID",
+        "placeholder": "Please enter CMCC ECloud VLB listener ID",
+        "tooltip": "For more information, see <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
+      },
+      "cmcccloud_vlb_snidomain": {
+        "label": "CMCC ECloud VLB SNI domain (Optional)",
+        "placeholder": "Please enter CMCC ECloud VLB SNI domain name",
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
       "cpanel_deploy_target": {
         "option": {
           "website": {
@@ -1455,9 +1515,6 @@
       },
       "ctcccloud_elb_deploy_target": {
         "option": {
-          "certificate": {
-            "label": "ELB certificate"
-          },
           "loadbalancer": {
             "label": "ELB load balancer"
           },
@@ -1492,10 +1549,6 @@
       "ctcccloud_lvdn_domain": {
         "label": "CTCC StateCloud LVDN domain",
         "placeholder": "Please enter CTCC StateCloud LVDN domain name"
-      },
-      "dogecloud_cdn_domain": {
-        "label": "Doge Cloud CDN domain",
-        "placeholder": "Please enter Doge Cloud CDN domain name"
       },
       "flexcdn_deploy_target": {
         "option": {
@@ -1541,19 +1594,24 @@
         "placeholder": "Please enter GoEdge certificate ID",
         "tooltip": "You can find it on GoEdge dashboard. <br><br>(Please open the browser devtools, and visit the \"网站列表 -> 证书管理 -> 证书\" page to capture network requests, then you can get the certificate ID.)"
       },
-      "huaweicloud_aad_domain": {
-        "label": "Huawei Cloud AAD domain",
-        "placeholder": "Please enter Huawei Cloud AAD domain name"
+      "huaweicloud_aad_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud AAD region (e.g. cn-north-4)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/aad?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/aad</a>"
       },
       "huaweicloud_aad_instance_id": {
         "label": "Huawei Cloud AAD instance ID",
         "placeholder": "Please enter Huawei Cloud AAD instance ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list\" target=\"_blank\">https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list</a>"
       },
+      "huaweicloud_aad_domain": {
+        "label": "Huawei Cloud AAD domain",
+        "placeholder": "Please enter Huawei Cloud AAD domain name"
+      },
       "huaweicloud_apig_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud API gateway region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/apig?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/apig</a>"
       },
       "huaweicloud_apig_deploy_target": {
         "option": {
@@ -1570,7 +1628,7 @@
       "huaweicloud_cdn_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud CDN region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/cdn?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/cdn</a>"
       },
       "huaweicloud_cdn_domain": {
         "label": "Huawei Cloud CDN domain",
@@ -1579,7 +1637,7 @@
       "huaweicloud_obs_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud OBS region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/obs?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/obs</a>"
       },
       "huaweicloud_obs_bucket": {
         "label": "Huawei Cloud OBS bucket name",
@@ -1592,7 +1650,7 @@
       "huaweicloud_elb_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
       },
       "huaweicloud_elb_deploy_target": {
         "option": {
@@ -1607,11 +1665,6 @@
           }
         }
       },
-      "huaweicloud_elb_certificate_id": {
-        "label": "Huawei Cloud ELB certificate ID",
-        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
       "huaweicloud_elb_loadbalancer_id": {
         "label": "Huawei Cloud ELB load balancer ID",
         "placeholder": "Please enter Huawei Cloud ELB load balancer ID",
@@ -1622,19 +1675,33 @@
         "placeholder": "Please enter Huawei Cloud ELB listener ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>"
       },
+      "huaweicloud_elb_certificate_id": {
+        "label": "Huawei Cloud ELB certificate ID",
+        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
+      },
       "huaweicloud_live_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud Live region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/live?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/live</a>"
       },
       "huaweicloud_live_domain": {
         "label": "Huawei Cloud Live streaming domain",
         "placeholder": "Please enter Huawei Cloud Live streaming domain name"
       },
+      "huaweicloud_vod_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud VOD region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/vod?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/vod</a>"
+      },
+      "huaweicloud_vod_domain": {
+        "label": "Huawei Cloud VOD domain",
+        "placeholder": "Please enter Huawei Cloud VOD domain name"
+      },
       "huaweicloud_waf_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
       },
       "huaweicloud_waf_deploy_target": {
         "option": {
@@ -1714,59 +1781,6 @@
         "label": "JD Cloud WAF domain",
         "placeholder": "Please enter JD Cloud WAF domain name"
       },
-      "k8s_namespace": {
-        "label": "Kubernetes Namespace",
-        "placeholder": "Please enter Kubernetes Namespace",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/\" target=\"_blank\">https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</a>"
-      },
-      "k8s_secret_name": {
-        "label": "Kubernetes Secret name",
-        "placeholder": "Please enter Kubernetes Secret name",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_type": {
-        "label": "Kubernetes Secret type",
-        "placeholder": "Please enter Kubernetes Secret type",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_key": {
-        "label": "Kubernetes Secret data key for private key",
-        "placeholder": "Please enter Kubernetes Secret data key for private key",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_crt": {
-        "label": "Kubernetes Secret data key for certificate",
-        "placeholder": "Please enter Kubernetes Secret data key for certificate",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_servercrt": {
-        "label": "Kubernetes Secret data key for certificate (includes the end-entity parts only) (Optional)",
-        "placeholder": "Please enter Kubernetes Secret data key for server certificate",
-        "help": ""
-      },
-      "k8s_secret_data_key_for_intermediacrt": {
-        "label": "Kubernetes Secret data key for certificate (includes the CA parts only) (Optional)",
-        "placeholder": "Please enter Kubernetes Secret data key for intermediate certificate",
-        "help": ""
-      },
-      "k8s_secret_annotations": {
-        "label": "Kubernetes Secret annotations (Optional)",
-        "placeholder": "Please enter Kubernetes Secret annotations",
-        "help": "Notes: One key value pair per line, separated by colon.",
-        "errmsg": {
-          "invalid": "Invalid annotations"
-        },
-        "tooltip": "Example: <br><i>environment: production<br>app: nginx</i>"
-      },
-      "k8s_secret_labels": {
-        "label": "Kubernetes Secret labels (Optional)",
-        "placeholder": "Please enter Kubernetes Secret labels",
-        "help": "Notes: One key value pair per line, separated by colon.",
-        "errmsg": {
-          "invalid": "Invalid labels"
-        },
-        "tooltip": "Example: <br><i>environment: production<br>app: nginx</i>"
-      },
       "kong": {
         "guide": "Requires Kong v2.0 or higher."
       },
@@ -1806,6 +1820,11 @@
         "placeholder": "Please enter Kingsoft Cloud CDN certificate ID",
         "tooltip": "For more information, see <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
       },
+      "ksyun_slb_region": {
+        "label": "Kingsoft Cloud region",
+        "placeholder": "Please enter Kingsoft Cloud SLB region (e.g. cn-beijing-6)",
+        "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/directories/1164\" target=\"_blank\">https://endocs.ksyun.com/directories/1164</a>"
+      },
       "ksyun_slb_deploy_target": {
         "option": {
           "certificate": {
@@ -1834,6 +1853,15 @@
         "label": "LeCDN user ID (Optional)",
         "placeholder": "Please enter LeCDN user ID",
         "tooltip": "You can find it on LeCDN dashboard. <br>Required when using administrator's authorization. It Must be the same as the user to which the certificate belongs."
+      },
+      "linode_los_region_id": {
+        "label": "Linode region ID",
+        "placeholder": "Please enter Linode object storage region ID (e.g. us-east)",
+        "tooltip": "For more information, see <a href=\"https://techdocs.akamai.com/cloud-computing/docs/endpoint-types#supported-endpoint-types-by-region\" target=\"_blank\">https://techdocs.akamai.com/cloud-computing/docs/endpoint-types</a>"
+      },
+      "linode_los_bucket": {
+        "label": "Linode object storage bucket name",
+        "placeholder": "Please enter Linode object storage bucket name"
       },
       "local": {
         "guide": "If you are running Certimate in Docker, the \"Local\" refers to the container rather than the host."
@@ -1941,6 +1969,11 @@
         "placeholder": "Please enter NPM certificate ID",
         "tooltip": "You can find it on NPM dashboard."
       },
+      "oraclecloud_certificatesmgmt_compartment_ocid": {
+        "label": "OCI compartment OCID",
+        "placeholder": "Please enter OCI compartment OCID",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
+      },
       "proxmoxve": {
         "guide": "Requires Proxmox VE v5.2 or higher."
       },
@@ -1951,26 +1984,30 @@
       "proxmoxve_auto_restart": {
         "label": "Auto restart Proxmox VE after deployment"
       },
-      "qiniu_cdn_domain": {
-        "label": "Qiniu CDN domain",
-        "placeholder": "Please enter Qiniu CDN domain name"
+      "qingcloud_lb_zone_id": {
+        "label": "QingCloud zone ID",
+        "placeholder": "Please enter QingCloud LBC zone ID (e.g. pek3a)",
+        "tooltip": "For more information, see <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
       },
-      "qiniu_kodo_bucket": {
-        "label": "Qiniu Kodo bucket",
-        "placeholder": "Please enter Qiniu Kodo bucket name"
+      "qingcloud_lb_deploy_target": {
+        "option": {
+          "loadbalancer": {
+            "label": "LBC load balancer"
+          },
+          "listener": {
+            "label": "LBC listener"
+          }
+        }
       },
-      "qiniu_kodo_domain": {
-        "label": "Qiniu Kodo custom domain",
-        "placeholder": "Please enter Qiniu Kodo bucket custom domain name"
+      "qingcloud_lb_loadbalancer_id": {
+        "label": "QingCloud LBC load balancer ID",
+        "placeholder": "Please enter QingCloud LBC load balancer ID",
+        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
       },
-      "qiniu_pili_hub": {
-        "label": "Qiniu Pili hub",
-        "placeholder": "Please enter Qiniu Pili hub name",
-        "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/hub\" target=\"_blank\">https://portal.qiniu.com/hub</a>"
-      },
-      "qiniu_pili_domain": {
-        "label": "Qiniu Pili streaming domain",
-        "placeholder": "Please enter Qiniu Pili streaming domain name"
+      "qingcloud_lb_listener_id": {
+        "label": "QingCloud LBC listener ID",
+        "placeholder": "Please enter QingCloud LBC listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
       },
       "rainyun_rcdn_instance_id": {
         "label": "Rain Yun RCDN instance ID",
@@ -2074,6 +2111,12 @@
         "placeholder": "Please enter SamWAF certificate ID",
         "tooltip": "You can find it on SamWAF dashboard."
       },
+      "samwaf_console": {
+        "guide": "Requires SamWAF v1.3.21 or higher."
+      },
+      "samwaf_console_auto_restart": {
+        "label": "Auto restart SamWAF after deployment"
+      },
       "ssh_pre_command": {
         "label": "Pre-command (Optional)",
         "placeholder": "Please enter command to be executed before uploading files"
@@ -2112,7 +2155,7 @@
       "tencentcloud_cdn_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CDN API endpoint (e.g. cdn.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_cdn_domain": {
         "label": "Tencent Cloud CDN domain",
@@ -2121,7 +2164,7 @@
       "tencentcloud_clb_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CLB API endpoint (e.g. clb.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_clb_region": {
         "label": "Tencent Cloud region",
@@ -2171,7 +2214,7 @@
       "tencentcloud_css_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CSS API endpoint (e.g. live.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>live.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>live.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_css_domain": {
         "label": "Tencent Cloud CSS streaming domain",
@@ -2180,7 +2223,7 @@
       "tencentcloud_ecdn_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud ECDN API endpoint (e.g. cdn.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ecdn_domain": {
         "label": "Tencent Cloud ECDN domain",
@@ -2189,7 +2232,7 @@
       "tencentcloud_eo_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_eo_zone_id": {
         "label": "Tencent Cloud EdgeOne zone ID",
@@ -2214,10 +2257,65 @@
           "off": "Disallow"
         }
       },
+      "tencentcloud_eomakers_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>teo.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_eomakers_api_token": {
+        "label": "Tencent Cloud EdgeOne Makers API Token",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers API Token",
+        "tooltip": "For more information, see <a href=\"https://pages.edgeone.ai/document/api-token\" target=\"_blank\">https://pages.edgeone.ai/document/api-token</a>"
+      },
+      "tencentcloud_eomakers_project_id": {
+        "label": "Tencent Cloud EdgeOne Makers project ID",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers project ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone/makers\" target=\"_blank\">https://console.tencentcloud.com/edgeone/makers</a>"
+      },
+      "tencentcloud_eomakers_domains": {
+        "label": "Tencent Cloud EdgeOne Makers custom domains",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers custom domain names (separated by semicolons)",
+        "help": "Notes: Multiple domains should be separated by semicolons.",
+        "multiple_input_modal": {
+          "title": "Change Tencent Cloud EdgeOne Makers custom domain",
+          "placeholder": "Please enter Tencent Cloud EdgeOne Makers custom domain name"
+        }
+      },
+      "tencentcloud_eomakers_enable_multiple_ssl": {
+        "label": "Multiple SSL certificates",
+        "help": "Notes: Each domain name supports one RSA certificate and one ECC certificate at most.",
+        "switch": {
+          "suffix": "to retain other certificates with different algorithms.",
+          "on": "Allow",
+          "off": "Disallow"
+        }
+      },
+      "tencentcloud_ga2_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud GA2 API endpoint (e.g. ga2.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ga2.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ga2.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_ga2_deploy_target": {
+        "option": {
+          "listener": {
+            "label": "GA2 listener"
+          }
+        }
+      },
+      "tencentcloud_ga2_accelerator_id": {
+        "label": "Tencent Cloud GA2 accelerator ID (Optional)",
+        "placeholder": "Please enter Tencent Cloud GA2 accelerator ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
+      },
+      "tencentcloud_ga2_listener_id": {
+        "label": "Tencent Cloud GA2 listener ID",
+        "placeholder": "Please enter Tencent Cloud GA2 listener ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_gaap_deploy_target": {
         "option": {
@@ -2239,7 +2337,7 @@
       "tencentcloud_scf_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SCF API endpoint (e.g. scf.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>scf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>scf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_scf_region": {
         "label": "Tencent Cloud region",
@@ -2253,7 +2351,7 @@
       "tencentcloud_ssl_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ssldeploy": {
         "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>DeployCertificateInstance</em> to create an asynchronously deployment task."
@@ -2261,7 +2359,7 @@
       "tencentcloud_ssldeploy_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ssldeploy_resource_region": {
         "label": "Tencent Cloud resource region (Optional)",
@@ -2292,7 +2390,7 @@
       "tencentcloud_sslupdate_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_sslupdate_certificate_id": {
         "label": "Tencent Cloud SSL certificate ID",
@@ -2329,10 +2427,49 @@
         "label": "Renewal certificate (certificate ID unchanged)",
         "tooltip": "When unchecked, it will invoke <em>UpdateCertificateInstance</em>; otherwise, it will invoke <em>UploadUpdateCertificateInstance</em>."
       },
+      "tencentcloud_tse_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud TSE API endpoint (e.g. tse.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_tse_region": {
+        "label": "Tencent Cloud region",
+        "placeholder": "Please enter Tencent Cloud TSE region (e.g. ap-guangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1290/79214\" target=\"_blank\">https://www.tencentcloud.com/document/product/1290/79214</a>"
+      },
+      "tencentcloud_tse_service_type": {
+        "label": "Tencent Cloud TSE service type",
+        "placeholder": "Please select Tencent Cloud TSE service type",
+        "option": {
+          "cloudnative": {
+            "label": "Cloud-native API gateway"
+          }
+        }
+      },
+      "tencentcloud_tse_gateway_id": {
+        "label": "Tencent Cloud TSE Cloud-native API gateway ID",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
+      },
+      "tencentcloud_tse_domains": {
+        "label": "Tencent Cloud TSE Cloud-native API gateway binding domains",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway binding domain names (separated by semicolons)",
+        "help": "Notes: Multiple domains should be separated by semicolons.",
+        "multiple_input_modal": {
+          "title": "Change Tencent Cloud TSE Cloud-native API gateway binding domains",
+          "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway binding domain name"
+        }
+      },
+      "tencentcloud_tse_certificate_id": {
+        "label": "Tencent Cloud TSE Cloud-native certificate ID",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native certificate ID",
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
+      },
       "tencentcloud_vod_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud VOD API endpoint (e.g. vod.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>vod.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>vod.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_vod_sub_app_id": {
         "label": "Tencent Cloud VOD App ID",
@@ -2346,7 +2483,7 @@
       "tencentcloud_waf_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud WAF API endpoint (e.g. waf.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>waf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>waf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_waf_region": {
         "label": "Tencent Cloud region",
@@ -2366,6 +2503,11 @@
         "label": "Tencent Cloud WAF domain ID",
         "placeholder": "Please enter Tencent Cloud WAF domain ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/waf\" target=\"_blank\">https://console.tencentcloud.com/waf</a>"
+      },
+      "ucloud_ualb_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UALB API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_ualb_region": {
         "label": "UCloud region",
@@ -2397,10 +2539,20 @@
         "placeholder": "Please enter UCloud UALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
+      "ucloud_ucdn_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UCDN API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
       "ucloud_ucdn_domain_id": {
         "label": "UCloud UCDN domain ID",
         "placeholder": "Please enter UCloud UCDN domain ID",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ucdn\" target=\"_blank\">https://console.ucloud-global.com/ucdn</a>"
+      },
+      "ucloud_uclb_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UCLB API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_uclb_region": {
         "label": "UCloud region",
@@ -2427,6 +2579,11 @@
         "placeholder": "Please enter UCloud UCLB VServer ID",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>"
       },
+      "ucloud_upathx_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UPathX API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
       "ucloud_upathx_accelerator_id": {
         "label": "UCloud UPathX accelerator ID",
         "placeholder": "Please enter UCloud UPathX accelerator ID",
@@ -2436,6 +2593,11 @@
         "label": "UCloud UPathX listener port",
         "placeholder": "Please enter UCloud UPathX listener port",
         "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>"
+      },
+      "ucloud_us3_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud US3 API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_us3_region": {
         "label": "UCloud region",
@@ -2449,6 +2611,11 @@
       "ucloud_us3_domain": {
         "label": "UCloud US3 custom domain",
         "placeholder": "Please enter UCloud US3 bucket custom domain name"
+      },
+      "ucloud_uewaf_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UEWAF API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       },
       "ucloud_uewaf_domain": {
         "label": "UCloud UEWAF domain",
@@ -2502,7 +2669,7 @@
       "volcengine_alb_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine ALB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
       },
       "volcengine_alb_deploy_target": {
         "option": {
@@ -2532,7 +2699,7 @@
       "volcengine_apig_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine API gateway region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
       },
       "volcengine_apig_domain": {
         "label": "VolcEngine API gateway custom domain",
@@ -2549,7 +2716,7 @@
       "volcengine_clb_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine CLB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
       },
       "volcengine_clb_deploy_target": {
         "option": {
@@ -2578,7 +2745,7 @@
       "volcengine_imagex_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine ImageX region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/508/23757\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/508/23757?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>"
       },
       "volcengine_imagex_service_id": {
         "label": "VolcEngine ImageX service ID",
@@ -2596,7 +2763,7 @@
       "volcengine_tos_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine TOS region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
       },
       "volcengine_tos_bucket": {
         "label": "VolcEngine TOS bucket",
@@ -2605,6 +2772,11 @@
       "volcengine_tos_domain": {
         "label": "VolcEngine TOS custom domain",
         "placeholder": "Please enter VolcEngine TOS bucket custom domain name"
+      },
+      "volcengine_vod_region": {
+        "label": "VolcEngine region",
+        "placeholder": "Please enter VolcEngine VOD region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.volcengine.com/docs/4/1215505?lang=en\" target=\"_blank\">https://docs.volcengine.com/docs/4/1215505</a>"
       },
       "volcengine_vod_space_name": {
         "label": "VolcEngine VOD space name",
@@ -2620,6 +2792,9 @@
           },
           "image": {
             "label": "Image"
+          },
+          "third": {
+            "label": "Third"
           }
         }
       },
@@ -2630,7 +2805,7 @@
       "volcengine_waf_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine WAF region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6511/1594024\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>"
+        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6511/1594024?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>"
       },
       "volcengine_waf_access_mode": {
         "label": "VolcEngine WAF access mode",
@@ -2651,7 +2826,7 @@
         "help": "Notes: Multiple domains should be separated by semicolons.",
         "multiple_input_modal": {
           "title": "Change Wangsu Cloud CDN domains",
-          "placeholder": "Please enter Wangsu Cloud CDN domain"
+          "placeholder": "Please enter Wangsu Cloud CDN domain name"
         }
       },
       "wangsu_cdnpro_environment": {
@@ -2690,13 +2865,18 @@
       "webhook_data": {
         "label": "Webhook data (Optional)",
         "placeholder": "Please enter Webhook data",
-        "help": "Notes: Leave it blank to use the default Webhook data provided by the credential.",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
         "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>: <br>The primary domain or IP address of the certificate.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>: <br>The domains or IP addresses of the certificate, separated by semicolons.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>: <br>The PEM format content of the certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>: <br>The PEM format content of the server certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>: <br>The PEM format content of the intermediate CA certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>: <br>The PEM format content of the private key file.</li></ol>"
       },
       "webhook_timeout": {
         "label": "Webhook timeout (Optional)",
         "placeholder": "Please enter Webhook timeout",
         "unit": "seconds"
+      },
+      "yandexcloud_certificatemanager_certificate_id": {
+        "label": "Yandex Cloud Certificate Manager certificate ID (Optional)",
+        "placeholder": "Please enter Yandex Cloud Certificate Manager certificate ID",
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "zenlayer_cdn_deploy_target": {
         "option": {
@@ -2796,7 +2976,7 @@
       "discordbot_channel_id": {
         "label": "Discord channel ID (Optional)",
         "placeholder": "Please enter Discord channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the credential."
+        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
       },
       "email_format": {
         "label": "Message format (Optional)",
@@ -2815,15 +2995,20 @@
         "placeholder": "Please enter receiver email address",
         "help": "Notes: Leave it blank to use the default receiver email address provided by the selected credential."
       },
+      "matrix_room_id": {
+        "label": "Matrix room ID (Optional)",
+        "placeholder": "Please enter Matrix room ID",
+        "help": "Notes: Leave it blank to use the default room ID provided by the selected credential."
+      },
       "mattermost_channel_id": {
         "label": "Mattermost channel ID (Optional)",
         "placeholder": "Please enter Mattermost channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the credential."
+        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
       },
       "slackbot_channel_id": {
         "label": "Slack channel ID (Optional)",
         "placeholder": "Please enter Slack channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the credential."
+        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
       },
       "telegrambot_chat_id": {
         "label": "Telegram chat ID (Optional)",
@@ -2833,7 +3018,7 @@
       "webhook_data": {
         "label": "Webhook data (Optional)",
         "placeholder": "Please enter Webhook data",
-        "help": "Notes: Leave it blank to use the default Webhook data provided by the credential.",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
         "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_NOTIFIER_SUBJECT}</strong>: <br>The subject of notification.</li><li><strong>${CERTIMATE_NOTIFIER_MESSAGE}</strong>: <br>The message of notification.</li></ol>"
       },
       "webhook_timeout": {

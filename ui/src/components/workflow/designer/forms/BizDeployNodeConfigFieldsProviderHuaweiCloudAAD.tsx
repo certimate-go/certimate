@@ -28,6 +28,16 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudAAD = () => {
   return (
     <>
       <Form.Item
+        name={[parentNamePath, "region"]}
+        initialValue={initialValues.region}
+        label={t("workflow_node.deploy.form.huaweicloud_aad_region.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.huaweicloud_aad_region.tooltip") }}></span>}
+      >
+        <Input placeholder={t("workflow_node.deploy.form.huaweicloud_aad_region.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "instanceId"]}
         initialValue={initialValues.instanceId}
         label={t("workflow_node.deploy.form.huaweicloud_aad_instance_id.label")}
@@ -74,6 +84,7 @@ const BizDeployNodeConfigFieldsProviderHuaweiCloudAAD = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    region: "",
     instanceId: "",
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domain: "",
@@ -85,6 +96,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
+      region: z.string().nonempty(),
       instanceId: z.string().nonempty(),
       domainMatchPattern: z.string().nonempty().default(DOMAIN_MATCH_PATTERN_EXACT),
       domain: z.string().nullish(),

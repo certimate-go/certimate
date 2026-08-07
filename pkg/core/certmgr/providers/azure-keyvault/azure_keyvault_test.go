@@ -3,12 +3,14 @@ package azurekeyvault_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/azure-keyvault"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("AZUREKEYVAULT_")
+	fp            = it.Args("AZUREKEYVAULT_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fTenantId     string
@@ -51,11 +53,8 @@ func TestProvider(t *testing.T) {
 			CloudName:    fCloudName,
 			KeyVaultName: fKeyVaultName,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

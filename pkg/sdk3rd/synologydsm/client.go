@@ -1,3 +1,4 @@
+// A mock HTTP client for Synology DSM.
 package synologydsm
 
 import (
@@ -23,7 +24,7 @@ type Client struct {
 	synoToken    string
 	synoTokenMtx sync.Mutex
 
-	client *resty.Client
+	rc *resty.Client
 }
 
 func NewClient(serverUrl string) (*Client, error) {
@@ -35,10 +36,10 @@ func NewClient(serverUrl string) (*Client, error) {
 	}
 
 	client := &Client{}
-	client.client = resty.New().
+	client.rc = resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")).
 		SetHeader("User-Agent", app.AppUserAgent).
-		SetPreRequestHook(func(c *resty.Client, req *http.Request) error {
+		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if client.synoToken != "" {
 				req.Header.Set("X-SYNO-TOKEN", client.synoToken)
 			}
@@ -50,12 +51,12 @@ func NewClient(serverUrl string) (*Client, error) {
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -67,9 +68,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -77,9 +81,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -104,11 +105,13 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		return resp, err
 	}
 
-	if err := json.Unmarshal(resp.Body(), &res); err != nil {
-		return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
-	} else {
-		if tsuccess := res.GetSuccess(); !tsuccess {
-			return resp, fmt.Errorf("sdkerr: code='%d'", res.GetErrorCode())
+	if len(resp.Body()) != 0 {
+		if err := json.Unmarshal(resp.Body(), &res); err != nil {
+			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
+		} else {
+			if rSuccess := res.GetSuccess(); !rSuccess {
+				return resp, fmt.Errorf("sdkerr: api error: code='%d'", res.GetErrorCode())
+			}
 		}
 	}
 

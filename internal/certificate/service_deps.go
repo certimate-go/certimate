@@ -17,7 +17,3 @@ type certificateRepository interface {
 	Save(ctx context.Context, certificate *domain.Certificate) (*domain.Certificate, error)
 	DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error)
 }
-
-type settingsRepository interface {
-	GetByName(ctx context.Context, name string) (*domain.Settings, error)
-}

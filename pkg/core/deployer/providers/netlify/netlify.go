@@ -79,7 +79,7 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 	}
 
 	// 提取服务器证书和中间证书
-	serverCertPEM, intermediaCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
+	serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certPEM)
 	if err != nil {
 		return fmt.Errorf("failed to extract certs: %w", err)
 	}
@@ -88,11 +88,11 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 	// REF: https://open-api.netlify.com/#tag/sniCertificate/operation/provisionSiteTLSCertificate
 	provisionSiteTLSCertificateReq := &netlifysdk.ProvisionSiteTLSCertificateRequest{
 		Certificate:    serverCertPEM,
-		CACertificates: intermediaCertPEM,
+		CACertificates: issuerCertPEM,
 		Key:            privkeyPEM,
 	}
 	provisionSiteTLSCertificateResp, err := d.sdkClient.ProvisionSiteTLSCertificateWithContext(ctx, d.config.SiteId, provisionSiteTLSCertificateReq)
-	d.logger.Debug("sdk request 'ProvisionSiteTLSCertificate'", slog.String("siteId", d.config.SiteId), slog.Any("request", provisionSiteTLSCertificateReq), slog.Any("response", provisionSiteTLSCertificateResp))
+	d.logger.Debug("sdk request 'ProvisionSiteTLSCertificate'", slog.String("params.siteId", d.config.SiteId), slog.Any("request", provisionSiteTLSCertificateReq), slog.Any("response", provisionSiteTLSCertificateResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ProvisionSiteTLSCertificate': %w", err)
 	}
@@ -101,5 +101,12 @@ func (d *Deployer) deployToWebsite(ctx context.Context, certPEM, privkeyPEM stri
 }
 
 func createSDKClient(apiToken string) (*netlifysdk.Client, error) {
-	return netlifysdk.NewClient(apiToken)
+	client, err := netlifysdk.NewClient(
+		netlifysdk.WithApiToken(apiToken),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -113,7 +113,9 @@ const (
 
 func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool) (any, error) {
 	if apiVersion == sdkVersionV1 {
-		client, err := onepanelsdk.NewClient(serverUrl, apiKey)
+		client, err := onepanelsdk.NewClient(serverUrl,
+			onepanelsdk.WithApiKey(apiKey),
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -124,7 +126,9 @@ func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool) (
 
 		return client, nil
 	} else if apiVersion == sdkVersionV2 {
-		client, err := onepanelsdk2.NewClient(serverUrl, apiKey)
+		client, err := onepanelsdk2.NewClient(serverUrl,
+			onepanelsdk2.WithApiKey(apiKey),
+		)
 		if err != nil {
 			return nil, err
 		}

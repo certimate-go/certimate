@@ -15,8 +15,14 @@ type CERTIFICATESERVICE struct {
 	*client.Client
 }
 
+const (
+	ServiceName = certificateservice.ServiceName
+	EndpointsID = certificateservice.EndpointsID
+	ServiceID   = certificateservice.ServiceID
+)
+
 func New(p client.ConfigProvider, cfgs ...*volcengine.Config) *CERTIFICATESERVICE {
-	c := p.ClientConfig(certificateservice.EndpointsID, cfgs...)
+	c := p.ClientConfig(EndpointsID, cfgs...)
 	return newClient(*c.Config, c.Handlers, c.Endpoint, c.SigningRegion, c.SigningName)
 }
 
@@ -25,8 +31,8 @@ func newClient(cfg volcengine.Config, handlers request.Handlers, endpoint, signi
 		Client: client.New(
 			cfg,
 			metadata.ClientInfo{
-				ServiceName:   certificateservice.ServiceName,
-				ServiceID:     certificateservice.ServiceID,
+				ServiceName:   ServiceName,
+				ServiceID:     ServiceID,
 				SigningName:   signingName,
 				SigningRegion: signingRegion,
 				Endpoint:      endpoint,

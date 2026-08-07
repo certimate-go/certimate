@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/ucloud/ucloud-sdk-go/services/uaccount"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
@@ -26,6 +27,8 @@ type DeployerConfig struct {
 	PublicKey string `json:"publicKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
+	// 优刻得接口端点。
+	Endpoint string `json:"endpoint,omitempty"`
 	// 加速器实例 ID。
 	AcceleratorId string `json:"acceleratorId"`
 	// 加速器监听端口。
@@ -46,7 +49,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId)
+	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -55,6 +58,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		PrivateKey: config.PrivateKey,
 		PublicKey:  config.PublicKey,
 		ProjectId:  config.ProjectId,
+		Endpoint:   config.Endpoint,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -109,7 +113,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathXClient, error) {
+func createSDKClient(privateKey, publicKey, projectId, endpoint string) (*ucloudsdk.UPathXClient, error) {
 	if privateKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
@@ -118,11 +122,20 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathX
 	}
 
 	cfg := ucloud.NewConfig()
-	cfg.ProjectId = projectId
+	if projectId != "" {
+		cfg.ProjectId = projectId
+	}
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	// PathX 相关接口要求必传 ProjectId 参数
 	if cfg.ProjectId == "" {
-		defaultProjectId, err := getSDKDefaultProjectId(privateKey, publicKey)
+		defaultProjectId, err := getSDKDefaultProjectId(privateKey, publicKey, endpoint)
 		if err != nil {
 			return nil, err
 		}
@@ -138,8 +151,15 @@ func createSDKClient(privateKey, publicKey, projectId string) (*ucloudsdk.UPathX
 	return client, nil
 }
 
-func getSDKDefaultProjectId(privateKey, publicKey string) (string, error) {
+func getSDKDefaultProjectId(privateKey, publicKey, endpoint string) (string, error) {
 	cfg := ucloud.NewConfig()
+	if endpoint != "" {
+		if strings.Contains(endpoint, "://") {
+			cfg.BaseUrl = endpoint
+		} else {
+			cfg.BaseUrl = "https://" + endpoint
+		}
+	}
 
 	credential := auth.NewCredential()
 	credential.PrivateKey = privateKey

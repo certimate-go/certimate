@@ -2,7 +2,6 @@ package huaweicloudelb
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -20,6 +19,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/huaweicloud-elb"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -38,15 +38,15 @@ type DeployerConfig struct {
 	Region string `json:"region"`
 	// 部署目标。
 	DeployTarget string `json:"deployTarget"`
-	// 证书 ID。
-	// 部署目标为 [DEPLOY_TARGET_CERTIFICATE] 时必填。
-	CertificateId string `json:"certificateId,omitempty"`
 	// 负载均衡器 ID。
 	// 部署目标为 [DEPLOY_TARGET_LOADBALANCER] 时必填。
 	LoadbalancerId string `json:"loadbalancerId,omitempty"`
 	// 负载均衡监听 ID。
 	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
+	// 证书 ID。
+	// 部署目标为 [DEPLOY_TARGET_CERTIFICATE] 时必填。
+	CertificateId string `json:"certificateId,omitempty"`
 }
 
 type Deployer struct {
@@ -99,11 +99,6 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
 	// 根据部署目标决定业务流程
 	switch d.config.DeployTarget {
-	case DEPLOY_TARGET_CERTIFICATE:
-		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
-			return nil, err
-		}
-
 	case DEPLOY_TARGET_LOADBALANCER:
 		if err := d.deployToLoadbalancer(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
@@ -111,6 +106,11 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	case DEPLOY_TARGET_LISTENER:
 		if err := d.deployToListener(ctx, certPEM, privkeyPEM); err != nil {
+			return nil, err
+		}
+
+	case DEPLOY_TARGET_CERTIFICATE:
+		if err := d.deployToCertificate(ctx, certPEM, privkeyPEM); err != nil {
 			return nil, err
 		}
 
@@ -149,13 +149,11 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, certPEM, privkeyPEM
 		}
 
 		listListenersReq := &hwelbmodel.ListListenersRequest{
-			Marker:         listListenersMarker,
-			Limit:          lo.ToPtr(int32(2000)),
-			Protocol:       &[]string{"HTTPS", "TERMINATED_HTTPS"},
-			LoadbalancerId: &[]string{showLoadBalancerResp.Loadbalancer.Id},
-		}
-		if d.config.EnterpriseProjectId != "" {
-			listListenersReq.EnterpriseProjectId = lo.ToPtr([]string{d.config.EnterpriseProjectId})
+			EnterpriseProjectId: lo.IfF(d.config.EnterpriseProjectId != "", func() *[]string { return lo.ToPtr([]string{d.config.EnterpriseProjectId}) }).Else(nil),
+			Marker:              listListenersMarker,
+			Limit:               lo.ToPtr(int32(2000)),
+			Protocol:            &[]string{"HTTPS", "TERMINATED_HTTPS"},
+			LoadbalancerId:      &[]string{showLoadBalancerResp.Loadbalancer.Id},
 		}
 		listListenersResp, err := d.sdkClient.ListListeners(listListenersReq)
 		d.logger.Debug("sdk request 'elb.ListListeners'", slog.Any("request", listListenersReq), slog.Any("response", listListenersResp))
@@ -186,26 +184,16 @@ func (d *Deployer) deployToLoadbalancer(ctx context.Context, certPEM, privkeyPEM
 		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
 	}
 
-	// 遍历更新监听器证书
+	// 批量更新监听器证书
 	if len(listenerIds) == 0 {
-		d.logger.Info("no listeners to deploy")
+		d.logger.Info("no elb listeners to deploy")
 	} else {
-		d.logger.Info("found https listeners to deploy", slog.Any("listenerIds", listenerIds))
-		var errs []error
+		d.logger.Info("found elb listeners to deploy", slog.Any("listenerIds", listenerIds))
 
-		for _, listenerId := range listenerIds {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateListenerCertificate(ctx, listenerId, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, listenerIds, func(ctx context.Context, listenerId string, _ int) error {
+			return d.updateListenerCertificate(ctx, listenerId, upres.CertId)
+		}); err != nil {
+			return err
 		}
 	}
 

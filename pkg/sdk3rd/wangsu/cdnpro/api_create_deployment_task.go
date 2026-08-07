@@ -6,10 +6,10 @@ import (
 )
 
 type CreateDeploymentTaskRequest struct {
-	Name    *string                     `json:"name,omitempty"`
-	Target  *string                     `json:"target,omitempty"`
-	Actions *[]DeploymentTaskActionInfo `json:"actions,omitempty"`
-	Webhook *string                     `json:"webhook,omitempty"`
+	Name    *string                 `json:"name,omitempty"`
+	Target  *string                 `json:"target,omitempty"`
+	Actions *[]DeploymentTaskAction `json:"actions,omitempty"`
+	Webhook *string                 `json:"webhook,omitempty"`
 }
 
 type CreateDeploymentTaskResponse struct {

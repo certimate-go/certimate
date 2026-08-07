@@ -96,6 +96,10 @@
     }
   },
 
+  "plugins": {
+    "tab": "插件"
+  },
+
   "sslprovider": {
     "tab": "证书颁发机构",
     "ca": {

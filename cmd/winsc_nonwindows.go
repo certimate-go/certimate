@@ -11,7 +11,7 @@ import (
 func NewWinscCommand(app core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "winsc",
-		Short: "Install/Uninstall Windows service (Not supported on non-Windows OS)",
+		Short: "Manages Windows service (Not supported on non-Windows OS)",
 	}
 
 	return command

@@ -21,7 +21,7 @@ func (c *Client) RcdnInstanceSslBind(instanceId int64, req *RcdnInstanceSslBindR
 
 func (c *Client) RcdnInstanceSslBindWithContext(ctx context.Context, instanceId int64, req *RcdnInstanceSslBindRequest) (*RcdnInstanceSslBindResponse, error) {
 	if instanceId == 0 {
-		return nil, fmt.Errorf("sdkerr: unset instanceId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset instanceId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPost, fmt.Sprintf("/product/rcdn/instance/%d/ssl_bind", instanceId))

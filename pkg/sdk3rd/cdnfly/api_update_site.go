@@ -22,7 +22,7 @@ func (c *Client) UpdateSite(siteId string, req *UpdateSiteRequest) (*UpdateSiteR
 
 func (c *Client) UpdateSiteWithContext(ctx context.Context, siteId string, req *UpdateSiteRequest) (*UpdateSiteResponse, error) {
 	if siteId == "" {
-		return nil, fmt.Errorf("sdkerr: unset siteId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset siteId")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPut, fmt.Sprintf("/sites/%s", url.PathEscape(siteId)))

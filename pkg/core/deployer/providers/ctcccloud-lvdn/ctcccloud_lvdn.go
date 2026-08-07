@@ -2,7 +2,6 @@ package ctcccloudlvdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -12,6 +11,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/ctcccloud-lvdn"
 	ctyunlvdn "github.com/certimate-go/certimate/pkg/sdk3rd/ctyun/lvdn"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -72,6 +72,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -114,26 +116,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no lvdn domains to deploy")
 	} else {
 		d.logger.Info("found lvdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertName); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, upres.CertName)
+		}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -144,7 +136,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 	domains := make([]string, 0)
 
 	// 查询域名列表
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11559&data=183&isNormal=1&vid=261
+	// REF: https://www.ctyun.cn/document/10000093/10041903
 	queryDomainsPage := 1
 	queryDomainsPageSize := 100
 	for {
@@ -160,17 +152,13 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			ProductCode: lo.ToPtr("005"),
 		}
 		queryDomainListResp, err := d.sdkClient.QueryDomainListWithContext(ctx, queryDomainListReq)
-		d.logger.Debug("sdk request 'cdn.QueryDomainList'", slog.Any("request", queryDomainListReq), slog.Any("response", queryDomainListResp))
+		d.logger.Debug("sdk request 'lvdn.QueryDomainList'", slog.Any("request", queryDomainListReq), slog.Any("response", queryDomainListResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'cdn.QueryDomainList': %w", err)
-		}
-
-		if queryDomainListResp.ReturnObj == nil {
-			break
+			return nil, fmt.Errorf("failed to execute sdk request 'lvdn.QueryDomainList': %w", err)
 		}
 
 		ignoredStatuses := []int32{1, 5, 6, 7, 8, 9, 11, 12}
-		for _, domainItem := range queryDomainListResp.ReturnObj.Results {
+		for _, domainItem := range queryDomainListResp.Results {
 			if lo.Contains(ignoredStatuses, domainItem.Status) {
 				continue
 			}
@@ -178,7 +166,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 			domains = append(domains, domainItem.Domain)
 		}
 
-		if len(queryDomainListResp.ReturnObj.Results) < queryDomainsPageSize {
+		if len(queryDomainListResp.Results) < queryDomainsPageSize {
 			break
 		}
 
@@ -190,7 +178,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertName string) error {
 	// 查询域名配置信息
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11473&data=183&isNormal=1&vid=261
+	// REF: https://www.ctyun.cn/document/10000093/10042886
 	queryDomainDetailReq := &ctyunlvdn.QueryDomainDetailRequest{
 		Domain:      lo.ToPtr(domain),
 		ProductCode: lo.ToPtr("005"),
@@ -199,10 +187,16 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 	d.logger.Debug("sdk request 'lvdn.QueryDomainDetail'", slog.Any("request", queryDomainDetailReq), slog.Any("response", queryDomainDetailResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'lvdn.QueryDomainDetail': %w", err)
+	} else {
+		// 已部署过，直接返回
+		if queryDomainDetailResp.HttpsSwitch == 1 &&
+			queryDomainDetailResp.CertName == cloudCertName {
+			return nil
+		}
 	}
 
 	// 修改域名配置
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=108&api=11308&data=161&isNormal=1&vid=154
+	// REF: https://www.ctyun.cn/document/10000093/10041347
 	updateDomainReq := &ctyunlvdn.UpdateDomainRequest{
 		Domain:      lo.ToPtr(domain),
 		ProductCode: lo.ToPtr("005"),
@@ -219,5 +213,12 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 }
 
 func createSDKClient(accessKeyId, secretAccessKey string) (*ctyunlvdn.Client, error) {
-	return ctyunlvdn.NewClient(accessKeyId, secretAccessKey)
+	client, err := ctyunlvdn.NewClient(
+		ctyunlvdn.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

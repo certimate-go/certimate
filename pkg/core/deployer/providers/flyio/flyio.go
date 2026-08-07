@@ -82,5 +82,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(apiToken string) (*flyiosdk.Client, error) {
-	return flyiosdk.NewClient(apiToken)
+	client, err := flyiosdk.NewClient(
+		flyiosdk.WithApiToken(apiToken),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

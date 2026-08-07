@@ -81,7 +81,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		Cert:     url.QueryEscape(certPEM),
 		Key:      url.QueryEscape(privkeyPEM),
 	}
-	createDomainWithCertResp, err := d.sdkClient.CreateDomainWithCert(createDomainWithCertReq)
+	createDomainWithCertResp, err := d.sdkClient.CreateDomainWithCertWithContext(ctx, createDomainWithCertReq)
 	d.logger.Debug("sdk request 'unicloud.host.CreateDomainWithCert'", slog.Any("request", createDomainWithCertReq), slog.Any("response", createDomainWithCertResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'unicloud.host.CreateDomainWithCert': %w", err)
@@ -91,5 +91,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(username, password string) (*unicloudsdk.Client, error) {
-	return unicloudsdk.NewClient(username, password)
+	client, err := unicloudsdk.NewClient(
+		unicloudsdk.WithLogins(username, password),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

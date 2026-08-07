@@ -11,14 +11,14 @@ type NginxListCertificatesRequest struct {
 	Expand *string `json:"expand,omitempty" url:"expand,omitempty"`
 }
 
-type NginxListCertificatesResponse = []*CertificateRecord
+type NginxListCertificatesResponse = []*Certificate
 
 func (c *Client) NginxListCertificates(req *NginxListCertificatesRequest) (*NginxListCertificatesResponse, error) {
 	return c.NginxListCertificatesWithContext(context.Background(), req)
 }
 
 func (c *Client) NginxListCertificatesWithContext(ctx context.Context, req *NginxListCertificatesRequest) (*NginxListCertificatesResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

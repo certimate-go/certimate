@@ -2,7 +2,6 @@ package upyuncdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/upyun-ssl"
 	upyunsdk "github.com/certimate-go/certimate/pkg/sdk3rd/upyun/console"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 )
 
 type (
@@ -140,26 +140,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no cdn domains to deploy")
 	} else {
 		d.logger.Info("found cdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, upres.CertId)
+		}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -223,7 +213,7 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]string, error) {
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, cloudCertId string) error {
 	// 获取域名证书配置
 	getHttpsServiceManagerResp, err := d.sdkClient.GetHttpsServiceManagerWithContext(ctx, domain)
-	d.logger.Debug("sdk request 'console.GetHttpsServiceManager'", slog.String("request.domain", domain), slog.Any("response", getHttpsServiceManagerResp))
+	d.logger.Debug("sdk request 'console.GetHttpsServiceManager'", slog.String("params.domain", domain), slog.Any("response", getHttpsServiceManagerResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'console.GetHttpsServiceManager': %w", err)
 	}
@@ -261,5 +251,12 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 }
 
 func createSDKClient(username, password string) (*upyunsdk.Client, error) {
-	return upyunsdk.NewClient(username, password)
+	client, err := upyunsdk.NewClient(
+		upyunsdk.WithLogins(username, password),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

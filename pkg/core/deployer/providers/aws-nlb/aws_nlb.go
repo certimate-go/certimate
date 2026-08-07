@@ -8,6 +8,7 @@ import (
 	aws "github.com/aws/aws-sdk-go-v2/aws"
 	awscfg "github.com/aws/aws-sdk-go-v2/config"
 	awscred "github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
 	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2/types"
 
@@ -22,6 +23,10 @@ type (
 )
 
 type DeployerConfig struct {
+	// AWS API 认证方式。
+	// 可取值 "accesskey"、"imds"。
+	// 零值时默认值 [AUTH_METHOD_ACCESSKEY]。
+	AuthMethod string `json:"authMethod,omitempty"`
 	// AWS AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
 	// AWS SecretAccessKey。
@@ -53,7 +58,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.AccessKeyId, config.SecretAccessKey, config.Region)
+	client, err := createSDKClient(config.AuthMethod, config.AccessKeyId, config.SecretAccessKey, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -62,6 +67,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	switch config.CertificateSource {
 	case CERTIFICATE_SOURCE_ACM:
 		pcertmgr, err = cmgrimplacm.NewCertmgr(&cmgrimplacm.CertmgrConfig{
+			AuthMethod:      config.AuthMethod,
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,
@@ -72,6 +78,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 
 	case CERTIFICATE_SOURCE_IAM:
 		pcertmgr, err = cmgrimpliam.NewCertmgr(&cmgrimpliam.CertmgrConfig{
+			AuthMethod:      config.AuthMethod,
 			AccessKeyId:     config.AccessKeyId,
 			SecretAccessKey: config.SecretAccessKey,
 			Region:          config.Region,
@@ -123,7 +130,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeLoadBalancers.html
 	describeLoadBalancersReq := &elasticloadbalancingv2.DescribeLoadBalancersInput{
 		LoadBalancerArns: []string{d.config.LoadbalancerArn},
-		PageSize:         aws.Int32(1),
 	}
 	describeLoadBalancersResp, err := d.sdkClient.DescribeLoadBalancers(ctx, describeLoadBalancersReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.DescribeLoadBalancers'", slog.Any("request", describeLoadBalancersReq), slog.Any("response", describeLoadBalancersResp))
@@ -138,7 +144,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	describeListenersReq := &elasticloadbalancingv2.DescribeListenersInput{
 		LoadBalancerArn: aws.String(d.config.LoadbalancerArn),
 		ListenerArns:    []string{d.config.ListenerArn},
-		PageSize:        aws.Int32(1),
 	}
 	describeListenersResp, err := d.sdkClient.DescribeListeners(ctx, describeListenersReq)
 	d.logger.Debug("sdk request 'elasticloadbalancingv2.DescribeListeners'", slog.Any("request", describeListenersReq), slog.Any("response", describeListenersResp))
@@ -148,61 +153,105 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("could not find nlb listener '%s'", d.config.ListenerArn)
 	}
 
+	listenerInfo := describeListenersResp.Listeners[0]
+	if len(listenerInfo.Certificates) > 0 {
+		d.logger.Info("found nlb listener certificates in used", slog.Any("certificates", listenerInfo.Certificates))
+	}
+
 	if d.config.IsDefault {
-		if describeListenersResp.Listeners[0].Certificates != nil {
-			for _, cert := range describeListenersResp.Listeners[0].Certificates {
-				if aws.ToString(cert.CertificateArn) == upres.ExtendedData["Arn"].(string) {
-					d.logger.Info("no need to update nlb listener default certificate")
-					return &DeployResult{}, nil
-				}
+		certArn := upres.ExtendedData["Arn"].(string)
+		for _, certItem := range listenerInfo.Certificates {
+			if aws.ToString(certItem.CertificateArn) == certArn && aws.ToBool(certItem.IsDefault) {
+				d.logger.Info("no need to deploy nlb listener default certificate")
+				return &DeployResult{}, nil
 			}
 		}
 
-		// 更新 HTTPS 侦听器
-		// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_ModifyListener.html
-		modifyListenerReq := &elasticloadbalancingv2.ModifyListenerInput{
-			ListenerArn: aws.String(d.config.ListenerArn),
-			Certificates: []types.Certificate{
-				{
-					CertificateArn: aws.String(upres.ExtendedData["Arn"].(string)),
-				},
-			},
-		}
-		modifyListenerResp, err := d.sdkClient.ModifyListener(ctx, modifyListenerReq)
-		d.logger.Debug("sdk request 'elasticloadbalancingv2.ModifyListener'", slog.Any("request", modifyListenerReq), slog.Any("response", modifyListenerResp))
-		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.ModifyListener': %w", err)
+		if err := d.updateListenerDefaultCertificate(ctx, *listenerInfo.ListenerArn, certArn); err != nil {
+			return nil, err
 		}
 	} else {
-		// 将证书添加到证书列表
-		// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_AddListenerCertificates.html
-		addListenerCertificatesReq := &elasticloadbalancingv2.AddListenerCertificatesInput{
-			ListenerArn: aws.String(d.config.ListenerArn),
-			Certificates: []types.Certificate{
-				{
-					CertificateArn: aws.String(upres.ExtendedData["Arn"].(string)),
-				},
-			},
+		certArn := upres.ExtendedData["Arn"].(string)
+		for _, certItem := range listenerInfo.Certificates {
+			if aws.ToString(certItem.CertificateArn) == certArn && !aws.ToBool(certItem.IsDefault) {
+				d.logger.Info("no need to deploy nlb listener sni certificate")
+				return &DeployResult{}, nil
+			}
 		}
-		addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificates(ctx, addListenerCertificatesReq)
-		d.logger.Debug("sdk request 'elasticloadbalancingv2.AddListenerCertificates'", slog.Any("request", addListenerCertificatesReq), slog.Any("response", addListenerCertificatesResp))
-		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.AddListenerCertificates': %w", err)
+
+		if err := d.updateListenerSniCertificate(ctx, *listenerInfo.ListenerArn, certArn); err != nil {
+			return nil, err
 		}
 	}
 
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*elasticloadbalancingv2.Client, error) {
-	cfg, err := awscfg.LoadDefaultConfig(context.Background())
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerArn string, cloudCertArn string) error {
+	// 更新 HTTPS 侦听器
+	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_ModifyListener.html
+	modifyListenerReq := &elasticloadbalancingv2.ModifyListenerInput{
+		ListenerArn: aws.String(cloudListenerArn),
+		Certificates: []types.Certificate{
+			{
+				CertificateArn: aws.String(cloudCertArn),
+			},
+		},
+	}
+	modifyListenerResp, err := d.sdkClient.ModifyListener(ctx, modifyListenerReq)
+	d.logger.Debug("sdk request 'elasticloadbalancingv2.ModifyListener'", slog.Any("request", modifyListenerReq), slog.Any("response", modifyListenerResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.ModifyListener': %w", err)
+	}
+
+	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerArn string, cloudCertArn string) error {
+	// 将证书添加到证书列表
+	// REF: https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_AddListenerCertificates.html
+	addListenerCertificatesReq := &elasticloadbalancingv2.AddListenerCertificatesInput{
+		ListenerArn: aws.String(cloudListenerArn),
+		Certificates: []types.Certificate{
+			{
+				CertificateArn: aws.String(cloudCertArn),
+			},
+		},
+	}
+	addListenerCertificatesResp, err := d.sdkClient.AddListenerCertificates(ctx, addListenerCertificatesReq)
+	d.logger.Debug("sdk request 'elasticloadbalancingv2.AddListenerCertificates'", slog.Any("request", addListenerCertificatesReq), slog.Any("response", addListenerCertificatesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'elasticloadbalancingv2.AddListenerCertificates': %w", err)
+	}
+
+	return nil
+}
+
+func createSDKClient(authMethod, accessKeyId, secretAccessKey, region string) (*elasticloadbalancingv2.Client, error) {
+	opts := []func(options *awscfg.LoadOptions) error{
+		awscfg.WithRegion(region),
+	}
+
+	staticCredsProvider := awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, "")
+	imdsCredsProvider := aws.NewCredentialsCache(ec2rolecreds.New())
+	switch authMethod {
+	case "":
+		if accessKeyId != "" && secretAccessKey != "" {
+			opts = append(opts, awscfg.WithCredentialsProvider(staticCredsProvider))
+		}
+	case AUTH_METHOD_ACCESSKEY:
+		opts = append(opts, awscfg.WithCredentialsProvider(staticCredsProvider))
+	case AUTH_METHOD_IMDS:
+		opts = append(opts, awscfg.WithCredentialsProvider(imdsCredsProvider))
+	default:
+		return nil, fmt.Errorf("unsupported auth method '%s'", authMethod)
+	}
+
+	cfg, err := awscfg.LoadDefaultConfig(context.Background(), opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	client := elasticloadbalancingv2.NewFromConfig(cfg, func(o *elasticloadbalancingv2.Options) {
-		o.Region = region
-		o.Credentials = aws.NewCredentialsCache(awscred.NewStaticCredentialsProvider(accessKeyId, secretAccessKey, ""))
-	})
+	client := elasticloadbalancingv2.NewFromConfig(cfg)
 	return client, nil
 }

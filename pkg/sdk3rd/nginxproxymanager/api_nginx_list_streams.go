@@ -11,14 +11,14 @@ type NginxListStreamsRequest struct {
 	Expand *string `json:"expand,omitempty" url:"expand,omitempty"`
 }
 
-type NginxListStreamsResponse = []*StreamHostRecord
+type NginxListStreamsResponse = []*StreamHost
 
 func (c *Client) NginxListStreams(req *NginxListStreamsRequest) (*NginxListStreamsResponse, error) {
 	return c.NginxListStreamsWithContext(context.Background(), req)
 }
 
 func (c *Client) NginxListStreamsWithContext(ctx context.Context, req *NginxListStreamsRequest) (*NginxListStreamsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

@@ -3,12 +3,14 @@ package rainyunsslcenter_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/rainyun-sslcenter"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("RAINYUNSSLCENTER_")
+	fp            = it.Args("RAINYUNSSLCENTER_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fApiKey       string
@@ -35,11 +37,8 @@ func TestProvider(t *testing.T) {
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
 			ApiKey: fApiKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

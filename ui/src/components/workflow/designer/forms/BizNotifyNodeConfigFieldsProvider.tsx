@@ -4,6 +4,7 @@ import { NOTIFICATION_PROVIDERS, type NotificationProviderType } from "@/domain/
 
 import BizNotifyNodeConfigFieldsProviderDiscordBot from "./BizNotifyNodeConfigFieldsProviderDiscordBot";
 import BizNotifyNodeConfigFieldsProviderEmail from "./BizNotifyNodeConfigFieldsProviderEmail";
+import BizNotifyNodeConfigFieldsProviderMatrix from "./BizNotifyNodeConfigFieldsProviderMatrix";
 import BizNotifyNodeConfigFieldsProviderMattermost from "./BizNotifyNodeConfigFieldsProviderMattermost";
 import BizNotifyNodeConfigFieldsProviderSlackBot from "./BizNotifyNodeConfigFieldsProviderSlackBot";
 import BizNotifyNodeConfigFieldsProviderTelegramBot from "./BizNotifyNodeConfigFieldsProviderTelegramBot";
@@ -16,6 +17,7 @@ const providerComponentMap: Partial<Record<NotificationProviderType, React.Compo
     */
   [NOTIFICATION_PROVIDERS.DISCORDBOT]: BizNotifyNodeConfigFieldsProviderDiscordBot,
   [NOTIFICATION_PROVIDERS.EMAIL]: BizNotifyNodeConfigFieldsProviderEmail,
+  [NOTIFICATION_PROVIDERS.MATRIX]: BizNotifyNodeConfigFieldsProviderMatrix,
   [NOTIFICATION_PROVIDERS.MATTERMOST]: BizNotifyNodeConfigFieldsProviderMattermost,
   [NOTIFICATION_PROVIDERS.SLACKBOT]: BizNotifyNodeConfigFieldsProviderSlackBot,
   [NOTIFICATION_PROVIDERS.TELEGRAMBOT]: BizNotifyNodeConfigFieldsProviderTelegramBot,

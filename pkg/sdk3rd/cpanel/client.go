@@ -1,3 +1,5 @@
+// A simple SDK client for cPanel.
+// API documentation: https://api.docs.cpanel.net/
 package cpanel
 
 import (
@@ -14,39 +16,44 @@ import (
 )
 
 type Client struct {
-	client *resty.Client
+	rc *resty.Client
 }
 
-func NewClient(serverUrl string, username, apiToken string) (*Client, error) {
+func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
+	opts := &Options{}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
 	if serverUrl == "" {
 		return nil, fmt.Errorf("sdkerr: unset serverUrl")
 	}
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if username == "" {
+	if opts.Username == "" {
 		return nil, fmt.Errorf("sdkerr: unset username")
 	}
-	if apiToken == "" {
+	if opts.ApiToken == "" {
 		return nil, fmt.Errorf("sdkerr: unset apiToken")
 	}
 
-	client := resty.New().
+	httper := resty.New().
 		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/execute").
 		SetHeader("Accept", "application/json").
-		SetHeader("Authorization", fmt.Sprintf("cpanel %s:%s", username, apiToken)).
+		SetHeader("Authorization", "cpanel "+opts.Username+":"+opts.ApiToken).
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{client}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
-	c.client.SetTimeout(timeout)
+	c.rc.SetTimeout(timeout)
 	return c
 }
 
 func (c *Client) SetTLSConfig(config *tls.Config) *Client {
-	c.client.SetTLSClientConfig(config)
+	c.rc.SetTLSClientConfig(config)
 	return c
 }
 
@@ -58,9 +65,12 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 		return nil, fmt.Errorf("sdkerr: unset path")
 	}
 
-	req := c.client.R()
+	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -68,9 +78,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -99,8 +106,8 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
-			if tstatus := res.GetStatus(); tstatus == 0 {
-				return resp, fmt.Errorf("sdkerr: status='%d', messages='%s', warnings='%s', errors='%s'", tstatus, strings.Join(res.GetMessages(), ", "), strings.Join(res.GetWarnings(), ", "), strings.Join(res.GetErrors(), ", "))
+			if rStatus := res.GetStatus(); rStatus == 0 {
+				return resp, fmt.Errorf("sdkerr: api error: status='%d', messages='%s', warnings='%s', errors='%s'", rStatus, strings.Join(res.GetMessages(), ", "), strings.Join(res.GetWarnings(), ", "), strings.Join(res.GetErrors(), ", "))
 			}
 		}
 	}

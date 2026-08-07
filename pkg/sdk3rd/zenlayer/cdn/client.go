@@ -1,4 +1,6 @@
-﻿package cdn
+﻿// An extension SDK client for ZenlayerCloud CDN service.
+// Based on github.com/zenlayer/zenlayercloud-sdk-go.
+package cdn
 
 import (
 	"github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"

@@ -16,7 +16,7 @@ func (c *Client) DeleteRecord(recordIds []*int64) (*DeleteRecordResponse, error)
 
 func (c *Client) DeleteRecordWithContext(ctx context.Context, recordIds []*int64) (*DeleteRecordResponse, error) {
 	if len(recordIds) == 0 {
-		return nil, fmt.Errorf("sdkerr: unset recordIds")
+		return nil, fmt.Errorf("sdkerr: bad request: unset recordIds")
 	}
 
 	httpreq, err := c.newRequest(http.MethodPost, "/v1/change_record_status/")

@@ -17,17 +17,18 @@ func (c *Client) DnsDeleteRecord(domainId string, recordId string) (*DnsDeleteRe
 
 func (c *Client) DnsDeleteRecordWithContext(ctx context.Context, domainId string, recordId string) (*DnsDeleteRecordResponse, error) {
 	if domainId == "" {
-		return nil, fmt.Errorf("sdkerr: unset domainId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset domainId")
 	}
 	if recordId == "" {
-		return nil, fmt.Errorf("sdkerr: unset recordId")
+		return nil, fmt.Errorf("sdkerr: bad request: unset recordId")
 	}
 
-	if err := c.ensureAccessTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 
-	httpreq, err := c.newRequest(http.MethodDelete, fmt.Sprintf("%s/v1/domains/%s/records/%s", dnsBaseURL, url.PathEscape(domainId), url.PathEscape(recordId)))
+	path := dnsBaseURL + fmt.Sprintf("/v1/domains/%s/records/%s", url.PathEscape(domainId), url.PathEscape(recordId))
+	httpreq, err := c.newRequest(http.MethodDelete, path)
 	if err != nil {
 		return nil, err
 	} else {

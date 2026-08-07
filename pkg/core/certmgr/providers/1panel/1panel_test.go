@@ -3,12 +3,14 @@ package onepanelssl_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/certmgr/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/1panel"
+	it "github.com/certimate-go/certimate/pkg/core/certmgr/testing"
 )
 
 var (
-	fp            = tester.Args("1PANEL_")
+	fp            = it.Args("1PANEL_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fServerUrl    string
@@ -43,11 +45,8 @@ func TestProvider(t *testing.T) {
 			ApiVersion: fApiVersion,
 			ApiKey:     fApiKey,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestUpload(t, provider, tester.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestUpload(t, provider, it.TestUploadArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

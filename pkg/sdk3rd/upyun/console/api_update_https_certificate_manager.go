@@ -27,7 +27,7 @@ func (c *Client) UpdateHttpsCertificateManager(req *UpdateHttpsCertificateManage
 }
 
 func (c *Client) UpdateHttpsCertificateManagerWithContext(ctx context.Context, req *UpdateHttpsCertificateManagerRequest) (*UpdateHttpsCertificateManagerResponse, error) {
-	if err := c.ensureCookieExists(); err != nil {
+	if err := c.ensureCookies(ctx); err != nil {
 		return nil, err
 	}
 

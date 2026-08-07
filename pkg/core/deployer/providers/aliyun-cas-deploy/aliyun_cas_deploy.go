@@ -149,10 +149,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		case "success", "error":
 			return true, nil
 		case "", "editing":
-			return false, fmt.Errorf("unexpected aliyun deployment job status")
+			return false, fmt.Errorf("unexpected deployment job status")
 		}
 
-		d.logger.Info("waiting for aliyun deployment job completion ...")
+		d.logger.Info("waiting for deployment job completion ...")
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return nil, err

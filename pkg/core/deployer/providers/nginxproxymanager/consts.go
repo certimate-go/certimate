@@ -1,8 +1,12 @@
 package nginxproxymanager
 
+import (
+	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/nginxproxymanager"
+)
+
 const (
-	AUTH_METHOD_PASSWORD = "password"
-	AUTH_METHOD_TOKEN    = "token"
+	AUTH_METHOD_PASSWORD = cmgrimpl.AUTH_METHOD_PASSWORD
+	AUTH_METHOD_TOKEN    = cmgrimpl.AUTH_METHOD_TOKEN
 )
 
 const (

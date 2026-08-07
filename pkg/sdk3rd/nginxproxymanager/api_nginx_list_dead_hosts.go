@@ -11,14 +11,14 @@ type NginxListDeadHostsRequest struct {
 	Expand *string `json:"expand,omitempty" url:"expand,omitempty"`
 }
 
-type NginxListDeadHostsResponse = []*DeadHostRecord
+type NginxListDeadHostsResponse = []*DeadHost
 
 func (c *Client) NginxListDeadHosts(req *NginxListDeadHostsRequest) (*NginxListDeadHostsResponse, error) {
 	return c.NginxListDeadHostsWithContext(context.Background(), req)
 }
 
 func (c *Client) NginxListDeadHostsWithContext(ctx context.Context, req *NginxListDeadHostsRequest) (*NginxListDeadHostsResponse, error) {
-	if err := c.ensureJwtTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 

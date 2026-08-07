@@ -69,8 +69,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 查询证书列表，避免重复上传
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11452&data=183&isNormal=1&vid=261
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11449&data=183&isNormal=1&vid=261
+	// REF: https://www.ctyun.cn/document/10000093/10039621
+	// REF: https://www.ctyun.cn/document/10000093/10039620
 	queryCertListPage := 1
 	queryCertListPerPage := 1000
 	for {
@@ -81,9 +81,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		}
 
 		queryCertListReq := &ctyunlvdn.QueryCertListRequest{
-			Page:      lo.ToPtr(int32(queryCertListPage)),
-			PerPage:   lo.ToPtr(int32(queryCertListPerPage)),
-			UsageMode: lo.ToPtr(int32(0)),
+			Page:    lo.ToPtr(int32(queryCertListPage)),
+			PerPage: lo.ToPtr(int32(queryCertListPerPage)),
 		}
 		queryCertListResp, err := c.sdkClient.QueryCertListWithContext(ctx, queryCertListReq)
 		c.logger.Debug("sdk request 'lvdn.QueryCertList'", slog.Any("request", queryCertListReq), slog.Any("response", queryCertListResp))
@@ -91,11 +90,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			return nil, fmt.Errorf("failed to execute sdk request 'lvdn.QueryCertList': %w", err)
 		}
 
-		if queryCertListResp.ReturnObj == nil {
-			break
-		}
-
-		for _, certItem := range queryCertListResp.ReturnObj.Results {
+		for _, certItem := range queryCertListResp.Results {
 			// 对比证书通用名称
 			if !strings.EqualFold(certX509.Subject.CommonName, certItem.CN) {
 				continue
@@ -121,8 +116,8 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			c.logger.Debug("sdk request 'lvdn.QueryCertDetail'", slog.Any("request", queryCertDetailReq), slog.Any("response", queryCertDetailResp))
 			if err != nil {
 				return nil, fmt.Errorf("failed to execute sdk request 'lvdn.QueryCertDetail': %w", err)
-			} else if queryCertDetailResp.ReturnObj != nil && queryCertDetailResp.ReturnObj.Result != nil {
-				if !xcert.EqualCertificatesFromPEM(certPEM, queryCertDetailResp.ReturnObj.Result.Certs) {
+			} else if queryCertDetailResp != nil && queryCertDetailResp.Result != nil {
+				if !xcert.EqualCertificatesFromPEM(certPEM, queryCertDetailResp.Result.Certs) {
 					continue
 				}
 			}
@@ -130,12 +125,12 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			// 如果以上信息都一致，则视为已存在相同证书，直接返回
 			c.logger.Info("ssl certificate already exists")
 			return &UploadResult{
-				CertId:   fmt.Sprintf("%d", queryCertDetailResp.ReturnObj.Result.Id),
-				CertName: queryCertDetailResp.ReturnObj.Result.Name,
+				CertId:   fmt.Sprintf("%d", queryCertDetailResp.Result.Id),
+				CertName: queryCertDetailResp.Result.Name,
 			}, nil
 		}
 
-		if len(queryCertListResp.ReturnObj.Results) < queryCertListPerPage {
+		if len(queryCertListResp.Results) < queryCertListPerPage {
 			break
 		}
 
@@ -146,7 +141,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	certName := fmt.Sprintf("certimate-%d", time.Now().UnixMilli())
 
 	// 创建证书
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=125&api=11436&data=183&isNormal=1&vid=261
+	// REF: https://www.ctyun.cn/document/10000093/10039618
 	createCertReq := &ctyunlvdn.CreateCertRequest{
 		Name:  lo.ToPtr(certName),
 		Certs: lo.ToPtr(certPEM),
@@ -159,7 +154,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	return &UploadResult{
-		CertId:   fmt.Sprintf("%d", createCertResp.ReturnObj.Id),
+		CertId:   fmt.Sprintf("%d", createCertResp.Id),
 		CertName: certName,
 	}, nil
 }
@@ -169,5 +164,12 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func createSDKClient(accessKeyId, secretAccessKey string) (*ctyunlvdn.Client, error) {
-	return ctyunlvdn.NewClient(accessKeyId, secretAccessKey)
+	client, err := ctyunlvdn.NewClient(
+		ctyunlvdn.WithAkSk(accessKeyId, secretAccessKey),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

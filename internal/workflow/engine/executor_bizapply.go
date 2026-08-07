@@ -20,6 +20,7 @@ import (
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/repository"
+	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
@@ -55,7 +56,6 @@ const (
 type bizApplyNodeExecutor struct {
 	nodeExecutor
 
-	settingsRepo    settingsRepository
 	accessRepo      accessRepository
 	acmeAccountRepo acmeAccountRepository
 	certificateRepo certificateRepository
@@ -120,12 +120,6 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		WorkflowNodeId:     execCtx.Node.Id,
 	}
 	certificate.PopulateFromPEM(obtainResp.FullChainCertificate, obtainResp.PrivateKey)
-	if obtainResp.ARIInfo != nil {
-		applyARIInfoToCertificate(certificate, obtainResp.ARIInfo)
-	} else if obtainResp.ARIError != "" {
-		ne.logger.Warn("could not get ARI info", slog.String("error", obtainResp.ARIError))
-		copyARIFields(certificate, lastCertificate)
-	}
 	if certificate, err := ne.certificateRepo.Save(execCtx.Context(), certificate); err != nil {
 		ne.logger.Warn("could not save certificate")
 		return execRes, err
@@ -226,19 +220,10 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 
 		now := time.Now()
 		ariTriggered := false
-		if !thisNodeCfg.DisableARI && !lastCertificate.ARIWindowStart.IsZero() {
-			if lastCertificate.ARINextRefreshAt.IsZero() || !now.Before(lastCertificate.ARINextRefreshAt) {
-				if ariInfo, err := ne.getARIInfoForCertificate(execCtx, lastCertificate); err != nil {
-					ne.logger.Warn("could not refresh ARI info", slog.String("certificateId", lastCertificate.Id), slog.Any("error", err))
-				} else if ariInfo != nil {
-					applyARIInfoToCertificate(lastCertificate, ariInfo)
-					if _, err := ne.certificateRepo.Save(execCtx.Context(), lastCertificate); err != nil {
-						ne.logger.Warn("could not save refreshed ARI info", slog.String("certificateId", lastCertificate.Id), slog.Any("error", err))
-					}
-				}
-			}
-
-			ariTriggered = shouldRenewByARI(lastCertificate.ARIWindowStart, lastCertificate.ARIWindowEnd, now)
+		if !thisNodeCfg.DisableARI {
+			ariTriggered = ne.evaluateARI(now, lastCertificate, func() (*certacme.ARIInfo, error) {
+				return ne.getARIInfoForCertificate(execCtx, lastCertificate)
+			})
 		}
 
 		renewalInterval := time.Duration(thisNodeCfg.SkipBeforeExpiryDays) * time.Hour * 24
@@ -415,12 +400,9 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 构造证书申请时所需的 lego 配置项
 	legoCertifierCfg := &lego.NewConfig(nil).Certificate
-	settings, _ := ne.settingsRepo.GetByName(execCtx.Context(), domain.SettingsNameSSLProvider)
-	if settings != nil {
-		sslProviderSettings := settings.Content.AsSSLProvider()
-		if sslProviderSettings.Timeout > 0 {
-			legoCertifierCfg.Timeout = time.Duration(sslProviderSettings.Timeout) * time.Second
-		}
+	globalSettingsForPersistence := settings.GetGlobalSettingsForSSLProvider()
+	if globalSettingsForPersistence.Timeout > 0 {
+		legoCertifierCfg.Timeout = time.Duration(globalSettingsForPersistence.Timeout) * time.Second
 	}
 
 	// 如果启用多进程模式，发送指令
@@ -496,33 +478,18 @@ func (ne *bizApplyNodeExecutor) getARIInfoForCertificate(execCtx *NodeExecutionC
 	return acmeClient.GetARIInfo(execCtx.Context(), certificate.Certificate)
 }
 
-func applyARIInfoToCertificate(certificate *domain.Certificate, ariInfo *certacme.ARIInfo) {
-	if certificate == nil || ariInfo == nil {
-		return
+func (ne *bizApplyNodeExecutor) evaluateARI(now time.Time, certificate *domain.Certificate, fetch func() (*certacme.ARIInfo, error)) bool {
+	ariInfo, err := fetch()
+	if err != nil {
+		ne.logger.Warn("could not refresh ARI info", slog.String("certificateId", certificate.Id), slog.Any("error", err))
+		return false
 	}
 
-	certificate.ARISupported = ariInfo.Supported
-	if !ariInfo.Supported {
-		certificate.ARIWindowStart = time.Time{}
-		certificate.ARIWindowEnd = time.Time{}
-		certificate.ARINextRefreshAt = time.Time{}
-		return
+	if ariInfo == nil || !ariInfo.Supported {
+		return false
 	}
 
-	certificate.ARIWindowStart = ariInfo.WindowStart
-	certificate.ARIWindowEnd = ariInfo.WindowEnd
-	certificate.ARINextRefreshAt = ariInfo.NextRefreshAt
-}
-
-func copyARIFields(target *domain.Certificate, source *domain.Certificate) {
-	if target == nil || source == nil {
-		return
-	}
-
-	target.ARIWindowStart = source.ARIWindowStart
-	target.ARIWindowEnd = source.ARIWindowEnd
-	target.ARINextRefreshAt = source.ARINextRefreshAt
-	target.ARISupported = source.ARISupported
+	return shouldRenewByARI(ariInfo.WindowStart, ariInfo.WindowEnd, now)
 }
 
 func shouldRenewByARI(windowStart, windowEnd, now time.Time) bool {
@@ -599,7 +566,6 @@ func (ne *bizApplyNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionConte
 func newBizApplyNodeExecutor() NodeExecutor {
 	return &bizApplyNodeExecutor{
 		nodeExecutor:    nodeExecutor{logger: slog.Default()},
-		settingsRepo:    repository.NewSettingsRepository(),
 		accessRepo:      repository.NewAccessRepository(),
 		acmeAccountRepo: repository.NewACMEAccountRepository(),
 		certificateRepo: repository.NewCertificateRepository(),

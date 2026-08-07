@@ -75,7 +75,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func createSDKClient(serverUrl string, accessTokenId int64, accessToken string, skipTlsVerify bool) (*ratpanelsdk.Client, error) {
-	client, err := ratpanelsdk.NewClient(serverUrl, accessTokenId, accessToken)
+	client, err := ratpanelsdk.NewClient(serverUrl,
+		ratpanelsdk.WithAccessToken(accessTokenId, accessToken),
+	)
 	if err != nil {
 		return nil, err
 	}

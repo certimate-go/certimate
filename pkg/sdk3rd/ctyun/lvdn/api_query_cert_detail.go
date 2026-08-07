@@ -8,17 +8,14 @@ import (
 )
 
 type QueryCertDetailRequest struct {
-	Id        *int64  `json:"id,omitempty"         url:"id,omitempty"`
-	Name      *string `json:"name,omitempty"       url:"name,omitempty"`
-	UsageMode *int32  `json:"usage_mode,omitempty" url:"usage_mode,omitempty"`
+	Id   *int64  `json:"id,omitempty"   url:"id,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
 }
 
 type QueryCertDetailResponse struct {
 	sdkResponseBase
 
-	ReturnObj *struct {
-		Result *CertDetail `json:"result,omitempty"`
-	} `json:"returnObj,omitempty"`
+	Result *CertDetail `json:"result,omitempty"`
 }
 
 func (c *Client) QueryCertDetail(req *QueryCertDetailRequest) (*QueryCertDetailResponse, error) {

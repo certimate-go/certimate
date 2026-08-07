@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/samber/lo"
 
@@ -73,6 +74,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -96,7 +99,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 }
 
 func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM string) error {
-	if d.config.Domain == "" {
+	domain := normalizeDomain(d.config.Domain)
+	if domain == "" {
 		return fmt.Errorf("config `domain` is required")
 	}
 
@@ -111,21 +115,21 @@ func (d *Deployer) deployToDomain(ctx context.Context, certPEM, privkeyPEM strin
 	// 查询域名配置
 	// REF: https://portal.baishancloud.com/track/document/api/1/1065
 	getDomainConfigReq := &baishansdk.GetDomainConfigRequest{
-		Domains: lo.ToPtr(d.config.Domain),
-		Config:  lo.ToPtr([]string{"https"}),
+		Domains: lo.ToPtr(domain),
+		Config:  []*string{lo.ToPtr("https")},
 	}
 	getDomainConfigResp, err := d.sdkClient.GetDomainConfigWithContext(ctx, getDomainConfigReq)
 	d.logger.Debug("sdk request 'cdn.GetDomainConfig'", slog.Any("request", getDomainConfigReq), slog.Any("response", getDomainConfigResp))
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'cdn.GetDomainConfig': %w", err)
 	} else if len(getDomainConfigResp.Data) == 0 {
-		return fmt.Errorf("could not find domain '%s'", d.config.Domain)
+		return fmt.Errorf("could not find domain '%s'", domain)
 	}
 
 	// 设置域名配置
 	// REF: https://portal.baishancloud.com/track/document/api/1/1045
 	setDomainConfigReq := &baishansdk.SetDomainConfigRequest{
-		Domains: lo.ToPtr(d.config.Domain),
+		Domains: lo.ToPtr(domain),
 		Config: &baishansdk.DomainConfig{
 			Https: &baishansdk.DomainConfigHttps{
 				CertId:      json.Number(upres.CertId),
@@ -161,5 +165,20 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 }
 
 func createSDKClient(apiToken string) (*baishansdk.Client, error) {
-	return baishansdk.NewClient(apiToken)
+	client, err := baishansdk.NewClient(
+		baishansdk.WithApiToken(apiToken),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func normalizeDomain(domain string) string {
+	// "*.example.com" → ".example.com"，适配白山云 CDN 的泛域名参数要求
+	if strings.HasPrefix(domain, "*.") {
+		return strings.TrimPrefix(domain, "*")
+	}
+	return domain
 }

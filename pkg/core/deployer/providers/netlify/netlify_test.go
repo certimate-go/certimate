@@ -3,12 +3,14 @@ package netlify_test
 import (
 	"testing"
 
-	"github.com/certimate-go/certimate/pkg/core/deployer/internal/tester"
+	"github.com/stretchr/testify/require"
+
 	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/netlify"
+	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp            = tester.Args("NETLIFY_")
+	fp            = it.Args("NETLIFY_")
 	fTestCertPath string
 	fTestKeyPath  string
 	fApiToken     string
@@ -40,11 +42,8 @@ func TestProvider(t *testing.T) {
 			DeployTarget: impl.DEPLOY_TARGET_WEBSITE,
 			SiteId:       fSiteId,
 		})
-		if err != nil {
-			t.Errorf("err: %+v", err)
-			return
-		}
+		require.NoError(t, err)
 
-		tester.TestDeploy(t, provider, tester.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
 	})
 }

@@ -73,7 +73,9 @@ func NewDNSProviderConfig(config *Config) (*DNSProvider, error) {
 		return nil, fmt.Errorf("qingcloud: the configuration of the DNS provider is nil")
 	}
 
-	client, err := qingcloudsdk.NewClient(config.AccessKey, config.AccessSecret)
+	client, err := qingcloudsdk.NewClient(
+		qingcloudsdk.WithAkSk(config.AccessKey, config.AccessSecret),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("qingcloud: %w", err)
 	} else {
@@ -96,7 +98,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("qingcloud: could not find zone for domain %q: %w", domain, err)
 	}
 
-	// REF: https://docsv4.qingcloud.com/user_guide/development_docs/api/api_list/dns/record/#_createrecord
 	request := &qingcloudsdk.CreateRecordRequest{
 		ZoneName:   lo.ToPtr(authZone),
 		DomainName: lo.ToPtr(info.EffectiveFQDN),
@@ -139,10 +140,13 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("qingcloud: unknown record ID for '%s'", info.EffectiveFQDN)
 	}
 
-	// REF: https://docsv4.qingcloud.com/user_guide/development_docs/api/api_list/dns/record/#_deleterecord
 	if _, err := d.client.DeleteRecordWithContext(ctx, []*int64{recordID}); err != nil {
 		return fmt.Errorf("qingcloud: error when delete record: %w", err)
 	}
+
+	d.recordIDsMu.Lock()
+	delete(d.recordIDs, token)
+	d.recordIDsMu.Unlock()
 
 	return nil
 }
