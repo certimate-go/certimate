@@ -1,23 +1,17 @@
 package ibmc
 
 import (
-	"bytes"
 	"context"
 	crand "crypto/rand"
-	"crypto/tls"
-	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log/slog"
 	"net"
-	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	ibmcsdk "github.com/certimate-go/certimate/pkg/sdk3rd/ibmc"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
@@ -35,21 +29,9 @@ type DeployerConfig struct {
 type Deployer struct {
 	config *DeployerConfig
 	logger *slog.Logger
-	client *http.Client
 }
 
 var _ Provider = (*Deployer)(nil)
-
-type sessionResponse struct {
-	Token string `json:"X-Auth-Token"`
-}
-
-type redfishError struct {
-	Error struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
-	} `json:"error"`
-}
 
 func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	if config == nil {
@@ -63,12 +45,9 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, err
 	}
 	config.Endpoint = strings.Join(endpoints, "\n")
-	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: config.AllowInsecureConnections} //nolint:gosec // explicitly configured for iBMC self-signed certificates
 	return &Deployer{
 		config: config,
 		logger: slog.Default(),
-		client: &http.Client{Transport: transport, Timeout: 30 * time.Second},
 	}, nil
 }
 
@@ -89,10 +68,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert certificate to PKCS#12: %w", err)
 	}
-	payload := map[string]string{"Certificate": base64.StdEncoding.EncodeToString(pfx), "Password": certificatePassword}
 	var failures []string
 	for _, endpoint := range strings.Split(d.config.Endpoint, "\n") {
-		if err := d.deployHost(ctx, strings.TrimSpace(endpoint), payload); err != nil {
+		if err := d.deployHost(ctx, strings.TrimSpace(endpoint), pfx, certificatePassword); err != nil {
 			failures = append(failures, fmt.Sprintf("%s: %v", endpoint, err))
 		}
 	}
@@ -151,125 +129,26 @@ type managersResponse struct {
 	} `json:"Members"`
 }
 
-func (d *Deployer) deployHost(ctx context.Context, base string, payload map[string]string) error {
-	token, sessionURL, err := d.createSession(ctx, base)
+func (d *Deployer) deployHost(ctx context.Context, base string, certificate []byte, password string) error {
+	client := ibmcsdk.NewClient(base, d.config.Username, d.config.Password, d.config.AllowInsecureConnections)
+	token, sessionURL, err := client.CreateSession(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to create Redfish session: %w", err)
 	}
-	defer func() { _ = d.deleteSession(context.Background(), token, sessionURL) }()
-	managerPath, err := d.discoverManager(ctx, base, token)
+	defer func() { _ = client.DeleteSession(context.Background(), token, sessionURL) }()
+	managerPath, err := client.DiscoverManager(ctx, token)
 	if err != nil {
 		return err
 	}
-	path := managerPath + "/SecurityService/HttpsCert/Actions/HttpsCert.ImportCustomCertificate"
-	if _, err := d.doJSON(ctx, http.MethodPost, base+path, token, payload, nil); err != nil {
+	if err := client.ImportCustomCertificate(ctx, token, managerPath, certificate, password); err != nil {
 		return fmt.Errorf("failed to import HTTPS certificate: %w", err)
 	}
 	d.logger.Info("iBMC HTTPS certificate imported", slog.String("endpoint", base), slog.String("manager", managerPath))
 	if d.config.RestartAfterImport {
-		if _, err := d.doJSON(ctx, http.MethodPost, base+managerPath+"/Actions/Manager.Reset", token, map[string]string{"ResetType": "ForceRestart"}, nil); err != nil {
+		if err := client.ResetManager(ctx, token, managerPath); err != nil {
 			return fmt.Errorf("failed to restart iBMC after certificate import: %w", err)
 		}
 		d.logger.Info("iBMC restart requested", slog.String("endpoint", base), slog.String("manager", managerPath))
 	}
 	return nil
-}
-
-func (d *Deployer) discoverManager(ctx context.Context, base, token string) (string, error) {
-	response := &managersResponse{}
-	if _, err := d.doJSON(ctx, http.MethodGet, base+"/redfish/v1/Managers", token, nil, response); err != nil {
-		return "", fmt.Errorf("failed to query Redfish managers: %w", err)
-	}
-	if len(response.Members) == 0 {
-		return "", fmt.Errorf("Redfish managers collection is empty")
-	}
-	manager := response.Members[0].ODataID
-	if manager == "" && response.Members[0].ID != "" {
-		manager = "/redfish/v1/Managers/" + url.PathEscape(response.Members[0].ID)
-	}
-	if manager == "" {
-		return "", fmt.Errorf("Redfish manager has no resource ID")
-	}
-	if managerURL, err := url.Parse(manager); err == nil && managerURL.IsAbs() {
-		manager = managerURL.EscapedPath()
-		if managerURL.RawQuery != "" {
-			manager += "?" + managerURL.RawQuery
-		}
-	} else if !strings.HasPrefix(manager, "/") {
-		manager = "/" + manager
-	}
-	return strings.TrimRight(manager, "/"), nil
-}
-
-func (d *Deployer) createSession(ctx context.Context, base string) (string, string, error) {
-	response := &sessionResponse{}
-	resp, err := d.doJSON(ctx, http.MethodPost, base+"/redfish/v1/SessionService/Sessions", "", map[string]string{"UserName": d.config.Username, "Password": d.config.Password}, response)
-	if err != nil {
-		return "", "", err
-	}
-	token := resp.Header.Get("X-Auth-Token")
-	if token == "" {
-		token = response.Token
-	}
-	if token == "" {
-		return "", "", fmt.Errorf("iBMC did not return X-Auth-Token")
-	}
-	location := resp.Header.Get("Location")
-	if location != "" {
-		u, err := url.Parse(location)
-		if err == nil && !u.IsAbs() {
-			if baseURL, err := url.Parse(base); err == nil {
-				location = baseURL.ResolveReference(u).String()
-			}
-		}
-	}
-	return token, location, nil
-}
-
-func (d *Deployer) deleteSession(ctx context.Context, token, location string) error {
-	if location == "" {
-		return nil
-	}
-	_, err := d.doJSON(ctx, http.MethodDelete, location, token, nil, nil)
-	return err
-}
-
-func (d *Deployer) doJSON(ctx context.Context, method, endpoint, token string, payload, result any) (*http.Response, error) {
-	var body io.Reader
-	if payload != nil {
-		data, err := json.Marshal(payload)
-		if err != nil {
-			return nil, err
-		}
-		body = bytes.NewReader(data)
-	}
-	req, err := http.NewRequestWithContext(ctx, method, endpoint, body)
-	if err != nil {
-		return nil, err
-	}
-	if payload != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	if token != "" {
-		req.Header.Set("X-Auth-Token", token)
-	}
-	resp, err := d.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	data, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		var apiErr redfishError
-		if json.Unmarshal(data, &apiErr) == nil && (apiErr.Error.Code != "" || apiErr.Error.Message != "") {
-			return nil, fmt.Errorf("HTTP %d: %s: %s", resp.StatusCode, apiErr.Error.Code, apiErr.Error.Message)
-		}
-		return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, strings.TrimSpace(string(data)))
-	}
-	if result != nil && len(data) > 0 {
-		if err := json.Unmarshal(data, result); err != nil {
-			return nil, fmt.Errorf("invalid iBMC response: %w", err)
-		}
-	}
-	return resp, nil
 }
