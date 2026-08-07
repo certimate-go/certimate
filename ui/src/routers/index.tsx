@@ -12,6 +12,7 @@ import PresetList from "@/pages/presets/PresetList";
 import Settings from "@/pages/settings/Settings";
 import SettingsAbout from "@/pages/settings/SettingsAbout";
 import SettingsAccount from "@/pages/settings/SettingsAccount";
+import SettingsAcmeAccounts from "@/pages/settings/SettingsAcmeAccounts";
 import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPlugins from "@/pages/settings/SettingsPlugins";
@@ -85,6 +86,10 @@ export const router = createHashRouter([
           {
             path: "/settings/ssl-provider",
             element: <SettingsSSLProvider />,
+          },
+          {
+            path: "/settings/acme-accounts",
+            element: <SettingsAcmeAccounts />,
           },
           {
             path: "/settings/persistence",

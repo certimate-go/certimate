@@ -5,6 +5,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
 
+	"github.com/certimate-go/certimate/internal/acmeaccount"
 	"github.com/certimate-go/certimate/internal/certificate"
 	"github.com/certimate-go/certimate/internal/notify"
 	"github.com/certimate-go/certimate/internal/pluginhost"
@@ -37,6 +38,7 @@ func BindRouter(router *router.Router[*core.RequestEvent]) {
 	statisticsSvc = statistics.NewStatisticsService(statisticsRepo)
 	notifySvc = notify.NewNotifyService(accessRepo)
 	providerSchemaSvc = providerschema.NewProviderSchemaService(providerSchemaRepo)
+	acmeAccountSvc := acmeaccount.NewService(acmeAccountRepo)
 
 	group := router.Group("/api")
 	group.Bind(apis.RequireSuperuserAuth())
@@ -48,4 +50,5 @@ func BindRouter(router *router.Router[*core.RequestEvent]) {
 	handlers.NewPluginCatalogHandler(group, pluginhost.GlobalCatalog())
 	handlers.NewPluginAdminHandler(group)
 	handlers.NewPluginMarketHandler(group, pluginhost.GlobalMarketService())
+	handlers.NewACMEAccountsHandler(group, acmeAccountSvc)
 }
