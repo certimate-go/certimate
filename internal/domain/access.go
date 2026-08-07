@@ -611,6 +611,13 @@ type AccessConfigForSynologyDSM struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForIBMC struct {
+	Endpoint                 string `json:"endpoint"`
+	Username                 string `json:"username"`
+	Password                 string `json:"password"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForTechnitiumDNS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`

@@ -161,6 +161,7 @@
   "hostingde": "hosting.de",
   "hostinger": "Hostinger",
   "huaweicloud": "Huawei Cloud",
+  "ibmc": "Huawei iBMC (Redfish)",
   "huaweicloud_aad": "Huawei Cloud - AAD (Advanced Anti-DDoS)",
   "huaweicloud_apig": "Huawei Cloud - API Gateway",
   "huaweicloud_cdn": "Huawei Cloud - CDN (Content Delivery Network)",

@@ -90,6 +90,18 @@
     "shared_allow_insecure_conns": {
       "label": "Allow insecure SSL/TLS connections"
     },
+    "ibmc_endpoint": {
+      "label": "iBMC hosts",
+      "placeholder": "Enter one iBMC host or URL per line"
+    },
+    "ibmc_username": {
+      "label": "iBMC username",
+      "placeholder": "Please enter the iBMC username"
+    },
+    "ibmc_password": {
+      "label": "iBMC password",
+      "placeholder": "Please enter the iBMC password"
+    },
 
     "1panel_server_url": {
       "label": "1Panel server URL",

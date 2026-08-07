@@ -2206,6 +2206,9 @@
         "label": "Fallback to use SCP",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
       },
+      "ibmc_restart_after_import": {
+        "label": "Restart iBMC after certificate import"
+      },
       "synologydsm": {
         "guide": "Requires Synology DSM v6.0 or higher."
       },
