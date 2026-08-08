@@ -491,14 +491,14 @@ type AccessConfigForPowerDNS struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForProxmoxVE struct {
+type AccessConfigForProxmoxBS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
 	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForProxmoxBackupServer struct {
+type AccessConfigForProxmoxVE struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
 	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`

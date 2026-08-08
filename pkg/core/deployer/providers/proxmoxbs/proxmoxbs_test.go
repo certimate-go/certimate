@@ -1,16 +1,16 @@
-package proxmoxbackupserver_test
+package proxmoxbs_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
-	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/proxmoxbackupserver"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/proxmoxbs"
 	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
 var (
-	fp              = it.Args("PROXMOXBACKUPSERVER_")
+	fp              = it.Args("PROXMOXBS_")
 	fTestCertPath   string
 	fTestKeyPath    string
 	fServerUrl      string
@@ -31,13 +31,13 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./proxmoxbackupserver_test.go -args \
-	--PROXMOXBACKUPSERVER_TESTCERTPATH="/path/to/your-test-cert.pem" \
-	--PROXMOXBACKUPSERVER_TESTKEYPATH="/path/to/your-test-key.pem" \
-	--PROXMOXBACKUPSERVER_SERVERURL="http://127.0.0.1:8007" \
-	--PROXMOXBACKUPSERVER_APITOKEN="your-api-token" \
-	--PROXMOXBACKUPSERVER_APITOKENSECRET="your-api-token-secret" \
-	--PROXMOXBACKUPSERVER_NODENAME="your-node-name"
+	go test -v ./proxmoxbs_test.go -args \
+	--PROXMOXBS_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--PROXMOXBS_TESTKEYPATH="/path/to/your-test-key.pem" \
+	--PROXMOXBS_SERVERURL="http://127.0.0.1:8007" \
+	--PROXMOXBS_APITOKEN="your-api-token" \
+	--PROXMOXBS_APITOKENSECRET="your-api-token-secret" \
+	--PROXMOXBS_NODENAME="your-node-name"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()

@@ -1,4 +1,4 @@
-package proxmoxbackupserver
+package proxmoxbs
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/certimate-go/certimate/pkg/core"
-	proxmoxbackupserversdk "github.com/certimate-go/certimate/pkg/sdk3rd/proxmoxbackupserver"
+	pbssdk "github.com/certimate-go/certimate/pkg/sdk3rd/proxmoxbs"
 )
 
 type (
@@ -16,11 +16,11 @@ type (
 )
 
 type DeployerConfig struct {
-	// Proxmox Backup Server 服务地址。
+	// Proxmox BS 服务地址。
 	ServerUrl string `json:"serverUrl"`
-	// Proxmox Backup Server API Token。
+	// Proxmox BS API Token。
 	ApiToken string `json:"apiToken"`
-	// Proxmox Backup Server API Token Secret。
+	// Proxmox BS API Token Secret。
 	ApiTokenSecret string `json:"apiTokenSecret,omitempty"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
@@ -33,7 +33,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *proxmoxbackupserversdk.Client
+	sdkClient *pbssdk.Client
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -70,7 +70,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 上传自定义证书
 	// REF: https://pbs.proxmox.com/docs/api-viewer/index.html#/nodes/{node}/certificates/custom
-	nodeUploadCustomCertificateReq := &proxmoxbackupserversdk.NodeUploadCustomCertificateRequest{
+	nodeUploadCustomCertificateReq := &pbssdk.NodeUploadCustomCertificateRequest{
 		Certificates: certPEM,
 		Key:          privkeyPEM,
 		Force:        true,
@@ -85,9 +85,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify bool) (*proxmoxbackupserversdk.Client, error) {
-	client, err := proxmoxbackupserversdk.NewClient(serverUrl,
-		proxmoxbackupserversdk.WithApiToken(apiToken, apiTokenSecret),
+func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify bool) (*pbssdk.Client, error) {
+	client, err := pbssdk.NewClient(
+		serverUrl,
+		pbssdk.WithApiToken(apiToken, apiTokenSecret),
 	)
 	if err != nil {
 		return nil, err

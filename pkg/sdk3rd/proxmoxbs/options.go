@@ -1,4 +1,4 @@
-package proxmoxbackupserver
+package proxmoxbs
 
 type Options struct {
 	TokenId     string

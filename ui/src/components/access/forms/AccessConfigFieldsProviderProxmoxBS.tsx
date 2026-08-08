@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const AccessConfigFormFieldsProviderProxmoxBackupServer = () => {
+const AccessConfigFormFieldsProviderProxmoxBS = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -20,30 +20,30 @@ const AccessConfigFormFieldsProviderProxmoxBackupServer = () => {
       <Form.Item
         name={[parentNamePath, "serverUrl"]}
         initialValue={initialValues.serverUrl}
-        label={t("access.form.proxmoxbackupserver_server_url.label")}
+        label={t("access.form.proxmoxbs_server_url.label")}
         rules={[formRule]}
       >
-        <Input type="url" placeholder={t("access.form.proxmoxbackupserver_server_url.placeholder")} />
+        <Input type="url" placeholder={t("access.form.proxmoxbs_server_url.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "apiToken"]}
         initialValue={initialValues.apiToken}
-        label={t("access.form.proxmoxbackupserver_api_token.label")}
+        label={t("access.form.proxmoxbs_api_token.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.proxmoxbackupserver_api_token.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.proxmoxbs_api_token.tooltip") }}></span>}
       >
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.proxmoxbackupserver_api_token.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.proxmoxbs_api_token.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "apiTokenSecret"]}
         initialValue={initialValues.apiTokenSecret}
-        label={t("access.form.proxmoxbackupserver_api_token_secret.label")}
+        label={t("access.form.proxmoxbs_api_token_secret.label")}
         rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.proxmoxbackupserver_api_token_secret.tooltip") }}></span>}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.proxmoxbs_api_token_secret.tooltip") }}></span>}
       >
-        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.proxmoxbackupserver_api_token_secret.placeholder")} />
+        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.proxmoxbs_api_token_secret.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -76,7 +76,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   });
 };
 
-const _default = Object.assign(AccessConfigFormFieldsProviderProxmoxBackupServer, {
+const _default = Object.assign(AccessConfigFormFieldsProviderProxmoxBS, {
   getInitialValues,
   getSchema,
 });

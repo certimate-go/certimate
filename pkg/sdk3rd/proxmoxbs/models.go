@@ -1,4 +1,4 @@
-package proxmoxbackupserver
+package proxmoxbs
 
 type CustomCertificate struct {
 	Certificates string `json:"certificates,omitempty"`

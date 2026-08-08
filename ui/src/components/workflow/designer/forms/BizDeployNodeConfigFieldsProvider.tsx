@@ -90,8 +90,8 @@ import BizDeployNodeConfigFieldsProviderMohuaMVH from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderNetlify from "./BizDeployNodeConfigFieldsProviderNetlify";
 import BizDeployNodeConfigFieldsProviderNginxProxyManager from "./BizDeployNodeConfigFieldsProviderNginxProxyManager";
 import BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt from "./BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt";
+import BizDeployNodeConfigFieldsProviderProxmoxBS from "./BizDeployNodeConfigFieldsProviderProxmoxBS";
 import BizDeployNodeConfigFieldsProviderProxmoxVE from "./BizDeployNodeConfigFieldsProviderProxmoxVE";
-import BizDeployNodeConfigFieldsProviderProxmoxBackupServer from "./BizDeployNodeConfigFieldsProviderProxmoxBackupServer";
 import BizDeployNodeConfigFieldsProviderQingCloudLB from "./BizDeployNodeConfigFieldsProviderQingCloudLB";
 import BizDeployNodeConfigFieldsProviderQiniuCDN from "./BizDeployNodeConfigFieldsProviderQiniuCDN";
 import BizDeployNodeConfigFieldsProviderQiniuKodo from "./BizDeployNodeConfigFieldsProviderQiniuKodo";
@@ -242,8 +242,8 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.NETLIFY]: BizDeployNodeConfigFieldsProviderNetlify,
   [DEPLOYMENT_PROVIDERS.NGINXPROXYMANAGER]: BizDeployNodeConfigFieldsProviderNginxProxyManager,
   [DEPLOYMENT_PROVIDERS.ORACLECLOUD_CERTIFICATESMGMT]: BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt,
+  [DEPLOYMENT_PROVIDERS.PROXMOXBS]: BizDeployNodeConfigFieldsProviderProxmoxBS,
   [DEPLOYMENT_PROVIDERS.PROXMOXVE]: BizDeployNodeConfigFieldsProviderProxmoxVE,
-  [DEPLOYMENT_PROVIDERS.PROXMOXBACKUPSERVER]: BizDeployNodeConfigFieldsProviderProxmoxBackupServer,
   [DEPLOYMENT_PROVIDERS.QINGCLOUD_LB]: BizDeployNodeConfigFieldsProviderQingCloudLB,
   [DEPLOYMENT_PROVIDERS.QINIU_CDN]: BizDeployNodeConfigFieldsProviderQiniuCDN,
   [DEPLOYMENT_PROVIDERS.QINIU_KODO]: BizDeployNodeConfigFieldsProviderQiniuKodo,

@@ -7,7 +7,7 @@ import Tips from "@/components/Tips";
 
 import { useFormNestedFieldsContext } from "./_context";
 
-const BizDeployNodeConfigFieldsProviderProxmoxBackupServer = () => {
+const BizDeployNodeConfigFieldsProviderProxmoxBS = () => {
   const { i18n, t } = useTranslation();
 
   const { parentNamePath } = useFormNestedFieldsContext();
@@ -20,22 +20,22 @@ const BizDeployNodeConfigFieldsProviderProxmoxBackupServer = () => {
   return (
     <>
       <Form.Item>
-        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.proxmoxbackupserver.guide") }}></span>} />
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.proxmoxbs.guide") }}></span>} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "nodeName"]}
         initialValue={initialValues.nodeName}
-        label={t("workflow_node.deploy.form.proxmoxbackupserver_node_name.label")}
+        label={t("workflow_node.deploy.form.proxmoxbs_node_name.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("workflow_node.deploy.form.proxmoxbackupserver_node_name.placeholder")} />
+        <Input placeholder={t("workflow_node.deploy.form.proxmoxbs_node_name.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "autoRestart"]}
         initialValue={initialValues.autoRestart}
-        label={t("workflow_node.deploy.form.proxmoxbackupserver_auto_restart.label")}
+        label={t("workflow_node.deploy.form.proxmoxbs_auto_restart.label")}
         rules={[formRule]}
       >
         <Switch />
@@ -60,7 +60,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   });
 };
 
-const _default = Object.assign(BizDeployNodeConfigFieldsProviderProxmoxBackupServer, {
+const _default = Object.assign(BizDeployNodeConfigFieldsProviderProxmoxBS, {
   getInitialValues,
   getSchema,
 });

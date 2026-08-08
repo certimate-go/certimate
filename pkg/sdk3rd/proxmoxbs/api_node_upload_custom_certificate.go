@@ -1,4 +1,4 @@
-package proxmoxbackupserver
+package proxmoxbs
 
 import (
 	"context"

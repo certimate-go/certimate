@@ -1,6 +1,6 @@
 // A simple SDK client for Proxmox Backup Server.
 // API documentation: https://pbs.proxmox.com/docs/api-viewer/
-package proxmoxbackupserver
+package proxmoxbs
 
 import (
 	"crypto/tls"
