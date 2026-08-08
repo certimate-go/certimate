@@ -107,6 +107,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   PORKBUN: "porkbun",
   POWERDNS: "powerdns",
   PROXMOXVE: "proxmoxve",
+  PROXMOXBACKUPSERVER: "proxmoxbackupserver",
   QINGCLOUD: "qingcloud",
   QINIU: "qiniu",
   RAINYUN: "rainyun",
@@ -224,6 +225,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.LECDN, "provider.lecdn", "/imgs/providers/lecdn.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.NGINXPROXYMANAGER, "provider.nginxproxymanager", "/imgs/providers/nginxproxymanager.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.PROXMOXVE, "provider.proxmoxve", "/imgs/providers/proxmoxve.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.PROXMOXBACKUPSERVER, "provider.proxmoxbackupserver", "/imgs/providers/proxmoxbackupserver.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.RATPANEL, "provider.ratpanel", "/imgs/providers/ratpanel.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.SAFELINE, "provider.safeline", "/imgs/providers/safeline.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.SAMWAF, "provider.samwaf", "/imgs/providers/samwaf.png", [ACCESS_USAGES.HOSTING]],
@@ -709,6 +711,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   NGINXPROXYMANAGER: `${ACCESS_PROVIDERS.NGINXPROXYMANAGER}`,
   ORACLECLOUD_CERTIFICATESMGMT: `${ACCESS_PROVIDERS.ORACLECLOUD}-certificatesmgmt`,
   PROXMOXVE: `${ACCESS_PROVIDERS.PROXMOXVE}`,
+  PROXMOXBACKUPSERVER: `${ACCESS_PROVIDERS.PROXMOXBACKUPSERVER}`,
   QINGCLOUD_LB: `${ACCESS_PROVIDERS.QINGCLOUD}-lb`,
   QINIU_CDN: `${ACCESS_PROVIDERS.QINIU}-cdn`,
   QINIU_KODO: `${ACCESS_PROVIDERS.QINIU}-kodo`,
@@ -955,6 +958,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.DOKPLOY, "provider.dokploy", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.NGINXPROXYMANAGER, "provider.nginxproxymanager", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.PROXMOXVE, "provider.proxmoxve", DEPLOYMENT_CATEGORIES.OTHER],
+      [DEPLOYMENT_PROVIDERS.PROXMOXBACKUPSERVER, "provider.proxmoxbackupserver", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", DEPLOYMENT_CATEGORIES.OTHER],
     ] satisfies Array<[DeploymentProviderType, string, DeploymentCategoryType, "builtin"] | [DeploymentProviderType, string, DeploymentCategoryType]>
   ).map(([type, name, category, builtin]) => [
