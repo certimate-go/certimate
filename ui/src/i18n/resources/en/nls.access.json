@@ -1136,6 +1136,20 @@
       "placeholder": "Please enter Proxmox VE API token secret",
       "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },
+    "proxmoxbackupserver_server_url": {
+      "label": "Proxmox Backup Server server URL",
+      "placeholder": "Please enter Proxmox Backup Server server URL"
+    },
+    "proxmoxbackupserver_api_token": {
+      "label": "Proxmox Backup Server API token",
+      "placeholder": "Please enter Proxmox Backup Server API token",
+      "tooltip": "For more information, see <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
+    "proxmoxbackupserver_api_token_secret": {
+      "label": "Proxmox Backup Server API token secret (Optional)",
+      "placeholder": "Please enter Proxmox Backup Server API token secret",
+      "tooltip": "For more information, see <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
     "qingcloud_access_key_id": {
       "label": "QingCloud AccessKeyID",
       "placeholder": "Please enter QingCloud AccessKeyID",

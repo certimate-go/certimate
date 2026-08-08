@@ -2029,6 +2029,16 @@
       "proxmoxve_auto_restart": {
         "label": "Auto restart Proxmox VE after deployment"
       },
+      "proxmoxbackupserver": {
+        "guide": "Requires Proxmox Backup Server v2.1 or higher."
+      },
+      "proxmoxbackupserver_node_name": {
+        "label": "Proxmox Backup Server node name",
+        "placeholder": "Please enter Proxmox Backup Server node name"
+      },
+      "proxmoxbackupserver_auto_restart": {
+        "label": "Auto restart Proxmox Backup Server after deployment"
+      },
       "qingcloud_lb_zone_id": {
         "label": "QingCloud zone ID",
         "placeholder": "Please enter QingCloud LBC zone ID (e.g. pek3a)",

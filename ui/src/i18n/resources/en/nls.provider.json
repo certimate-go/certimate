@@ -214,6 +214,7 @@
   "porkbun": "Porkbun",
   "powerdns": "PowerDNS",
   "proxmoxve": "Proxmox VE",
+  "proxmoxbackupserver": "Proxmox Backup Server",
   "qingcloud": "QingCloud",
   "qingcloud_dns": "QingCloud - DNS",
   "qingcloud_lb": "QingCloud - LBC (Load Balancer Cluster)",
