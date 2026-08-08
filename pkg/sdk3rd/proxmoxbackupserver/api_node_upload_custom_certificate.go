@@ -9,7 +9,7 @@ import (
 type NodeUploadCustomCertificateRequest CustomCertificate
 
 type NodeUploadCustomCertificateResponse struct {
-	Data *struct {
+	Data []struct {
 		FileName    string   `json:"filename,omitempty"`
 		Fingerprint string   `json:"fingerprint,omitempty"`
 		Subject     string   `json:"subject,omitempty"`
