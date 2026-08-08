@@ -2028,6 +2028,16 @@
       "proxmoxve_auto_restart": {
         "label": "部署后自动重启 Proxmox VE 服务"
       },
+      "proxmoxbackupserver": {
+        "guide": "需要 Proxmox Backup Server v2.1 或更高版本。"
+      },
+      "proxmoxbackupserver_node_name": {
+        "label": "Proxmox Backup Server 节点名称",
+        "placeholder": "请输入 Proxmox Backup Server 节点名称"
+      },
+      "proxmoxbackupserver_auto_restart": {
+        "label": "部署后自动重启 Proxmox Backup Server 服务"
+      },
       "qingcloud_lb_zone_id": {
         "label": "青云服务区域 ID",
         "placeholder": "请输入青云 ELB 服务区域 ID（例如：pek3a）",

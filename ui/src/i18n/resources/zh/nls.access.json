@@ -1136,6 +1136,20 @@
       "placeholder": "请输入 Proxmox VE API Token Secret",
       "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },
+    "proxmoxbackupserver_server_url": {
+      "label": "Proxmox Backup Server 服务地址",
+      "placeholder": "请输入 Proxmox Backup Server 服务地址"
+    },
+    "proxmoxbackupserver_api_token": {
+      "label": "Proxmox Backup Server API Token",
+      "placeholder": "请输入 Proxmox Backup Server API Token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
+    "proxmoxbackupserver_api_token_secret": {
+      "label": "Proxmox Backup Server API Token Secret（可选）",
+      "placeholder": "请输入 Proxmox Backup Server API Token Secret",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
     "qingcloud_access_key_id": {
       "label": "青云 AccessKeyID",
       "placeholder": "请输入青云 AccessKeyID",
