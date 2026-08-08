@@ -90,6 +90,18 @@
     "shared_allow_insecure_conns": {
       "label": "忽略 SSL/TLS 证书验证"
     },
+    "ibmc_endpoint": {
+      "label": "iBMC 主机列表",
+      "placeholder": "每行输入一个 iBMC 主机名或 URL"
+    },
+    "ibmc_username": {
+      "label": "iBMC 用户名",
+      "placeholder": "请输入 iBMC 用户名"
+    },
+    "ibmc_password": {
+      "label": "iBMC 密码",
+      "placeholder": "请输入 iBMC 密码"
+    },
 
     "1panel_server_url": {
       "label": "1Panel 服务地址",

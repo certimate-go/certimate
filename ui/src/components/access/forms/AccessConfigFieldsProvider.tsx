@@ -107,6 +107,7 @@ import AccessConfigFieldsProviderSpaceship from "./AccessConfigFieldsProviderSpa
 import AccessConfigFieldsProviderSSH from "./AccessConfigFieldsProviderSSH";
 import AccessConfigFieldsProviderSSLCom from "./AccessConfigFieldsProviderSSLCom";
 import AccessConfigFieldsProviderSynologyDSM from "./AccessConfigFieldsProviderSynologyDSM";
+import AccessConfigFieldsProviderIBMC from "./AccessConfigFieldsProviderIBMC";
 import AccessConfigFieldsProviderTechnitiumDNS from "./AccessConfigFieldsProviderTechnitiumDNS";
 import AccessConfigFieldsProviderTelegramBot from "./AccessConfigFieldsProviderTelegramBot";
 import AccessConfigFieldsProviderTencentCloud from "./AccessConfigFieldsProviderTencentCloud";
@@ -236,6 +237,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.SSLCOM]: AccessConfigFieldsProviderSSLCom,
   [ACCESS_PROVIDERS.SSH]: AccessConfigFieldsProviderSSH,
   [ACCESS_PROVIDERS.SYNOLOGYDSM]: AccessConfigFieldsProviderSynologyDSM,
+  [ACCESS_PROVIDERS.IBMC]: AccessConfigFieldsProviderIBMC,
   [ACCESS_PROVIDERS.TECHNITIUMDNS]: AccessConfigFieldsProviderTechnitiumDNS,
   [ACCESS_PROVIDERS.TELEGRAMBOT]: AccessConfigFieldsProviderTelegramBot,
   [ACCESS_PROVIDERS.TENCENTCLOUD]: AccessConfigFieldsProviderTencentCloud,
