@@ -89,6 +89,7 @@ import AccessConfigFieldsProviderOVHcloud from "./AccessConfigFieldsProviderOVHc
 import AccessConfigFieldsProviderPorkbun from "./AccessConfigFieldsProviderPorkbun";
 import AccessConfigFieldsProviderPowerDNS from "./AccessConfigFieldsProviderPowerDNS";
 import AccessConfigFieldsProviderProxmoxVE from "./AccessConfigFieldsProviderProxmoxVE";
+import AccessConfigFieldsProviderProxmoxBackupServer from "./AccessConfigFieldsProviderProxmoxBackupServer";
 import AccessConfigFieldsProviderQingCloud from "./AccessConfigFieldsProviderQingCloud";
 import AccessConfigFieldsProviderQiniu from "./AccessConfigFieldsProviderQiniu";
 import AccessConfigFieldsProviderRainYun from "./AccessConfigFieldsProviderRainYun";
@@ -217,6 +218,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.PORKBUN]: AccessConfigFieldsProviderPorkbun,
   [ACCESS_PROVIDERS.POWERDNS]: AccessConfigFieldsProviderPowerDNS,
   [ACCESS_PROVIDERS.PROXMOXVE]: AccessConfigFieldsProviderProxmoxVE,
+  [ACCESS_PROVIDERS.PROXMOXBACKUPSERVER]: AccessConfigFieldsProviderProxmoxBackupServer,
   [ACCESS_PROVIDERS.QINGCLOUD]: AccessConfigFieldsProviderQingCloud,
   [ACCESS_PROVIDERS.QINIU]: AccessConfigFieldsProviderQiniu,
   [ACCESS_PROVIDERS.RAINYUN]: AccessConfigFieldsProviderRainYun,
