@@ -498,6 +498,13 @@ type AccessConfigForProxmoxVE struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
+type AccessConfigForProxmoxBackupServer struct {
+	ServerUrl                string `json:"serverUrl"`
+	ApiToken                 string `json:"apiToken"`
+	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForQingCloud struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
