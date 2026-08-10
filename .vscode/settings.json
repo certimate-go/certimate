@@ -8,6 +8,7 @@
     "*.css": "tailwindcss",
     "Dockerfile_*": "dockerfile"
   },
+  "files.encoding": "utf8",
   "go.useLanguageServer": true,
   "gopls": {
     "formatting.gofumpt": true,

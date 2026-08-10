@@ -15,6 +15,7 @@ import AccessConfigFieldsProviderAkamai from "./AccessConfigFieldsProviderAkamai
 import AccessConfigFieldsProviderAPISIX from "./AccessConfigFieldsProviderAPISIX";
 import AccessConfigFieldsProviderArvanCloud from "./AccessConfigFieldsProviderArvanCloud";
 import AccessConfigFieldsProviderAWS from "./AccessConfigFieldsProviderAWS";
+import AccessConfigFieldsProviderAxisNow from "./AccessConfigFieldsProviderAxisNow";
 import AccessConfigFieldsProviderAzure from "./AccessConfigFieldsProviderAzure";
 import AccessConfigFieldsProviderBaiduCloud from "./AccessConfigFieldsProviderBaiduCloud";
 import AccessConfigFieldsProviderBaishan from "./AccessConfigFieldsProviderBaishan";
@@ -86,6 +87,7 @@ import AccessConfigFieldsProviderOracleCloud from "./AccessConfigFieldsProviderO
 import AccessConfigFieldsProviderOVHcloud from "./AccessConfigFieldsProviderOVHcloud";
 import AccessConfigFieldsProviderPorkbun from "./AccessConfigFieldsProviderPorkbun";
 import AccessConfigFieldsProviderPowerDNS from "./AccessConfigFieldsProviderPowerDNS";
+import AccessConfigFieldsProviderProxmoxBS from "./AccessConfigFieldsProviderProxmoxBS";
 import AccessConfigFieldsProviderProxmoxVE from "./AccessConfigFieldsProviderProxmoxVE";
 import AccessConfigFieldsProviderQingCloud from "./AccessConfigFieldsProviderQingCloud";
 import AccessConfigFieldsProviderRainYun from "./AccessConfigFieldsProviderRainYun";
@@ -138,6 +140,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.APISIX]: AccessConfigFieldsProviderAPISIX,
   [ACCESS_PROVIDERS.ARVANCLOUD]: AccessConfigFieldsProviderArvanCloud,
   [ACCESS_PROVIDERS.AWS]: AccessConfigFieldsProviderAWS,
+  [ACCESS_PROVIDERS.AXISNOW]: AccessConfigFieldsProviderAxisNow,
   [ACCESS_PROVIDERS.AZURE]: AccessConfigFieldsProviderAzure,
   [ACCESS_PROVIDERS.BAIDUCLOUD]: AccessConfigFieldsProviderBaiduCloud,
   [ACCESS_PROVIDERS.BAISHAN]: AccessConfigFieldsProviderBaishan,
@@ -209,6 +212,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.OVHCLOUD]: AccessConfigFieldsProviderOVHcloud,
   [ACCESS_PROVIDERS.PORKBUN]: AccessConfigFieldsProviderPorkbun,
   [ACCESS_PROVIDERS.POWERDNS]: AccessConfigFieldsProviderPowerDNS,
+  [ACCESS_PROVIDERS.PROXMOXBS]: AccessConfigFieldsProviderProxmoxBS,
   [ACCESS_PROVIDERS.PROXMOXVE]: AccessConfigFieldsProviderProxmoxVE,
   [ACCESS_PROVIDERS.QINGCLOUD]: AccessConfigFieldsProviderQingCloud,
   [ACCESS_PROVIDERS.RAINYUN]: AccessConfigFieldsProviderRainYun,

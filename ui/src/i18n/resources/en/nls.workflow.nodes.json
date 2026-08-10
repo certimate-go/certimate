@@ -1975,7 +1975,7 @@
         "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
       },
       "proxmoxve": {
-        "guide": "Requires Proxmox VE v5.2 or higher."
+        "guide": "Requires Proxmox Virtual Environment v5.2 or higher."
       },
       "proxmoxve_node_name": {
         "label": "Proxmox VE cluster node name",
@@ -1983,6 +1983,16 @@
       },
       "proxmoxve_auto_restart": {
         "label": "Auto restart Proxmox VE after deployment"
+      },
+      "proxmoxbs": {
+        "guide": "Requires Proxmox Backup Server v2.1 or higher."
+      },
+      "proxmoxbs_node_name": {
+        "label": "Proxmox BS node name",
+        "placeholder": "Please enter Proxmox BS node name"
+      },
+      "proxmoxbs_auto_restart": {
+        "label": "Auto restart Proxmox BS after deployment"
       },
       "qingcloud_lb_zone_id": {
         "label": "QingCloud zone ID",

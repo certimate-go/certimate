@@ -1,4 +1,4 @@
-﻿package synologydsm
+package synologydsm
 
 func getAuthErrorDescription(code int) string {
 	switch code {

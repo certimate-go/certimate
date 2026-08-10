@@ -1,4 +1,4 @@
-﻿package flyio
+package flyio
 
 type Options struct {
 	ApiToken string

@@ -1,4 +1,4 @@
-﻿package cloudflare
+package cloudflare
 
 type Options struct {
 	ApiToken string

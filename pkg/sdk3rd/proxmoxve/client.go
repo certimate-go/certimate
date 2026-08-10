@@ -1,4 +1,4 @@
-// A simple SDK client for Proxmox VE.
+// A simple SDK client for Proxmox Virtual Environment.
 // API documentation: https://pve.proxmox.com/pve-docs/api-viewer/index.html
 package proxmoxve
 

@@ -1,4 +1,4 @@
-﻿package rainyun
+package rainyun
 
 type Options struct {
 	ApiKey string

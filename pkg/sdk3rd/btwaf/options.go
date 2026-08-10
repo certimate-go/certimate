@@ -1,4 +1,4 @@
-﻿package btwaf
+package btwaf
 
 type Options struct {
 	ApiKey string

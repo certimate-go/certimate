@@ -1,4 +1,4 @@
-﻿package alb
+package alb
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/alb"

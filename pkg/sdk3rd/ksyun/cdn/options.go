@@ -1,4 +1,4 @@
-﻿package cdn
+package cdn
 
 import (
 	common "github.com/certimate-go/certimate/pkg/sdk3rd/ksyun/zz-shared-common"

@@ -1,4 +1,4 @@
-﻿package proxmoxve
+package proxmoxve
 
 type Options struct {
 	TokenId     string

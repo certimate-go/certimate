@@ -1,4 +1,4 @@
-﻿package loop
+package loop
 
 import (
 	"context"

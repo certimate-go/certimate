@@ -1,4 +1,4 @@
-﻿package alibabacloud
+package alibabacloud
 
 import (
 	"strings"

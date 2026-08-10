@@ -87,6 +87,10 @@ type AccessConfigForAWS struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
+type AccessConfigForAxisNow struct {
+	ApiToken string `json:"apiToken"`
+}
+
 type AccessConfigForAzure struct {
 	TenantId          string `json:"tenantId"`
 	ClientId          string `json:"clientId"`
@@ -475,6 +479,13 @@ type AccessConfigForPorkbun struct {
 type AccessConfigForPowerDNS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
+type AccessConfigForProxmoxBS struct {
+	ServerUrl                string `json:"serverUrl"`
+	ApiToken                 string `json:"apiToken"`
+	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 

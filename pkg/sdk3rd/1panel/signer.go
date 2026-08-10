@@ -1,4 +1,4 @@
-﻿package onepanel
+package onepanel
 
 import (
 	"crypto/md5"

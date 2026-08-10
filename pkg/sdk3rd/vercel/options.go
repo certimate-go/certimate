@@ -1,4 +1,4 @@
-﻿package vercel
+package vercel
 
 type Options struct {
 	ApiToken string

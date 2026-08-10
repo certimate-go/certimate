@@ -243,6 +243,11 @@
       "placeholder": "请输入 AWS SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html</a>"
     },
+    "axisnow_api_token": {
+      "label": "AxisNow API 令牌",
+      "placeholder": "请输入 AxisNow API 令牌",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.axisnow.io/zh/docs/edge/tenant/api-tokens\" target=\"_blank\">https://www.axisnow.io/zh/docs/edge/tenant/api-tokens</a>"
+    },
     "azure_tenant_id": {
       "label": "Azure 租户 ID",
       "placeholder": "请输入 Azure 租户 ID",
@@ -1130,6 +1135,20 @@
       "label": "Proxmox VE API Token Secret（可选）",
       "placeholder": "请输入 Proxmox VE API Token Secret",
       "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
+    },
+    "proxmoxbs_server_url": {
+      "label": "Proxmox BS 服务地址",
+      "placeholder": "请输入 Proxmox BS 服务地址"
+    },
+    "proxmoxbs_api_token": {
+      "label": "Proxmox BS API Token",
+      "placeholder": "请输入 Proxmox BS API Token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
+    "proxmoxbs_api_token_secret": {
+      "label": "Proxmox BS API Token Secret（可选）",
+      "placeholder": "请输入 Proxmox BS API Token Secret",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
     },
     "qingcloud_access_key_id": {
       "label": "青云 AccessKeyID",

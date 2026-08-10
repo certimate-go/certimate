@@ -1,4 +1,4 @@
-﻿package v20191205
+package v20191205
 
 import (
 	ssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"

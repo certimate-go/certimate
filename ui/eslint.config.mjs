@@ -16,6 +16,9 @@ export default defineConfig(
   // Basic
   eslint.configs["recommended"],
   {
+    ignores: ["**/node_modules/**", "**/dist/**", "**/*.min.js"],
+  },
+  {
     name: "eslint/import",
     extends: [importPlugin.flatConfigs["recommended"], importPlugin.flatConfigs["typescript"]],
     rules: {

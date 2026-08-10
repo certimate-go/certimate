@@ -1,4 +1,4 @@
-﻿package certificateservice
+package certificateservice
 
 import (
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"

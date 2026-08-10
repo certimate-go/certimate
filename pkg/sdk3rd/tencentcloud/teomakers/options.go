@@ -1,4 +1,4 @@
-﻿package teomakers
+package teomakers
 
 type Options struct {
 	BaseEndpoint string

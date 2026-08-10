@@ -1,4 +1,4 @@
-﻿package synologydsm
+package synologydsm
 
 import (
 	"net/http"

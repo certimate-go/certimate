@@ -1,4 +1,4 @@
-﻿package internal
+package internal
 
 import (
 	"context"
@@ -14,7 +14,6 @@ import (
 	linodesdk "github.com/certimate-go/certimate/pkg/sdk3rd/linode"
 )
 
-// Environment variables names.
 const (
 	envNamespace = "LINODE_"
 

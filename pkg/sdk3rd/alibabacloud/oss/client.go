@@ -1,4 +1,4 @@
-﻿// A simple SDK client for AliababaCloud OSS.
+// A simple SDK client for AliababaCloud OSS.
 // API documentation: https://www.alibabacloud.com/help/en/oss/developer-reference/list-of-operations-by-function
 package oss
 

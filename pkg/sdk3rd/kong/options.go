@@ -1,4 +1,4 @@
-﻿package kong
+package kong
 
 type Options struct {
 	ApiToken  string

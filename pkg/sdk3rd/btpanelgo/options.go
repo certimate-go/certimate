@@ -1,4 +1,4 @@
-﻿package btpanelgo
+package btpanelgo
 
 type Options struct {
 	ApiKey string

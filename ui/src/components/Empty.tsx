@@ -26,7 +26,7 @@ const Empty = (props: EmptyProps) => {
   return (
     <div className={className} style={style}>
       <div className="relative w-full overflow-hidden">
-        <div className="relative top-0 left-0 z-1 flex h-full w-full py-4">
+        <div className="relative top-0 left-0 z-1 flex size-full py-4">
           <div className="relative mx-auto w-full max-w-lg">
             <div className="flex flex-col gap-2 text-center">
               <Show when={!!icon}>

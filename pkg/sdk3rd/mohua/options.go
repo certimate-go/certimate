@@ -1,4 +1,4 @@
-﻿package mohua
+package mohua
 
 type Options struct {
 	Username string

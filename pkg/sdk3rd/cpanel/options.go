@@ -1,4 +1,4 @@
-﻿package cpanel
+package cpanel
 
 type Options struct {
 	Username string

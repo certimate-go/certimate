@@ -1,20 +1,20 @@
 package vercel
 
 type sdkResponse interface {
-	GetError() *sdkError
+	GetError() *sdkAPIError
 }
 
 type sdkResponseBase struct {
-	Error *sdkError `json:"error,omitempty"`
+	Error *sdkAPIError `json:"error,omitempty"`
 }
 
-type sdkError struct {
+type sdkAPIError struct {
 	Code         string `json:"code"`
 	Message      string `json:"message"`
 	MissingToken bool   `json:"missingToken,omitempty"`
 }
 
-func (r *sdkResponseBase) GetError() *sdkError {
+func (r *sdkResponseBase) GetError() *sdkAPIError {
 	return r.Error
 }
 
