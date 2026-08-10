@@ -138,7 +138,7 @@ This repository is available under the [MIT License](https://opensource.org/lice
 
 ## ⭐ Star History
 
-Star Certificate on GitHub and be instantly notified of new releases!
+Star Certimate on GitHub and be instantly notified of new releases!
 
 <a href="https://www.star-history.com/?repos=certimate-go%2Fcertimate&type=date&legend=bottom-right">
  <picture>
