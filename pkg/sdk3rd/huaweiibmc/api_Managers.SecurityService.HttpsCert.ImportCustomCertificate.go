@@ -2,6 +2,7 @@ package huaweiibmc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -21,6 +22,35 @@ type ImportCustomCertificateToManagerResponse struct {
 	sdkResponseBase
 }
 
+func (r *ImportCustomCertificateToManagerResponse) GetAPIError() error {
+	if r.isSuccessfulResponse() {
+		return nil
+	}
+
+	return r.sdkResponseBase.GetAPIError()
+}
+
+func (r *ImportCustomCertificateToManagerResponse) isSuccessfulResponse() bool {
+	if r.Error == nil {
+		return false
+	}
+
+	var extendedInfo []struct {
+		MessageID string `json:"MessageId"`
+	}
+	if err := json.Unmarshal(r.Error.MessageExtendedInfo, &extendedInfo); err != nil {
+		return false
+	}
+
+	for _, info := range extendedInfo {
+		if info.MessageID == "iBMC.1.0.CertImportOK" {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (c *Client) ImportCustomCertificateToManager(req *ImportCustomCertificateToManagerRequest) (*ImportCustomCertificateToManagerResponse, error) {
 	return c.ImportCustomCertificateToManagerWithContext(context.Background(), req)
 }
@@ -34,7 +64,7 @@ func (c *Client) ImportCustomCertificateToManagerWithContext(ctx context.Context
 		return nil, fmt.Errorf("sdkerr: bad request: unset managerId")
 	}
 
-	httpreq, err := c.newRequest(http.MethodPost, managerLoc+"/SecurityService/HttpsCert/Actions/HttpsCert.ImportCustomCertificateToManager")
+	httpreq, err := c.newRequest(http.MethodPost, managerLoc+"/SecurityService/HttpsCert/Actions/HttpsCert.ImportCustomCertificate")
 	if err != nil {
 		return nil, err
 	} else {

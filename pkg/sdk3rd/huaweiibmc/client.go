@@ -27,6 +27,10 @@ type Client struct {
 	rc *resty.Client
 }
 
+type sdkSuccessfulResponse interface {
+	isSuccessfulResponse() bool
+}
+
 func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 	opts := &Options{}
 	for _, fn := range optFns {
@@ -117,6 +121,9 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 	if err != nil {
 		if resp != nil {
 			json.Unmarshal(resp.Body(), &res)
+			if successful, ok := res.(sdkSuccessfulResponse); ok && successful.isSuccessfulResponse() {
+				return resp, nil
+			}
 		}
 		return resp, err
 	}
