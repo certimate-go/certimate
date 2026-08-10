@@ -1134,20 +1134,6 @@
       "placeholder": "请输入 PowerDNS API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>"
     },
-    "proxmoxve_server_url": {
-      "label": "Proxmox VE 服务地址",
-      "placeholder": "请输入 Proxmox VE 服务地址"
-    },
-    "proxmoxve_api_token": {
-      "label": "Proxmox VE API Token",
-      "placeholder": "请输入 Proxmox VE API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
-    "proxmoxve_api_token_secret": {
-      "label": "Proxmox VE API Token Secret（可选）",
-      "placeholder": "请输入 Proxmox VE API Token Secret",
-      "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
     "proxmoxbs_server_url": {
       "label": "Proxmox BS 服务地址",
       "placeholder": "请输入 Proxmox BS 服务地址"
@@ -1158,9 +1144,23 @@
       "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
     },
     "proxmoxbs_api_token_secret": {
-      "label": "Proxmox BS API Token Secret（可选）",
+      "label": "Proxmox BS API Token Secret",
       "placeholder": "请输入 Proxmox BS API Token Secret",
       "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
+    "proxmoxve_server_url": {
+      "label": "Proxmox VE 服务地址",
+      "placeholder": "请输入 Proxmox VE 服务地址"
+    },
+    "proxmoxve_api_token": {
+      "label": "Proxmox VE API Token",
+      "placeholder": "请输入 Proxmox VE API Token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
+    },
+    "proxmoxve_api_token_secret": {
+      "label": "Proxmox VE API Token Secret",
+      "placeholder": "请输入 Proxmox VE API Token Secret",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },
     "qingcloud_access_key_id": {
       "label": "青云 AccessKeyID",

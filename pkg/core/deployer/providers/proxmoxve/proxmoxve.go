@@ -21,10 +21,10 @@ type DeployerConfig struct {
 	// Proxmox VE API Token。
 	ApiToken string `json:"apiToken"`
 	// Proxmox VE API Token Secret。
-	ApiTokenSecret string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret string `json:"apiTokenSecret"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
-	// 集群节点名称。
+	// 节点名称。
 	NodeName string `json:"nodeName"`
 	// 是否自动重启。
 	AutoRestart bool `json:"autoRestart"`

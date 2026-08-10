@@ -2021,16 +2021,6 @@
         "placeholder": "请输入 OCI 资源区间 OCID",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
       },
-      "proxmoxve": {
-        "guide": "需要 Proxmox Virtual Environment v5.2 或更高版本。"
-      },
-      "proxmoxve_node_name": {
-        "label": "Proxmox VE 集群节点名称",
-        "placeholder": "请输入 Proxmox VE 集群节点名称"
-      },
-      "proxmoxve_auto_restart": {
-        "label": "部署后自动重启 Proxmox VE 服务"
-      },
       "proxmoxbs": {
         "guide": "需要 Proxmox Backup Server v2.1 或更高版本。"
       },
@@ -2040,6 +2030,16 @@
       },
       "proxmoxbs_auto_restart": {
         "label": "部署后自动重启 Proxmox BS 服务"
+      },
+      "proxmoxve": {
+        "guide": "需要 Proxmox Virtual Environment v5.2 或更高版本。"
+      },
+      "proxmoxve_node_name": {
+        "label": "Proxmox VE 节点名称",
+        "placeholder": "请输入 Proxmox VE 节点名称"
+      },
+      "proxmoxve_auto_restart": {
+        "label": "部署后自动重启 Proxmox VE 服务"
       },
       "qingcloud_lb_zone_id": {
         "label": "青云服务区域 ID",

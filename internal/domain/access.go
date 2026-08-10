@@ -501,14 +501,14 @@ type AccessConfigForPowerDNS struct {
 type AccessConfigForProxmoxBS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
-	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret           string `json:"apiTokenSecret"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
 type AccessConfigForProxmoxVE struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
-	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret           string `json:"apiTokenSecret"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 

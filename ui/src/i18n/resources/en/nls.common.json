@@ -53,7 +53,7 @@
 
   "errmsg": {
     "domain_invalid": "Invalid domain name",
-    "host_invalid": "Invalid domain name or IP address",
+    "host_invalid": "Invalid host: not a domain name or IP address",
     "port_invalid": "Invalid port",
     "ip_invalid": "Invalid IP address",
     "json_invalid": "Invalid JSON string",
