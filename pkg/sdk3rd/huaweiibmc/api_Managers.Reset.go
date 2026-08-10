@@ -2,6 +2,7 @@ package huaweiibmc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -18,6 +19,35 @@ type ResetManagerRequest struct {
 
 type ResetManagerResponse struct {
 	sdkResponseBase
+}
+
+func (r *ResetManagerResponse) GetAPIError() error {
+	if r.isSuccessfulResponse() {
+		return nil
+	}
+
+	return r.sdkResponseBase.GetAPIError()
+}
+
+func (r *ResetManagerResponse) isSuccessfulResponse() bool {
+	if r.Error == nil {
+		return false
+	}
+
+	var extendedInfo []struct {
+		MessageID string `json:"MessageId"`
+	}
+	if err := json.Unmarshal(r.Error.MessageExtendedInfo, &extendedInfo); err != nil {
+		return false
+	}
+
+	for _, info := range extendedInfo {
+		if info.MessageID == "Base.1.0.Success" {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (c *Client) ResetManager(req *ResetManagerRequest) (*ResetManagerResponse, error) {
