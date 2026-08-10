@@ -64,6 +64,7 @@ import AccessConfigFieldsProviderHetzner from "./AccessConfigFieldsProviderHetzn
 import AccessConfigFieldsProviderHostingde from "./AccessConfigFieldsProviderHostingde";
 import AccessConfigFieldsProviderHostinger from "./AccessConfigFieldsProviderHostinger";
 import AccessConfigFieldsProviderHuaweiCloud from "./AccessConfigFieldsProviderHuaweiCloud";
+import AccessConfigFieldsProviderHuaweiIBMC from "./AccessConfigFieldsProviderHuaweiIBMC";
 import AccessConfigFieldsProviderInfomaniak from "./AccessConfigFieldsProviderInfomaniak";
 import AccessConfigFieldsProviderIONOS from "./AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./AccessConfigFieldsProviderJDCloud";
@@ -193,6 +194,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.HOSTINGDE]: AccessConfigFieldsProviderHostingde,
   [ACCESS_PROVIDERS.HOSTINGER]: AccessConfigFieldsProviderHostinger,
   [ACCESS_PROVIDERS.HUAWEICLOUD]: AccessConfigFieldsProviderHuaweiCloud,
+  [ACCESS_PROVIDERS.HUAWEIIBMC]: AccessConfigFieldsProviderHuaweiIBMC,
   [ACCESS_PROVIDERS.IONOS]: AccessConfigFieldsProviderIONOS,
   [ACCESS_PROVIDERS.JDCLOUD]: AccessConfigFieldsProviderJDCloud,
   [ACCESS_PROVIDERS.KONG]: AccessConfigFieldsProviderKong,

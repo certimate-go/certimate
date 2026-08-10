@@ -353,6 +353,13 @@ type AccessConfigForHuaweiCloud struct {
 	EnterpriseProjectId string `json:"enterpriseProjectId,omitempty"`
 }
 
+type AccessConfigForHuaweiIBMC struct {
+	Host                     string `json:"host"`
+	Username                 string `json:"username"`
+	Password                 string `json:"password"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForInfomaniak struct {
 	AccessToken string `json:"accessToken"`
 }

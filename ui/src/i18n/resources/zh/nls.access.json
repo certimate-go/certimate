@@ -796,6 +796,18 @@
       "placeholder": "请输入华为云企业项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://support.huaweicloud.com/usermanual-em/zh-cn_topic_0126101490.html\" target=\"_blank\">https://support.huaweicloud.com/usermanual-em/zh-cn_topic_0126101490.html</a>"
     },
+    "huaweiibmc_host": {
+      "label": "iBMC Redfish 服务器地址",
+      "placeholder": "请输入 iBMC Redfish 服务器地址"
+    },
+    "huaweiibmc_username": {
+      "label": "iBMC 用户名",
+      "placeholder": "请输入 iBMC 用户名"
+    },
+    "huaweiibmc_password": {
+      "label": "iBMC 密码",
+      "placeholder": "请输入 iBMC 密码"
+    },
     "infomaniak_access_token": {
       "label": "Infomaniak AccessToken",
       "placeholder": "请输入 Infomaniak AccessToken",

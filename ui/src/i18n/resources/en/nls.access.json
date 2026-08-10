@@ -796,6 +796,18 @@
       "placeholder": "Please enter Huawei Cloud enterprise project ID",
       "tooltip": "For more information, see <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html</a>"
     },
+    "huaweiibmc_host": {
+      "label": "iBMC Redfish server host",
+      "placeholder": "Please enter iBMC Redfish server host"
+    },
+    "huaweiibmc_username": {
+      "label": "iBMC username",
+      "placeholder": "Please enter the iBMC username"
+    },
+    "huaweiibmc_password": {
+      "label": "iBMC password",
+      "placeholder": "Please enter the iBMC password"
+    },
     "infomaniak_access_token": {
       "label": "Infomaniak access token",
       "placeholder": "Please enter Infomaniak access token",

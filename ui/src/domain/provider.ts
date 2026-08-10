@@ -79,6 +79,7 @@ export const ACCESS_PROVIDERS = Object.freeze({
   HOSTINGDE: "hostingde",
   HOSTINGER: "hostinger",
   HUAWEICLOUD: "huaweicloud",
+  HUAWEIIBMC: "huaweiibmc",
   INFOMANIAK: "infomaniak",
   IONOS: "ionos",
   JDCLOUD: "jdcloud",
@@ -230,6 +231,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.SAFELINE, "provider.safeline", "/imgs/providers/safeline.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.SAMWAF, "provider.samwaf", "/imgs/providers/samwaf.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", "/imgs/providers/synologydsm.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.HUAWEIIBMC, "provider.huaweiibmc", "/imgs/providers/huawei.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.AKAMAI, "provider.akamai", "/imgs/providers/akamai.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ARVANCLOUD, "provider.arvancloud", "/imgs/providers/arvancloud.svg", [ACCESS_USAGES.DNS]],
@@ -692,6 +694,7 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   HUAWEICLOUD_SCM: `${ACCESS_PROVIDERS.HUAWEICLOUD}-scm`,
   HUAWEICLOUD_VOD: `${ACCESS_PROVIDERS.HUAWEICLOUD}-vod`,
   HUAWEICLOUD_WAF: `${ACCESS_PROVIDERS.HUAWEICLOUD}-waf`,
+  HUAWEIIBMC: `${ACCESS_PROVIDERS.HUAWEIIBMC}`,
   JDCLOUD_ALB: `${ACCESS_PROVIDERS.JDCLOUD}-alb`,
   JDCLOUD_CDN: `${ACCESS_PROVIDERS.JDCLOUD}-cdn`,
   JDCLOUD_LIVE: `${ACCESS_PROVIDERS.JDCLOUD}-live`,
@@ -960,6 +963,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.PROXMOXBS, "provider.proxmoxbs", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.PROXMOXVE, "provider.proxmoxve", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", DEPLOYMENT_CATEGORIES.OTHER],
+      [DEPLOYMENT_PROVIDERS.HUAWEIIBMC, "provider.huaweiibmc", DEPLOYMENT_CATEGORIES.OTHER],
     ] satisfies Array<[DeploymentProviderType, string, DeploymentCategoryType, "builtin"] | [DeploymentProviderType, string, DeploymentCategoryType]>
   ).map(([type, name, category, builtin]) => [
     type,

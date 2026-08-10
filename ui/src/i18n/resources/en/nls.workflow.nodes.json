@@ -1717,6 +1717,9 @@
         "placeholder": "Please enter Huawei Cloud WAF certificate ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/console/#/waf/certificateManagement\" target=\"_blank\">https://console-intl.huaweicloud.com/console/#/waf/certificateManagement</a>"
       },
+      "huaweiibmc_auto_restart": {
+        "label": "Auto restart iBMC after deployment"
+      },
       "jdcloud_alb_region_id": {
         "label": "JD Cloud region ID",
         "placeholder": "Please enter JD Cloud ALB region ID (e.g. cn-north-1)",
