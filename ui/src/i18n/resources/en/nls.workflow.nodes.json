@@ -1717,6 +1717,9 @@
         "placeholder": "Please enter Huawei Cloud WAF certificate ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/console/#/waf/certificateManagement\" target=\"_blank\">https://console-intl.huaweicloud.com/console/#/waf/certificateManagement</a>"
       },
+      "huaweiibmc_auto_restart": {
+        "label": "Auto restart iBMC after deployment"
+      },
       "jdcloud_alb_region_id": {
         "label": "JD Cloud region ID",
         "placeholder": "Please enter JD Cloud ALB region ID (e.g. cn-north-1)",
@@ -2205,9 +2208,6 @@
       "ssh_use_scp": {
         "label": "Fallback to use SCP",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
-      },
-      "ibmc_restart_after_import": {
-        "label": "Restart iBMC after certificate import"
       },
       "synologydsm": {
         "guide": "Requires Synology DSM v6.0 or higher."

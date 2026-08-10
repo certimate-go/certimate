@@ -90,18 +90,6 @@
     "shared_allow_insecure_conns": {
       "label": "忽略 SSL/TLS 证书验证"
     },
-    "ibmc_endpoint": {
-      "label": "iBMC 主机列表",
-      "placeholder": "每行输入一个 iBMC 主机名或 URL"
-    },
-    "ibmc_username": {
-      "label": "iBMC 用户名",
-      "placeholder": "请输入 iBMC 用户名"
-    },
-    "ibmc_password": {
-      "label": "iBMC 密码",
-      "placeholder": "请输入 iBMC 密码"
-    },
 
     "1panel_server_url": {
       "label": "1Panel 服务地址",
@@ -807,6 +795,18 @@
       "label": "华为云企业项目 ID（可选）",
       "placeholder": "请输入华为云企业项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://support.huaweicloud.com/usermanual-em/zh-cn_topic_0126101490.html\" target=\"_blank\">https://support.huaweicloud.com/usermanual-em/zh-cn_topic_0126101490.html</a>"
+    },
+    "huaweiibmc_host": {
+      "label": "iBMC Redfish 服务器地址",
+      "placeholder": "请输入 iBMC Redfish 服务器地址"
+    },
+    "huaweiibmc_username": {
+      "label": "iBMC 用户名",
+      "placeholder": "请输入 iBMC 用户名"
+    },
+    "huaweiibmc_password": {
+      "label": "iBMC 密码",
+      "placeholder": "请输入 iBMC 密码"
     },
     "infomaniak_access_token": {
       "label": "Infomaniak AccessToken",

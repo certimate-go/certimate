@@ -74,7 +74,7 @@ import BizDeployNodeConfigFieldsProviderHuaweiCloudLive from "./BizDeployNodeCon
 import BizDeployNodeConfigFieldsProviderHuaweiCloudOBS from "./BizDeployNodeConfigFieldsProviderHuaweiCloudOBS";
 import BizDeployNodeConfigFieldsProviderHuaweiCloudVOD from "./BizDeployNodeConfigFieldsProviderHuaweiCloudVOD";
 import BizDeployNodeConfigFieldsProviderHuaweiCloudWAF from "./BizDeployNodeConfigFieldsProviderHuaweiCloudWAF";
-import BizDeployNodeConfigFieldsProviderIBMC from "./BizDeployNodeConfigFieldsProviderIBMC";
+import BizDeployNodeConfigFieldsProviderHuaweiIBMC from "./BizDeployNodeConfigFieldsProviderHuaweiIBMC";
 import BizDeployNodeConfigFieldsProviderJDCloudALB from "./BizDeployNodeConfigFieldsProviderJDCloudALB";
 import BizDeployNodeConfigFieldsProviderJDCloudCDN from "./BizDeployNodeConfigFieldsProviderJDCloudCDN";
 import BizDeployNodeConfigFieldsProviderJDCloudLive from "./BizDeployNodeConfigFieldsProviderJDCloudLive";
@@ -226,7 +226,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_OBS]: BizDeployNodeConfigFieldsProviderHuaweiCloudOBS,
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_VOD]: BizDeployNodeConfigFieldsProviderHuaweiCloudVOD,
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_WAF]: BizDeployNodeConfigFieldsProviderHuaweiCloudWAF,
-  [DEPLOYMENT_PROVIDERS.IBMC]: BizDeployNodeConfigFieldsProviderIBMC,
+  [DEPLOYMENT_PROVIDERS.HUAWEIIBMC]: BizDeployNodeConfigFieldsProviderHuaweiIBMC,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_ALB]: BizDeployNodeConfigFieldsProviderJDCloudALB,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_CDN]: BizDeployNodeConfigFieldsProviderJDCloudCDN,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_LIVE]: BizDeployNodeConfigFieldsProviderJDCloudLive,

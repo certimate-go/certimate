@@ -90,18 +90,6 @@
     "shared_allow_insecure_conns": {
       "label": "Allow insecure SSL/TLS connections"
     },
-    "ibmc_endpoint": {
-      "label": "iBMC hosts",
-      "placeholder": "Enter one iBMC host or URL per line"
-    },
-    "ibmc_username": {
-      "label": "iBMC username",
-      "placeholder": "Please enter the iBMC username"
-    },
-    "ibmc_password": {
-      "label": "iBMC password",
-      "placeholder": "Please enter the iBMC password"
-    },
 
     "1panel_server_url": {
       "label": "1Panel server URL",
@@ -807,6 +795,18 @@
       "label": "Huawei Cloud enterprise project ID (Optional)",
       "placeholder": "Please enter Huawei Cloud enterprise project ID",
       "tooltip": "For more information, see <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html</a>"
+    },
+    "huaweiibmc_host": {
+      "label": "iBMC Redfish server host",
+      "placeholder": "Please enter iBMC Redfish server host"
+    },
+    "huaweiibmc_username": {
+      "label": "iBMC username",
+      "placeholder": "Please enter the iBMC username"
+    },
+    "huaweiibmc_password": {
+      "label": "iBMC password",
+      "placeholder": "Please enter the iBMC password"
     },
     "infomaniak_access_token": {
       "label": "Infomaniak access token",

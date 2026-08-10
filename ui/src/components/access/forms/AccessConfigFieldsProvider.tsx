@@ -64,6 +64,7 @@ import AccessConfigFieldsProviderHetzner from "./AccessConfigFieldsProviderHetzn
 import AccessConfigFieldsProviderHostingde from "./AccessConfigFieldsProviderHostingde";
 import AccessConfigFieldsProviderHostinger from "./AccessConfigFieldsProviderHostinger";
 import AccessConfigFieldsProviderHuaweiCloud from "./AccessConfigFieldsProviderHuaweiCloud";
+import AccessConfigFieldsProviderHuaweiIBMC from "./AccessConfigFieldsProviderHuaweiIBMC";
 import AccessConfigFieldsProviderInfomaniak from "./AccessConfigFieldsProviderInfomaniak";
 import AccessConfigFieldsProviderIONOS from "./AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./AccessConfigFieldsProviderJDCloud";
@@ -106,7 +107,6 @@ import AccessConfigFieldsProviderSpaceship from "./AccessConfigFieldsProviderSpa
 import AccessConfigFieldsProviderSSH from "./AccessConfigFieldsProviderSSH";
 import AccessConfigFieldsProviderSSLCom from "./AccessConfigFieldsProviderSSLCom";
 import AccessConfigFieldsProviderSynologyDSM from "./AccessConfigFieldsProviderSynologyDSM";
-import AccessConfigFieldsProviderIBMC from "./AccessConfigFieldsProviderIBMC";
 import AccessConfigFieldsProviderTechnitiumDNS from "./AccessConfigFieldsProviderTechnitiumDNS";
 import AccessConfigFieldsProviderTelegramBot from "./AccessConfigFieldsProviderTelegramBot";
 import AccessConfigFieldsProviderTencentCloud from "./AccessConfigFieldsProviderTencentCloud";
@@ -193,6 +193,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.HOSTINGDE]: AccessConfigFieldsProviderHostingde,
   [ACCESS_PROVIDERS.HOSTINGER]: AccessConfigFieldsProviderHostinger,
   [ACCESS_PROVIDERS.HUAWEICLOUD]: AccessConfigFieldsProviderHuaweiCloud,
+  [ACCESS_PROVIDERS.HUAWEIIBMC]: AccessConfigFieldsProviderHuaweiIBMC,
   [ACCESS_PROVIDERS.IONOS]: AccessConfigFieldsProviderIONOS,
   [ACCESS_PROVIDERS.JDCLOUD]: AccessConfigFieldsProviderJDCloud,
   [ACCESS_PROVIDERS.KONG]: AccessConfigFieldsProviderKong,
@@ -235,7 +236,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.SSLCOM]: AccessConfigFieldsProviderSSLCom,
   [ACCESS_PROVIDERS.SSH]: AccessConfigFieldsProviderSSH,
   [ACCESS_PROVIDERS.SYNOLOGYDSM]: AccessConfigFieldsProviderSynologyDSM,
-  [ACCESS_PROVIDERS.IBMC]: AccessConfigFieldsProviderIBMC,
   [ACCESS_PROVIDERS.TECHNITIUMDNS]: AccessConfigFieldsProviderTechnitiumDNS,
   [ACCESS_PROVIDERS.TELEGRAMBOT]: AccessConfigFieldsProviderTelegramBot,
   [ACCESS_PROVIDERS.TENCENTCLOUD]: AccessConfigFieldsProviderTencentCloud,

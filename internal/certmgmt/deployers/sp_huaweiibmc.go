@@ -5,22 +5,22 @@ import (
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
-	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ibmc"
+	dplyimpl "github.com/certimate-go/certimate/pkg/core/deployer/providers/huaweiibmc"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 func init() {
-	Registries.MustRegister(domain.DeploymentProviderTypeIBMC, func(options *ProviderFactoryOptions) (core.Deployer, error) {
-		credentials := domain.AccessConfigForIBMC{}
+	Registries.MustRegister(domain.DeploymentProviderTypeHuaweiIBMC, func(options *ProviderFactoryOptions) (core.Deployer, error) {
+		credentials := domain.AccessConfigForHuaweiIBMC{}
 		if err := xmaps.Populate(options.ProviderAccessConfig, &credentials); err != nil {
-			return nil, fmt.Errorf("failed to populate iBMC access config: %w", err)
+			return nil, fmt.Errorf("failed to populate Huawei iBMC access config: %w", err)
 		}
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
-			Endpoint:                 credentials.Endpoint,
+			Host:                     credentials.Host,
 			Username:                 credentials.Username,
 			Password:                 credentials.Password,
 			AllowInsecureConnections: credentials.AllowInsecureConnections,
-			RestartAfterImport:       xmaps.GetOrDefaultBool(options.ProviderExtendedConfig, "restartAfterImport", true),
+			AutoRestart:              xmaps.GetBool(options.ProviderExtendedConfig, "autoRestart"),
 		})
 		return provider, err
 	})
