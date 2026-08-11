@@ -224,13 +224,23 @@ func createK8sClient(kubeConfig string) (*rest.RESTClient, error) {
 		return nil, err
 	}
 
-	// InClusterConfig does not set GroupVersion or NegotiatedSerializer,
-	// but both are required by rest.RESTClientFor.
+	// InClusterConfig does not set GroupVersion, NegotiatedSerializer or APIPath,
+	// but all of them are required by rest.RESTClientFor.
+	// Note that an empty APIPath makes every request target "/v1/namespaces/..."
+	// instead of "/api/v1/namespaces/...", which the API server rejects with
+	// 404 "the server could not find the requested resource".
 	if config.GroupVersion == nil {
 		config.GroupVersion = &schema.GroupVersion{Group: "", Version: "v1"}
 	}
 	if config.NegotiatedSerializer == nil {
 		config.NegotiatedSerializer = scheme.Codecs.WithoutConversion()
+	}
+	if config.APIPath == "" {
+		if config.GroupVersion.Group == "" {
+			config.APIPath = "/api"
+		} else {
+			config.APIPath = "/apis"
+		}
 	}
 
 	client, err := rest.RESTClientFor(config)
