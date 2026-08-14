@@ -1,3 +1,5 @@
+//go:build tester
+
 package huaweicloudscm_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./huaweicloud_scm_test.go -args \
+	go test -tags=tester -v ./huaweicloud_scm_test.go -args \
 	--HUAWEICLOUDSCM_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--HUAWEICLOUDSCM_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--HUAWEICLOUDSCM_ACCESSKEYID="your-access-key-id" \

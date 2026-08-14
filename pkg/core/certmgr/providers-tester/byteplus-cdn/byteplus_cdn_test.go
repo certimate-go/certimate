@@ -1,3 +1,5 @@
+//go:build tester
+
 package bytepluscdn_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./byteplus_cdn_test.go -args \
+	go test -tags=tester -v ./byteplus_cdn_test.go -args \
 	--BYTEPLUSCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BYTEPLUSCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BYTEPLUSCDN_ACCESSKEYID="your-access-key-id" \

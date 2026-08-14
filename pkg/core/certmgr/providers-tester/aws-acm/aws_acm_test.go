@@ -1,3 +1,5 @@
+//go:build tester
+
 package awsacm_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aws_acm_test.go -args \
+	go test -tags=tester -v ./aws_acm_test.go -args \
 	--AWSACM_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AWSACM_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AWSACM_ACCESSKEYID="your-access-key-id" \

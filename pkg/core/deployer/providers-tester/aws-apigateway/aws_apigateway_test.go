@@ -1,3 +1,5 @@
+//go:build tester
+
 package awsapigateway_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aws_apigateway_test.go -args \
+	go test -tags=tester -v ./aws_apigateway_test.go -args \
 	--AWSAPIGATEWAY_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AWSAPIGATEWAY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AWSAPIGATEWAY_ACCESSKEYID="your-access-key-id" \

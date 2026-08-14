@@ -1,3 +1,5 @@
+//go:build tester
+
 package ctcccloudao_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ctcccloud_ao_test.go -args \
+	go test -tags=tester -v ./ctcccloud_ao_test.go -args \
 	--CTCCCLOUDAO_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CTCCCLOUDAO_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CTCCCLOUDAO_ACCESSKEYID="your-access-key-id" \

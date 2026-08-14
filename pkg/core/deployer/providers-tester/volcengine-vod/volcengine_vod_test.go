@@ -1,3 +1,5 @@
+//go:build tester
+
 package volcenginevod_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./volcengine_vod_test.go -args \
+	go test -tags=tester -v ./volcengine_vod_test.go -args \
 	--VOLCENGINEVOD_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEVOD_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEVOD_ACCESSKEYID="your-access-key-id" \

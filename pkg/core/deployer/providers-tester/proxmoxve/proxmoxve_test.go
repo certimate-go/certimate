@@ -1,3 +1,5 @@
+//go:build tester
+
 package proxmoxve_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./proxmoxve_test.go -args \
+	go test -tags=tester -v ./proxmoxve_test.go -args \
 	--PROXMOXVE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--PROXMOXVE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--PROXMOXVE_SERVERURL="http://127.0.0.1:8006" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package ftp_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ftp_test.go -args \
+	go test -tags=tester -v ./ftp_test.go -args \
 	--FTP_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--FTP_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--FTP_FTPHOST="localhost" \

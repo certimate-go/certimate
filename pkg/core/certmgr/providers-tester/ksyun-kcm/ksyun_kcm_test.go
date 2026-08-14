@@ -1,3 +1,5 @@
+//go:build tester
+
 package ksyunkcm_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ksyun_kcm_test.go -args \
+	go test -tags=tester -v ./ksyun_kcm_test.go -args \
 	--KSYUNKCM_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--KSYUNKCM_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--KSYUNKCM_ACCESSKEYID="your-access-key-id" \

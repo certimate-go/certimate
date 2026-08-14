@@ -1,3 +1,5 @@
+//go:build tester
+
 package awsiam_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aws_iam_test.go -args \
+	go test -tags=tester -v ./aws_iam_test.go -args \
 	--AWSIAM_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AWSIAM_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AWSIAM_ACCESSKEYID="your-access-key-id" \

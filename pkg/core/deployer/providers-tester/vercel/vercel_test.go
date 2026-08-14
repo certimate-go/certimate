@@ -1,3 +1,5 @@
+//go:build tester
+
 package vercel_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./vercel_test.go -args \
+	go test -tags=tester -v ./vercel_test.go -args \
 	--VERCEL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VERCEL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VERCEL_APIACCESSTOKEN="your-api-access-token" \

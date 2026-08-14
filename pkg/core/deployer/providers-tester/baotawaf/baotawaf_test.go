@@ -1,3 +1,5 @@
+//go:build tester
+
 package baotawaf_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./baotawaf_test.go -args \
+	go test -tags=tester -v ./baotawaf_test.go -args \
 	--BAOTAWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BAOTAWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAOTAWAF_SERVERURL="http://127.0.0.1:8888" \

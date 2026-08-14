@@ -1,3 +1,5 @@
+//go:build tester
+
 package webhook_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./webhook_test.go -args \
+	go test -tags=tester -v ./webhook_test.go -args \
 	--WEBHOOK_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--WEBHOOK_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--WEBHOOK_URL="https://example.com/your-webhook-url" \

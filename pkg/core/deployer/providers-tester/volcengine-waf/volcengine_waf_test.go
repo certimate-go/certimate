@@ -1,3 +1,5 @@
+//go:build tester
+
 package volcenginewaf_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./volcengine_waf_test.go -args \
+	go test -tags=tester -v ./volcengine_waf_test.go -args \
 	--VOLCENGINEWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEWAF_ACCESSKEYID="your-access-key-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package local_test
 
 import (
@@ -43,7 +45,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./local_test.go -args \
+	go test -tags=tester -v ./local_test.go -args \
 	--LOCAL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--LOCAL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--LOCAL_FILEPATHFORCRT="/path/to/your-output-cert" \

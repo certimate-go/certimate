@@ -1,3 +1,5 @@
+//go:build tester
+
 package jdcloudssl_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./jdcloud_ssl_test.go -args \
+	go test -tags=tester -v ./jdcloud_ssl_test.go -args \
 	--JDCLOUDSSL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--JDCLOUDSSL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDSSL_ACCESSKEYID="your-access-key-id" \

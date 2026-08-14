@@ -1,3 +1,5 @@
+//go:build tester
+
 package zenlayerga_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./zenlayer_ga_test.go -args \
+	go test -tags=tester -v ./zenlayer_ga_test.go -args \
 	--ZENLAYERGA_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ZENLAYERGA_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ZENLAYERGA_ACCESSKEYID="your-access-key-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package mattermost_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./mattermost_test.go -args \
+	go test -tags=tester -v ./mattermost_test.go -args \
 	--MATTERMOST_SERVERURL="https://example.com/your-server-url" \
 	--MATTERMOST_CHANNELID="your-chanel-id" \
 	--MATTERMOST_USERNAME="your-username" \

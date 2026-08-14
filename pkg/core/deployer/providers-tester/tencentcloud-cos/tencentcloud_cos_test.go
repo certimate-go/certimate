@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudcos_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_cos_test.go -args \
+	go test -tags=tester -v ./tencentcloud_cos_test.go -args \
 	--TENCENTCLOUDCOS_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDCOS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDCOS_SECRETID="your-secret-id" \

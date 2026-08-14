@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudcdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_cdn_test.go -args \
+	go test -tags=tester -v ./tencentcloud_cdn_test.go -args \
 	--TENCENTCLOUDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDCDN_SECRETID="your-secret-id" \

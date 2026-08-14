@@ -1,3 +1,5 @@
+//go:build tester
+
 package azurekeyvault_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./azure_keyvault_test.go -args \
+	go test -tags=tester -v ./azure_keyvault_test.go -args \
 	--AZUREKEYVAULT_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AZUREKEYVAULT_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AZUREKEYVAULT_TENANTID="your-tenant-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package byteplusclb_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./byteplus_clb_test.go -args \
+	go test -tags=tester -v ./byteplus_clb_test.go -args \
 	--BYTEPLUSCLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BYTEPLUSCLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BYTEPLUSCLB_ACCESSKEYID="your-access-key-id" \

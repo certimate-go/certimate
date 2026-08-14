@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudclb_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_clb_test.go -args \
+	go test -tags=tester -v ./tencentcloud_clb_test.go -args \
 	--TENCENTCLOUDCLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDCLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDCLB_SECRETID="your-secret-id" \

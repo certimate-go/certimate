@@ -1,3 +1,5 @@
+//go:build tester
+
 package huaweicloudlive_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./huaweicloud_live_test.go -args \
+	go test -tags=tester -v ./huaweicloud_live_test.go -args \
 	--HUAWEICLOUDLIVE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--HUAWEICLOUDLIVE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--HUAWEICLOUDLIVE_ACCESSKEYID="your-access-key-id" \

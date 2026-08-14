@@ -1,3 +1,5 @@
+//go:build tester
+
 package oraclecloudcertificatesmgmt_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./oraclecloud_certificatesmgmt_test.go -args \
+	go test -tags=tester -v ./oraclecloud_certificatesmgmt_test.go -args \
 	--ORACLECLOUDCERTIFICATESMGMT_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ORACLECLOUDCERTIFICATESMGMT_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ORACLECLOUDCERTIFICATESMGMT_PRIVATEKEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----" \

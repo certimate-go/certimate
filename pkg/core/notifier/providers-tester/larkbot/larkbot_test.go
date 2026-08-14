@@ -1,3 +1,5 @@
+//go:build tester
+
 package larkbot_test
 
 import (
@@ -23,7 +25,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./larkbot_test.go -args \
+	go test -tags=tester -v ./larkbot_test.go -args \
 	--LARKBOT_WEBHOOKURL="https://example.com/your-webhook-url" \
 	--LARKBOT_SECRET="your-secret"
 */

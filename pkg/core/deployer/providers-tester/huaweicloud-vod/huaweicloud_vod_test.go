@@ -1,3 +1,5 @@
+//go:build tester
+
 package huaweicloudvod_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./huaweicloud_vod_test.go -args \
+	go test -tags=tester -v ./huaweicloud_vod_test.go -args \
 	--HUAWEICLOUDVOD_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--HUAWEICLOUDVOD_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--HUAWEICLOUDVOD_ACCESSKEYID="your-access-key-id" \

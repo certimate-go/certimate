@@ -1,3 +1,5 @@
+//go:build tester
+
 package proxmoxbs_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./proxmoxbs_test.go -args \
+	go test -tags=tester -v ./proxmoxbs_test.go -args \
 	--PROXMOXBS_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--PROXMOXBS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--PROXMOXBS_SERVERURL="http://127.0.0.1:8007" \

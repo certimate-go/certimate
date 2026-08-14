@@ -1,3 +1,5 @@
+//go:build tester
+
 package jdcloudcdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./jdcloud_cdn_test.go -args \
+	go test -tags=tester -v ./jdcloud_cdn_test.go -args \
 	--JDCLOUDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--JDCLOUDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDCDN_ACCESSKEYID="your-access-key-id" \

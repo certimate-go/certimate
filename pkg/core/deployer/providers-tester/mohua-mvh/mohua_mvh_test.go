@@ -1,3 +1,5 @@
+//go:build tester
+
 package mohuamvh_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./mohuamvh_test.go -args \
+	go test -tags=tester -v ./mohuamvh_test.go -args \
 	--MOHUAMVH_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--MOHUAMVH_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--MOHUAMVH_USERNAME="your-username" \

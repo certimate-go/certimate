@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyunfc_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_fc_test.go -args \
+	go test -tags=tester -v ./aliyun_fc_test.go -args \
 	--ALIYUNFC_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNFC_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNFC_ACCESSKEYID="your-access-key-id" \

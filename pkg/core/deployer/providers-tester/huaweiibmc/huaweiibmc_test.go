@@ -1,3 +1,5 @@
+//go:build tester
+
 package huaweiibmc_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./huaweiibmc_test.go -args \
+	go test -tags=tester -v ./huaweiibmc_test.go -args \
 	--HUAWEIIBMC_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--HUAWEIIBMC_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--HUAWEIIBMC_HOST="localhost" \

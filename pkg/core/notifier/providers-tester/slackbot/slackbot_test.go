@@ -1,3 +1,5 @@
+//go:build tester
+
 package slackbot_test
 
 import (
@@ -23,7 +25,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./slackbot_test.go -args \
+	go test -tags=tester -v ./slackbot_test.go -args \
 	--SLACKBOT_APITOKEN="your-bot-token" \
 	--SLACKBOT_CHANNELID="your-channel-id"
 */

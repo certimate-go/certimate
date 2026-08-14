@@ -1,3 +1,5 @@
+//go:build tester
+
 package volcengineclb_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./volcengine_clb_test.go -args \
+	go test -tags=tester -v ./volcengine_clb_test.go -args \
 	--VOLCENGINECLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINECLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINECLB_ACCESSKEYID="your-access-key-id" \

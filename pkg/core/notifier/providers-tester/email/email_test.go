@@ -1,3 +1,5 @@
+//go:build tester
+
 package email_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./email_test.go -args \
+	go test -tags=tester -v ./email_test.go -args \
 	--EMAIL_SMTPHOST="smtp.example.com" \
 	--EMAIL_SMTPPORT=465 \
 	--EMAIL_SMTPTLS=true \

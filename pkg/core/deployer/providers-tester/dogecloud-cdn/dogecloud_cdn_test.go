@@ -1,3 +1,5 @@
+//go:build tester
+
 package dogecloudcdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./dogecloud_cdn_test.go -args \
+	go test -tags=tester -v ./dogecloud_cdn_test.go -args \
 	--DOGECLOUDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--DOGECLOUDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--DOGECLOUDCDN_ACCESSKEY="your-access-key" \

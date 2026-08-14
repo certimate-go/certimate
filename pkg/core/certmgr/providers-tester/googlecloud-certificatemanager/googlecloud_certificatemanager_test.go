@@ -1,3 +1,5 @@
+//go:build tester
+
 package googlecloudcertificatemanager_test
 
 import (
@@ -28,7 +30,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./googlecloud_certificatemanager_test.go -args \
+	go test -tags=tester -v ./googlecloud_certificatemanager_test.go -args \
 	--GOOGLECLOUDCERTIFICATEMANAGER_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--GOOGLECLOUDCERTIFICATEMANAGER_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--GOOGLECLOUDCERTIFICATEMANAGER_PROJECTID="your-project-id" \

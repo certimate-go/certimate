@@ -1,3 +1,5 @@
+//go:build tester
+
 package tester
 
 import (

@@ -1,3 +1,5 @@
+//go:build tester
+
 package uclouducdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ucloud_ucdn_test.go -args \
+	go test -tags=tester -v ./ucloud_ucdn_test.go -args \
 	--UCLOUDUCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UCLOUDUCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UCLOUDUCDN_PRIVATEKEY="your-private-key" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package cachefly_test
 
 import (
@@ -25,7 +27,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./cachefly_test.go -args \
+	go test -tags=tester -v ./cachefly_test.go -args \
 	--CACHEFLY_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CACHEFLY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CACHEFLY_APITOKEN="your-api-token"

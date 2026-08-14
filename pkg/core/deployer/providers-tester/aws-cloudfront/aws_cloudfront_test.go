@@ -1,3 +1,5 @@
+//go:build tester
+
 package awscloudfront_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aws_cloudfront_test.go -args \
+	go test -tags=tester -v ./aws_cloudfront_test.go -args \
 	--AWSCLOUDFRONT_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AWSCLOUDFRONT_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AWSCLOUDFRONT_ACCESSKEYID="your-access-key-id" \

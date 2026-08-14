@@ -1,3 +1,5 @@
+//go:build tester
+
 package awsnlb_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aws_nlb_test.go -args \
+	go test -tags=tester -v ./aws_nlb_test.go -args \
 	--AWSNLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AWSNLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AWSNLB_ACCESSKEYID="your-access-key-id" \

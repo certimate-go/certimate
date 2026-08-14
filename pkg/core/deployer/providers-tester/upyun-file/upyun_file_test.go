@@ -1,3 +1,5 @@
+//go:build tester
+
 package upyunfile_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./upyun_file_test.go -args \
+	go test -tags=tester -v ./upyun_file_test.go -args \
 	--UPYUNFILE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UPYUNFILE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UPYUNFILE_USERNAME="your-username" \

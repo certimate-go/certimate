@@ -1,3 +1,5 @@
+//go:build tester
+
 package ucloudulb_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ucloud_ulb_test.go -args \
+	go test -tags=tester -v ./ucloud_ulb_test.go -args \
 	--UCLOUDULB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UCLOUDULB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UCLOUDULB_PRIVATEKEY="your-private-key" \

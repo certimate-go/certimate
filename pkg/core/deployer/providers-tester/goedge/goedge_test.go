@@ -1,3 +1,5 @@
+//go:build tester
+
 package goedge_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./goedge_test.go -args \
+	go test -tags=tester -v ./goedge_test.go -args \
 	--GOEDGE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--GOEDGE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--GOEDGE_SERVERURL="http://127.0.0.1:7788" \

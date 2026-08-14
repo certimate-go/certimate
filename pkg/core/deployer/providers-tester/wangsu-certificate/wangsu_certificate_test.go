@@ -1,3 +1,5 @@
+//go:build tester
+
 package wangsucertificate_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./wangsu_certificate_test.go -args \
+	go test -tags=tester -v ./wangsu_certificate_test.go -args \
 	--WANGSUCERTIFICATE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--WANGSUCERTIFICATE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--WANGSUCERTIFICATE_ACCESSKEYID="your-access-key-id" \

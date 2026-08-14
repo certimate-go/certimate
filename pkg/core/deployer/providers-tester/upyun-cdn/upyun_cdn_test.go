@@ -1,3 +1,5 @@
+//go:build tester
+
 package upyuncdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./upyun_cdn_test.go -args \
+	go test -tags=tester -v ./upyun_cdn_test.go -args \
 	--UPYUNCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UPYUNCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UPYUNCDN_USERNAME="your-username" \

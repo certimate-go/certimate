@@ -1,3 +1,5 @@
+//go:build tester
+
 package uclouduewaf_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ucloud_uewaf_test.go -args \
+	go test -tags=tester -v ./ucloud_uewaf_test.go -args \
 	--UCLOUDUEWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UCLOUDUEWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UCLOUDUEWAF_PRIVATEKEY="your-private-key" \

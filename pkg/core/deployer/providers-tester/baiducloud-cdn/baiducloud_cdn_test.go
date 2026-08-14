@@ -1,3 +1,5 @@
+//go:build tester
+
 package baiducloudcdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./baiducloud_cdn_test.go -args \
+	go test -tags=tester -v ./baiducloud_cdn_test.go -args \
 	--BAIDUCLOUDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BAIDUCLOUDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAIDUCLOUDCDN_ACCESSKEYID="your-access-key-id" \

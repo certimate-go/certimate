@@ -1,3 +1,5 @@
+//go:build tester
+
 package byteplusapig_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./byteplus_apig_test.go -args \
+	go test -tags=tester -v ./byteplus_apig_test.go -args \
 	--BYTEPLUSAPIG_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BYTEPLUSAPIG_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BYTEPLUSAPIG_ACCESSKEYID="your-access-key-id" \

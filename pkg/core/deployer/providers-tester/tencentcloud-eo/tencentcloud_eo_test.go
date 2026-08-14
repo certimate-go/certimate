@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudeo_test
 
 import (
@@ -32,7 +34,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_eo_test.go -args \
+	go test -tags=tester -v ./tencentcloud_eo_test.go -args \
 	--TENCENTCLOUDEO_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDEO_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDEO_SECRETID="your-secret-id" \

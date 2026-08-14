@@ -1,3 +1,5 @@
+//go:build tester
+
 package axisnow_test
 
 import (
@@ -25,7 +27,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./axisnow_test.go -args \
+	go test -tags=tester -v ./axisnow_test.go -args \
 	--AXISNOW_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AXISNOW_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AXISNOW_APITOKEN="your-api-token"

@@ -1,3 +1,5 @@
+//go:build tester
+
 package onepanelconsole_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./1panel_console_test.go -args \
+	go test -tags=tester -v ./1panel_console_test.go -args \
 	--1PANELCONSOLE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--1PANELCONSOLE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--1PANELCONSOLE_SERVERURL="http://127.0.0.1:20410" \

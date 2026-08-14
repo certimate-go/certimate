@@ -1,3 +1,5 @@
+//go:build tester
+
 package s3_test
 
 import (
@@ -37,7 +39,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./s3_test.go -args \
+	go test -tags=tester -v ./s3_test.go -args \
 	--S3_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--S3_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--S3_ENDPOINT="http://endpoint" \

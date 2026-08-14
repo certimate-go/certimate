@@ -1,3 +1,5 @@
+//go:build tester
+
 package byteplusalb_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./byteplus_alb_test.go -args \
+	go test -tags=tester -v ./byteplus_alb_test.go -args \
 	--BYTEPLUSALB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BYTEPLUSALB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BYTEPLUSALB_ACCESSKEYID="your-access-key-id" \

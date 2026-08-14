@@ -1,3 +1,5 @@
+//go:build tester
+
 package bunnycdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./bunny_cdn_test.go -args \
+	go test -tags=tester -v ./bunny_cdn_test.go -args \
 	--BUNNYCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BUNNYCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BUNNYCDN_APITOKEN="your-api-token" \

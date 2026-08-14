@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudvod_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_vod_test.go -args \
+	go test -tags=tester -v ./tencentcloud_vod_test.go -args \
 	--TENCENTCLOUDVOD_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDVOD_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDVOD_SECRETID="your-secret-id" \

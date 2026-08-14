@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyuncdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_cdn_test.go -args \
+	go test -tags=tester -v ./aliyun_cdn_test.go -args \
 	--ALIYUNCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNCDN_ACCESSKEYID="your-access-key-id" \

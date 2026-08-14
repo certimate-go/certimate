@@ -1,3 +1,5 @@
+//go:build tester
+
 package wangsucdnpro_test
 
 import (
@@ -37,7 +39,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./wangsu_cdnpro_test.go -args \
+	go test -tags=tester -v ./wangsu_cdnpro_test.go -args \
 	--WANGSUCDNPRO_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--WANGSUCDNPRO_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--WANGSUCDNPRO_ACCESSKEYID="your-access-key-id" \

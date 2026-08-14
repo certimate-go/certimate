@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyunapigw_test
 
 import (
@@ -37,7 +39,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_apigw_test.go -args \
+	go test -tags=tester -v ./aliyun_apigw_test.go -args \
 	--ALIYUNAPIGW_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNAPIGW_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNAPIGW_ACCESSKEYID="your-access-key-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package ucloudupathx_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ucloud_upathx_test.go -args \
+	go test -tags=tester -v ./ucloud_upathx_test.go -args \
 	--UCLOUDUPATHX_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UCLOUDUPATHX_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UCLOUDUPATHX_PRIVATEKEY="your-private-key" \

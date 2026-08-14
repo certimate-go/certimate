@@ -1,3 +1,5 @@
+//go:build tester
+
 package ksyunslb_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ksyun_slb_test.go -args \
+	go test -tags=tester -v ./ksyun_slb_test.go -args \
 	--KSYUNSLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--KSYUNSLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--KSYUNSLB_ACCESSKEYID="your-access-key-id" \

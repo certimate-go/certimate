@@ -1,3 +1,5 @@
+//go:build tester
+
 package ratpanel_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ratpanel_test.go -args \
+	go test -tags=tester -v ./ratpanel_test.go -args \
 	--RATPANEL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--RATPANEL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--RATPANEL_SERVERURL="http://127.0.0.1:8888" \

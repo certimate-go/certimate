@@ -1,3 +1,5 @@
+//go:build tester
+
 package ctcccloudfaas_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ctcccloud_faas_test.go -args \
+	go test -tags=tester -v ./ctcccloud_faas_test.go -args \
 	--CTCCCLOUDFAAS_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CTCCCLOUDFAAS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CTCCCLOUDFAAS_ACCESSKEYID="your-access-key-id" \

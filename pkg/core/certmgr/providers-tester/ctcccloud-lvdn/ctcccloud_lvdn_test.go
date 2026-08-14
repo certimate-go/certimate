@@ -1,3 +1,5 @@
+//go:build tester
+
 package ctcccloudlvdn_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ctcccloud_lvdn_test.go -args \
+	go test -tags=tester -v ./ctcccloud_lvdn_test.go -args \
 	--CTCCCLOUDLVDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CTCCCLOUDLVDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CTCCCLOUDLVDN_ACCESSKEYID="your-access-key-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package volcengineapig_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./volcengine_apig_test.go -args \
+	go test -tags=tester -v ./volcengine_apig_test.go -args \
 	--VOLCENGINEAPIG_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--VOLCENGINEAPIG_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--VOLCENGINEAPIG_ACCESSKEYID="your-access-key-id" \
