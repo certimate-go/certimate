@@ -141,9 +141,10 @@ jobs:
         run: |
           # Exclude paths below:
           EXCLUDES=(
-            "./pkg/core/certmgr/providers/"
-            "./pkg/core/deployer/providers/"
-            "./pkg/core/notifier/providers/"
+            "./pkg/core/certmgr/providers-tester/"
+            "./pkg/core/deployer/providers-tester/"
+            "./pkg/core/notifier/providers-tester/"
+            "./pkg/core/purger/providers-tester/"
             "./pkg/sdk3rd-forked/"
           )
 
@@ -157,6 +158,9 @@ jobs:
           if ! go test -race -v $GO_PKGS; then
             echo "::error::Failed to run 'go test', please fix the issues." >&2
             exit 1
+          else
+            go test -tags=tester -c -o /dev/null ./...
+            echo "'go test' passed."
           fi
 
       - name: Check state
