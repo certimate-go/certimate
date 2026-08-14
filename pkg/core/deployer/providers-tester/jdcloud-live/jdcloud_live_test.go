@@ -1,3 +1,5 @@
+//go:build tester
+
 package jdcloudlive_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./jdcloud_live_test.go -args \
+	go test -tags=tester -v ./jdcloud_live_test.go -args \
 	--JDCLOUDLIVE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--JDCLOUDLIVE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDLIVE_ACCESSKEYID="your-access-key-id" \

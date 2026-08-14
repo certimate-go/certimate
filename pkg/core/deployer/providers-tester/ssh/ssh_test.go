@@ -1,3 +1,5 @@
+//go:build tester
+
 package ssh_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ssh_test.go -args \
+	go test -tags=tester -v ./ssh_test.go -args \
 	--SSH_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--SSH_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--SSH_SSHHOST="localhost" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package dokploy_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./dokploy_test.go -args \
+	go test -tags=tester -v ./dokploy_test.go -args \
 	--DOKPLOY_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--DOKPLOY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--DOKPLOY_SERVERURL="http://127.0.0.1:3000" \

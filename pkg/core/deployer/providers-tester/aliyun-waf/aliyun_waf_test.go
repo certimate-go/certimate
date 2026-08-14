@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyunwaf_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_waf_test.go -args \
+	go test -tags=tester -v ./aliyun_waf_test.go -args \
 	--ALIYUNWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNWAF_ACCESSKEYID="your-access-key-id" \

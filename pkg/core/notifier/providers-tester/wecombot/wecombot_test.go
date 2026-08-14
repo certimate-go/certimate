@@ -1,3 +1,5 @@
+//go:build tester
+
 package wecombot_test
 
 import (
@@ -21,7 +23,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./wecombot_test.go -args \
+	go test -tags=tester -v ./wecombot_test.go -args \
 	--WECOMBOT_WEBHOOKURL="https://example.com/your-webhook-url" \
 */
 func TestProvider(t *testing.T) {

@@ -1,3 +1,5 @@
+//go:build tester
+
 package baiducloudappblb_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./baiducloud_appblb_test.go -args \
+	go test -tags=tester -v ./baiducloud_appblb_test.go -args \
 	--BAIDUCLOUDAPPBLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BAIDUCLOUDAPPBLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAIDUCLOUDAPPBLB_ACCESSKEYID="your-access-key-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package synologydsm_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./synology_dsm_test.go -args \
+	go test -tags=tester -v ./synology_dsm_test.go -args \
 	--SYNOLOGYDSM_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--SYNOLOGYDSM_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--SYNOLOGYDSM_SERVERURL="http://127.0.0.1:5000/" \

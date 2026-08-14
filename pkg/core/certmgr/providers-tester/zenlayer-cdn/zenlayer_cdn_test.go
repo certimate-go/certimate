@@ -1,3 +1,5 @@
+//go:build tester
+
 package zenlayercdn_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./zenlayer_cdn_test.go -args \
+	go test -tags=tester -v ./zenlayer_cdn_test.go -args \
 	--ZENLAYERCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ZENLAYERCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ZENLAYERCDN_ACCESSKEYID="your-access-key-id" \

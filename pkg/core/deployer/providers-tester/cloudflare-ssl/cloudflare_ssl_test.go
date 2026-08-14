@@ -1,3 +1,5 @@
+//go:build tester
+
 package cloudflaressl_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./cloudflare_ssl_test.go -args \
+	go test -tags=tester -v ./cloudflare_ssl_test.go -args \
 	--CLOUDFLARESSL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CLOUDFLARESSL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CLOUDFLARESSL_APITOKEN="your-api-token" \

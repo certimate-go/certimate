@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudwaf_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_waf_test.go -args \
+	go test -tags=tester -v ./tencentcloud_waf_test.go -args \
 	--TENCENTCLOUDWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDWAF_SECRETID="your-secret-id" \

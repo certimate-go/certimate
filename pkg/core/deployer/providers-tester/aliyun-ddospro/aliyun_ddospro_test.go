@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyunddospro_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_ddospro_test.go -args \
+	go test -tags=tester -v ./aliyun_ddospro_test.go -args \
 	--ALIYUNDDOSPRO_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNDDOSPRO_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNDDOSPRO_ACCESSKEYID="your-access-key-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package qiniukodo_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./qiniu_kodo_test.go -args \
+	go test -tags=tester -v ./qiniu_kodo_test.go -args \
 	--QINIUKODO_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--QINIUKODO_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--QINIUKODO_ACCESSKEY="your-access-key" \

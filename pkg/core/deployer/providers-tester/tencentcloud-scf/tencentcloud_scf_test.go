@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudscf_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_scf_test.go -args \
+	go test -tags=tester -v ./tencentcloud_scf_test.go -args \
 	--TENCENTCLOUDSCF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDSCF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDSCF_SECRETID="your-secret-id" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package cpanel_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./cpanel_test.go -args \
+	go test -tags=tester -v ./cpanel_test.go -args \
 	--CPANEL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CPANEL_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CPANEL_SERVERURL="http://127.0.0.1:2082" \

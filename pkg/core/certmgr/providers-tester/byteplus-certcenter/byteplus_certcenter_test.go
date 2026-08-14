@@ -1,3 +1,5 @@
+//go:build tester
+
 package bytepluscertcenter_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./byteplus_certcenter_test.go -args \
+	go test -tags=tester -v ./byteplus_certcenter_test.go -args \
 	--BYTEPLUSCERTCENTER_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BYTEPLUSCERTCENTER_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BYTEPLUSCERTCENTER_ACCESSKEYID="your-access-key-id" \

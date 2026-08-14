@@ -1,3 +1,5 @@
+//go:build tester
+
 package nginxproxymanager_test
 
 import (
@@ -32,7 +34,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./nginxproxymanager_test.go -args \
+	go test -tags=tester -v ./nginxproxymanager_test.go -args \
 	--NGINXPROXYMANAGER_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--NGINXPROXYMANAGER_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--NGINXPROXYMANAGER_SERVERURL="http://127.0.0.1:20410" \

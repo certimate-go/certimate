@@ -1,3 +1,5 @@
+//go:build tester
+
 package ksyuncdn_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ksyun_cdn_test.go -args \
+	go test -tags=tester -v ./ksyun_cdn_test.go -args \
 	--KSYUNCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--KSYUNCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--KSYUNCDN_ACCESSKEYID="your-access-key-id" \

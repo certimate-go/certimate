@@ -1,3 +1,5 @@
+//go:build tester
+
 package tencentcloudgaap_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./tencentcloud_gaap_test.go -args \
+	go test -tags=tester -v ./tencentcloud_gaap_test.go -args \
 	--TENCENTCLOUDGAAP_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--TENCENTCLOUDGAAP_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--TENCENTCLOUDGAAP_SECRETID="your-secret-id" \

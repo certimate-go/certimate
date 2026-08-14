@@ -1,3 +1,5 @@
+//go:build tester
+
 package jdcloudwaf_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./jdcloud_waf_test.go -args \
+	go test -tags=tester -v ./jdcloud_waf_test.go -args \
 	--JDCLOUDWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--JDCLOUDWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDWAF_ACCESSKEYID="your-access-key-id" \

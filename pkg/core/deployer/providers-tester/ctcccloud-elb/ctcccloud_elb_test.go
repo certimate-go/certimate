@@ -1,3 +1,5 @@
+//go:build tester
+
 package ctcccloudelb_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ctcccloud_elb_test.go -args \
+	go test -tags=tester -v ./ctcccloud_elb_test.go -args \
 	--CTCCCLOUDELB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CTCCCLOUDELB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CTCCCLOUDELB_ACCESSKEYID="your-access-key-id" \

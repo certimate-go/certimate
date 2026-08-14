@@ -1,3 +1,5 @@
+//go:build tester
+
 package digitaloceancertificate_test
 
 import (
@@ -25,7 +27,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./digitalocean_certificate_test.go -args \
+	go test -tags=tester -v ./digitalocean_certificate_test.go -args \
 	--DIGITALOCEANCERTIFICATE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--DIGITALOCEANCERTIFICATE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--DIGITALOCEANCERTIFICATE_ACCESSTOKEN="your-access-token"

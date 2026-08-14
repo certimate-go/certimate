@@ -1,3 +1,5 @@
+//go:build tester
+
 package baotapanelconsole_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./baotawaf_console_test.go -args \
+	go test -tags=tester -v ./baotawaf_console_test.go -args \
 	--BAOTAWAFCONSOLE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BAOTAWAFCONSOLE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAOTAWAFCONSOLE_SERVERURL="http://127.0.0.1:8888" \

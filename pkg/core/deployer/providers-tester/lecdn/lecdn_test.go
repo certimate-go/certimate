@@ -1,3 +1,5 @@
+//go:build tester
+
 package lecdn_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./lecdn_test.go -args \
+	go test -tags=tester -v ./lecdn_test.go -args \
 	--LECDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--LECDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--LECDN_SERVERURL="http://127.0.0.1:5090" \

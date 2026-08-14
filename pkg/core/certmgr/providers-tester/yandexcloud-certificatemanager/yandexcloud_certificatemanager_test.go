@@ -1,3 +1,5 @@
+//go:build tester
+
 package yandexcloudcertificatemanager_test
 
 import (
@@ -28,7 +30,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./yandexcloud_certificatemanager_test.go -args \
+	go test -tags=tester -v ./yandexcloud_certificatemanager_test.go -args \
 	--YANDEXCLOUDCERTIFICATEMANAGER_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--YANDEXCLOUDCERTIFICATEMANAGER_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--YANDEXCLOUDCERTIFICATEMANAGER_FOLDERID="your-folder-id" \

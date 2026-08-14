@@ -1,3 +1,5 @@
+//go:build tester
+
 package dingtalkbot_test
 
 import (
@@ -23,7 +25,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./dingtalkbot_test.go -args \
+	go test -tags=tester -v ./dingtalkbot_test.go -args \
 	--DINGTALKBOT_WEBHOOKURL="https://example.com/your-webhook-url" \
 	--DINGTALKBOT_SECRET="your-secret"
 */

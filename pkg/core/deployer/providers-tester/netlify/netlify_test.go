@@ -1,3 +1,5 @@
+//go:build tester
+
 package netlify_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./netlify_test.go -args \
+	go test -tags=tester -v ./netlify_test.go -args \
 	--NETLIFY_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--NETLIFY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--NETLIFY_APITOKEN="your-api-token" \

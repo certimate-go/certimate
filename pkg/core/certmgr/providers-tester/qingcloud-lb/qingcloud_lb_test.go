@@ -1,3 +1,5 @@
+//go:build tester
+
 package qingcloudlb_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./qingcloud_lb_test.go -args \
+	go test -tags=tester -v ./qingcloud_lb_test.go -args \
 	--QINGCLOUDLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--QINGCLOUDLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--QINGCLOUDLB_ACCESSKEYID="your-access-key-id" \

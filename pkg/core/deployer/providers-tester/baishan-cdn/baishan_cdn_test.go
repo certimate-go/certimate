@@ -1,3 +1,5 @@
+//go:build tester
+
 package baishancdn_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./baishan_cdn_test.go -args \
+	go test -tags=tester -v ./baishan_cdn_test.go -args \
 	--BAISHANCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--BAISHANCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--BAISHANCDN_APITOKEN="your-api-token" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package rainyunsslcenter_test
 
 import (
@@ -25,7 +27,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./rainyun_sslcenter_test.go -args \
+	go test -tags=tester -v ./rainyun_sslcenter_test.go -args \
 	--RAINYUNSSLCENTER_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--RAINYUNSSLCENTER_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--RAINYUNSSLCENTER_APIKEY="your-api-key"

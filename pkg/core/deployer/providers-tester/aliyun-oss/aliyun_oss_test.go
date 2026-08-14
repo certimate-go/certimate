@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyunoss_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_oss_test.go -args \
+	go test -tags=tester -v ./aliyun_oss_test.go -args \
 	--ALIYUNOSS_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNOSS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNOSS_ACCESSKEYID="your-access-key-id" \

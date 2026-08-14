@@ -1,3 +1,5 @@
+//go:build tester
+
 package gcorecdn_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./gcore_cdn_test.go -args \
+	go test -tags=tester -v ./gcore_cdn_test.go -args \
 	--GCORECDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--GCORECDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--GCORECDN_APITOKEN="your-api-token" \

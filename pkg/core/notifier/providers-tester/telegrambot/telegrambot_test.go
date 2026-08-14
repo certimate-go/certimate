@@ -1,3 +1,5 @@
+//go:build tester
+
 package telegrambot_test
 
 import (
@@ -23,7 +25,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./telegrambot_test.go -args \
+	go test -tags=tester -v ./telegrambot_test.go -args \
 	--TELEGRAMBOT_APITOKEN="your-api-token" \
 	--TELEGRAMBOT_CHATID="your-chat-id"
 */

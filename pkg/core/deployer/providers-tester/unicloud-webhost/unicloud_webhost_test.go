@@ -1,3 +1,5 @@
+//go:build tester
+
 package unicloudwebhost_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./unicloud_webhost_test.go -args \
+	go test -tags=tester -v ./unicloud_webhost_test.go -args \
 	--UNICLOUDWEBHOST_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UNICLOUDWEBHOST_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UNICLOUDWEBHOST_USERNAME="your-username" \

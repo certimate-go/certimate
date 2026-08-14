@@ -1,3 +1,5 @@
+//go:build tester
+
 package qiniucdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./qiniu_cdn_test.go -args \
+	go test -tags=tester -v ./qiniu_cdn_test.go -args \
 	--QINIUCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--QINIUCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--QINIUCDN_ACCESSKEY="your-access-key" \

@@ -1,3 +1,5 @@
+//go:build tester
+
 package k8ssecret_test
 
 import (
@@ -34,7 +36,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./k8s_secret_test.go -args \
+	go test -tags=tester -v ./k8s_secret_test.go -args \
 	--K8SSECRET_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--K8SSECRET_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--K8SSECRET_KUBECONFIG="..." \

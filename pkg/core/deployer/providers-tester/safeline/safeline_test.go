@@ -1,3 +1,5 @@
+//go:build tester
+
 package safeline_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./safeline_test.go -args \
+	go test -tags=tester -v ./safeline_test.go -args \
 	--SAFELINE_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--SAFELINE_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--SAFELINE_SERVERURL="http://127.0.0.1:9443" \

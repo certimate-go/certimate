@@ -1,3 +1,5 @@
+//go:build tester
+
 package discordbot_test
 
 import (
@@ -23,7 +25,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./discordbot_test.go -args \
+	go test -tags=tester -v ./discordbot_test.go -args \
 	--DISCORDBOT_APITOKEN="your-bot-token" \
 	--DISCORDBOT_CHANNELID="your-channel-id"
 */

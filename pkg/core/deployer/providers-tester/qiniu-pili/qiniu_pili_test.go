@@ -1,3 +1,5 @@
+//go:build tester
+
 package qiniupili_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./qiniu_pili_test.go -args \
+	go test -tags=tester -v ./qiniu_pili_test.go -args \
 	--QINIUPILI_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--QINIUPILI_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--QINIUPILI_ACCESSKEY="your-access-key" \

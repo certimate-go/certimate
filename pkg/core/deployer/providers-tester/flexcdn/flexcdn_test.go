@@ -1,3 +1,5 @@
+//go:build tester
+
 package flexcdn_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./flexcdn_test.go -args \
+	go test -tags=tester -v ./flexcdn_test.go -args \
 	--FLEXCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--FLEXCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--FLEXCDN_SERVERURL="http://127.0.0.1:7788" \

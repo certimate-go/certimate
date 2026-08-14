@@ -1,3 +1,5 @@
+//go:build tester
+
 package jdcloudvod_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./jdcloud_vod_test.go -args \
+	go test -tags=tester -v ./jdcloud_vod_test.go -args \
 	--JDCLOUDVOD_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--JDCLOUDVOD_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDVOD_ACCESSKEYID="your-access-key-id" \

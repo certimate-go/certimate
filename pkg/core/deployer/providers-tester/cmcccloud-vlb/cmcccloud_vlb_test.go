@@ -1,3 +1,5 @@
+//go:build tester
+
 package cmcccloudvlb_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./cmcccloud_vlb_test.go -args \
+	go test -tags=tester -v ./cmcccloud_vlb_test.go -args \
 	--CMCCCLOUDVLB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CMCCCLOUDVLB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CMCCCLOUDVLB_ACCESSKEYID="your-access-key-id" \

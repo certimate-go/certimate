@@ -1,3 +1,5 @@
+//go:build tester
+
 package jdcloudalb_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./jdcloud_alb_test.go -args \
+	go test -tags=tester -v ./jdcloud_alb_test.go -args \
 	--JDCLOUDALB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--JDCLOUDALB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--JDCLOUDALB_ACCESSKEYID="your-access-key-id" \

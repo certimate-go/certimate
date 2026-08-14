@@ -1,3 +1,5 @@
+//go:build tester
+
 package ucloudus3_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ucloud_us3_test.go -args \
+	go test -tags=tester -v ./ucloud_us3_test.go -args \
 	--UCLOUDUS3_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UCLOUDUS3_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--UCLOUDUS3_PRIVATEKEY="your-private-key" \

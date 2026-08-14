@@ -1,3 +1,5 @@
+//go:build tester
+
 package ctcccloudicdn_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./ctcccloud_cdn_test.go -args \
+	go test -tags=tester -v ./ctcccloud_cdn_test.go -args \
 	--CTCCCLOUDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CTCCCLOUDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CTCCCLOUDCDN_ACCESSKEYID="your-access-key-id" \

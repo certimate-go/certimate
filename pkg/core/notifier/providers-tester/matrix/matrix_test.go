@@ -1,3 +1,5 @@
+//go:build tester
+
 package matrix_test
 
 import (
@@ -27,7 +29,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./matrix_test.go -args \
+	go test -tags=tester -v ./matrix_test.go -args \
 	--MATRIX_SERVERURL="https://example.com/your-matrix-server" \
 	--MATRIX_USERID="@bot:example.org" \
 	--MATRIX_ACCESSTOKEN="your-access-token" \

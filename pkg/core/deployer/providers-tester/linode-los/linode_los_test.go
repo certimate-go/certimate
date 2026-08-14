@@ -1,3 +1,5 @@
+//go:build tester
+
 package linodelos_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./linode_los_test.go -args \
+	go test -tags=tester -v ./linode_los_test.go -args \
 	--LINODELOS_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--LINODELOS_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--LINODELOS_ACCESSTOKEN="your-api-token" \

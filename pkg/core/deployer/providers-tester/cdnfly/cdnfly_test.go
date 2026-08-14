@@ -1,3 +1,5 @@
+//go:build tester
+
 package cdnfly_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./cdnfly_test.go -args \
+	go test -tags=tester -v ./cdnfly_test.go -args \
 	--CDNFLY_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--CDNFLY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--CDNFLY_SERVERURL="http://127.0.0.1:88" \

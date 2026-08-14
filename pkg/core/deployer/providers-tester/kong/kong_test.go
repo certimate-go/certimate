@@ -1,3 +1,5 @@
+//go:build tester
+
 package kong_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./kong_test.go -args \
+	go test -tags=tester -v ./kong_test.go -args \
 	--KONG_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--KONG_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--KONG_SERVERURL="http://127.0.0.1:9080" \

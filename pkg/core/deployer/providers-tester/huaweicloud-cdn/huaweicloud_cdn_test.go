@@ -1,3 +1,5 @@
+//go:build tester
+
 package huaweicloudcdn_test
 
 import (
@@ -31,7 +33,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./huaweicloud_cdn_test.go -args \
+	go test -tags=tester -v ./huaweicloud_cdn_test.go -args \
 	--HUAWEICLOUDCDN_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--HUAWEICLOUDCDN_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--HUAWEICLOUDCDN_ACCESSKEYID="your-access-key-id" \

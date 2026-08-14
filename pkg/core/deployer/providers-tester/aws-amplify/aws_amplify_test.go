@@ -1,3 +1,5 @@
+//go:build tester
+
 package awsamplify_test
 
 import (
@@ -33,7 +35,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aws_amplify_test.go -args \
+	go test -tags=tester -v ./aws_amplify_test.go -args \
 	--AWSAMPLIFY_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--AWSAMPLIFY_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--AWSAMPLIFY_ACCESSKEYID="your-access-key-id" \

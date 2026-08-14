@@ -1,3 +1,5 @@
+//go:build tester
+
 package aliyunalb_test
 
 import (
@@ -35,7 +37,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./aliyun_alb_test.go -args \
+	go test -tags=tester -v ./aliyun_alb_test.go -args \
 	--ALIYUNALB_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--ALIYUNALB_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--ALIYUNALB_ACCESSKEYID="your-access-key-id" \

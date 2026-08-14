@@ -1,3 +1,5 @@
+//go:build tester
+
 package apisix_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./apisix_test.go -args \
+	go test -tags=tester -v ./apisix_test.go -args \
 	--APISIX_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--APISIX_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--APISIX_SERVERURL="http://127.0.0.1:9080" \

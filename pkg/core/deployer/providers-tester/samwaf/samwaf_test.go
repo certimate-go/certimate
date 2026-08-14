@@ -1,3 +1,5 @@
+//go:build tester
+
 package samwaf_test
 
 import (
@@ -29,7 +31,7 @@ func init() {
 /*
 Shell command to run this test:
 
-	go test -v ./samwaf_test.go -args \
+	go test -tags=tester -v ./samwaf_test.go -args \
 	--SAMWAF_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--SAMWAF_TESTKEYPATH="/path/to/your-test-key.pem" \
 	--SAMWAF_SERVERURL="http://127.0.0.1:26666" \
