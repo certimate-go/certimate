@@ -1,66 +1,41 @@
-package k8ssecret_test
+package k8ssecret
 
 import (
-	"os"
+	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/require"
-
-	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/k8s-secret"
-	it "github.com/certimate-go/certimate/pkg/core/deployer/testing"
 )
 
-var (
-	fp                   = it.Args("K8SSECRET_")
-	fTestCertPath        string
-	fTestKeyPath         string
-	fKubeConfig          string
-	fNamespace           string
-	fSecretName          string
-	fSecretDataKeyForCrt string
-	fSecretDataKeyForKey string
-)
+const testKubeConfig = `apiVersion: v1
+kind: Config
+clusters:
+  - name: test
+    cluster:
+      server: https://127.0.0.1:6443
+      insecure-skip-tls-verify: true
+contexts:
+  - name: test
+    context:
+      cluster: test
+      user: test
+current-context: test
+users:
+  - name: test
+    user:
+      token: test-token
+`
 
-func init() {
-	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
-	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
-	fp.DefineString(&fKubeConfig, "KUBECONFIG")
-	fp.DefineString(&fNamespace, "NAMESPACE", "default")
-	fp.DefineString(&fSecretName, "SECRETNAME")
-	fp.DefineString(&fSecretDataKeyForCrt, "SECRETDATAKEYFORCRT", "tls.crt")
-	fp.DefineString(&fSecretDataKeyForKey, "SECRETDATAKEYFORKEY", "tls.key")
-}
-
-/*
-Shell command to run this test:
-
-	go test -v ./k8s_secret_test.go -args \
-	--K8SSECRET_TESTCERTPATH="/path/to/your-test-cert.pem" \
-	--K8SSECRET_TESTKEYPATH="/path/to/your-test-key.pem" \
-	--K8SSECRET_KUBECONFIG="..." \
-	--K8SSECRET_NAMESPACE="default" \
-	--K8SSECRET_SECRETNAME="secret" \
-	--K8SSECRET_SECRETDATAKEYFORCRT="tls.crt" \
-	--K8SSECRET_SECRETDATAKEYFORKEY="tls.key"
-*/
-func TestProvider(t *testing.T) {
-	fp.Parse()
-
-	if fKubeConfigStat, err := os.Stat(fKubeConfig); err == nil && !fKubeConfigStat.IsDir() {
-		fKubeConfigBytes, _ := os.ReadFile(fKubeConfig)
-		fKubeConfig = string(fKubeConfigBytes)
+// Secrets live in the core API group, which is served under "/api".
+// If APIPath is left empty, rest.RESTClientFor builds requests against
+// "/v1/namespaces/..." and the API server answers 404
+// ("the server could not find the requested resource").
+func TestCreateK8sClientSetsCoreAPIPath(t *testing.T) {
+	client, err := createK8sClient(testKubeConfig)
+	if err != nil {
+		t.Fatalf("createK8sClient() returned an unexpected error: %v", err)
 	}
 
-	t.Run("Deploy", func(t *testing.T) {
-		provider, err := impl.NewDeployer(&impl.DeployerConfig{
-			KubeConfig:          fKubeConfig,
-			Namespace:           fNamespace,
-			SecretName:          fSecretName,
-			SecretDataKeyForCrt: fSecretDataKeyForCrt,
-			SecretDataKeyForKey: fSecretDataKeyForKey,
-		})
-		require.NoError(t, err)
-
-		it.TestDeploy(t, provider, it.TestDeployArgs{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
-	})
+	const want = "/api/v1"
+	if got := client.Get().URL().Path; !strings.HasPrefix(got, want) {
+		t.Errorf("request path = %q, want it to start with %q", got, want)
+	}
 }
