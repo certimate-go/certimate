@@ -11,9 +11,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag version to be used for Docker image"
+        description: "Existing git tag to build and push (e.g. v0.4.31). Does not move the tag or recreate the GitHub Release."
         required: true
-        default: "latest"
+        default: "v0.4.31"
 
 jobs:
   prepare-ui:
@@ -22,6 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -49,6 +50,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
           fetch-depth: 1
           persist-credentials: false
           submodules: true
@@ -76,6 +78,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{version}},value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=semver,pattern=v{{major}}.{{minor}},value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Log in to DOCKERHUB
         uses: docker/login-action@v4
@@ -104,3 +108,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          # Aliyun ACR rejects Buildx default provenance attestations
+          # (application/vnd.oci.empty.v1+json).
+          provenance: false
+          sbom: false
