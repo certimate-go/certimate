@@ -2999,6 +2999,41 @@
     }
   },
 
+  "purge": {
+    "label": "Purge certificates",
+    "default_name": "Purging",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Parameters"
+      },
+      "strategy": {
+        "tab": "Strategy",
+        "title": "Strategy settings"
+      }
+    },
+    "form": {
+      "provider": {
+        "label": "Hosting provider",
+        "placeholder": "Please select hosting provider",
+        "search": {
+          "placeholder": "Search hosting provider ..."
+        }
+      },
+      "provider_access": {
+        "label": "Hosting provider credential",
+        "placeholder": "Please select an credential of the hosting provider",
+        "button": "Create"
+      },
+      "expired_days": {
+        "label": "Certificate expiry timespan (Optional)",
+        "placeholder": "Please enter certificate expiry timespan",
+        "prefix": "Perform purge if the certificate has expired ≥",
+        "suffix": ".",
+        "unit": "days"
+      }
+    }
+  },
+
   "notify": {
     "label": "Send notification",
     "default_name": "Notification",

@@ -979,6 +979,37 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
 );
 // #endregion
 
+// #region PurgeProvider
+/*
+  注意：如果追加新的常量值，请保持以 ASCII 排序。
+  NOTICE: If you add new constant, please keep ASCII order.
+ */
+export const PURGE_PROVIDERS = Object.freeze({
+  TODO: ``,
+} as const);
+
+export type PurgeProviderType = (typeof PURGE_PROVIDERS)[keyof typeof PURGE_PROVIDERS];
+
+export interface PurgeProvider extends BaseProviderWithAccess<PurgeProviderType> {}
+
+export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvider> = new Map(
+  /*
+     注意：此处的顺序决定显示在前端的顺序。
+     NOTICE: The following order determines the order displayed at the frontend.
+    */
+  ([[PURGE_PROVIDERS.TODO, ""]] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>).map(([type, name]) => [
+    type,
+    {
+      type: type,
+      name: name,
+      icon: accessProvidersMap.get(type.split("-")[0])?.icon || "TODO:icon",
+      provider: type.split("-")[0] as AccessProviderType,
+      builtin: false,
+    },
+  ])
+);
+// #endregion
+
 // #region NotificationProvider
 /*
   注意：如果追加新的常量值，请保持以 ASCII 排序。

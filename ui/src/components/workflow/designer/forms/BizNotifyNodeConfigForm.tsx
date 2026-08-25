@@ -77,6 +77,7 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
   }, [fieldProvider, fieldProviderAccessId]);
 
   const handleProviderPick = (value: string) => {
+    // 首次选择提供商时重置表单，避免来自导入的配置字段残留
     formInst.setFieldValue("provider", value);
     formInst.setFieldValue("providerAccessId", void 0);
     formInst.setFieldValue("providerConfig", void 0);

@@ -106,6 +106,7 @@ const (
 	WorkflowNodeTypeBizUpload   = WorkflowNodeType("bizUpload")
 	WorkflowNodeTypeBizMonitor  = WorkflowNodeType("bizMonitor")
 	WorkflowNodeTypeBizDeploy   = WorkflowNodeType("bizDeploy")
+	WorkflowNodeTypeBizPurge    = WorkflowNodeType("bizPurge")
 	WorkflowNodeTypeBizNotify   = WorkflowNodeType("bizNotify")
 )
 
@@ -198,6 +199,15 @@ func (c WorkflowNodeConfig) AsBizDeploy() WorkflowNodeConfigForBizDeploy {
 	}
 }
 
+func (c WorkflowNodeConfig) AsBizPurge() WorkflowNodeConfigForBizPurge {
+	return WorkflowNodeConfigForBizPurge{
+		Provider:         xmaps.GetString(c, "provider"),
+		ProviderAccessId: xmaps.GetString(c, "providerAccessId"),
+		ProviderConfig:   xmaps.GetKVMapAny(c, "providerConfig"),
+		ExpiredDays:      xmaps.GetInt(c, "expiredDays"),
+	}
+}
+
 func (c WorkflowNodeConfig) AsBizNotify() WorkflowNodeConfigForBizNotify {
 	return WorkflowNodeConfigForBizNotify{
 		Provider:             xmaps.GetString(c, "provider"),
@@ -264,6 +274,13 @@ type WorkflowNodeConfigForBizDeploy struct {
 	ProviderAccessId        string         `json:"providerAccessId,omitempty"` // 主机提供商授权记录 ID
 	ProviderConfig          map[string]any `json:"providerConfig,omitempty"`   // 主机提供商额外配置
 	SkipOnLastSucceeded     bool           `json:"skipOnLastSucceeded"`        // 上次部署成功时是否跳过
+}
+
+type WorkflowNodeConfigForBizPurge struct {
+	Provider         string         `json:"provider"`                   // 清除提供商
+	ProviderAccessId string         `json:"providerAccessId,omitempty"` // 清除提供商授权记录 ID
+	ProviderConfig   map[string]any `json:"providerConfig,omitempty"`   // 清除提供商额外配置
+	ExpiredDays      int            `json:"expiredDays"`                // 证书已过期天数
 }
 
 type WorkflowNodeConfigForBizNotify struct {

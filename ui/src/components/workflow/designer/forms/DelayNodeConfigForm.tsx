@@ -74,7 +74,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   const { t: _ } = i18n;
 
   return z.object({
-    wait: z.coerce.number().int().positive(),
+    wait: z.coerce.number().int().gt(0),
   });
 };
 

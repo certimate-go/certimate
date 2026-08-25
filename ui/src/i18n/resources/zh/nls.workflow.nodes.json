@@ -2998,6 +2998,41 @@
     }
   },
 
+  "purge": {
+    "label": "清除过期证书",
+    "default_name": "清除",
+    "form_anchor": {
+      "parameters": {
+        "tab": "参数设置"
+      },
+      "strategy": {
+        "tab": "执行策略",
+        "title": "执行策略"
+      }
+    },
+    "form": {
+      "provider": {
+        "label": "主机提供商",
+        "placeholder": "请选择主机提供商",
+        "search": {
+          "placeholder": "搜索主机提供商……"
+        }
+      },
+      "provider_access": {
+        "label": "主机提供商授权",
+        "placeholder": "请选择主机提供商授权",
+        "button": "新建"
+      },
+      "expired_days": {
+        "label": "证书过期时限（可选）",
+        "placeholder": "请输入证书过期时限",
+        "prefix": "清除已过期超过",
+        "suffix": "的证书。",
+        "unit": "天"
+      }
+    }
+  },
+
   "notify": {
     "label": "推送通知",
     "default_name": "通知",

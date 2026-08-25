@@ -47,6 +47,7 @@ export const WORKFLOW_NODE_TYPES = Object.freeze({
   BIZ_UPLOAD: "bizUpload",
   BIZ_MONITOR: "bizMonitor",
   BIZ_DEPLOY: "bizDeploy",
+  BIZ_PURGE: "bizPurge",
   BIZ_NOTIFY: "bizNotify",
 } as const);
 
@@ -165,6 +166,19 @@ export type WorkflowNodeConfigForBizDeploy = {
 export const defaultNodeConfigForBizDeploy = (): Partial<WorkflowNodeConfigForBizDeploy> => {
   return {
     skipOnLastSucceeded: true,
+  };
+};
+
+export type WorkflowNodeConfigForBizPurge = {
+  provider: string;
+  providerAccessId?: string;
+  providerConfig?: Record<string, unknown>;
+  expiredDays?: number;
+};
+
+export const defaultNodeConfigForBizPurge = (): Partial<WorkflowNodeConfigForBizPurge> => {
+  return {
+    expiredDays: 0,
   };
 };
 
@@ -315,6 +329,16 @@ export const newNode = (type: WorkflowNodeType, { i18n = getI18n() }: { i18n?: R
         data: {
           name: t("workflow_node.deploy.default_name"),
           config: defaultNodeConfigForBizDeploy(),
+        },
+      };
+
+    case WORKFLOW_NODE_TYPES.BIZ_PURGE:
+      return {
+        id: newNodeId(),
+        type: type,
+        data: {
+          name: t("workflow_node.purge.default_name"),
+          config: defaultNodeConfigForBizPurge(),
         },
       };
 

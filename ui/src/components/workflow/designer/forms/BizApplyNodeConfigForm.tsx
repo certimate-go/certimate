@@ -1080,7 +1080,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       disableCommonName: z.boolean().nullish(),
       disableFollowCNAME: z.boolean().nullish(),
       disableARI: z.boolean().nullish(),
-      skipBeforeExpiryDays: z.coerce.number().int().positive(),
+      skipBeforeExpiryDays: z.coerce.number().int().gt(0),
     })
     .superRefine((values, ctx) => {
       if (values.identifier) {

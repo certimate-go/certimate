@@ -478,6 +478,12 @@ const (
 	DeploymentProviderTypeZenlayerGA                    = DeploymentProviderType(AccessProviderTypeZenlayer + "-ga")
 )
 
+type PurgeProviderType string
+
+func (t PurgeProviderType) String() string {
+	return string(t)
+}
+
 type NotificationProviderType string
 
 func (t NotificationProviderType) String() string {

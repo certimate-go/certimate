@@ -11,12 +11,12 @@ type Deployer interface {
 	// 部署证书。
 	//
 	// 入参：
-	//   - ctx：上下文。
-	//   - certPEM：证书 PEM 内容。
-	//   - privkeyPEM：私钥 PEM 内容。
+	//   - ctx: 上下文。
+	//   - certPEM: 证书 PEM 内容。
+	//   - privkeyPEM: 私钥 PEM 内容。
 	//
 	// 出参：
-	//   - res：部署结果。
+	//   - res: 部署结果。
 	//   - err: 错误。
 	Deploy(ctx context.Context, certPEM, privkeyPEM string) (_res *DeployerDeployResult, _err error)
 }
