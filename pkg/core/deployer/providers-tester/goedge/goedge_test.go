@@ -1,0 +1,61 @@
+//go:build tester
+
+package goedge_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	tester "github.com/certimate-go/certimate/pkg/core/deployer/providers-tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/goedge"
+)
+
+var (
+	fp             = tester.InitArgs("GOEDGE_")
+	fTestCertPath  string
+	fTestKeyPath   string
+	fServerUrl     string
+	fAccessKeyId   string
+	fAccessKey     string
+	fCertificateId int64
+)
+
+func init() {
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fServerUrl, "SERVERURL")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fAccessKey, "ACCESSKEY")
+	fp.DefineInt64(&fCertificateId, "CERTIFICATEID")
+}
+
+/*
+Shell command to run this test:
+
+	go test -tags=tester -v ./goedge_test.go -args \
+	--GOEDGE_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--GOEDGE_TESTKEYPATH="/path/to/your-test-key.pem" \
+	--GOEDGE_SERVERURL="http://127.0.0.1:7788" \
+	--GOEDGE_ACCESSKEYID="your-access-key-id" \
+	--GOEDGE_ACCESSKEY="your-access-key" \
+	--GOEDGE_CERTIFICATEID="your-certificate-id"
+*/
+func TestProvider(t *testing.T) {
+	fp.Parse()
+
+	t.Run("Deploy_ToCertificate", func(t *testing.T) {
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
+			ServerUrl:                fServerUrl,
+			ApiRole:                  "user",
+			AccessKeyId:              fAccessKeyId,
+			AccessKey:                fAccessKey,
+			AllowInsecureConnections: true,
+			DeployTarget:             impl.DEPLOY_TARGET_CERTIFICATE,
+			CertificateId:            fCertificateId,
+		})
+		require.NoError(t, err)
+
+		tester.Deploy(t, provider, tester.DeployInput{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+	})
+}

@@ -43,7 +43,7 @@ const AccessConfigFormFieldsProviderProxmoxVE = () => {
         rules={[formRule]}
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.proxmoxve_api_token_secret.tooltip") }}></span>}
       >
-        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.proxmoxve_api_token_secret.placeholder")} />
+        <Input.Password autoComplete="new-password" placeholder={t("access.form.proxmoxve_api_token_secret.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -62,6 +62,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     serverUrl: "http://<your-host-addr>:8006/",
     apiToken: "",
+    apiTokenSecret: "",
   };
 };
 
@@ -71,7 +72,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   return z.object({
     serverUrl: z.url({ protocol: z.core.regexes.httpProtocol }),
     apiToken: z.string().nonempty(),
-    apiTokenSecret: z.string().nullish(),
+    apiTokenSecret: z.string().nonempty(),
     allowInsecureConnections: z.boolean().nullish(),
   });
 };

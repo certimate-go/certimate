@@ -20,7 +20,7 @@ type argsParser struct {
 	vals []any
 }
 
-func Args(prefix string) ArgsParser {
+func InitArgs(prefix string) ArgsParser {
 	return &argsParser{
 		prefix: prefix,
 		keys:   make([]string, 0),

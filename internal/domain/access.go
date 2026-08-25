@@ -348,6 +348,13 @@ type AccessConfigForHuaweiCloud struct {
 	EnterpriseProjectId string `json:"enterpriseProjectId,omitempty"`
 }
 
+type AccessConfigForHuaweiIBMC struct {
+	Host                     string `json:"host"`
+	Username                 string `json:"username"`
+	Password                 string `json:"password"`
+	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
+}
+
 type AccessConfigForInfomaniak struct {
 	AccessToken string `json:"accessToken"`
 }
@@ -485,14 +492,14 @@ type AccessConfigForPowerDNS struct {
 type AccessConfigForProxmoxBS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
-	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret           string `json:"apiTokenSecret"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
 type AccessConfigForProxmoxVE struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
-	ApiTokenSecret           string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret           string `json:"apiTokenSecret"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 

@@ -53,7 +53,7 @@
 
   "errmsg": {
     "domain_invalid": "无效域名",
-    "host_invalid": "无效域名或 IP 地址",
+    "host_invalid": "无效主机：不是一个有效的域名或 IP 地址",
     "port_invalid": "无效端口号",
     "ip_invalid": "无效 IP 地址",
     "json_invalid": "无效 JSON 格式字符串",

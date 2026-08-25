@@ -21,7 +21,7 @@ type DeployerConfig struct {
 	// Proxmox BS API Token。
 	ApiToken string `json:"apiToken"`
 	// Proxmox BS API Token Secret。
-	ApiTokenSecret string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret string `json:"apiTokenSecret"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
 	// 节点名称。
