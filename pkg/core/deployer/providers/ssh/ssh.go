@@ -46,6 +46,10 @@ type DeployerConfig struct {
 	JumpServers []ServerConfig `json:"jumpServers,omitempty"`
 	// 是否回退使用 SCP。
 	UseSCP bool `json:"useSCP,omitempty"`
+	// 命令执行模式。
+	// 可取值 "script"、"sequential"。
+	// 零值时默认值 "script"。
+	ExecuteMode string `json:"executeMode,omitempty"`
 	// 前置命令。
 	PreCommand string `json:"preCommand,omitempty"`
 	// 后置命令。
@@ -122,17 +126,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 执行前置命令
 	if d.config.PreCommand != "" {
-		command := d.config.PreCommand
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}", d.config.FilePathForCrt)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}", d.config.FilePathForCrtOnlyServer)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}", d.config.FilePathForCrtOnlyIntermedia)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}", d.config.FilePathForKey)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}", d.config.PfxPassword)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}", d.config.JksAlias)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}", d.config.JksKeypass)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}", d.config.JksStorepass)
-
-		stdout, stderr, err := xssh.RunCommand(sshClient.RawClient(), command)
+		stdout, stderr, err := d.executeCommand(sshClient, d.config.PreCommand)
 		d.logger.Debug("run pre-command", slog.String("stdout", stdout), slog.String("stderr", stderr))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute pre-command (stdout: %s, stderr: %s): %w ", stdout, stderr, err)
@@ -229,17 +223,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 执行后置命令
 	if d.config.PostCommand != "" {
-		command := d.config.PostCommand
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}", d.config.FilePathForCrt)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}", d.config.FilePathForCrtOnlyServer)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}", d.config.FilePathForCrtOnlyIntermedia)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}", d.config.FilePathForKey)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}", d.config.PfxPassword)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}", d.config.JksAlias)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}", d.config.JksKeypass)
-		command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}", d.config.JksStorepass)
-
-		stdout, stderr, err := xssh.RunCommand(sshClient.RawClient(), command)
+		stdout, stderr, err := d.executeCommand(sshClient, d.config.PostCommand)
 		d.logger.Debug("run post-command", slog.String("stdout", stdout), slog.String("stderr", stderr))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute post-command (stdout: %s, stderr: %s): %w ", stdout, stderr, err)
@@ -247,6 +231,31 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}
 
 	return &DeployResult{}, nil
+}
+
+func (d *Deployer) executeCommand(sshClient *ssh.Client, command string) (string, string, error) {
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}", d.config.FilePathForCrt)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}", d.config.FilePathForCrtOnlyServer)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}", d.config.FilePathForCrtOnlyIntermedia)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}", d.config.FilePathForKey)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}", d.config.PfxPassword)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}", d.config.JksAlias)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}", d.config.JksKeypass)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}", d.config.JksStorepass)
+
+	if d.config.ExecuteMode == EXECUTE_MODE_SEQUENTIAL {
+		lines := make([]string, 0)
+		for _, line := range strings.Split(command, "\n") {
+			line = strings.TrimSpace(line)
+			if line != "" {
+				lines = append(lines, line)
+			}
+		}
+
+		return xssh.RunCommands(sshClient.RawClient(), lines)
+	}
+
+	return xssh.RunCommand(sshClient.RawClient(), command)
 }
 
 func createSshClient(config DeployerConfig) (*ssh.Client, error) {

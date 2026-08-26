@@ -2215,6 +2215,19 @@
         "ps_binding_netsh": "PowerShell - Binding netsh",
         "ps_binding_rdp": "PowerShell - Binding RDP"
       },
+      "ssh_execute_mode": {
+        "label": "Command execution mode",
+        "tooltip": "Some devices without a shell (e.g. AV control processors, network appliances) only accept a single command per session and will silently ignore the rest. Choose \"one line per session\" for those.",
+        "option": {
+          "script": {
+            "label": "Single script (default)"
+          },
+          "sequential": {
+            "label": "One line per session"
+          }
+        }
+      },
+
       "ssh_use_scp": {
         "label": "Fallback to use SCP",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."

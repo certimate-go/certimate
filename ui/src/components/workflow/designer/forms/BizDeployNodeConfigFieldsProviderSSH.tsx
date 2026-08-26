@@ -15,6 +15,9 @@ import {
   useSharedFormFieldsAndHandlers as _useSharedFormFieldsAndHandlers,
 } from "./BizDeployNodeConfigFieldsProviderLocal";
 
+const EXECUTE_MODE_SCRIPT = "script" as const;
+const EXECUTE_MODE_SEQUENTIAL = "sequential" as const;
+
 const FORMAT_PEM = CERTIFICATE_FORMATS.PEM;
 const FORMAT_PFX = CERTIFICATE_FORMATS.PFX;
 const FORMAT_JKS = CERTIFICATE_FORMATS.JKS;
@@ -248,6 +251,21 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
       </Form.Item>
 
       <Form.Item
+        name={[parentNamePath, "executeMode"]}
+        initialValue={initialValues.executeMode}
+        label={t("workflow_node.deploy.form.ssh_execute_mode.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ssh_execute_mode.tooltip") }}></span>}
+      >
+        <Select
+          options={[EXECUTE_MODE_SCRIPT, EXECUTE_MODE_SEQUENTIAL].map((s) => ({
+            label: t(`workflow_node.deploy.form.ssh_execute_mode.option.${s}.label`),
+            value: s,
+          }))}
+        />
+      </Form.Item>
+
+      <Form.Item
         name={[parentNamePath, "fileFormat"]}
         initialValue={initialValues.fileFormat}
         label={t("workflow_node.deploy.form.shared_file_format.label")}
@@ -473,6 +491,7 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
+    executeMode: EXECUTE_MODE_SCRIPT,
     fileFormat: FORMAT_PEM,
     filePathForKey: "/etc/ssl/certimate/cert.key",
     filePathForCrt: "/etc/ssl/certimate/cert.crt",
@@ -485,6 +504,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       useSCP: z.boolean().nullish(),
+      executeMode: z.enum([EXECUTE_MODE_SCRIPT, EXECUTE_MODE_SEQUENTIAL]).nullish(),
       fileFormat: z.enum([FORMAT_PEM, FORMAT_PFX, FORMAT_JKS]),
       filePathForKey: z.string().max(256).nullish(),
       filePathForCrt: z.string().max(256).nullish(),

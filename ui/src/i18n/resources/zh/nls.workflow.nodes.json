@@ -2214,6 +2214,19 @@
         "ps_binding_netsh": "PowerShell - 导入并绑定到 netsh",
         "ps_binding_rdp": "PowerShell - 导入并绑定到 RDP"
       },
+      "ssh_execute_mode": {
+        "label": "命令执行模式",
+        "tooltip": "部分不提供 Shell 的嵌入式设备每个会话仅接受一条命令，多余的命令会被忽略，此时请选择逐行执行。",
+        "option": {
+          "script": {
+            "label": "整段脚本（默认）"
+          },
+          "sequential": {
+            "label": "逐行执行"
+          }
+        }
+      },
+
       "ssh_use_scp": {
         "label": "回退使用 SCP",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
