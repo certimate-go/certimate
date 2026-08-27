@@ -78,6 +78,7 @@
   "baiducloud_appblb": "百度智能云 - 应用型负载均衡 BLB",
   "baiducloud_blb": "百度智能云 - 普通型负载均衡 BLB",
   "baiducloud_cdn": "百度智能云 - 内容分发网络 CDN",
+  "baiducloud_cert": "百度智能云 - SSL 证书服务",
   "baiducloud_cert_upload": "百度智能云 - 上传到 SSL 证书服务",
   "baiducloud_dns": "百度智能云 - 智能云解析 DNS",
   "baishan": "白山云",

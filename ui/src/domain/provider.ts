@@ -989,6 +989,7 @@ export const PURGE_PROVIDERS = Object.freeze(
     ALIYUN_CAS: `${ACCESS_PROVIDERS.ALIYUN}-cas`,
     ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
     ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
+    BAIDUCLOUD_CERT: `${ACCESS_PROVIDERS.BAIDUCLOUD}-cert`,
     HUAWEICLOUD_ELB: `${ACCESS_PROVIDERS.HUAWEICLOUD}-elb`,
     HUAWEICLOUD_SCM: `${ACCESS_PROVIDERS.HUAWEICLOUD}-scm`,
     HUAWEICLOUD_WAF: `${ACCESS_PROVIDERS.HUAWEICLOUD}-waf`,
@@ -1019,6 +1020,7 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
       [PURGE_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud_scm"],
       [PURGE_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud_elb"],
       [PURGE_PROVIDERS.HUAWEICLOUD_WAF, "provider.huaweicloud_waf"],
+      [PURGE_PROVIDERS.BAIDUCLOUD_CERT, "provider.baiducloud_cert"],
       [PURGE_PROVIDERS.UCLOUD_USSL, "provider.ucloud_ussl"],
     ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>
   ).map(([type, name]) => [

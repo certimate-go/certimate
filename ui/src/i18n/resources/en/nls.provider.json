@@ -78,6 +78,7 @@
   "baiducloud_appblb": "Baidu Cloud - AppBLB (Application Baidu Load Balancer)",
   "baiducloud_blb": "Baidu Cloud - BLB (Load Balancer)",
   "baiducloud_cdn": "Baidu Cloud - CDN (Content Delivery Network)",
+  "baiducloud_cert": "Baidu Cloud - SSL Certificate Service",
   "baiducloud_cert_upload": "Baidu Cloud - Upload to SSL Certificate Service",
   "baiducloud_dns": "Baidu Cloud - DNS",
   "baishan": "Baishan",
