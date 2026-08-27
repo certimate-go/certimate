@@ -7,6 +7,7 @@ import BizPurgeNodeConfigFieldsProviderAliyunCLB from "./BizPurgeNodeConfigField
 import BizPurgeNodeConfigFieldsProviderAliyunESA from "./BizPurgeNodeConfigFieldsProviderAliyunESA";
 import BizPurgeNodeConfigFieldsProviderTencentCloudGAAP from "./BizPurgeNodeConfigFieldsProviderTencentCloudGAAP";
 import BizPurgeNodeConfigFieldsProviderTencentCloudSSL from "./BizPurgeNodeConfigFieldsProviderTencentCloudSSL";
+import BizPurgeNodeConfigFieldsProviderTencentCloudTSE from "./BizPurgeNodeConfigFieldsProviderTencentCloudTSE";
 
 const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentType<any>>> = {
   /*
@@ -18,6 +19,7 @@ const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentTyp
   [PURGE_PROVIDERS.ALIYUN_ESA]: BizPurgeNodeConfigFieldsProviderAliyunESA,
   [PURGE_PROVIDERS.TENCENTCLOUD_GAAP]: BizPurgeNodeConfigFieldsProviderTencentCloudGAAP,
   [PURGE_PROVIDERS.TENCENTCLOUD_SSL]: BizPurgeNodeConfigFieldsProviderTencentCloudSSL,
+  [PURGE_PROVIDERS.TENCENTCLOUD_TSE]: BizPurgeNodeConfigFieldsProviderTencentCloudTSE,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {

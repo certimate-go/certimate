@@ -497,6 +497,7 @@ const (
 	PurgeProviderTypeAliyunESA        = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
 	PurgeProviderTypeTencentCloudGAAP = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
 	PurgeProviderTypeTencentCloudSSL  = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
+	PurgeProviderTypeTencentCloudTSE  = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
 )
 
 type NotificationProviderType string

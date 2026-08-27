@@ -990,6 +990,7 @@ export const PURGE_PROVIDERS = Object.freeze(
     ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
     ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
     TENCENTCLOUD_GAAP: `${ACCESS_PROVIDERS.TENCENTCLOUD}-gaap`,
+    TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
     TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
   } as const
 );
@@ -1006,10 +1007,11 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
   (
     [
       [PURGE_PROVIDERS.ALIYUN_CAS, "provider.aliyun_cas"],
-      [PURGE_PROVIDERS.ALIYUN_CLB, "provider.aliyun_clb"],
       [PURGE_PROVIDERS.ALIYUN_ESA, "provider.aliyun_esa"],
-      [PURGE_PROVIDERS.TENCENTCLOUD_GAAP, "provider.tencentcloud_gaap"],
+      [PURGE_PROVIDERS.ALIYUN_CLB, "provider.aliyun_clb"],
       [PURGE_PROVIDERS.TENCENTCLOUD_SSL, "provider.tencentcloud_ssl"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_GAAP, "provider.tencentcloud_gaap"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_TSE, "provider.tencentcloud_tse"],
     ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>
   ).map(([type, name]) => [
     type,
