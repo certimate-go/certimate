@@ -5,6 +5,10 @@ import (
 	scm "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
 )
 
+func GenReqDefForDeleteCertificate() *def.HttpRequestDef {
+	return scm.GenReqDefForDeleteCertificate()
+}
+
 func GenReqDefForExportCertificate() *def.HttpRequestDef {
 	return scm.GenReqDefForExportCertificate()
 }
