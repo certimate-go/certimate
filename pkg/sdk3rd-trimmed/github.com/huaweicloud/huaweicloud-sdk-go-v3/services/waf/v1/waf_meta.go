@@ -9,6 +9,10 @@ func GenReqDefForCreateCertificate() *def.HttpRequestDef {
 	return waf.GenReqDefForCreateCertificate()
 }
 
+func GenReqDefForDeleteCertificate() *def.HttpRequestDef {
+	return waf.GenReqDefForDeleteCertificate()
+}
+
 func GenReqDefForListCertificates() *def.HttpRequestDef {
 	return waf.GenReqDefForListCertificates()
 }

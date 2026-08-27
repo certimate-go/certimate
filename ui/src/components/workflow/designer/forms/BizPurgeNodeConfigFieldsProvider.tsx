@@ -6,6 +6,7 @@ import BizPurgeNodeConfigFieldsProviderAliyunCAS from "./BizPurgeNodeConfigField
 import BizPurgeNodeConfigFieldsProviderAliyunCLB from "./BizPurgeNodeConfigFieldsProviderAliyunCLB";
 import BizPurgeNodeConfigFieldsProviderAliyunESA from "./BizPurgeNodeConfigFieldsProviderAliyunESA";
 import BizPurgeNodeConfigFieldsProviderHuaweiCloudELB from "./BizPurgeNodeConfigFieldsProviderHuaweiCloudELB";
+import BizPurgeNodeConfigFieldsProviderHuaweiCloudWAF from "./BizPurgeNodeConfigFieldsProviderHuaweiCloudWAF";
 import BizPurgeNodeConfigFieldsProviderTencentCloudGAAP from "./BizPurgeNodeConfigFieldsProviderTencentCloudGAAP";
 import BizPurgeNodeConfigFieldsProviderTencentCloudSSL from "./BizPurgeNodeConfigFieldsProviderTencentCloudSSL";
 import BizPurgeNodeConfigFieldsProviderTencentCloudTSE from "./BizPurgeNodeConfigFieldsProviderTencentCloudTSE";
@@ -20,6 +21,7 @@ const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentTyp
   [PURGE_PROVIDERS.ALIYUN_CLB]: BizPurgeNodeConfigFieldsProviderAliyunCLB,
   [PURGE_PROVIDERS.ALIYUN_ESA]: BizPurgeNodeConfigFieldsProviderAliyunESA,
   [PURGE_PROVIDERS.HUAWEICLOUD_ELB]: BizPurgeNodeConfigFieldsProviderHuaweiCloudELB,
+  [PURGE_PROVIDERS.HUAWEICLOUD_WAF]: BizPurgeNodeConfigFieldsProviderHuaweiCloudWAF,
   [PURGE_PROVIDERS.TENCENTCLOUD_GAAP]: BizPurgeNodeConfigFieldsProviderTencentCloudGAAP,
   [PURGE_PROVIDERS.TENCENTCLOUD_SSL]: BizPurgeNodeConfigFieldsProviderTencentCloudSSL,
   [PURGE_PROVIDERS.TENCENTCLOUD_TSE]: BizPurgeNodeConfigFieldsProviderTencentCloudTSE,

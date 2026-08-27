@@ -3056,6 +3056,11 @@
         "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/elb\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
       },
+      "huaweicloud_waf_region": {
+        "label": "华为云服务区域",
+        "placeholder": "请输入华为云 WAF 服务区域（例如：cn-north-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/waf\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",

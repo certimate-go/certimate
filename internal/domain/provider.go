@@ -497,6 +497,7 @@ const (
 	PurgeProviderTypeAliyunESA        = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
 	PurgeProviderTypeHuaweiCloudELB   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
 	PurgeProviderTypeHuaweiCloudSCM   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
+	PurgeProviderTypeHuaweiCloudWAF   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-waf")
 	PurgeProviderTypeTencentCloudGAAP = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
 	PurgeProviderTypeTencentCloudSSL  = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
 	PurgeProviderTypeTencentCloudTSE  = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")

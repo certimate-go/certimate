@@ -3057,6 +3057,11 @@
         "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
       },
+      "huaweicloud_waf_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
