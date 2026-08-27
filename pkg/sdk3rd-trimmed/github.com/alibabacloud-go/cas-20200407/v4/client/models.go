@@ -8,6 +8,10 @@ type CreateDeploymentJobRequest = client.CreateDeploymentJobRequest
 
 type CreateDeploymentJobResponse = client.CreateDeploymentJobResponse
 
+type DeleteUserCertificateRequest = client.DeleteUserCertificateRequest
+
+type DeleteUserCertificateResponse = client.DeleteUserCertificateResponse
+
 type DescribeDeploymentJobRequest = client.DescribeDeploymentJobRequest
 
 type DescribeDeploymentJobResponse = client.DescribeDeploymentJobResponse
@@ -19,6 +23,10 @@ type GetCertificateDetailResponse = client.GetCertificateDetailResponse
 type GetUserCertificateDetailRequest = client.GetUserCertificateDetailRequest
 
 type GetUserCertificateDetailResponse = client.GetUserCertificateDetailResponse
+
+type ListCertificatesRequest = client.ListCertificatesRequest
+
+type ListCertificatesResponse = client.ListCertificatesResponse
 
 type ListContactRequest = client.ListContactRequest
 

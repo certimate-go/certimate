@@ -40,6 +40,7 @@
   "aliyun": "阿里云",
   "aliyun_alb": "阿里云 - 应用型负载均衡 ALB",
   "aliyun_apigw": "阿里云 - API 网关",
+  "aliyun_cas": "阿里云 - 数字证书管理服务 CAS",
   "aliyun_cas_deploy": "阿里云 - 通过数字证书管理服务 CAS 创建部署任务",
   "aliyun_cas_upload": "阿里云 - 上传到数字证书管理服务 CAS",
   "aliyun_cdn": "阿里云 - 内容分发网络 CDN",

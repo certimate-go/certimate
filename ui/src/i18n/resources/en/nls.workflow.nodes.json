@@ -3025,11 +3025,17 @@
         "button": "Create"
       },
       "expired_days": {
-        "label": "Certificate expiry timespan (Optional)",
+        "label": "Certificate expiry timespan",
         "placeholder": "Please enter certificate expiry timespan",
         "prefix": "Perform purge if the certificate has expired ≥",
         "suffix": ".",
         "unit": "days"
+      },
+
+      "aliyun_cas_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud CAS region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>"
       }
     }
   },

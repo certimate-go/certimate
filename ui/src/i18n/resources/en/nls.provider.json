@@ -40,6 +40,7 @@
   "aliyun": "Alibaba Cloud",
   "aliyun_alb": "Alibaba Cloud - ALB (Application Load Balancer)",
   "aliyun_apigw": "Alibaba Cloud - API Gateway",
+  "aliyun_cas": "Alibaba Cloud - CAS (Certificate Management Service)",
   "aliyun_cas_deploy": "Alibaba Cloud - Deploy via CAS (Certificate Management Service)",
   "aliyun_cas_upload": "Alibaba Cloud - Upload to CAS (Certificate Management Service)",
   "aliyun_cdn": "Alibaba Cloud - CDN (Content Delivery Network)",

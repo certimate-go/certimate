@@ -2,12 +2,14 @@
 
 import { PURGE_PROVIDERS, type PurgeProviderType } from "@/domain/provider";
 
+import BizPurgeNodeConfigFieldsProviderAliyunCAS from "./BizPurgeNodeConfigFieldsProviderAliyunCAS";
+
 const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentType<any>>> = {
   /*
     注意：如果追加新的子组件，请保持以 ASCII 排序。
     NOTICE: If you add new child component, please keep ASCII order.
     */
-  [PURGE_PROVIDERS.TODO]: () => <div>TODO:</div>,
+  [PURGE_PROVIDERS.ALIYUN_CAS]: BizPurgeNodeConfigFieldsProviderAliyunCAS,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
