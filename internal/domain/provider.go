@@ -492,18 +492,19 @@ func (t PurgeProviderType) String() string {
 NOTICE: If you add new constant, please keep ASCII order.
 */
 const (
-	PurgeProviderTypeAliyunCAS        = PurgeProviderType(AccessProviderTypeAliyun + "-cas")
-	PurgeProviderTypeAliyunCLB        = PurgeProviderType(AccessProviderTypeAliyun + "-clb")
-	PurgeProviderTypeAliyunESA        = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
-	PurgeProviderTypeBaiduCloudCert   = PurgeProviderType(AccessProviderTypeBaiduCloud + "-cert")
-	PurgeProviderTypeHuaweiCloudELB   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
-	PurgeProviderTypeHuaweiCloudSCM   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
-	PurgeProviderTypeHuaweiCloudWAF   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-waf")
-	PurgeProviderTypeJDCloudSSL       = PurgeProviderType(AccessProviderTypeJDCloud + "-ssl")
-	PurgeProviderTypeTencentCloudGAAP = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
-	PurgeProviderTypeTencentCloudSSL  = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
-	PurgeProviderTypeTencentCloudTSE  = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
-	PurgeProviderTypeUCloudUSSL       = PurgeProviderType(AccessProviderTypeUCloud + "-ussl")
+	PurgeProviderTypeAliyunCAS            = PurgeProviderType(AccessProviderTypeAliyun + "-cas")
+	PurgeProviderTypeAliyunCLB            = PurgeProviderType(AccessProviderTypeAliyun + "-clb")
+	PurgeProviderTypeAliyunESA            = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
+	PurgeProviderTypeBaiduCloudCert       = PurgeProviderType(AccessProviderTypeBaiduCloud + "-cert")
+	PurgeProviderTypeHuaweiCloudELB       = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
+	PurgeProviderTypeHuaweiCloudSCM       = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
+	PurgeProviderTypeHuaweiCloudWAF       = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-waf")
+	PurgeProviderTypeJDCloudSSL           = PurgeProviderType(AccessProviderTypeJDCloud + "-ssl")
+	PurgeProviderTypeTencentCloudGAAP     = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
+	PurgeProviderTypeTencentCloudSSL      = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
+	PurgeProviderTypeTencentCloudTSE      = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
+	PurgeProviderTypeUCloudUSSL           = PurgeProviderType(AccessProviderTypeUCloud + "-ussl")
+	PurgeProviderTypeVolcEngineCertCenter = PurgeProviderType(AccessProviderTypeVolcEngine + "-certcenter")
 )
 
 type NotificationProviderType string

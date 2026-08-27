@@ -11,6 +11,7 @@ import BizPurgeNodeConfigFieldsProviderTencentCloudGAAP from "./BizPurgeNodeConf
 import BizPurgeNodeConfigFieldsProviderTencentCloudSSL from "./BizPurgeNodeConfigFieldsProviderTencentCloudSSL";
 import BizPurgeNodeConfigFieldsProviderTencentCloudTSE from "./BizPurgeNodeConfigFieldsProviderTencentCloudTSE";
 import BizPurgeNodeConfigFieldsProviderUCloudUSSL from "./BizPurgeNodeConfigFieldsProviderUCloudUSSL";
+import BizPurgeNodeConfigFieldsProviderVolcEngineCertCenter from "./BizPurgeNodeConfigFieldsProviderVolcEngineCertCenter";
 
 const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentType<any>>> = {
   /*
@@ -26,6 +27,7 @@ const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentTyp
   [PURGE_PROVIDERS.TENCENTCLOUD_SSL]: BizPurgeNodeConfigFieldsProviderTencentCloudSSL,
   [PURGE_PROVIDERS.TENCENTCLOUD_TSE]: BizPurgeNodeConfigFieldsProviderTencentCloudTSE,
   [PURGE_PROVIDERS.UCLOUD_USSL]: BizPurgeNodeConfigFieldsProviderUCloudUSSL,
+  [PURGE_PROVIDERS.VOLCENGINE_CERTCENTER]: BizPurgeNodeConfigFieldsProviderVolcEngineCertCenter,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {

@@ -998,6 +998,7 @@ export const PURGE_PROVIDERS = Object.freeze(
     TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
     TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
     UCLOUD_USSL: `${ACCESS_PROVIDERS.UCLOUD}-ussl`,
+    VOLCENGINE_CERTCENTER: `${ACCESS_PROVIDERS.VOLCENGINE}-certcenter`,
   } as const
 );
 
@@ -1021,6 +1022,7 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
       [PURGE_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud_scm"],
       [PURGE_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud_elb"],
       [PURGE_PROVIDERS.HUAWEICLOUD_WAF, "provider.huaweicloud_waf"],
+      [PURGE_PROVIDERS.VOLCENGINE_CERTCENTER, "provider.volcengine_certcenter"],
       [PURGE_PROVIDERS.BAIDUCLOUD_CERT, "provider.baiducloud_cert"],
       [PURGE_PROVIDERS.JDCLOUD_SSL, "provider.jdcloud_ssl"],
       [PURGE_PROVIDERS.UCLOUD_USSL, "provider.ucloud_ussl"],

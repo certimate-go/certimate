@@ -74,7 +74,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		return nil, err
 	}
 
-	// 查询证书列表，避免重复上传
+	// 获取证书列表，避免重复上传
 	// REF: https://www.volcengine.com/docs/6454/125709
 	listCertInfoPageNum := 1
 	listCertInfoPageSize := 100
