@@ -66,7 +66,7 @@ const BizDeployNodeConfigFieldsProviderNginxProxyManager = () => {
 
         <Form.Item
           name={[parentNamePath, "hostType"]}
-          initialValue={initialValues.hostId}
+          initialValue={initialValues.hostType}
           label={t("workflow_node.deploy.form.nginxproxymanager_host_type.label")}
           rules={[formRule]}
         >
@@ -131,7 +131,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       switch (values.deployTarget) {
         case DEPLOY_TARGET_HOST:
           {
-            const scHostMatchPattern = z.coerce.number().int().positive();
+            const scHostMatchPattern = z.enum([HOST_MATCH_PATTERN_SPECIFIED, HOST_MATCH_PATTERN_CERTSAN]);
             const spHostMatchPattern = scHostMatchPattern.safeParse(values.hostMatchPattern);
             if (!spHostMatchPattern.success) {
               ctx.addIssue({
