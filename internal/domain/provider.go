@@ -500,6 +500,7 @@ const (
 	PurgeProviderTypeTencentCloudGAAP = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
 	PurgeProviderTypeTencentCloudSSL  = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
 	PurgeProviderTypeTencentCloudTSE  = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
+	PurgeProviderTypeUCloudUSSL       = PurgeProviderType(AccessProviderTypeUCloud + "-ussl")
 )
 
 type NotificationProviderType string

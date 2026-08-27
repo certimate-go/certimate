@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
-	"time"
 
 	"github.com/samber/lo"
 	"github.com/ucloud/ucloud-sdk-go/services/ulb"
@@ -260,7 +259,7 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadba
 		return fmt.Errorf("failed to execute sdk request 'ulb.AddSSLBinding': %w", err)
 	}
 
-	// 找出需要删除绑定的扩展证书
+	// 获取扩展证书信息，并找出需要删除绑定的同域名证书
 	// REF: https://docs.ucloud.cn/api/ulb-api/describe_sslv2
 	sslIdsToDelete := make([]string, 0)
 	for _, certItem := range cloudListenerInfo.Certificates {
@@ -282,9 +281,6 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadba
 		sslItem := describeSSLV2Resp.DataSet[0]
 		if sslItem.Domains == d.config.Domain {
 			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 同域名证书需要删除
-			continue
-		} else if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
-			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 过期证书需要删除。TODO: remove on v0.5
 			continue
 		}
 	}

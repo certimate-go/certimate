@@ -3089,6 +3089,11 @@
         "label": "腾讯云 TSE 云原生网关 ID",
         "placeholder": "请输入腾讯云 TSE 云原生网关 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com.cn/rcc/governance\" target=\"_blank\">https://console.cloud.tencent.com.cn/rcc/governance</a>"
+      },
+      "ucloud_ussl_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 USSL 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
       }
     }
   },

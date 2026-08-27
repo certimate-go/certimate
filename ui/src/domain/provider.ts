@@ -994,6 +994,7 @@ export const PURGE_PROVIDERS = Object.freeze(
     TENCENTCLOUD_GAAP: `${ACCESS_PROVIDERS.TENCENTCLOUD}-gaap`,
     TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
     TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
+    UCLOUD_USSL: `${ACCESS_PROVIDERS.UCLOUD}-ussl`,
   } as const
 );
 
@@ -1016,6 +1017,7 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
       [PURGE_PROVIDERS.TENCENTCLOUD_TSE, "provider.tencentcloud_tse"],
       [PURGE_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud_scm"],
       [PURGE_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud_elb"],
+      [PURGE_PROVIDERS.UCLOUD_USSL, "provider.ucloud_ussl"],
     ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>
   ).map(([type, name]) => [
     type,

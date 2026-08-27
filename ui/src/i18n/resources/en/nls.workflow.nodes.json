@@ -3090,6 +3090,11 @@
         "label": "Tencent Cloud TSE Cloud-native API gateway ID",
         "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
+      },
+      "ucloud_ussl_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud USSL API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
       }
     }
   },
