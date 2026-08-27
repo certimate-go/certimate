@@ -3051,6 +3051,19 @@
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "aws_iam_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS IAM 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_iam_certificate_path": {
+        "label": "AWS IAM 证书路径（可选）",
+        "placeholder": "请输入 AWS IAM 证书路径",
+        "errmsg": {
+          "invalid": "无效的证书路径"
+        },
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html</a>"
+      },
       "azure_keyvault_name": {
         "label": "Azure KeyVault 名称",
         "placeholder": "请输入 Azure KeyVault 名称",

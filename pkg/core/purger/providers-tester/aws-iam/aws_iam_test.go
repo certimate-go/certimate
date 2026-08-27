@@ -1,6 +1,6 @@
 //go:build tester
 
-package aliyunesa_test
+package awsiam_test
 
 import (
 	"testing"
@@ -8,32 +8,29 @@ import (
 	"github.com/stretchr/testify/require"
 
 	tester "github.com/certimate-go/certimate/pkg/core/purger/providers-tester"
-	impl "github.com/certimate-go/certimate/pkg/core/purger/providers/aliyun-esa"
+	impl "github.com/certimate-go/certimate/pkg/core/purger/providers/aws-iam"
 )
 
 var (
-	fp               = tester.InitArgs("ALIYUNESA_")
+	fp               = tester.InitArgs("AWSIAM_")
 	fAccessKeyId     string
-	fAccessKeySecret string
+	fSecretAccessKey string
 	fRegion          string
-	fSiteId          int64
 )
 
 func init() {
 	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
-	fp.DefineString(&fAccessKeySecret, "ACCESSKEYSECRET")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
-	fp.DefineInt64(&fSiteId, "SITEID")
 }
 
 /*
 Shell command to run this test:
 
-	go test -tags=tester -v ./aliyun_esa_test.go -args \
-	--ALIYUNESA_ACCESSKEYID="your-access-key-id" \
-	--ALIYUNESA_ACCESSKEYSECRET="your-access-key-secret" \
-	--ALIYUNESA_REGION="cn-hangzhou" \
-	--ALIYUNESA_SITEID="your-esa-site-id"
+	go test -tags=tester -v ./aws_iam_test.go -args \
+	--AWSIAM_ACCESSKEYID="your-access-key-id" \
+	--AWSIAM_SECRETACCESSKEY="your-access-key-secret" \
+	--AWSIAM_REGION="us-east-1"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -41,9 +38,8 @@ func TestProvider(t *testing.T) {
 	t.Run("Purge", func(t *testing.T) {
 		provider, err := impl.NewPurger(&impl.PurgerConfig{
 			AccessKeyId:     fAccessKeyId,
-			AccessKeySecret: fAccessKeySecret,
+			SecretAccessKey: fSecretAccessKey,
 			Region:          fRegion,
-			SiteId:          fSiteId,
 		})
 		require.NoError(t, err)
 

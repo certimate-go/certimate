@@ -12,11 +12,9 @@ import (
 )
 
 var (
-	fp            = tester.InitArgs("UCLOUDUSSL_")
-	fTestCertPath string
-	fTestKeyPath  string
-	fPrivateKey   string
-	fPublicKey    string
+	fp          = tester.InitArgs("UCLOUDUSSL_")
+	fPrivateKey string
+	fPublicKey  string
 )
 
 func init() {

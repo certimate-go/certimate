@@ -13,8 +13,6 @@ import (
 
 var (
 	fp               = tester.InitArgs("HUAWEICLOUDELB_")
-	fTestCertPath    string
-	fTestKeyPath     string
 	fAccessKeyId     string
 	fSecretAccessKey string
 	fRegion          string
