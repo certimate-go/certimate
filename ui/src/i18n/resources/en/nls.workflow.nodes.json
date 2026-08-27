@@ -3036,6 +3036,11 @@
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud CAS region (e.g. cn-hangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>"
+      },
+      "aliyun_clb_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud CLB region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
       }
     }
   },

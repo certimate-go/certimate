@@ -3,6 +3,7 @@
 import { PURGE_PROVIDERS, type PurgeProviderType } from "@/domain/provider";
 
 import BizPurgeNodeConfigFieldsProviderAliyunCAS from "./BizPurgeNodeConfigFieldsProviderAliyunCAS";
+import BizPurgeNodeConfigFieldsProviderAliyunCLB from "./BizPurgeNodeConfigFieldsProviderAliyunCLB";
 
 const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentType<any>>> = {
   /*
@@ -10,6 +11,7 @@ const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentTyp
     NOTICE: If you add new child component, please keep ASCII order.
     */
   [PURGE_PROVIDERS.ALIYUN_CAS]: BizPurgeNodeConfigFieldsProviderAliyunCAS,
+  [PURGE_PROVIDERS.ALIYUN_CLB]: BizPurgeNodeConfigFieldsProviderAliyunCLB,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {

@@ -987,6 +987,7 @@ export const PURGE_PROVIDERS = Object.freeze(
    */
   {
     ALIYUN_CAS: `${ACCESS_PROVIDERS.ALIYUN}-cas`,
+    ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
   } as const
 );
 
@@ -1002,6 +1003,7 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
   (
     [
       [PURGE_PROVIDERS.ALIYUN_CAS, "provider.aliyun_cas"],
+      [PURGE_PROVIDERS.ALIYUN_CLB, "provider.aliyun_clb"],
     ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>
   ).map(([type, name]) => [
     type,
