@@ -259,6 +259,7 @@
   "tencentcloud_ga2": "腾讯云 - 全球加速 2.0 GA2",
   "tencentcloud_gaap": "腾讯云 - 全球应用加速 GAAP",
   "tencentcloud_scf": "腾讯云 - 云函数 SCF",
+  "tencentcloud_ssl": "腾讯云 - SSL 证书服务",
   "tencentcloud_ssl_deploy": "腾讯云 - 通过 SSL 证书服务创建部署任务",
   "tencentcloud_ssl_update": "腾讯云 - 通过 SSL 证书服务更新云资源证书",
   "tencentcloud_ssl_upload": "腾讯云 - 上传到 SSL 证书服务",

@@ -166,7 +166,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 		return fmt.Errorf("could not find ga2 listener '%s'", cloudListenerId)
 	}
 
-	// 获取证书信息，避免重复绑定
+	// 获取证书信息，并找出需要解绑的同域名证书
 	// REF: https://cloud.tencent.com/document/api/400/41674
 	serverCertificateIds := make([]string, 0)
 	for _, serverCertificateId := range describeListenersResp.Response.ListenerSet[0].ServerCertificates {
@@ -187,8 +187,8 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 
 			return fmt.Errorf("failed to execute sdk request 'ssl.DescribeCertificate': %w", err)
 		} else {
-			certSANMatched := lo.ElementsMatch(lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName), cloudCertSANs)
-			if certSANMatched { // 同域名证书需要删除
+			certSANMatched := lo.ElementsMatch(cloudCertSANs, lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName))
+			if certSANMatched {
 				continue
 			}
 

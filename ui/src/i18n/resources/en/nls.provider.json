@@ -259,6 +259,7 @@
   "tencentcloud_ga2": "Tencent Cloud - GA2 (Global Accelerator 2.0)",
   "tencentcloud_gaap": "Tencent Cloud - GAAP (Global Application Acceleration Platform)",
   "tencentcloud_scf": "Tencent Cloud - SCF (Serverless Cloud Function)",
+  "tencentcloud_ssl": "Tencent Cloud - SSL Certificate Service",
   "tencentcloud_ssl_deploy": "Tencent Cloud - Deploy via SSL Certificate Service",
   "tencentcloud_ssl_update": "Tencent Cloud - Update via SSL Certificate Service",
   "tencentcloud_ssl_upload": "Tencent Cloud - Upload to SSL Certificate Service",

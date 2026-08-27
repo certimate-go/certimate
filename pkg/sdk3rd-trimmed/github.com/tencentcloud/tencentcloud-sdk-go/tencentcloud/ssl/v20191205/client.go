@@ -23,6 +23,30 @@ func NewClient(credential common.CredentialIface, region string, clientProfile *
 	return
 }
 
+func NewDeleteCertificateRequest() (request *DeleteCertificateRequest) {
+	return ssl.NewDeleteCertificateRequest()
+}
+
+func NewDeleteCertificateResponse() (response *DeleteCertificateResponse) {
+	return ssl.NewDeleteCertificateResponse()
+}
+
+func (c *Client) DeleteCertificateWithContext(ctx context.Context, request *DeleteCertificateRequest) (response *DeleteCertificateResponse, err error) {
+	if request == nil {
+		request = NewDeleteCertificateRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "ssl", ssl.APIVersion, "DeleteCertificate")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DeleteCertificate require credential")
+	}
+
+	request.SetContext(ctx)
+	response = NewDeleteCertificateResponse()
+	err = c.Send(request, response)
+	return
+}
+
 func NewDescribeCertificateRequest() (request *DescribeCertificateRequest) {
 	return ssl.NewDescribeCertificateRequest()
 }
@@ -43,6 +67,30 @@ func (c *Client) DescribeCertificateWithContext(ctx context.Context, request *De
 
 	request.SetContext(ctx)
 	response = NewDescribeCertificateResponse()
+	err = c.Send(request, response)
+	return
+}
+
+func NewDescribeCertificatesRequest() (request *DescribeCertificatesRequest) {
+	return ssl.NewDescribeCertificatesRequest()
+}
+
+func NewDescribeCertificatesResponse() (response *DescribeCertificatesResponse) {
+	return ssl.NewDescribeCertificatesResponse()
+}
+
+func (c *Client) DescribeCertificatesWithContext(ctx context.Context, request *DescribeCertificatesRequest) (response *DescribeCertificatesResponse, err error) {
+	if request == nil {
+		request = NewDescribeCertificatesRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "ssl", ssl.APIVersion, "DescribeCertificates")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DescribeCertificates require credential")
+	}
+
+	request.SetContext(ctx)
+	response = NewDescribeCertificatesResponse()
 	err = c.Send(request, response)
 	return
 }

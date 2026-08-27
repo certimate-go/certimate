@@ -3051,6 +3051,11 @@
         "label": "Alibaba Cloud ESA site ID",
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "tencentcloud_ssl_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       }
     }
   },
