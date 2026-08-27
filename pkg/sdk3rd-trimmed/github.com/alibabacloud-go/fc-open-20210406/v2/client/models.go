@@ -1,4 +1,4 @@
-﻿package client
+package client
 
 import (
 	"github.com/alibabacloud-go/fc-open-20210406/v2/client"

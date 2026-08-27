@@ -1,4 +1,4 @@
-﻿package zga
+package zga
 
 import (
 	zga20230706 "github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/zga20230706"

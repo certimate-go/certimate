@@ -1,4 +1,4 @@
-﻿package cdn
+package cdn
 
 import (
 	"github.com/zenlayer/zenlayercloud-sdk-go/zenlayercloud/common"

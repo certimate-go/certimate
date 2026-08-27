@@ -1,4 +1,4 @@
-﻿package bunny
+package bunny
 
 type Options struct {
 	ApiKey string

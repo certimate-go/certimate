@@ -1,4 +1,4 @@
-﻿package client
+package client
 
 type Options struct {
 	Username string

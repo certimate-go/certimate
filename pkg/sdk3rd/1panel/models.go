@@ -1,4 +1,4 @@
-﻿package onepanel
+package onepanel
 
 type Website struct {
 	ID            int64  `json:"id"`

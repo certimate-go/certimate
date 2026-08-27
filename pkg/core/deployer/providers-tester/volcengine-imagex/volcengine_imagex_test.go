@@ -1,0 +1,62 @@
+//go:build tester
+
+package volcengineimagex_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	tester "github.com/certimate-go/certimate/pkg/core/deployer/providers-tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/volcengine-imagex"
+)
+
+var (
+	fp               = tester.InitArgs("VOLCENGINEIMAGEX_")
+	fTestCertPath    string
+	fTestKeyPath     string
+	fAccessKeyId     string
+	fSecretAccessKey string
+	fRegion          string
+	fServiceId       string
+	fDomain          string
+)
+
+func init() {
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fAccessKeyId, "ACCESSKEYID")
+	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
+	fp.DefineString(&fRegion, "REGION")
+	fp.DefineString(&fServiceId, "SERVICEID")
+	fp.DefineString(&fDomain, "DOMAIN")
+}
+
+/*
+Shell command to run this test:
+
+	go test -tags=tester -v ./volcengine_imagex_test.go -args \
+	--VOLCENGINEIMAGEX_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--VOLCENGINEIMAGEX_TESTKEYPATH="/path/to/your-test-key.pem" \
+	--VOLCENGINEIMAGEX_ACCESSKEYID="your-access-key-id" \
+	--VOLCENGINEIMAGEX_SECRETACCESSKEY="your-secret-access-key" \
+	--VOLCENGINEIMAGEX_REGION="cn-north-1" \
+	--VOLCENGINEIMAGEX_SERVICEID="your-service-id" \
+	--VOLCENGINEIMAGEX_DOMAIN="example.com"
+*/
+func TestProvider(t *testing.T) {
+	fp.Parse()
+
+	t.Run("Deploy", func(t *testing.T) {
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
+			AccessKeyId:     fAccessKeyId,
+			SecretAccessKey: fSecretAccessKey,
+			Region:          fRegion,
+			ServiceId:       fServiceId,
+			Domain:          fDomain,
+		})
+		require.NoError(t, err)
+
+		tester.Deploy(t, provider, tester.DeployInput{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+	})
+}

@@ -1,4 +1,4 @@
-﻿package ratpanel
+package ratpanel
 
 type Options struct {
 	AccessTokenId int64

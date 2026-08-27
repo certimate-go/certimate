@@ -1,4 +1,4 @@
-﻿package onepanel
+package onepanel
 
 type Options struct {
 	ApiKey string

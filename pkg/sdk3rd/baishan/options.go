@@ -1,4 +1,4 @@
-﻿package baishan
+package baishan
 
 type Options struct {
 	ApiToken string

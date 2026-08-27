@@ -1,4 +1,4 @@
-﻿package alb
+package alb
 
 import (
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"

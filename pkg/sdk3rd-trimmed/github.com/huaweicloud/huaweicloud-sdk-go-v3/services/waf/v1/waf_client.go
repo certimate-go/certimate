@@ -1,4 +1,4 @@
-﻿package v1
+package v1
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"

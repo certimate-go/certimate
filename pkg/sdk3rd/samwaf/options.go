@@ -1,4 +1,4 @@
-﻿package samwaf
+package samwaf
 
 type Options struct {
 	ApiKey string

@@ -73,6 +73,7 @@ import BizDeployNodeConfigFieldsProviderHuaweiCloudLive from "./BizDeployNodeCon
 import BizDeployNodeConfigFieldsProviderHuaweiCloudOBS from "./BizDeployNodeConfigFieldsProviderHuaweiCloudOBS";
 import BizDeployNodeConfigFieldsProviderHuaweiCloudVOD from "./BizDeployNodeConfigFieldsProviderHuaweiCloudVOD";
 import BizDeployNodeConfigFieldsProviderHuaweiCloudWAF from "./BizDeployNodeConfigFieldsProviderHuaweiCloudWAF";
+import BizDeployNodeConfigFieldsProviderHuaweiIBMC from "./BizDeployNodeConfigFieldsProviderHuaweiIBMC";
 import BizDeployNodeConfigFieldsProviderJDCloudALB from "./BizDeployNodeConfigFieldsProviderJDCloudALB";
 import BizDeployNodeConfigFieldsProviderJDCloudCDN from "./BizDeployNodeConfigFieldsProviderJDCloudCDN";
 import BizDeployNodeConfigFieldsProviderJDCloudLive from "./BizDeployNodeConfigFieldsProviderJDCloudLive";
@@ -88,6 +89,7 @@ import BizDeployNodeConfigFieldsProviderMohuaMVH from "./BizDeployNodeConfigFiel
 import BizDeployNodeConfigFieldsProviderNetlify from "./BizDeployNodeConfigFieldsProviderNetlify";
 import BizDeployNodeConfigFieldsProviderNginxProxyManager from "./BizDeployNodeConfigFieldsProviderNginxProxyManager";
 import BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt from "./BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt";
+import BizDeployNodeConfigFieldsProviderProxmoxBS from "./BizDeployNodeConfigFieldsProviderProxmoxBS";
 import BizDeployNodeConfigFieldsProviderProxmoxVE from "./BizDeployNodeConfigFieldsProviderProxmoxVE";
 import BizDeployNodeConfigFieldsProviderQingCloudLB from "./BizDeployNodeConfigFieldsProviderQingCloudLB";
 import BizDeployNodeConfigFieldsProviderRainYunRCDN from "./BizDeployNodeConfigFieldsProviderRainYunRCDN";
@@ -219,6 +221,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_OBS]: BizDeployNodeConfigFieldsProviderHuaweiCloudOBS,
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_VOD]: BizDeployNodeConfigFieldsProviderHuaweiCloudVOD,
   [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_WAF]: BizDeployNodeConfigFieldsProviderHuaweiCloudWAF,
+  [DEPLOYMENT_PROVIDERS.HUAWEIIBMC]: BizDeployNodeConfigFieldsProviderHuaweiIBMC,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_ALB]: BizDeployNodeConfigFieldsProviderJDCloudALB,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_CDN]: BizDeployNodeConfigFieldsProviderJDCloudCDN,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_LIVE]: BizDeployNodeConfigFieldsProviderJDCloudLive,
@@ -234,6 +237,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.NETLIFY]: BizDeployNodeConfigFieldsProviderNetlify,
   [DEPLOYMENT_PROVIDERS.NGINXPROXYMANAGER]: BizDeployNodeConfigFieldsProviderNginxProxyManager,
   [DEPLOYMENT_PROVIDERS.ORACLECLOUD_CERTIFICATESMGMT]: BizDeployNodeConfigFieldsProviderOracleCloudCertificatesMgmt,
+  [DEPLOYMENT_PROVIDERS.PROXMOXBS]: BizDeployNodeConfigFieldsProviderProxmoxBS,
   [DEPLOYMENT_PROVIDERS.PROXMOXVE]: BizDeployNodeConfigFieldsProviderProxmoxVE,
   [DEPLOYMENT_PROVIDERS.QINGCLOUD_LB]: BizDeployNodeConfigFieldsProviderQingCloudLB,
   [DEPLOYMENT_PROVIDERS.RAINYUN_RCDN]: BizDeployNodeConfigFieldsProviderRainYunRCDN,

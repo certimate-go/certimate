@@ -1,4 +1,4 @@
-﻿package settings
+package settings
 
 import (
 	"context"
@@ -17,7 +17,7 @@ func GetGlobalSettingsForSSLProvider() domain.SettingsContentForSSLProvider {
 	if content == nil {
 		content = domain.SettingsContent{}
 	}
-	return *(content.(domain.SettingsContent)).AsSSLProvider()
+	return *content.(domain.SettingsContent).AsSSLProvider()
 }
 
 func GetGlobalSettingsForPersistence() domain.SettingsContentForPersistence {
@@ -27,7 +27,7 @@ func GetGlobalSettingsForPersistence() domain.SettingsContentForPersistence {
 	if content == nil {
 		content = domain.SettingsContent{}
 	}
-	return *(content.(domain.SettingsContent)).AsPersistence()
+	return *content.(domain.SettingsContent).AsPersistence()
 }
 
 func registerSettingsStoreByName(settingsName string) error {

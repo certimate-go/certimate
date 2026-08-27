@@ -1,4 +1,4 @@
-﻿package netlify
+package netlify
 
 type Options struct {
 	ApiToken string

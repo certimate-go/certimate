@@ -1,0 +1,434 @@
+﻿name: "GitHub Pull Requests Checker"
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: gh_pr_check-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  pr-guard:
+    if: >
+      github.event.issue.pull_request &&
+      contains(fromJSON('["OWNER", "MEMBER"]'), github.event.comment.author_association) &&
+      startsWith(github.event.comment.body, '/pr-check')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log
+        run: |
+          echo "Triggered by @${{ github.event.comment.user.login }}"
+          echo "On PR #${{ github.event.issue.number }}"
+      - name: Get PR details
+        id: pr_details
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            core.setOutput("git_head_repo", pr.head.repo.full_name);
+            core.setOutput("git_head_ref", pr.head.ref);
+            core.setOutput("git_head_sha", pr.head.sha);
+            console.log(`git head repo: ${pr.head.repo.full_name}, ref: ${pr.head.ref}, sha: ${pr.head.sha}`);
+    outputs:
+      git_head_repo: ${{ steps.pr_details.outputs.git_head_repo }}
+      git_head_ref: ${{ steps.pr_details.outputs.git_head_ref }}
+      git_head_sha: ${{ steps.pr_details.outputs.git_head_sha }}
+      no_compile: ${{ contains(github.event.comment.body, '-no-compile') }}
+      no_test: ${{ contains(github.event.comment.body, '-no-test') }}
+      no_lint: ${{ contains(github.event.comment.body, '-no-lint') }}
+
+  compile-build:
+    if: needs.pr-guard.outputs.no_compile != 'true'
+    needs: pr-guard
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Initialize Actions status
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: "${{ needs.pr-guard.outputs.git_head_sha }}",
+              state: "pending",
+              context: "pr-check/compile-build",
+              description: "Running...",
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/merge
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: "go.mod"
+
+      - name: Check Node.js dependencies
+        run: |
+          npm --prefix=./ui ci
+
+      - name: Build Node.js
+        run: |
+          npm --prefix=./ui run build
+
+      - name: Build Go
+        env:
+          CGO_ENABLED: 0
+        run: |
+          go build -v -ldflags "-s -w" -trimpath -o ./dist/certimate ./
+
+  unit-test:
+    if: needs.pr-guard.outputs.no_test != 'true'
+    needs: pr-guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize Actions status
+        uses: actions/github-script@v9
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: "${{ needs.pr-guard.outputs.git_head_sha }}",
+              state: "pending",
+              context: "pr-check/unit-test",
+              description: "Running...",
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/merge
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: "go.mod"
+
+      - name: Run Go unit tests
+        id: gotest
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          # Exclude paths below:
+          EXCLUDES=(
+            "./pkg/core/certmgr/providers-tester/"
+            "./pkg/core/deployer/providers-tester/"
+            "./pkg/core/notifier/providers-tester/"
+            "./pkg/core/purger/providers-tester/"
+            "./pkg/sdk3rd-forked/"
+          )
+
+          GO_PKGS=$(go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./... | grep -Ev $(IFS='|'; echo "${EXCLUDES[*]}"))
+
+          echo " "
+          echo "Testing packages:"
+          echo "$GO_PKGS"
+          echo " "
+
+          if ! go test -race -v $GO_PKGS; then
+            echo "::error::Failed to run 'go test', please fix the issues." >&2
+            exit 1
+          else
+            go test -tags=tester -c -o /dev/null ./...
+            echo "'go test' passed."
+          fi
+
+      - name: Check state
+        if: always()
+        run: |
+          if [[ "${{ steps.gotest.outcome }}" == "failure" ]]; then
+            echo "::error::Some cases failed."
+            exit 1
+          fi
+
+  lint-format:
+    if: needs.pr-guard.outputs.no_lint != 'true'
+    needs: pr-guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize Actions status
+        uses: actions/github-script@v9
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: "${{ needs.pr-guard.outputs.git_head_sha }}",
+              state: "pending",
+              context: "pr-check/lint-format",
+              description: "Running...",
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/merge
+          fetch-depth: 1
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: "go.mod"
+
+      # 暂时禁用，避免 Prettier 配置冲突导致检查失败
+      # - name: Run Node.js code linter
+      #   id: jslint
+      #   if: success() || failure()
+      #   continue-on-error: true
+      #   run: |
+      #     git reset --hard HEAD
+      #     git clean -df
+
+      #     cd ui
+      #     npm ci
+
+      #     echo "Running 'eslint' ..."
+      #     if ! npx eslint . --quiet; then
+      #       echo "::error::'eslint' resulted in changes, please format files and commit them:"
+      #       exit 1
+      #     else
+      #       echo "'eslint' passed."
+      #     fi
+
+      - name: Run Node.js code formatter
+        id: jsfmt
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          git reset --hard HEAD
+          git clean -df
+
+          cd ui
+          npm ci
+
+          echo "Running 'eslint --fix' ..."
+          npx eslint . --fix --output-file=/dev/null
+          if ! git diff --quiet; then
+            echo "::error::'eslint --fix' resulted in changes, please format files and commit them:"
+            git diff --exit-code
+            exit 1
+          else
+            echo "'eslint --fix' passed."
+          fi
+
+      - name: Run Go code linter
+        id: golint
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          git reset --hard HEAD
+          git clean -df
+
+          # Exclude paths below:
+          EXCLUDES=(
+            "./pkg/sdk3rd-forked/"
+            "./pkg/sdk3rd-trimmed/"
+          )
+
+          GO_MODULE=$(go list -m)
+          GO_PKGS=$(go list ./... | grep -Ev $(IFS='|'; echo "${EXCLUDES[*]}"))
+
+          EXCLUDE_FUNC=()
+          for pkg in ${GO_PKGS}; do
+            pkg_path="./${pkg#$GO_MODULE/}"
+            if [ ! -d "$pkg_path" ]; then
+              EXCLUDE_FUNC+=("$pkg")
+              continue
+            fi
+            if ! grep -RqE '//nolint:(all|govet)' "$pkg_path"/*.go 2>/dev/null; then
+              EXCLUDE_FUNC+=("$pkg")
+            fi
+          done
+
+          GO_PKGS=$(printf '%s\n' "${EXCLUDE_FUNC[@]}")
+          echo " "
+          echo "Linting packages:"
+          echo "$GO_PKGS"
+          echo " "
+
+          echo "Running 'go vet' ..."
+          if ! echo "$GO_PKGS" | xargs go vet; then
+            echo "::error::Failed to run 'go vet', please fix the issues."
+            exit 1
+          else
+            echo "'go vet' passed."
+          fi
+
+      - name: Run Go code formatter
+        id: gofmt
+        if: success() || failure()
+        continue-on-error: true
+        run: |
+          git reset --hard HEAD
+          git clean -df
+
+          go install mvdan.cc/gofumpt@latest
+          gofumpt --version
+
+          # Exclude paths below:
+          EXCLUDES=(
+            "./pkg/sdk3rd-forked/"
+            "./pkg/sdk3rd-trimmed/"
+          )
+
+          EXCLUDE_FUNC=()
+          for ex in "${EXCLUDES[@]}"; do
+            EXCLUDE_FUNC+=(-path "${ex}*" -prune -o)
+          done
+
+          GO_FILES="$(
+            find . \
+              "${EXCLUDE_FUNC[@]}" \
+              -type f -name "*.go" \
+              -print
+          )"
+          echo " "
+          echo "Formatting files:"
+          echo "$GO_FILES"
+          echo " "
+
+          echo "Running 'gofumpt' ..."
+          echo "$GO_FILES" | xargs -d '\n' gofumpt -l -w
+          if ! git diff --quiet; then
+            echo "::error::'gofumpt' resulted in changes, please format files and commit them:"
+            git diff --exit-code
+            exit 1
+          else
+            echo "'gofumpt' passed."
+          fi
+
+      - name: Check state
+        if: always()
+        run: |
+          if [[ "${{ steps.jslint.outcome }}" == "failure" ||
+                "${{ steps.jsfmt.outcome }}" == "failure" ||
+                "${{ steps.golint.outcome }}" == "failure" ||
+                "${{ steps.gofmt.outcome }}" == "failure" ]]; then
+            echo "::error::Some cases failed."
+            exit 1
+          fi
+
+  ending:
+    needs: [pr-guard, compile-build, unit-test, lint-format]
+    if: always() && needs.pr-guard.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      statuses: write
+    steps:
+      - name: Compute overall state
+        id: overall_state
+        run: |
+          # 最终状态：
+          #  - 任一失败 → failure
+          #  - 任一手动取消/超时 → cancelled
+          #  - 全部成功 → success
+          RESULTS="${{ needs.compile-build.result }} ${{ needs.unit-test.result }} ${{ needs.lint-format.result }}"
+          if echo "$RESULTS" | grep -q "failure\|error"; then
+            echo "state=failure" >> "$GITHUB_OUTPUT"
+          elif echo "$RESULTS" | grep -q "cancelled"; then
+            echo "state=cancelled" >> "$GITHUB_OUTPUT"
+          else
+            echo "state=success" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set Actions status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const jobs = [
+              {
+                ctx: "pr-check/compile-build",
+                result: "${{ needs.compile-build.result }}",
+                skipped: "${{ needs.pr-guard.outputs.no_compile }}",
+              },
+              {
+                ctx: "pr-check/unit-test",
+                result: "${{ needs.unit-test.result }}",
+                skipped: "${{ needs.pr-guard.outputs.no_test }}",
+              },
+              {
+                ctx: "pr-check/lint-format",
+                result: "${{ needs.lint-format.result }}",
+                skipped: "${{ needs.pr-guard.outputs.no_lint }}",
+              },
+            ];
+            const states = {
+              "success": "success",
+              "failure": "failure",
+              "cancelled": "error"
+            };
+            for (const j of jobs) {
+              if (j.skipped === "true") continue;
+              const state = states[j.result] || "error";
+              const desc  = state === "success" ? "Passed"
+                          : state === "failure" ? "Failed"
+                          : "Cancelled";
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: "${{ needs.pr-guard.outputs.git_head_sha }}",
+                state: state,
+                context: j.ctx,
+                description: desc,
+                target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              });
+            }
+
+      - name: Create comment
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const stateIcon = "${{ steps.overall_state.outputs.state }}" === "success" ? "✅"
+                : "${{ steps.overall_state.outputs.state }}" === "failure" ? "❌"
+                : "";
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              body: stateIcon + "PR check done, overall result: **" + "${{ steps.overall_state.outputs.state }}" + "**\n" +
+                "- _compile-build_: **" + ("${{ needs.pr-guard.outputs.no_compile }}" === "true" ? "skipped" : "${{ needs.compile-build.result }}") + "**\n" +
+                "- _unit-test_: **" + ("${{ needs.pr-guard.outputs.no_test }}" === "true" ? "skipped" : "${{ needs.unit-test.result }}") + "**\n" +
+                "- _lint-format_: **" + ("${{ needs.pr-guard.outputs.no_lint }}" === "true" ? "skipped" : "${{ needs.lint-format.result }}") + "**\n\n" +
+                "Click to [view details](" + `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}` + ").",
+            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

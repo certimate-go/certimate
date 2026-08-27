@@ -1,4 +1,4 @@
-﻿package maps
+package maps
 
 // 将源字典中的所有键值对复制到目标字典中。
 //

@@ -243,6 +243,11 @@
       "placeholder": "请输入 AWS SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html</a>"
     },
+    "axisnow_api_token": {
+      "label": "AxisNow API 令牌",
+      "placeholder": "请输入 AxisNow API 令牌",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.axisnow.io/zh/docs/edge/tenant/api-tokens\" target=\"_blank\">https://www.axisnow.io/zh/docs/edge/tenant/api-tokens</a>"
+    },
     "azure_tenant_id": {
       "label": "Azure 租户 ID",
       "placeholder": "请输入 Azure 租户 ID",
@@ -791,6 +796,18 @@
       "placeholder": "请输入华为云企业项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://support.huaweicloud.com/usermanual-em/zh-cn_topic_0126101490.html\" target=\"_blank\">https://support.huaweicloud.com/usermanual-em/zh-cn_topic_0126101490.html</a>"
     },
+    "huaweiibmc_host": {
+      "label": "iBMC Redfish 服务器地址",
+      "placeholder": "请输入 iBMC Redfish 服务器地址"
+    },
+    "huaweiibmc_username": {
+      "label": "iBMC 用户名",
+      "placeholder": "请输入 iBMC 用户名"
+    },
+    "huaweiibmc_password": {
+      "label": "iBMC 密码",
+      "placeholder": "请输入 iBMC 密码"
+    },
     "infomaniak_access_token": {
       "label": "Infomaniak AccessToken",
       "placeholder": "请输入 Infomaniak AccessToken",
@@ -1117,6 +1134,20 @@
       "placeholder": "请输入 PowerDNS API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>"
     },
+    "proxmoxbs_server_url": {
+      "label": "Proxmox BS 服务地址",
+      "placeholder": "请输入 Proxmox BS 服务地址"
+    },
+    "proxmoxbs_api_token": {
+      "label": "Proxmox BS API Token",
+      "placeholder": "请输入 Proxmox BS API Token",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
+    "proxmoxbs_api_token_secret": {
+      "label": "Proxmox BS API Token Secret",
+      "placeholder": "请输入 Proxmox BS API Token Secret",
+      "tooltip": "这是什么？请参阅 <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
     "proxmoxve_server_url": {
       "label": "Proxmox VE 服务地址",
       "placeholder": "请输入 Proxmox VE 服务地址"
@@ -1127,7 +1158,7 @@
       "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },
     "proxmoxve_api_token_secret": {
-      "label": "Proxmox VE API Token Secret（可选）",
+      "label": "Proxmox VE API Token Secret",
       "placeholder": "请输入 Proxmox VE API Token Secret",
       "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },

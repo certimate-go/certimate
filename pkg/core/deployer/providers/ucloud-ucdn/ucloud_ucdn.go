@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
@@ -95,14 +96,19 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 获取加速域名配置
 	// REF: https://docs.ucloud.cn/api/ucdn-api/get_ucdn_domain_config
+	var domainConfigInfo ucloudsdk.DomainConfigInfo
 	getUcdnDomainConfigReq := d.sdkClient.NewGetUcdnDomainConfigRequest()
 	getUcdnDomainConfigReq.DomainId = []string{d.config.DomainId}
 	getUcdnDomainConfigResp, err := d.sdkClient.GetUcdnDomainConfig(getUcdnDomainConfigReq)
 	d.logger.Debug("sdk request 'ucdn.GetUcdnDomainConfig'", slog.Any("request", getUcdnDomainConfigReq), slog.Any("response", getUcdnDomainConfigResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ucdn.GetUcdnDomainConfig': %w", err)
-	} else if len(getUcdnDomainConfigResp.DomainList) == 0 {
-		return nil, fmt.Errorf("could not find domain '%s'", d.config.DomainId)
+	} else {
+		if len(getUcdnDomainConfigResp.DomainList) == 0 {
+			return nil, fmt.Errorf("could not find domain '%s'", d.config.DomainId)
+		}
+
+		domainConfigInfo = getUcdnDomainConfigResp.DomainList[0]
 	}
 
 	// 更新 HTTPS 加速配置
@@ -110,9 +116,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	certId, _ := strconv.Atoi(upres.CertId)
 	updateUcdnDomainHttpsConfigV2Req := d.sdkClient.NewUpdateUcdnDomainHttpsConfigV2Request()
 	updateUcdnDomainHttpsConfigV2Req.DomainId = ucloud.String(d.config.DomainId)
-	updateUcdnDomainHttpsConfigV2Req.HttpsStatusCn = ucloud.String(getUcdnDomainConfigResp.DomainList[0].HttpsStatusCn)
-	updateUcdnDomainHttpsConfigV2Req.HttpsStatusAbroad = ucloud.String(getUcdnDomainConfigResp.DomainList[0].HttpsStatusAbroad)
-	updateUcdnDomainHttpsConfigV2Req.HttpsStatusAbroad = ucloud.String(getUcdnDomainConfigResp.DomainList[0].HttpsStatusAbroad)
+	updateUcdnDomainHttpsConfigV2Req.HttpsStatusCn = lo.
+		IfF(domainConfigInfo.AreaCode == "all" || domainConfigInfo.AreaCode == "cn", func() *string { return ucloud.String(domainConfigInfo.HttpsStatusCn) }).
+		Else(nil)
+	updateUcdnDomainHttpsConfigV2Req.HttpsStatusAbroad = lo.
+		IfF(domainConfigInfo.AreaCode == "all" || domainConfigInfo.AreaCode == "abroad", func() *string { return ucloud.String(domainConfigInfo.HttpsStatusAbroad) }).
+		Else(nil)
 	updateUcdnDomainHttpsConfigV2Req.CertId = ucloud.Int(certId)
 	updateUcdnDomainHttpsConfigV2Req.CertName = ucloud.String(upres.CertName)
 	updateUcdnDomainHttpsConfigV2Req.CertType = ucloud.String("ussl")

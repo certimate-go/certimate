@@ -7,7 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/certimate-go/certimate/pkg/core"
-	proxmoxvesdk "github.com/certimate-go/certimate/pkg/sdk3rd/proxmoxve"
+	pvesdk "github.com/certimate-go/certimate/pkg/sdk3rd/proxmoxve"
 )
 
 type (
@@ -21,10 +21,10 @@ type DeployerConfig struct {
 	// Proxmox VE API Token。
 	ApiToken string `json:"apiToken"`
 	// Proxmox VE API Token Secret。
-	ApiTokenSecret string `json:"apiTokenSecret,omitempty"`
+	ApiTokenSecret string `json:"apiTokenSecret"`
 	// 是否允许不安全的连接。
 	AllowInsecureConnections bool `json:"allowInsecureConnections,omitempty"`
-	// 集群节点名称。
+	// 节点名称。
 	NodeName string `json:"nodeName"`
 	// 是否自动重启。
 	AutoRestart bool `json:"autoRestart"`
@@ -33,7 +33,7 @@ type DeployerConfig struct {
 type Deployer struct {
 	config    *DeployerConfig
 	logger    *slog.Logger
-	sdkClient *proxmoxvesdk.Client
+	sdkClient *pvesdk.Client
 }
 
 var _ Provider = (*Deployer)(nil)
@@ -70,7 +70,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 上传自定义证书
 	// REF: https://pve.proxmox.com/pve-docs/api-viewer/index.html#/nodes/{node}/certificates/custom
-	nodeUploadCustomCertificateReq := &proxmoxvesdk.NodeUploadCustomCertificateRequest{
+	nodeUploadCustomCertificateReq := &pvesdk.NodeUploadCustomCertificateRequest{
 		Certificates: certPEM,
 		Key:          privkeyPEM,
 		Force:        true,
@@ -85,9 +85,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify bool) (*proxmoxvesdk.Client, error) {
-	client, err := proxmoxvesdk.NewClient(serverUrl,
-		proxmoxvesdk.WithApiToken(apiToken, apiTokenSecret),
+func createSDKClient(serverUrl, apiToken, apiTokenSecret string, skipTlsVerify bool) (*pvesdk.Client, error) {
+	client, err := pvesdk.NewClient(
+		serverUrl,
+		pvesdk.WithApiToken(apiToken, apiTokenSecret),
 	)
 	if err != nil {
 		return nil, err

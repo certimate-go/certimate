@@ -1,4 +1,4 @@
-﻿package common
+package common
 
 type Options struct {
 	AccessKey string

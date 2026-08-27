@@ -1,4 +1,4 @@
-﻿// A simple SDK client for VolcEngine TOS.
+// A simple SDK client for VolcEngine TOS.
 // API documentation: https://www.volcengine.com/docs/6349/74837
 package tos
 

@@ -1,4 +1,4 @@
-﻿package maps
+package maps
 
 // 获取字典中的所有键组成的切片。
 //

@@ -1,4 +1,4 @@
-﻿package matrix
+package matrix
 
 type Options struct {
 	UserId      string

@@ -1,4 +1,4 @@
-﻿package apig
+package apig
 
 import (
 	"github.com/volcengine/volcengine-go-sdk/service/apig"

@@ -1,4 +1,4 @@
-﻿package oss
+package oss
 
 type Options struct {
 	AccessKeyId     string

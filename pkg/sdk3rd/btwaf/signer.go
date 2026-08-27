@@ -1,4 +1,4 @@
-﻿package btwaf
+package btwaf
 
 import (
 	"crypto/md5"

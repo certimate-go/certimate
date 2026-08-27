@@ -1,4 +1,4 @@
-﻿package settings
+package settings
 
 import (
 	"github.com/certimate-go/certimate/internal/domain"

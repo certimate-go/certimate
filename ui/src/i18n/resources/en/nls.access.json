@@ -243,6 +243,11 @@
       "placeholder": "Please enter AWS SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html</a>"
     },
+    "axisnow_api_token": {
+      "label": "AxisNow API token",
+      "placeholder": "Please enter AxisNow API token",
+      "tooltip": "For more information, see <a href=\"https://www.axisnow.io/zh/docs/edge/tenant/api-tokens\" target=\"_blank\">https://www.axisnow.io/zh/docs/edge/tenant/api-tokens</a>"
+    },
     "azure_tenant_id": {
       "label": "Azure tenant ID",
       "placeholder": "Please enter Azure tenant ID",
@@ -791,6 +796,18 @@
       "placeholder": "Please enter Huawei Cloud enterprise project ID",
       "tooltip": "For more information, see <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html</a>"
     },
+    "huaweiibmc_host": {
+      "label": "iBMC Redfish server host",
+      "placeholder": "Please enter iBMC Redfish server host"
+    },
+    "huaweiibmc_username": {
+      "label": "iBMC username",
+      "placeholder": "Please enter the iBMC username"
+    },
+    "huaweiibmc_password": {
+      "label": "iBMC password",
+      "placeholder": "Please enter the iBMC password"
+    },
     "infomaniak_access_token": {
       "label": "Infomaniak access token",
       "placeholder": "Please enter Infomaniak access token",
@@ -1117,6 +1134,20 @@
       "placeholder": "Please enter PowerDNS API key",
       "tooltip": "For more information, see <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>"
     },
+    "proxmoxbs_server_url": {
+      "label": "Proxmox BS server URL",
+      "placeholder": "Please enter Proxmox BS server URL"
+    },
+    "proxmoxbs_api_token": {
+      "label": "Proxmox BS API token",
+      "placeholder": "Please enter Proxmox BS API token",
+      "tooltip": "For more information, see <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
+    "proxmoxbs_api_token_secret": {
+      "label": "Proxmox BS API token secret",
+      "placeholder": "Please enter Proxmox BS API token secret",
+      "tooltip": "For more information, see <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
+    },
     "proxmoxve_server_url": {
       "label": "Proxmox VE server URL",
       "placeholder": "Please enter Proxmox VE server URL"
@@ -1127,7 +1158,7 @@
       "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },
     "proxmoxve_api_token_secret": {
-      "label": "Proxmox VE API token secret (Optional)",
+      "label": "Proxmox VE API token secret",
       "placeholder": "Please enter Proxmox VE API token secret",
       "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
     },

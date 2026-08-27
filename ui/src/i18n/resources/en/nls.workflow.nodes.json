@@ -266,7 +266,7 @@
       },
       "disable_ari": {
         "label": "Disable ARI",
-        "tooltip": "It determines whether to disable ARI (ACME Renewal Information). If you don't understand this option, just keep it by default. <br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">Click here to learn more</a>."
+        "tooltip": "ARI (ACME Renewal Information) is a renewal scheduling hint from the CA. When enabled, if the CA suggests early renewal (e.g., pending mass revocation), the system will renew early on the next workflow run, overriding your configured threshold. When disabled, renewal is determined solely by your configured threshold. <br><a href=\"https://letsencrypt.org/2023/03/23/improving-resliiency-and-reliability-with-ari/\" target=\"_blank\">Click here to learn more</a>."
       },
       "skip_before_expiry_days": {
         "label": "Repeated application",
@@ -274,7 +274,8 @@
         "prefix": "Perform renewal if the last issued certificate expires in ≤",
         "suffix": ".",
         "unit": "days",
-        "help": "Notes: The actual renewal interval also depends on the CRON expression that triggers the workflow."
+        "help": "Notes: The actual renewal timing is also affected by the workflow CRON expression and the CA's ARI suggestion (if supported).",
+        "ari_notice": "Certificate renewal is determined by two conditions: your configured threshold and the CA's ARI suggested window (if supported). Renewal triggers when either condition is met. To rely solely on your threshold, disable ARI in 'Advanced Settings'."
       },
 
       "aliyun_esa_region": {
@@ -1724,6 +1725,9 @@
         "placeholder": "Please enter Huawei Cloud WAF certificate ID",
         "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/console/#/waf/certificateManagement\" target=\"_blank\">https://console-intl.huaweicloud.com/console/#/waf/certificateManagement</a>"
       },
+      "huaweiibmc_auto_restart": {
+        "label": "Auto restart iBMC after deployment"
+      },
       "jdcloud_alb_region_id": {
         "label": "JD Cloud region ID",
         "placeholder": "Please enter JD Cloud ALB region ID (e.g. cn-north-1)",
@@ -1973,12 +1977,22 @@
         "placeholder": "Please enter OCI compartment OCID",
         "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
       },
+      "proxmoxbs": {
+        "guide": "Requires Proxmox Backup Server v2.1 or higher."
+      },
+      "proxmoxbs_node_name": {
+        "label": "Proxmox BS node name",
+        "placeholder": "Please enter Proxmox BS node name"
+      },
+      "proxmoxbs_auto_restart": {
+        "label": "Auto restart Proxmox BS after deployment"
+      },
       "proxmoxve": {
-        "guide": "Requires Proxmox VE v5.2 or higher."
+        "guide": "Requires Proxmox Virtual Environment v5.2 or higher."
       },
       "proxmoxve_node_name": {
-        "label": "Proxmox VE cluster node name",
-        "placeholder": "Please enter Proxmox VE cluster node name"
+        "label": "Proxmox VE node name",
+        "placeholder": "Please enter Proxmox VE node name"
       },
       "proxmoxve_auto_restart": {
         "label": "Auto restart Proxmox VE after deployment"

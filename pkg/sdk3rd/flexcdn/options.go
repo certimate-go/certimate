@@ -1,4 +1,4 @@
-﻿package flexcdn
+package flexcdn
 
 type Options struct {
 	Role        string
