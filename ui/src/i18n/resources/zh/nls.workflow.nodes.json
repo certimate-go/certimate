@@ -3051,6 +3051,11 @@
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "tencentcloud_gaap_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/608/36934\" target=\"_blank\">https://cloud.tencent.com/document/product/608/36934</a><br>国际站用户请填写 <em>gaap.intl.tencentcloudapi.com</em>。"
+      },
       "tencentcloud_ssl_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 SSL 接口端点（例如：ssl.tencentcloudapi.com）",

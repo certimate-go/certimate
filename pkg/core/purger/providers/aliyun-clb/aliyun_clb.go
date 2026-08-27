@@ -91,10 +91,6 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 
 		for _, certItem := range describeServerCertificatesResp.Body.ServerCertificates.ServerCertificate {
 			certNotAfter := time.Unix(tea.Int64Value(certItem.ExpireTimeStamp), 0)
-			if certNotAfter.IsZero() {
-				continue
-			}
-
 			if time.Since(certNotAfter) >= expiry {
 				purgingCertIds = append(purgingCertIds, tea.StringValue(certItem.ServerCertificateId))
 			}

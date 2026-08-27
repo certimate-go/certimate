@@ -8,6 +8,10 @@ type CreateCertificateRequest = gaap.CreateCertificateRequest
 
 type CreateCertificateResponse = gaap.CreateCertificateResponse
 
+type DeleteCertificateRequest = gaap.DeleteCertificateRequest
+
+type DeleteCertificateResponse = gaap.DeleteCertificateResponse
+
 type DescribeCertificatesRequest = gaap.DescribeCertificatesRequest
 
 type DescribeCertificatesResponse = gaap.DescribeCertificatesResponse

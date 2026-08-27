@@ -48,6 +48,31 @@ func (c *Client) CreateCertificateWithContext(ctx context.Context, request *Crea
 	return
 }
 
+func NewDeleteCertificateRequest() (request *DeleteCertificateRequest) {
+	return gaap.NewDeleteCertificateRequest()
+}
+
+func NewDeleteCertificateResponse() (response *DeleteCertificateResponse) {
+	return gaap.NewDeleteCertificateResponse()
+}
+
+func (c *Client) DeleteCertificateWithContext(ctx context.Context, request *DeleteCertificateRequest) (response *DeleteCertificateResponse, err error) {
+	if request == nil {
+		request = NewDeleteCertificateRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "gaap", APIVersion, "DeleteCertificate")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DeleteCertificate require credential")
+	}
+
+	request.SetContext(ctx)
+
+	response = NewDeleteCertificateResponse()
+	err = c.Send(request, response)
+	return
+}
+
 func NewDescribeCertificatesRequest() (request *DescribeCertificatesRequest) {
 	return gaap.NewDescribeCertificatesRequest()
 }

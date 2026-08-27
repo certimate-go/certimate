@@ -5,6 +5,7 @@ import { PURGE_PROVIDERS, type PurgeProviderType } from "@/domain/provider";
 import BizPurgeNodeConfigFieldsProviderAliyunCAS from "./BizPurgeNodeConfigFieldsProviderAliyunCAS";
 import BizPurgeNodeConfigFieldsProviderAliyunCLB from "./BizPurgeNodeConfigFieldsProviderAliyunCLB";
 import BizPurgeNodeConfigFieldsProviderAliyunESA from "./BizPurgeNodeConfigFieldsProviderAliyunESA";
+import BizPurgeNodeConfigFieldsProviderTencentCloudGAAP from "./BizPurgeNodeConfigFieldsProviderTencentCloudGAAP";
 import BizPurgeNodeConfigFieldsProviderTencentCloudSSL from "./BizPurgeNodeConfigFieldsProviderTencentCloudSSL";
 
 const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentType<any>>> = {
@@ -15,6 +16,7 @@ const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentTyp
   [PURGE_PROVIDERS.ALIYUN_CAS]: BizPurgeNodeConfigFieldsProviderAliyunCAS,
   [PURGE_PROVIDERS.ALIYUN_CLB]: BizPurgeNodeConfigFieldsProviderAliyunCLB,
   [PURGE_PROVIDERS.ALIYUN_ESA]: BizPurgeNodeConfigFieldsProviderAliyunESA,
+  [PURGE_PROVIDERS.TENCENTCLOUD_GAAP]: BizPurgeNodeConfigFieldsProviderTencentCloudGAAP,
   [PURGE_PROVIDERS.TENCENTCLOUD_SSL]: BizPurgeNodeConfigFieldsProviderTencentCloudSSL,
 };
 
