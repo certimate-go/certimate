@@ -494,6 +494,7 @@ NOTICE: If you add new constant, please keep ASCII order.
 const (
 	PurgeProviderTypeAliyunCAS = PurgeProviderType(AccessProviderTypeAliyun + "-cas")
 	PurgeProviderTypeAliyunCLB = PurgeProviderType(AccessProviderTypeAliyun + "-clb")
+	PurgeProviderTypeAliyunESA = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
 )
 
 type NotificationProviderType string

@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strconv"
-	"strings"
+	"time"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/dara"
@@ -16,17 +15,17 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
-	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
+	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
 type (
-	Provider     = core.Deployer
-	DeployResult = core.DeployerDeployResult
+	Provider    = core.Purger
+	PurgeResult = core.PurgerPurgeResult
 )
 
-type DeployerConfig struct {
+type PurgerConfig struct {
 	// 阿里云 AccessKeyId。
 	AccessKeyId string `json:"accessKeyId"`
 	// 阿里云 AccessKeySecret。
@@ -39,18 +38,18 @@ type DeployerConfig struct {
 	SiteId int64 `json:"siteId"`
 }
 
-type Deployer struct {
-	config     *DeployerConfig
+type Purger struct {
+	config     *PurgerConfig
 	logger     *slog.Logger
 	sdkClient  *aliesa.Client
 	sdkCertmgr core.Certmgr
 }
 
-var _ Provider = (*Deployer)(nil)
+var _ Provider = (*Purger)(nil)
 
-func NewDeployer(config *DeployerConfig) (*Deployer, error) {
+func NewPurger(config *PurgerConfig) (*Purger, error) {
 	if config == nil {
-		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
+		return nil, fmt.Errorf("the configuration of the purger provider is nil")
 	}
 
 	client, err := createSDKClient(config.AccessKeyId, config.AccessKeySecret, config.Region)
@@ -68,7 +67,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
 	}
 
-	return &Deployer{
+	return &Purger{
 		config:     config,
 		logger:     slog.Default(),
 		sdkClient:  client,
@@ -76,39 +75,23 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	}, nil
 }
 
-func (d *Deployer) SetLogger(logger *slog.Logger) {
+func (p *Purger) SetLogger(logger *slog.Logger) {
 	if logger == nil {
-		d.logger = slog.New(slog.DiscardHandler)
+		p.logger = slog.New(slog.DiscardHandler)
 	} else {
-		d.logger = logger
+		p.logger = logger
 	}
-
-	d.sdkCertmgr.SetLogger(logger)
 }
 
-func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
-	if d.config.SiteId == 0 {
+func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult, error) {
+	if p.config.SiteId == 0 {
 		return nil, fmt.Errorf("config `siteId` is required")
 	}
 
-	// 解析证书内容
-	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
-	if err != nil {
-		return nil, err
-	}
+	purgingCertIds := make([]string, 0)
 
-	// 上传证书
-	upres, err := d.sdkCertmgr.Upload(ctx, certPEM, privkeyPEM)
-	if err != nil {
-		return nil, fmt.Errorf("failed to upload certificate file: %w", err)
-	} else {
-		d.logger.Info("ssl certificate uploaded", slog.Any("result", upres))
-	}
-
-	// 查询站点证书列表，并找出需要删除的同域名证书
+	// 查询站点证书列表
 	// REF: https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-listcertificates
-	certIsAlreadySet := false
-	certIdsToDelete := make([]string, 0)
 	listCertificatesPageNumber := 1
 	listCertificatesPageSize := 10
 	for {
@@ -119,25 +102,24 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		}
 
 		listCertificatesReq := &aliesa.ListCertificatesRequest{
-			SiteId:     tea.Int64(d.config.SiteId),
+			SiteId:     tea.Int64(p.config.SiteId),
 			PageNumber: tea.Int64(int64(listCertificatesPageNumber)),
 			PageSize:   tea.Int64(int64(listCertificatesPageSize)),
 		}
-		listCertificatesResp, err := d.sdkClient.ListCertificatesWithContext(ctx, listCertificatesReq, &dara.RuntimeOptions{})
-		d.logger.Debug("sdk request 'esa.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
+		listCertificatesResp, err := p.sdkClient.ListCertificatesWithContext(ctx, listCertificatesReq, &dara.RuntimeOptions{})
+		p.logger.Debug("sdk request 'esa.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'esa.ListCertificates': %w", err)
 		}
 
 		for _, certItem := range listCertificatesResp.Body.Result {
-			if tea.StringValue(certItem.CasId) == upres.CertId {
-				certIsAlreadySet = true
+			certNotAfter, err := time.ParseInLocation(time.DateTime, tea.StringValue(certItem.NotAfter), time.FixedZone("CST", 8*60*60))
+			if err != nil {
 				continue
 			}
 
-			certSANMatched := lo.ElementsMatch(certX509.DNSNames, strings.Split(tea.StringValue(certItem.SAN), ","))
-			if certSANMatched {
-				certIdsToDelete = append(certIdsToDelete, tea.StringValue(certItem.Id))
+			if time.Since(certNotAfter) >= expiry {
+				purgingCertIds = append(purgingCertIds, tea.StringValue(certItem.Id))
 			}
 		}
 
@@ -148,44 +130,25 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		listCertificatesPageNumber++
 	}
 
-	// 配置站点证书
-	// REF: https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-setcertificate
-	if certIsAlreadySet {
-		d.logger.Info("no need to deploy esa site certificate")
-		return &DeployResult{}, nil
-	} else {
-		certIdAsInt, _ := strconv.ParseInt(upres.CertId, 10, 64)
-		setCertificateReq := &aliesa.SetCertificateRequest{
-			Region: tea.String(d.config.Region),
-			SiteId: tea.Int64(d.config.SiteId),
-			Type:   tea.String("cas"),
-			CasId:  tea.Int64(certIdAsInt),
-		}
-		setCertificateResp, err := d.sdkClient.SetCertificateWithContext(ctx, setCertificateReq, &dara.RuntimeOptions{})
-		d.logger.Debug("sdk request 'esa.SetCertificate'", slog.Any("request", setCertificateReq), slog.Any("response", setCertificateResp))
-		if err != nil {
-			if sdkErr, ok := err.(*tea.SDKError); ok {
-				if sdkErrCode := tea.StringValue(sdkErr.Code); sdkErrCode == "Certificate.Duplicated" {
-					return &DeployResult{}, nil
+	// 删除站点证书
+	// REF: https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-deletecertificate
+	purgedCount := 0
+	if len(purgingCertIds) > 0 {
+		p.logger.Info("found certificates to purge", slog.Any("certIds", purgingCertIds))
+
+		if err := xloop.ForRangeAllWithContext(ctx, purgingCertIds, func(ctx context.Context, certId string, i int) error {
+			if i > 0 {
+				if err := xwait.DelayWithContext(ctx, 1*time.Second); err != nil {
+					return err
 				}
 			}
 
-			return nil, fmt.Errorf("failed to execute sdk request 'esa.SetCertificate': %w", err)
-		}
-	}
-
-	// 删除站点证书
-	// REF: https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-deletecertificate
-	if len(certIdsToDelete) > 0 {
-		d.logger.Info("found esa site certificates to delete", slog.Any("certIds", certIdsToDelete))
-
-		if err := xloop.ForRangeAllWithContext(ctx, certIdsToDelete, func(ctx context.Context, certId string, _ int) error {
 			deleteCertificateReq := &aliesa.DeleteCertificateRequest{
-				SiteId: tea.Int64(d.config.SiteId),
+				SiteId: tea.Int64(p.config.SiteId),
 				Id:     tea.String(certId),
 			}
-			deleteCertificateResp, err := d.sdkClient.DeleteCertificateWithContext(ctx, deleteCertificateReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'esa.DeleteCertificate'", slog.Any("request", deleteCertificateReq), slog.Any("response", deleteCertificateResp))
+			deleteCertificateResp, err := p.sdkClient.DeleteCertificateWithContext(ctx, deleteCertificateReq, &dara.RuntimeOptions{})
+			p.logger.Debug("sdk request 'esa.DeleteCertificate'", slog.Any("request", deleteCertificateReq), slog.Any("response", deleteCertificateResp))
 			if err != nil {
 				if sdkErr, ok := err.(*tea.SDKError); ok {
 					if sdkErrCode := tea.StringValue(sdkErr.Code); sdkErrCode == "Certificate.NotFound" {
@@ -196,13 +159,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return fmt.Errorf("failed to execute sdk request 'esa.DeleteCertificate': %w", err)
 			}
 
+			purgedCount++
 			return nil
 		}); err != nil {
 			return nil, err
 		}
 	}
 
-	return &DeployResult{}, nil
+	return &PurgeResult{
+		Count: purgedCount,
+	}, nil
 }
 
 func createSDKClient(accessKeyId, accessKeySecret, region string) (*aliesa.Client, error) {

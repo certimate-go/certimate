@@ -3041,6 +3041,16 @@
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud CLB region (e.g. cn-hangzhou)",
         "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
+      },
+      "aliyun_esa_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>"
+      },
+      "aliyun_esa_site_id": {
+        "label": "Alibaba Cloud ESA site ID",
+        "placeholder": "Please enter Alibaba Cloud ESA site ID",
+        "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       }
     }
   },
