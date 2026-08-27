@@ -495,6 +495,7 @@ const (
 	PurgeProviderTypeAliyunCAS            = PurgeProviderType(AccessProviderTypeAliyun + "-cas")
 	PurgeProviderTypeAliyunCLB            = PurgeProviderType(AccessProviderTypeAliyun + "-clb")
 	PurgeProviderTypeAliyunESA            = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
+	PurgeProviderTypeAWSACM               = PurgeProviderType(AccessProviderTypeAWS + "-acm")
 	PurgeProviderTypeAWSIAM               = PurgeProviderType(AccessProviderTypeAWS + "-iam")
 	PurgeProviderTypeAzureKeyVault        = PurgeProviderType(AccessProviderTypeAzure + "-keyvault")
 	PurgeProviderTypeBaiduCloudCert       = PurgeProviderType(AccessProviderTypeBaiduCloud + "-cert")

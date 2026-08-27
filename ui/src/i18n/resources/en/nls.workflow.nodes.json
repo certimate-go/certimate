@@ -3052,6 +3052,11 @@
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "aws_acm_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS ACM region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
       "aws_iam_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS IAM region (e.g. us-east-1)",

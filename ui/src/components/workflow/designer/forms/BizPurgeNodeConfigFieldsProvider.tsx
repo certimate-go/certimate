@@ -5,6 +5,7 @@ import { PURGE_PROVIDERS, type PurgeProviderType } from "@/domain/provider";
 import BizPurgeNodeConfigFieldsProviderAliyunCAS from "./BizPurgeNodeConfigFieldsProviderAliyunCAS";
 import BizPurgeNodeConfigFieldsProviderAliyunCLB from "./BizPurgeNodeConfigFieldsProviderAliyunCLB";
 import BizPurgeNodeConfigFieldsProviderAliyunESA from "./BizPurgeNodeConfigFieldsProviderAliyunESA";
+import BizPurgeNodeConfigFieldsProviderAWSACM from "./BizPurgeNodeConfigFieldsProviderAWSACM";
 import BizPurgeNodeConfigFieldsProviderAWSIAM from "./BizPurgeNodeConfigFieldsProviderAWSIAM";
 import BizPurgeNodeConfigFieldsProviderAzureKeyVault from "./BizPurgeNodeConfigFieldsProviderAzureKeyVault";
 import BizPurgeNodeConfigFieldsProviderHuaweiCloudELB from "./BizPurgeNodeConfigFieldsProviderHuaweiCloudELB";
@@ -23,6 +24,7 @@ const providerComponentMap: Partial<Record<PurgeProviderType, React.ComponentTyp
   [PURGE_PROVIDERS.ALIYUN_CAS]: BizPurgeNodeConfigFieldsProviderAliyunCAS,
   [PURGE_PROVIDERS.ALIYUN_CLB]: BizPurgeNodeConfigFieldsProviderAliyunCLB,
   [PURGE_PROVIDERS.ALIYUN_ESA]: BizPurgeNodeConfigFieldsProviderAliyunESA,
+  [PURGE_PROVIDERS.AWS_ACM]: BizPurgeNodeConfigFieldsProviderAWSACM,
   [PURGE_PROVIDERS.AWS_IAM]: BizPurgeNodeConfigFieldsProviderAWSIAM,
   [PURGE_PROVIDERS.AZURE_KEYVAULT]: BizPurgeNodeConfigFieldsProviderAzureKeyVault,
   [PURGE_PROVIDERS.HUAWEICLOUD_ELB]: BizPurgeNodeConfigFieldsProviderHuaweiCloudELB,

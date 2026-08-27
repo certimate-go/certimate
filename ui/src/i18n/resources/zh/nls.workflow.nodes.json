@@ -3051,6 +3051,11 @@
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "aws_acm_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS ACM 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
       "aws_iam_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS IAM 服务区域（例如：us-east-1）",
