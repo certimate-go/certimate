@@ -12,6 +12,7 @@ import { ACCESS_USAGES } from "@/domain/provider";
 import { useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { unwrapErrMsg } from "@/utils/error";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 const AccessNew = () => {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const AccessNew = () => {
 
     setFormPending(true);
     try {
+      applyTrimmedFormValues(formInst);
       formValues = await formInst.validateFields();
       formValues.reserve = providerUsage === "ca" ? "ca" : providerUsage === "notification" ? "notif" : void 0;
     } catch (err) {
