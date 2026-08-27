@@ -3051,6 +3051,11 @@
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "huaweicloud_elb_region": {
+        "label": "华为云服务区域",
+        "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/elb\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",

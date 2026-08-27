@@ -498,6 +498,7 @@ const (
 	PurgeProviderTypeTencentCloudGAAP = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
 	PurgeProviderTypeTencentCloudSSL  = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
 	PurgeProviderTypeTencentCloudTSE  = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
+	PurgeProviderTypeHuaweiCloudELB   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
 	PurgeProviderTypeHuaweiCloudSCM   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
 )
 

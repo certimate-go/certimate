@@ -9,6 +9,10 @@ func GenReqDefForCreateCertificate() *def.HttpRequestDef {
 	return elb.GenReqDefForCreateCertificate()
 }
 
+func GenReqDefForDeleteCertificate() *def.HttpRequestDef {
+	return elb.GenReqDefForDeleteCertificate()
+}
+
 func GenReqDefForListCertificates() *def.HttpRequestDef {
 	return elb.GenReqDefForListCertificates()
 }

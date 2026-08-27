@@ -1,18 +1,17 @@
-package huaweicloudscm
+package huaweicloudelb
 
 import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
-	hwscmmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/model"
-	hwscmregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3/region"
+	hwelbmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3/model"
+	hwelbregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3/region"
 	"github.com/samber/lo"
 
-	hwscm "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/scm/v3"
+	hwelb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
@@ -38,7 +37,7 @@ type PurgerConfig struct {
 type Purger struct {
 	config    *PurgerConfig
 	logger    *slog.Logger
-	sdkClient *hwscm.ScmClient
+	sdkClient *hwelb.ElbClient
 }
 
 var _ Provider = (*Purger)(nil)
@@ -72,9 +71,8 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 	purgingCertIds := make([]string, 0)
 
 	// 查询证书列表
-	// REF: https://support.huaweicloud.com/api-ccm/ListCertificates.html
-	listCertificatesLimit := 50
-	listCertificatesOffset := 0
+	// REF: https://support.huaweicloud.com/api-elb/ListCertificates.html
+	listCertificatesMarker := (*string)(nil)
 	for {
 		select {
 		case <-ctx.Done():
@@ -82,21 +80,19 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 		default:
 		}
 
-		listCertificatesReq := &hwscmmodel.ListCertificatesRequest{
-			EnterpriseProjectId: lo.EmptyableToPtr(p.config.EnterpriseProjectId),
-			Limit:               lo.ToPtr(int32(listCertificatesLimit)),
-			Offset:              lo.ToPtr(int32(listCertificatesOffset)),
-			SortDir:             lo.ToPtr("DESC"),
-			SortKey:             lo.ToPtr("certExpiredTime"),
+		listCertificatesReq := &hwelbmodel.ListCertificatesRequest{
+			Marker: listCertificatesMarker,
+			Limit:  lo.ToPtr(int32(2000)),
+			Type:   lo.ToPtr([]string{"server", "server_sm"}),
 		}
 		listCertificatesResp, err := p.sdkClient.ListCertificates(listCertificatesReq)
-		p.logger.Debug("sdk request 'scm.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
+		p.logger.Debug("sdk request 'elb.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
 		if err != nil {
-			return nil, fmt.Errorf("failed to execute sdk request 'scm.ListCertificates': %w", err)
+			return nil, fmt.Errorf("failed to execute sdk request 'elb.ListCertificates': %w", err)
 		}
 
 		for _, certItem := range *listCertificatesResp.Certificates {
-			certNotAfter, err := time.ParseInLocation(time.DateTime, strings.TrimSuffix(certItem.ExpireTime, ".0"), time.FixedZone("CST", 8*60*60))
+			certNotAfter, err := time.Parse(time.RFC3339, certItem.ExpireTime)
 			if err != nil {
 				continue
 			}
@@ -106,15 +102,15 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 			}
 		}
 
-		if len(*listCertificatesResp.Certificates) < listCertificatesLimit {
+		if len(*listCertificatesResp.Certificates) == 0 || listCertificatesResp.PageInfo.NextMarker == nil {
 			break
 		}
 
-		listCertificatesOffset += listCertificatesLimit
+		listCertificatesMarker = listCertificatesResp.PageInfo.NextMarker
 	}
 
 	// 删除证书
-	// REF: https://support.huaweicloud.com/api-ccm/DeleteCertificate_0.html
+	// REF: https://support.huaweicloud.com/api-elb/DeleteCertificate.html
 	purgedCount := 0
 	if len(purgingCertIds) > 0 {
 		p.logger.Info("found certificates to purge", slog.Any("certIds", purgingCertIds))
@@ -126,17 +122,17 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 				}
 			}
 
-			deleteCertificateReq := &hwscmmodel.DeleteCertificateRequest{
+			deleteCertificateReq := &hwelbmodel.DeleteCertificateRequest{
 				CertificateId: certId,
 			}
 			deleteCertificateResp, err := p.sdkClient.DeleteCertificate(deleteCertificateReq)
-			p.logger.Debug("sdk request 'scm.DeleteCertificate'", slog.Any("request", deleteCertificateReq), slog.Any("response", deleteCertificateResp))
+			p.logger.Debug("sdk request 'elb.DeleteCertificate'", slog.Any("request", deleteCertificateReq), slog.Any("response", deleteCertificateResp))
 			if err != nil {
-				if deleteCertificateResp != nil && deleteCertificateResp.HttpStatusCode == 404 {
+				if deleteCertificateResp != nil && (deleteCertificateResp.HttpStatusCode == 404 || deleteCertificateResp.HttpStatusCode == 409) {
 					return nil
 				}
 
-				return fmt.Errorf("failed to execute sdk request 'scm.DeleteCertificate': %w", err)
+				return fmt.Errorf("failed to execute sdk request 'elb.DeleteCertificate': %w", err)
 			}
 
 			purgedCount++
@@ -151,9 +147,9 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 	}, nil
 }
 
-func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwscm.ScmClient, error) {
+func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwelb.ElbClient, error) {
 	if region == "" {
-		region = "cn-north-4" // SCM 服务默认区域：华北北京四
+		region = "cn-north-4" // ELB 服务默认区域：华北北京四
 	}
 
 	auth, err := basic.NewCredentialsBuilder().
@@ -164,12 +160,12 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwscm.ScmCli
 		return nil, err
 	}
 
-	hcRegion, err := hwscmregion.SafeValueOf(region)
+	hcRegion, err := hwelbregion.SafeValueOf(region)
 	if err != nil {
 		return nil, err
 	}
 
-	hcClient, err := hwscm.ScmClientBuilder().
+	hcClient, err := hwelb.ElbClientBuilder().
 		WithRegion(hcRegion).
 		WithCredential(auth).
 		SafeBuild()
@@ -177,6 +173,6 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwscm.ScmCli
 		return nil, err
 	}
 
-	client := hwscm.NewScmClient(hcClient)
+	client := hwelb.NewElbClient(hcClient)
 	return client, nil
 }

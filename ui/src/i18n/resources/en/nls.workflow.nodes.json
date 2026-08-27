@@ -3052,6 +3052,11 @@
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "huaweicloud_elb_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
