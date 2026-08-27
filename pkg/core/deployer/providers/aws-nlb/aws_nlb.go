@@ -49,6 +49,8 @@ type DeployerConfig struct {
 	CertificateSource string `json:"certificateSource"`
 	// 是否设为默认证书。
 	IsDefault bool `json:"isDefault,omitempty"`
+	// 是否自动移除同域名的其他证书。
+	AutoPrune bool `json:"autoPrune,omitempty"`
 }
 
 type Deployer struct {
@@ -212,8 +214,10 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			return nil, err
 		}
 
-		if err := d.pruneListenerSniCertificates(ctx, *listenerInfo.ListenerArn, certArn, certX509.DNSNames); err != nil {
-			return nil, err
+		if d.config.AutoPrune {
+			if err := d.pruneListenerSniCertificates(ctx, *listenerInfo.ListenerArn, certArn, certX509.DNSNames); err != nil {
+				return nil, err
+			}
 		}
 	}
 

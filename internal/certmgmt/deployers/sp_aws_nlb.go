@@ -25,6 +25,7 @@ func init() {
 			ListenerArn:       xmaps.GetString(options.ProviderExtendedConfig, "listenerArn"),
 			CertificateSource: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "certificateSource", dplyimpl.CERTIFICATE_SOURCE_ACM),
 			IsDefault:         xmaps.GetBool(options.ProviderExtendedConfig, "isDefault"),
+			AutoPrune:         xmaps.GetBool(options.ProviderExtendedConfig, "autoPrune"),
 		})
 		return provider, err
 	})

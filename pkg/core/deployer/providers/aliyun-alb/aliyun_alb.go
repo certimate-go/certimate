@@ -49,6 +49,8 @@ type DeployerConfig struct {
 	// SNI 域名（支持泛域名）。
 	// 部署目标为 [DEPLOY_TARGET_LOADBALANCER]、[DEPLOY_TARGET_LISTENER] 时选填。
 	Domain string `json:"domain,omitempty"`
+	// 是否自动移除同域名的其他证书。
+	AutoPrune bool `json:"autoPrune,omitempty"`
 }
 
 type Deployer struct {
@@ -364,38 +366,40 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 			certIdWithRegions = append(certIdWithRegions, certIdWithRegion)
 		}
 
-		if err := xloop.ForRangeAllWithContext(ctx, certIdWithRegions, func(ctx context.Context, certIdWithRegion string, _ int) error {
-			certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
-			certIdBareAsInt, err := strconv.ParseInt(certIdBare, 10, 64)
-			if err != nil {
-				return err
-			}
+		if d.config.AutoPrune {
+			if err := xloop.ForRangeAllWithContext(ctx, certIdWithRegions, func(ctx context.Context, certIdWithRegion string, _ int) error {
+				certIdBare := strings.SplitN(certIdWithRegion, "-", 2)[0]
+				certIdBareAsInt, err := strconv.ParseInt(certIdBare, 10, 64)
+				if err != nil {
+					return err
+				}
 
-			getCertificateDetailReq := &alicas.GetCertificateDetailRequest{
-				CertificateId: tea.Int64(certIdBareAsInt),
-			}
-			getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
-			d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
-			if err != nil {
-				if sdkErr, ok := err.(*tea.SDKError); ok {
-					if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
+				getCertificateDetailReq := &alicas.GetCertificateDetailRequest{
+					CertificateId: tea.Int64(certIdBareAsInt),
+				}
+				getCertificateDetailResp, err := d.sdkClients.CAS.GetCertificateDetailWithContext(ctx, getCertificateDetailReq, &dara.RuntimeOptions{})
+				d.logger.Debug("sdk request 'cas.GetCertificateDetail'", slog.Any("request", getCertificateDetailReq), slog.Any("response", getCertificateDetailResp))
+				if err != nil {
+					if sdkErr, ok := err.(*tea.SDKError); ok {
+						if sdkErrCode := tea.StringValue(sdkErr.Code); strings.HasPrefix(sdkErrCode, "NotFound") {
+							return nil
+						}
+					}
+
+					return fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err)
+				} else {
+					// 注意，虽然文档中存在 SubjectAlternativeNames 字段，但实际返回的数据结构中不包含
+					certSANMatched := lo.ElementsMatch(cloudCertSANs, strings.Split(tea.StringValue(getCertificateDetailResp.Body.Domain), ","))
+					if certSANMatched && lo.Contains(cloudCertSANs, d.config.Domain) {
+						certIdsToDissociate = append(certIdsToDissociate, certIdWithRegion)
 						return nil
 					}
 				}
 
-				return fmt.Errorf("failed to execute sdk request 'cas.GetCertificateDetail': %w", err)
-			} else {
-				// 注意，虽然文档中存在 SubjectAlternativeNames 字段，但实际返回的数据结构中不包含
-				certSANMatched := lo.ElementsMatch(cloudCertSANs, strings.Split(tea.StringValue(getCertificateDetailResp.Body.Domain), ","))
-				if certSANMatched && lo.Contains(cloudCertSANs, d.config.Domain) {
-					certIdsToDissociate = append(certIdsToDissociate, certIdWithRegion)
-					return nil
-				}
+				return nil
+			}); err != nil {
+				return err
 			}
-
-			return nil
-		}); err != nil {
-			return err
 		}
 	}
 
@@ -426,7 +430,7 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 
 	// 解除关联监听和扩展证书
 	// REF: https://help.aliyun.com/zh/slb/application-load-balancer/developer-reference/api-alb-2020-06-16-dissociateadditionalcertificatesfromlistener
-	if len(certIdsToDissociate) > 0 {
+	if d.config.AutoPrune && len(certIdsToDissociate) > 0 {
 		d.logger.Info("found alb listener certificates to dissociate", slog.Any("certIds", certIdsToDissociate))
 
 		const MAX_CERTS_PER_REQUEST = 10

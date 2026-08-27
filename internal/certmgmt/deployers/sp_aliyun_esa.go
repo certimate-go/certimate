@@ -21,6 +21,7 @@ func init() {
 			AccessKeySecret: credentials.AccessKeySecret,
 			Region:          xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			SiteId:          xmaps.GetInt64(options.ProviderExtendedConfig, "siteId"),
+			AutoPrune:       xmaps.GetBool(options.ProviderExtendedConfig, "autoPrune"),
 		})
 		return provider, err
 	})

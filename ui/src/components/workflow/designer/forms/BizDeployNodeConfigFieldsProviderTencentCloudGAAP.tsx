@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -69,6 +69,15 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
         >
           <Input placeholder={t("workflow_node.deploy.form.tencentcloud_gaap_listener_id.placeholder")} />
         </Form.Item>
+
+        <Form.Item
+          name={[parentNamePath, "autoPrune"]}
+          initialValue={initialValues.autoPrune}
+          label={t("workflow_node.deploy.form.tencentcloud_gaap_auto_prune.label")}
+          rules={[formRule]}
+        >
+          <Switch />
+        </Form.Item>
       </Show>
     </>
   );
@@ -77,6 +86,7 @@ const BizDeployNodeConfigFieldsProviderTencentCloudGAAP = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     deployTarget: DEPLOY_TARGET_LISTENER,
+    autoPrune: true,
   };
 };
 
@@ -89,6 +99,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       deployTarget: z.enum([DEPLOY_TARGET_LISTENER]),
       proxyId: z.string().nullish(),
       listenerId: z.string().nullish(),
+      autoPrune: z.boolean().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.deployTarget) {

@@ -656,6 +656,9 @@
         "placeholder": "请输入阿里云 ALB 扩展域名",
         "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
       },
+      "aliyun_alb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
+      },
       "aliyun_apigw_region": {
         "label": "阿里云服务地域",
         "placeholder": "请输入阿里云 API 网关地域（例如：cn-hangzhou）",
@@ -792,6 +795,9 @@
         "label": "阿里云 ESA 站点 ID",
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "aliyun_esa_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
       },
       "aliyun_esa_saas_region": {
         "label": "阿里云服务地域",
@@ -991,6 +997,9 @@
       "aws_alb_is_default": {
         "label": "设为默认证书"
       },
+      "aws_alb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
+      },
       "aws_amplify_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS Amplify 区域（例如：us-east-1）",
@@ -1089,6 +1098,9 @@
       },
       "aws_nlb_is_default": {
         "label": "设为默认证书"
+      },
+      "aws_nlb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
       },
       "azure_keyvault_name": {
         "label": "Azure KeyVault 名称",
@@ -2390,6 +2402,9 @@
         "placeholder": "请输入腾讯云 GA2 监听器 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/gaap\" target=\"_blank\">https://console.cloud.tencent.com/gaap</a>"
       },
+      "tencentcloud_ga2_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",
@@ -2616,6 +2631,9 @@
         "label": "优刻得 UALB 扩展域名（可选）",
         "placeholder": "请输入优刻得 UALB 扩展域名",
         "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
+      },
+      "ucloud_ualb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
       },
       "ucloud_ucdn_endpoint": {
         "label": "优刻得接口端点（可选）",
@@ -3005,12 +3023,17 @@
       "parameters": {
         "tab": "参数设置"
       },
+      "purging": {
+        "tab": "清除设置",
+        "title": "清除设置"
+      },
       "strategy": {
         "tab": "执行策略",
         "title": "执行策略"
       }
     },
     "form": {
+      "guide": "出于安全考虑，大多数证书托管服务不允许删除正在被其他资源所关联的证书。若要清除此类过期证书，请先解除与其他资源的关联。",
       "provider": {
         "label": "主机提供商",
         "placeholder": "请选择主机提供商",

@@ -37,6 +37,8 @@ type DeployerConfig struct {
 	Region string `json:"region"`
 	// 阿里云 ESA 站点 ID。
 	SiteId int64 `json:"siteId"`
+	// 是否自动移除同域名的其他证书。
+	AutoPrune bool `json:"autoPrune,omitempty"`
 }
 
 type Deployer struct {
@@ -119,7 +121,8 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		}
 
 		listCertificatesReq := &aliesa.ListCertificatesRequest{
-			SiteId:     tea.Int64(d.config.SiteId),
+			SiteId: tea.Int64(d.config.SiteId),
+
 			PageNumber: tea.Int64(int64(listCertificatesPageNumber)),
 			PageSize:   tea.Int64(int64(listCertificatesPageSize)),
 		}
@@ -176,7 +179,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 删除站点证书
 	// REF: https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-deletecertificate
-	if len(certIdsToDelete) > 0 {
+	if d.config.AutoPrune && len(certIdsToDelete) > 0 {
 		d.logger.Info("found esa site certificates to delete", slog.Any("certIds", certIdsToDelete))
 
 		if err := xloop.ForRangeAllWithContext(ctx, certIdsToDelete, func(ctx context.Context, certId string, _ int) error {

@@ -11,6 +11,7 @@ import AccessSelect from "@/components/access/AccessSelect";
 import PurgeProviderPicker from "@/components/provider/PurgeProviderPicker";
 import PurgeProviderSelect from "@/components/provider/PurgeProviderSelect";
 import Show from "@/components/Show";
+import Tips from "@/components/Tips";
 import { type AccessModel } from "@/domain/access";
 import { purgeProvidersMap } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizPurge, defaultNodeConfigForBizPurge } from "@/domain/workflow";
@@ -116,6 +117,18 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
 
         <div style={{ display: fieldProvider ? "block" : "none" }}>
           <div id="parameters" data-anchor="parameters">
+            <Form.Item>
+              <Tips message={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.purge.form.guide") }}></span>} />
+            </Form.Item>
+          </div>
+
+          <div id="purging" data-anchor="purging">
+            <Divider size="small">
+              <Typography.Text className="text-xs font-normal" type="secondary">
+                {t("workflow_node.purge.form_anchor.purging.title")}
+              </Typography.Text>
+            </Divider>
+
             <Form.Item name="provider" label={t("workflow_node.purge.form.provider.label")} rules={[formRule]}>
               <PurgeProviderSelect
                 allowClear
@@ -194,7 +207,7 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
 const getAnchorItems = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }): Required<AnchorProps>["items"] => {
   const { t } = i18n;
 
-  return ["parameters", "strategy"].map((key) => ({
+  return ["parameters", "purging", "strategy"].map((key) => ({
     key: key,
     title: t(`workflow_node.purge.form_anchor.${key}.tab`),
     href: "#" + key,

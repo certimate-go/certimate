@@ -657,6 +657,9 @@
         "placeholder": "Please enter Alibaba Cloud ALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
+      "aliyun_alb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "aliyun_apigw_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud API gateway region (e.g. cn-hangzhou)",
@@ -793,6 +796,9 @@
         "label": "Alibaba Cloud ESA site ID",
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "aliyun_esa_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "aliyun_esa_saas_region": {
         "label": "Alibaba Cloud region",
@@ -992,6 +998,9 @@
       "aws_alb_is_default": {
         "label": "Set as default certificate"
       },
+      "aws_alb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "aws_amplify_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS Amplify region (e.g. us-east-1)",
@@ -1090,6 +1099,9 @@
       },
       "aws_nlb_is_default": {
         "label": "Set as default certificate"
+      },
+      "aws_nlb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "azure_keyvault_name": {
         "label": "Azure KeyVault name",
@@ -2391,6 +2403,9 @@
         "placeholder": "Please enter Tencent Cloud GA2 listener ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
       },
+      "tencentcloud_ga2_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
@@ -2617,6 +2632,9 @@
         "label": "UCloud UALB SNI domain (Optional)",
         "placeholder": "Please enter UCloud UALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
+      "ucloud_ualb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "ucloud_ucdn_endpoint": {
         "label": "UCloud API endpoint (Optional)",
@@ -3006,12 +3024,17 @@
       "parameters": {
         "tab": "Parameters"
       },
+      "purging": {
+        "tab": "Purging",
+        "title": "Purging settings"
+      },
       "strategy": {
         "tab": "Strategy",
         "title": "Strategy settings"
       }
     },
     "form": {
+      "guide": "For safety reason, most certificate management services do not allow to delete a certificate that is being associated with another resource. To purge a certificate that is in use, you must first remove the association.",
       "provider": {
         "label": "Hosting provider",
         "placeholder": "Please select hosting provider",
