@@ -495,11 +495,11 @@ const (
 	PurgeProviderTypeAliyunCAS        = PurgeProviderType(AccessProviderTypeAliyun + "-cas")
 	PurgeProviderTypeAliyunCLB        = PurgeProviderType(AccessProviderTypeAliyun + "-clb")
 	PurgeProviderTypeAliyunESA        = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
+	PurgeProviderTypeHuaweiCloudELB   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
+	PurgeProviderTypeHuaweiCloudSCM   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
 	PurgeProviderTypeTencentCloudGAAP = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
 	PurgeProviderTypeTencentCloudSSL  = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
 	PurgeProviderTypeTencentCloudTSE  = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
-	PurgeProviderTypeHuaweiCloudELB   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
-	PurgeProviderTypeHuaweiCloudSCM   = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
 )
 
 type NotificationProviderType string
