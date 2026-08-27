@@ -3051,6 +3051,11 @@
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "azure_keyvault_name": {
+        "label": "Azure KeyVault 名称",
+        "placeholder": "请输入 Azure KeyVault 名称",
+        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/azure/key-vault/general/about-keys-secrets-certificates\" target=\"_blank\">https://learn.microsoft.com/zh-cn/azure/key-vault/general/about-keys-secrets-certificates</a>"
+      },
       "huaweicloud_elb_region": {
         "label": "华为云服务区域",
         "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",

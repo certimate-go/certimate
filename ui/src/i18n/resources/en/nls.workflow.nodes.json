@@ -3052,6 +3052,11 @@
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "azure_keyvault_name": {
+        "label": "Azure KeyVault name",
+        "placeholder": "Please enter Azure KeyVault name",
+        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates</a>"
+      },
       "huaweicloud_elb_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
