@@ -12,6 +12,7 @@ import { ACCESS_USAGES } from "@/domain/provider";
 import { useTriggerElement, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { unwrapErrMsg } from "@/utils/error";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 import AccessForm, { type AccessFormModes, type AccessFormProps, type AccessFormUsages } from "./AccessForm";
 
@@ -60,6 +61,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
 
     setFormPending(true);
     try {
+      applyTrimmedFormValues(formInst);
       formValues = await formInst.validateFields();
       formValues.reserve = usage === "ca" ? "ca" : usage === "notification" ? "notif" : void 0;
     } catch (err) {
