@@ -85,6 +85,10 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 }
 
 func (p *Purger) uploadToCloudNative(ctx context.Context, expiry time.Duration) (*PurgeResult, error) {
+	if p.config.GatewayId == "" {
+		return nil, fmt.Errorf("config `gatewayId` is required")
+	}
+
 	purgingCertIds := make([]string, 0)
 
 	// 查询云原生网关证书列表，避免重复上传
