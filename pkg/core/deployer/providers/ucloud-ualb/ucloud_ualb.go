@@ -280,7 +280,7 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadba
 
 		sslItem := describeSSLV2Resp.DataSet[0]
 		if sslItem.Domains == d.config.Domain {
-			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 同域名证书需要删除
+			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId)
 			continue
 		}
 	}

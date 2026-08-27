@@ -183,6 +183,7 @@
   "jdcloud_dns": "JD Cloud - DNS",
   "jdcloud_live": "JD Cloud - Live Video",
   "jdcloud_vod": "JD Cloud - VOD (Video on Demand)",
+  "jdcloud_ssl": "JD Cloud - SSL Certificate",
   "jdcloud_ssl_upload": "JD Cloud - Upload to SSL Certificate",
   "jdcloud_waf": "JD Cloud - WAF (Web Application Firewall)",
   "kong": "Kong",
