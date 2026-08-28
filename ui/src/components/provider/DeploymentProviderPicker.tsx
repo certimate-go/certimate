@@ -1,9 +1,10 @@
-﻿import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+﻿import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Avatar, Card, Divider, Empty, Flex, Input, type InputRef, Tabs, Tooltip, Typography } from "antd";
+import { Avatar, Card, Divider, Empty, Flex, Input, type InputRef, Tabs, Tag, Tooltip, Typography } from "antd";
 
 import Show from "@/components/Show";
 import { DEPLOYMENT_CATEGORIES, type DeploymentProvider, deploymentProvidersMap } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { mergeCls } from "@/utils/css";
 
 import { type SharedPickerProps, usePickerDataSource, usePickerWrapperCols } from "./_shared";
@@ -20,6 +21,8 @@ const DeploymentProviderPicker = forwardRef<DeploymentProviderPickerInstance, De
   ({ className, style, gap = "medium", placeholder, showAvailability = false, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
+    const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
+
     const { wrapperElRef, cols } = usePickerWrapperCols(320);
 
     const [category, setCategory] = useState<string>(DEPLOYMENT_CATEGORIES.ALL);
@@ -27,8 +30,10 @@ const DeploymentProviderPicker = forwardRef<DeploymentProviderPickerInstance, De
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
+    const allProviders = useMemo(() => Array.from(deploymentProvidersMap.values()), [pluginCatalogVersion]);
+
     const dataSources = usePickerDataSource({
-      dataSource: Array.from(deploymentProvidersMap.values()),
+      dataSource: allProviders,
       filters: [
         onFilter!,
         (_, provider) => {
@@ -66,6 +71,11 @@ const DeploymentProviderPicker = forwardRef<DeploymentProviderPickerInstance, De
                     </Tooltip>
                   </div>
                 </div>
+                {provider.source === "plugin" ? (
+                  <Tag className="shrink-0" color="orange">
+                    {t("provider.tag.plugin")}
+                  </Tag>
+                ) : null}
               </div>
             </div>
           </Card>

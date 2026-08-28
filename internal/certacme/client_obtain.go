@@ -60,6 +60,7 @@ type ObtainCertificateRequest struct {
 
 	// ARI 相关
 	_                     struct{}
+	DisableARI            bool
 	ARIReplacesAccountUrl string
 	ARIReplacesCertId     string
 }
@@ -72,6 +73,8 @@ type ObtainCertificateResponse struct {
 	PrivateKey           string
 	ACMEAccountUrl       string
 	ACMECertificateUrl   string
+	ARIInfo              *ARIInfo
+	ARIError             string
 	ARIReplaced          bool
 }
 
@@ -191,7 +194,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		}
 	}
 
-	return &ObtainCertificateResponse{
+	obtainResp := &ObtainCertificateResponse{
 		CAProvider:           domain.CAProviderType(c.account.CA),
 		CSR:                  strings.TrimSpace(string(resp.CSR)),
 		FullChainCertificate: strings.TrimSpace(string(resp.Certificate)),
@@ -200,5 +203,16 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		ACMEAccountUrl:       c.account.ACMEAccountUrl,
 		ACMECertificateUrl:   resp.CertURL,
 		ARIReplaced:          req.ReplacesCertID != "",
-	}, nil
+	}
+
+	if !request.DisableARI {
+		ariInfo, err := c.GetARIInfo(ctx, obtainResp.FullChainCertificate)
+		if err != nil {
+			obtainResp.ARIError = err.Error()
+		} else {
+			obtainResp.ARIInfo = ariInfo
+		}
+	}
+
+	return obtainResp, nil
 }

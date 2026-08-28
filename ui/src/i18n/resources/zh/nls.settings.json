@@ -96,6 +96,66 @@
     }
   },
 
+  "plugins": {
+    "tab": "插件"
+  },
+
+  "acmeaccounts": {
+    "tab": "ACME 账户",
+    "title": "ACME 账户凭据",
+    "tips": "管理用于签发证书的 ACME 账户私钥。导出可与其他 ACME 客户端互通；轮转会在 CA 侧更换密钥（旧密钥立即失效）。",
+    "empty": "尚无已存储的 ACME 账户。签发证书时会自动创建账户，也可导入已有私钥。",
+    "filter": {
+      "ca_placeholder": "按 CA 筛选"
+    },
+    "table": {
+      "ca": "证书颁发机构",
+      "email": "邮箱",
+      "account_uri": "Account URI",
+      "directory": "Directory URL",
+      "created": "创建时间",
+      "actions": "操作"
+    },
+    "action": {
+      "import": "导入",
+      "export": "导出",
+      "rotate": "轮转密钥"
+    },
+    "import": {
+      "modal": {
+        "title": "导入 ACME 账户"
+      },
+      "form": {
+        "ca": "证书颁发机构",
+        "ca_placeholder": "请选择 CA",
+        "directory": "ACME Directory URL",
+        "directory_placeholder": "https://example.com/acme/directory",
+        "private_key": "账户私钥（PEM）",
+        "private_key_placeholder": "-----BEGIN ... PRIVATE KEY-----",
+        "private_key_extra": "将通过 ACME 服务器自动探测 Account URI（仅恢复已存在账户，不会新建）。",
+        "email": "邮箱",
+        "email_placeholder": "若 CA 返回联系邮箱可留空",
+        "email_extra": "当 CA 账户没有 mailto 联系方式时必填。"
+      }
+    },
+    "export": {
+      "confirm": {
+        "title": "导出私钥？",
+        "content": "ACME 账户私钥可用于签发与吊销证书。请仅导出到可信环境。"
+      },
+      "modal": {
+        "title": "账户私钥",
+        "tips": "请妥善保管。持有该私钥即可冒充此 ACME 账户。"
+      }
+    },
+    "rotate": {
+      "confirm": {
+        "title": "轮转账户密钥？",
+        "content": "CA 将立即作废当前私钥。请确认没有其他 ACME 客户端仍在使用旧密钥。Account URI 保持不变。"
+      }
+    }
+  },
+
   "sslprovider": {
     "tab": "证书颁发机构",
     "ca": {

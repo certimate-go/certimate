@@ -5,8 +5,11 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
 
+	"github.com/certimate-go/certimate/internal/acmeaccount"
 	"github.com/certimate-go/certimate/internal/certificate"
 	"github.com/certimate-go/certimate/internal/notify"
+	"github.com/certimate-go/certimate/internal/pluginhost"
+	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/handlers"
 	"github.com/certimate-go/certimate/internal/statistics"
@@ -14,10 +17,11 @@ import (
 )
 
 var (
-	certificateSvc *certificate.CertificateService
-	workflowSvc    *workflow.WorkflowService
-	statisticsSvc  *statistics.StatisticsService
-	notifySvc      *notify.NotifyService
+	certificateSvc    *certificate.CertificateService
+	workflowSvc       *workflow.WorkflowService
+	statisticsSvc     *statistics.StatisticsService
+	notifySvc         *notify.NotifyService
+	providerSchemaSvc *providerschema.ProviderSchemaService
 )
 
 func BindRouter(router *router.Router[*core.RequestEvent]) {
@@ -27,11 +31,14 @@ func BindRouter(router *router.Router[*core.RequestEvent]) {
 	acmeAccountRepo := repository.NewACMEAccountRepository()
 	certificateRepo := repository.NewCertificateRepository()
 	statisticsRepo := repository.NewStatisticsRepository()
+	providerSchemaRepo := repository.NewProviderSchemaRepository()
 
 	certificateSvc = certificate.NewCertificateService(acmeAccountRepo, certificateRepo)
 	workflowSvc = workflow.NewWorkflowService(workflowRepo, workflowRunRepo)
 	statisticsSvc = statistics.NewStatisticsService(statisticsRepo)
 	notifySvc = notify.NewNotifyService(accessRepo)
+	providerSchemaSvc = providerschema.NewProviderSchemaService(providerSchemaRepo)
+	acmeAccountSvc := acmeaccount.NewService(acmeAccountRepo)
 
 	group := router.Group("/api")
 	group.Bind(apis.RequireSuperuserAuth())
@@ -39,4 +46,9 @@ func BindRouter(router *router.Router[*core.RequestEvent]) {
 	handlers.NewWorkflowsHandler(group, workflowSvc)
 	handlers.NewStatisticsHandler(group, statisticsSvc)
 	handlers.NewNotificationsHandler(group, notifySvc)
+	handlers.NewProviderSchemaHandler(group, providerSchemaSvc)
+	handlers.NewPluginCatalogHandler(group, pluginhost.GlobalCatalog())
+	handlers.NewPluginAdminHandler(group)
+	handlers.NewPluginMarketHandler(group, pluginhost.GlobalMarketService())
+	handlers.NewACMEAccountsHandler(group, acmeAccountSvc)
 }

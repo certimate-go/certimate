@@ -1,6 +1,10 @@
 {
   "$ns": "provider",
 
+  "access": {
+    "usedBy": "使用者："
+  },
+
   "text": {
     "nodata": "暂无提供商",
     "default_ca": "（默认）不指定，跟随全局设置",
@@ -9,6 +13,10 @@
     "available_group": "可用（已添加授权凭据）",
     "unavailable_group": "不可用（未添加授权凭据）",
     "unavailable_divider": "以下提供商不可用（即未添加过授权凭据）"
+  },
+
+  "tag": {
+    "plugin": "插件"
   },
 
   "category": {
@@ -136,8 +144,6 @@
   "dnsexit": "DNSExit",
   "dnsla": "帝恩爱斯（DNS.LA）",
   "dnsmadeeasy": "DNS Made Easy",
-  "dogecloud": "多吉云",
-  "dogecloud_cdn": "多吉云 - 内容分发网络 CDN",
   "dokploy": "Dokploy",
   "duckdns": "Duck DNS",
   "dynadot": "Dynadot",
@@ -187,8 +193,6 @@
   "jdcloud_ssl_upload": "京东云 - 上传到 SSL 数字证书",
   "jdcloud_waf": "京东云 - Web 应用防火墙 WAF",
   "kong": "Kong",
-  "kubernetes": "Kubernetes",
-  "kubernetes_secret": "Kubernetes - Secret",
   "ksyun": "金山云",
   "ksyun_cdn": "金山云 - 内容分发网络 CDN",
   "ksyun_kcm_upload": "金山云 - 上传到 SSL 证书管理",
@@ -223,10 +227,6 @@
   "qingcloud": "青云",
   "qingcloud_dns": "青云 - 云解析 DNS",
   "qingcloud_lb": "青云 - 负载均衡 LB",
-  "qiniu": "七牛云",
-  "qiniu_cdn": "七牛云 - 内容分发网络 CDN",
-  "qiniu_kodo": "七牛云 - 对象存储 Kodo",
-  "qiniu_pili": "七牛云 - 视频直播 Pili",
   "rainyun": "雨云",
   "rainyun_rcdn": "雨云 - 雨盾 CDN",
   "rainyun_sslcenter_upload": "雨云 - 上传到 SSL 证书中心",
@@ -281,9 +281,6 @@
   "ucloud_ussl": "优刻得 - 证书管理 USSL",
   "unicloud": "uniCloud (DCloud)",
   "unicloud_webhost": "uniCloud - 前端网页托管",
-  "upyun": "又拍云",
-  "upyun_cdn": "又拍云 - 云分发 CDN",
-  "upyun_file": "又拍云 - 云存储 USS",
   "vercel": "Vercel",
   "volcengine": "火山引擎",
   "volcengine_alb": "火山引擎 - 应用型负载均衡 ALB",
@@ -311,8 +308,5 @@
   "yandexcloud": "Yandex Cloud",
   "yandexcloud_certificatemanager": "Yandex Cloud - 证书管理器",
   "yandexcloud_dns": "Yandex Cloud - DNS",
-  "zerossl": "ZeroSSL",
-  "zenlayer": "Zenlayer",
-  "zenlayer_cdn": "Zenlayer - 内容分发网络 CDN",
-  "zenlayer_ga": "Zenlayer - 全球智能加速 ZGA"
+  "zerossl": "ZeroSSL"
 }

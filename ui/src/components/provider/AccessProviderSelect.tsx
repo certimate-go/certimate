@@ -94,7 +94,21 @@ const AccessProviderSelect = ({ showOptionTags, onFilter, ...props }: AccessProv
       }}
       options={options}
       optionLabelProp={void 0}
-      optionRender={(option) => renderOption(option.data.value)}
+      optionRender={(option) => {
+        const provider = accessProvidersMap.get(option.data.value as string);
+        const hasDeployers = provider?.deployers && provider.deployers.length > 0;
+        return (
+          <div className="flex flex-col gap-0.5">
+            {renderOption(option.data.value)}
+            {hasDeployers && (
+              <Typography.Text className="pl-7" type="secondary" style={{ fontSize: 11 }}>
+                {t("provider.access.usedBy")} {provider!.deployers!.slice(0, 3).join(", ")}
+                {provider!.deployers!.length > 3 ? ` +${provider!.deployers!.length - 3} more` : ""}
+              </Typography.Text>
+            )}
+          </div>
+        );
+      }}
       showSearch={{
         filterOption: (inputValue, option) => matchSearchOption(inputValue, option!),
         optionFilterProp: "label",
