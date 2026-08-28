@@ -44,12 +44,10 @@ type DeployerConfig struct {
 
 	// 跳板机配置数组。
 	JumpServers []ServerConfig `json:"jumpServers,omitempty"`
-	// 是否回退使用 SCP。
+	// 是否使用 SCP 传输文件。
 	UseSCP bool `json:"useSCP,omitempty"`
-	// 命令执行模式。
-	// 可取值 "script"、"sequential"。
-	// 零值时默认值 "script"。
-	ExecuteMode string `json:"executeMode,omitempty"`
+	// 是否使用 REPL 命令行。
+	UseREPL bool `json:"useREPL,omitempty"`
 	// 前置命令。
 	PreCommand string `json:"preCommand,omitempty"`
 	// 后置命令。
@@ -126,7 +124,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 执行前置命令
 	if d.config.PreCommand != "" {
-		stdout, stderr, err := d.executeCommand(sshClient, d.config.PreCommand)
+		stdout, stderr, err := execCommand(sshClient, d.config.PreCommand, *d.config)
 		d.logger.Debug("run pre-command", slog.String("stdout", stdout), slog.String("stderr", stderr))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute pre-command (stdout: %s, stderr: %s): %w ", stdout, stderr, err)
@@ -223,7 +221,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 执行后置命令
 	if d.config.PostCommand != "" {
-		stdout, stderr, err := d.executeCommand(sshClient, d.config.PostCommand)
+		stdout, stderr, err := execCommand(sshClient, d.config.PostCommand, *d.config)
 		d.logger.Debug("run post-command", slog.String("stdout", stdout), slog.String("stderr", stderr))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute post-command (stdout: %s, stderr: %s): %w ", stdout, stderr, err)
@@ -233,26 +231,18 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	return &DeployResult{}, nil
 }
 
-func (d *Deployer) executeCommand(sshClient *ssh.Client, command string) (string, string, error) {
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}", d.config.FilePathForCrt)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}", d.config.FilePathForCrtOnlyServer)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}", d.config.FilePathForCrtOnlyIntermedia)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}", d.config.FilePathForKey)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}", d.config.PfxPassword)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}", d.config.JksAlias)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}", d.config.JksKeypass)
-	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}", d.config.JksStorepass)
+func execCommand(sshClient *ssh.Client, command string, config DeployerConfig) (string, string, error) {
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}", config.FilePathForCrt)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}", config.FilePathForCrtOnlyServer)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_INTERMEDIA_PATH}", config.FilePathForCrtOnlyIntermedia)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}", config.FilePathForKey)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_PFX_PASSWORD}", config.PfxPassword)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_ALIAS}", config.JksAlias)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_KEYPASS}", config.JksKeypass)
+	command = strings.ReplaceAll(command, "${CERTIMATE_DEPLOYER_CMDVAR_JKS_STOREPASS}", config.JksStorepass)
 
-	if d.config.ExecuteMode == EXECUTE_MODE_SEQUENTIAL {
-		lines := make([]string, 0)
-		for _, line := range strings.Split(command, "\n") {
-			line = strings.TrimSpace(line)
-			if line != "" {
-				lines = append(lines, line)
-			}
-		}
-
-		return xssh.RunCommands(sshClient.RawClient(), lines)
+	if config.UseREPL {
+		return xssh.RunCommandWithREPL(sshClient.RawClient(), command)
 	}
 
 	return xssh.RunCommand(sshClient.RawClient(), command)

@@ -3,6 +3,7 @@ package ssh
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -36,28 +37,35 @@ func RunCommand(sshCli *ssh.Client, command string) (string, string, error) {
 	return stdoutBuf.String(), stderrBuf.String(), nil
 }
 
-// 逐行执行远程脚本命令，每行命令使用独立的会话通道，并返回执行后标准输出和标准错误。
-// 适用于不提供 Shell、每个会话仅接受单条命令的嵌入式设备。
+// 与 [RunCommand] 类似，但以 REPL 模式逐行执行脚本。
 //
 // 入参:
 //   - sshCli: SSH 客户端。
-//   - commands: 待执行的脚本命令数组。
+//   - commands: 待执行的脚本命令。
 //
 // 出参:
 //   - stdout：标准输出。
 //   - stderr：标准错误。
 //   - err: 错误。
-func RunCommands(sshCli *ssh.Client, commands []string) (string, string, error) {
-	stdoutBuf := bytes.NewBuffer(nil)
-	stderrBuf := bytes.NewBuffer(nil)
-	for _, command := range commands {
-		stdout, stderr, err := RunCommand(sshCli, command)
-		stdoutBuf.WriteString(stdout)
-		stderrBuf.WriteString(stderr)
-		if err != nil {
-			return stdoutBuf.String(), stderrBuf.String(), err
+func RunCommandWithREPL(sshCli *ssh.Client, command string) (string, string, error) {
+	lines := make([]string, 0)
+	for _, line := range strings.Split(command, "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			lines = append(lines, line)
 		}
 	}
 
-	return stdoutBuf.String(), stderrBuf.String(), nil
+	stdouts := make([]string, 0, len(lines))
+	stderrs := make([]string, 0, len(lines))
+	for _, line := range lines {
+		stdout, stderr, err := RunCommand(sshCli, line)
+		stdouts = append(stdouts, stdout)
+		stderrs = append(stderrs, stderr)
+		if err != nil {
+			return strings.Join(stdouts, "\n"), strings.Join(stderrs, "\n"), err
+		}
+	}
+
+	return strings.Join(stdouts, "\n"), strings.Join(stderrs, "\n"), nil
 }

@@ -12,11 +12,6 @@ const (
 )
 
 const (
-	EXECUTE_MODE_SCRIPT     = "script"
-	EXECUTE_MODE_SEQUENTIAL = "sequential"
-)
-
-const (
 	PFX_ENCODER_LEGACYRC2  = string(xcertpfx.EncoderNameLegacyRC2)
 	PFX_ENCODER_LEGACYDES  = string(xcertpfx.EncoderNameLegacyDES)
 	PFX_ENCODER_MODERN2023 = string(xcertpfx.EncoderNameModern2023)

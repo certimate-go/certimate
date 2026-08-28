@@ -342,7 +342,7 @@
         "tooltip": "It's the main directory where the website's files are stored on the server."
       },
       "ssh_use_scp": {
-        "label": "Fallback to use SCP",
+        "label": "Use SCP to transfer file",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
       },
       "ucloud_udnr_endpoint": {
@@ -2215,22 +2215,13 @@
         "ps_binding_netsh": "PowerShell - Binding netsh",
         "ps_binding_rdp": "PowerShell - Binding RDP"
       },
-      "ssh_execute_mode": {
-        "label": "Command execution mode",
-        "tooltip": "Some devices without a shell (e.g. AV control processors, network appliances) only accept a single command per session and will silently ignore the rest. Choose \"one line per session\" for those.",
-        "option": {
-          "script": {
-            "label": "Single script (default)"
-          },
-          "sequential": {
-            "label": "One line per session"
-          }
-        }
-      },
-
       "ssh_use_scp": {
-        "label": "Fallback to use SCP",
+        "label": "Use SCP to transfer file",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
+      },
+      "ssh_use_repl": {
+        "label": "Use REPL mode to execute commands (Optional)",
+        "tooltip": "If the remote server has no shell and does not support multi-line commands, please check this option to enable REPL mode for line-by-line command execution."
       },
       "synologydsm": {
         "guide": "Requires Synology DSM v6.0 or higher."
