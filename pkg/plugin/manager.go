@@ -70,13 +70,40 @@ func (m *Manager) Deploy(ctx context.Context, dp *DiscoveredPlugin, req *DeployR
 	return res, err
 }
 
+type syncBuffer struct {
+	mu  sync.Mutex
+	buf bytes.Buffer
+}
+
+func (b *syncBuffer) Write(p []byte) (int, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	n, err := b.buf.Write(p)
+	if b.buf.Len() > 2*stderrTailLimit {
+		data := b.buf.Bytes()
+		copy(data, data[len(data)-stderrTailLimit:])
+		b.buf.Truncate(stderrTailLimit)
+	}
+	return n, err
+}
+
+func (b *syncBuffer) tail(limit int) []byte {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	data := b.buf.Bytes()
+	if len(data) > limit {
+		data = data[len(data)-limit:]
+	}
+	return bytes.Clone(data)
+}
+
 type dispensed struct {
 	client   *githubplugin.Client
 	deployer Deployer
-	stderr   *bytes.Buffer
+	stderr   *syncBuffer
 }
 
-func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *bytes.Buffer) *githubplugin.ClientConfig {
+func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *syncBuffer) *githubplugin.ClientConfig {
 	cfg := &githubplugin.ClientConfig{
 		HandshakeConfig:  HandshakeConfig,
 		Plugins:          PluginSetForDeployer(),
@@ -95,7 +122,7 @@ func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *bytes.Buffer) *gith
 }
 
 func (m *Manager) dispense(dp *DiscoveredPlugin) (*dispensed, error) {
-	stderr := &bytes.Buffer{}
+	stderr := &syncBuffer{}
 	client := githubplugin.NewClient(m.clientConfig(dp, stderr))
 	rpcClient, err := client.Client()
 	if err != nil {
@@ -168,15 +195,14 @@ func mapStartError(dp *DiscoveredPlugin, err error) error {
 	return err
 }
 
-func stderrTail(buf *bytes.Buffer, redact secretRedactor) string {
-	if buf == nil || buf.Len() == 0 {
+func stderrTail(buf *syncBuffer, redact secretRedactor) string {
+	if buf == nil {
 		return ""
 	}
-	data := buf.Bytes()
-	if len(data) > stderrTailLimit {
-		data = data[len(data)-stderrTailLimit:]
+	if data := buf.tail(stderrTailLimit); len(data) > 0 {
+		return redact(string(data))
 	}
-	return redact(string(data))
+	return ""
 }
 
 func noopRedactor(s string) string { return s }

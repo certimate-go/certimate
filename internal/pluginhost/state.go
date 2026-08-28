@@ -1,8 +1,10 @@
 package pluginhost
 
-var globalCatalog = NewCatalog()
-var globalReloader *Reloader
-var globalMarketService *MarketService
+var (
+	globalCatalog       = NewCatalog()
+	globalReloader      *Reloader
+	globalMarketService *MarketService
+)
 
 func SetGlobalCatalog(c *Catalog) {
 	if c != nil {

@@ -6,8 +6,10 @@ import (
 	"regexp"
 )
 
-var providerTypePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_.-]*$`)
-var repoPattern = regexp.MustCompile(`^certimate-go/[a-z0-9_.-]+$`)
+var (
+	providerTypePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_.-]*$`)
+	repoPattern         = regexp.MustCompile(`^certimate-go/[a-z0-9_.-]+$`)
+)
 
 type Release struct {
 	Repo      string            `json:"repo"`
