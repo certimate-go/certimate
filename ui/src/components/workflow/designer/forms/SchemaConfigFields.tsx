@@ -66,7 +66,9 @@ const renderControl = (col: SchemaColumn, t: (key: string) => string): ReactNode
     case "switch":
       return <Switch />;
     case "number":
-      return <Input type="number" min={col.min} max={col.max} placeholder={placeholder} style={{ width: "100%" }} {...unitFieldProps("text", col.unitKey, t)} />;
+      return (
+        <Input type="number" min={col.min} max={col.max} placeholder={placeholder} style={{ width: "100%" }} {...unitFieldProps("text", col.unitKey, t)} />
+      );
     case "select":
       return <Select placeholder={placeholder} options={optionList(col, t)} style={{ width: "100%" }} />;
     case "radio":

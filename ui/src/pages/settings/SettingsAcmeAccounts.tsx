@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconDownload, IconPlus, IconRefresh } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
-import { App, Button, Empty, Form, Input, Modal, Select, Space, Table, Typography, type TableProps } from "antd";
+import { App, Button, Empty, Form, Input, Modal, Select, Space, Table, type TableProps, Typography } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
@@ -216,8 +216,8 @@ const SettingsAcmeAccounts = () => {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="!mb-1">{t("settings.acmeaccounts.title")}</h2>
-          <Typography.Paragraph type="secondary" className="!mb-0">
+          <h2 className="mb-1!">{t("settings.acmeaccounts.title")}</h2>
+          <Typography.Paragraph type="secondary" className="mb-0!">
             {t("settings.acmeaccounts.tips")}
           </Typography.Paragraph>
         </div>
@@ -249,12 +249,7 @@ const SettingsAcmeAccounts = () => {
         dataSource={tableData}
         scroll={{ x: "max(100%, 960px)" }}
         locale={{
-          emptyText: (
-            <Empty
-              description={!loading ? t("settings.acmeaccounts.empty") : " "}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          ),
+          emptyText: <Empty description={!loading ? t("settings.acmeaccounts.empty") : " "} image={Empty.PRESENTED_IMAGE_SIMPLE} />,
         }}
         pagination={{
           current: page,
@@ -295,7 +290,12 @@ const SettingsAcmeAccounts = () => {
           >
             <Input.TextArea autoSize={{ minRows: 6, maxRows: 12 }} placeholder={t("settings.acmeaccounts.import.form.private_key_placeholder")} />
           </Form.Item>
-          <Form.Item name="email" label={t("settings.acmeaccounts.import.form.email")} rules={[importRule]} extra={t("settings.acmeaccounts.import.form.email_extra")}>
+          <Form.Item
+            name="email"
+            label={t("settings.acmeaccounts.import.form.email")}
+            rules={[importRule]}
+            extra={t("settings.acmeaccounts.import.form.email_extra")}
+          >
             <Input placeholder={t("settings.acmeaccounts.import.form.email_placeholder")} />
           </Form.Item>
         </Form>

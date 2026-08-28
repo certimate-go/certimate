@@ -19,6 +19,9 @@ const renderApp = () => {
   );
 };
 
-const pluginCatalogReady = usePluginCatalogStore.getState().init().catch(() => undefined);
+const pluginCatalogReady = usePluginCatalogStore
+  .getState()
+  .init()
+  .catch(() => undefined);
 const renderDeadline = new Promise<void>((resolve) => setTimeout(resolve, 2000));
 void Promise.race([pluginCatalogReady, renderDeadline]).finally(renderApp);
