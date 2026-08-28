@@ -6,7 +6,7 @@
     "nodata_description": "当前未找到工作流。请先创建。",
     "nodata_button": "新建工作流",
     "unpublished_warning": "请先完成流程编排并发布更改",
-    "runnning_prompt": "运行中……请稍后查看运行历史"
+    "running_prompt": "运行中……请稍后查看运行历史"
   },
 
   "page": {
