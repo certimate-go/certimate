@@ -32,14 +32,16 @@ func Upload(t *testing.T, provider certmgr.Provider, input UploadInput) {
 	}
 
 	ctx := context.Background()
+
+	loglvr := slog.LevelVar{}
+	loglvr.Set(slog.LevelDebug)
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: &loglvr}))
+	provider.SetLogger(logger)
+
 	certData, _ := os.ReadFile(input.CertPath)
 	privkeyData, _ := os.ReadFile(input.KeyPath)
 	assert.NotNil(t, certData)
 	assert.NotNil(t, privkeyData)
-
-	logger := slog.Default()
-	logger.Enabled(ctx, slog.LevelDebug)
-	provider.SetLogger(logger)
 
 	res, err := provider.Upload(ctx, string(certData), string(privkeyData))
 	require.NoError(t, err)

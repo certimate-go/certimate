@@ -32,14 +32,16 @@ func Deploy(t *testing.T, provider deployer.Provider, input DeployInput) {
 	}
 
 	ctx := context.Background()
+
+	loglvr := slog.LevelVar{}
+	loglvr.Set(slog.LevelDebug)
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: &loglvr}))
+	provider.SetLogger(logger)
+
 	certData, _ := os.ReadFile(input.CertPath)
 	privkeyData, _ := os.ReadFile(input.KeyPath)
 	assert.NotNil(t, certData)
 	assert.NotNil(t, privkeyData)
-
-	logger := slog.Default()
-	logger.Enabled(ctx, slog.LevelDebug)
-	provider.SetLogger(logger)
 
 	res, err := provider.Deploy(ctx, string(certData), string(privkeyData))
 	require.NoError(t, err)

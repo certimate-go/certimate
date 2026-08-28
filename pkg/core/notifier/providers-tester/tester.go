@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
+	"os"
 	"testing"
 
 	"github.com/samber/lo"
@@ -26,12 +27,14 @@ type NotifyInput struct {
 
 func Notify(t *testing.T, provider notifier.Provider, input NotifyInput) {
 	ctx := context.Background()
+
+	loglvr := slog.LevelVar{}
+	loglvr.Set(slog.LevelDebug)
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: &loglvr}))
+	provider.SetLogger(logger)
+
 	message := lo.Ternary(input.Message != "", input.Message, mockMessage)
 	subject := lo.Ternary(input.Subject != "", input.Subject, mockSubject)
-
-	logger := slog.Default()
-	logger.Enabled(ctx, slog.LevelDebug)
-	provider.SetLogger(logger)
 
 	res, err := provider.Notify(ctx, message, subject)
 	require.NoError(t, err)
