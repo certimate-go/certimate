@@ -232,11 +232,6 @@ type AccessConfigForDNSMadeEasy struct {
 	ApiSecret string `json:"apiSecret"`
 }
 
-type AccessConfigForDogeCloud struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
-}
-
 type AccessConfigForDokploy struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
@@ -380,10 +375,6 @@ type AccessConfigForKong struct {
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 
-type AccessConfigForKubernetes struct {
-	KubeConfig string `json:"kubeConfig,omitempty"`
-}
-
 type AccessConfigForKsyun struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
@@ -515,11 +506,6 @@ type AccessConfigForProxmoxVE struct {
 type AccessConfigForQingCloud struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
-}
-
-type AccessConfigForQiniu struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
 }
 
 type AccessConfigForRainYun struct {
@@ -658,11 +644,6 @@ type AccessConfigForUniCloud struct {
 	Password string `json:"password"`
 }
 
-type AccessConfigForUpyun struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type AccessConfigForVercel struct {
 	ApiAccessToken string `json:"apiAccessToken"`
 	TeamId         string `json:"teamId,omitempty"`
@@ -710,12 +691,6 @@ type AccessConfigForXinnet struct {
 type AccessConfigForYandexCloud struct {
 	FolderId          string `json:"folderId"`
 	ServiceAccountKey string `json:"serviceAccountKey"`
-}
-
-type AccessConfigForZenlayer struct {
-	AccessKeyId       string `json:"accessKeyId"`
-	AccessKeyPassword string `json:"accessKeyPassword"`
-	ResourceGroupId   string `json:"resourceGroupId,omitempty"`
 }
 
 type AccessConfigForZeroSSL struct {

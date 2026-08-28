@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMount } from "ahooks";
-import { App, Button, Flex, Form } from "antd";
+import { Alert, App, Button, Flex, Form } from "antd";
 
 import AccessForm, { type AccessFormUsages } from "@/components/access/AccessForm";
 import AccessProviderPicker, { type AccessProviderPickerInstance } from "@/components/provider/AccessProviderPicker";
@@ -12,6 +12,7 @@ import { ACCESS_USAGES } from "@/domain/provider";
 import { useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { unwrapErrMsg } from "@/utils/error";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 const AccessNew = () => {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const AccessNew = () => {
 
     setFormPending(true);
     try {
+      applyTrimmedFormValues(formInst);
       formValues = await formInst.validateFields();
       formValues.reserve = providerUsage === "ca" ? "ca" : providerUsage === "notification" ? "notif" : void 0;
     } catch (err) {
@@ -80,6 +82,17 @@ const AccessNew = () => {
 
       <div className="container">
         <Show when={!fieldProvider}>
+          <Alert
+            type="info"
+            message={t("plugin.market.nudge")}
+            action={
+              <Button size="small" onClick={() => navigate("/settings/plugins")}>
+                {t("plugin.market.browse")}
+              </Button>
+            }
+            closable
+            className="mb-4"
+          />
           <AccessProviderPicker
             ref={providerPickerRef}
             gap="large"

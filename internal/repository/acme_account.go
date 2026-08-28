@@ -52,6 +52,67 @@ func (r *ACMEAccountRepository) GetByCAAndAcctUrl(ctx context.Context, ca string
 	return r.castRecordToModel(record)
 }
 
+func (r *ACMEAccountRepository) GetById(ctx context.Context, id string) (*domain.ACMEAccount, error) {
+	record, err := app.GetApp().FindRecordById(domain.CollectionNameACMEAccount, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, domain.ErrRecordNotFound
+		}
+		return nil, err
+	}
+
+	return r.castRecordToModel(record)
+}
+
+func (r *ACMEAccountRepository) List(ctx context.Context, page, perPage int, ca string) ([]*domain.ACMEAccount, int64, error) {
+	if page < 1 {
+		page = 1
+	}
+	if perPage < 1 {
+		perPage = 15
+	}
+	if perPage > 100 {
+		perPage = 100
+	}
+
+	filter := ""
+	params := dbx.Params{}
+	var countExprs []dbx.Expression
+	if ca != "" {
+		filter = "ca={:ca}"
+		params["ca"] = ca
+		countExprs = append(countExprs, dbx.HashExp{"ca": ca})
+	}
+
+	total, err := app.GetApp().CountRecords(domain.CollectionNameACMEAccount, countExprs...)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * perPage
+	records, err := app.GetApp().FindRecordsByFilter(
+		domain.CollectionNameACMEAccount,
+		filter,
+		"ca,created",
+		perPage,
+		offset,
+		params,
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	accounts := make([]*domain.ACMEAccount, 0, len(records))
+	for _, record := range records {
+		account, err := r.castRecordToModel(record)
+		if err != nil {
+			return nil, 0, err
+		}
+		accounts = append(accounts, account)
+	}
+	return accounts, total, nil
+}
+
 func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.ACMEAccount) (*domain.ACMEAccount, error) {
 	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameACMEAccount)
 	if err != nil {

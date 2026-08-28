@@ -1,6 +1,10 @@
 {
   "$ns": "provider",
 
+  "access": {
+    "usedBy": "Used by:"
+  },
+
   "text": {
     "nodata": "No providers available",
     "default_ca": "(Default) Follow global settings",
@@ -9,6 +13,10 @@
     "available_group": "Available (with added credentials)",
     "unavailable_group": "Unavailable (without added credentials)",
     "unavailable_divider": "The following providers are not available (without added credentials)"
+  },
+
+  "tag": {
+    "plugin": "Plugin"
   },
 
   "category": {
@@ -136,8 +144,6 @@
   "dnsexit": "DNSExit",
   "dnsla": "DNS.LA",
   "dnsmadeeasy": "DNS Made Easy",
-  "dogecloud_cdn": "Doge Cloud - CDN (Content Delivery Network)",
-  "dogecloud": "Doge Cloud",
   "dokploy": "Dokploy",
   "duckdns": "Duck DNS",
   "dynadot": "Dynadot",
@@ -187,8 +193,6 @@
   "jdcloud_ssl_upload": "JD Cloud - Upload to SSL Certificate",
   "jdcloud_waf": "JD Cloud - WAF (Web Application Firewall)",
   "kong": "Kong",
-  "kubernetes": "Kubernetes",
-  "kubernetes_secret": "Kubernetes - Secret",
   "ksyun": "Kingsoft Cloud",
   "ksyun_cdn": "Kingsoft Cloud - CDN (Content Delivery Network)",
   "ksyun_kcm_upload": "Kingsoft Cloud - Upload to KCM (SSL Certificate Manager)",
@@ -223,10 +227,6 @@
   "qingcloud": "QingCloud",
   "qingcloud_dns": "QingCloud - DNS",
   "qingcloud_lb": "QingCloud - LBC (Load Balancer Cluster)",
-  "qiniu": "Qiniu",
-  "qiniu_cdn": "Qiniu - CDN (Content Delivery Network)",
-  "qiniu_kodo": "Qiniu - Kodo",
-  "qiniu_pili": "Qiniu - Pili",
   "rainyun": "Rain Yun",
   "rainyun_rcdn": "Rain Yun - RCDN (Content Delivery Network)",
   "rainyun_sslcenter_upload": "Rain Yun - Upload to SSL Certificate Center",
@@ -281,9 +281,6 @@
   "todaynic": "TodayNIC.com",
   "unicloud": "uniCloud (DCloud)",
   "unicloud_webhost": "uniCloud - Web Host",
-  "upyun": "UPYUN",
-  "upyun_cdn": "UPYUN - CDN (Content Delivery Network)",
-  "upyun_file": "UPYUN - USS (Storage Service)",
   "vercel": "Vercel",
   "volcengine": "Volcengine",
   "volcengine_alb": "Volcengine - ALB (Application Load Balancer)",
@@ -311,8 +308,5 @@
   "yandexcloud": "Yandex Cloud",
   "yandexcloud_certificatemanager": "Yandex Cloud - Certificate Manager",
   "yandexcloud_dns": "Yandex Cloud - DNS",
-  "zerossl": "ZeroSSL",
-  "zenlayer": "Zenlayer",
-  "zenlayer_cdn": "Zenlayer - CDN (Content Delivery Network)",
-  "zenlayer_ga": "Zenlayer - ZGA (Global Accelerator)"
+  "zerossl": "ZeroSSL"
 }

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	_ "time/tzdata"
@@ -15,12 +17,15 @@ import (
 
 	"github.com/certimate-go/certimate/cmd"
 	"github.com/certimate-go/certimate/internal/app"
+	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
 	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/workflow"
+	"github.com/certimate-go/certimate/pkg/plugin"
 	"github.com/certimate-go/certimate/ui"
 
+	_ "github.com/certimate-go/certimate/internal/accessschema"
 	_ "github.com/certimate-go/certimate/migrations"
 )
 
@@ -49,6 +54,7 @@ func main() {
 			}
 
 			settings.Setup()
+			scanPlugins()
 			return nil
 		})
 
@@ -91,4 +97,50 @@ func main() {
 			slog.Error("[CERTIMATE] Start failed.", slog.Any("error", err))
 		}
 	}
+}
+
+func scanPlugins() {
+	pluginDir := resolvePluginDir()
+	if pluginDir == "" {
+		return
+	}
+	cfg := plugin.PluginConfig{
+		PluginDir:   pluginDir,
+		CoreVersion: app.AppVersion,
+	}
+	logger := slog.Default().With(slog.String("component", "pluginhost"))
+
+	pluginhost.SweepOrphans(pluginDir, logger)
+
+	catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, logger)
+	pluginhost.SetGlobalCatalog(catalog)
+	for _, err := range errs {
+		logger.Warn("[CERTIMATE] plugin registration error", slog.Any("error", err))
+	}
+
+	reloader := pluginhost.NewReloader(cfg, catalog, logger)
+	reloader.InitFromCatalog()
+	pluginhost.SetGlobalReloader(reloader)
+
+	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
+		PluginDir:      pluginDir,
+		DownloadMirror: os.Getenv("CERTIMATE_PLUGIN_DOWNLOAD_MIRROR"),
+		Logger:         logger,
+	})
+	pluginhost.SetGlobalMarketService(marketSvc)
+
+	watcher := pluginhost.NewWatcher(pluginDir, logger)
+	watcher.Start(context.Background())
+	reloader.Start(context.Background(), watcher)
+}
+
+func resolvePluginDir() string {
+	if dir := strings.TrimSpace(os.Getenv("CERTIMATE_PLUGIN_DIR")); dir != "" {
+		return dir
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(cwd, "plugins")
 }

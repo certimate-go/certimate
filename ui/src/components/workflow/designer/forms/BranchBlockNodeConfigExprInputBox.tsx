@@ -15,6 +15,7 @@ import {
   type ExprValueType,
 } from "@/domain/workflow";
 import { useAntdFormName } from "@/hooks";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 import { useNodeFormContext } from "./_context";
 import { getAllPreviousNodes } from "../_util";
@@ -261,6 +262,7 @@ const BranchBlockNodeConfigExprInputBox = forwardRef<BranchBlockNodeConfigExprIn
     useImperativeHandle(ref, () => {
       return {
         validate: async () => {
+          applyTrimmedFormValues(formInst);
           const formValues = await formInst.validateFields();
           return formValuesToExpr(formValues);
         },

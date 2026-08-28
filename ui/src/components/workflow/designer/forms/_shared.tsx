@@ -8,6 +8,7 @@ import { isEqual } from "radash";
 
 import Show from "@/components/Show";
 import { unwrapErrMsg } from "@/utils/error";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 import { type NodeRegistry } from "../nodes/typings";
 
@@ -48,6 +49,7 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
 
     setFormPending(true);
     try {
+      applyTrimmedFormValues(formInst);
       formValues = await formInst.validateFields();
     } catch (err) {
       message.warning(t("common.errmsg.form_invalid"));

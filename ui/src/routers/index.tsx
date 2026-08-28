@@ -12,9 +12,11 @@ import PresetList from "@/pages/presets/PresetList";
 import Settings from "@/pages/settings/Settings";
 import SettingsAbout from "@/pages/settings/SettingsAbout";
 import SettingsAccount from "@/pages/settings/SettingsAccount";
+import SettingsAcmeAccounts from "@/pages/settings/SettingsAcmeAccounts";
 import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
+import SettingsPlugins from "@/pages/settings/SettingsPlugins";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
 import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
@@ -86,8 +88,16 @@ export const router = createHashRouter([
             element: <SettingsSSLProvider />,
           },
           {
+            path: "/settings/acme-accounts",
+            element: <SettingsAcmeAccounts />,
+          },
+          {
             path: "/settings/persistence",
             element: <SettingsPersistence />,
+          },
+          {
+            path: "/settings/plugins",
+            element: <SettingsPlugins />,
           },
           {
             path: "/settings/diagnostics",

@@ -1,10 +1,13 @@
 import { withBasePath } from "@/utils/url";
 
+export type ProviderSource = "core" | "plugin";
+
 interface BaseProvider<P> {
   type: P;
   name: string;
   icon: string;
   builtin: boolean;
+  source?: ProviderSource;
 }
 
 interface BaseProviderWithAccess<P> extends BaseProvider<P> {
@@ -57,7 +60,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   DNSEXIT: "dnsexit",
   DNSLA: "dnsla",
   DNSMADEEASY: "dnsmadeeasy",
-  DOGECLOUD: "dogecloud",
   DOKPLOY: "dokploy",
   DUCKDNS: "duckdns",
   DYNADOT: "dynadot",
@@ -84,7 +86,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   IONOS: "ionos",
   JDCLOUD: "jdcloud",
   KONG: "kong",
-  KUBERNETES: "k8s",
   KSYUN: "ksyun",
   LARKBOT: "larkbot",
   LECDN: "lecdn",
@@ -110,7 +111,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   PROXMOXBS: "proxmoxbs",
   PROXMOXVE: "proxmoxve",
   QINGCLOUD: "qingcloud",
-  QINIU: "qiniu",
   RAINYUN: "rainyun",
   RATPANEL: "ratpanel",
   REGRU: "regru",
@@ -132,7 +132,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   TODAYNIC: "todaynic",
   UCLOUD: "ucloud",
   UNICLOUD: "unicloud",
-  UPYUN: "upyun",
   VERCEL: "vercel",
   VOLCENGINE: "volcengine",
   VULTR: "vultr",
@@ -142,7 +141,6 @@ export const ACCESS_PROVIDERS = Object.freeze({
   WESTCN: "westcn",
   XINNET: "xinnet",
   YANDEXCLOUD: "yandexcloud",
-  ZENLAYER: "zenlayer",
   ZEROSSL: "zerossl",
 } as const);
 
@@ -159,6 +157,7 @@ export type AccessUsageType = (typeof ACCESS_USAGES)[keyof typeof ACCESS_USAGES]
 
 export interface AccessProvider extends BaseProvider<AccessProviderType> {
   usages: AccessUsageType[];
+  deployers?: string[];
 }
 
 export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProvider> = new Map(
@@ -172,7 +171,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.SSH, "provider.ssh", "/imgs/providers/ssh.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.FTP, "provider.ftp", "/imgs/providers/ftp.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WEBHOOK, "provider.webhook", "/imgs/providers/webhook.svg", [ACCESS_USAGES.HOSTING, ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.KUBERNETES, "provider.kubernetes", "/imgs/providers/kubernetes.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.S3, "provider.s3", "/imgs/providers/s3.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.ALIYUN, "provider.aliyun", "/imgs/providers/aliyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -202,17 +200,13 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.CPANEL, "provider.cpanel", "/imgs/providers/cpanel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.BAISHAN, "provider.baishan", "/imgs/providers/baishan.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.DOGECLOUD, "provider.dogecloud", "/imgs/providers/dogecloud.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.KSYUN, "provider.ksyun", "/imgs/providers/ksyun.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.QINIU, "provider.qiniu", "/imgs/providers/qiniu.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.UPYUN, "provider.upyun", "/imgs/providers/upyun.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WANGSU, "provider.wangsu", "/imgs/providers/wangsu.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.MOHUA, "provider.mohua", "/imgs/providers/mohua.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.UNICLOUD, "provider.unicloud", "/imgs/providers/unicloud.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CACHEFLY, "provider.cachefly", "/imgs/providers/cachefly.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.FLEXCDN, "provider.flexcdn", "/imgs/providers/flexcdn.png", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.FLYIO, "provider.flyio", "/imgs/providers/flyio.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.ZENLAYER, "provider.zenlayer", "/imgs/providers/zenlayer.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS["1PANEL"], "provider.1panel", "/imgs/providers/1panel.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.APISIX, "provider.apisix", "/imgs/providers/apisix.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BAOTAPANEL, "provider.baotapanel", "/imgs/providers/baota.svg", [ACCESS_USAGES.HOSTING]],
@@ -676,7 +670,6 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   CTCCCLOUD_FAAS: `${ACCESS_PROVIDERS.CTCCCLOUD}-faas`,
   CTCCCLOUD_ICDN: `${ACCESS_PROVIDERS.CTCCCLOUD}-icdn`,
   CTCCCLOUD_LVDN: `${ACCESS_PROVIDERS.CTCCCLOUD}-lvdn`,
-  DOGECLOUD_CDN: `${ACCESS_PROVIDERS.DOGECLOUD}-cdn`,
   DIGITALOCEAN_CERTIFICATE: `${ACCESS_PROVIDERS.DIGITALOCEAN}-certificate`,
   DOKPLOY: `${ACCESS_PROVIDERS.DOKPLOY}`,
   FLEXCDN: `${ACCESS_PROVIDERS.FLEXCDN}`,
@@ -702,7 +695,6 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   JDCLOUD_SSL: `${ACCESS_PROVIDERS.JDCLOUD}-ssl`,
   JDCLOUD_WAF: `${ACCESS_PROVIDERS.JDCLOUD}-waf`,
   KONG: `${ACCESS_PROVIDERS.KONG}`,
-  KUBERNETES_SECRET: `${ACCESS_PROVIDERS.KUBERNETES}-secret`,
   KSYUN_CDN: `${ACCESS_PROVIDERS.KSYUN}-cdn`,
   KSYUN_KCM: `${ACCESS_PROVIDERS.KSYUN}-kcm`,
   KSYUN_SLB: `${ACCESS_PROVIDERS.KSYUN}-slb`,
@@ -716,9 +708,6 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   PROXMOXBS: `${ACCESS_PROVIDERS.PROXMOXBS}`,
   PROXMOXVE: `${ACCESS_PROVIDERS.PROXMOXVE}`,
   QINGCLOUD_LB: `${ACCESS_PROVIDERS.QINGCLOUD}-lb`,
-  QINIU_CDN: `${ACCESS_PROVIDERS.QINIU}-cdn`,
-  QINIU_KODO: `${ACCESS_PROVIDERS.QINIU}-kodo`,
-  QINIU_PILI: `${ACCESS_PROVIDERS.QINIU}-pili`,
   RAINYUN_RCDN: `${ACCESS_PROVIDERS.RAINYUN}-rcdn`,
   RAINYUN_SSLCENTER: `${ACCESS_PROVIDERS.RAINYUN}-sslcenter`,
   RATPANEL: `${ACCESS_PROVIDERS.RATPANEL}`,
@@ -752,8 +741,6 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   UCLOUD_UPATHX: `${ACCESS_PROVIDERS.UCLOUD}-upathx`,
   UCLOUD_US3: `${ACCESS_PROVIDERS.UCLOUD}-us3`,
   UNICLOUD_WEBHOST: `${ACCESS_PROVIDERS.UNICLOUD}-webhost`,
-  UPYUN_CDN: `${ACCESS_PROVIDERS.UPYUN}-cdn`,
-  UPYUN_FILE: `${ACCESS_PROVIDERS.UPYUN}-file`,
   VERCEL: `${ACCESS_PROVIDERS.VERCEL}`,
   VOLCENGINE_ALB: `${ACCESS_PROVIDERS.VOLCENGINE}-alb`,
   VOLCENGINE_APIG: `${ACCESS_PROVIDERS.VOLCENGINE}-apig`,
@@ -771,8 +758,6 @@ export const DEPLOYMENT_PROVIDERS = Object.freeze({
   WANGSU_CERTIFICATE: `${ACCESS_PROVIDERS.WANGSU}-certificate`,
   WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
   YANDEXCLOUD_CERTIFICATEMANAGER: `${ACCESS_PROVIDERS.YANDEXCLOUD}-certificatemanager`,
-  ZENLAYER_CDN: `${ACCESS_PROVIDERS.ZENLAYER}-cdn`,
-  ZENLAYER_GA: `${ACCESS_PROVIDERS.ZENLAYER}-ga`,
 } as const);
 
 export type DeploymentProviderType = (typeof DEPLOYMENT_PROVIDERS)[keyof typeof DEPLOYMENT_PROVIDERS];
@@ -809,7 +794,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.SSH, "provider.ssh", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.FTP, "provider.ftp", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.WEBHOOK, "provider.webhook", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.KUBERNETES_SECRET, "provider.kubernetes_secret", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.S3, "provider.s3_upload", DEPLOYMENT_CATEGORIES.STORAGE],
       [DEPLOYMENT_PROVIDERS.ALIYUN_OSS, "provider.aliyun_oss", DEPLOYMENT_CATEGORIES.STORAGE],
       [DEPLOYMENT_PROVIDERS.ALIYUN_CDN, "provider.aliyun_cdn", DEPLOYMENT_CATEGORIES.CDN],
@@ -892,8 +876,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.NETLIFY, "provider.netlify", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.VERCEL, "provider.vercel", DEPLOYMENT_CATEGORIES.WEBSITE],
       [DEPLOYMENT_PROVIDERS.YANDEXCLOUD_CERTIFICATEMANAGER, "provider.yandexcloud_certificatemanager", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.ZENLAYER_CDN, "provider.zenlayer_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.ZENLAYER_GA, "provider.zenlayer_ga", DEPLOYMENT_CATEGORIES.ACCELERATOR],
       [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_CDN, "provider.baiducloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_BLB, "provider.baiducloud_blb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
       [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_APPBLB, "provider.baiducloud_appblb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
@@ -924,15 +906,9 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.UCLOUD_UEWAF, "provider.ucloud_uewaf", DEPLOYMENT_CATEGORIES.FIREWALL],
       [DEPLOYMENT_PROVIDERS.UCLOUD_UPATHX, "provider.ucloud_upathx", DEPLOYMENT_CATEGORIES.ACCELERATOR],
       [DEPLOYMENT_PROVIDERS.BAISHAN_CDN, "provider.baishan_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.DOGECLOUD_CDN, "provider.dogecloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.QINIU_KODO, "provider.qiniu_kodo", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.QINIU_CDN, "provider.qiniu_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.QINIU_PILI, "provider.qiniu_pili", DEPLOYMENT_CATEGORIES.AV],
       [DEPLOYMENT_PROVIDERS.WANGSU_CDN, "provider.wangsu_cdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.WANGSU_CDNPRO, "provider.wangsu_cdnpro", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE, "provider.wangsu_certificate_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.UPYUN_FILE, "provider.upyun_file", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.UPYUN_CDN, "provider.upyun_cdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.RAINYUN_RCDN, "provider.rainyun_rcdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.RAINYUN_SSLCENTER, "provider.rainyun_sslcenter_upload", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.UNICLOUD_WEBHOST, "provider.unicloud_webhost", DEPLOYMENT_CATEGORIES.WEBSITE],

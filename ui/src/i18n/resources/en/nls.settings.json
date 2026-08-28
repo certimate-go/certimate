@@ -96,6 +96,66 @@
     }
   },
 
+  "plugins": {
+    "tab": "Plugins"
+  },
+
+  "acmeaccounts": {
+    "tab": "ACME accounts",
+    "title": "ACME account credentials",
+    "tips": "Manage ACME account private keys used for certificate issuance. Export enables interoperability with other ACME clients; rotate replaces the key at the CA (old key becomes invalid immediately).",
+    "empty": "No ACME accounts stored yet. Accounts are created automatically when certificates are issued, or you can import an existing private key.",
+    "filter": {
+      "ca_placeholder": "Filter by CA"
+    },
+    "table": {
+      "ca": "Certificate authority",
+      "email": "Email",
+      "account_uri": "Account URI",
+      "directory": "Directory URL",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "action": {
+      "import": "Import",
+      "export": "Export",
+      "rotate": "Rotate key"
+    },
+    "import": {
+      "modal": {
+        "title": "Import ACME account"
+      },
+      "form": {
+        "ca": "Certificate authority",
+        "ca_placeholder": "Select CA",
+        "directory": "ACME directory URL",
+        "directory_placeholder": "https://example.com/acme/directory",
+        "private_key": "Account private key (PEM)",
+        "private_key_placeholder": "-----BEGIN ... PRIVATE KEY-----",
+        "private_key_extra": "The Account URI is resolved automatically via the ACME server (existing account only).",
+        "email": "Email",
+        "email_placeholder": "Optional if the CA returns a contact email",
+        "email_extra": "Required when the CA account has no mailto contact."
+      }
+    },
+    "export": {
+      "confirm": {
+        "title": "Export private key?",
+        "content": "The ACME account private key controls certificate issuance and revocation for this account. Only export it to a trusted environment."
+      },
+      "modal": {
+        "title": "Account private key",
+        "tips": "Store this key securely. Anyone with this key can act as this ACME account."
+      }
+    },
+    "rotate": {
+      "confirm": {
+        "title": "Rotate account key?",
+        "content": "The CA will invalidate the current private key immediately. Ensure no other ACME clients still use the old key. The Account URI stays the same."
+      }
+    }
+  },
+
   "sslprovider": {
     "tab": "Certificate authority",
     "ca": {
