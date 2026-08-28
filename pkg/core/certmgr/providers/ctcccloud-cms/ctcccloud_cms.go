@@ -165,8 +165,8 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 			// 对比证书有效期
 			newCertNotBefore := certX509.NotBefore
 			newCertNotAfter := certX509.NotAfter
-			oldCertNotBefore, _ := time.Parse("2006-01-02T15:04:05Z", certItem.IssueTime)
-			oldCertNotAfter, _ := time.Parse("2006-01-02T15:04:05Z", certItem.ExpireTime)
+			oldCertNotBefore, _ := time.Parse(time.RFC3339, certItem.IssueTime)
+			oldCertNotAfter, _ := time.Parse(time.RFC3339, certItem.ExpireTime)
 			if !newCertNotBefore.Equal(oldCertNotBefore) || !newCertNotAfter.Equal(oldCertNotAfter) {
 				continue
 			}

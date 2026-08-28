@@ -105,7 +105,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 
 			// 对比证书有效期
 			newCertNotAfter := certX509.NotAfter
-			oldCertNotAfter, _ := time.Parse("2006-01-02T15:04:05Z", certItem.NotAfter)
+			oldCertNotAfter, _ := time.Parse(time.RFC3339, certItem.NotAfter)
 			if !newCertNotAfter.Equal(oldCertNotAfter) {
 				continue
 			}
