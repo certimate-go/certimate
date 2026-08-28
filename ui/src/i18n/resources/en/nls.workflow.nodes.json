@@ -2661,24 +2661,6 @@
         "label": "uniCloud Web host domain",
         "placeholder": "uniCloud Web host domain"
       },
-      "upyun_cdn": {
-        "guide": "This uses webpage simulator login and does not guarantee stability. If there are any changes to the UPYUN, please create a GitHub Issue."
-      },
-      "upyun_cdn_domain": {
-        "label": "UPYUN CDN domain",
-        "placeholder": "Please enter UPYUN CDN domain name"
-      },
-      "upyun_file": {
-        "guide": "This uses webpage simulator login and does not guarantee stability. If there are any changes to the UPYUN, please create a GitHub Issue."
-      },
-      "upyun_file_bucket": {
-        "label": "UPYUN USS bucket",
-        "placeholder": "Please enter UPYUN USS bucket name"
-      },
-      "upyun_file_domain": {
-        "label": "UPYUN USS custom domain",
-        "placeholder": "Please enter UPYUN USS bucket custom domain name"
-      },
       "volcengine_alb_region": {
         "label": "VolcEngine region",
         "placeholder": "Please enter VolcEngine ALB region (e.g. cn-beijing)",
@@ -2890,45 +2872,6 @@
         "label": "Yandex Cloud Certificate Manager certificate ID (Optional)",
         "placeholder": "Please enter Yandex Cloud Certificate Manager certificate ID",
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
-      },
-      "zenlayer_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "Domain"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "zenlayer_cdn_domain": {
-        "label": "Zenlayer CDN domain",
-        "placeholder": "Please enter Zenlayer CDN domain name"
-      },
-      "zenlayer_cdn_certificate_id": {
-        "label": "Zenlayer CDN certificate ID",
-        "placeholder": "Please enter Zenlayer CDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
-      },
-      "zenlayer_ga_deploy_target": {
-        "option": {
-          "accelerator": {
-            "label": "Accelerator"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "zenlayer_ga_accelerator_id": {
-        "label": "Zenlayer ZGA accelerator ID",
-        "placeholder": "Please enter Zenlayer ZGA accelerator ID",
-        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
-      },
-      "zenlayer_ga_certificate_id": {
-        "label": "Zenlayer ZGA certificate ID",
-        "placeholder": "Please enter Zenlayer ZGA certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
       }
     }
   },

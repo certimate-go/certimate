@@ -127,7 +127,6 @@ const (
 	AccessProviderTypeTodayNIC            = AccessProviderType("todaynic")
 	AccessProviderTypeUCloud              = AccessProviderType("ucloud")
 	AccessProviderTypeUniCloud            = AccessProviderType("unicloud")
-	AccessProviderTypeUpyun               = AccessProviderType("upyun")
 	AccessProviderTypeVercel              = AccessProviderType("vercel")
 	AccessProviderTypeVolcEngine          = AccessProviderType("volcengine")
 	AccessProviderTypeVultr               = AccessProviderType("vultr")
@@ -137,7 +136,6 @@ const (
 	AccessProviderTypeWestcn              = AccessProviderType("westcn")
 	AccessProviderTypeXinnet              = AccessProviderType("xinnet")
 	AccessProviderTypeYandexCloud         = AccessProviderType("yandexcloud")
-	AccessProviderTypeZenlayer            = AccessProviderType("zenlayer")
 	AccessProviderTypeZeroSSL             = AccessProviderType("zerossl")
 )
 
@@ -447,8 +445,6 @@ const (
 	DeploymentProviderTypeUCloudUPathX                  = DeploymentProviderType(AccessProviderTypeUCloud + "-pathx")
 	DeploymentProviderTypeUCloudUS3                     = DeploymentProviderType(AccessProviderTypeUCloud + "-us3")
 	DeploymentProviderTypeUniCloudWebHost               = DeploymentProviderType(AccessProviderTypeUniCloud + "-webhost")
-	DeploymentProviderTypeUpyunCDN                      = DeploymentProviderType(AccessProviderTypeUpyun + "-cdn")
-	DeploymentProviderTypeUpyunFile                     = DeploymentProviderType(AccessProviderTypeUpyun + "-file")
 	DeploymentProviderTypeVercel                        = DeploymentProviderType(AccessProviderTypeVercel)
 	DeploymentProviderTypeVolcEngineALB                 = DeploymentProviderType(AccessProviderTypeVolcEngine + "-alb")
 	DeploymentProviderTypeVolcEngineAPIG                = DeploymentProviderType(AccessProviderTypeVolcEngine + "-apig")
@@ -466,8 +462,6 @@ const (
 	DeploymentProviderTypeWangsuCertificate             = DeploymentProviderType(AccessProviderTypeWangsu + "-certificate")
 	DeploymentProviderTypeWebhook                       = DeploymentProviderType(AccessProviderTypeWebhook)
 	DeploymentProviderTypeYandexCloudCertificateManager = DeploymentProviderType(AccessProviderTypeYandexCloud + "-certificatemanager")
-	DeploymentProviderTypeZenlayerCDN                   = DeploymentProviderType(AccessProviderTypeZenlayer + "-cdn")
-	DeploymentProviderTypeZenlayerGA                    = DeploymentProviderType(AccessProviderTypeZenlayer + "-ga")
 )
 
 type NotificationProviderType string

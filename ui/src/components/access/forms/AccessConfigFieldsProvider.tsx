@@ -112,7 +112,6 @@ import AccessConfigFieldsProviderTencentCloud from "./AccessConfigFieldsProvider
 import AccessConfigFieldsProviderTodayNIC from "./AccessConfigFieldsProviderTodayNIC";
 import AccessConfigFieldsProviderUCloud from "./AccessConfigFieldsProviderUCloud";
 import AccessConfigFieldsProviderUniCloud from "./AccessConfigFieldsProviderUniCloud";
-import AccessConfigFieldsProviderUpyun from "./AccessConfigFieldsProviderUpyun";
 import AccessConfigFieldsProviderVercel from "./AccessConfigFieldsProviderVercel";
 import AccessConfigFieldsProviderVolcEngine from "./AccessConfigFieldsProviderVolcEngine";
 import AccessConfigFieldsProviderVultr from "./AccessConfigFieldsProviderVultr";
@@ -122,7 +121,6 @@ import AccessConfigFieldsProviderWeComBot from "./AccessConfigFieldsProviderWeCo
 import AccessConfigFieldsProviderWestcn from "./AccessConfigFieldsProviderWestcn";
 import AccessConfigFieldsProviderXinnet from "./AccessConfigFieldsProviderXinnet";
 import AccessConfigFieldsProviderYandexCloud from "./AccessConfigFieldsProviderYandexCloud";
-import AccessConfigFieldsProviderZenlayer from "./AccessConfigFieldsProviderZenlayer";
 import AccessConfigFieldsProviderZeroSSL from "./AccessConfigFieldsProviderZeroSSL";
 
 const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentType<any>>> = {
@@ -238,7 +236,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.TODAYNIC]: AccessConfigFieldsProviderTodayNIC,
   [ACCESS_PROVIDERS.UCLOUD]: AccessConfigFieldsProviderUCloud,
   [ACCESS_PROVIDERS.UNICLOUD]: AccessConfigFieldsProviderUniCloud,
-  [ACCESS_PROVIDERS.UPYUN]: AccessConfigFieldsProviderUpyun,
   [ACCESS_PROVIDERS.VERCEL]: AccessConfigFieldsProviderVercel,
   [ACCESS_PROVIDERS.VOLCENGINE]: AccessConfigFieldsProviderVolcEngine,
   [ACCESS_PROVIDERS.VULTR]: AccessConfigFieldsProviderVultr,
@@ -248,7 +245,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.WESTCN]: AccessConfigFieldsProviderWestcn,
   [ACCESS_PROVIDERS.XINNET]: AccessConfigFieldsProviderXinnet,
   [ACCESS_PROVIDERS.YANDEXCLOUD]: AccessConfigFieldsProviderYandexCloud,
-  [ACCESS_PROVIDERS.ZENLAYER]: AccessConfigFieldsProviderZenlayer,
   [ACCESS_PROVIDERS.ZEROSSL]: AccessConfigFieldsProviderZeroSSL,
 };
 

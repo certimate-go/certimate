@@ -1495,16 +1495,6 @@
       "label": "uniCloud 控制台密码",
       "placeholder": "请输入 uniCloud 控制台密码"
     },
-    "upyun_username": {
-      "label": "又拍云子账号用户名",
-      "placeholder": "请输入又拍云子账号用户名",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a><br>请关闭该账号的二次登录验证。"
-    },
-    "upyun_password": {
-      "label": "又拍云子账号密码",
-      "placeholder": "请输入又拍云子账号密码",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a><br>请关闭该账号的二次登录验证。"
-    },
     "vercel_api_access_token": {
       "label": "Vercel API Access Token",
       "placeholder": "请输入 Vercel API Access Token",
@@ -1628,21 +1618,6 @@
       "label": "Yandex Cloud 服务账号授权密钥",
       "placeholder": "请输入Yandex Cloud 服务账号授权密钥\r\n\r\n{\r\n  \"id\": \"AUTHORIZED_KEY_ID\",\r\n  \"service_account_id\": \"SERVICE_ACCOUNT_ID\",\r\n  \"created_at\": \"DATE\",\r\n  \"key_algorithm\": \"RSA_2048\",\r\n  \"public_key\": \"ENCODED_PUBLIC_KEY\",\r\n  \"private_key\": \"ENCODED_PRIVATE_KEY\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys\" target=\"_blank\">https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys</a>"
-    },
-    "zenlayer_access_key_id": {
-      "label": "Zenlayer AccessKeyID",
-      "placeholder": "请输入 Zenlayer AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key</a>"
-    },
-    "zenlayer_access_key_password": {
-      "label": "Zenlayer AccessKeyPassword",
-      "placeholder": "请输入 Zenlayer AccessKeyPassword",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key</a>"
-    },
-    "zenlayer_resource_group_id": {
-      "label": "Zenlayer 资源组 ID（可选）",
-      "placeholder": "请输入 Zenlayer 资源组 ID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/create-a-resource-group\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/create-a-resource-group</a>"
     },
     "zerossl_eab": {
       "guide": "点击下方链接了解如何获取 ZeroSSL EAB：<br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"

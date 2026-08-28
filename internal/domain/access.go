@@ -644,11 +644,6 @@ type AccessConfigForUniCloud struct {
 	Password string `json:"password"`
 }
 
-type AccessConfigForUpyun struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type AccessConfigForVercel struct {
 	ApiAccessToken string `json:"apiAccessToken"`
 	TeamId         string `json:"teamId,omitempty"`
@@ -696,12 +691,6 @@ type AccessConfigForXinnet struct {
 type AccessConfigForYandexCloud struct {
 	FolderId          string `json:"folderId"`
 	ServiceAccountKey string `json:"serviceAccountKey"`
-}
-
-type AccessConfigForZenlayer struct {
-	AccessKeyId       string `json:"accessKeyId"`
-	AccessKeyPassword string `json:"accessKeyPassword"`
-	ResourceGroupId   string `json:"resourceGroupId,omitempty"`
 }
 
 type AccessConfigForZeroSSL struct {

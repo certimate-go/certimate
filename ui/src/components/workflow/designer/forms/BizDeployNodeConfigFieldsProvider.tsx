@@ -124,8 +124,6 @@ import BizDeployNodeConfigFieldsProviderUCloudUEWAF from "./BizDeployNodeConfigF
 import BizDeployNodeConfigFieldsProviderUCloudUPathX from "./BizDeployNodeConfigFieldsProviderUCloudUPathX";
 import BizDeployNodeConfigFieldsProviderUCloudUS3 from "./BizDeployNodeConfigFieldsProviderUCloudUS3";
 import BizDeployNodeConfigFieldsProviderUniCloudWebHost from "./BizDeployNodeConfigFieldsProviderUniCloudWebHost";
-import BizDeployNodeConfigFieldsProviderUpyunCDN from "./BizDeployNodeConfigFieldsProviderUpyunCDN";
-import BizDeployNodeConfigFieldsProviderUpyunFile from "./BizDeployNodeConfigFieldsProviderUpyunFile";
 import BizDeployNodeConfigFieldsProviderVolcEngineALB from "./BizDeployNodeConfigFieldsProviderVolcEngineALB";
 import BizDeployNodeConfigFieldsProviderVolcEngineAPIG from "./BizDeployNodeConfigFieldsProviderVolcEngineAPIG";
 import BizDeployNodeConfigFieldsProviderVolcEngineCDN from "./BizDeployNodeConfigFieldsProviderVolcEngineCDN";
@@ -142,8 +140,6 @@ import BizDeployNodeConfigFieldsProviderWangsuCDNPro from "./BizDeployNodeConfig
 import BizDeployNodeConfigFieldsProviderWangsuCertificate from "./BizDeployNodeConfigFieldsProviderWangsuCertificate";
 import BizDeployNodeConfigFieldsProviderWebhook from "./BizDeployNodeConfigFieldsProviderWebhook";
 import BizDeployNodeConfigFieldsProviderYandexCloudCertificateManager from "./BizDeployNodeConfigFieldsProviderYandexCloudCertificateManager";
-import BizDeployNodeConfigFieldsProviderZenlayerCDN from "./BizDeployNodeConfigFieldsProviderZenlayerCDN";
-import BizDeployNodeConfigFieldsProviderZenlayerGA from "./BizDeployNodeConfigFieldsProviderZenlayerGA";
 import SchemaConfigFields from "./SchemaConfigFields";
 
 const providerComponentMap: Partial<Record<DeploymentProviderType, React.ComponentType<any>>> = {
@@ -272,8 +268,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.UCLOUD_UPATHX]: BizDeployNodeConfigFieldsProviderUCloudUPathX,
   [DEPLOYMENT_PROVIDERS.UCLOUD_US3]: BizDeployNodeConfigFieldsProviderUCloudUS3,
   [DEPLOYMENT_PROVIDERS.UNICLOUD_WEBHOST]: BizDeployNodeConfigFieldsProviderUniCloudWebHost,
-  [DEPLOYMENT_PROVIDERS.UPYUN_CDN]: BizDeployNodeConfigFieldsProviderUpyunCDN,
-  [DEPLOYMENT_PROVIDERS.UPYUN_FILE]: BizDeployNodeConfigFieldsProviderUpyunFile,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_ALB]: BizDeployNodeConfigFieldsProviderVolcEngineALB,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_APIG]: BizDeployNodeConfigFieldsProviderVolcEngineAPIG,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CDN]: BizDeployNodeConfigFieldsProviderVolcEngineCDN,
@@ -290,8 +284,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE]: BizDeployNodeConfigFieldsProviderWangsuCertificate,
   [DEPLOYMENT_PROVIDERS.WEBHOOK]: BizDeployNodeConfigFieldsProviderWebhook,
   [DEPLOYMENT_PROVIDERS.YANDEXCLOUD_CERTIFICATEMANAGER]: BizDeployNodeConfigFieldsProviderYandexCloudCertificateManager,
-  [DEPLOYMENT_PROVIDERS.ZENLAYER_CDN]: BizDeployNodeConfigFieldsProviderZenlayerCDN,
-  [DEPLOYMENT_PROVIDERS.ZENLAYER_GA]: BizDeployNodeConfigFieldsProviderZenlayerGA,
 };
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {

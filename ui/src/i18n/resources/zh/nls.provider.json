@@ -275,9 +275,6 @@
   "ucloud_us3": "优刻得 - 对象存储 US3",
   "unicloud": "uniCloud (DCloud)",
   "unicloud_webhost": "uniCloud - 前端网页托管",
-  "upyun": "又拍云",
-  "upyun_cdn": "又拍云 - 云分发 CDN",
-  "upyun_file": "又拍云 - 云存储 USS",
   "vercel": "Vercel",
   "volcengine": "火山引擎",
   "volcengine_alb": "火山引擎 - 应用型负载均衡 ALB",
@@ -304,8 +301,5 @@
   "yandexcloud": "Yandex Cloud",
   "yandexcloud_certificatemanager": "Yandex Cloud - 证书管理器",
   "yandexcloud_dns": "Yandex Cloud - DNS",
-  "zerossl": "ZeroSSL",
-  "zenlayer": "Zenlayer",
-  "zenlayer_cdn": "Zenlayer - 内容分发网络 CDN",
-  "zenlayer_ga": "Zenlayer - 全球智能加速 ZGA"
+  "zerossl": "ZeroSSL"
 }

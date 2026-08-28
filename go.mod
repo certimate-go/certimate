@@ -87,7 +87,6 @@ require (
 	github.com/yandex-cloud/go-sdk/services/certificatemanager v0.0.81
 	github.com/yandex-cloud/go-sdk/v2 v2.144.0
 	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
-	github.com/zenlayer/zenlayercloud-sdk-go v0.2.49
 	gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0
 	gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1
 	gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0

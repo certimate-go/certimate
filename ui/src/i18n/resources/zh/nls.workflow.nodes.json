@@ -2660,24 +2660,6 @@
         "label": "uniCloud 前端网页托管网站域名",
         "placeholder": "请输入 uniCloud 前端网页托管网站域名"
       },
-      "upyun_cdn": {
-        "guide": "由于又拍云未公开相关 API，这里将使用网页模拟登录方式部署，但无法保证稳定性。如遇又拍云接口变更，请到 GitHub 发起 Issue 告知。"
-      },
-      "upyun_cdn_domain": {
-        "label": "又拍云 CDN 加速域名",
-        "placeholder": "请输入又拍云 CDN 加速域名"
-      },
-      "upyun_file": {
-        "guide": "由于又拍云未公开相关 API，这里将使用网页模拟登录方式部署，但无法保证稳定性。如遇又拍云接口变更，请到 GitHub 发起 Issue 告知。"
-      },
-      "upyun_file_bucket": {
-        "label": "又拍云云存储桶名",
-        "placeholder": "请输入又拍云云存储桶名"
-      },
-      "upyun_file_domain": {
-        "label": "又拍云云存储自定义域名",
-        "placeholder": "请输入又拍云云存储自定义域名"
-      },
       "volcengine_alb_region": {
         "label": "火山引擎服务地域",
         "placeholder": "请输入火山引擎 ALB 服务地域（例如：cn-beijing）",
@@ -2889,45 +2871,6 @@
         "label": "Yandex Cloud 证书管理器证书 ID（可选）",
         "placeholder": "请输入 Yandex Cloud 证书管理器证书 ID",
         "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
-      },
-      "zenlayer_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "部署到指定加速域名"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "zenlayer_cdn_domain": {
-        "label": "Zenlayer CDN 加速域名",
-        "placeholder": "请输入 Zenlayer CDN 加速域名"
-      },
-      "zenlayer_cdn_certificate_id": {
-        "label": "Zenlayer CDN 证书 ID",
-        "placeholder": "请输入 Zenlayer CDN 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
-      },
-      "zenlayer_ga_deploy_target": {
-        "option": {
-          "accelerator": {
-            "label": "部署到指定全球网络加速器"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "zenlayer_ga_accelerator_id": {
-        "label": "Zenlayer ZGA 加速器 ID",
-        "placeholder": "请输入 Zenlayer ZGA 加速器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
-      },
-      "zenlayer_ga_certificate_id": {
-        "label": "Zenlayer ZGA 证书 ID",
-        "placeholder": "请输入 Zenlayer ZGA 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
       }
     }
   },

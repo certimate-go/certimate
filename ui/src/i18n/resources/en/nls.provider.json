@@ -275,9 +275,6 @@
   "todaynic": "TodayNIC.com",
   "unicloud": "uniCloud (DCloud)",
   "unicloud_webhost": "uniCloud - Web Host",
-  "upyun": "UPYUN",
-  "upyun_cdn": "UPYUN - CDN (Content Delivery Network)",
-  "upyun_file": "UPYUN - USS (Storage Service)",
   "vercel": "Vercel",
   "volcengine": "Volcengine",
   "volcengine_alb": "Volcengine - ALB (Application Load Balancer)",
@@ -304,8 +301,5 @@
   "yandexcloud": "Yandex Cloud",
   "yandexcloud_certificatemanager": "Yandex Cloud - Certificate Manager",
   "yandexcloud_dns": "Yandex Cloud - DNS",
-  "zerossl": "ZeroSSL",
-  "zenlayer": "Zenlayer",
-  "zenlayer_cdn": "Zenlayer - CDN (Content Delivery Network)",
-  "zenlayer_ga": "Zenlayer - ZGA (Global Accelerator)"
+  "zerossl": "ZeroSSL"
 }
