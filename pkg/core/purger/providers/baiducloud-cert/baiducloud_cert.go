@@ -70,7 +70,7 @@ func (p *Purger) Purge(ctx context.Context, expiry time.Duration) (*PurgeResult,
 		return nil, fmt.Errorf("failed to execute sdk request 'cert.ListCertDetail': %w", err)
 	} else {
 		for _, certItem := range listCertDetail.Certs {
-			certNotAfter, err := time.ParseInLocation("2006-01-02T15:04:05Z", certItem.CertStopTime, time.FixedZone("CST", 8*60*60))
+			certNotAfter, err := time.Parse(time.RFC3339, certItem.CertStopTime)
 			if err != nil {
 				continue
 			}
