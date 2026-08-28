@@ -1,7 +1,6 @@
-import i18n from "@/i18n";
-
 import type { PluginCatalogEntry } from "@/api/plugincatalog";
 import { ACCESS_USAGES, DEPLOYMENT_CATEGORIES, accessProvidersMap, deploymentProvidersMap } from "@/domain/provider";
+import i18n from "@/i18n";
 
 const PLUGIN_PLACEHOLDER_ICON =
   "data:image/svg+xml," +
@@ -29,9 +28,7 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
   for (const entry of entries) {
     const accessType = entry.accessProviderType || entry.providerType;
 
-    const usages = (entry.accessUsages || ["hosting"])
-      .map((u) => usageMap[u])
-      .filter(Boolean);
+    const usages = (entry.accessUsages || ["hosting"]).map((u) => usageMap[u]).filter(Boolean);
 
     if (entry.providerType && !deploymentProvidersMap.has(entry.providerType)) {
       deploymentProvidersMap.set(entry.providerType, {

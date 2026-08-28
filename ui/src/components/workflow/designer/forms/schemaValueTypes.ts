@@ -54,11 +54,7 @@ export const discriminatorFields = (columns: SchemaColumn[]): string[] => {
   return [...seen];
 };
 
-export const unitFieldProps = (
-  mappedValueType: string,
-  unitKey: string | undefined,
-  t: (key: string) => string
-): Record<string, unknown> => {
+export const unitFieldProps = (mappedValueType: string, unitKey: string | undefined, t: (key: string) => string): Record<string, unknown> => {
   if (!unitKey) return {};
   const text = t(unitKey);
   return mappedValueType === "digit" ? { addonAfter: text } : { suffix: text };

@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { IconDatabaseCog, IconHeartRateMonitor, IconInfoCircle, IconKey, IconPalette, IconPlugConnected, IconPuzzle, IconUserShield } from "@tabler/icons-react";
+import {
+  IconDatabaseCog,
+  IconHeartRateMonitor,
+  IconInfoCircle,
+  IconKey,
+  IconPalette,
+  IconPlugConnected,
+  IconPuzzle,
+  IconUserShield,
+} from "@tabler/icons-react";
 import { Menu } from "antd";
 
 const Settings = () => {

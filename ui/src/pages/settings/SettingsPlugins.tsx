@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconDownload, IconPuzzle, IconTrash, IconRefresh } from "@tabler/icons-react";
+import { IconDownload, IconPuzzle, IconRefresh, IconTrash } from "@tabler/icons-react";
 import { Alert, App, Button, Card, Empty, Input, Progress, Segmented, Skeleton, Tag, Tooltip } from "antd";
 
 import {
-  fetchMarketListing,
-  installPlugin,
-  deletePlugin,
-  updatePlugin,
-  getInstallStatus,
-  isTerminalState,
   type InstallJobStatus,
   type MarketEntry,
+  deletePlugin,
+  fetchMarketListing,
+  getInstallStatus,
+  installPlugin,
+  isTerminalState,
+  updatePlugin,
 } from "@/api/pluginmarket";
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
@@ -345,7 +345,11 @@ const SettingsPlugins = () => {
       const downloaded = job?.downloaded ?? 0;
       if (job!.state === "downloading" && total > 0) {
         const pct = Math.min(100, Math.round((downloaded / total) * 100));
-        return <span className="text-xs text-blue-500">{t("plugin.market.job.downloading")} · {pct}%</span>;
+        return (
+          <span className="text-xs text-blue-500">
+            {t("plugin.market.job.downloading")} · {pct}%
+          </span>
+        );
       }
       return (
         <span className="flex items-center gap-1.5 text-xs text-blue-500">
@@ -359,7 +363,7 @@ const SettingsPlugins = () => {
     }
     return (
       <span className="flex items-center gap-1.5">
-        <span className={`inline-block h-2 w-2 rounded-full ${statusColor[entry.status] ?? "bg-gray-400"}`} />
+        <span className={`inline-block size-2 rounded-full ${statusColor[entry.status] ?? "bg-gray-400"}`} />
         {t(statusLabel[entry.status], entry.status)}
       </span>
     );
@@ -419,12 +423,7 @@ const SettingsPlugins = () => {
             value={statusFilter}
             onChange={(value) => setStatusFilter(value as typeof statusFilter)}
           />
-          <Input.Search
-            allowClear
-            className="w-48"
-            placeholder={t("plugin.market.action.search_placeholder")}
-            onSearch={(value) => setKeyword(value)}
-          />
+          <Input.Search allowClear className="w-48" placeholder={t("plugin.market.action.search_placeholder")} onSearch={(value) => setKeyword(value)} />
         </div>
         <Button icon={<IconRefresh size={16} />} onClick={() => loadListing()} loading={loading}>
           {t("plugin.market.action.refresh")}
@@ -439,9 +438,9 @@ const SettingsPlugins = () => {
             <Card key={entry.provider_type} hoverable className="flex flex-col">
               <div className="flex h-full flex-col gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 p-2.5 dark:bg-gray-800">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 p-2.5 dark:bg-gray-800">
                     {marketIconSrc(entry) ? (
-                      <img src={marketIconSrc(entry)} alt={entry.provider_type} className="h-full w-full object-contain" />
+                      <img src={marketIconSrc(entry)} alt={entry.provider_type} className="size-full object-contain" />
                     ) : (
                       <IconPuzzle size={22} className="text-gray-400" />
                     )}
@@ -454,7 +453,7 @@ const SettingsPlugins = () => {
                   </div>
                   <div className="shrink-0">{renderActions(entry)}</div>
                 </div>
-                <div className="line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">{entry.description}</div>
+                <div className="line-clamp-2 min-h-10 text-sm text-gray-500">{entry.description}</div>
                 <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-2 text-xs text-gray-400 dark:border-gray-800">
                   {renderStatus(entry)}
                   <span>v{entry.version}</span>
