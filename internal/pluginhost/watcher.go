@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultDebounce    = 500 * time.Millisecond
+	defaultDebounce     = 500 * time.Millisecond
 	defaultPollInterval = 30 * time.Second
 )
 

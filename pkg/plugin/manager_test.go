@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"log/slog"
@@ -124,6 +125,44 @@ func TestManager_Deploy_PluginConfigError_Mapped(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "bad config") {
 		t.Fatalf("expected config error message preserved, got %q", err.Error())
+	}
+}
+
+func TestSyncBuffer_ConcurrentWriteAndTail(t *testing.T) {
+	var b syncBuffer
+
+	const line = "stderr line\n"
+	var wg sync.WaitGroup
+	for i := 0; i < 4; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				b.Write([]byte(line))
+			}
+		}()
+	}
+	for i := 0; i < 100; i++ {
+		b.tail(stderrTailLimit)
+	}
+	wg.Wait()
+
+	if got, want := len(b.tail(stderrTailLimit)), 4*100*len(line); got != want {
+		t.Fatalf("tail length: got %d, want %d", got, want)
+	}
+
+	for i := 0; i < 3*stderrTailLimit/len(line); i++ {
+		b.Write([]byte(line))
+	}
+	if b.buf.Len() > 2*stderrTailLimit {
+		t.Fatalf("compacted buffer length: got %d, want <= %d", b.buf.Len(), 2*stderrTailLimit)
+	}
+	tail := b.tail(stderrTailLimit)
+	if len(tail) != stderrTailLimit {
+		t.Fatalf("capped tail length: got %d, want %d", len(tail), stderrTailLimit)
+	}
+	if !bytes.HasSuffix(tail, []byte(line)) {
+		t.Fatal("capped tail should end with a complete line")
 	}
 }
 

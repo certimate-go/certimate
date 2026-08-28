@@ -318,6 +318,7 @@ jobs:
             find . \
               "${EXCLUDE_FUNC[@]}" \
               -type f -name "*.go" \
+              -not -name "*.pb.go" \
               -print
           )"
           echo " "
