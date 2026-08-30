@@ -34,7 +34,6 @@ import BizDeployNodeConfigFieldsProviderAzureKeyVault from "./BizDeployNodeConfi
 import BizDeployNodeConfigFieldsProviderBaiduCloudAppBLB from "./BizDeployNodeConfigFieldsProviderBaiduCloudAppBLB";
 import BizDeployNodeConfigFieldsProviderBaiduCloudBLB from "./BizDeployNodeConfigFieldsProviderBaiduCloudBLB";
 import BizDeployNodeConfigFieldsProviderBaiduCloudCDN from "./BizDeployNodeConfigFieldsProviderBaiduCloudCDN";
-import BizDeployNodeConfigFieldsProviderBaishanCDN from "./BizDeployNodeConfigFieldsProviderBaishanCDN";
 import BizDeployNodeConfigFieldsProviderBaotaPanel from "./BizDeployNodeConfigFieldsProviderBaotaPanel";
 import BizDeployNodeConfigFieldsProviderBaotaPanelConsole from "./BizDeployNodeConfigFieldsProviderBaotaPanelConsole";
 import BizDeployNodeConfigFieldsProviderBaotaPanelGo from "./BizDeployNodeConfigFieldsProviderBaotaPanelGo";
@@ -80,8 +79,6 @@ import BizDeployNodeConfigFieldsProviderJDCloudLive from "./BizDeployNodeConfigF
 import BizDeployNodeConfigFieldsProviderJDCloudVOD from "./BizDeployNodeConfigFieldsProviderJDCloudVOD";
 import BizDeployNodeConfigFieldsProviderJDCloudWAF from "./BizDeployNodeConfigFieldsProviderJDCloudWAF";
 import BizDeployNodeConfigFieldsProviderKong from "./BizDeployNodeConfigFieldsProviderKong";
-import BizDeployNodeConfigFieldsProviderKsyunCDN from "./BizDeployNodeConfigFieldsProviderKsyunCDN";
-import BizDeployNodeConfigFieldsProviderKsyunSLB from "./BizDeployNodeConfigFieldsProviderKsyunSLB";
 import BizDeployNodeConfigFieldsProviderLeCDN from "./BizDeployNodeConfigFieldsProviderLeCDN";
 import BizDeployNodeConfigFieldsProviderLinodeLOS from "./BizDeployNodeConfigFieldsProviderLinodeLOS";
 import BizDeployNodeConfigFieldsProviderLocal from "./BizDeployNodeConfigFieldsProviderLocal";
@@ -135,9 +132,6 @@ import BizDeployNodeConfigFieldsProviderVolcEngineLive from "./BizDeployNodeConf
 import BizDeployNodeConfigFieldsProviderVolcEngineTOS from "./BizDeployNodeConfigFieldsProviderVolcEngineTOS";
 import BizDeployNodeConfigFieldsProviderVolcEngineVOD from "./BizDeployNodeConfigFieldsProviderVolcEngineVOD";
 import BizDeployNodeConfigFieldsProviderVolcEngineWAF from "./BizDeployNodeConfigFieldsProviderVolcEngineWAF";
-import BizDeployNodeConfigFieldsProviderWangsuCDN from "./BizDeployNodeConfigFieldsProviderWangsuCDN";
-import BizDeployNodeConfigFieldsProviderWangsuCDNPro from "./BizDeployNodeConfigFieldsProviderWangsuCDNPro";
-import BizDeployNodeConfigFieldsProviderWangsuCertificate from "./BizDeployNodeConfigFieldsProviderWangsuCertificate";
 import BizDeployNodeConfigFieldsProviderWebhook from "./BizDeployNodeConfigFieldsProviderWebhook";
 import BizDeployNodeConfigFieldsProviderYandexCloudCertificateManager from "./BizDeployNodeConfigFieldsProviderYandexCloudCertificateManager";
 import SchemaConfigFields from "./SchemaConfigFields";
@@ -178,7 +172,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_APPBLB]: BizDeployNodeConfigFieldsProviderBaiduCloudAppBLB,
   [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_BLB]: BizDeployNodeConfigFieldsProviderBaiduCloudBLB,
   [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_CDN]: BizDeployNodeConfigFieldsProviderBaiduCloudCDN,
-  [DEPLOYMENT_PROVIDERS.BAISHAN_CDN]: BizDeployNodeConfigFieldsProviderBaishanCDN,
   [DEPLOYMENT_PROVIDERS.BAOTAPANEL_CONSOLE]: BizDeployNodeConfigFieldsProviderBaotaPanelConsole,
   [DEPLOYMENT_PROVIDERS.BAOTAPANEL]: BizDeployNodeConfigFieldsProviderBaotaPanel,
   [DEPLOYMENT_PROVIDERS.BAOTAPANELGO_CONSOLE]: BizDeployNodeConfigFieldsProviderBaotaPanelGoConsole,
@@ -224,8 +217,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.JDCLOUD_VOD]: BizDeployNodeConfigFieldsProviderJDCloudVOD,
   [DEPLOYMENT_PROVIDERS.JDCLOUD_WAF]: BizDeployNodeConfigFieldsProviderJDCloudWAF,
   [DEPLOYMENT_PROVIDERS.KONG]: BizDeployNodeConfigFieldsProviderKong,
-  [DEPLOYMENT_PROVIDERS.KSYUN_CDN]: BizDeployNodeConfigFieldsProviderKsyunCDN,
-  [DEPLOYMENT_PROVIDERS.KSYUN_SLB]: BizDeployNodeConfigFieldsProviderKsyunSLB,
   [DEPLOYMENT_PROVIDERS.LECDN]: BizDeployNodeConfigFieldsProviderLeCDN,
   [DEPLOYMENT_PROVIDERS.LINODE_LOS]: BizDeployNodeConfigFieldsProviderLinodeLOS,
   [DEPLOYMENT_PROVIDERS.LOCAL]: BizDeployNodeConfigFieldsProviderLocal,
@@ -279,9 +270,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_TOS]: BizDeployNodeConfigFieldsProviderVolcEngineTOS,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_VOD]: BizDeployNodeConfigFieldsProviderVolcEngineVOD,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_WAF]: BizDeployNodeConfigFieldsProviderVolcEngineWAF,
-  [DEPLOYMENT_PROVIDERS.WANGSU_CDN]: BizDeployNodeConfigFieldsProviderWangsuCDN,
-  [DEPLOYMENT_PROVIDERS.WANGSU_CDNPRO]: BizDeployNodeConfigFieldsProviderWangsuCDNPro,
-  [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE]: BizDeployNodeConfigFieldsProviderWangsuCertificate,
   [DEPLOYMENT_PROVIDERS.WEBHOOK]: BizDeployNodeConfigFieldsProviderWebhook,
   [DEPLOYMENT_PROVIDERS.YANDEXCLOUD_CERTIFICATEMANAGER]: BizDeployNodeConfigFieldsProviderYandexCloudCertificateManager,
 };

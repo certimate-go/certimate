@@ -50,7 +50,7 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
     setFormPending(true);
     try {
       applyTrimmedFormValues(formInst);
-      formValues = await formInst.validateFields();
+      formValues = { ...formInst.getFieldsValue(true), ...(await formInst.validateFields()) };
     } catch (err) {
       message.warning(t("common.errmsg.form_invalid"));
 

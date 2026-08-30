@@ -1180,25 +1180,6 @@
         "label": "Baidu Cloud CDN domain",
         "placeholder": "Please enter Baidu Cloud CDN domain name"
       },
-      "baishan_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "Domain"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "baishan_cdn_domain": {
-        "label": "Baishan Cloud CDN domain",
-        "placeholder": "Please enter Baishan Cloud CDN domain name"
-      },
-      "baishan_cdn_certificate_id": {
-        "label": "Baishan Cloud CDN certificate ID",
-        "placeholder": "Please enter Baishan Cloud CDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://cdnx.console.baishan.com/#/cdn/cert\" target=\"_blank\">https://cdnx.console.baishan.com/#/cdn/cert</a>"
-      },
       "baotapanel": {
         "guide": "Requires aaPanel v7.0 / BaotaPanel v8.3 or higher."
       },
@@ -1803,42 +1784,6 @@
         "label": "Kong certificate ID",
         "placeholder": "Please enter Kong certificate ID",
         "tooltip": "You can find it on Kong dashboard."
-      },
-      "ksyun_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "Domain"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "ksyun_cdn_domain": {
-        "label": "Kingsoft Cloud CDN domain",
-        "placeholder": "Please enter Kingsoft Cloud CDN domain name"
-      },
-      "ksyun_cdn_certificate_id": {
-        "label": "Kingsoft Cloud CDN certificate ID",
-        "placeholder": "Please enter Kingsoft Cloud CDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
-      },
-      "ksyun_slb_region": {
-        "label": "Kingsoft Cloud region",
-        "placeholder": "Please enter Kingsoft Cloud SLB region (e.g. cn-beijing-6)",
-        "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/directories/1164\" target=\"_blank\">https://endocs.ksyun.com/directories/1164</a>"
-      },
-      "ksyun_slb_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "ksyun_slb_certificate_id": {
-        "label": "Kingsoft Cloud SLB certificate ID",
-        "placeholder": "Please enter Kingsoft Cloud SLB certificate ID",
-        "tooltip": "For more information, see <a href=\"https://network.console.ksyun.com/index.html#!/slb/slbIndex\" target=\"_blank\">https://network.console.ksyun.com/index.html#!/slb/slbIndex</a>"
       },
       "lecdn_deploy_target": {
         "option": {
@@ -2814,48 +2759,6 @@
       "volcengine_waf_domain": {
         "label": "VolcEngine WAF domain",
         "placeholder": "Please enter VolcEngine WAF domain name"
-      },
-      "wangsu_cdn_domains": {
-        "label": "Wangsu Cloud CDN domains",
-        "placeholder": "Please enter Wangsu Cloud CDN domain names (separated by semicolons)",
-        "help": "Notes: Multiple domains should be separated by semicolons.",
-        "multiple_input_modal": {
-          "title": "Change Wangsu Cloud CDN domains",
-          "placeholder": "Please enter Wangsu Cloud CDN domain name"
-        }
-      },
-      "wangsu_cdnpro_environment": {
-        "label": "Wangsu Cloud environment",
-        "placeholder": "Please select Wangsu Cloud environment",
-        "option": {
-          "production": {
-            "label": "Production environment"
-          },
-          "staging": {
-            "label": "Staging environment"
-          }
-        }
-      },
-      "wangsu_cdnpro_domain": {
-        "label": "Wangsu Cloud CDN domain",
-        "placeholder": "Please enter Wangsu Cloud CDN domain name"
-      },
-      "wangsu_cdnpro_certificate_id": {
-        "label": "Wangsu Cloud CDN certificate ID (Optional)",
-        "placeholder": "Please enter Wangsu Cloud CDN certificate ID",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "For more information, see <a href=\"https://cdnpro.console.wangsu.com/v2/index/#/certificate\" target=\"_blank\">https://cdnpro.console.wangsu.com/v2/index/#/certificate</a>"
-      },
-      "wangsu_cdnpro_webhook_id": {
-        "label": "Wangsu Cloud CDN Webhook ID (Optional)",
-        "placeholder": "Please enter Wangsu Cloud CDN Webhook ID",
-        "tooltip": "For more information, see <a href=\"https://cdnpro.console.wangsu.com/v2/index/#/certificate\" target=\"_blank\">https://cdnpro.console.wangsu.com/v2/index/#/certificate</a>"
-      },
-      "wangsu_certificate_id": {
-        "label": "Wangsu Cloud certificate ID (Optional)",
-        "placeholder": "Please enter Wangsu Cloud certificate ID",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "For more information, see <a href=\"https://cdn.console.wangsu.com/v2/index#/certificate/list?code=cert_mylist&parentCode=cert_ssl&productCode=certificatemanagement\" target=\"_blank\">https://cdn.console.wangsu.com/v2/index#/certificate/list</a>"
       },
       "webhook_data": {
         "label": "Webhook data (Optional)",

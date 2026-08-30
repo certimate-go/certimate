@@ -288,10 +288,6 @@
       "placeholder": "请输入百度智能云 SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://cloud.baidu.com/doc/Reference/s/jjwvz2e3p\" target=\"_blank\">https://cloud.baidu.com/doc/Reference/s/jjwvz2e3p</a>"
     },
-    "baishan_api_token": {
-      "label": "白山云 API Token",
-      "placeholder": "请输入白山云 API Token"
-    },
     "baotapanel_server_url": {
       "label": "宝塔面板服务地址",
       "placeholder": "请输入宝塔面板服务地址",
@@ -847,16 +843,6 @@
       "label": "Kong Admin API Token（可选）",
       "placeholder": "请输入 Kong Admin API Token",
       "tooltip": "这是什么？请参阅 <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>"
-    },
-    "ksyun_access_key_id": {
-      "label": "金山云 AccessKeyID",
-      "placeholder": "请输入金山云 AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.ksyun.com/documents/39976\" target=\"_blank\">https://docs.ksyun.com/documents/39976</a>"
-    },
-    "ksyun_secret_access_key": {
-      "label": "金山云 SecretAccessKey",
-      "placeholder": "请输入金山云 SecretAccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.ksyun.com/documents/39976\" target=\"_blank\">https://docs.ksyun.com/documents/39976</a>"
     },
     "larkbot_webhook_url": {
       "label": "飞书群机器人 Webhook 地址",
@@ -1524,21 +1510,6 @@
       "label": "Vultr API Key",
       "placeholder": "请输入 Vultr API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key\" target=\"_blank\">https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key</a>"
-    },
-    "wangsu_access_key_id": {
-      "label": "网宿云 AccessKeyID",
-      "placeholder": "请输入网宿云 AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://www.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_access_key_secret": {
-      "label": "网宿云 AccessKeySecret",
-      "placeholder": "请输入网宿云 AccessKeySecret",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://www.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_api_key": {
-      "label": "网宿云 API 接口密码",
-      "placeholder": "请输入网宿云 API 接口密码",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.wangsu.com/document/account-manage/15776\" target=\"_blank\">https://www.wangsu.com/document/account-manage/15776</a>"
     },
     "webhook_url": {
       "label": "Webhook 回调地址",

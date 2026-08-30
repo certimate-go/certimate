@@ -105,10 +105,6 @@ type AccessConfigForBaiduCloud struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
-type AccessConfigForBaishan struct {
-	ApiToken string `json:"apiToken"`
-}
-
 type AccessConfigForBaotaPanel struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiKey                   string `json:"apiKey"`
@@ -373,11 +369,6 @@ type AccessConfigForKong struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForKsyun struct {
-	AccessKeyId     string `json:"accessKeyId"`
-	SecretAccessKey string `json:"secretAccessKey"`
 }
 
 type AccessConfigForLarkBot struct {
@@ -657,12 +648,6 @@ type AccessConfigForVolcEngine struct {
 
 type AccessConfigForVultr struct {
 	ApiKey string `json:"apiKey"`
-}
-
-type AccessConfigForWangsu struct {
-	AccessKeyId     string `json:"accessKeyId"`
-	AccessKeySecret string `json:"accessKeySecret"`
-	ApiKey          string `json:"apiKey"`
 }
 
 type AccessConfigForWebhook struct {

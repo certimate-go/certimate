@@ -18,7 +18,6 @@ import AccessConfigFieldsProviderAWS from "./AccessConfigFieldsProviderAWS";
 import AccessConfigFieldsProviderAxisNow from "./AccessConfigFieldsProviderAxisNow";
 import AccessConfigFieldsProviderAzure from "./AccessConfigFieldsProviderAzure";
 import AccessConfigFieldsProviderBaiduCloud from "./AccessConfigFieldsProviderBaiduCloud";
-import AccessConfigFieldsProviderBaishan from "./AccessConfigFieldsProviderBaishan";
 import AccessConfigFieldsProviderBaotaPanel from "./AccessConfigFieldsProviderBaotaPanel";
 import AccessConfigFieldsProviderBaotaPanelGo from "./AccessConfigFieldsProviderBaotaPanelGo";
 import AccessConfigFieldsProviderBaotaWAF from "./AccessConfigFieldsProviderBaotaWAF";
@@ -69,7 +68,6 @@ import AccessConfigFieldsProviderInfomaniak from "./AccessConfigFieldsProviderIn
 import AccessConfigFieldsProviderIONOS from "./AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./AccessConfigFieldsProviderJDCloud";
 import AccessConfigFieldsProviderKong from "./AccessConfigFieldsProviderKong";
-import AccessConfigFieldsProviderKsyun from "./AccessConfigFieldsProviderKsyun";
 import AccessConfigFieldsProviderLarkBot from "./AccessConfigFieldsProviderLarkBot";
 import AccessConfigFieldsProviderLeCDN from "./AccessConfigFieldsProviderLeCDN";
 import AccessConfigFieldsProviderLinode from "./AccessConfigFieldsProviderLinode";
@@ -115,7 +113,6 @@ import AccessConfigFieldsProviderUniCloud from "./AccessConfigFieldsProviderUniC
 import AccessConfigFieldsProviderVercel from "./AccessConfigFieldsProviderVercel";
 import AccessConfigFieldsProviderVolcEngine from "./AccessConfigFieldsProviderVolcEngine";
 import AccessConfigFieldsProviderVultr from "./AccessConfigFieldsProviderVultr";
-import AccessConfigFieldsProviderWangsu from "./AccessConfigFieldsProviderWangsu";
 import AccessConfigFieldsProviderWebhook from "./AccessConfigFieldsProviderWebhook";
 import AccessConfigFieldsProviderWeComBot from "./AccessConfigFieldsProviderWeComBot";
 import AccessConfigFieldsProviderWestcn from "./AccessConfigFieldsProviderWestcn";
@@ -142,7 +139,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.AXISNOW]: AccessConfigFieldsProviderAxisNow,
   [ACCESS_PROVIDERS.AZURE]: AccessConfigFieldsProviderAzure,
   [ACCESS_PROVIDERS.BAIDUCLOUD]: AccessConfigFieldsProviderBaiduCloud,
-  [ACCESS_PROVIDERS.BAISHAN]: AccessConfigFieldsProviderBaishan,
   [ACCESS_PROVIDERS.BAOTAPANEL]: AccessConfigFieldsProviderBaotaPanel,
   [ACCESS_PROVIDERS.BAOTAPANELGO]: AccessConfigFieldsProviderBaotaPanelGo,
   [ACCESS_PROVIDERS.BAOTAWAF]: AccessConfigFieldsProviderBaotaWAF,
@@ -192,7 +188,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.IONOS]: AccessConfigFieldsProviderIONOS,
   [ACCESS_PROVIDERS.JDCLOUD]: AccessConfigFieldsProviderJDCloud,
   [ACCESS_PROVIDERS.KONG]: AccessConfigFieldsProviderKong,
-  [ACCESS_PROVIDERS.KSYUN]: AccessConfigFieldsProviderKsyun,
   [ACCESS_PROVIDERS.LARKBOT]: AccessConfigFieldsProviderLarkBot,
   [ACCESS_PROVIDERS.LECDN]: AccessConfigFieldsProviderLeCDN,
   [ACCESS_PROVIDERS.INFOMANIAK]: AccessConfigFieldsProviderInfomaniak,
@@ -239,7 +234,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.VERCEL]: AccessConfigFieldsProviderVercel,
   [ACCESS_PROVIDERS.VOLCENGINE]: AccessConfigFieldsProviderVolcEngine,
   [ACCESS_PROVIDERS.VULTR]: AccessConfigFieldsProviderVultr,
-  [ACCESS_PROVIDERS.WANGSU]: AccessConfigFieldsProviderWangsu,
   [ACCESS_PROVIDERS.WEBHOOK]: AccessConfigFieldsProviderWebhook,
   [ACCESS_PROVIDERS.WECOMBOT]: AccessConfigFieldsProviderWeComBot,
   [ACCESS_PROVIDERS.WESTCN]: AccessConfigFieldsProviderWestcn,

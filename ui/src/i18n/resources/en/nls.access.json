@@ -288,10 +288,6 @@
       "placeholder": "Please enter Baidu Cloud SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en\" target=\"_blank\">https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en</a>"
     },
-    "baishan_api_token": {
-      "label": "Baishan Cloud API token",
-      "placeholder": "Please enter Baishan Cloud API token"
-    },
     "baotapanel_server_url": {
       "label": "aaPanel server URL",
       "placeholder": "Please enter aaPanel server URL",
@@ -847,16 +843,6 @@
       "label": "Kong admin API token (Optional)",
       "placeholder": "Please enter Kong admin API token",
       "tooltip": "For more information, see <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>"
-    },
-    "ksyun_access_key_id": {
-      "label": "Kingsoft Cloud AccessKeyID",
-      "placeholder": "Please enter Kingsoft Cloud AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/documents/37659\" target=\"_blank\">https://endocs.ksyun.com/documents/37659</a>"
-    },
-    "ksyun_secret_access_key": {
-      "label": "Kingsoft Cloud SecretAccessKey",
-      "placeholder": "Please enter Kingsoft Cloud SecretAccessKey",
-      "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/documents/37659\" target=\"_blank\">https://endocs.ksyun.com/documents/37659</a>"
     },
     "larkbot_webhook_url": {
       "label": "Lark bot Webhook URL",
@@ -1525,21 +1511,6 @@
       "label": "Vultr API key",
       "placeholder": "Please enter Vultr API key",
       "tooltip": "For more information, see <a href=\"https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key\" target=\"_blank\">https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key</a>"
-    },
-    "wangsu_access_key_id": {
-      "label": "Wangsu Cloud AccessKeyID",
-      "placeholder": "Please enter Wangsu Cloud AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://en.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_access_key_secret": {
-      "label": "Wangsu Cloud AccessKeySecret",
-      "placeholder": "Please enter Wangsu Cloud AccessKeySecret",
-      "tooltip": "For more information, see <a href=\"https://en.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_api_key": {
-      "label": "Wangsu Cloud API key",
-      "placeholder": "Please enter Wangsu Cloud API key",
-      "tooltip": "For more information, see <a href=\"https://en.wangsu.com/document/account-manage/15776\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15776</a>"
     },
     "webhook_url": {
       "label": "Webhook URL",
