@@ -2820,7 +2820,7 @@
       "volcengine_clb_snidomain": {
         "label": "VolcEngine CLB SNI domain (Optional)",
         "placeholder": "Please enter the VolcEngine CLB extension domain",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, set the extension certificate for SNI. The extension domain must already be configured in the HTTPS listener's forwarding rules."
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, set the extension one for SNI."
       },
       "volcengine_dcdn_domain": {
         "label": "VolcEngine DCDN domain",

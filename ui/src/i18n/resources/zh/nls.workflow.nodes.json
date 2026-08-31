@@ -2819,7 +2819,7 @@
       "volcengine_clb_snidomain": {
         "label": "火山引擎 CLB 扩展域名（可选）",
         "placeholder": "请输入火山引擎 CLB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。扩展域名需已配置到 HTTPS 监听器转发规则。"
+        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
       },
       "volcengine_dcdn_domain": {
         "label": "火山引擎 DCDN 加速域名",
