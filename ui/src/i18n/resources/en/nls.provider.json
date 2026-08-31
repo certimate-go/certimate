@@ -285,6 +285,7 @@
   "volcengine_cdn": "Volcengine - CDN (Content Delivery Network)",
   "volcengine_certcenter_upload": "Volcengine - Upload to Certificate Center",
   "volcengine_clb": "Volcengine - CLB (Classic Load Balancer)",
+  "volcengine_clb_domainextensions": "Volcengine - CLB extension domain",
   "volcengine_dcdn": "Volcengine - DCDN (Dynamic Content Delivery Network)",
   "volcengine_dns": "Volcengine - DNS",
   "volcengine_imagex": "Volcengine - ImageX",
