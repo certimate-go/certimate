@@ -2952,6 +2952,11 @@
         "placeholder": "Please enter Webhook timeout",
         "unit": "seconds"
       },
+      "email_receiver_address": {
+        "label": "Receiver email address",
+        "placeholder": "Please enter receiver email address",
+        "help": "Notes: To send to multiple recipients, separate them with commas (,)."
+      },
       "yandexcloud_certificatemanager_certificate_id": {
         "label": "Yandex Cloud Certificate Manager certificate ID (Optional)",
         "placeholder": "Please enter Yandex Cloud Certificate Manager certificate ID",
