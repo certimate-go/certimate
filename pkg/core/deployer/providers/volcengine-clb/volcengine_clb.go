@@ -221,7 +221,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
-		return d.updateListenerSniCertificate(ctx, cloudListenerId, describeListenerAttributesResp.DomainExtensions, cloudCertId)
+		return d.updateListenerSniCertificate(ctx, describeListenerAttributesResp, cloudCertId)
 	}
 }
 
@@ -242,12 +242,12 @@ func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudLi
 	return nil
 }
 
-func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerId string, domainExtensions []*veclb.DomainExtensionForDescribeListenerAttributesOutput, cloudCertId string) error {
-	domainExtension, _ := lo.Find(domainExtensions, func(domainExtension *veclb.DomainExtensionForDescribeListenerAttributesOutput) bool {
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerInfo *veclb.DescribeListenerAttributesOutput, cloudCertId string) error {
+	domainExtension, _ := lo.Find(cloudListenerInfo.DomainExtensions, func(domainExtension *veclb.DomainExtensionForDescribeListenerAttributesOutput) bool {
 		return d.config.Domain == ve.StringValue(domainExtension.Domain)
 	})
 	if domainExtension == nil {
-		return fmt.Errorf("could not find clb listener domain extension '%s' for listener '%s'", d.config.Domain, cloudListenerId)
+		return fmt.Errorf("could not find clb listener domain extension '%s' for listener '%s'", d.config.Domain, ve.StringValue(cloudListenerInfo.ListenerId))
 	} else if ve.StringValue(domainExtension.CertCenterCertificateId) == cloudCertId {
 		d.logger.Info("no need to deploy clb listener extension domain certificate")
 		return nil
@@ -256,7 +256,7 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 	// 修改指定监听器的扩展域名证书
 	// REF: https://www.volcengine.com/docs/6406/2193110
 	modifyListenerDomainExtensionsReq := &veclb.ModifyListenerDomainExtensionsInput{
-		ListenerId: ve.String(cloudListenerId),
+		ListenerId: cloudListenerInfo.ListenerId,
 		ModifyDomainExtensions: []*veclb.ModifyDomainExtensionForModifyListenerDomainExtensionsInput{
 			{
 				DomainExtensionId:       domainExtension.DomainExtensionId,
