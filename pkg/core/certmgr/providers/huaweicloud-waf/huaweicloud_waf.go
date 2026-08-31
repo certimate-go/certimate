@@ -90,7 +90,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			Pagesize:            lo.ToPtr(int32(listCertificatesPageSize)),
 		}
 		listCertificatesResp, err := c.sdkClient.ListCertificates(listCertificatesReq)
-		c.logger.Debug("sdk request 'waf.ShowCertificate'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
+		c.logger.Debug("sdk request 'waf.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'waf.ListCertificates': %w", err)
 		}

@@ -268,7 +268,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 								continue
 							}
 
-							certExpireTime, _ := time.Parse("2006-01-02T15:04:05Z", lo.FromPtr(certInfo.ExpireTime))
+							certExpireTime, _ := time.Parse(time.RFC3339, lo.FromPtr(certInfo.ExpireTime))
 							if certExpireTime.Before(time.Now()) {
 								continue
 							}
