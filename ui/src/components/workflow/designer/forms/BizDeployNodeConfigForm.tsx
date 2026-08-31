@@ -12,7 +12,7 @@ import DeploymentProviderPicker from "@/components/provider/DeploymentProviderPi
 import DeploymentProviderSelect from "@/components/provider/DeploymentProviderSelect";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { deploymentProvidersMap } from "@/domain/provider";
+import { DEPLOYMENT_PROVIDERS, deploymentProvidersMap } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizDeploy, defaultNodeConfigForBizDeploy } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
@@ -38,8 +38,13 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
 
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
   const accessOptionFilter = (_: string, option: AccessModel) => {
+    if (deploymentProvidersMap.get(fieldProvider)?.provider !== option.provider) return false;
+    // 邮件（SMTP）部署提供商复用通知渠道里已配置的邮件发送授权
+    if (fieldProvider === DEPLOYMENT_PROVIDERS.EMAIL) {
+      return option.reserve === "notif" || option.reserve == null;
+    }
     if (option.reserve) return false;
-    return deploymentProvidersMap.get(fieldProvider)?.provider === option.provider;
+    return true;
   };
 
   const initialValues = useMemo(() => {

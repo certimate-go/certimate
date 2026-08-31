@@ -2951,6 +2951,11 @@
         "placeholder": "请输入 Webhook 超时时间",
         "unit": "秒"
       },
+      "email_receiver_address": {
+        "label": "收件人邮箱",
+        "placeholder": "请输入收件人邮箱",
+        "help": "提示：多个收件人请用英文逗号（,）分隔。"
+      },
       "yandexcloud_certificatemanager_certificate_id": {
         "label": "Yandex Cloud 证书管理器证书 ID（可选）",
         "placeholder": "请输入 Yandex Cloud 证书管理器证书 ID",

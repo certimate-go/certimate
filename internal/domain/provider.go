@@ -382,6 +382,7 @@ const (
 	DeploymentProviderTypeDigitalOceanCertificate       = DeploymentProviderType(AccessProviderTypeDigitalOcean + "-certificate")
 	DeploymentProviderTypeDogeCloudCDN                  = DeploymentProviderType(AccessProviderTypeDogeCloud + "-cdn")
 	DeploymentProviderTypeDokploy                       = DeploymentProviderType(AccessProviderTypeDokploy)
+	DeploymentProviderTypeEmail                         = DeploymentProviderType(AccessProviderTypeEmail)
 	DeploymentProviderTypeFlexCDN                       = DeploymentProviderType(AccessProviderTypeFlexCDN)
 	DeploymentProviderTypeFlyIO                         = DeploymentProviderType(AccessProviderTypeFlyIO)
 	DeploymentProviderTypeFTP                           = DeploymentProviderType(AccessProviderTypeFTP)
