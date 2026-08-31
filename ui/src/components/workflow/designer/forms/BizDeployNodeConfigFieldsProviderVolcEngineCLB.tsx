@@ -4,6 +4,7 @@ import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import Show from "@/components/Show";
+import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
@@ -73,6 +74,18 @@ const BizDeployNodeConfigFieldsProviderVolcEngineCLB = () => {
           <Input placeholder={t("workflow_node.deploy.form.volcengine_clb_listener_id.placeholder")} />
         </Form.Item>
       </Show>
+
+      <Show when={fieldResourceType === DEPLOY_TARGET_LOADBALANCER || fieldResourceType === DEPLOY_TARGET_LISTENER}>
+        <Form.Item
+          name={[parentNamePath, "domain"]}
+          initialValue={initialValues.domain}
+          label={t("workflow_node.deploy.form.volcengine_clb_snidomain.label")}
+          extra={t("workflow_node.deploy.form.volcengine_clb_snidomain.help")}
+          rules={[formRule]}
+        >
+          <Input allowClear placeholder={t("workflow_node.deploy.form.volcengine_clb_snidomain.placeholder")} />
+        </Form.Item>
+      </Show>
     </>
   );
 };
@@ -85,7 +98,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
-  const { t: _ } = i18n;
+  const { t } = i18n;
 
   return z
     .object({
@@ -93,6 +106,13 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER]),
       loadbalancerId: z.string().nullish(),
       listenerId: z.string().nullish(),
+      domain: z
+        .string()
+        .nullish()
+        .refine((v) => {
+          if (!v) return true;
+          return isDomain(v, { allowWildcard: true });
+        }, t("common.errmsg.domain_invalid")),
     })
     .superRefine((values, ctx) => {
       switch (values.deployTarget) {

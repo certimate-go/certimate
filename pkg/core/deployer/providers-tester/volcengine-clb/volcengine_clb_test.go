@@ -19,6 +19,7 @@ var (
 	fSecretAccessKey string
 	fRegion          string
 	fListenerId      string
+	fDomain          string
 )
 
 func init() {
@@ -28,6 +29,7 @@ func init() {
 	fp.DefineString(&fSecretAccessKey, "SECRETACCESSKEY")
 	fp.DefineString(&fRegion, "REGION")
 	fp.DefineString(&fListenerId, "LISTENERID")
+	fp.DefineString(&fDomain, "DOMAIN")
 }
 
 /*
@@ -39,7 +41,8 @@ Shell command to run this test:
 	--VOLCENGINECLB_ACCESSKEYID="your-access-key-id" \
 	--VOLCENGINECLB_SECRETACCESSKEY="your-secret-access-key" \
 	--VOLCENGINECLB_REGION="cn-beijing" \
-	--VOLCENGINECLB_LISTENERID="your-listener-id"
+	--VOLCENGINECLB_LISTENERID="your-listener-id" \
+	--VOLCENGINECLB_DOMAIN="example.com"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -51,6 +54,7 @@ func TestProvider(t *testing.T) {
 			Region:          fRegion,
 			DeployTarget:    impl.DEPLOY_TARGET_LISTENER,
 			ListenerId:      fListenerId,
+			Domain:          fDomain,
 		})
 		require.NoError(t, err)
 

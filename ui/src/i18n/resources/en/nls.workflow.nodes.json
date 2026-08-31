@@ -2817,6 +2817,11 @@
         "placeholder": "Please enter VolcEngine CLB listener ID",
         "tooltip": "For more information, see <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
       },
+      "volcengine_clb_snidomain": {
+        "label": "VolcEngine CLB SNI domain (Optional)",
+        "placeholder": "Please enter the VolcEngine CLB extension domain",
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, set the extension one for SNI."
+      },
       "volcengine_dcdn_domain": {
         "label": "VolcEngine DCDN domain",
         "placeholder": "Please enter VolcEngine DCDN domain name"
