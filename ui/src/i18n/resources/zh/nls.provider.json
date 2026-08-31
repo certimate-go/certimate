@@ -285,7 +285,6 @@
   "volcengine_cdn": "火山引擎 - 内容分发网络 CDN",
   "volcengine_certcenter_upload": "火山引擎 - 上传到证书中心",
   "volcengine_clb": "火山引擎 - 传统型负载均衡 CLB",
-  "volcengine_clb_domainextensions": "火山引擎 - 传统型负载均衡 CLB 扩展域名",
   "volcengine_dcdn": "火山引擎 - 全站加速 DCDN",
   "volcengine_dns": "火山引擎 - 云解析 DNS",
   "volcengine_imagex": "火山引擎 - 图片服务 ImageX",

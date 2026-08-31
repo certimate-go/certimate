@@ -2817,20 +2817,10 @@
         "placeholder": "Please enter VolcEngine CLB listener ID",
         "tooltip": "For more information, see <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
       },
-      "volcengine_clb_domainextensions_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine CLB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892?lang=en\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
-      },
-      "volcengine_clb_domainextensions_listener_id": {
-        "label": "VolcEngine CLB listener ID",
-        "placeholder": "Please enter VolcEngine CLB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
-      },
-      "volcengine_clb_domainextensions_domain": {
-        "label": "VolcEngine CLB extension domain",
+      "volcengine_clb_snidomain": {
+        "label": "VolcEngine CLB SNI domain (Optional)",
         "placeholder": "Please enter the VolcEngine CLB extension domain",
-        "help": "Enter an extension domain configured in the HTTPS listener's forwarding rules."
+        "help": "Notes: Leave it blank to set the default certificate; otherwise, set the extension certificate for SNI. The extension domain must already be configured in the HTTPS listener's forwarding rules."
       },
       "volcengine_dcdn_domain": {
         "label": "VolcEngine DCDN domain",

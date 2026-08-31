@@ -37,6 +37,9 @@ type DeployerConfig struct {
 	// 负载均衡监听器 ID。
 	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
+	// SNI 域名（支持泛域名）。
+	// 部署目标为 [DEPLOY_TARGET_LOADBALANCER]、[DEPLOY_TARGET_LISTENER] 时选填。
+	Domain string `json:"domain,omitempty"`
 }
 
 type Deployer struct {
@@ -194,6 +197,34 @@ func (d *Deployer) deployToListener(ctx context.Context, cloudCertId string) err
 }
 
 func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
+	// 查询指定监听器的详细信息
+	// REF: https://www.volcengine.com/docs/6406/71778
+	describeListenerAttributesReq := &veclb.DescribeListenerAttributesInput{
+		ListenerId: ve.String(cloudListenerId),
+	}
+	describeListenerAttributesResp, err := d.sdkClient.DescribeListenerAttributesWithContext(ctx, describeListenerAttributesReq)
+	d.logger.Debug("sdk request 'clb.DescribeListenerAttributes'", slog.Any("request", describeListenerAttributesReq), slog.Any("response", describeListenerAttributesResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'clb.DescribeListenerAttributes': %w", err)
+	}
+	if describeListenerAttributesResp == nil {
+		return fmt.Errorf("could not find clb listener '%s'", cloudListenerId)
+	}
+
+	if d.config.Domain == "" {
+		// 未指定 SNI，只需部署到监听器
+		if ve.StringValue(describeListenerAttributesResp.CertCenterCertificateId) == cloudCertId {
+			d.logger.Info("no need to deploy clb listener default certificate")
+			return nil
+		}
+		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
+	}
+
+	// 指定 SNI，需部署到扩展域名
+	return d.updateListenerSniCertificate(ctx, cloudListenerId, describeListenerAttributesResp.DomainExtensions, cloudCertId)
+}
+
+func (d *Deployer) updateListenerDefaultCertificate(ctx context.Context, cloudListenerId string, cloudCertId string) error {
 	// 修改指定监听器
 	// REF: https://www.volcengine.com/docs/6406/71775
 	modifyListenerAttributesReq := &veclb.ModifyListenerAttributesInput{
@@ -208,6 +239,52 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 	}
 
 	return nil
+}
+
+func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListenerId string, domainExtensions []*veclb.DomainExtensionForDescribeListenerAttributesOutput, cloudCertId string) error {
+	domainExtension := findDomainExtension(domainExtensions, d.config.Domain)
+	if domainExtension == nil || ve.StringValue(domainExtension.DomainExtensionId) == "" {
+		return fmt.Errorf("could not find clb listener domain extension '%s' for listener '%s'", d.config.Domain, cloudListenerId)
+	}
+	if ve.StringValue(domainExtension.CertCenterCertificateId) == cloudCertId {
+		d.logger.Info("no need to deploy clb listener extension domain certificate")
+		return nil
+	}
+
+	// 修改指定监听器的扩展域名证书
+	// REF: https://www.volcengine.com/docs/6406/2193110
+	modifyListenerDomainExtensionsReq := buildModifyListenerDomainExtensionsRequest(cloudListenerId, ve.StringValue(domainExtension.DomainExtensionId), cloudCertId)
+	modifyListenerDomainExtensionsResp, err := d.sdkClient.ModifyListenerDomainExtensionsWithContext(ctx, modifyListenerDomainExtensionsReq)
+	d.logger.Debug("sdk request 'clb.ModifyListenerDomainExtensions'", slog.Any("request", modifyListenerDomainExtensionsReq), slog.Any("response", modifyListenerDomainExtensionsResp))
+	if err != nil {
+		return fmt.Errorf("failed to execute sdk request 'clb.ModifyListenerDomainExtensions': %w", err)
+	}
+
+	return nil
+}
+
+func findDomainExtension(domainExtensions []*veclb.DomainExtensionForDescribeListenerAttributesOutput, domain string) *veclb.DomainExtensionForDescribeListenerAttributesOutput {
+	for _, domainExtension := range domainExtensions {
+		if domainExtension == nil || ve.StringValue(domainExtension.Domain) != domain {
+			continue
+		}
+		return domainExtension
+	}
+
+	return nil
+}
+
+func buildModifyListenerDomainExtensionsRequest(listenerId, domainExtensionId, cloudCertId string) *veclb.ModifyListenerDomainExtensionsInput {
+	return &veclb.ModifyListenerDomainExtensionsInput{
+		ListenerId: ve.String(listenerId),
+		ModifyDomainExtensions: []*veclb.ModifyDomainExtensionForModifyListenerDomainExtensionsInput{
+			{
+				DomainExtensionId:       ve.String(domainExtensionId),
+				CertificateSource:       ve.String("cert_center"),
+				CertCenterCertificateId: ve.String(cloudCertId),
+			},
+		},
+	}
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*veclb.CLB, error) {

@@ -136,7 +136,6 @@ import BizDeployNodeConfigFieldsProviderVolcEngineAPIG from "./BizDeployNodeConf
 import BizDeployNodeConfigFieldsProviderVolcEngineCDN from "./BizDeployNodeConfigFieldsProviderVolcEngineCDN";
 import BizDeployNodeConfigFieldsProviderVolcEngineCertCenter from "./BizDeployNodeConfigFieldsProviderVolcEngineCertCenter";
 import BizDeployNodeConfigFieldsProviderVolcEngineCLB from "./BizDeployNodeConfigFieldsProviderVolcEngineCLB";
-import BizDeployNodeConfigFieldsProviderVolcEngineCLBDomainExtensions from "./BizDeployNodeConfigFieldsProviderVolcEngineCLBDomainExtensions";
 import BizDeployNodeConfigFieldsProviderVolcEngineDCDN from "./BizDeployNodeConfigFieldsProviderVolcEngineDCDN";
 import BizDeployNodeConfigFieldsProviderVolcEngineImageX from "./BizDeployNodeConfigFieldsProviderVolcEngineImageX";
 import BizDeployNodeConfigFieldsProviderVolcEngineLive from "./BizDeployNodeConfigFieldsProviderVolcEngineLive";
@@ -290,7 +289,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CDN]: BizDeployNodeConfigFieldsProviderVolcEngineCDN,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CERTCENTER]: BizDeployNodeConfigFieldsProviderVolcEngineCertCenter,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_CLB]: BizDeployNodeConfigFieldsProviderVolcEngineCLB,
-  [DEPLOYMENT_PROVIDERS.VOLCENGINE_CLB_DOMAINEXTENSIONS]: BizDeployNodeConfigFieldsProviderVolcEngineCLBDomainExtensions,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_DCDN]: BizDeployNodeConfigFieldsProviderVolcEngineDCDN,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_IMAGEX]: BizDeployNodeConfigFieldsProviderVolcEngineImageX,
   [DEPLOYMENT_PROVIDERS.VOLCENGINE_LIVE]: BizDeployNodeConfigFieldsProviderVolcEngineLive,

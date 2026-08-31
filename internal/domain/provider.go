@@ -463,7 +463,6 @@ const (
 	DeploymentProviderTypeVolcEngineCDN                 = DeploymentProviderType(AccessProviderTypeVolcEngine + "-cdn")
 	DeploymentProviderTypeVolcEngineCertCenter          = DeploymentProviderType(AccessProviderTypeVolcEngine + "-certcenter")
 	DeploymentProviderTypeVolcEngineCLB                 = DeploymentProviderType(AccessProviderTypeVolcEngine + "-clb")
-	DeploymentProviderTypeVolcEngineCLBDomainExtensions = DeploymentProviderType(AccessProviderTypeVolcEngine + "-clb-domainextensions")
 	DeploymentProviderTypeVolcEngineDCDN                = DeploymentProviderType(AccessProviderTypeVolcEngine + "-dcdn")
 	DeploymentProviderTypeVolcEngineImageX              = DeploymentProviderType(AccessProviderTypeVolcEngine + "-imagex")
 	DeploymentProviderTypeVolcEngineLive                = DeploymentProviderType(AccessProviderTypeVolcEngine + "-live")
