@@ -901,6 +901,18 @@
         }
       }
     },
+    "lecdn_auth_method": {
+      "label": "LeCDN API authentication method",
+      "placeholder": "Please select LeCDN API authentication method",
+      "option": {
+        "password": {
+          "label": "Username & Password"
+        },
+        "apikey": {
+          "label": "API key"
+        }
+      }
+    },
     "lecdn_username": {
       "label": "LeCDN username",
       "placeholder": "Please enter LeCDN username"
@@ -908,6 +920,10 @@
     "lecdn_password": {
       "label": "LeCDN password",
       "placeholder": "Please enter LeCDN password"
+    },
+    "lecdn_api_key": {
+      "label": "LeCDN API key",
+      "placeholder": "Please enter LeCDN API key"
     },
     "linode_access_token": {
       "label": "Linode access token",

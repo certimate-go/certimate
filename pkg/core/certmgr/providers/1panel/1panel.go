@@ -286,33 +286,41 @@ const (
 )
 
 func createSDKClient(serverUrl, apiVersion, apiKey string, skipTlsVerify bool, nodeName string) (any, error) {
-	if apiVersion == sdkVersionV1 {
-		client, err := onepanelsdk.NewClient(serverUrl,
-			onepanelsdk.WithApiKey(apiKey),
-		)
-		if err != nil {
-			return nil, err
+	switch apiVersion {
+	case sdkVersionV1:
+		{
+			client, err := onepanelsdk.NewClient(
+				serverUrl,
+				onepanelsdk.WithApiKey(apiKey),
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			if skipTlsVerify {
+				client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+			}
+
+			return client, nil
 		}
 
-		if skipTlsVerify {
-			client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
-		}
+	case sdkVersionV2:
+		{
+			client, err := onepanelsdk2.NewClient(
+				serverUrl,
+				onepanelsdk2.WithApiKey(apiKey),
+				onepanelsdk2.WithNode(nodeName),
+			)
+			if err != nil {
+				return nil, err
+			}
 
-		return client, nil
-	} else if apiVersion == sdkVersionV2 {
-		client, err := onepanelsdk2.NewClient(serverUrl,
-			onepanelsdk2.WithApiKey(apiKey),
-			onepanelsdk2.WithNode(nodeName),
-		)
-		if err != nil {
-			return nil, err
-		}
+			if skipTlsVerify {
+				client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+			}
 
-		if skipTlsVerify {
-			client.SetTLSConfig(&tls.Config{InsecureSkipVerify: true})
+			return client, nil
 		}
-
-		return client, nil
 	}
 
 	return nil, fmt.Errorf("1panel: invalid api version")

@@ -1,9 +1,9 @@
-package nginxproxymanager
+package v3
 
 type Options struct {
 	Username string
 	Password string
-	JwtToken string
+	ApiKey   string
 }
 
 type OptionsFunc func(*Options)
@@ -12,13 +12,13 @@ func WithLogins(username, password string) OptionsFunc {
 	return func(o *Options) {
 		o.Username = username
 		o.Password = password
-		o.JwtToken = ""
+		o.ApiKey = ""
 	}
 }
 
-func WithJwtToken(jwtToken string) OptionsFunc {
+func WithApiKey(apiKey string) OptionsFunc {
 	return func(o *Options) {
-		o.JwtToken = jwtToken
+		o.ApiKey = apiKey
 		o.Username = ""
 		o.Password = ""
 	}

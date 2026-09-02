@@ -1,6 +1,5 @@
-// A simple SDK client for NginxProxyManager.
-// API documentation: https://github.com/NginxProxyManager/nginx-proxy-manager/discussions/3265
-package nginxproxymanager
+// A simple SDK client for LeCDN v3 as admin.
+package v3
 
 import (
 	"context"
@@ -21,6 +20,7 @@ import (
 type Client struct {
 	username string
 	password string
+	apiKey   string
 
 	token   string
 	tokenMu sync.Mutex
@@ -40,25 +40,34 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if opts.JwtToken == "" && (opts.Username == "" || opts.Password == "") {
-		return nil, fmt.Errorf("sdkerr: unset jwtToken or username/password")
+	if opts.ApiKey == "" && (opts.Username == "" || opts.Password == "") {
+		return nil, fmt.Errorf("sdkerr: unset apiKey or username/password")
 	}
-	if opts.JwtToken != "" && (opts.Username != "" || opts.Password != "") {
-		return nil, fmt.Errorf("sdkerr: cannot set both jwtToken and username/password")
+	if opts.ApiKey != "" && (opts.Username != "" || opts.Password != "") {
+		return nil, fmt.Errorf("sdkerr: cannot set both apiKey and username/password")
+	}
+
+	baseUrl := strings.TrimSuffix(serverUrl, "/")
+	if opts.ApiKey != "" {
+		baseUrl += "/api/admin"
+	} else {
+		baseUrl += "/prod-api"
 	}
 
 	client := &Client{
 		username: opts.Username,
 		password: opts.Password,
-		token:    opts.JwtToken,
+		apiKey:   opts.ApiKey,
 	}
 	client.rc = resty.New().
-		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/api").
+		SetBaseURL(baseUrl).
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.token != "" {
+			if client.apiKey != "" {
+				req.Header.Set("Authorization", client.apiKey)
+			} else if client.token != "" {
 				req.Header.Set("Authorization", "Bearer "+client.token)
 			}
 
@@ -110,7 +119,7 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Response, error) {
+func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
@@ -124,15 +133,12 @@ func (c *Client) doRequestWithResult(req *resty.Request, res any) (*resty.Respon
 	}
 
 	if len(resp.Body()) != 0 {
-		var errRes *sdkResponseBase
-		if err := json.Unmarshal(resp.Body(), &errRes); err == nil {
-			if rError := errRes.GetError(); rError != "" {
-				return resp, fmt.Errorf("sdkerr: api error: error='%s'", rError)
-			}
-		}
-
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
+		} else {
+			if rCode := res.GetCode(); rCode != 0 && rCode != 200 {
+				return resp, fmt.Errorf("sdkerr: api error: code='%d', message='%s'", rCode, res.GetMessage())
+			}
 		}
 	}
 
@@ -146,35 +152,40 @@ func (c *Client) ensureToken(ctx context.Context) error {
 		return nil
 	}
 
-	httpreq, err := c.newRequest(http.MethodPost, "/tokens")
+	httpreq, err := c.newRequest(http.MethodPost, "/auth/login")
 	if err != nil {
 		return err
 	} else {
 		httpreq.SetBody(map[string]string{
-			"identity": c.username,
-			"secret":   c.password,
+			"username": c.username,
+			"password": c.password,
 		})
 		httpreq.SetContext(ctx)
 	}
 
-	type tokensResponse struct {
+	type loginResponse struct {
 		sdkResponseBase
-		Token   string `json:"token"`
-		Expires string `json:"expires"`
+		Data *struct {
+			UserId   int64  `json:"user_id"`
+			Username string `json:"username"`
+			Token    string `json:"token"`
+		} `json:"data,omitempty"`
 	}
 
-	result := &tokensResponse{}
+	result := &loginResponse{}
 	if _, err := c.doRequestWithResult(httpreq, result); err != nil {
 		return err
-	} else if rError := result.GetError(); rError != "" {
-		return fmt.Errorf("sdkerr: auth error: error='%s'", rError)
 	} else {
-		if result.Token == "" {
+		if result.Data == nil || result.Data.Token == "" {
 			return fmt.Errorf("sdkerr: auth error: received empty token")
 		}
 
-		c.token = result.Token
+		c.token = result.Data.Token
 	}
 
 	return nil
+}
+
+func (c *Client) isUseApiKey() bool {
+	return c.apiKey != ""
 }
