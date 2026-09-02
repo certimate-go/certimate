@@ -110,6 +110,7 @@ import BizDeployNodeConfigFieldsProviderTencentCloudCDN from "./BizDeployNodeCon
 import BizDeployNodeConfigFieldsProviderTencentCloudCLB from "./BizDeployNodeConfigFieldsProviderTencentCloudCLB";
 import BizDeployNodeConfigFieldsProviderTencentCloudCOS from "./BizDeployNodeConfigFieldsProviderTencentCloudCOS";
 import BizDeployNodeConfigFieldsProviderTencentCloudCSS from "./BizDeployNodeConfigFieldsProviderTencentCloudCSS";
+import BizDeployNodeConfigFieldsProviderTencentCloudDDoSPro from "./BizDeployNodeConfigFieldsProviderTencentCloudDDoSPro";
 import BizDeployNodeConfigFieldsProviderTencentCloudECDN from "./BizDeployNodeConfigFieldsProviderTencentCloudECDN";
 import BizDeployNodeConfigFieldsProviderTencentCloudEO from "./BizDeployNodeConfigFieldsProviderTencentCloudEO";
 import BizDeployNodeConfigFieldsProviderTencentCloudEOMakers from "./BizDeployNodeConfigFieldsProviderTencentCloudEOMakers";
@@ -263,6 +264,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_CLB]: BizDeployNodeConfigFieldsProviderTencentCloudCLB,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_COS]: BizDeployNodeConfigFieldsProviderTencentCloudCOS,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_CSS]: BizDeployNodeConfigFieldsProviderTencentCloudCSS,
+  [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_DDOSPRO]: BizDeployNodeConfigFieldsProviderTencentCloudDDoSPro,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_ECDN]: BizDeployNodeConfigFieldsProviderTencentCloudECDN,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_EO]: BizDeployNodeConfigFieldsProviderTencentCloudEO,
   [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_EOMAKERS]: BizDeployNodeConfigFieldsProviderTencentCloudEOMakers,
