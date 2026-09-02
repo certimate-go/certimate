@@ -58,6 +58,7 @@
   "aliyun_waf": "阿里云 - Web 应用防火墙 WAF",
   "apisix": "Apache APISIX",
   "arvancloud": "ArvanCloud",
+  "asiaispcdn": "橙域网络网迹 CDN",
   "aws": "AWS（Amazon Web Services）",
   "aws_acm": "AWS - 证书管理器 ACM",
   "aws_alb": "AWS - 应用程序负载均衡器 ALB",

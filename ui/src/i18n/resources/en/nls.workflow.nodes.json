@@ -960,6 +960,10 @@
         "placeholder": "Please enter APISIX certificate ID",
         "tooltip": "You can find it on APISIX dashboard."
       },
+      "asiaispcdn_domain": {
+        "label": "Asia-ISP CDN domain",
+        "placeholder": "Please enter Asia-ISP CDN domain name"
+      },
       "aws_acm_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS ACM region (e.g. us-east-1)",

@@ -220,6 +220,14 @@
       "placeholder": "Please enter ArvanCloud API key",
       "tooltip": "For more information, see <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
     },
+    "asiaispcdn_access_key_id": {
+      "label": "Asia-ISP CDN AccessKeyID",
+      "placeholder": "Please enter Asia-ISP CDN AccessKeyID"
+    },
+    "asiaispcdn_access_key_secret": {
+      "label": "Asia-ISP CDN AccessKeySecret",
+      "placeholder": "Please enter Asia-ISP CDN AccessKeySecret"
+    },
     "aws_auth_method": {
       "label": "AWS API authentication method",
       "placeholder": "Please select AWS API authentication method",

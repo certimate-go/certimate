@@ -959,6 +959,10 @@
         "placeholder": "请输入 APISIX 证书 ID",
         "tooltip": "请登录 APISIX 控制台查看"
       },
+      "asiaispcdn_domain": {
+        "label": "橙域网络网迹 CDN 加速域名",
+        "placeholder": "请输入橙域网络网迹 CDN 加速域名"
+      },
       "aws_acm_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS ACM 服务区域（例如：us-east-1）",
