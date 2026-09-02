@@ -218,8 +218,16 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 			d.logger.Info("no need to deploy clb listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
 	} else {
+		if lo.SomeBy(describeListenerAttributesResp.DomainExtensions, func(domainExtension *veclb.DomainExtensionForDescribeListenerAttributesOutput) bool {
+			return ve.StringValue(domainExtension.Domain) == d.config.Domain && ve.StringValue(domainExtension.CertCenterCertificateId) == cloudCertId
+		}) {
+			d.logger.Info("no need to deploy clb listener sni certificate")
+			return nil
+		}
+
 		// 指定 SNI，需部署到扩展域名
 		return d.updateListenerSniCertificate(ctx, describeListenerAttributesResp, cloudCertId)
 	}
@@ -248,9 +256,6 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 	})
 	if domainExtension == nil {
 		return fmt.Errorf("could not find clb listener domain extension '%s' for listener '%s'", d.config.Domain, ve.StringValue(cloudListenerInfo.ListenerId))
-	} else if ve.StringValue(domainExtension.CertCenterCertificateId) == cloudCertId {
-		d.logger.Info("no need to deploy clb listener extension domain certificate")
-		return nil
 	}
 
 	// 修改指定监听器的扩展域名证书

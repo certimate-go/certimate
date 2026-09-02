@@ -240,6 +240,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudLoad
 			d.logger.Info("no need to deploy appblb listener default certificate")
 			return nil
 		}
+
 		return d.updateHttpsListenerDefaultCertificate(ctx, cloudLoadbalancerId, &listenerInfo, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
