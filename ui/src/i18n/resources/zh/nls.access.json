@@ -901,6 +901,18 @@
         }
       }
     },
+    "lecdn_auth_method": {
+      "label": "LeCDN API 认证方式",
+      "placeholder": "请选择 LeCDN API 认证方式",
+      "option": {
+        "password": {
+          "label": "账号密码"
+        },
+        "apikey": {
+          "label": "API Key"
+        }
+      }
+    },
     "lecdn_username": {
       "label": "LeCDN 用户名",
       "placeholder": "请输入 LeCDN 用户名"
@@ -908,6 +920,10 @@
     "lecdn_password": {
       "label": "LeCDN 用户密码",
       "placeholder": "请输入 LeCDN 用户密码"
+    },
+    "lecdn_api_key": {
+      "label": "LeCDN API Key",
+      "placeholder": "请输入 LeCDN API Key"
     },
     "linode_access_token": {
       "label": "Linode AccessToken",
@@ -1018,7 +1034,7 @@
       "placeholder": "请选择 NPM API 认证方式",
       "option": {
         "password": {
-          "label": "密码"
+          "label": "账号密码"
         },
         "token": {
           "label": "API Token"

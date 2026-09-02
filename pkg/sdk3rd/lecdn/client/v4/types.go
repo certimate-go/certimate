@@ -1,4 +1,4 @@
-package client
+package v4
 
 type sdkResponse interface {
 	GetCode() int
@@ -7,7 +7,7 @@ type sdkResponse interface {
 
 type sdkResponseBase struct {
 	Code    int    `json:"code"`
-	Message string `json:"msg"`
+	Message string `json:"message"`
 }
 
 func (r *sdkResponseBase) GetCode() int {
