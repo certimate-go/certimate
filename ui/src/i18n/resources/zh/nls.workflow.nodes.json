@@ -2298,6 +2298,20 @@
         "label": "腾讯云云直播流域名",
         "placeholder": "请输入腾讯云云直播流域名"
       },
+      "tencentcloud_ddospro_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 DDoS 高防接口端点（例如：clb.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/214/30669\" target=\"_blank\">https://cloud.tencent.com/document/product/214/30669</a><br>国际站用户请填写 <em>clb.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_ddospro_instance_id": {
+        "label": "腾讯云 DDoS 高防实例 ID",
+        "placeholder": "请输入腾讯云 DDoS 高防实例 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/ddos\" target=\"_blank\">https://console.cloud.tencent.com/ddos</a>"
+      },
+      "tencentcloud_ddospro_domain": {
+        "label": "腾讯云 DDoS 高防网站域名",
+        "placeholder": "请输入腾讯云 DDoS 高防网站域名"
+      },
       "tencentcloud_ecdn_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 ECDN 接口端点（例如：cdn.tencentcloudapi.com）",

@@ -436,6 +436,7 @@ const (
 	DeploymentProviderTypeTencentCloudCLB               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-clb")
 	DeploymentProviderTypeTencentCloudCOS               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-cos")
 	DeploymentProviderTypeTencentCloudCSS               = DeploymentProviderType(AccessProviderTypeTencentCloud + "-css")
+	DeploymentProviderTypeTencentCloudDDoSPro           = DeploymentProviderType(AccessProviderTypeTencentCloud + "-ddospro")
 	DeploymentProviderTypeTencentCloudECDN              = DeploymentProviderType(AccessProviderTypeTencentCloud + "-ecdn")
 	DeploymentProviderTypeTencentCloudEO                = DeploymentProviderType(AccessProviderTypeTencentCloud + "-eo")
 	DeploymentProviderTypeTencentCloudEOMakers          = DeploymentProviderType(AccessProviderTypeTencentCloud + "-eomakers")

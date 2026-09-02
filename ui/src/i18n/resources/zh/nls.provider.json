@@ -251,6 +251,7 @@
   "tencentcloud_clb": "腾讯云 - 负载均衡 CLB",
   "tencentcloud_cos": "腾讯云 - 对象存储 COS",
   "tencentcloud_css": "腾讯云 - 云直播 CSS",
+  "tencentcloud_ddospro": "腾讯云 - DDoS 高防",
   "tencentcloud_dns": "腾讯云 - 云解析 DNS",
   "tencentcloud_ecdn": "腾讯云 - 全站加速网络 ECDN",
   "tencentcloud_eo": "腾讯云 - 边缘安全加速平台 EdgeOne",
