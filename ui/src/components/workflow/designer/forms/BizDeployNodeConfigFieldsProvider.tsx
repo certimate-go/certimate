@@ -22,6 +22,7 @@ import BizDeployNodeConfigFieldsProviderAliyunOSS from "./BizDeployNodeConfigFie
 import BizDeployNodeConfigFieldsProviderAliyunVOD from "./BizDeployNodeConfigFieldsProviderAliyunVOD";
 import BizDeployNodeConfigFieldsProviderAliyunWAF from "./BizDeployNodeConfigFieldsProviderAliyunWAF";
 import BizDeployNodeConfigFieldsProviderAPISIX from "./BizDeployNodeConfigFieldsProviderAPISIX";
+import BizDeployNodeConfigFieldsProviderAsiaISPCDN from "./BizDeployNodeConfigFieldsProviderAsiaISPCDN";
 import BizDeployNodeConfigFieldsProviderAWSACM from "./BizDeployNodeConfigFieldsProviderAWSACM";
 import BizDeployNodeConfigFieldsProviderAWSALB from "./BizDeployNodeConfigFieldsProviderAWSALB";
 import BizDeployNodeConfigFieldsProviderAWSAmplify from "./BizDeployNodeConfigFieldsProviderAWSAmplify";
@@ -176,6 +177,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.ALIYUN_VOD]: BizDeployNodeConfigFieldsProviderAliyunVOD,
   [DEPLOYMENT_PROVIDERS.ALIYUN_WAF]: BizDeployNodeConfigFieldsProviderAliyunWAF,
   [DEPLOYMENT_PROVIDERS.APISIX]: BizDeployNodeConfigFieldsProviderAPISIX,
+  [DEPLOYMENT_PROVIDERS.ASIAISPCDN]: BizDeployNodeConfigFieldsProviderAsiaISPCDN,
   [DEPLOYMENT_PROVIDERS.AWS_ACM]: BizDeployNodeConfigFieldsProviderAWSACM,
   [DEPLOYMENT_PROVIDERS.AWS_ALB]: BizDeployNodeConfigFieldsProviderAWSALB,
   [DEPLOYMENT_PROVIDERS.AWS_AMPLIFY]: BizDeployNodeConfigFieldsProviderAWSAmplify,

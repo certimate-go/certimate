@@ -58,6 +58,7 @@
   "aliyun_waf": "Alibaba Cloud - WAF (Web Application Firewall)",
   "apisix": "Apache APISIX",
   "arvancloud": "ArvanCloud",
+  "asiaispcdn": "Asia-ISP CDN",
   "aws": "AWS (Amazon Web Services)",
   "aws_acm": "AWS - ACM (Amazon Certificate Manager)",
   "aws_alb": "AWS - ALB (Application Load Balancer)",

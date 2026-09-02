@@ -81,6 +81,11 @@ type AccessConfigForArvanCloud struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type AccessConfigForAsiaISPCDN struct {
+	AccessKeyId     string `json:"accessKeyId"`
+	AccessKeySecret string `json:"accessKeySecret"`
+}
+
 type AccessConfigForAWS struct {
 	AuthMethod      string `json:"authMethod"`
 	AccessKeyId     string `json:"accessKeyId"`
