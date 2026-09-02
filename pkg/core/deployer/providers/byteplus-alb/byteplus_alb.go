@@ -213,6 +213,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 			d.logger.Info("no need to deploy alb listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
@@ -252,7 +253,8 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 					CertCenterCertificateId: bp.String(cloudCertId),
 					Action:                  bp.String("modify"),
 				}
-			}),
+			},
+		),
 	}
 	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
 	d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))

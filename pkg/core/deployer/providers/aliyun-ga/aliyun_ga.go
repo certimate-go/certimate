@@ -240,6 +240,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 			d.logger.Info("no need to deploy ga listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, cloudListenerId, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名

@@ -112,6 +112,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				}
 
 				domains = domainCandidates
+				if len(domains) == 0 {
+					return nil, fmt.Errorf("could not find any domains matched by wildcard")
+				}
 			} else {
 				domains = []string{d.config.Domain}
 			}
@@ -125,6 +128,9 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			}
 
 			domains = domainCandidates
+			if len(domains) == 0 {
+				return nil, fmt.Errorf("could not find any domains matched by certificate")
+			}
 		}
 
 	default:
@@ -213,12 +219,6 @@ func (d *Deployer) getMatchedDomainsByCertId(ctx context.Context, cloudCertId st
 	if describeCertConfigResp.Result.OtherCertConfig != nil {
 		for i := range describeCertConfigResp.Result.OtherCertConfig {
 			domains = append(domains, describeCertConfigResp.Result.OtherCertConfig[i].Domain)
-		}
-	}
-
-	if len(domains) == 0 {
-		if len(describeCertConfigResp.Result.SpecifiedCertConfig) == 0 {
-			return nil, fmt.Errorf("could not find any domains matched by certificate")
 		}
 	}
 
