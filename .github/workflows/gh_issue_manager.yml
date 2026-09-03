@@ -1,0 +1,36 @@
+name: "Issue Manager"
+
+on:
+  schedule:
+    # Daily at 01:30 UTC (09:30 Beijing time)
+    - cron: "30 1 * * *"
+  issue_comment:
+    types:
+      - created
+  issues:
+    types:
+      - labeled
+  pull_request_target:
+    types:
+      - labeled
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  issue-manager:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manage issues with the "answered" label
+        uses: tiangolo/issue-manager@0.8.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config: >
+            {
+              "answered": {
+                "delay": 604800,
+                "message": "This issue has been automatically closed because there has been no further reply from you for over 7 days since our last response. If your problem is not resolved, please feel free to reopen this issue or open a new one with more details.\n\n---\n\n此 Issue 已被自动关闭。在我们最后一次回复后已超过 7 天未收到您的进一步回复。如果您的问题仍未解决，欢迎重新打开此 Issue 或创建新的 Issue 并提供更多详细信息。"
+              }
+            }
