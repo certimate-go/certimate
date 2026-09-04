@@ -18,7 +18,7 @@
 </div>
 
 <div align="center">
-  
+
 <a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/daily" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/weekly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/monthly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
@@ -40,7 +40,7 @@
 - **自托管**：私有化安装，所有数据本地化存储，掌控数据的隐私与安全。
 - **跨平台**：Windows/Linux/macOS，全平台多架构可运行。
 - **零依赖**：无需安装数据库、运行时或复杂框架，一键启动，开箱即用。
-- **低占用**：超轻量的资源开销，仅需 ~16 MB 内存。
+- **低占用**：超轻量的资源开销，仅需 ~20 MB 常驻内存。
 - **易操作**：图形化界面，通过简单配置即可完成证书的自动化管理。
 
 ## 💡 功能特性
@@ -50,7 +50,7 @@
 - 支持 DNS-01（即基于域名解析验证）、HTTP-01（即基于文件验证）两种质询方式。
 - 支持 PEM、PFX、JKS 等多种格式输出证书。
 - 支持 70+ 域名托管商（如阿里云、腾讯云、AWS、Cloudflare、GoDaddy 等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-dns-providers)）。
-- 支持 150+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-hosting-providers)）。
+- 支持 160+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-hosting-providers)）。
 - 支持邮件、钉钉、飞书、企业微信、Discord、Slack、Telegram 等多种通知渠道。
 - 支持 Let's Encrypt、Actalis、Google Trust Services、SSL.com、ZeroSSL 等多种 ACME 证书颁发机构。
 - 更多特性等待探索。
