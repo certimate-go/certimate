@@ -22,11 +22,11 @@ func (c *Client) CreateDomainWithCert(req *CreateDomainWithCertRequest) (*Create
 }
 
 func (c *Client) CreateDomainWithCertWithContext(ctx context.Context, req *CreateDomainWithCertRequest) (*CreateDomainWithCertResponse, error) {
-	if err := c.ensureApiUserToken(ctx); err != nil {
+	if err := c.ensureConsoleToken(ctx); err != nil {
 		return nil, err
 	}
 
 	resp := &CreateDomainWithCertResponse{}
-	err := c.sendRequestWithResult(ctx, http.MethodPost, "/host/create-domain-with-cert", req, resp)
+	err := c.sendConsoleRequestWithResult(ctx, http.MethodPost, "/host/create-domain-with-cert", req, resp)
 	return resp, err
 }
