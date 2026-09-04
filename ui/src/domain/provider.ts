@@ -941,6 +941,73 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
 );
 // #endregion
 
+// #region PurgeProvider
+export const PURGE_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+   */
+  {
+    ALIYUN_CAS: `${ACCESS_PROVIDERS.ALIYUN}-cas`,
+    ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
+    ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
+    AWS_ACM: `${ACCESS_PROVIDERS.AWS}-acm`,
+    AWS_IAM: `${ACCESS_PROVIDERS.AWS}-iam`,
+    AZURE_KEYVAULT: `${ACCESS_PROVIDERS.AZURE}-keyvault`,
+    BAIDUCLOUD_CERT: `${ACCESS_PROVIDERS.BAIDUCLOUD}-cert`,
+    HUAWEICLOUD_ELB: `${ACCESS_PROVIDERS.HUAWEICLOUD}-elb`,
+    HUAWEICLOUD_SCM: `${ACCESS_PROVIDERS.HUAWEICLOUD}-scm`,
+    HUAWEICLOUD_WAF: `${ACCESS_PROVIDERS.HUAWEICLOUD}-waf`,
+    JDCLOUD_SSL: `${ACCESS_PROVIDERS.JDCLOUD}-ssl`,
+    TENCENTCLOUD_GAAP: `${ACCESS_PROVIDERS.TENCENTCLOUD}-gaap`,
+    TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
+    TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
+    UCLOUD_USSL: `${ACCESS_PROVIDERS.UCLOUD}-ussl`,
+    VOLCENGINE_CERTCENTER: `${ACCESS_PROVIDERS.VOLCENGINE}-certcenter`,
+  } as const
+);
+
+export type PurgeProviderType = (typeof PURGE_PROVIDERS)[keyof typeof PURGE_PROVIDERS];
+
+export interface PurgeProvider extends BaseProviderWithAccess<PurgeProviderType> {}
+
+export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvider> = new Map(
+  /*
+    注意：此处的顺序决定显示在前端的顺序。
+    NOTICE: The following order determines the order displayed at the frontend.
+   */
+  (
+    [
+      [PURGE_PROVIDERS.ALIYUN_CAS, "provider.aliyun_cas"],
+      [PURGE_PROVIDERS.ALIYUN_ESA, "provider.aliyun_esa"],
+      [PURGE_PROVIDERS.ALIYUN_CLB, "provider.aliyun_clb"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_SSL, "provider.tencentcloud_ssl"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_GAAP, "provider.tencentcloud_gaap"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_TSE, "provider.tencentcloud_tse"],
+      [PURGE_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud_scm"],
+      [PURGE_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud_elb"],
+      [PURGE_PROVIDERS.HUAWEICLOUD_WAF, "provider.huaweicloud_waf"],
+      [PURGE_PROVIDERS.VOLCENGINE_CERTCENTER, "provider.volcengine_certcenter"],
+      [PURGE_PROVIDERS.AWS_ACM, "provider.aws_acm"],
+      [PURGE_PROVIDERS.AWS_IAM, "provider.aws_iam"],
+      [PURGE_PROVIDERS.AZURE_KEYVAULT, "provider.azure_keyvault"],
+      [PURGE_PROVIDERS.BAIDUCLOUD_CERT, "provider.baiducloud_cert"],
+      [PURGE_PROVIDERS.JDCLOUD_SSL, "provider.jdcloud_ssl"],
+      [PURGE_PROVIDERS.UCLOUD_USSL, "provider.ucloud_ussl"],
+    ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>
+  ).map(([type, name]) => [
+    type,
+    {
+      type: type,
+      name: name,
+      icon: accessProvidersMap.get(type.split("-")[0])!.icon,
+      provider: type.split("-")[0] as AccessProviderType,
+      builtin: false,
+    },
+  ])
+);
+// #endregion
+
 // #region NotificationProvider
 export const NOTIFICATION_PROVIDERS = Object.freeze(
   /*

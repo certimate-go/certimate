@@ -110,6 +110,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
+	if c.config.GatewayId == "" {
+		return nil, fmt.Errorf("config `gatewayId` is required")
+	}
+
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {

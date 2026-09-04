@@ -668,6 +668,9 @@
         "placeholder": "请输入阿里云 ALB 扩展域名",
         "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
       },
+      "aliyun_alb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
+      },
       "aliyun_apigw_region": {
         "label": "阿里云服务地域",
         "placeholder": "请输入阿里云 API 网关地域（例如：cn-hangzhou）",
@@ -804,6 +807,9 @@
         "label": "阿里云 ESA 站点 ID",
         "placeholder": "请输入阿里云 ESA 站点 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "aliyun_esa_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
       },
       "aliyun_esa_saas_region": {
         "label": "阿里云服务地域",
@@ -1003,6 +1009,9 @@
       "aws_alb_is_default": {
         "label": "设为默认证书"
       },
+      "aws_alb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
+      },
       "aws_amplify_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS Amplify 区域（例如：us-east-1）",
@@ -1101,6 +1110,9 @@
       },
       "aws_nlb_is_default": {
         "label": "设为默认证书"
+      },
+      "aws_nlb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
       },
       "azure_keyvault_name": {
         "label": "Azure KeyVault 名称",
@@ -2269,6 +2281,9 @@
         "placeholder": "请输入腾讯云 GA2 监听器 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/gaap\" target=\"_blank\">https://console.cloud.tencent.com/gaap</a>"
       },
+      "tencentcloud_ga2_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "腾讯云接口端点（可选）",
         "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",
@@ -2495,6 +2510,9 @@
         "label": "优刻得 UALB 扩展域名（可选）",
         "placeholder": "请输入优刻得 UALB 扩展域名",
         "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
+      },
+      "ucloud_ualb_auto_prune": {
+        "label": "部署后自动移除具有相同 SAN 的旧证书"
       },
       "ucloud_ucdn_endpoint": {
         "label": "优刻得接口端点（可选）",
@@ -2774,6 +2792,143 @@
         "label": "Yandex Cloud 证书管理器证书 ID（可选）",
         "placeholder": "请输入 Yandex Cloud 证书管理器证书 ID",
         "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
+      }
+    }
+  },
+
+  "purge": {
+    "label": "清除过期证书",
+    "default_name": "清除",
+    "form_anchor": {
+      "parameters": {
+        "tab": "参数设置"
+      },
+      "purging": {
+        "tab": "清除设置",
+        "title": "清除设置"
+      },
+      "strategy": {
+        "tab": "执行策略",
+        "title": "执行策略"
+      }
+    },
+    "form": {
+      "guide": "出于安全考虑，大多数证书托管服务不允许删除正在被其他资源所关联的证书。若要清除此类过期证书，请先解除与其他资源的关联。",
+      "provider": {
+        "label": "主机提供商",
+        "placeholder": "请选择主机提供商",
+        "search": {
+          "placeholder": "搜索主机提供商……"
+        }
+      },
+      "provider_access": {
+        "label": "主机提供商授权",
+        "placeholder": "请选择主机提供商授权",
+        "button": "新建"
+      },
+      "expired_days": {
+        "label": "证书过期时限",
+        "placeholder": "请输入证书过期时限",
+        "prefix": "清除已过期超过",
+        "suffix": "的证书。",
+        "unit": "天"
+      },
+
+      "aliyun_cas_region": {
+        "label": "阿里云服务地域",
+        "placeholder": "请输入阿里云 CAS 服务地域（例如：cn-hangzhou）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://help.aliyun.com/zh/ssl-certificate/developer-reference/endpoints</a>"
+      },
+      "aliyun_clb_region": {
+        "label": "阿里云服务地域",
+        "placeholder": "请输入阿里云 CLB 服务地域（例如：cn-hangzhou）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://help.aliyun.com/zh/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
+      },
+      "aliyun_esa_region": {
+        "label": "阿里云服务地域",
+        "placeholder": "请输入阿里云 ESA 服务地域（例如：cn-hangzhou）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>"
+      },
+      "aliyun_esa_site_id": {
+        "label": "阿里云 ESA 站点 ID",
+        "placeholder": "请输入阿里云 ESA 站点 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "aws_acm_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS ACM 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_iam_region": {
+        "label": "AWS 服务区域",
+        "placeholder": "请输入 AWS IAM 服务区域（例如：us-east-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_iam_certificate_path": {
+        "label": "AWS IAM 证书路径（可选）",
+        "placeholder": "请输入 AWS IAM 证书路径",
+        "errmsg": {
+          "invalid": "无效的证书路径"
+        },
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/reference_identifiers.html</a>"
+      },
+      "azure_keyvault_name": {
+        "label": "Azure KeyVault 名称",
+        "placeholder": "请输入 Azure KeyVault 名称",
+        "tooltip": "这是什么？请参阅 <a href=\"https://learn.microsoft.com/zh-cn/azure/key-vault/general/about-keys-secrets-certificates\" target=\"_blank\">https://learn.microsoft.com/zh-cn/azure/key-vault/general/about-keys-secrets-certificates</a>"
+      },
+      "huaweicloud_elb_region": {
+        "label": "华为云服务区域",
+        "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/elb\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
+      },
+      "huaweicloud_waf_region": {
+        "label": "华为云服务区域",
+        "placeholder": "请输入华为云 WAF 服务区域（例如：cn-north-1）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/waf\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
+      },
+      "tencentcloud_gaap_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 GAAP 接口端点（例如：gaap.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/608/36934\" target=\"_blank\">https://cloud.tencent.com/document/product/608/36934</a><br>国际站用户请填写 <em>gaap.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_ssl_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 SSL 接口端点（例如：ssl.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/400/41659\" target=\"_blank\">https://cloud.tencent.com/document/product/400/41659</a><br>国际站用户请填写 <em>ssl.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_tse_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 TSE 接口端点（例如：tse.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com.cn/document/product/1364/54618\" target=\"_blank\">https://cloud.tencent.com.cn/document/product/1364/54618</a><br>国际站用户请填写 <em>tse.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_tse_region": {
+        "label": "腾讯云服务地域",
+        "placeholder": "请输入腾讯云 TSE 服务地域（例如：ap-guangzhou）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com.cn/document/product/1364/54618\" target=\"_blank\">https://cloud.tencent.com.cn/document/product/1364/54618</a>"
+      },
+      "tencentcloud_tse_service_type": {
+        "label": "腾讯云 TSE 服务类型",
+        "placeholder": "请选择腾讯云 TSE 服务类型",
+        "option": {
+          "cloudnative": {
+            "label": "云原生网关"
+          }
+        }
+      },
+      "tencentcloud_tse_gateway_id": {
+        "label": "腾讯云 TSE 云原生网关 ID",
+        "placeholder": "请输入腾讯云 TSE 云原生网关 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com.cn/rcc/governance\" target=\"_blank\">https://console.cloud.tencent.com.cn/rcc/governance</a>"
+      },
+      "ucloud_ussl_endpoint": {
+        "label": "优刻得接口端点（可选）",
+        "placeholder": "请输入优刻得 USSL 接口端点（例如：api.ucloud.cn）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
+      "volcengine_certcenter_region": {
+        "label": "火山引擎服务地域",
+        "placeholder": "请输入火山引擎证书中心服务地域（例如：cn-beijing）"
       }
     }
   },

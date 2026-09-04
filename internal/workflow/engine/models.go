@@ -21,6 +21,7 @@ const (
 	NodeTypeBizUpload   = domain.WorkflowNodeTypeBizUpload
 	NodeTypeBizMonitor  = domain.WorkflowNodeTypeBizMonitor
 	NodeTypeBizDeploy   = domain.WorkflowNodeTypeBizDeploy
+	NodeTypeBizPurge    = domain.WorkflowNodeTypeBizPurge
 	NodeTypeBizNotify   = domain.WorkflowNodeTypeBizNotify
 )
 

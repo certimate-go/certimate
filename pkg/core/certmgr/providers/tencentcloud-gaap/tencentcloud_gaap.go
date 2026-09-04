@@ -76,7 +76,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 查询服务器证书列表，避免重复上传
-	// REF: https://cloud.tencent.com/document/api/1364/98588
+	// REF: https://cloud.tencent.com/document/api/608/36977
 	// REF: https://cloud.tencent.com/document/api/608/36978
 	describeCertificatesOffset := 0
 	describeCertificatesLimit := 100

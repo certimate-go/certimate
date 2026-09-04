@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -93,6 +93,15 @@ const BizDeployNodeConfigFieldsProviderUCloudUALB = () => {
         >
           <Input allowClear placeholder={t("workflow_node.deploy.form.ucloud_ualb_snidomain.placeholder")} />
         </Form.Item>
+
+        <Form.Item
+          name={[parentNamePath, "autoPrune"]}
+          initialValue={initialValues.autoPrune}
+          label={t("workflow_node.deploy.form.ucloud_ualb_auto_prune.label")}
+          rules={[formRule]}
+        >
+          <Switch />
+        </Form.Item>
       </Show>
     </>
   );
@@ -104,6 +113,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
     deployTarget: DEPLOY_TARGET_LISTENER,
     loadbalancerId: "",
     listenerId: "",
+    autoPrune: true,
   };
 };
 
@@ -124,6 +134,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           if (!v) return true;
           return isDomain(v);
         }, t("common.errmsg.domain_invalid")),
+      autoPrune: z.boolean().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.deployTarget) {

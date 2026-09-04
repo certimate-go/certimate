@@ -10,15 +10,13 @@ import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
 	hwelbmodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3/model"
 	hwelbregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3/region"
-	hwiam "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3"
-	hwiammodel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/model"
-	hwiamregion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/iam/v3/region"
 	"github.com/samber/lo"
 
 	hwelb "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/huaweicloud/huaweicloud-sdk-go-v3/services/elb/v3"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xhuaweicloud "github.com/certimate-go/certimate/pkg/utils/third-party/huaweicloud"
 )
 
 type (
@@ -202,10 +200,6 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*hwelb.ElbCli
 }
 
 func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error) {
-	if region == "" {
-		region = "cn-north-4" // IAM 服务默认区域：华北北京四
-	}
-
 	auth, err := global.NewCredentialsBuilder().
 		WithAk(accessKeyId).
 		WithSk(secretAccessKey).
@@ -214,30 +208,5 @@ func getSDKProjectId(accessKeyId, secretAccessKey, region string) (string, error
 		return "", err
 	}
 
-	hcRegion, err := hwiamregion.SafeValueOf(region)
-	if err != nil {
-		return "", err
-	}
-
-	hcClient, err := hwiam.IamClientBuilder().
-		WithRegion(hcRegion).
-		WithCredential(auth).
-		SafeBuild()
-	if err != nil {
-		return "", err
-	}
-
-	client := hwiam.NewIamClient(hcClient)
-
-	request := &hwiammodel.KeystoneListProjectsRequest{
-		Name: &region,
-	}
-	response, err := client.KeystoneListProjects(request)
-	if err != nil {
-		return "", err
-	} else if response.Projects == nil || len(*response.Projects) == 0 {
-		return "", fmt.Errorf("huaweicloud: no project found")
-	}
-
-	return (*response.Projects)[0].Id, nil
+	return xhuaweicloud.GetKeystoneProjectIDWithRegion(auth, region)
 }

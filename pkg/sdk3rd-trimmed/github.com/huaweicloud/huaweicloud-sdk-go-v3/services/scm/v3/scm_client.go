@@ -18,6 +18,16 @@ func ScmClientBuilder() *httpclient.HcHttpClientBuilder {
 	return scm.ScmClientBuilder()
 }
 
+func (c *ScmClient) DeleteCertificate(request *model.DeleteCertificateRequest) (*model.DeleteCertificateResponse, error) {
+	requestDef := GenReqDefForDeleteCertificate()
+
+	if resp, err := c.HcClient.Sync(request, requestDef); err != nil {
+		return nil, err
+	} else {
+		return resp.(*model.DeleteCertificateResponse), nil
+	}
+}
+
 func (c *ScmClient) ExportCertificate(request *model.ExportCertificateRequest) (*model.ExportCertificateResponse, error) {
 	requestDef := GenReqDefForExportCertificate()
 

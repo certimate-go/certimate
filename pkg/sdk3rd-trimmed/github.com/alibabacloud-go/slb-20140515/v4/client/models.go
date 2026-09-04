@@ -4,6 +4,10 @@ import (
 	"github.com/alibabacloud-go/slb-20140515/v4/client"
 )
 
+type DeleteServerCertificateRequest = client.DeleteServerCertificateRequest
+
+type DeleteServerCertificateResponse = client.DeleteServerCertificateResponse
+
 type DescribeDomainExtensionsRequest = client.DescribeDomainExtensionsRequest
 
 type DescribeDomainExtensionsResponse = client.DescribeDomainExtensionsResponse

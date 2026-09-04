@@ -12,25 +12,25 @@ type Certmgr interface {
 	// 上传证书。
 	//
 	// 入参：
-	//   - ctx：上下文。
-	//   - certPEM：证书 PEM 内容。
-	//   - privkeyPEM：私钥 PEM 内容。
+	//   - ctx: 上下文。
+	//   - certPEM: 证书 PEM 内容。
+	//   - privkeyPEM: 私钥 PEM 内容。
 	//
 	// 出参：
-	//   - res：上传结果。
+	//   - res: 上传结果。
 	//   - err: 错误。
 	Upload(ctx context.Context, certPEM, privkeyPEM string) (_res *CertmgrUploadResult, _err error)
 
 	// 替换证书。
 	//
 	// 入参：
-	//   - ctx：上下文。
-	//   - certIdOrName：证书 ID 或名称，即云服务商处的证书标识符。
-	//   - certPEM：证书 PEM 内容。
-	//   - privkeyPEM：私钥 PEM 内容。
+	//   - ctx: 上下文。
+	//   - certIdOrName: 证书 ID 或名称，即云服务商处的证书标识符。
+	//   - certPEM: 证书 PEM 内容。
+	//   - privkeyPEM: 私钥 PEM 内容。
 	//
 	// 出参：
-	//   - res：替换结果。
+	//   - res: 替换结果。
 	//   - err: 错误。
 	Replace(ctx context.Context, certIdOrName string, certPEM, privkeyPEM string) (_res *CertmgrReplaceResult, _err error)
 }

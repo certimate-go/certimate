@@ -32,28 +32,34 @@ type ObtainCertificateRequest struct {
 	NoCommonName      bool
 
 	// 提供商相关
+	_                      struct{}
 	ChallengeType          string
 	Provider               domain.ACMEChallengeProviderType
 	ProviderAccessConfig   map[string]any
 	ProviderExtendedConfig map[string]any
 
 	// 解析相关
+	_                  struct{}
 	DisableFollowCNAME bool
 	Nameservers        []string
 
 	// DNS-01 质询相关
+	_                     struct{}
 	DnsPropagationWait    int
 	DnsPropagationTimeout int
 	DnsTTL                int
 
 	// HTTP-01 质询相关
+	_             struct{}
 	HttpDelayWait int
 
 	// ACME 相关
+	_              struct{}
 	PreferredChain string
 	ACMEProfile    string
 
 	// ARI 相关
+	_                     struct{}
 	DisableARI            bool
 	ARIReplacesAccountUrl string
 	ARIReplacesCertId     string
@@ -102,7 +108,8 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 			opts := &dns01.Options{}
 			opts.RecursiveNameservers = request.Nameservers
 			dns01.SetDefaultClient(dns01.NewClient(opts))
-			c.client.Challenge.SetDNS01Provider(provider,
+			c.client.Challenge.SetDNS01Provider(
+				provider,
 				dns01.CondOptions(
 					request.DnsPropagationWait > 0,
 					dns01.PropagationWait(time.Duration(request.DnsPropagationWait)*time.Second, true),
@@ -129,7 +136,8 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 				return nil, fmt.Errorf("failed to initialize http-01 provider '%s': %w", request.Provider, err)
 			}
 
-			c.client.Challenge.SetHTTP01Provider(provider,
+			c.client.Challenge.SetHTTP01Provider(
+				provider,
 				http01.SetDelay(time.Duration(request.HttpDelayWait)*time.Second),
 			)
 		}

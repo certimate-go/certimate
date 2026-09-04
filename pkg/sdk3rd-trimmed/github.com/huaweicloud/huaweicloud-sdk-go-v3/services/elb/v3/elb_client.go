@@ -28,6 +28,16 @@ func (c *ElbClient) CreateCertificate(request *model.CreateCertificateRequest) (
 	}
 }
 
+func (c *ElbClient) DeleteCertificate(request *model.DeleteCertificateRequest) (*model.DeleteCertificateResponse, error) {
+	requestDef := GenReqDefForDeleteCertificate()
+
+	if resp, err := c.HcClient.Sync(request, requestDef); err != nil {
+		return nil, err
+	} else {
+		return resp.(*model.DeleteCertificateResponse), nil
+	}
+}
+
 func (c *ElbClient) ListCertificates(request *model.ListCertificatesRequest) (*model.ListCertificatesResponse, error) {
 	requestDef := GenReqDefForListCertificates()
 

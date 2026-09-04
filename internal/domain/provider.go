@@ -454,6 +454,38 @@ const (
 	DeploymentProviderTypeYandexCloudCertificateManager = DeploymentProviderType(AccessProviderTypeYandexCloud + "-certificatemanager")
 )
 
+type PurgeProviderType string
+
+func (t PurgeProviderType) String() string {
+	return string(t)
+}
+
+/*
+清除证书主机提供商常量值。
+短横线前的部分始终等于授权提供商类型。
+
+注意：如果追加新的常量值，请保持以 ASCII 排序。
+NOTICE: If you add new constant, please keep ASCII order.
+*/
+const (
+	PurgeProviderTypeAliyunCAS            = PurgeProviderType(AccessProviderTypeAliyun + "-cas")
+	PurgeProviderTypeAliyunCLB            = PurgeProviderType(AccessProviderTypeAliyun + "-clb")
+	PurgeProviderTypeAliyunESA            = PurgeProviderType(AccessProviderTypeAliyun + "-esa")
+	PurgeProviderTypeAWSACM               = PurgeProviderType(AccessProviderTypeAWS + "-acm")
+	PurgeProviderTypeAWSIAM               = PurgeProviderType(AccessProviderTypeAWS + "-iam")
+	PurgeProviderTypeAzureKeyVault        = PurgeProviderType(AccessProviderTypeAzure + "-keyvault")
+	PurgeProviderTypeBaiduCloudCert       = PurgeProviderType(AccessProviderTypeBaiduCloud + "-cert")
+	PurgeProviderTypeHuaweiCloudELB       = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-elb")
+	PurgeProviderTypeHuaweiCloudSCM       = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-scm")
+	PurgeProviderTypeHuaweiCloudWAF       = PurgeProviderType(AccessProviderTypeHuaweiCloud + "-waf")
+	PurgeProviderTypeJDCloudSSL           = PurgeProviderType(AccessProviderTypeJDCloud + "-ssl")
+	PurgeProviderTypeTencentCloudGAAP     = PurgeProviderType(AccessProviderTypeTencentCloud + "-gaap")
+	PurgeProviderTypeTencentCloudSSL      = PurgeProviderType(AccessProviderTypeTencentCloud + "-ssl")
+	PurgeProviderTypeTencentCloudTSE      = PurgeProviderType(AccessProviderTypeTencentCloud + "-tse")
+	PurgeProviderTypeUCloudUSSL           = PurgeProviderType(AccessProviderTypeUCloud + "-ussl")
+	PurgeProviderTypeVolcEngineCertCenter = PurgeProviderType(AccessProviderTypeVolcEngine + "-certcenter")
+)
+
 type NotificationProviderType string
 
 func (t NotificationProviderType) String() string {

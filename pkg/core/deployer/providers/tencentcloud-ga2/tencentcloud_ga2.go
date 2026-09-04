@@ -41,6 +41,8 @@ type DeployerConfig struct {
 	// 监听器 ID。
 	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
+	// 是否自动移除同域名的其他证书。
+	AutoPrune bool `json:"autoPrune,omitempty"`
 }
 
 type Deployer struct {
@@ -166,7 +168,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 		return fmt.Errorf("could not find ga2 listener '%s'", cloudListenerId)
 	}
 
-	// 获取证书信息，避免重复绑定
+	// 获取证书信息，并找出需要解绑的同域名证书
 	// REF: https://cloud.tencent.com/document/api/400/41674
 	serverCertificateIds := make([]string, 0)
 	for _, serverCertificateId := range describeListenersResp.Response.ListenerSet[0].ServerCertificates {
@@ -174,24 +176,28 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 			return nil
 		}
 
-		describeCertificateReq := tcssl.NewDescribeCertificateRequest()
-		describeCertificateReq.CertificateId = serverCertificateId
-		describeCertificateResp, err := d.sdkClients.SSL.DescribeCertificateWithContext(ctx, describeCertificateReq)
-		d.logger.Debug("sdk request 'ssl.DescribeCertificate'", slog.Any("request", describeCertificateReq), slog.Any("response", describeCertificateResp))
-		if err != nil {
-			if sdkErr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
-				if sdkErrCode := sdkErr.Code; sdkErrCode == "FailedOperation.CertificateNotFound" {
+		if d.config.AutoPrune {
+			describeCertificateReq := tcssl.NewDescribeCertificateRequest()
+			describeCertificateReq.CertificateId = serverCertificateId
+			describeCertificateResp, err := d.sdkClients.SSL.DescribeCertificateWithContext(ctx, describeCertificateReq)
+			d.logger.Debug("sdk request 'ssl.DescribeCertificate'", slog.Any("request", describeCertificateReq), slog.Any("response", describeCertificateResp))
+			if err != nil {
+				if sdkErr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
+					if sdkErrCode := sdkErr.Code; sdkErrCode == "FailedOperation.CertificateNotFound" {
+						continue
+					}
+				}
+
+				return fmt.Errorf("failed to execute sdk request 'ssl.DescribeCertificate': %w", err)
+			} else {
+				certSANMatched := lo.ElementsMatch(cloudCertSANs, lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName))
+				if certSANMatched {
 					continue
 				}
-			}
 
-			return fmt.Errorf("failed to execute sdk request 'ssl.DescribeCertificate': %w", err)
+				serverCertificateIds = append(serverCertificateIds, lo.FromPtr(serverCertificateId))
+			}
 		} else {
-			certSANMatched := lo.ElementsMatch(lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName), cloudCertSANs)
-			if certSANMatched { // 同域名证书需要删除
-				continue
-			}
-
 			serverCertificateIds = append(serverCertificateIds, lo.FromPtr(serverCertificateId))
 		}
 	}

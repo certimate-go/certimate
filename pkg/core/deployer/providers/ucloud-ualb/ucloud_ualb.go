@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
-	"time"
 
 	"github.com/samber/lo"
 	"github.com/ucloud/ucloud-sdk-go/services/ulb"
@@ -45,6 +44,8 @@ type DeployerConfig struct {
 	// SNI 域名（不支持泛域名）。
 	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时选填。
 	Domain string `json:"domain,omitempty"`
+	// 是否自动移除同域名的其他证书。
+	AutoPrune bool `json:"autoPrune,omitempty"`
 }
 
 type Deployer struct {
@@ -220,6 +221,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			d.logger.Info("no need to deploy alb listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, cloudLoadbalancerId, cloudListenerId, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
@@ -227,7 +229,18 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			d.logger.Info("no need to deploy alb listener sni certificate")
 			return nil
 		}
-		return d.updateListenerSniCertificate(ctx, cloudLoadbalancerId, listenerInfo, cloudCertId)
+
+		if err := d.updateListenerSniCertificate(ctx, cloudLoadbalancerId, listenerInfo, cloudCertId); err != nil {
+			return err
+		}
+
+		if d.config.AutoPrune {
+			if err := d.pruneListenerSniCertificates(ctx, cloudLoadbalancerId, listenerInfo, cloudCertId); err != nil {
+				return err
+			}
+		}
+
+		return nil
 	}
 }
 
@@ -260,10 +273,17 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadba
 		return fmt.Errorf("failed to execute sdk request 'ulb.AddSSLBinding': %w", err)
 	}
 
-	// 找出需要删除绑定的扩展证书
+	return nil
+}
+
+func (d *Deployer) pruneListenerSniCertificates(ctx context.Context, cloudLoadbalancerId string, cloudListenerInfo ulb.Listener, cloudCertId string) error {
+	// 获取扩展证书信息，并找出需要删除绑定的同域名证书
 	// REF: https://docs.ucloud.cn/api/ulb-api/describe_sslv2
 	sslIdsToDelete := make([]string, 0)
 	for _, certItem := range cloudListenerInfo.Certificates {
+		if certItem.SSLId == cloudCertId {
+			continue
+		}
 		if certItem.IsDefault {
 			continue
 		}
@@ -281,17 +301,14 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudLoadba
 
 		sslItem := describeSSLV2Resp.DataSet[0]
 		if sslItem.Domains == d.config.Domain {
-			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 同域名证书需要删除
-			continue
-		} else if sslItem.NotAfter != 0 && int64(sslItem.NotAfter) < time.Now().Unix() {
-			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId) // 过期证书需要删除。TODO: remove on v0.5
+			sslIdsToDelete = append(sslIdsToDelete, sslItem.SSLId)
 			continue
 		}
 	}
 
 	// 删除监听器绑定的扩展证书
 	// REF: https://docs.ucloud.cn/api/ulb-api/delete_ssl_binding_json
-	if len(sslIdsToDelete) > 0 {
+	if d.config.AutoPrune && len(sslIdsToDelete) > 0 {
 		d.logger.Info("found alb listener certificates to unbind", slog.Any("sslIds", sslIdsToDelete))
 
 		deleteSSLBindingReq := d.sdkClient.NewDeleteSSLBindingRequest()

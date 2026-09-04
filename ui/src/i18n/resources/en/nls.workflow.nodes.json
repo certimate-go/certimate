@@ -669,6 +669,9 @@
         "placeholder": "Please enter Alibaba Cloud ALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
+      "aliyun_alb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "aliyun_apigw_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud API gateway region (e.g. cn-hangzhou)",
@@ -805,6 +808,9 @@
         "label": "Alibaba Cloud ESA site ID",
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "aliyun_esa_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "aliyun_esa_saas_region": {
         "label": "Alibaba Cloud region",
@@ -1004,6 +1010,9 @@
       "aws_alb_is_default": {
         "label": "Set as default certificate"
       },
+      "aws_alb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "aws_amplify_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS Amplify region (e.g. us-east-1)",
@@ -1102,6 +1111,9 @@
       },
       "aws_nlb_is_default": {
         "label": "Set as default certificate"
+      },
+      "aws_nlb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "azure_keyvault_name": {
         "label": "Azure KeyVault name",
@@ -2270,6 +2282,9 @@
         "placeholder": "Please enter Tencent Cloud GA2 listener ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
       },
+      "tencentcloud_ga2_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
@@ -2496,6 +2511,9 @@
         "label": "UCloud UALB SNI domain (Optional)",
         "placeholder": "Please enter UCloud UALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
+      "ucloud_ualb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "ucloud_ucdn_endpoint": {
         "label": "UCloud API endpoint (Optional)",
@@ -2775,6 +2793,143 @@
         "label": "Yandex Cloud Certificate Manager certificate ID (Optional)",
         "placeholder": "Please enter Yandex Cloud Certificate Manager certificate ID",
         "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
+      }
+    }
+  },
+
+  "purge": {
+    "label": "Purge certificates",
+    "default_name": "Purging",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Parameters"
+      },
+      "purging": {
+        "tab": "Purging",
+        "title": "Purging settings"
+      },
+      "strategy": {
+        "tab": "Strategy",
+        "title": "Strategy settings"
+      }
+    },
+    "form": {
+      "guide": "For safety reason, most certificate management services do not allow to delete a certificate that is being associated with another resource. To purge a certificate that is in use, you must first remove the association.",
+      "provider": {
+        "label": "Hosting provider",
+        "placeholder": "Please select hosting provider",
+        "search": {
+          "placeholder": "Search hosting provider ..."
+        }
+      },
+      "provider_access": {
+        "label": "Hosting provider credential",
+        "placeholder": "Please select an credential of the hosting provider",
+        "button": "Create"
+      },
+      "expired_days": {
+        "label": "Certificate expiry timespan",
+        "placeholder": "Please enter certificate expiry timespan",
+        "prefix": "Perform purge if the certificate has expired ≥",
+        "suffix": ".",
+        "unit": "days"
+      },
+
+      "aliyun_cas_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud CAS region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>"
+      },
+      "aliyun_clb_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud CLB region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
+      },
+      "aliyun_esa_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>"
+      },
+      "aliyun_esa_site_id": {
+        "label": "Alibaba Cloud ESA site ID",
+        "placeholder": "Please enter Alibaba Cloud ESA site ID",
+        "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
+      },
+      "aws_acm_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS ACM region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_iam_region": {
+        "label": "AWS Region",
+        "placeholder": "Please enter AWS IAM region (e.g. us-east-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
+      },
+      "aws_iam_certificate_path": {
+        "label": "AWS IAM certificate path (Optional)",
+        "placeholder": "Please enter AWS IAM certificate path",
+        "errmsg": {
+          "invalid": "Invalid certificate path"
+        },
+        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html</a>"
+      },
+      "azure_keyvault_name": {
+        "label": "Azure KeyVault name",
+        "placeholder": "Please enter Azure KeyVault name",
+        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates</a>"
+      },
+      "huaweicloud_elb_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
+      },
+      "huaweicloud_waf_region": {
+        "label": "Huawei Cloud region",
+        "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
+      },
+      "tencentcloud_gaap_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_ssl_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_tse_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud TSE API endpoint (e.g. tse.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_tse_region": {
+        "label": "Tencent Cloud region",
+        "placeholder": "Please enter Tencent Cloud TSE region (e.g. ap-guangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1290/79214\" target=\"_blank\">https://www.tencentcloud.com/document/product/1290/79214</a>"
+      },
+      "tencentcloud_tse_service_type": {
+        "label": "Tencent Cloud TSE service type",
+        "placeholder": "Please select Tencent Cloud TSE service type",
+        "option": {
+          "cloudnative": {
+            "label": "Cloud-native API gateway"
+          }
+        }
+      },
+      "tencentcloud_tse_gateway_id": {
+        "label": "Tencent Cloud TSE Cloud-native API gateway ID",
+        "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
+      },
+      "ucloud_ussl_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud USSL API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
+      "volcengine_certcenter_region": {
+        "label": "VolcEngine region",
+        "placeholder": "Please enter VolcEngine Certificate Center region (e.g. cn-beijing)"
       }
     }
   },
