@@ -41,6 +41,7 @@ func init() {
 			},
 			JumpServers:                  jumpServers,
 			UseSCP:                       xmaps.GetBool(options.ProviderExtendedConfig, "useSCP"),
+			UseREPL:                      xmaps.GetBool(options.ProviderExtendedConfig, "useREPL"),
 			PreCommand:                   xmaps.GetString(options.ProviderExtendedConfig, "preCommand"),
 			PostCommand:                  xmaps.GetString(options.ProviderExtendedConfig, "postCommand"),
 			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", dplyimpl.FILE_FORMAT_PEM),
