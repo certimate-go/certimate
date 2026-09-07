@@ -1,5 +1,5 @@
-// A simple SDK client for LeCDN v3 as admin.
-package master
+// A simple SDK client for LeCDN v3 as user.
+package v3
 
 import (
 	"context"
@@ -20,6 +20,7 @@ import (
 type Client struct {
 	username string
 	password string
+	apiKey   string
 
 	token   string
 	tokenMu sync.Mutex
@@ -39,24 +40,32 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 	if _, err := url.Parse(serverUrl); err != nil {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
-	if opts.Username == "" {
-		return nil, fmt.Errorf("sdkerr: unset username")
+	if opts.ApiKey == "" && (opts.Username == "" || opts.Password == "") {
+		return nil, fmt.Errorf("sdkerr: unset apiKey or username/password")
 	}
-	if opts.Password == "" {
-		return nil, fmt.Errorf("sdkerr: unset password")
+	if opts.ApiKey != "" && (opts.Username != "" || opts.Password != "") {
+		return nil, fmt.Errorf("sdkerr: cannot set both apiKey and username/password")
+	}
+
+	baseUrl := strings.TrimSuffix(serverUrl, "/")
+	if opts.ApiKey != "" {
+		baseUrl += "/api/client"
+	} else {
+		baseUrl += "/prod-api"
 	}
 
 	client := &Client{
 		username: opts.Username,
 		password: opts.Password,
+		apiKey:   opts.ApiKey,
 	}
 	client.rc = resty.New().
-		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/prod-api").
-		SetHeader("Accept", "application/json").
-		SetHeader("Content-Type", "application/json").
+		SetBaseURL(baseUrl).
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
-			if client.token != "" {
+			if client.apiKey != "" {
+				req.Header.Set("Authorization", client.apiKey)
+			} else if client.token != "" {
 				req.Header.Set("Authorization", "Bearer "+client.token)
 			}
 
@@ -125,7 +134,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 		if err := json.Unmarshal(resp.Body(), &res); err != nil {
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
-			if rCode := res.GetCode(); rCode != 200 {
+			if rCode := res.GetCode(); rCode != 0 && rCode != 200 {
 				return resp, fmt.Errorf("sdkerr: api error: code='%d', message='%s'", rCode, res.GetMessage())
 			}
 		}
@@ -146,6 +155,7 @@ func (c *Client) ensureToken(ctx context.Context) error {
 		return err
 	} else {
 		httpreq.SetBody(map[string]string{
+			"email":    c.username,
 			"username": c.username,
 			"password": c.password,
 		})
@@ -173,4 +183,8 @@ func (c *Client) ensureToken(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (c *Client) isUseApiKey() bool {
+	return c.apiKey != ""
 }

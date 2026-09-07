@@ -66,6 +66,7 @@ require (
 	github.com/pquerna/otp v1.5.0
 	github.com/samber/lo v1.53.0
 	github.com/spf13/cobra v1.10.2
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/antiddos v1.3.131
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.116
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/clb v1.3.142
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.145

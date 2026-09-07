@@ -26,7 +26,7 @@ func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
 	fp.DefineString(&fServerUrl, "SERVERURL")
-	fp.DefineString(&fApiVersion, "APIVERSION", "v3")
+	fp.DefineString(&fApiVersion, "APIVERSION", "v4")
 	fp.DefineString(&fUsername, "USERNAME")
 	fp.DefineString(&fPassword, "PASSWORD")
 	fp.DefineInt64(&fCertificateId, "CERTIFICATEID")

@@ -1,4 +1,4 @@
-package master
+package v3
 
 type sdkResponse interface {
 	GetCode() int

@@ -41,7 +41,10 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: invalid serverUrl: %w", err)
 	}
 	if opts.JwtToken == "" && (opts.Username == "" || opts.Password == "") {
-		return nil, fmt.Errorf("sdkerr: unset password or jwtToken")
+		return nil, fmt.Errorf("sdkerr: unset jwtToken or username/password")
+	}
+	if opts.JwtToken != "" && (opts.Username != "" || opts.Password != "") {
+		return nil, fmt.Errorf("sdkerr: cannot set both jwtToken and username/password")
 	}
 
 	client := &Client{
