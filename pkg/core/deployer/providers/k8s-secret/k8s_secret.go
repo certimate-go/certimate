@@ -180,10 +180,14 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	// 创建或更新 Secret 实例
 	if secretIsNew {
+		// POST (create) targets the collection path; the secret name is
+		// read by the API server from the body's metadata.name. Chaining
+		// .Name() here would POST to the named path, which the API server
+		// rejects with 405 "the server does not allow this method on the
+		// requested resource".
 		secretPostResp := client.Post().
 			Namespace(d.config.Namespace).
 			Resource("secrets").
-			Name(d.config.SecretName).
 			VersionedParams(&meta.GetOptions{}, meta.ParameterCodec).
 			Body(secretPayload).
 			Do(ctx)
