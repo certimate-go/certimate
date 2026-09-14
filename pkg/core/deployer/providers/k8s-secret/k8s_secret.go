@@ -183,7 +183,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		secretPostResp := client.Post().
 			Namespace(d.config.Namespace).
 			Resource("secrets").
-			Name(d.config.SecretName).
 			VersionedParams(&meta.GetOptions{}, meta.ParameterCodec).
 			Body(secretPayload).
 			Do(ctx)
