@@ -341,7 +341,7 @@
         "tooltip": "即服务器上存储网站文件的主文件夹。"
       },
       "ssh_use_scp": {
-        "label": "回退使用 SCP",
+        "label": "使用 SCP 传输文件",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
       },
       "ucloud_udnr_endpoint": {
@@ -2219,8 +2219,12 @@
         "ps_binding_rdp": "PowerShell - 导入并绑定到 RDP"
       },
       "ssh_use_scp": {
-        "label": "回退使用 SCP",
+        "label": "使用 SCP 传输文件",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
+      },
+      "ssh_use_repl": {
+        "label": "使用 REPL 模式执行命令（可选）",
+        "tooltip": "如果你的远程服务器未提供 Shell、不支持多行命令，请勾选此选项启用 REPL 模式以逐行执行命令。"
       },
       "synologydsm": {
         "guide": "需要群晖 DSM v6.0 或更高版本。"

@@ -342,7 +342,7 @@
         "tooltip": "It's the main directory where the website's files are stored on the server."
       },
       "ssh_use_scp": {
-        "label": "Fallback to use SCP",
+        "label": "Use SCP to transfer file",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
       },
       "ucloud_udnr_endpoint": {
@@ -2220,8 +2220,12 @@
         "ps_binding_rdp": "PowerShell - Binding RDP"
       },
       "ssh_use_scp": {
-        "label": "Fallback to use SCP",
+        "label": "Use SCP to transfer file",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
+      },
+      "ssh_use_repl": {
+        "label": "Use REPL mode to execute commands (Optional)",
+        "tooltip": "If the remote server has no shell and does not support multi-line commands, please check this option to enable REPL mode for line-by-line command execution."
       },
       "synologydsm": {
         "guide": "Requires Synology DSM v6.0 or higher."
