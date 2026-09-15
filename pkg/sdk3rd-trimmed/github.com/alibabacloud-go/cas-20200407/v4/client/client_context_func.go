@@ -281,6 +281,10 @@ func (client *Client) UploadUserCertificateWithContext(ctx context.Context, requ
 		query["Cert"] = request.Cert
 	}
 
+	if !dara.IsNil(request.ClientToken) {
+		query["ClientToken"] = request.ClientToken
+	}
+
 	if !dara.IsNil(request.EncryptCert) {
 		query["EncryptCert"] = request.EncryptCert
 	}
