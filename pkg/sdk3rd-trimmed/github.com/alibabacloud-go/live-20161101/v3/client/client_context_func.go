@@ -102,6 +102,10 @@ func (client *Client) SetLiveDomainCertificateWithContext(ctx context.Context, r
 		query["DomainName"] = request.DomainName
 	}
 
+	if !dara.IsNil(request.DryRun) {
+		query["DryRun"] = request.DryRun
+	}
+
 	if !dara.IsNil(request.ForceSet) {
 		query["ForceSet"] = request.ForceSet
 	}
