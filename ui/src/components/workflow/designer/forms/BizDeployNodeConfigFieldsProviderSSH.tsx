@@ -467,6 +467,16 @@ const BizDeployNodeConfigFieldsProviderSSH = () => {
           />
         </Form.Item>
       </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "useREPL"]}
+        initialValue={initialValues.useREPL}
+        label={t("workflow_node.deploy.form.ssh_use_repl.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.ssh_use_repl.tooltip") }}></span>}
+      >
+        <Switch />
+      </Form.Item>
     </>
   );
 };
@@ -497,6 +507,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       jksStorepass: z.string().nullish(),
       preCommand: z.string().max(20480).nullish(),
       postCommand: z.string().max(20480).nullish(),
+      useREPL: z.boolean().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.fileFormat) {

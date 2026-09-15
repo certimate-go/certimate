@@ -1,4 +1,4 @@
-﻿name: "GitHub Pull Requests Checker"
+name: "GitHub Pull Requests Checker"
 
 on:
   issue_comment:
@@ -300,7 +300,7 @@ jobs:
           git reset --hard HEAD
           git clean -df
 
-          go install mvdan.cc/gofumpt@latest
+          go install mvdan.cc/gofumpt@v0.11.0
           gofumpt --version
 
           # Exclude paths below:

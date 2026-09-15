@@ -74,6 +74,10 @@ func (client *Client) DeleteUserCertificateWithContext(ctx context.Context, requ
 		query["CertId"] = request.CertId
 	}
 
+	if !dara.IsNil(request.ClientToken) {
+		query["ClientToken"] = request.ClientToken
+	}
+
 	req := &openapiutil.OpenApiRequest{
 		Query: openapiutil.Query(query),
 	}
@@ -373,6 +377,10 @@ func (client *Client) UploadUserCertificateWithContext(ctx context.Context, requ
 	query := map[string]interface{}{}
 	if !dara.IsNil(request.Cert) {
 		query["Cert"] = request.Cert
+	}
+
+	if !dara.IsNil(request.ClientToken) {
+		query["ClientToken"] = request.ClientToken
 	}
 
 	if !dara.IsNil(request.EncryptCert) {
