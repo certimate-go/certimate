@@ -216,8 +216,16 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudListenerI
 			d.logger.Info("no need to deploy alb listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
 	} else {
+		if lo.SomeBy(describeListenerAttributesResp.DomainExtensions, func(domainExtension *vealb.DomainExtensionForDescribeListenerAttributesOutput) bool {
+			return ve.StringValue(domainExtension.Domain) == d.config.Domain && ve.StringValue(domainExtension.CertCenterCertificateId) == cloudCertId
+		}) {
+			d.logger.Info("no need to deploy alb listener sni certificate")
+			return nil
+		}
+
 		// 指定 SNI，需部署到扩展域名
 		return d.updateListenerSniCertificate(ctx, *describeListenerAttributesResp, cloudCertId)
 	}
@@ -247,7 +255,7 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 		ListenerId: cloudListenerInfo.ListenerId,
 		DomainExtensions: lo.Map(
 			lo.Filter(cloudListenerInfo.DomainExtensions, func(domain *vealb.DomainExtensionForDescribeListenerAttributesOutput, _ int) bool {
-				return *domain.Domain == d.config.Domain
+				return ve.StringValue(domain.Domain) == d.config.Domain
 			}),
 			func(domain *vealb.DomainExtensionForDescribeListenerAttributesOutput, _ int) *vealb.DomainExtensionForModifyListenerAttributesInput {
 				return &vealb.DomainExtensionForModifyListenerAttributesInput{
@@ -257,7 +265,8 @@ func (d *Deployer) updateListenerSniCertificate(ctx context.Context, cloudListen
 					CertCenterCertificateId: ve.String(cloudCertId),
 					Action:                  ve.String("modify"),
 				}
-			}),
+			},
+		),
 	}
 	modifyListenerAttributesResp, err := d.sdkClient.ModifyListenerAttributesWithContext(ctx, modifyListenerAttributesReq)
 	d.logger.Debug("sdk request 'alb.ModifyListenerAttributes'", slog.Any("request", modifyListenerAttributesReq), slog.Any("response", modifyListenerAttributesResp))

@@ -13,6 +13,7 @@ import AccessConfigFieldsProviderAkamai from "./AccessConfigFieldsProviderAkamai
 import AccessConfigFieldsProviderAliyun from "./AccessConfigFieldsProviderAliyun";
 import AccessConfigFieldsProviderAPISIX from "./AccessConfigFieldsProviderAPISIX";
 import AccessConfigFieldsProviderArvanCloud from "./AccessConfigFieldsProviderArvanCloud";
+import AccessConfigFieldsProviderAsiaISPCDN from "./AccessConfigFieldsProviderAsiaISPCDN";
 import AccessConfigFieldsProviderAWS from "./AccessConfigFieldsProviderAWS";
 import AccessConfigFieldsProviderAxisNow from "./AccessConfigFieldsProviderAxisNow";
 import AccessConfigFieldsProviderAzure from "./AccessConfigFieldsProviderAzure";
@@ -143,6 +144,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.ALIYUN]: AccessConfigFieldsProviderAliyun,
   [ACCESS_PROVIDERS.APISIX]: AccessConfigFieldsProviderAPISIX,
   [ACCESS_PROVIDERS.ARVANCLOUD]: AccessConfigFieldsProviderArvanCloud,
+  [ACCESS_PROVIDERS.ASIAISPCDN]: AccessConfigFieldsProviderAsiaISPCDN,
   [ACCESS_PROVIDERS.AWS]: AccessConfigFieldsProviderAWS,
   [ACCESS_PROVIDERS.AXISNOW]: AccessConfigFieldsProviderAxisNow,
   [ACCESS_PROVIDERS.AZURE]: AccessConfigFieldsProviderAzure,

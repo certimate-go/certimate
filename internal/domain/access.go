@@ -81,6 +81,11 @@ type AccessConfigForArvanCloud struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type AccessConfigForAsiaISPCDN struct {
+	AccessKeyId     string `json:"accessKeyId"`
+	AccessKeySecret string `json:"accessKeySecret"`
+}
+
 type AccessConfigForAWS struct {
 	AuthMethod      string `json:"authMethod"`
 	AccessKeyId     string `json:"accessKeyId"`
@@ -397,10 +402,12 @@ type AccessConfigForLarkBot struct {
 
 type AccessConfigForLeCDN struct {
 	ServerUrl                string `json:"serverUrl"`
+	AuthMethod               string `json:"authMethod"`
 	ApiVersion               string `json:"apiVersion"`
 	ApiRole                  string `json:"apiRole"`
-	Username                 string `json:"username"`
-	Password                 string `json:"password"`
+	Username                 string `json:"username,omitempty"`
+	Password                 string `json:"password,omitempty"`
+	ApiKey                   string `json:"apiKey,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 

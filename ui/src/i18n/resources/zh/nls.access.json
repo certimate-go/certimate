@@ -220,6 +220,14 @@
       "placeholder": "请输入 ArvanCloud API 密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
     },
+    "asiaispcdn_access_key_id": {
+      "label": "橙域网络网迹 CDN AccessKeyID",
+      "placeholder": "请输入橙域网络网迹 CDN AccessKeyID"
+    },
+    "asiaispcdn_access_key_secret": {
+      "label": "橙域网络网迹 CDN AccessKeySecret",
+      "placeholder": "请输入橙域网络网迹 CDN AccessKeySecret"
+    },
     "aws_auth_method": {
       "label": "AWS API 认证方式",
       "placeholder": "请选择 AWS API 认证方式",
@@ -893,6 +901,18 @@
         }
       }
     },
+    "lecdn_auth_method": {
+      "label": "LeCDN API 认证方式",
+      "placeholder": "请选择 LeCDN API 认证方式",
+      "option": {
+        "password": {
+          "label": "账号密码"
+        },
+        "apikey": {
+          "label": "API Key"
+        }
+      }
+    },
     "lecdn_username": {
       "label": "LeCDN 用户名",
       "placeholder": "请输入 LeCDN 用户名"
@@ -900,6 +920,10 @@
     "lecdn_password": {
       "label": "LeCDN 用户密码",
       "placeholder": "请输入 LeCDN 用户密码"
+    },
+    "lecdn_api_key": {
+      "label": "LeCDN API Key",
+      "placeholder": "请输入 LeCDN API Key"
     },
     "linode_access_token": {
       "label": "Linode AccessToken",
@@ -1010,7 +1034,7 @@
       "placeholder": "请选择 NPM API 认证方式",
       "option": {
         "password": {
-          "label": "密码"
+          "label": "账号密码"
         },
         "token": {
           "label": "API Token"

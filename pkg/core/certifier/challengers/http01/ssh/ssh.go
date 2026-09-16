@@ -34,7 +34,7 @@ type ChallengerConfig struct {
 
 	// 跳板机配置数组。
 	JumpServers []ServerConfig `json:"jumpServers,omitempty"`
-	// 是否回退使用 SCP。
+	// 是否使用 SCP 传输文件。
 	UseSCP bool `json:"useSCP,omitempty"`
 	// 网站根目录路径。
 	WebRootPath string `json:"webRootPath"`

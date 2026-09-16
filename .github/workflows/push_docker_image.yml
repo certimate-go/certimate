@@ -11,9 +11,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing git tag to build and push (e.g. v0.4.31). Does not move the tag or recreate the GitHub Release."
+        description: "Tag version to be used for Docker image"
         required: true
-        default: "v0.4.31"
+        default: "latest"
 
 jobs:
   prepare-ui:

@@ -220,6 +220,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			d.logger.Info("no need to deploy alb listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, cloudLoadbalancerId, cloudListenerId, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
@@ -227,6 +228,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			d.logger.Info("no need to deploy alb listener sni certificate")
 			return nil
 		}
+
 		return d.updateListenerSniCertificate(ctx, cloudLoadbalancerId, listenerInfo, cloudCertId)
 	}
 }

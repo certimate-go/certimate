@@ -341,7 +341,7 @@
         "tooltip": "即服务器上存储网站文件的主文件夹。"
       },
       "ssh_use_scp": {
-        "label": "回退使用 SCP",
+        "label": "使用 SCP 传输文件",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
       },
       "ucloud_udnr_endpoint": {
@@ -958,6 +958,10 @@
         "label": "APISIX 证书 ID",
         "placeholder": "请输入 APISIX 证书 ID",
         "tooltip": "请登录 APISIX 控制台查看"
+      },
+      "asiaispcdn_domain": {
+        "label": "橙域网络网迹 CDN 加速域名",
+        "placeholder": "请输入橙域网络网迹 CDN 加速域名"
       },
       "aws_acm_region": {
         "label": "AWS 服务区域",
@@ -2215,8 +2219,12 @@
         "ps_binding_rdp": "PowerShell - 导入并绑定到 RDP"
       },
       "ssh_use_scp": {
-        "label": "回退使用 SCP",
+        "label": "使用 SCP 传输文件",
         "tooltip": "如果你的远程服务器不支持 SFTP，请勾选此选项回退为 SCP。"
+      },
+      "ssh_use_repl": {
+        "label": "使用 REPL 模式执行命令（可选）",
+        "tooltip": "如果你的远程服务器未提供 Shell、不支持多行命令，请勾选此选项启用 REPL 模式以逐行执行命令。"
       },
       "synologydsm": {
         "guide": "需要群晖 DSM v6.0 或更高版本。"
@@ -2297,6 +2305,20 @@
       "tencentcloud_css_domain": {
         "label": "腾讯云云直播流域名",
         "placeholder": "请输入腾讯云云直播流域名"
+      },
+      "tencentcloud_ddospro_endpoint": {
+        "label": "腾讯云接口端点（可选）",
+        "placeholder": "请输入腾讯云 DDoS 高防接口端点（例如：clb.tencentcloudapi.com）",
+        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.tencent.com/document/product/214/30669\" target=\"_blank\">https://cloud.tencent.com/document/product/214/30669</a><br>国际站用户请填写 <em>clb.intl.tencentcloudapi.com</em>。"
+      },
+      "tencentcloud_ddospro_instance_id": {
+        "label": "腾讯云 DDoS 高防实例 ID",
+        "placeholder": "请输入腾讯云 DDoS 高防实例 ID",
+        "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/ddos\" target=\"_blank\">https://console.cloud.tencent.com/ddos</a>"
+      },
+      "tencentcloud_ddospro_domain": {
+        "label": "腾讯云 DDoS 高防网站域名",
+        "placeholder": "请输入腾讯云 DDoS 高防网站域名"
       },
       "tencentcloud_ecdn_endpoint": {
         "label": "腾讯云接口端点（可选）",
@@ -2815,6 +2837,11 @@
         "label": "火山引擎 CLB 监听器 ID",
         "placeholder": "请输入火山引擎 CLB 监听器 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
+      },
+      "volcengine_clb_snidomain": {
+        "label": "火山引擎 CLB 扩展域名（可选）",
+        "placeholder": "请输入火山引擎 CLB 扩展域名",
+        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
       },
       "volcengine_dcdn_domain": {
         "label": "火山引擎 DCDN 加速域名",

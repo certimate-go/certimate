@@ -10,21 +10,23 @@ import (
 )
 
 type AESCryptor interface {
-	CBCEncrypt(data []byte) ([]byte, error)
-	CBCDecrypt(cipher []byte) ([]byte, error)
+	CBCEncrypt(plaintext []byte) ([]byte, error)
+	CBCDecrypt(ciphertext []byte) ([]byte, error)
+	GCMEncrypt(plaintext, iv, aad []byte) ([]byte, error)
+	GCMDecrypt(ciphertext, iv, aad []byte) ([]byte, error)
 }
 
 type aesCryptor struct {
 	key []byte
 }
 
-func (c *aesCryptor) CBCEncrypt(data []byte) ([]byte, error) {
+func (c *aesCryptor) CBCEncrypt(plaintext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(c.key)
 	if err != nil {
 		return nil, err
 	}
 
-	paddedData := c.pkcs7Padding(data, aes.BlockSize)
+	paddedData := c.pkcs7Padding(plaintext, aes.BlockSize)
 	ciphertext := make([]byte, aes.BlockSize+len(paddedData))
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
@@ -58,6 +60,45 @@ func (c *aesCryptor) CBCDecrypt(ciphertext []byte) ([]byte, error) {
 	mode.CryptBlocks(ciphertext, ciphertext)
 
 	return c.pkcs7Unpadding(ciphertext), nil
+}
+
+func (c *aesCryptor) GCMEncrypt(plaintext, iv, aad []byte) ([]byte, error) {
+	const gcmStandardNonceSize int = 12
+	if len(iv) != gcmStandardNonceSize {
+		return nil, fmt.Errorf("the iv length must be %d bytes for GCM", gcmStandardNonceSize)
+	}
+
+	block, err := aes.NewCipher(c.key)
+	if err != nil {
+		return nil, err
+	}
+
+	aesGCM, err := cipher.NewGCMWithNonceSize(block, len(iv))
+	if err != nil {
+		return nil, err
+	}
+
+	ciphertext := aesGCM.Seal(nil, iv, plaintext, aad)
+	return ciphertext, nil
+}
+
+func (c *aesCryptor) GCMDecrypt(ciphertext, iv, aad []byte) ([]byte, error) {
+	block, err := aes.NewCipher(c.key)
+	if err != nil {
+		return nil, err
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	plaintext, err := aesGCM.Open(nil, iv, ciphertext, aad)
+	if err != nil {
+		return nil, err
+	}
+
+	return plaintext, nil
 }
 
 func (c *aesCryptor) pkcs7Padding(data []byte, blockSize int) []byte {

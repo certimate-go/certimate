@@ -11,7 +11,7 @@ import preserveFilesPlugin from "./scripts/vite/plugins/preserve-files-plugin";
 export default defineConfig(({ command }) => {
   let appVersion = undefined;
   try {
-    const content = fs.readFileSync(path.resolve(__dirname, "../internal/app/app.go"), "utf-8");
+    const content = fs.readFileSync(path.resolve(import.meta.dirname, "../internal/app/app.go"), "utf-8");
     const matches = content.match(/AppVersion\s+=\s+"(.+?)"/);
     if (matches) {
       appVersion = matches[1];
@@ -59,7 +59,7 @@ export default defineConfig(({ command }) => {
     ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
+        "@": path.resolve(import.meta.dirname, "./src"),
       },
     },
     server: {

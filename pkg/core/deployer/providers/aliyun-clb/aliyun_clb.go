@@ -225,6 +225,7 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudLoadbalan
 			d.logger.Info("no need to deploy clb listener default certificate")
 			return nil
 		}
+
 		return d.updateListenerDefaultCertificate(ctx, cloudLoadbalancerId, cloudListenerPort, cloudCertId)
 	} else {
 		// 指定 SNI，需部署到扩展域名
