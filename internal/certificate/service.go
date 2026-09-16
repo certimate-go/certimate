@@ -1,8 +1,6 @@
 package certificate
 
 import (
-	"archive/zip"
-	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -12,11 +10,9 @@ import (
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/certacme"
-	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/domain/dtos"
 	"github.com/certimate-go/certimate/internal/settings"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
-	xcertpfx "github.com/certimate-go/certimate/pkg/utils/cert/pfx"
 )
 
 type CertificateService struct {
@@ -48,166 +44,16 @@ func (s *CertificateService) DownloadCertificate(ctx context.Context, req *dtos.
 	canonicalName := strings.Split(certificate.SubjectAltNames, ";")[0]
 	canonicalName = strings.ReplaceAll(canonicalName, "*", "_")
 
-	var buf bytes.Buffer
-	zipWriter := zip.NewWriter(&buf)
-	defer zipWriter.Close()
-
-	var zipBytes []byte
-	switch req.FileFormat {
-	case "", domain.CertificateFormatTypePEM:
-		{
-			serverCertPEM, issuerCertPEM, err := xcert.ExtractCertificatesFromPEM(certificate.Certificate)
-			if err != nil {
-				return nil, fmt.Errorf("failed to extract certs: %w", err)
-			}
-
-			keyWriter, err := zipWriter.Create(fmt.Sprintf("%s.key", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = keyWriter.Write([]byte(certificate.PrivateKey))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			certWriter, err := zipWriter.Create(fmt.Sprintf("%s.crt", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = certWriter.Write([]byte(certificate.Certificate))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			serverCertWriter, err := zipWriter.Create(fmt.Sprintf("%s (server).pem", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = serverCertWriter.Write([]byte(serverCertPEM))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			intermediaCertWriter, err := zipWriter.Create(fmt.Sprintf("%s (intermedia).pem", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = intermediaCertWriter.Write([]byte(issuerCertPEM))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			err = zipWriter.Close()
-			if err != nil {
-				return nil, err
-			}
-
-			zipBytes = buf.Bytes()
-		}
-
-	case domain.CertificateFormatTypePFX:
-		{
-			pfxPassword := "certimate"
-			if req.PfxPassword != "" {
-				pfxPassword = req.PfxPassword
-			}
-
-			pfxEncoder, err := xcertpfx.ResolvePfxEncoder(req.PfxEncoder)
-			if err != nil {
-				return nil, err
-			}
-
-			certPFX, err := xcert.TransformCertificateFromPEMToPFX(certificate.Certificate, certificate.PrivateKey, pfxPassword, pfxEncoder)
-			if err != nil {
-				return nil, err
-			}
-
-			certWriter, err := zipWriter.Create(fmt.Sprintf("%s.pfx", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = certWriter.Write(certPFX)
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			readmeWriter, err := zipWriter.Create("README.txt")
-			if err != nil {
-				return nil, err
-			} else {
-				readme := fmt.Sprintf("[PFX Password]\n%s\n", pfxPassword)
-				_, err = readmeWriter.Write([]byte(readme))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			err = zipWriter.Close()
-			if err != nil {
-				return nil, err
-			}
-
-			zipBytes = buf.Bytes()
-		}
-
-	case domain.CertificateFormatTypeJKS:
-		{
-			jksAlias := "certimate"
-			if req.JksAlias != "" {
-				jksAlias = req.JksAlias
-			}
-
-			jksKeypass := "certimate"
-			if req.JksKeypass != "" {
-				jksKeypass = req.JksKeypass
-			}
-
-			jksStorepass := "certimate"
-			if req.JksStorepass != "" {
-				jksStorepass = req.JksStorepass
-			}
-
-			certJKS, err := xcert.TransformCertificateFromPEMToJKS(certificate.Certificate, certificate.PrivateKey, jksAlias, jksKeypass, jksStorepass)
-			if err != nil {
-				return nil, err
-			}
-
-			certWriter, err := zipWriter.Create(fmt.Sprintf("%s.jks", canonicalName))
-			if err != nil {
-				return nil, err
-			} else {
-				_, err = certWriter.Write(certJKS)
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			readmeWriter, err := zipWriter.Create("README.txt")
-			if err != nil {
-				return nil, err
-			} else {
-				readme := fmt.Sprintf("[JKS Alias]\n%s\n\n[JKS Key Password]\n%s\n\n[JKS Store Password]\n%s\n", jksAlias, jksKeypass, jksStorepass)
-				_, err = readmeWriter.Write([]byte(readme))
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			err = zipWriter.Close()
-			if err != nil {
-				return nil, err
-			}
-
-			zipBytes = buf.Bytes()
-		}
-
-	default:
-		return nil, domain.ErrInvalidParams
+	zipBytes, err := xcert.BuildCertificateArchive(certificate.Certificate, certificate.PrivateKey, canonicalName, xcert.CertificateArchiveOptions{
+		FileFormat:   string(req.FileFormat),
+		PfxPassword:  req.PfxPassword,
+		PfxEncoder:   req.PfxEncoder,
+		JksAlias:     req.JksAlias,
+		JksKeypass:   req.JksKeypass,
+		JksStorepass: req.JksStorepass,
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	resp := &dtos.CertificateDownloadResp{
