@@ -75,12 +75,13 @@ const CertificateList = () => {
       width: 300,
       render: (_, record) => {
         const names = record.subjectAltNames ? record.subjectAltNames.split(";") : [];
-        const hiddenCount = Math.max(names.length - 3, 0);
+        const visibleNames = names.slice(0, 3);
+        const hiddenCount = names.length - visibleNames.length;
         return (
           <div className="flex max-w-full items-baseline gap-1 truncate">
             {names.length > 0 ? (
               <Typography.Text className="min-w-0 flex-1" delete={record.isRevoked} ellipsis>
-                {names.slice(0, 3).join("; ")}
+                {visibleNames.join("; ")}
               </Typography.Text>
             ) : (
               <Typography.Text className="min-w-0 flex-1">—</Typography.Text>
