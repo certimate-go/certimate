@@ -280,30 +280,49 @@ const InternalCASharedForm = ({ children, provider }: { children?: React.ReactNo
   );
 };
 
-const InternalCASharedFormEabFields = ({ i18nKey }: { i18nKey: string }) => {
+const InternalCASharedFormEabFields = ({ provider }: { provider: CAProviderType }) => {
   const { t, i18n } = useTranslation();
 
-  const hasGuide = i18n.exists(`access.form.${i18nKey}_eab.guide`);
+  const accessOptional = caProvidersMap.get(provider)?.accessOptional ?? false;
+  const hasGuide = i18n.exists(`access.form.${provider}_eab.guide`);
+  const hasAutoGuide = accessOptional && i18n.exists(`access.form.${provider}_eab_auto.guide`);
 
-  const formSchema = z.object({
-    endpoint: z.url({ protocol: z.core.regexes.httpProtocol }),
-    eabKid: z.string().nonempty(),
-    eabHmacKey: z.string().nonempty(),
-  });
+  const formSchema = z
+    .object({
+      eabKid: accessOptional ? z.string().nullish() : z.string().nonempty(),
+      eabHmacKey: accessOptional ? z.string().nullish() : z.string().nonempty(),
+    })
+    .superRefine((values, ctx) => {
+      if (!accessOptional) return;
+
+      const eabKid = values.eabKid ?? "";
+      const eabHmacKey = values.eabHmacKey ?? "";
+      if (!!eabKid === !!eabHmacKey) return;
+
+      ctx.addIssue({
+        code: "custom",
+        message: t("access.form.shared_acme_eab_pair.errmsg"),
+        path: [!eabKid ? "eabKid" : "eabHmacKey"],
+      });
+    });
   const formRule = createSchemaFieldRule(formSchema);
 
   return (
     <>
-      <Form.Item name="eabKid" label={t("access.form.shared_acme_eab_kid.label")} rules={[formRule]}>
-        <Input autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_kid.placeholder")} />
+      <Form.Item name="eabKid" dependencies={["eabHmacKey"]} label={t("access.form.shared_acme_eab_kid.label")} rules={[formRule]}>
+        <Input allowClear={accessOptional} autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_kid.placeholder")} />
       </Form.Item>
 
-      <Form.Item name="eabHmacKey" label={t("access.form.shared_acme_eab_hmac_key.label")} rules={[formRule]}>
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_hmac_key.placeholder")} />
+      <Form.Item name="eabHmacKey" dependencies={["eabKid"]} label={t("access.form.shared_acme_eab_hmac_key.label")} rules={[formRule]}>
+        <Input.Password allowClear={accessOptional} autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_hmac_key.placeholder")} />
+      </Form.Item>
+
+      <Form.Item hidden={!hasAutoGuide}>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t(`access.form.${provider}_eab_auto.guide`) }}></span>} />
       </Form.Item>
 
       <Form.Item hidden={!hasGuide}>
-        <Tips message={<span dangerouslySetInnerHTML={{ __html: t(`access.form.${i18nKey}_eab.guide`) }}></span>} />
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t(`access.form.${provider}_eab.guide`) }}></span>} />
       </Form.Item>
     </>
   );
@@ -328,7 +347,7 @@ const InternalCASettingsFormProviderLetsEncryptStaging = () => {
 const InternalCASettingsFormProviderActalisSSL = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.ACTALISSSL}>
-      <InternalCASharedFormEabFields i18nKey="actalisssl" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.ACTALISSSL} />
     </InternalCASharedForm>
   );
 };
@@ -336,7 +355,7 @@ const InternalCASettingsFormProviderActalisSSL = () => {
 const InternalCASettingsFormProviderDigiCert = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.DIGICERT}>
-      <InternalCASharedFormEabFields i18nKey="digicert" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.DIGICERT} />
     </InternalCASharedForm>
   );
 };
@@ -344,7 +363,7 @@ const InternalCASettingsFormProviderDigiCert = () => {
 const InternalCASettingsFormProviderGlobalSignAtlas = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.GLOBALSIGNATLAS}>
-      <InternalCASharedFormEabFields i18nKey="globalsignatlas" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.GLOBALSIGNATLAS} />
     </InternalCASharedForm>
   );
 };
@@ -352,7 +371,7 @@ const InternalCASettingsFormProviderGlobalSignAtlas = () => {
 const InternalCASettingsFormProviderGoogleTrustServices = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.GOOGLETRUSTSERVICES}>
-      <InternalCASharedFormEabFields i18nKey="googletrustservices" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.GOOGLETRUSTSERVICES} />
     </InternalCASharedForm>
   );
 };
@@ -360,7 +379,7 @@ const InternalCASettingsFormProviderGoogleTrustServices = () => {
 const InternalCASettingsFormProviderLiteSSL = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.LITESSL}>
-      <InternalCASharedFormEabFields i18nKey="litessl" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.LITESSL} />
     </InternalCASharedForm>
   );
 };
@@ -385,7 +404,7 @@ const InternalCASettingsFormProviderSectigo = () => {
         />
       </Form.Item>
 
-      <InternalCASharedFormEabFields i18nKey="sectigo" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.SECTIGO} />
     </InternalCASharedForm>
   );
 };
@@ -393,7 +412,7 @@ const InternalCASettingsFormProviderSectigo = () => {
 const InternalCASettingsFormProviderSSLCom = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.SSLCOM}>
-      <InternalCASharedFormEabFields i18nKey="sslcom" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.SSLCOM} />
     </InternalCASharedForm>
   );
 };
@@ -401,7 +420,7 @@ const InternalCASettingsFormProviderSSLCom = () => {
 const InternalCASettingsFormProviderZeroSSL = () => {
   return (
     <InternalCASharedForm provider={CA_PROVIDERS.ZEROSSL}>
-      <InternalCASharedFormEabFields i18nKey="zerossl" />
+      <InternalCASharedFormEabFields provider={CA_PROVIDERS.ZEROSSL} />
     </InternalCASharedForm>
   );
 };

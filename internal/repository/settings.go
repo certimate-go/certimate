@@ -9,6 +9,7 @@ import (
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/pocketbase/dbx"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 type SettingsRepository struct{}
@@ -44,5 +45,38 @@ func (r *SettingsRepository) GetByName(ctx context.Context, name string) (*domai
 		Name:    record.GetString("name"),
 		Content: content,
 	}
+	return settings, nil
+}
+
+func (r *SettingsRepository) Save(ctx context.Context, settings *domain.Settings) (*domain.Settings, error) {
+	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameSettings)
+	if err != nil {
+		return settings, err
+	}
+
+	var record *core.Record
+	if existing, err := r.GetByName(ctx, settings.Name); err != nil {
+		if !domain.IsRecordNotFoundError(err) {
+			return settings, err
+		}
+	} else {
+		record, err = app.GetApp().FindRecordById(collection, existing.Id)
+		if err != nil {
+			return settings, err
+		}
+	}
+	if record == nil {
+		record = core.NewRecord(collection)
+	}
+
+	record.Set("name", settings.Name)
+	record.Set("content", settings.Content)
+	if err := app.GetApp().Save(record); err != nil {
+		return settings, err
+	}
+
+	settings.Id = record.Id
+	settings.CreatedAt = record.GetDateTime("created").Time()
+	settings.UpdatedAt = record.GetDateTime("updated").Time()
 	return settings, nil
 }
