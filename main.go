@@ -49,6 +49,7 @@ func main() {
 			}
 
 			settings.Setup()
+
 			return nil
 		})
 

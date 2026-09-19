@@ -19,17 +19,28 @@ const AccessConfigFormFieldsProviderZeroSSL = () => {
 
   return (
     <>
-      <Form.Item name={[parentNamePath, "eabKid"]} initialValue={initialValues.eabKid} label={t("access.form.shared_acme_eab_kid.label")} rules={[formRule]}>
-        <Input autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_kid.placeholder")} />
+      <Form.Item
+        name={[parentNamePath, "eabKid"]}
+        initialValue={initialValues.eabKid}
+        dependencies={[parentNamePath, "eabHmacKey"]}
+        label={t("access.form.shared_acme_eab_kid.label")}
+        rules={[formRule]}
+      >
+        <Input allowClear autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_kid.placeholder")} />
       </Form.Item>
 
       <Form.Item
         name={[parentNamePath, "eabHmacKey"]}
         initialValue={initialValues.eabHmacKey}
+        dependencies={[parentNamePath, "eabKid"]}
         label={t("access.form.shared_acme_eab_hmac_key.label")}
         rules={[formRule]}
       >
-        <Input.Password autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_hmac_key.placeholder")} />
+        <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.shared_acme_eab_hmac_key.placeholder")} />
+      </Form.Item>
+
+      <Form.Item>
+        <Tips message={<span dangerouslySetInnerHTML={{ __html: t("access.form.zerossl_eab_auto_access.guide") }}></span>} />
       </Form.Item>
 
       <Form.Item>
@@ -47,12 +58,24 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
 };
 
 const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) => {
-  const { t: _ } = i18n;
+  const { t } = i18n;
 
-  return z.object({
-    eabKid: z.string().nonempty(),
-    eabHmacKey: z.string().nonempty(),
-  });
+  return z
+    .object({
+      eabKid: z.string().nullish(),
+      eabHmacKey: z.string().nullish(),
+    })
+    .superRefine((values, ctx) => {
+      const eabKid = values.eabKid ?? "";
+      const eabHmacKey = values.eabHmacKey ?? "";
+      if (!!eabKid === !!eabHmacKey) return;
+
+      ctx.addIssue({
+        code: "custom",
+        message: t("access.form.shared_acme_eab_pair.errmsg"),
+        path: [!eabKid ? "eabKid" : "eabHmacKey"],
+      });
+    });
 };
 
 const _default = Object.assign(AccessConfigFormFieldsProviderZeroSSL, {

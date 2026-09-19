@@ -2,6 +2,7 @@ package settings
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -44,4 +45,34 @@ func registerSettingsStoreByName(settingsName string) error {
 
 func buildPbStoreKey(settingsName string) string {
 	return fmt.Sprintf("%s|settings|%s", strings.ToLower(app.AppName), strings.ToLower(settingsName))
+}
+
+func SetGlobalSettingsForSSLProvider(content *domain.SettingsContentForSSLProvider) error {
+	data, err := json.Marshal(content)
+	if err != nil {
+		return err
+	}
+
+	settingsContent := domain.SettingsContent{}
+	if err := json.Unmarshal(data, &settingsContent); err != nil {
+		return err
+	}
+
+	settingsRepo := repository.NewSettingsRepository()
+	settings, err := settingsRepo.GetByName(context.Background(), domain.SettingsNameSSLProvider)
+	if err != nil {
+		if !domain.IsRecordNotFoundError(err) {
+			return err
+		}
+		settings = &domain.Settings{Name: domain.SettingsNameSSLProvider}
+	}
+
+	settings.Content = settingsContent
+	if _, err := settingsRepo.Save(context.Background(), settings); err != nil {
+		return err
+	}
+
+	pb := app.GetApp()
+	pb.Store().Set(buildPbStoreKey(domain.SettingsNameSSLProvider), settingsContent)
+	return nil
 }
