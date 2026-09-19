@@ -27,7 +27,15 @@ const CertificateDetail = ({ data, ...props }: CertificateDetailProps) => {
         </Form.Item>
 
         <Form.Item label={t("certificate.props.subject_alt_names")}>
-          <Input value={data.subjectAltNames.split(";").join("; ")} variant="filled" placeholder="" />
+          {data.subjectAltNames ? (
+            <div className="flex flex-wrap gap-1">
+              {data.subjectAltNames.split(";").map((name, index) => (
+                <Tag key={`${name}_${index}`}>{name}</Tag>
+              ))}
+            </div>
+          ) : (
+            <span>—</span>
+          )}
         </Form.Item>
 
         <Form.Item label={t("certificate.props.issuer_name")}>
