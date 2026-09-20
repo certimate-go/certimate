@@ -131,6 +131,9 @@ export type WorkflowNodeConfigForBizUpload = {
   source: string;
   certificate: string;
   privateKey: string;
+  provider?: string;
+  providerAccessId?: string;
+  providerConfig?: Record<string, unknown> | null;
 };
 
 export const defaultNodeConfigForBizUpload = (): Partial<WorkflowNodeConfigForBizUpload> => {

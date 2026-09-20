@@ -234,6 +234,16 @@
       "label": "Asia-ISP CDN AccessKeySecret",
       "placeholder": "Please enter Asia-ISP CDN AccessKeySecret"
     },
+    "autossl_access_key": {
+      "label": "AutoSSL AccessKey",
+      "placeholder": "Please enter AutoSSL AccessKey",
+      "tooltip": "What is this? Please see <a href=\"https://www.auto-ssl.cn/docs/OpenAPI.html\" target=\"_blank\">https://www.auto-ssl.cn/docs/OpenAPI.html</a>"
+    },
+    "autossl_secret_key": {
+      "label": "AutoSSL SecretKey",
+      "placeholder": "Please enter AutoSSL SecretKey",
+      "tooltip": "What is this? Please see <a href=\"https://www.auto-ssl.cn/docs/OpenAPI.html\" target=\"_blank\">https://www.auto-ssl.cn/docs/OpenAPI.html</a>"
+    },
     "aws_auth_method": {
       "label": "AWS API authentication method",
       "placeholder": "Please select AWS API authentication method",

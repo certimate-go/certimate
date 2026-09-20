@@ -13,7 +13,7 @@ import { useProviderFilterByUsage } from "./forms/_hooks";
 import AccessConfigFieldsProvider from "./forms/AccessConfigFieldsProvider";
 
 export type AccessFormModes = "create" | "modify";
-export type AccessFormUsages = "dns" | "hosting" | "dns-hosting" | "ca" | "notification";
+export type AccessFormUsages = "dns" | "hosting" | "dns-hosting" | "ca" | "notification" | "certsource";
 
 export interface AccessFormProps {
   className?: string;

@@ -59,6 +59,7 @@
   "apisix": "Apache APISIX",
   "arvancloud": "ArvanCloud",
   "asiaispcdn": "Asia-ISP CDN",
+  "autossl": "AutoSSL",
   "aws": "AWS (Amazon Web Services)",
   "aws_acm": "AWS - ACM (Amazon Certificate Manager)",
   "aws_alb": "AWS - ALB (Application Load Balancer)",

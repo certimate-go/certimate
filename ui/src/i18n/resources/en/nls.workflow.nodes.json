@@ -363,6 +363,7 @@
     },
     "form": {
       "guide": "The file content will be read again every time this node executes.",
+      "provider_guide": "The certificate will be fetched again from the certificate source provider every time this node executes; if the fetched certificate is identical to the last one, the subsequent execution will be skipped.",
       "source": {
         "label": "Upload source",
         "placeholder": "Please select upload source",
@@ -375,8 +376,31 @@
           },
           "url": {
             "label": "URL"
+          },
+          "provider": {
+            "label": "Cert platform"
           }
         }
+      },
+      "certsource_provider": {
+        "label": "Certificate source provider",
+        "placeholder": "Please select certificate source provider"
+      },
+      "certsource_provider_access": {
+        "label": "Certificate source provider authorization",
+        "placeholder": "Please select certificate source provider authorization",
+        "button": "Create new"
+      },
+      "autossl_domain": {
+        "label": "Certificate domain",
+        "placeholder": "Please enter certificate domain (e.g. example.com or *.example.com)",
+        "tooltip": "The latest valid certificate in AutoSSL matching this domain will be fetched."
+      },
+      "autossl_cert_id": {
+        "label": "Certificate ID",
+        "placeholder": "(Optional) Please enter AutoSSL certificate ID",
+        "tooltip": "The <em>certId</em> returned in AutoSSL certificate list. If filled, the certificate will be fetched directly, ignoring domain matching.",
+        "help": "Optional. If left empty, it will be matched automatically by the certificate domain above."
       },
       "name": {
         "label": "Domains / IP addresses",

@@ -30,6 +30,7 @@ export const ACCESS_PROVIDERS = Object.freeze(
     APISIX: "apisix",
     ARVANCLOUD: "arvancloud",
     ASIAISPCDN: "asiaispcdn",
+    AUTOSSL: "autossl",
     AWS: "aws",
     AXISNOW: "axisnow",
     AZURE: "azure",
@@ -156,6 +157,7 @@ export const ACCESS_USAGES = Object.freeze({
   HOSTING: "hosting",
   CA: "ca",
   NOTIFICATION: "notification",
+  CERTSOURCE: "certsource",
 } as const);
 
 export type AccessUsageType = (typeof ACCESS_USAGES)[keyof typeof ACCESS_USAGES];
@@ -304,6 +306,8 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.TELEGRAMBOT, "provider.telegrambot", "/imgs/providers/telegram.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.MATRIX, "provider.matrix", "/imgs/providers/matrix.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.MATTERMOST, "provider.mattermost", "/imgs/providers/mattermost.svg", [ACCESS_USAGES.NOTIFICATION]],
+
+      [ACCESS_PROVIDERS.AUTOSSL, "provider.autossl", "/imgs/providers/autossl.svg", [ACCESS_USAGES.CERTSOURCE]],
     ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[], "builtin"] | [AccessProviderType, string, string, AccessUsageType[]]>
   ).map(([type, name, icon, usages, builtin]) => [
     type,
@@ -1039,6 +1043,43 @@ export const notificationProvidersMap: Map<NotificationProvider["type"] | string
       [NOTIFICATION_PROVIDERS.MATRIX],
       [NOTIFICATION_PROVIDERS.MATTERMOST],
     ] satisfies Array<[NotificationProviderType]>
+  ).map(([type]) => [
+    type,
+    {
+      type: type,
+      name: accessProvidersMap.get(type.split("-")[0])!.name,
+      icon: accessProvidersMap.get(type.split("-")[0])!.icon,
+      provider: type.split("-")[0] as AccessProviderType,
+      builtin: false,
+    },
+  ])
+);
+// #endregion
+
+// #region CertsourceProvider
+export const CERTSOURCE_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+  */
+  {
+    AUTOSSL: `${ACCESS_PROVIDERS.AUTOSSL}`,
+  } as const
+);
+
+export type CertsourceProviderType = (typeof CERTSOURCE_PROVIDERS)[keyof typeof CERTSOURCE_PROVIDERS];
+
+export interface CertsourceProvider extends BaseProviderWithAccess<CertsourceProviderType> {}
+
+export const certsourceProvidersMap: Map<CertsourceProvider["type"] | string, CertsourceProvider> = new Map(
+  /*
+    注意：此处的顺序决定显示在前端的顺序。
+    NOTICE: The following order determines the order displayed at the frontend.
+  */
+  (
+    [
+      [CERTSOURCE_PROVIDERS.AUTOSSL],
+    ] satisfies Array<[CertsourceProviderType]>
   ).map(([type]) => [
     type,
     {

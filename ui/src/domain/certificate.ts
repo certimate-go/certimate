@@ -24,6 +24,7 @@ export interface CertificateModel extends BaseModel {
 export const CERTIFICATE_SOURCES = Object.freeze({
   REQUEST: "request",
   UPLOAD: "upload",
+  FETCH: "fetch",
 } as const);
 
 export type CertificateSourceType = (typeof CERTIFICATE_SOURCES)[keyof typeof CERTIFICATE_SOURCES];

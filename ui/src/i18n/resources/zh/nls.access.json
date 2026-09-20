@@ -234,6 +234,16 @@
       "label": "橙域网络网迹 CDN AccessKeySecret",
       "placeholder": "请输入橙域网络网迹 CDN AccessKeySecret"
     },
+    "autossl_access_key": {
+      "label": "AutoSSL AccessKey",
+      "placeholder": "请输入 AutoSSL AccessKey",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.auto-ssl.cn/docs/OpenAPI.html\" target=\"_blank\">https://www.auto-ssl.cn/docs/OpenAPI.html</a>"
+    },
+    "autossl_secret_key": {
+      "label": "AutoSSL SecretKey",
+      "placeholder": "请输入 AutoSSL SecretKey",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.auto-ssl.cn/docs/OpenAPI.html\" target=\"_blank\">https://www.auto-ssl.cn/docs/OpenAPI.html</a>"
+    },
     "aws_auth_method": {
       "label": "AWS API 认证方式",
       "placeholder": "请选择 AWS API 认证方式",

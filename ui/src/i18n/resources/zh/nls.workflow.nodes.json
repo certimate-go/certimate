@@ -362,6 +362,7 @@
     },
     "form": {
       "guide": "每次执行此节点时，都将重新读取文件内容。",
+      "provider_guide": "每次执行此节点时，都将从证书来源提供商重新拉取证书内容；若拉取到的证书与上次一致，则跳过后续执行。",
       "source": {
         "label": "上传来源",
         "placeholder": "请选择上传来源",
@@ -374,8 +375,31 @@
           },
           "url": {
             "label": "URL 路径"
+          },
+          "provider": {
+            "label": "证书平台"
           }
         }
+      },
+      "certsource_provider": {
+        "label": "证书来源提供商",
+        "placeholder": "请选择证书来源提供商"
+      },
+      "certsource_provider_access": {
+        "label": "证书来源提供商授权",
+        "placeholder": "请选择证书来源提供商授权",
+        "button": "新建授权"
+      },
+      "autossl_domain": {
+        "label": "证书域名",
+        "placeholder": "请输入证书域名（如 example.com 或 *.example.com）",
+        "tooltip": "将拉取 AutoSSL 中与该域名匹配、且仍在有效期内的最新一张证书。"
+      },
+      "autossl_cert_id": {
+        "label": "证书 ID",
+        "placeholder": "（可选）请输入 AutoSSL 证书 ID",
+        "tooltip": "即 AutoSSL 证书列表中返回的 <em>certId</em>。填写后将直接拉取该证书，忽略域名匹配。",
+        "help": "可选。留空时按上方证书域名自动匹配。"
       },
       "name": {
         "label": "证书名称",
