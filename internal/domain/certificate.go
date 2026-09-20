@@ -105,6 +105,7 @@ func (t CertificateSourceType) String() string {
 const (
 	CertificateSourceTypeRequest = CertificateSourceType("request")
 	CertificateSourceTypeUpload  = CertificateSourceType("upload")
+	CertificateSourceTypeFetch   = CertificateSourceType("fetch")
 )
 
 type CertificateKeyAlgorithmType certcrypto.KeyType

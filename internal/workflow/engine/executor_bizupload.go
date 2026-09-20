@@ -14,9 +14,11 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
+	"github.com/certimate-go/certimate/internal/certmgmt"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/repository"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 /**
@@ -36,14 +38,16 @@ import (
 type bizUploadNodeExecutor struct {
 	nodeExecutor
 
+	accessRepo      accessRepository
 	certificateRepo certificateRepository
 	wfoutputRepo    workflowOutputRepository
 }
 
 const (
-	BizUploadSourceForm  = "form"
-	BizUploadSourceLocal = "local"
-	BizUploadSourceURL   = "url"
+	BizUploadSourceForm     = "form"
+	BizUploadSourceLocal    = "local"
+	BizUploadSourceURL      = "url"
+	BizUploadSourceProvider = "provider"
 )
 
 func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
@@ -128,6 +132,37 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 			}
 		}
 
+	case BizUploadSourceProvider:
+		{
+			// 读取证书来源提供商授权
+			providerAccessConfig := make(map[string]any)
+			if nodeCfg.ProviderAccessId != "" {
+				if access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.ProviderAccessId); err != nil {
+					return execRes, fmt.Errorf("failed to get access #%s record: %w", nodeCfg.ProviderAccessId, err)
+				} else {
+					providerAccessConfig = access.Config
+				}
+			}
+
+			// 从证书来源提供商拉取证书
+			fetcher := certmgmt.NewClient(certmgmt.WithLogger(ne.logger))
+			fetchReq := &certmgmt.FetchCertificateRequest{
+				Provider:               domain.CertsourceProviderType(nodeCfg.Provider),
+				ProviderAccessConfig:   providerAccessConfig,
+				ProviderExtendedConfig: nodeCfg.ProviderConfig,
+				Domain:                 xmaps.GetString(nodeCfg.ProviderConfig, "domain"),
+				CertId:                 xmaps.GetString(nodeCfg.ProviderConfig, "certId"),
+			}
+			fetchResp, err := fetcher.FetchCertificate(execCtx.Context(), fetchReq)
+			if err != nil {
+				ne.logger.Warn("could not fetch certificate")
+				return execRes, err
+			}
+
+			certPEM = fetchResp.CertPEM
+			privkeyPEM = fetchResp.PrivkeyPEM
+		}
+
 	default:
 		return execRes, fmt.Errorf("unsupported upload source: '%s'", nodeCfg.Source)
 	}
@@ -174,8 +209,12 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	}
 
 	// 保存证书实体
+	certificateSource := domain.CertificateSourceTypeUpload
+	if nodeCfg.Source == BizUploadSourceProvider {
+		certificateSource = domain.CertificateSourceTypeFetch
+	}
 	certificate := &domain.Certificate{
-		Source:         domain.CertificateSourceTypeUpload,
+		Source:         certificateSource,
 		WorkflowId:     execCtx.WorkflowId,
 		WorkflowRunId:  execCtx.RunId,
 		WorkflowNodeId: execCtx.Node.Id,
@@ -301,6 +340,7 @@ func (ne *bizUploadNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionCont
 func newBizUploadNodeExecutor() NodeExecutor {
 	return &bizUploadNodeExecutor{
 		nodeExecutor:    nodeExecutor{logger: slog.Default()},
+		accessRepo:      repository.NewAccessRepository(),
 		certificateRepo: repository.NewCertificateRepository(),
 		wfoutputRepo:    repository.NewWorkflowOutputRepository(),
 	}

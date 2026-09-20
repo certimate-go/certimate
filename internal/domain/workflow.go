@@ -246,9 +246,13 @@ type WorkflowNodeConfigForBizApply struct {
 }
 
 type WorkflowNodeConfigForBizUpload struct {
-	Source      string `json:"source"`      // 证书来源，可取值 "form"、"local"、"url"（零值时默认值 "form"）
+	Source      string `json:"source"`      // 证书来源，可取值 "form"、"local"、"url"、"provider"（零值时默认值 "form"）
 	Certificate string `json:"certificate"` // 证书，根据证书来源决定是 PEM 内容 / 文件路径 / URL
 	PrivateKey  string `json:"privateKey"`  // 私钥，根据证书来源决定是 PEM 内容 / 文件路径 / URL
+
+	Provider         string         `json:"provider,omitempty"`         // 证书来源提供商（source 为 "provider" 时使用）
+	ProviderAccessId string         `json:"providerAccessId,omitempty"` // 证书来源提供商授权记录 ID
+	ProviderConfig   map[string]any `json:"providerConfig,omitempty"`   // 证书来源提供商额外配置
 }
 
 type WorkflowNodeConfigForBizMonitor struct {
