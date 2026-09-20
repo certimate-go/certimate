@@ -86,6 +86,11 @@ type AccessConfigForAsiaISPCDN struct {
 	AccessKeySecret string `json:"accessKeySecret"`
 }
 
+type AccessConfigForAutoSSL struct {
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
+}
+
 type AccessConfigForAWS struct {
 	AuthMethod      string `json:"authMethod"`
 	AccessKeyId     string `json:"accessKeyId"`

@@ -25,6 +25,7 @@ const (
 	AccessProviderTypeAPISIX              = AccessProviderType("apisix")
 	AccessProviderTypeArvanCloud          = AccessProviderType("arvancloud")
 	AccessProviderTypeAsiaISPCDN          = AccessProviderType("asiaispcdn")
+	AccessProviderTypeAutoSSL             = AccessProviderType("autossl")
 	AccessProviderTypeAWS                 = AccessProviderType("aws")
 	AccessProviderTypeAxisNow             = AccessProviderType("axisnow")
 	AccessProviderTypeAzure               = AccessProviderType("azure")
@@ -505,4 +506,21 @@ const (
 	NotificationProviderTypeTelegramBot = NotificationProviderType(AccessProviderTypeTelegramBot)
 	NotificationProviderTypeWebhook     = NotificationProviderType(AccessProviderTypeWebhook)
 	NotificationProviderTypeWeComBot    = NotificationProviderType(AccessProviderTypeWeComBot)
+)
+
+type CertsourceProviderType string
+
+func (t CertsourceProviderType) String() string {
+	return string(t)
+}
+
+/*
+证书来源提供商常量值。
+短横线前的部分始终等于授权提供商类型。
+
+注意：如果追加新的常量值，请保持以 ASCII 排序。
+NOTICE: If you add new constant, please keep ASCII order.
+*/
+const (
+	CertsourceProviderTypeAutoSSL = CertsourceProviderType(AccessProviderTypeAutoSSL)
 )
