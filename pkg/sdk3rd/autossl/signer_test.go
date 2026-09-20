@@ -70,46 +70,30 @@ func TestParseCertTime(t *testing.T) {
 }
 
 func TestParseCertificateItems(t *testing.T) {
-	// 形态一：data 为对象，含 list 数组
+	// 实测结构：PageHelper 分页格式，data.list 数组
 	{
-		payload := []byte(`{"code":200,"data":{"total":2,"list":[{"certId":"c1","url":"example.com","certEndTime":"2026-06-01 23:59:59","crtBrand":"Let's Encrypt"},{"certId":"c2","url":"*.example.org","certEndTime":1768816669358}]}}`)
+		payload := []byte(`{"code":200,"data":{"pageNum":1,"pageSize":5,"total":2,"pages":1,"list":[{"certId":"c1","url":"example.com","certStartTime":"2026-01-18 11:54:04","certEndTime":"2026-06-01 23:59:59","crtBrand":"Xcc"},{"certId":"c2","url":"*.example.org","certEndTime":"2027-02-15 11:54:03"}]},"message":"SUCCESS","status":"AUTO_SSL_SUCCESS"}`)
 		items, err := parseCertificateItems(payload)
 		require.NoError(t, err)
 		require.Len(t, items, 2)
 		assert.Equal(t, "c1", items[0].CertId)
 		assert.Equal(t, "example.com", items[0].Url)
 		assert.Equal(t, 2026, items[0].CertEndTime.Year())
+		assert.Equal(t, "Xcc", items[0].CrtBrand)
 		assert.Equal(t, "c2", items[1].CertId)
 		assert.Equal(t, "*.example.org", items[1].Url)
 	}
 
-	// 形态二：data 直接为数组
+	// 缺少 data 结构
 	{
-		payload := []byte(`{"code":200,"data":[{"certId":"c1","url":"example.com"}]}`)
-		items, err := parseCertificateItems(payload)
-		require.NoError(t, err)
-		require.Len(t, items, 1)
-		assert.Equal(t, "c1", items[0].CertId)
-	}
-
-	// 形态三：顶层直接为数组
-	{
-		payload := []byte(`[{"certId":"c1","url":"example.com"}]`)
-		items, err := parseCertificateItems(payload)
-		require.NoError(t, err)
-		require.Len(t, items, 1)
-	}
-
-	// 无法识别的结构
-	{
-		payload := []byte(`{"code":200,"data":{"foo":"bar"}}`)
+		payload := []byte(`{"code":200,"data":null}`)
 		_, err := parseCertificateItems(payload)
 		assert.Error(t, err)
 	}
 }
 
 func TestParseCertificateKeypair(t *testing.T) {
-	// 形态一：data 为对象
+	// 实测结构：data 对象含 pem/key
 	{
 		payload := []byte(`{"code":200,"data":{"pem":"-----BEGIN CERTIFICATE-----","key":"-----BEGIN PRIVATE KEY-----"}}`)
 		keypair, err := parseCertificateKeypair(payload)
@@ -118,17 +102,9 @@ func TestParseCertificateKeypair(t *testing.T) {
 		assert.Equal(t, "-----BEGIN PRIVATE KEY-----", keypair.PrivkeyPEM)
 	}
 
-	// 形态二：顶层直接为对象
+	// 缺少 data 结构
 	{
-		payload := []byte(`{"pem":"-----BEGIN CERTIFICATE-----","key":"-----BEGIN PRIVATE KEY-----"}`)
-		keypair, err := parseCertificateKeypair(payload)
-		require.NoError(t, err)
-		assert.Equal(t, "-----BEGIN CERTIFICATE-----", keypair.CertPEM)
-	}
-
-	// 无法识别的结构
-	{
-		payload := []byte(`{"code":200,"data":{"foo":"bar"}}`)
+		payload := []byte(`{"code":200,"data":null}`)
 		_, err := parseCertificateKeypair(payload)
 		assert.Error(t, err)
 	}

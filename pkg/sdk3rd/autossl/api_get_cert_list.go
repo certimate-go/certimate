@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	certListDefaultPageSize = 50
-	certListMaxPageSize     = 50
+	// 注意：官方文档称每页大小最大 50，但实测该接口限制每页大小在 1-20 之间。
+	certListDefaultPageSize = 20
+	certListMaxPageSize     = 20
 )
 
 type GetCertListRequest struct {

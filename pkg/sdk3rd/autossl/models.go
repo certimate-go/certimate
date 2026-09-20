@@ -84,82 +84,53 @@ type CertificateKeypair struct {
 
 // 从响应负载中解析证书列表。
 //
-// 官方文档未给出成功响应的完整外层结构，此处按常见形态兼容解析：
-//   - `data` 为数组；
-//   - `data` 为对象，含 `list`、`records`、`rows`、`items`、`content` 等字段之一；
-//   - 顶层直接为数组。
+// 实测成功响应结构（PageHelper 分页格式）：
+//
+//	{"code":200,"data":{"pageNum":1,...,"total":N,"list":[{...}]},"message":"SUCCESS","status":"AUTO_SSL_SUCCESS"}
 func parseCertificateItems(payload []byte) ([]*CertificateInfo, error) {
-	var topAny any
-	if err := json.Unmarshal(payload, &topAny); err != nil {
+	var res struct {
+		sdkResponseBase
+		Data *struct {
+			List []*certificateInfoRaw `json:"list"`
+		} `json:"data,omitempty"`
+	}
+	if err := json.Unmarshal(payload, &res); err != nil {
 		return nil, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
 	}
 
-	topMap, _ := topAny.(map[string]any)
-	candidates := []any{topAny}
-	if topMap != nil {
-		if data, ok := topMap["data"]; ok {
-			candidates = append(candidates, data)
-			if dataMap, ok := data.(map[string]any); ok {
-				for _, key := range []string{"list", "records", "rows", "items", "content", "certList"} {
-					if v, ok := dataMap[key]; ok {
-						candidates = append(candidates, v)
-					}
-				}
-			}
+	if res.Data == nil {
+		return nil, fmt.Errorf("sdkerr: no certificate list found in response")
+	}
+
+	items := make([]*CertificateInfo, 0, len(res.Data.List))
+	for _, itemRaw := range res.Data.List {
+		if itemRaw != nil {
+			items = append(items, itemRaw.toModel())
 		}
 	}
 
-	for _, candidate := range candidates {
-		if arr, ok := candidate.([]any); ok {
-			items := make([]*CertificateInfo, 0, len(arr))
-			for _, elem := range arr {
-				elemb, err := json.Marshal(elem)
-				if err != nil {
-					continue
-				}
-				var itemRaw certificateInfoRaw
-				if err := json.Unmarshal(elemb, &itemRaw); err != nil {
-					continue
-				}
-				items = append(items, itemRaw.toModel())
-			}
-			return items, nil
-		}
-	}
-
-	return nil, fmt.Errorf("sdkerr: unrecognized certificate list structure in response")
+	return items, nil
 }
 
 // 从响应负载中解析证书内容。
 //
-// 官方文档未给出成功响应的完整外层结构，此处按常见形态兼容解析：
-//   - `data` 为对象，含 `pem`、`key` 字段；
-//   - 顶层直接为对象，含 `pem`、`key` 字段。
+// 实测成功响应结构：
+//
+//	{"code":200,"data":{"pem":"-----BEGIN CERTIFICATE-----...","key":"-----BEGIN PRIVATE KEY-----..."}}
 func parseCertificateKeypair(payload []byte) (*CertificateKeypair, error) {
-	var topAny any
-	if err := json.Unmarshal(payload, &topAny); err != nil {
+	var res struct {
+		sdkResponseBase
+		Data *CertificateKeypair `json:"data,omitempty"`
+	}
+	if err := json.Unmarshal(payload, &res); err != nil {
 		return nil, fmt.Errorf("sdkerr: failed to unmarshal response: %w", err)
 	}
 
-	topMap, _ := topAny.(map[string]any)
-	if topMap == nil {
-		return nil, fmt.Errorf("sdkerr: unrecognized certificate keypair structure in response")
+	if res.Data == nil {
+		return nil, fmt.Errorf("sdkerr: no certificate keypair found in response")
 	}
 
-	candidates := []map[string]any{topMap}
-	if data, ok := topMap["data"].(map[string]any); ok {
-		candidates = append([]map[string]any{data}, candidates...)
-	}
-
-	for _, candidate := range candidates {
-		pem, hasPem := candidate["pem"].(string)
-		key, hasKey := candidate["key"].(string)
-		if hasPem && hasKey {
-			return &CertificateKeypair{CertPEM: pem, PrivkeyPEM: key}, nil
-		}
-	}
-
-	return nil, fmt.Errorf("sdkerr: unrecognized certificate keypair structure in response")
+	return res.Data, nil
 }
 
 func toString(v any) string {

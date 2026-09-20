@@ -37,7 +37,8 @@ func (c *Client) DownloadCertWithContext(ctx context.Context, req *DownloadCertR
 	if err != nil {
 		return nil, err
 	} else {
-		httpreq.SetBody(req)
+		// 注意：官方文档称 POST 接口参数经请求体传递，但实测该接口仅从查询参数读取 `id`。
+		httpreq.SetQueryParam("id", req.Id)
 		httpreq.SetContext(ctx)
 	}
 
