@@ -133,12 +133,16 @@ func (d *Deployer) deployWithCNAME(ctx context.Context, cloudCertId string) erro
 	// REF: https://www.volcengine.com/docs/6511/1214835
 	domainInfo := listDomainResp.Data[0]
 	updateDomainReq := &vewaf.UpdateDomainInput{
-		ProjectName: lo.EmptyableToPtr(d.config.ProjectName),
-		Region:      ve.String(d.config.Region),
-		Domain:      ve.String(d.config.Domain),
-		AccessMode:  ve.Int32(10),
-		LBAlgorithm: domainInfo.LBAlgorithm,
-		Protocols:   ve.StringSlice([]string{"HTTP", "HTTPS"}),
+		ProjectName:       lo.EmptyableToPtr(d.config.ProjectName),
+		Region:            ve.String(d.config.Region),
+		Domain:            ve.String(d.config.Domain),
+		AccessMode:        ve.Int32(10),
+		LBAlgorithm:       domainInfo.LBAlgorithm,
+		PublicRealServer:  ve.Int32(1),
+		VpcID:             domainInfo.VpcID,
+		BackendGroups:     toUpdateBackendGroups(domainInfo.BackendGroups),
+		CloudAccessConfig: toUpdateCloudAccessConfigs(domainInfo.CloudAccessConfig),
+		Protocols:         ve.StringSlice([]string{"HTTP", "HTTPS"}),
 		ProtocolPorts: &vewaf.ProtocolPortsForUpdateDomainInput{
 			HTTP:  ve.Int32Slice([]int32{80}),
 			HTTPS: ve.Int32Slice([]int32{443}),
@@ -166,6 +170,63 @@ func (d *Deployer) deployWithCNAME(ctx context.Context, cloudCertId string) erro
 	}
 
 	return nil
+}
+
+// 将 ListDomain 返回的回源组转换为 UpdateDomain 所需的结构。
+func toUpdateBackendGroups(groups []*vewaf.BackendGroupForListDomainOutput) []*vewaf.BackendGroupForUpdateDomainInput {
+	if groups == nil {
+		return nil
+	}
+
+	out := make([]*vewaf.BackendGroupForUpdateDomainInput, 0, len(groups))
+	for _, g := range groups {
+		backend := lo.Map(g.Backends, func(b *vewaf.BackendForListDomainOutput, _ int) *vewaf.BackendForUpdateDomainInput {
+			if b == nil {
+				return nil
+			}
+
+			return &vewaf.BackendForUpdateDomainInput{
+				IP:       b.IP,
+				Port:     b.Port,
+				Protocol: b.Protocol,
+				Weight:   b.Weight,
+			}
+		})
+
+		out = append(out, &vewaf.BackendGroupForUpdateDomainInput{
+			Name:       g.Name,
+			AccessPort: lo.Clone(g.AccessPort),
+			Backends:   backend,
+		})
+	}
+
+	return out
+}
+
+// 将 ListDomain 返回的云产品接入配置转换为 UpdateDomain 所需的结构。
+func toUpdateCloudAccessConfigs(configs []*vewaf.CloudAccessConfigForListDomainOutput) []*vewaf.CloudAccessConfigForUpdateDomainInput {
+	if configs == nil {
+		return nil
+	}
+
+	out := make([]*vewaf.CloudAccessConfigForUpdateDomainInput, 0, len(configs))
+	for _, c := range configs {
+		if c == nil {
+			continue
+		}
+
+		out = append(out, &vewaf.CloudAccessConfigForUpdateDomainInput{
+			InstanceID:     c.InstanceID,
+			InstanceName:   c.InstanceName,
+			ListenerID:     c.ListenerID,
+			AccessProtocol: c.AccessProtocol,
+			Protocol:       c.Protocol,
+			Port:           c.Port,
+			DefenceMode:    c.DefenceMode,
+		})
+	}
+
+	return out
 }
 
 func createSDKClient(accessKeyId, secretAccessKey, region string) (*vewaf.WAF, error) {
