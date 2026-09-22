@@ -37,3 +37,9 @@ func (c *WAF) ListDomainWithContext(ctx volcengine.Context, input *ListDomainInp
 type ListDomainInput = waf.ListDomainInput
 
 type ListDomainOutput = waf.ListDomainOutput
+
+type BackendForListDomainOutput = waf.BackendForListDomainOutput
+
+type BackendGroupForListDomainOutput = waf.BackendGroupForListDomainOutput
+
+type CloudAccessConfigForListDomainOutput = waf.CloudAccessConfigForListDomainOutput

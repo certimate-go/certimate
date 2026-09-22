@@ -292,11 +292,29 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 读取证书颁发机构授权
 	caAccessConfig := make(map[string]any)
+	var caAccess *domain.Access
 	if nodeCfg.CAProviderAccessId != "" {
-		if access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.CAProviderAccessId); err != nil {
+		access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.CAProviderAccessId)
+		if err != nil {
 			return nil, fmt.Errorf("failed to get access #%s record: %w", nodeCfg.CAProviderAccessId, err)
-		} else {
-			caAccessConfig = access.Config
+		}
+		caAccess = access
+		caAccessConfig = access.Config
+	}
+
+	caAccessHadEAB := false
+	if caAccess != nil {
+		if v, _ := caAccess.Config["eabKid"].(string); v != "" {
+			caAccessHadEAB = true
+		}
+	}
+	globalHadEAB := false
+	if nodeCfg.CAProvider == "" {
+		globalSettingsForSSLProvider := settings.GetGlobalSettingsForSSLProvider()
+		if providerConfig := globalSettingsForSSLProvider.Configs[globalSettingsForSSLProvider.Provider]; providerConfig != nil {
+			if v, _ := providerConfig["eabKid"].(string); v != "" {
+				globalHadEAB = true
+			}
 		}
 	}
 
@@ -323,6 +341,28 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 		return nil, err
 	} else {
 		ne.logger.Info("acme account initialized", slog.String("acmeAcctUrl", acmeAcct.ACMEAccountUrl))
+	}
+
+	if acmeCfg.EABKid != "" {
+		if caAccess != nil && !caAccessHadEAB {
+			caAccess.Config["eabKid"] = acmeCfg.EABKid
+			caAccess.Config["eabHmacKey"] = acmeCfg.EABHmacKey
+			if _, err := ne.accessRepo.Save(execCtx.Context(), caAccess); err != nil {
+				ne.logger.Warn("could not persist the acquired acme eab credentials to the access record")
+			}
+		} else if nodeCfg.CAProvider == "" && !globalHadEAB {
+			globalSettingsForSSLProvider := settings.GetGlobalSettingsForSSLProvider()
+			providerConfig := globalSettingsForSSLProvider.Configs[acmeCfg.CAProvider]
+			if providerConfig == nil {
+				providerConfig = map[string]any{}
+			}
+			providerConfig["eabKid"] = acmeCfg.EABKid
+			providerConfig["eabHmacKey"] = acmeCfg.EABHmacKey
+			globalSettingsForSSLProvider.Configs[acmeCfg.CAProvider] = providerConfig
+			if err := settings.SetGlobalSettingsForSSLProvider(&globalSettingsForSSLProvider); err != nil {
+				ne.logger.Warn("could not persist the acquired acme eab credentials to the global settings")
+			}
+		}
 	}
 
 	// 构造证书申请请求

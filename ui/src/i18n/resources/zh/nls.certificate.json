@@ -93,7 +93,6 @@
   },
 
   "props": {
-    "name": "名称",
     "validity": {
       "": "有效期限",
       "left_days": "{{left}} / {{total}} 天",

@@ -10,6 +10,15 @@ import { matchSearchString } from "@/utils/search";
 
 type Provider = { type: string; name: string };
 
+const isProviderAccessSatisfied = <T extends Provider>(provider: T, accesses: { provider: string }[]) => {
+  if ("accessOptional" in provider && provider.accessOptional) return true;
+  return accesses.some((access) => {
+    if ("builtin" in provider && provider.builtin) return true;
+    if ("provider" in provider) return access.provider === provider.provider;
+    return access.provider === provider.type;
+  });
+};
+
 export interface SharedSelectProps<T extends Provider> extends Omit<SelectProps, "labelRender" | "options" | "optionLabelProp" | "optionRender"> {
   className?: string;
   style?: React.CSSProperties;
@@ -44,13 +53,7 @@ export const useSelectDataSource = <T extends Provider>({
   }, [dataSource, filters, deps]);
 
   const availableDataSource = useMemo(() => {
-    return filteredDataSource.filter((provider) => {
-      return accesses.some((access) => {
-        if ("builtin" in provider && provider.builtin) return true;
-        if ("provider" in provider) return access.provider === provider.provider;
-        return access.provider === provider.type;
-      });
-    });
+    return filteredDataSource.filter((provider) => isProviderAccessSatisfied(provider, accesses));
   }, [accesses, filteredDataSource, deps]);
 
   const unavailableDataSource = useMemo(() => {
@@ -131,13 +134,7 @@ export const usePickerDataSource = <T extends Provider>({
   }, [dataSource, filters, keyword, deps]);
 
   const availableDataSource = useMemo(() => {
-    return filteredDataSource.filter((provider) => {
-      return accesses.some((access) => {
-        if ("builtin" in provider && provider.builtin) return true;
-        if ("provider" in provider) return access.provider === provider.provider;
-        return access.provider === provider.type;
-      });
-    });
+    return filteredDataSource.filter((provider) => isProviderAccessSatisfied(provider, accesses));
   }, [accesses, filteredDataSource, deps]);
 
   const unavailableDataSource = useMemo(() => {

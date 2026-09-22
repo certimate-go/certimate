@@ -151,6 +151,15 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     return false;
   }, [fieldCAProvider]);
 
+  const fieldCAProviderAccessOptional = useMemo(() => {
+    if (fieldCAProvider) {
+      const provider = caProvidersMap.get(fieldCAProvider);
+      return provider?.accessOptional ?? false;
+    }
+
+    return false;
+  }, [fieldCAProvider]);
+
   useEffect(() => {
     // 如果未选择质询提供商，则清空授权信息
     if (!fieldProvider && fieldProviderAccessId) {
@@ -181,7 +190,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     }
 
     // 如果已选择 CA 提供商只有一个授权信息，则自动选择该授权信息
-    if (fieldCAProvider && !fieldCAProviderAccessId) {
+    if (fieldCAProvider && !fieldCAProviderAccessId && !fieldCAProviderAccessOptional) {
       const availableAccesses = accesses
         .filter((access) => accessOptionFilterForCA(access.provider, access))
         .filter((access) => caProvidersMap.get(fieldCAProvider)?.provider === access.provider);
@@ -189,7 +198,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
         formInst.setFieldValue("caProviderAccessId", availableAccesses[0].id);
       }
     }
-  }, [fieldCAProvider, fieldCAProviderAccessId]);
+  }, [fieldCAProvider, fieldCAProviderAccessId, fieldCAProviderAccessOptional]);
 
   const handleIdentifierPick = (value: string) => {
     switch (value) {
@@ -543,7 +552,17 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
               </Form.Item>
             </Form.Item>
 
-            <Form.Item label={t("workflow_node.apply.form.ca_provider_access.label")} hidden={!showCAProviderAccess}>
+            <Form.Item
+              label={t("workflow_node.apply.form.ca_provider_access.label")}
+              hidden={!showCAProviderAccess}
+              extra={
+                fieldCAProviderAccessOptional
+                  ? t("access.form.shared_ca_access_optional.help", {
+                      provider: t(caProvidersMap.get(fieldCAProvider!)?.name ?? ""),
+                    })
+                  : void 0
+              }
+            >
               <div className="absolute -top-1.5 right-0 -translate-y-full">
                 <AccessEditDrawer
                   data={{ provider: caProvidersMap.get(fieldCAProvider!)?.provider }}
@@ -564,6 +583,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
               </div>
               <Form.Item name="caProviderAccessId" dependencies={["caProvider"]} noStyle rules={[formRule]}>
                 <AccessSelect
+                  allowClear={fieldCAProviderAccessOptional}
                   disabled={!fieldCAProvider}
                   placeholder={t("workflow_node.apply.form.ca_provider_access.placeholder")}
                   showSearch
@@ -1214,7 +1234,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
       if (values.caProvider) {
         const provider = caProvidersMap.get(values.caProvider);
-        if (!provider?.builtin && !values.caProviderAccessId) {
+        if (!provider?.builtin && !provider?.accessOptional && !values.caProviderAccessId) {
           ctx.addIssue({
             code: "custom",
             message: t("workflow_node.apply.form.ca_provider_access.placeholder"),
