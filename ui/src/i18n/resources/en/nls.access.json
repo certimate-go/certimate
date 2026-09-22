@@ -87,8 +87,14 @@
       "label": "ACME EAB HMAC key",
       "placeholder": "Please enter ACME EAB HMAC key"
     },
+    "shared_acme_eab_pair": {
+      "errmsg": "Please fill in both the ACME EAB KID and the ACME EAB HMAC key, or leave both empty to use automatic issuance."
+    },
     "shared_allow_insecure_conns": {
       "label": "Allow insecure SSL/TLS connections"
+    },
+    "shared_ca_access_optional": {
+      "help": "Leave it empty to automatically obtain the EAB credentials from {{provider}} with the certificate contact email above. Note: the contact email will be sent to {{provider}}. You can still select an existing credential to use manual EAB credentials."
     },
 
     "1panel_server_url": {
@@ -1681,6 +1687,12 @@
     },
     "zerossl_eab": {
       "guide": "Learn more about using EAB key in ZeroSSL: <br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
+    },
+    "zerossl_eab_auto": {
+      "guide": "Leave both fields empty and each workflow using the global settings will automatically obtain the EAB credentials from ZeroSSL with its certificate contact email. Note: the contact email will be sent to ZeroSSL. You can also fill in both fields to use your own EAB credentials."
+    },
+    "zerossl_eab_auto_access": {
+      "guide": "Leave both fields empty and each workflow using this authorization will automatically obtain the EAB credentials from ZeroSSL with its certificate contact email. Note: the contact email will be sent to ZeroSSL. You can also fill in both fields to use your own EAB credentials."
     }
   }
 }

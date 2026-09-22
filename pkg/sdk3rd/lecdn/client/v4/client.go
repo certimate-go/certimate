@@ -48,11 +48,7 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 	}
 
 	baseUrl := strings.TrimSuffix(serverUrl, "/")
-	if opts.ApiKey != "" {
-		baseUrl += "/api/client"
-	} else {
-		baseUrl += "/prod-api"
-	}
+	baseUrl += "/prod-api"
 
 	client := &Client{
 		username: opts.Username,
@@ -150,7 +146,7 @@ func (c *Client) ensureToken(ctx context.Context) error {
 		return nil
 	}
 
-	httpreq, err := c.newRequest(http.MethodPost, "/auth/login")
+	httpreq, err := c.newRequest(http.MethodPost, "/login")
 	if err != nil {
 		return err
 	} else {
