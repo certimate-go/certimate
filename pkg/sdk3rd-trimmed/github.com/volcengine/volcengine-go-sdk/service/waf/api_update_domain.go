@@ -39,3 +39,9 @@ type UpdateDomainInput = waf.UpdateDomainInput
 type UpdateDomainOutput = waf.UpdateDomainOutput
 
 type ProtocolPortsForUpdateDomainInput = waf.ProtocolPortsForUpdateDomainInput
+
+type BackendForUpdateDomainInput = waf.BackendForUpdateDomainInput
+
+type BackendGroupForUpdateDomainInput = waf.BackendGroupForUpdateDomainInput
+
+type CloudAccessConfigForUpdateDomainInput = waf.CloudAccessConfigForUpdateDomainInput

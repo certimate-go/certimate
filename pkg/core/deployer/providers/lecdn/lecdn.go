@@ -3,6 +3,7 @@ package lecdn
 import (
 	"context"
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"log/slog"
 	"time"
@@ -116,8 +117,8 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 				Name:        certName,
 				Description: certDesc,
 				Type:        "upload",
-				SSLPEM:      certPEM,
-				SSLKey:      privkeyPEM,
+				SSLPEM:      base64.StdEncoding.EncodeToString([]byte(certPEM)),
+				SSLKey:      base64.StdEncoding.EncodeToString([]byte(privkeyPEM)),
 				AutoRenewal: false,
 			}
 			updateSSLCertResp, err := sdkClient.UpdateCertificateWithContext(ctx, d.config.CertificateId, updateSSLCertReq)
@@ -134,8 +135,8 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 				Name:        certName,
 				Description: certDesc,
 				Type:        "upload",
-				SSLPEM:      certPEM,
-				SSLKey:      privkeyPEM,
+				SSLPEM:      base64.StdEncoding.EncodeToString([]byte(certPEM)),
+				SSLKey:      base64.StdEncoding.EncodeToString([]byte(privkeyPEM)),
 				AutoRenewal: false,
 			}
 			updateSSLCertResp, err := sdkClient.UpdateCertificateWithContext(ctx, d.config.CertificateId, updateSSLCertReq)
@@ -150,8 +151,8 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 			updateSSLCertReq := &lecdnclientsdkv4.UpdateCertificateRequest{
 				Name:        certName,
 				Description: certDesc,
-				SSLPEM:      certPEM,
-				SSLKey:      privkeyPEM,
+				SSLPEM:      base64.StdEncoding.EncodeToString([]byte(certPEM)),
+				SSLKey:      base64.StdEncoding.EncodeToString([]byte(privkeyPEM)),
 				AutoRenewal: false,
 			}
 			updateSSLCertResp, err := sdkClient.UpdateCertificateWithContext(ctx, d.config.CertificateId, updateSSLCertReq)
@@ -166,8 +167,8 @@ func (d *Deployer) deployToCertificate(ctx context.Context, certPEM, privkeyPEM 
 			updateSSLCertReq := &lecdnmastersdkv4.UpdateCertificateRequest{
 				Name:        certName,
 				Description: certDesc,
-				SSLPEM:      certPEM,
-				SSLKey:      privkeyPEM,
+				SSLPEM:      base64.StdEncoding.EncodeToString([]byte(certPEM)),
+				SSLKey:      base64.StdEncoding.EncodeToString([]byte(privkeyPEM)),
 				AutoRenewal: false,
 			}
 			updateSSLCertResp, err := sdkClient.UpdateCertificateWithContext(ctx, d.config.CertificateId, updateSSLCertReq)
@@ -207,7 +208,7 @@ func createSDKClient(serverUrl, apiVersion, apiRole, authMethod, username, passw
 					case "", AUTH_METHOD_PASSWORD:
 						client, err = lecdnclientsdkv3.NewClient(serverUrl, lecdnclientsdkv3.WithLogins(username, password))
 					case AUTH_METHOD_APIKEY:
-						client, err = lecdnclientsdkv3.NewClient(serverUrl, lecdnclientsdkv3.WithLogins(username, password))
+						client, err = lecdnclientsdkv3.NewClient(serverUrl, lecdnclientsdkv3.WithApiKey(apiKey))
 					default:
 						err = fmt.Errorf("unsupported auth method '%s'", authMethod)
 					}
@@ -233,7 +234,7 @@ func createSDKClient(serverUrl, apiVersion, apiRole, authMethod, username, passw
 					case "", AUTH_METHOD_PASSWORD:
 						client, err = lecdnmastersdkv3.NewClient(serverUrl, lecdnmastersdkv3.WithLogins(username, password))
 					case AUTH_METHOD_APIKEY:
-						client, err = lecdnmastersdkv3.NewClient(serverUrl, lecdnmastersdkv3.WithLogins(username, password))
+						client, err = lecdnmastersdkv3.NewClient(serverUrl, lecdnmastersdkv3.WithApiKey(apiKey))
 					default:
 						err = fmt.Errorf("unsupported auth method '%s'", authMethod)
 					}
@@ -264,7 +265,7 @@ func createSDKClient(serverUrl, apiVersion, apiRole, authMethod, username, passw
 					case "", AUTH_METHOD_PASSWORD:
 						client, err = lecdnclientsdkv4.NewClient(serverUrl, lecdnclientsdkv4.WithLogins(username, password))
 					case AUTH_METHOD_APIKEY:
-						client, err = lecdnclientsdkv4.NewClient(serverUrl, lecdnclientsdkv4.WithLogins(username, password))
+						client, err = lecdnclientsdkv4.NewClient(serverUrl, lecdnclientsdkv4.WithApiKey(apiKey))
 					default:
 						err = fmt.Errorf("unsupported auth method '%s'", authMethod)
 					}
@@ -290,7 +291,7 @@ func createSDKClient(serverUrl, apiVersion, apiRole, authMethod, username, passw
 					case "", AUTH_METHOD_PASSWORD:
 						client, err = lecdnmastersdkv4.NewClient(serverUrl, lecdnmastersdkv4.WithLogins(username, password))
 					case AUTH_METHOD_APIKEY:
-						client, err = lecdnmastersdkv4.NewClient(serverUrl, lecdnmastersdkv4.WithLogins(username, password))
+						client, err = lecdnmastersdkv4.NewClient(serverUrl, lecdnmastersdkv4.WithApiKey(apiKey))
 					default:
 						err = fmt.Errorf("unsupported auth method '%s'", authMethod)
 					}

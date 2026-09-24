@@ -8,6 +8,7 @@ import (
 
 type accessRepository interface {
 	GetById(ctx context.Context, id string) (*domain.Access, error)
+	Save(ctx context.Context, access *domain.Access) (*domain.Access, error)
 }
 
 type certificateRepository interface {

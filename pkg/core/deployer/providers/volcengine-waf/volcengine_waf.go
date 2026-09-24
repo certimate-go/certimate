@@ -133,12 +133,39 @@ func (d *Deployer) deployWithCNAME(ctx context.Context, cloudCertId string) erro
 	// REF: https://www.volcengine.com/docs/6511/1214835
 	domainInfo := listDomainResp.Data[0]
 	updateDomainReq := &vewaf.UpdateDomainInput{
-		ProjectName: lo.EmptyableToPtr(d.config.ProjectName),
-		Region:      ve.String(d.config.Region),
-		Domain:      ve.String(d.config.Domain),
-		AccessMode:  ve.Int32(10),
-		LBAlgorithm: domainInfo.LBAlgorithm,
-		Protocols:   ve.StringSlice([]string{"HTTP", "HTTPS"}),
+		ProjectName:      lo.EmptyableToPtr(d.config.ProjectName),
+		Region:           ve.String(d.config.Region),
+		Domain:           ve.String(d.config.Domain),
+		AccessMode:       ve.Int32(10),
+		LBAlgorithm:      domainInfo.LBAlgorithm,
+		PublicRealServer: ve.Int32(1),
+		VpcID:            domainInfo.VpcID,
+		BackendGroups: lo.Map(domainInfo.BackendGroups, func(g *vewaf.BackendGroupForListDomainOutput, _ int) *vewaf.BackendGroupForUpdateDomainInput {
+			return &vewaf.BackendGroupForUpdateDomainInput{
+				Name:       g.Name,
+				AccessPort: lo.Clone(g.AccessPort),
+				Backends: lo.Map(g.Backends, func(b *vewaf.BackendForListDomainOutput, _ int) *vewaf.BackendForUpdateDomainInput {
+					return &vewaf.BackendForUpdateDomainInput{
+						IP:       b.IP,
+						Port:     b.Port,
+						Protocol: b.Protocol,
+						Weight:   b.Weight,
+					}
+				}),
+			}
+		}),
+		CloudAccessConfig: lo.Map(domainInfo.CloudAccessConfig, func(c *vewaf.CloudAccessConfigForListDomainOutput, _ int) *vewaf.CloudAccessConfigForUpdateDomainInput {
+			return &vewaf.CloudAccessConfigForUpdateDomainInput{
+				InstanceID:     c.InstanceID,
+				InstanceName:   c.InstanceName,
+				ListenerID:     c.ListenerID,
+				AccessProtocol: c.AccessProtocol,
+				Protocol:       c.Protocol,
+				Port:           c.Port,
+				DefenceMode:    c.DefenceMode,
+			}
+		}),
+		Protocols: ve.StringSlice([]string{"HTTP", "HTTPS"}),
 		ProtocolPorts: &vewaf.ProtocolPortsForUpdateDomainInput{
 			HTTP:  ve.Int32Slice([]int32{80}),
 			HTTPS: ve.Int32Slice([]int32{443}),

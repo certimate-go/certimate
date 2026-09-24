@@ -343,6 +343,7 @@ export type CAProviderType = (typeof CA_PROVIDERS)[keyof typeof CA_PROVIDERS];
 
 export interface CAProvider extends BaseProviderWithAccess<CAProviderType> {
   description?: string;
+  accessOptional: boolean;
 }
 
 export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new Map(
@@ -360,11 +361,11 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
       [CA_PROVIDERS.GOOGLETRUSTSERVICES, "pki.goog"],
       [CA_PROVIDERS.SECTIGO, "sectigo.com"],
       [CA_PROVIDERS.SSLCOM, "ssl.com"],
-      [CA_PROVIDERS.ZEROSSL, "zerossl.com"],
+      [CA_PROVIDERS.ZEROSSL, "zerossl.com", undefined, "accessOptional"],
       [CA_PROVIDERS.LITESSL, "litessl.cn (freessl.cn)"],
       [CA_PROVIDERS.ACMECA, "ACME v2 (RFC 8555)"],
-    ] satisfies Array<[CAProviderType, string, "builtin"] | [CAProviderType, string]>
-  ).map(([type, description, builtin]) => [
+    ] satisfies Array<[CAProviderType, string, ("builtin" | undefined)?, ("accessOptional" | undefined)?]>
+  ).map(([type, description, builtin, accessOptional]) => [
     type,
     {
       type: type,
@@ -373,6 +374,7 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
       icon: accessProvidersMap.get(type.split("-")[0])!.icon,
       provider: type.split("-")[0] as AccessProviderType,
       builtin: builtin === "builtin",
+      accessOptional: accessOptional === "accessOptional",
     },
   ])
 );
