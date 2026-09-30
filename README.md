@@ -95,6 +95,10 @@ Default administrator account:
 
 Work with Certimate right now. Or read other content in the documentation to learn more.
 
+## ☁️ One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Certimate/)
+
 ## 📄 Documentation
 
 For full documentation, please visit [docs.certimate.me](https://docs.certimate.me/).
