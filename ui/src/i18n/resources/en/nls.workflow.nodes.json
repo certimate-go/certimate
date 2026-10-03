@@ -229,7 +229,7 @@
       "nameservers": {
         "label": "DNS recursive nameservers (Optional)",
         "placeholder": "Please enter DNS recursive nameservers (separated by semicolons)",
-        "tooltip": "It determines whether to custom DNS recursive nameservers during ACME challenge. If you don't understand this option, just keep it by default. <br><a href=\"https://go-acme.github.io/lego/usage/cli/options/index.html#dns-resolvers-and-challenge-verification\" target=\"_blank\">Click here to learn more</a>.",
+        "tooltip": "It determines whether to custom DNS recursive nameservers during ACME challenge. If you don't understand this option, just keep it by default. <br><a href=\"https://go-acme.github.io/lego/advanced/tips/#dns-resolvers-and-challenge-verification\" target=\"_blank\">Click here to learn more</a>.",
         "multiple_input_modal": {
           "title": "Change DNS rcursive nameservers",
           "placeholder": "Please enter DNS recursive nameserver"

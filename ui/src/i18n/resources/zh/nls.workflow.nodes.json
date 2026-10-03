@@ -228,7 +228,7 @@
       "nameservers": {
         "label": "DNS 递归服务器（可选）",
         "placeholder": "请输入 DNS 递归服务器（多个值请用半角分号隔开）",
-        "tooltip": "表示在 ACME 质询时使用自定义的 DNS 递归服务器。如果你不了解该选项的用途，保持默认即可。<br><a href=\"https://go-acme.github.io/lego/usage/cli/options/index.html#dns-resolvers-and-challenge-verification\" target=\"_blank\">点此了解更多</a>。",
+        "tooltip": "表示在 ACME 质询时使用自定义的 DNS 递归服务器。如果你不了解该选项的用途，保持默认即可。<br><a href=\"https://go-acme.github.io/lego/advanced/tips/#dns-resolvers-and-challenge-verification\" target=\"_blank\">点此了解更多</a>。",
         "multiple_input_modal": {
           "title": "修改 DNS 递归服务器",
           "placeholder": "请输入 DNS 递归服务器"
