@@ -19,25 +19,27 @@ func init() {
 		jumpServers := make([]chlgimpl.ServerConfig, len(credentials.JumpServers))
 		for i, jumpServer := range credentials.JumpServers {
 			jumpServers[i] = chlgimpl.ServerConfig{
-				SshHost:          jumpServer.Host,
-				SshPort:          jumpServer.Port,
-				SshAuthMethod:    jumpServer.AuthMethod,
-				SshUsername:      jumpServer.Username,
-				SshPassword:      jumpServer.Password,
-				SshKey:           jumpServer.Key,
-				SshKeyPassphrase: jumpServer.KeyPassphrase,
+				SshHost:           jumpServer.Host,
+				SshPort:           jumpServer.Port,
+				SshAuthMethod:     jumpServer.AuthMethod,
+				SshUsername:       jumpServer.Username,
+				SshPassword:       jumpServer.Password,
+				SshKey:            jumpServer.Key,
+				SshKeyPassphrase:  jumpServer.KeyPassphrase,
+				SshKeyCertificate: jumpServer.KeyCertificate,
 			}
 		}
 
 		provider, err := chlgimpl.NewChallenger(&chlgimpl.ChallengerConfig{
 			ServerConfig: chlgimpl.ServerConfig{
-				SshHost:          credentials.Host,
-				SshPort:          credentials.Port,
-				SshAuthMethod:    credentials.AuthMethod,
-				SshUsername:      credentials.Username,
-				SshPassword:      credentials.Password,
-				SshKey:           credentials.Key,
-				SshKeyPassphrase: credentials.KeyPassphrase,
+				SshHost:           credentials.Host,
+				SshPort:           credentials.Port,
+				SshAuthMethod:     credentials.AuthMethod,
+				SshUsername:       credentials.Username,
+				SshPassword:       credentials.Password,
+				SshKey:            credentials.Key,
+				SshKeyPassphrase:  credentials.KeyPassphrase,
+				SshKeyCertificate: credentials.KeyCertificate,
 			},
 			JumpServers: jumpServers,
 			UseSCP:      xmaps.GetBool(options.ProviderExtendedConfig, "useSCP"),
