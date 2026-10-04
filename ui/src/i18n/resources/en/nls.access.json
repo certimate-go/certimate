@@ -1433,6 +1433,14 @@
       "label": "SSH key passphrase (Optional)",
       "placeholder": "Please enter SSH key passphrase"
     },
+    "ssh_key_certificate": {
+      "label": "SSH key certificate (Optional)",
+      "placeholder": "Please enter SSH key certificate\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "tooltip": "The contents of an OpenSSH user certificate file (such as id_ed25519-cert.pub) signed by the user CA trusted by the target host. If set, it is offered before the bare SSH key during authentication.",
+      "errmsg": {
+        "invalid": "Invalid SSH key certificate"
+      }
+    },
     "ssh_jump_servers": {
       "label": "Jump servers (Optional)",
       "errmsg": {

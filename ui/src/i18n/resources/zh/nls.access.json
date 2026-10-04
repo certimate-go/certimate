@@ -1433,6 +1433,14 @@
       "label": "SSH 密钥口令（可选）",
       "placeholder": "请输入 SSH 密钥口令"
     },
+    "ssh_key_certificate": {
+      "label": "SSH 密钥证书（可选）",
+      "placeholder": "请输入 SSH 密钥证书\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "tooltip": "由目标主机信任的用户 CA 签发的 OpenSSH 用户证书文件内容（如 id_ed25519-cert.pub）。设置后将优先于裸私钥进行认证。",
+      "errmsg": {
+        "invalid": "无效的 SSH 密钥证书"
+      }
+    },
     "ssh_jump_servers": {
       "label": "跳板机（可选）",
       "errmsg": {

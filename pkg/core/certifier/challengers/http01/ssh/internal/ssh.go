@@ -104,6 +104,7 @@ func (p *HTTPProvider) createSshClient() (*ssh.Client, error) {
 	clientCfg.Password = p.config.Password
 	clientCfg.Key = p.config.Key
 	clientCfg.KeyPassphrase = p.config.KeyPassphrase
+	clientCfg.KeyCertificate = p.config.KeyCertificate
 	for _, jumpServer := range p.config.JumpServers {
 		jumpServerCfg := ssh.NewServerConfig()
 		jumpServerCfg.Host = jumpServer.Host
@@ -113,6 +114,7 @@ func (p *HTTPProvider) createSshClient() (*ssh.Client, error) {
 		jumpServerCfg.Password = jumpServer.Password
 		jumpServerCfg.Key = jumpServer.Key
 		jumpServerCfg.KeyPassphrase = jumpServer.KeyPassphrase
+		jumpServerCfg.KeyCertificate = jumpServer.KeyCertificate
 		clientCfg.JumpServers = append(clientCfg.JumpServers, *jumpServerCfg)
 	}
 

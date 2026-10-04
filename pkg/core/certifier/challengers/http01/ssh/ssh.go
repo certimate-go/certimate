@@ -26,7 +26,8 @@ type ServerConfig struct {
 	// SSH 登录私钥。
 	SshKey string `json:"sshKey,omitempty"`
 	// SSH 登录私钥口令。
-	SshKeyPassphrase string `json:"sshKeyPassphrase,omitempty"`
+	SshKeyPassphrase  string `json:"sshKeyPassphrase,omitempty"`
+	SshKeyCertificate string `json:"sshKeyCertificate,omitempty"`
 }
 
 type ChallengerConfig struct {
@@ -53,15 +54,17 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	providerConfig.Password = config.SshPassword
 	providerConfig.Key = config.SshKey
 	providerConfig.KeyPassphrase = config.SshKeyPassphrase
+	providerConfig.KeyCertificate = config.SshKeyCertificate
 	for _, jumpServer := range config.JumpServers {
 		jumpServerCfg := ssh.ServerConfig{
-			Host:          jumpServer.SshHost,
-			Port:          int(jumpServer.SshPort),
-			AuthMethod:    ssh.AuthMethodType(jumpServer.SshAuthMethod),
-			Username:      jumpServer.SshUsername,
-			Password:      jumpServer.SshPassword,
-			Key:           jumpServer.SshKey,
-			KeyPassphrase: jumpServer.SshKeyPassphrase,
+			Host:           jumpServer.SshHost,
+			Port:           int(jumpServer.SshPort),
+			AuthMethod:     ssh.AuthMethodType(jumpServer.SshAuthMethod),
+			Username:       jumpServer.SshUsername,
+			Password:       jumpServer.SshPassword,
+			Key:            jumpServer.SshKey,
+			KeyPassphrase:  jumpServer.SshKeyPassphrase,
+			KeyCertificate: jumpServer.SshKeyCertificate,
 		}
 		providerConfig.JumpServers = append(providerConfig.JumpServers, jumpServerCfg)
 	}
