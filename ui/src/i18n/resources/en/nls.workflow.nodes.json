@@ -1432,9 +1432,12 @@
         "tooltip": "You can find it on Cdnfly dashboard."
       },
       "cloudflare_ssl_environment": {
-        "label": "Cloudflare environment",
-        "placeholder": "Please enter Cloudflare environment",
-        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
+        "label": "Staging deploy (optional)",
+        "placeholder": "Leave empty for production (recommended)",
+        "help": "Leave empty for normal custom certificate upload to the production edge. Choose staging only if your Enterprise account uses the Staging Certificates beta.",
+        "option_staging": "staging (Enterprise Staging test)",
+        "errmsg_invalid": "Only empty or staging is allowed",
+        "tooltip": "Cloudflare API <code>deploy</code> field: when empty, production deployment is used and the field is omitted from the request. Staging is Enterprise-only. See <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">Staging environment</a> and <a href=\"https://developers.cloudflare.com/api/resources/custom_certificates/methods/create/\" target=\"_blank\">Create custom certificate</a>."
       },
       "cloudflare_ssl_zone_id": {
         "label": "Cloudflare DNS zone ID",

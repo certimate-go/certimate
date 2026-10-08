@@ -1431,9 +1431,12 @@
         "tooltip": "请登录 Cdnfly 控制台查看"
       },
       "cloudflare_ssl_environment": {
-        "label": "Cloudflare 环境",
-        "placeholder": "请输入 Cloudflare 环境",
-        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
+        "label": "Staging 部署（可选）",
+        "placeholder": "留空即生产部署（推荐）",
+        "help": "常规上传自定义证书到生产边缘时无需填写。仅 Enterprise 账户在 Staging 环境测试证书时选择 staging。",
+        "option_staging": "staging（Enterprise Staging 测试）",
+        "errmsg_invalid": "仅支持留空或 staging",
+        "tooltip": "Cloudflare API 的 <code>deploy</code> 参数：留空时默认生产部署且不会显式传递该字段。Staging 仅面向 Enterprise 开放，请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">Staging 环境</a> 与 <a href=\"https://developers.cloudflare.com/api/resources/custom_certificates/methods/create/\" target=\"_blank\">Create custom certificate</a>。"
       },
       "cloudflare_ssl_zone_id": {
         "label": "Cloudflare DNS 区域 ID",
