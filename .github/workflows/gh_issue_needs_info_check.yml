@@ -60,14 +60,17 @@ jobs:
               return;
             }
 
-            const bullets = result.deficiencies
-              .map((d) => `- ${d.en}\n  - ${d.zh}`)
+            const bulletsEn = result.deficiencies
+              .map((d) => `- ${d.en}`)
+              .join("\n");
+            const bulletsZh = result.deficiencies
+              .map((d) => `- ${d.zh}`)
               .join("\n");
 
             const body = [
               "Thanks for opening this issue. Some required information appears to be missing or incomplete:",
               "",
-              bullets,
+              bulletsEn,
               "",
               "Please update this issue with the details above. If we do not receive a reply from you within **7 days**, this issue will be **automatically closed**. You can **reopen** it at any time after you add the missing information.",
               "",
@@ -75,7 +78,7 @@ jobs:
               "",
               "感谢你提交 Issue。以下必要信息似乎缺失或不完整：",
               "",
-              bullets,
+              bulletsZh,
               "",
               "请补充上述内容。若 **7 天内** 仍未收到你的回复，此 Issue 将被 **自动关闭**。补充信息后你可以 **随时重新打开**。",
             ].join("\n");
