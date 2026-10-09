@@ -1,4 +1,4 @@
-name: "Issue needs-info check"
+name: "Issue help wanted check"
 
 on:
   issues:
@@ -9,7 +9,7 @@ permissions:
   issues: write
 
 concurrency:
-  group: needs-info-check-${{ github.event.issue.number }}
+  group: help-wanted-check-${{ github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
@@ -19,31 +19,6 @@ jobs:
       github.event.issue.user.type != 'Bot' &&
       !endsWith(github.event.issue.user.login, '[bot]')
     steps:
-      - name: Ensure needs-info label exists
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const labelName = "needs-info";
-            try {
-              await github.rest.issues.getLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: labelName,
-              });
-            } catch (error) {
-              if (error.status !== 404) {
-                throw error;
-              }
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: labelName,
-                color: "FBCA04",
-                description:
-                  "Waiting for the author to provide required information",
-              });
-            }
-
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -71,7 +46,7 @@ jobs:
             echo "needs_action=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Comment and apply needs-info label
+      - name: Comment and apply help wanted label
         if: steps.quality.outputs.needs_action == 'true'
         uses: actions/github-script@v7
         env:
@@ -116,5 +91,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.issue.number,
-              labels: ["needs-info"],
+              labels: ["help wanted"],
             });

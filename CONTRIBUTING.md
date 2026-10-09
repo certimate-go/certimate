@@ -125,9 +125,9 @@ Before opening a Pull Request, please open an issue to discuss the change and ge
 
 When you open a bug report, feature request, or question, please fill in the issue template completely (version number, clear description, reproduction steps where applicable, and logs if you have them).
 
-If we ask for more information and the issue is labeled `needs-info`, we need your reply to move forward. **If the necessary details are not provided within 7 days, the issue may be closed automatically.** You can **reopen** the issue at any time after you add the missing information.
+If we ask for more information and the issue is labeled `help wanted` (waiting for you to supplement the report), we need your reply to move forward. **If the necessary details are not provided within 7 days, the issue may be closed automatically.** You can **reopen** the issue at any time after you add the missing information.
 
-For maintainers: when requesting details, leave a short checklist in a comment, then apply the `needs-info` label so the same 7-day reminder and auto-close behavior applies.
+For maintainers: when requesting details, leave a short checklist in a comment, then apply the existing `help wanted` label so the same 7-day reminder and auto-close behavior applies.
 
 ## Getting Help
 
