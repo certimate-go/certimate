@@ -23,7 +23,32 @@ jobs:
   issue-manager:
     runs-on: ubuntu-latest
     steps:
-      - name: Manage issues with the "answered" label
+      - name: Ensure needs-info label exists
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelName = "needs-info";
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+                color: "FBCA04",
+                description:
+                  "Waiting for the author to provide required information",
+              });
+            }
+
+      - name: Manage issues with lifecycle labels
         uses: tiangolo/issue-manager@0.8.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -32,5 +57,13 @@ jobs:
               "answered": {
                 "delay": 604800,
                 "message": "This issue has been automatically closed because there has been no further reply from you for over 7 days since our last response. If your problem is not resolved, please feel free to reopen this issue or open a new one with more details.\n\n---\n\n此 Issue 已被自动关闭。在我们最后一次回复后已超过 7 天未收到您的进一步回复。如果您的问题仍未解决，欢迎重新打开此 Issue 或创建新的 Issue 并提供更多详细信息。"
+              },
+              "needs-info": {
+                "delay": 604800,
+                "message": "This issue has been automatically closed because the required information was not provided within 7 days. Please reopen this issue after you add the missing details, or open a new issue with a complete report.\n\n---\n\n此 Issue 已被自动关闭：在 7 天内未补充必要信息。补充详情后欢迎重新打开此 Issue，或提交包含完整信息的新 Issue。",
+                "reminder": {
+                  "before": "P3D",
+                  "message": "Reminder: this issue will be closed in about 3 days if the requested information is not provided. You can reply here and the timer will reset.\n\n---\n\n提醒：若仍未补充所需信息，此 Issue 将在约 3 天后自动关闭。在此回复后计时将会重置。"
+                }
               }
             }

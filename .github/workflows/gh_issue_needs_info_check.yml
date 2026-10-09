@@ -1,0 +1,120 @@
+name: "Issue needs-info check"
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write
+
+concurrency:
+  group: needs-info-check-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.issue.user.type != 'Bot' &&
+      !endsWith(github.event.issue.user.login, '[bot]')
+    steps:
+      - name: Ensure needs-info label exists
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelName = "needs-info";
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+                color: "FBCA04",
+                description:
+                  "Waiting for the author to provide required information",
+              });
+            }
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run issue body quality check
+        id: quality
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+        run: |
+          BODY_FILE=$(mktemp)
+          printf '%s' "$ISSUE_BODY" > "$BODY_FILE"
+          RESULT_FILE="$RUNNER_TEMP/issue-check.json"
+          cd .github/scripts/issue_quality
+          set +e
+          python3 check.py --body-file "$BODY_FILE" --labels "$ISSUE_LABELS" > "$RESULT_FILE"
+          CODE=$?
+          set -e
+          echo "result_file=$RESULT_FILE" >> "$GITHUB_OUTPUT"
+          if [ "$CODE" -ne 0 ]; then
+            echo "needs_action=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_action=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment and apply needs-info label
+        if: steps.quality.outputs.needs_action == 'true'
+        uses: actions/github-script@v7
+        env:
+          RESULT_FILE: ${{ steps.quality.outputs.result_file }}
+        with:
+          script: |
+            const fs = require("fs");
+            const result = JSON.parse(fs.readFileSync(process.env.RESULT_FILE, "utf8"));
+            if (result.skipped) {
+              core.info("Check skipped for non-template issue body.");
+              return;
+            }
+
+            const bullets = result.deficiencies
+              .map((d) => `- ${d.en}\n  - ${d.zh}`)
+              .join("\n");
+
+            const body = [
+              "Thanks for opening this issue. Some required information appears to be missing or incomplete:",
+              "",
+              bullets,
+              "",
+              "Please update this issue with the details above. If we do not receive a reply from you within **7 days**, this issue will be **automatically closed**. You can **reopen** it at any time after you add the missing information.",
+              "",
+              "---",
+              "",
+              "感谢你提交 Issue。以下必要信息似乎缺失或不完整：",
+              "",
+              bullets,
+              "",
+              "请补充上述内容。若 **7 天内** 仍未收到你的回复，此 Issue 将被 **自动关闭**。补充信息后你可以 **随时重新打开**。",
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body,
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              labels: ["needs-info"],
+            });

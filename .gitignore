@@ -18,5 +18,6 @@ dist
 
 /certimate
 /certimate.exe
+/main
 /docker/data
 /pb_data
