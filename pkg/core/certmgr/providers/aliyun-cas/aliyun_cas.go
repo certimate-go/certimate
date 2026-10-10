@@ -120,7 +120,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			// 对比证书内容
 			getUserCertificateDetailReq := &alicas.GetUserCertificateDetailRequest{
 				CertId:     certItem.CertificateId,
-				CertFilter: tea.Bool(true),
+				CertFilter: tea.Bool(false),
 			}
 			getUserCertificateDetailResp, err := c.sdkClient.GetUserCertificateDetailWithContext(ctx, getUserCertificateDetailReq, &dara.RuntimeOptions{})
 			c.logger.Debug("sdk request 'cas.GetUserCertificateDetail'", slog.Any("request", getUserCertificateDetailReq), slog.Any("response", getUserCertificateDetailResp))
