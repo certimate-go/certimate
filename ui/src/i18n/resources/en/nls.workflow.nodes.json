@@ -866,11 +866,7 @@
       "aliyun_mse_domain": {
         "label": "Alibaba Cloud MSE gateway domain",
         "placeholder": "Enter the domain configured in the gateway",
-        "help": "Deploys the certificate to matching existing domains in this gateway. Matching by certificate selects all domains covered by the certificate. HTTP domains will have HTTPS enabled. The certificate must cover every matched domain; the default catch-all domain (*) is excluded."
-      },
-      "aliyun_mse_force_https": {
-        "label": "Force HTTPS",
-        "help": "On deployment, this setting overrides the existing redirect settings for all matching domains. Enable it to redirect HTTP requests to HTTPS; disable it to turn off forced redirects while keeping HTTPS available."
+        "help": "Deploys the certificate to matching existing domains in this gateway. Matching by certificate selects all domains covered by the certificate. HTTP domains will have HTTPS enabled without forced redirects. Existing HTTPS domains keep their redirect and TLS settings. The certificate must cover every matched domain; the default catch-all domain (*) is excluded."
       },
       "aliyun_nlb_region": {
         "label": "Alibaba Cloud region",

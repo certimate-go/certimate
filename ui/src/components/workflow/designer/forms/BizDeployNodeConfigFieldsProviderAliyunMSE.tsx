@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input, Radio, Switch } from "antd";
+import { Form, Input, Radio } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -73,16 +73,6 @@ const BizDeployNodeConfigFieldsProviderAliyunMSE = () => {
           <Input placeholder={t("workflow_node.deploy.form.aliyun_mse_domain.placeholder")} />
         </Form.Item>
       </Show>
-
-      <Form.Item
-        name={[parentNamePath, "forceHttps"]}
-        initialValue={initialValues.forceHttps}
-        label={t("workflow_node.deploy.form.aliyun_mse_force_https.label")}
-        extra={t("workflow_node.deploy.form.aliyun_mse_force_https.help")}
-        rules={[formRule]}
-      >
-        <Switch />
-      </Form.Item>
     </>
   );
 };
@@ -93,7 +83,6 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
     gatewayId: "",
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domain: "",
-    forceHttps: false,
   };
 };
 
@@ -106,7 +95,6 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
       gatewayId: z.string().trim().nonempty(),
       domainMatchPattern: z.enum([DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN]).default(DOMAIN_MATCH_PATTERN_EXACT),
       domain: z.string().trim().nullish(),
-      forceHttps: z.boolean().nullish(),
     })
     .superRefine((values, ctx) => {
       if (values.domainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN && !isDomain(values.domain ?? "", { allowWildcard: true })) {

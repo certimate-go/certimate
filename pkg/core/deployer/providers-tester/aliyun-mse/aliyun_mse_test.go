@@ -21,7 +21,6 @@ var (
 	fGatewayId          string
 	fDomainMatchPattern string
 	fDomain             string
-	fForceHttps         bool
 )
 
 func init() {
@@ -33,7 +32,6 @@ func init() {
 	fp.DefineString(&fGatewayId, "GATEWAYID")
 	fp.DefineString(&fDomainMatchPattern, "DOMAINMATCHPATTERN")
 	fp.DefineString(&fDomain, "DOMAIN")
-	fp.DefineBool(&fForceHttps, "FORCEHTTPS")
 }
 
 /*
@@ -47,8 +45,7 @@ Shell command to run this test (enables HTTPS and updates the certificate for se
 	--ALIYUNMSE_REGION="cn-hangzhou" \
 	--ALIYUNMSE_GATEWAYID="gw-your-test-gateway" \
 	--ALIYUNMSE_DOMAINMATCHPATTERN="exact" \
-	--ALIYUNMSE_DOMAIN="example.com" \
-	--ALIYUNMSE_FORCEHTTPS=false
+	--ALIYUNMSE_DOMAIN="example.com"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
@@ -60,7 +57,6 @@ func TestProvider(t *testing.T) {
 			GatewayId:          fGatewayId,
 			DomainMatchPattern: fDomainMatchPattern,
 			Domain:             fDomain,
-			ForceHttps:         fForceHttps,
 		})
 		require.NoError(t, err)
 		tester.Deploy(t, provider, tester.DeployInput{CertPath: fTestCertPath, KeyPath: fTestKeyPath})

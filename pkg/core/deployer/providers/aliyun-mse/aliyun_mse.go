@@ -4,15 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strconv"
 	"strings"
-	"time"
 
 	aliopen "github.com/alibabacloud-go/darabonba-openapi/v2/client"
-	alimse "github.com/alibabacloud-go/mse-20190531/v5/client"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
+
+	alimse "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/mse-20190531/v5/client"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
@@ -20,7 +19,6 @@ import (
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
-	xwait "github.com/certimate-go/certimate/pkg/utils/wait"
 )
 
 type (
@@ -38,8 +36,6 @@ type DeployerConfig struct {
 	// 零值时默认值 [DOMAIN_MATCH_PATTERN_EXACT]。
 	DomainMatchPattern string `json:"domainMatchPattern,omitempty"`
 	Domain             string `json:"domain,omitempty"`
-	// 控制匹配域名是否强制将 HTTP 请求跳转到 HTTPS。
-	ForceHttps bool `json:"forceHttps,omitempty"`
 }
 
 type Deployer struct {
@@ -159,9 +155,6 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 	}); err != nil {
 		return nil, err
 	}
-	if err := d.waitForCertificate(ctx, domains, certIdentifier); err != nil {
-		return nil, err
-	}
 	return &DeployResult{}, nil
 }
 
@@ -183,48 +176,41 @@ func (d *Deployer) getAllDomains(ctx context.Context) ([]*alimse.ListGatewayDoma
 }
 
 func (d *Deployer) updateDomainCertificate(ctx context.Context, domain *alimse.ListGatewayDomainResponseBodyData, certIdentifier string) error {
-	// HTTP 首次启用 HTTPS 使用服务端默认配置，仅显式控制强制跳转。
+	if strings.EqualFold(tea.StringValue(domain.Protocol), "HTTPS") {
+		if tea.StringValue(domain.CertIdentifier) == certIdentifier {
+			d.logger.Info("ssl certificate already deployed", slog.String("domain", tea.StringValue(domain.Name)))
+			return nil
+		}
+
+		// 仅更换证书，避免覆盖域名的跳转、HTTP/2、TLS 和双向认证配置。
+		// REF: https://help.aliyun.com/zh/mse/developer-reference/api-mse-2019-05-31-updatesslcert
+		req := &alimse.UpdateSSLCertRequest{
+			GatewayUniqueId: tea.String(d.config.GatewayId),
+			DomainId:        domain.Id,
+			CertIdentifier:  tea.String(certIdentifier),
+		}
+		resp, err := d.sdkClient.UpdateSSLCertWithContext(ctx, req, &dara.RuntimeOptions{})
+		d.logger.Debug("sdk request 'mse.UpdateSSLCert'", slog.Any("request", req), slog.Any("response", resp))
+		if err != nil {
+			return fmt.Errorf("failed to execute sdk request 'mse.UpdateSSLCert': %w", err)
+		}
+		if resp == nil || resp.Body == nil {
+			return fmt.Errorf("empty response from 'mse.UpdateSSLCert'")
+		}
+		if !tea.BoolValue(resp.Body.Success) || !tea.BoolValue(resp.Body.Data) {
+			return fmt.Errorf("mse.UpdateSSLCert failed: code=%d, message=%s, requestId=%s", tea.Int32Value(resp.Body.Code), tea.StringValue(resp.Body.Message), tea.StringValue(resp.Body.RequestId))
+		}
+		return nil
+	}
+
+	// HTTP 首次启用 HTTPS 使用服务端默认 TLS 配置，不启用强制跳转。
 	// REF: https://help.aliyun.com/zh/mse/developer-reference/api-mse-2019-05-31-updategatewaydomain
 	req := &alimse.UpdateGatewayDomainRequest{
 		GatewayUniqueId: tea.String(d.config.GatewayId),
 		Id:              domain.Id,
 		Protocol:        tea.String("HTTPS"),
 		CertIdentifier:  tea.String(certIdentifier),
-		MustHttps:       tea.Bool(d.config.ForceHttps),
-	}
-	if strings.EqualFold(tea.StringValue(domain.Protocol), "HTTPS") {
-		// 修改已有 HTTPS 域名的跳转设置时，保留其 HTTP/2、TLS 和双向认证配置。
-		// REF: https://help.aliyun.com/zh/mse/developer-reference/api-mse-2019-05-31-getgatewaydomaindetail
-		getReq := &alimse.GetGatewayDomainDetailRequest{
-			GatewayUniqueId: tea.String(d.config.GatewayId),
-			Id:              tea.String(strconv.FormatInt(tea.Int64Value(domain.Id), 10)),
-		}
-		getResp, err := d.sdkClient.GetGatewayDomainDetailWithContext(ctx, getReq, &dara.RuntimeOptions{})
-		d.logger.Debug("sdk request 'mse.GetGatewayDomainDetail'", slog.Any("request", getReq), slog.Any("response", getResp))
-		if err != nil {
-			return fmt.Errorf("failed to execute sdk request 'mse.GetGatewayDomainDetail': %w", err)
-		}
-		if getResp == nil || getResp.Body == nil {
-			return fmt.Errorf("empty response from 'mse.GetGatewayDomainDetail'")
-		}
-		if !tea.BoolValue(getResp.Body.Success) {
-			return fmt.Errorf("mse.GetGatewayDomainDetail failed: code=%d, message=%s, requestId=%s", tea.Int32Value(getResp.Body.Code), tea.StringValue(getResp.Body.Message), tea.StringValue(getResp.Body.RequestId))
-		}
-		detail := getResp.Body.Data
-		if detail == nil || tea.Int64Value(detail.Id) != tea.Int64Value(domain.Id) {
-			return fmt.Errorf("missing or mismatched domain in 'mse.GetGatewayDomainDetail' response")
-		}
-		req.Http2 = detail.Http2
-		req.TlsMin = detail.TlsMin
-		req.TlsMax = detail.TlsMax
-		req.MtlsEnabled = detail.MtlsEnabled
-		req.CaCertIdentifier = detail.CaCertIdentifier
-		if detail.TlsCipherSuitesConfig != nil {
-			req.TlsCipherSuitesConfigJSON = &alimse.UpdateGatewayDomainRequestTlsCipherSuitesConfigJSON{
-				ConfigType:      detail.TlsCipherSuitesConfig.ConfigType,
-				TlsCipherSuites: detail.TlsCipherSuitesConfig.TlsCipherSuites,
-			}
-		}
+		MustHttps:       tea.Bool(false),
 	}
 	resp, err := d.sdkClient.UpdateGatewayDomainWithContext(ctx, req, &dara.RuntimeOptions{})
 	d.logger.Debug("sdk request 'mse.UpdateGatewayDomain'", slog.Any("request", req), slog.Any("response", resp))
@@ -236,37 +222,6 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain *alimse.L
 	}
 	if !tea.BoolValue(resp.Body.Success) || tea.Int64Value(resp.Body.Data) != tea.Int64Value(domain.Id) {
 		return fmt.Errorf("mse.UpdateGatewayDomain failed: code=%d, message=%s, requestId=%s", tea.Int32Value(resp.Body.Code), tea.StringValue(resp.Body.Message), tea.StringValue(resp.Body.RequestId))
-	}
-	return nil
-}
-
-func (d *Deployer) waitForCertificate(ctx context.Context, domains []*alimse.ListGatewayDomainResponseBodyData, certIdentifier string) error {
-	ctx, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel()
-	_, err := xwait.UntilWithContext(ctx, func(ctx context.Context, _ int) (bool, error) {
-		current, err := d.getAllDomains(ctx)
-		if err != nil {
-			return false, err
-		}
-		for _, target := range domains {
-			found := false
-			for _, domain := range current {
-				if domain != nil && tea.Int64Value(domain.Id) == tea.Int64Value(target.Id) && tea.StringValue(domain.CertIdentifier) == certIdentifier && strings.EqualFold(tea.StringValue(domain.Protocol), "HTTPS") {
-					if tea.BoolValue(domain.MustHttps) != d.config.ForceHttps {
-						continue
-					}
-					found = true
-					break
-				}
-			}
-			if !found {
-				return false, nil
-			}
-		}
-		return true, nil
-	}, 2*time.Second)
-	if err != nil {
-		return fmt.Errorf("failed to verify MSE domain certificate bindings: %w", err)
 	}
 	return nil
 }

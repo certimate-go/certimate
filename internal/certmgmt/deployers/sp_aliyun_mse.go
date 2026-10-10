@@ -23,7 +23,6 @@ func init() {
 			GatewayId:          xmaps.GetString(options.ProviderExtendedConfig, "gatewayId"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),
-			ForceHttps:         xmaps.GetBool(options.ProviderExtendedConfig, "forceHttps"),
 		})
 	})
 }
