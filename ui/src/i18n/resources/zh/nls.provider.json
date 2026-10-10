@@ -52,6 +52,7 @@
   "aliyun_fc": "阿里云 - 函数计算 FC",
   "aliyun_ga": "阿里云 - 全球加速 GA",
   "aliyun_live": "阿里云 - 视频直播 Live",
+  "aliyun_mse": "阿里云 - MSE 云原生网关",
   "aliyun_nlb": "阿里云 - 网络型负载均衡 NLB",
   "aliyun_oss": "阿里云 - 对象存储 OSS",
   "aliyun_vod": "阿里云 - 视频点播 VOD",

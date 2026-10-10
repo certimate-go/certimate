@@ -52,6 +52,7 @@
   "aliyun_fc": "Alibaba Cloud - FC (Function Compute)",
   "aliyun_ga": "Alibaba Cloud - GA (Global Accelerator)",
   "aliyun_live": "Alibaba Cloud - ApsaraVideo Live",
+  "aliyun_mse": "Alibaba Cloud - MSE Cloud-native Gateway",
   "aliyun_nlb": "Alibaba Cloud - NLB (Network Load Balancer)",
   "aliyun_oss": "Alibaba Cloud - OSS (Object Storage Service)",
   "aliyun_vod": "Alibaba Cloud - ApsaraVideo VOD (Video on Demand)",

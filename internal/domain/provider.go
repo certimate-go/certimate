@@ -333,6 +333,7 @@ const (
 	DeploymentProviderTypeAliyunFC                      = DeploymentProviderType(AccessProviderTypeAliyun + "-fc")
 	DeploymentProviderTypeAliyunGA                      = DeploymentProviderType(AccessProviderTypeAliyun + "-ga")
 	DeploymentProviderTypeAliyunLive                    = DeploymentProviderType(AccessProviderTypeAliyun + "-live")
+	DeploymentProviderTypeAliyunMSE                     = DeploymentProviderType(AccessProviderTypeAliyun + "-mse")
 	DeploymentProviderTypeAliyunNLB                     = DeploymentProviderType(AccessProviderTypeAliyun + "-nlb")
 	DeploymentProviderTypeAliyunOSS                     = DeploymentProviderType(AccessProviderTypeAliyun + "-oss")
 	DeploymentProviderTypeAliyunVOD                     = DeploymentProviderType(AccessProviderTypeAliyun + "-vod")

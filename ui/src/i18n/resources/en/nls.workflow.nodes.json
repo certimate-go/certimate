@@ -855,6 +855,18 @@
         "label": "Alibaba Cloud live streaming domain",
         "placeholder": "Please enter Alibaba Cloud live streaming domain name"
       },
+      "aliyun_mse_region": {
+        "label": "Alibaba Cloud service region",
+        "placeholder": "Enter the MSE gateway region (e.g., cn-hangzhou)"
+      },
+      "aliyun_mse_gateway_id": {
+        "label": "Alibaba Cloud MSE gateway ID",
+        "placeholder": "Enter the MSE gateway ID (gw-...)"
+      },
+      "aliyun_mse_domain": {
+        "label": "Alibaba Cloud MSE gateway domain",
+        "placeholder": "Enter the domain configured in the gateway"
+      },
       "aliyun_nlb_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud NLB region (e.g. cn-hangzhou)",

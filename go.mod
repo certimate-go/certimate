@@ -21,6 +21,7 @@ require (
 	github.com/alibabacloud-go/fc-open-20210406/v2 v2.0.12
 	github.com/alibabacloud-go/ga-20191120/v4 v4.0.2
 	github.com/alibabacloud-go/live-20161101/v3 v3.0.1
+	github.com/alibabacloud-go/mse-20190531/v5 v5.24.0
 	github.com/alibabacloud-go/nlb-20220430/v4 v4.1.3
 	github.com/alibabacloud-go/openapi-util v0.1.2
 	github.com/alibabacloud-go/slb-20140515/v4 v4.0.14
