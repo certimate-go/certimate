@@ -71,6 +71,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		AccessKeyId:     tea.String(config.AccessKeyId),
 		AccessKeySecret: tea.String(config.AccessKeySecret),
 		RegionId:        tea.String(config.Region),
+		Endpoint:        tea.String(fmt.Sprintf("mse.%s.aliyuncs.com", config.Region)),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
