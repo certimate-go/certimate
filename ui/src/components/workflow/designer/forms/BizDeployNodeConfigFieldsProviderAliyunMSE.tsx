@@ -46,12 +46,11 @@ const BizDeployNodeConfigFieldsProviderAliyunMSE = () => {
         initialValue={initialValues.domainMatchPattern}
         label={t("workflow_node.deploy.form.shared_domain_match_pattern.label")}
         extra={
-          <>
-            <div>{t("workflow_node.deploy.form.aliyun_mse_domain.help")}</div>
-            {fieldDomainMatchPattern === DOMAIN_MATCH_PATTERN_EXACT && (
-              <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.option.exact.help.wildcard") }}></span>
-            )}
-          </>
+          fieldDomainMatchPattern === DOMAIN_MATCH_PATTERN_EXACT ? (
+            <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.option.exact.help.wildcard") }}></span>
+          ) : (
+            void 0
+          )
         }
         rules={[formRule]}
       >
