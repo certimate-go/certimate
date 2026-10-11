@@ -204,7 +204,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain *alimse.L
 		return nil
 	}
 
-	// HTTP 首次启用 HTTPS 使用服务端默认 TLS 配置，不启用强制跳转。
+	// HTTP 启用 HTTPS 必须显式传入 TLS 版本，优先沿用域名已有配置。
 	// REF: https://help.aliyun.com/zh/mse/developer-reference/api-mse-2019-05-31-updategatewaydomain
 	req := &alimse.UpdateGatewayDomainRequest{
 		GatewayUniqueId: tea.String(d.config.GatewayId),
@@ -212,6 +212,8 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain *alimse.L
 		Protocol:        tea.String("HTTPS"),
 		CertIdentifier:  tea.String(certIdentifier),
 		MustHttps:       tea.Bool(false),
+		TlsMin:          tea.String(lo.CoalesceOrEmpty(tea.StringValue(domain.TlsMin), "TLS 1.2")),
+		TlsMax:          tea.String(lo.CoalesceOrEmpty(tea.StringValue(domain.TlsMax), "TLS 1.3")),
 	}
 	resp, err := d.sdkClient.UpdateGatewayDomainWithContext(ctx, req, &dara.RuntimeOptions{})
 	d.logger.Debug("sdk request 'mse.UpdateGatewayDomain'", slog.Any("request", req), slog.Any("response", resp))

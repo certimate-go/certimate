@@ -38,6 +38,8 @@ func TestUpdateDomainCertificate(t *testing.T) {
 		name        string
 		protocol    string
 		certificate string
+		tlsMin      string
+		tlsMax      string
 		action      string
 		request     url.Values
 		response    string
@@ -48,6 +50,17 @@ func TestUpdateDomainCertificate(t *testing.T) {
 			request: url.Values{
 				"GatewayUniqueId": {"gw-test"}, "Id": {"42"}, "CertIdentifier": {"new-cn-hangzhou"},
 				"Protocol": {"HTTPS"}, "MustHttps": {"false"},
+				"TlsMin": {"TLS 1.2"}, "TlsMax": {"TLS 1.3"},
+			},
+			response: `{"Success":true,"Data":42}`,
+		},
+		{
+			name: "enable HTTPS with existing TLS versions", protocol: "HTTP", tlsMin: "TLS 1.2", tlsMax: "TLS 1.2",
+			action: "UpdateGatewayDomain",
+			request: url.Values{
+				"GatewayUniqueId": {"gw-test"}, "Id": {"42"}, "CertIdentifier": {"new-cn-hangzhou"},
+				"Protocol": {"HTTPS"}, "MustHttps": {"false"},
+				"TlsMin": {"TLS 1.2"}, "TlsMax": {"TLS 1.2"},
 			},
 			response: `{"Success":true,"Data":42}`,
 		},
@@ -77,6 +90,7 @@ func TestUpdateDomainCertificate(t *testing.T) {
 			err := d.updateDomainCertificate(t.Context(), &alimse.ListGatewayDomainResponseBodyData{
 				Id: tea.Int64(42), Name: tea.String("example.com"), Protocol: tea.String(tc.protocol),
 				CertIdentifier: tea.String(tc.certificate), MustHttps: tea.Bool(true),
+				TlsMin: tea.String(tc.tlsMin), TlsMax: tea.String(tc.tlsMax),
 			}, "new-cn-hangzhou")
 			require.NoError(t, err)
 			if tc.action == "" {
