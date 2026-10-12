@@ -1,6 +1,8 @@
 package client
 
-import "github.com/alibabacloud-go/mse-20190531/v5/client"
+import (
+	"github.com/alibabacloud-go/mse-20190531/v5/client"
+)
 
 type ListGatewayDomainRequest = client.ListGatewayDomainRequest
 

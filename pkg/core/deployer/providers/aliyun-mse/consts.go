@@ -1,6 +1,11 @@
 package aliyunmse
 
 const (
+	// 服务类型：云原生网关。
+	SERVICE_TYPE_CLOUDNATIVE = "cloudnative"
+)
+
+const (
 	// 匹配模式：精确匹配。
 	DOMAIN_MATCH_PATTERN_EXACT = "exact"
 	// 匹配模式：通配符匹配。

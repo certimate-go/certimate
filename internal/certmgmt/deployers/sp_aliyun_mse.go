@@ -20,6 +20,7 @@ func init() {
 			AccessKeySecret:    credentials.AccessKeySecret,
 			ResourceGroupId:    credentials.ResourceGroupId,
 			Region:             xmaps.GetString(options.ProviderExtendedConfig, "region"),
+			ServiceType:        xmaps.GetString(options.ProviderExtendedConfig, "serviceType"),
 			GatewayId:          xmaps.GetString(options.ProviderExtendedConfig, "gatewayId"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
 			Domain:             xmaps.GetString(options.ProviderExtendedConfig, "domain"),

@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input, Radio } from "antd";
+import { Form, Input, Radio, Select } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -8,69 +8,85 @@ import { isDomain } from "@/utils/validator";
 
 import { useFormNestedFieldsContext } from "./_context";
 
+const SERVICE_TYPE_CLOUDNATIVE = "cloudnative" as const;
+
 const DOMAIN_MATCH_PATTERN_EXACT = "exact" as const;
 const DOMAIN_MATCH_PATTERN_WILDCARD = "wildcard" as const;
 const DOMAIN_MATCH_PATTERN_CERTSAN = "certsan" as const;
 
 const BizDeployNodeConfigFieldsProviderAliyunMSE = () => {
   const { i18n, t } = useTranslation();
+
   const { parentNamePath } = useFormNestedFieldsContext();
-  const formSchema = z.object({ [parentNamePath]: getSchema({ i18n }) });
+  const formSchema = z.object({
+    [parentNamePath]: getSchema({ i18n }),
+  });
   const formRule = createSchemaFieldRule(formSchema);
   const formInst = Form.useFormInstance();
   const initialValues = getInitialValues();
+
+  const fieldServiceType = Form.useWatch([parentNamePath, "serviceType"], formInst);
   const fieldDomainMatchPattern = Form.useWatch([parentNamePath, "domainMatchPattern"], { form: formInst, preserve: true });
 
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "region"]}
-        initialValue={initialValues.region}
-        label={t("workflow_node.deploy.form.aliyun_mse_region.label")}
+        name={[parentNamePath, "serviceType"]}
+        initialValue={initialValues.serviceType}
+        label={t("workflow_node.deploy.form.aliyun_mse_service_type.label")}
         rules={[formRule]}
       >
-        <Input placeholder={t("workflow_node.deploy.form.aliyun_mse_region.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
-        name={[parentNamePath, "gatewayId"]}
-        initialValue={initialValues.gatewayId}
-        label={t("workflow_node.deploy.form.aliyun_mse_gateway_id.label")}
-        rules={[formRule]}
-      >
-        <Input placeholder={t("workflow_node.deploy.form.aliyun_mse_gateway_id.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
-        name={[parentNamePath, "domainMatchPattern"]}
-        initialValue={initialValues.domainMatchPattern}
-        label={t("workflow_node.deploy.form.shared_domain_match_pattern.label")}
-        extra={
-          fieldDomainMatchPattern === DOMAIN_MATCH_PATTERN_EXACT ? (
-            <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.option.exact.help.wildcard") }}></span>
-          ) : (
-            void 0
-          )
-        }
-        rules={[formRule]}
-      >
-        <Radio.Group
-          options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
-            label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
+        <Select
+          options={[SERVICE_TYPE_CLOUDNATIVE].map((s) => ({
             value: s,
+            label: t(`workflow_node.deploy.form.aliyun_mse_service_type.option.${s}.label`),
           }))}
+          placeholder={t("workflow_node.deploy.form.aliyun_mse_service_type.placeholder")}
         />
       </Form.Item>
 
-      <Show when={fieldDomainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN}>
+      <Show when={fieldServiceType === SERVICE_TYPE_CLOUDNATIVE}>
         <Form.Item
-          name={[parentNamePath, "domain"]}
-          initialValue={initialValues.domain}
-          label={t("workflow_node.deploy.form.aliyun_mse_domain.label")}
+          name={[parentNamePath, "gatewayId"]}
+          initialValue={initialValues.gatewayId}
+          label={t("workflow_node.deploy.form.aliyun_mse_gateway_id.label")}
+          rules={[formRule]}
+          tooltip={<span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.aliyun_mse_gateway_id.tooltip") }}></span>}
+        >
+          <Input placeholder={t("workflow_node.deploy.form.aliyun_mse_gateway_id.placeholder")} />
+        </Form.Item>
+
+        <Form.Item
+          name={[parentNamePath, "domainMatchPattern"]}
+          initialValue={initialValues.domainMatchPattern}
+          label={t("workflow_node.deploy.form.shared_domain_match_pattern.label")}
+          extra={
+            fieldDomainMatchPattern === DOMAIN_MATCH_PATTERN_EXACT ? (
+              <span dangerouslySetInnerHTML={{ __html: t("workflow_node.deploy.form.shared_domain_match_pattern.option.exact.help.wildcard") }}></span>
+            ) : (
+              void 0
+            )
+          }
           rules={[formRule]}
         >
-          <Input placeholder={t("workflow_node.deploy.form.aliyun_mse_domain.placeholder")} />
+          <Radio.Group
+            options={[DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN].map((s) => ({
+              label: t(`workflow_node.deploy.form.shared_domain_match_pattern.option.${s}.label`),
+              value: s,
+            }))}
+          />
         </Form.Item>
+
+        <Show when={fieldDomainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN}>
+          <Form.Item
+            name={[parentNamePath, "domain"]}
+            initialValue={initialValues.domain}
+            label={t("workflow_node.deploy.form.aliyun_mse_domain.label")}
+            rules={[formRule]}
+          >
+            <Input placeholder={t("workflow_node.deploy.form.aliyun_mse_domain.placeholder")} />
+          </Form.Item>
+        </Show>
       </Show>
     </>
   );
@@ -79,6 +95,7 @@ const BizDeployNodeConfigFieldsProviderAliyunMSE = () => {
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
+    serviceType: SERVICE_TYPE_CLOUDNATIVE,
     gatewayId: "",
     domainMatchPattern: DOMAIN_MATCH_PATTERN_EXACT,
     domain: "",
@@ -90,18 +107,48 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
   return z
     .object({
-      region: z.string().trim().nonempty(),
-      gatewayId: z.string().trim().nonempty(),
+      serviceType: z.enum([SERVICE_TYPE_CLOUDNATIVE]),
+      region: z.string().nonempty(),
+      gatewayId: z.string().nullish(),
       domainMatchPattern: z.enum([DOMAIN_MATCH_PATTERN_EXACT, DOMAIN_MATCH_PATTERN_WILDCARD, DOMAIN_MATCH_PATTERN_CERTSAN]).default(DOMAIN_MATCH_PATTERN_EXACT),
-      domain: z.string().trim().nullish(),
+      domain: z.string().nullish(),
     })
     .superRefine((values, ctx) => {
-      if (values.domainMatchPattern !== DOMAIN_MATCH_PATTERN_CERTSAN && !isDomain(values.domain ?? "", { allowWildcard: true })) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("common.errmsg.domain_invalid"),
-          path: ["domain"],
-        });
+      if (values.serviceType) {
+        switch (values.serviceType) {
+          case SERVICE_TYPE_CLOUDNATIVE:
+            {
+              const scGatewayId = z.string().nonempty();
+              const spGatewayId = scGatewayId.safeParse(values.gatewayId);
+              if (!spGatewayId.success) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: z.treeifyError(spGatewayId.error).errors.join(),
+                  path: ["gatewayId"],
+                });
+              }
+            }
+            break;
+        }
+      }
+
+      if (values.domainMatchPattern) {
+        switch (values.domainMatchPattern) {
+          case DOMAIN_MATCH_PATTERN_EXACT:
+          case DOMAIN_MATCH_PATTERN_WILDCARD:
+            {
+              const scDomain = z.string().refine((v) => isDomain(v, { allowWildcard: true }), t("common.errmsg.domain_invalid"));
+              const spDomain = scDomain.safeParse(values.domain);
+              if (!spDomain.success) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: z.treeifyError(spDomain.error).errors.join(),
+                  path: ["domain"],
+                });
+              }
+            }
+            break;
+        }
       }
     });
 };
