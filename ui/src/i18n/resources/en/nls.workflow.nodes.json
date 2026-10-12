@@ -855,6 +855,29 @@
         "label": "Alibaba Cloud live streaming domain",
         "placeholder": "Please enter Alibaba Cloud live streaming domain name"
       },
+      "aliyun_mse_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud MSE region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/mse/product-overview/supported-regions\" target=\"_blank\">https://www.alibabacloud.com/help/en/mse/product-overview/supported-regions</a>"
+      },
+      "aliyun_mse_service_type": {
+        "label": "Alibaba Cloud MSE service type",
+        "placeholder": "Please select Alibaba Cloud MSE service type",
+        "option": {
+          "cloudnative": {
+            "label": "Cloud-native API gateway"
+          }
+        }
+      },
+      "aliyun_mse_gateway_id": {
+        "label": "Alibaba Cloud MSE Cloud-native API gateway ID",
+        "placeholder": "Please enter Alibaba Cloud MSE Cloud-native API gateway ID",
+        "tooltip": "For more information, see <a href=\"https://mse.console.aliyun.com/#/microgw\" target=\"_blank\">https://mse.console.aliyun.com</a>"
+      },
+      "aliyun_mse_domain": {
+        "label": "Alibaba Cloud MSE Cloud-native API gateway binding domain",
+        "placeholder": "Please enter Alibaba Cloud MSE Cloud-native API gateway binding domain name"
+      },
       "aliyun_nlb_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud NLB region (e.g. cn-hangzhou)",
