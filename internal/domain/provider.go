@@ -92,6 +92,7 @@ const (
 	AccessProviderTypeLinode              = AccessProviderType("linode")
 	AccessProviderTypeLiteSSL             = AccessProviderType("litessl")
 	AccessProviderTypeLocal               = AccessProviderType("local")
+	AccessProviderTypeLuaDNS              = AccessProviderType("luadns")
 	AccessProviderTypeMatrix              = AccessProviderType("matrix")
 	AccessProviderTypeMattermost          = AccessProviderType("mattermost")
 	AccessProviderTypeMohua               = AccessProviderType("mohua")
@@ -248,6 +249,7 @@ const (
 	ACMEDns01ProviderTypeJDCloud           = ACMEDns01ProviderType(AccessProviderTypeJDCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeJDCloudDNS]
 	ACMEDns01ProviderTypeJDCloudDNS        = ACMEDns01ProviderType(AccessProviderTypeJDCloud + "-dns")
 	ACMEDns01ProviderTypeLinode            = ACMEDns01ProviderType(AccessProviderTypeLinode)
+	ACMEDns01ProviderTypeLuaDNS            = ACMEDns01ProviderType(AccessProviderTypeLuaDNS)
 	ACMEDns01ProviderTypeNamecheap         = ACMEDns01ProviderType(AccessProviderTypeNamecheap)
 	ACMEDns01ProviderTypeNameDotCom        = ACMEDns01ProviderType(AccessProviderTypeNameDotCom)
 	ACMEDns01ProviderTypeNameSilo          = ACMEDns01ProviderType(AccessProviderTypeNameSilo)
