@@ -419,6 +419,11 @@ type AccessConfigForLiteSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
+type AccessConfigForLuaDNS struct {
+	Username string `json:"username"`
+	ApiKey   string `json:"apiKey"`
+}
+
 type AccessConfigForMatrix struct {
 	ServerUrl   string `json:"serverUrl"`
 	UserId      string `json:"userId"`
