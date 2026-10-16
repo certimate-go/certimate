@@ -1,9 +1,10 @@
 name: "Issue help wanted check"
 
-on:
-  issues:
-    types:
-      - opened
+# 有 Bug，暂时关闭
+# on:
+#   issues:
+#     types:
+#       - opened
 
 permissions:
   issues: write
