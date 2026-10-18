@@ -193,7 +193,7 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 			keyPassphrase := config.KeyPassphrase
 			keyCertificate := config.KeyCertificate
 
-			signers, err := createSigners(key, keyPassphrase, keyCertificate)
+			signers, err := createSshSigners(key, keyPassphrase, keyCertificate)
 			if err != nil {
 				return nil, err
 			}
@@ -218,7 +218,7 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 	return ssh.NewClient(sshConn, chans, reqs), nil
 }
 
-func createSigners(key, keyPassphrase, keyCertificate string) ([]ssh.Signer, error) {
+func createSshSigners(key, keyPassphrase, keyCertificate string) ([]ssh.Signer, error) {
 	var signer ssh.Signer
 	var err error
 	if keyPassphrase != "" {
@@ -237,20 +237,19 @@ func createSigners(key, keyPassphrase, keyCertificate string) ([]ssh.Signer, err
 
 	parsed, _, _, _, err := ssh.ParseAuthorizedKey([]byte(keyCertificate))
 	if err != nil {
-		return nil, fmt.Errorf("ssh: failed to parse key certificate: %w", err)
+		return nil, err
 	}
 
 	cert, ok := parsed.(*ssh.Certificate)
 	if !ok {
-		return nil, fmt.Errorf("ssh: key certificate is not an OpenSSH certificate")
-	}
-	if cert.CertType != ssh.UserCert {
-		return nil, fmt.Errorf("ssh: key certificate is not a user certificate")
+		return nil, fmt.Errorf("key certificate is not an open-ssh certificate")
+	} else if cert.CertType != ssh.UserCert {
+		return nil, fmt.Errorf("key certificate is not a user certificate")
 	}
 
 	certSigner, err := ssh.NewCertSigner(cert, signer)
 	if err != nil {
-		return nil, fmt.Errorf("ssh: failed to create key certificate signer: %w", err)
+		return nil, err
 	}
 
 	return []ssh.Signer{certSigner, signer}, nil

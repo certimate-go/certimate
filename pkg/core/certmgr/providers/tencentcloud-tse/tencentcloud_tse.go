@@ -178,7 +178,7 @@ func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM s
 	createCloudNativeAPIGatewayCertificateReq.GatewayId = common.StringPtr(c.config.GatewayId)
 	createCloudNativeAPIGatewayCertificateReq.Name = common.StringPtr(certName)
 	createCloudNativeAPIGatewayCertificateReq.CertId = uploadCertificateResp.Response.CertificateId
-	createCloudNativeAPIGatewayCertificateReq.BindDomains = common.StringPtrs(lo.Ternary(len(c.config.Domains) != 0, c.config.Domains, certX509.DNSNames))
+	createCloudNativeAPIGatewayCertificateReq.BindDomains = common.StringPtrs(lo.CoalesceSliceOrEmpty(c.config.Domains, certX509.DNSNames))
 	createCloudNativeAPIGatewayCertificateResp, err := c.sdkClients.TSE.CreateCloudNativeAPIGatewayCertificateWithContext(ctx, createCloudNativeAPIGatewayCertificateReq)
 	c.logger.Debug("sdk request 'tse.CreateCloudNativeAPIGatewayCertificate'", slog.Any("request", createCloudNativeAPIGatewayCertificateReq), slog.Any("response", createCloudNativeAPIGatewayCertificateResp))
 	if err != nil {

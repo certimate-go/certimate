@@ -86,7 +86,6 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
           name={[parentNamePath, "keyCertificate"]}
           initialValue={initialValues.keyCertificate}
           label={t("access.form.ssh_key_certificate.label")}
-          tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.ssh_key_certificate.tooltip") }}></span>}
           rules={[formRule]}
         >
           <FileTextInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key_certificate.placeholder")} />
@@ -305,11 +304,19 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
               });
             }
 
-            const keyCertificate = values.keyCertificate?.trim() ?? "";
-            if (keyCertificate !== "" && !keyCertificate.includes("-cert-v01@openssh.com")) {
+            const scKeyCertificate = z
+              .string()
+              .max(20480)
+              .nullish()
+              .refine((v) => {
+                if (!v) return true;
+                return v.includes("-cert-v01@openssh.com");
+              }, t("access.form.ssh_key_certificate.errmsg.invalid"));
+            const spKeyCertificate = scKeyCertificate.safeParse(values.keyCertificate);
+            if (!spKeyCertificate.success) {
               ctx.addIssue({
                 code: "custom",
-                message: t("access.form.ssh_key_certificate.errmsg.invalid"),
+                message: z.treeifyError(spKeyCertificate.error).errors.join(),
                 path: ["keyCertificate"],
               });
             }
