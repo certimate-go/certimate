@@ -36,7 +36,8 @@ type ServerConfig struct {
 	// SSH 登录私钥。
 	SshKey string `json:"sshKey,omitempty"`
 	// SSH 登录私钥口令。
-	SshKeyPassphrase  string `json:"sshKeyPassphrase,omitempty"`
+	SshKeyPassphrase string `json:"sshKeyPassphrase,omitempty"`
+	// SSH 登录用户证书。
 	SshKeyCertificate string `json:"sshKeyCertificate,omitempty"`
 }
 
