@@ -100,7 +100,8 @@ def check_issue(body: str, labels: list[str] | None = None) -> CheckResult:
     deficiencies: list[Deficiency] = []
 
     version = sections.get("version", "")
-    if _invalid_version(version):
+    requires_version = kind in ("bug", "question") or "version" in sections
+    if requires_version and _invalid_version(version):
         deficiencies.append(
             Deficiency(
                 id="invalid_version",
