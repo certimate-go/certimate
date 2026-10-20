@@ -7,13 +7,14 @@ const (
 )
 
 type ServerConfig struct {
-	Host          string
-	Port          int
-	AuthMethod    AuthMethodType
-	Username      string
-	Password      string
-	Key           string
-	KeyPassphrase string
+	Host           string
+	Port           int
+	AuthMethod     AuthMethodType
+	Username       string
+	Password       string
+	Key            string
+	KeyPassphrase  string
+	KeyCertificate string
 }
 
 type Config struct {

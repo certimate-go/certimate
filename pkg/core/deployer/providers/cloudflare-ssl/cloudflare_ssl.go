@@ -1,7 +1,6 @@
 package cloudflaressl
 
 import (
-	"cmp"
 	"context"
 	"fmt"
 	"log/slog"
@@ -20,9 +19,8 @@ type (
 type DeployerConfig struct {
 	// Cloudflare API Token。
 	ApiToken string `json:"apiToken"`
-	// Cloudflare 环境。
+	// Cloudflare 部署环境。
 	// 选填。
-	// 零值时默认值 "production"。
 	Environment string `json:"environment,omitempty"`
 	// Cloudflare DNS 区域 ID。
 	ZoneId string `json:"zoneId"`
@@ -71,13 +69,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 	if d.config.CertificateId == "" {
 		// 新建自定义证书
-		// REF: https://developers.cf.com/api/resources/custom_certificates/methods/create
+		// REF: https://developers.cloudflare.com/api/resources/custom_certificates/methods/create
 		customCertificateCreateReq := &cloudflaresdk.CustomCertificateCreateRequest{
 			ZoneId:       d.config.ZoneId,
 			Certificate:  lo.ToPtr(certPEM),
 			PrivateKey:   lo.ToPtr(privkeyPEM),
 			BundleMethod: lo.ToPtr("ubiquitous"),
-			Deploy:       lo.ToPtr(cmp.Or(d.config.Environment, "production")),
+			Deploy:       lo.EmptyableToPtr(d.config.Environment),
 		}
 		customCertificateCreateResp, err := d.sdkClient.CustomCertificateCreateWithContext(ctx, customCertificateCreateReq)
 		d.logger.Debug("sdk request 'CustomCertificates.Create'", slog.Any("request", customCertificateCreateReq), slog.Any("response", customCertificateCreateResp))
@@ -93,7 +91,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 			Certificate:   lo.ToPtr(certPEM),
 			PrivateKey:    lo.ToPtr(privkeyPEM),
 			BundleMethod:  lo.ToPtr("ubiquitous"),
-			Deploy:        lo.ToPtr(cmp.Or(d.config.Environment, "production")),
+			Deploy:        lo.EmptyableToPtr(d.config.Environment),
 		}
 		customCertificateEditResp, err := d.sdkClient.CustomCertificateEditWithContext(ctx, customCertificateEditReq)
 		d.logger.Debug("sdk request 'CustomCertificates.Edit'", slog.Any("request", customCertificateEditReq), slog.Any("response", customCertificateEditResp))

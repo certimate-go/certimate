@@ -936,6 +936,15 @@
       "placeholder": "请输入 Linode AccessToken",
       "tooltip": "这是什么？请参阅 <a href=\"https://techdocs.akamai.com/linode-api/reference/get-started\" target=\"_blank\">https://techdocs.akamai.com/linode-api/reference/get-started</a>"
     },
+    "luadns_username": {
+      "label": "LuaDNS 用户名",
+      "placeholder": "请输入 LuaDNS 用户名"
+    },
+    "luadns_api_key": {
+      "label": "LuaDNS API Key",
+      "placeholder": "请输入 LuaDNS API Key",
+      "tooltip": "这是什么？请参阅 <a href=\"https://app.luadns.com/api_keys\" target=\"_blank\">https://app.luadns.com/api_keys</a>"
+    },
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
@@ -1432,6 +1441,13 @@
     "ssh_key_passphrase": {
       "label": "SSH 密钥口令（可选）",
       "placeholder": "请输入 SSH 密钥口令"
+    },
+    "ssh_key_certificate": {
+      "label": "SSH 用户证书（可选）",
+      "placeholder": "请输入 SSH 用户证书\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "errmsg": {
+        "invalid": "无效的 SSH 用户证书"
+      }
     },
     "ssh_jump_servers": {
       "label": "跳板机（可选）",

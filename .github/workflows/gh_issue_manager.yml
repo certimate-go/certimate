@@ -23,7 +23,7 @@ jobs:
   issue-manager:
     runs-on: ubuntu-latest
     steps:
-      - name: Manage issues with the "answered" label
+      - name: Manage issues with lifecycle labels
         uses: tiangolo/issue-manager@0.8.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

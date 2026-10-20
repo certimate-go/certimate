@@ -81,6 +81,15 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
         >
           <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.ssh_key_passphrase.placeholder")} />
         </Form.Item>
+
+        <Form.Item
+          name={[parentNamePath, "keyCertificate"]}
+          initialValue={initialValues.keyCertificate}
+          label={t("access.form.ssh_key_certificate.label")}
+          rules={[formRule]}
+        >
+          <FileTextInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key_certificate.placeholder")} />
+        </Form.Item>
       </Show>
 
       <Form.Item label={t("access.form.ssh_jump_servers.label")}>
@@ -204,6 +213,17 @@ const AccessConfigFormFieldsProviderSSH = ({ disabled }: { disabled?: boolean })
                         >
                           <Input.Password allowClear autoComplete="new-password" placeholder={t("access.form.ssh_key_passphrase.placeholder")} />
                         </Form.Item>
+
+                        <Form.Item
+                          name={[index, "keyCertificate"]}
+                          hidden={subfieldAuthMethod !== AUTH_METHOD_KEY}
+                          label={t("access.form.ssh_key_certificate.label")}
+                          tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.ssh_key_certificate.tooltip") }}></span>}
+                          shouldUpdate
+                          rules={[formRule]}
+                        >
+                          <FileTextInput allowClear autoSize={{ minRows: 1, maxRows: 5 }} placeholder={t("access.form.ssh_key_certificate.placeholder")} />
+                        </Form.Item>
                       </>
                     ),
                   };
@@ -254,6 +274,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
       password: z.string().nullish(),
       key: z.string().max(20480).nullish(),
       keyPassphrase: z.string().nullish(),
+      keyCertificate: z.string().max(20480).nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.authMethod) {
@@ -280,6 +301,23 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
                 code: "custom",
                 message: z.treeifyError(spKey.error).errors.join(),
                 path: ["key"],
+              });
+            }
+
+            const scKeyCertificate = z
+              .string()
+              .max(20480)
+              .nullish()
+              .refine((v) => {
+                if (!v) return true;
+                return v.includes("-cert-v01@openssh.com");
+              }, t("access.form.ssh_key_certificate.errmsg.invalid"));
+            const spKeyCertificate = scKeyCertificate.safeParse(values.keyCertificate);
+            if (!spKeyCertificate.success) {
+              ctx.addIssue({
+                code: "custom",
+                message: z.treeifyError(spKeyCertificate.error).errors.join(),
+                path: ["keyCertificate"],
               });
             }
           }

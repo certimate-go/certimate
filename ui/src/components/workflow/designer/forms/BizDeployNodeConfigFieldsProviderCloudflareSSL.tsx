@@ -57,7 +57,6 @@ const BizDeployNodeConfigFieldsProviderCloudflareSSL = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    environment: "production",
     zoneId: "",
   };
 };

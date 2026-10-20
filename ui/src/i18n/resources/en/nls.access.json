@@ -939,6 +939,15 @@
     "litessl_eab": {
       "guide": "Learn more about using EAB key in LiteSSL: <br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
+    "luadns_username": {
+      "label": "LuaDNS username",
+      "placeholder": "Please enter LuaDNS username"
+    },
+    "luadns_api_key": {
+      "label": "LuaDNS API key",
+      "placeholder": "Please enter LuaDNS API key",
+      "tooltip": "For more information, see <a href=\"https://app.luadns.com/api_keys\" target=\"_blank\">https://app.luadns.com/api_keys</a>"
+    },
     "matrix_server_url": {
       "label": "Matrix server URL",
       "placeholder": "Please enter Matrix server URL"
@@ -1432,6 +1441,13 @@
     "ssh_key_passphrase": {
       "label": "SSH key passphrase (Optional)",
       "placeholder": "Please enter SSH key passphrase"
+    },
+    "ssh_key_certificate": {
+      "label": "SSH user certificate (Optional)",
+      "placeholder": "Please enter SSH user certificate\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "errmsg": {
+        "invalid": "Invalid SSH user certificate"
+      }
     },
     "ssh_jump_servers": {
       "label": "Jump servers (Optional)",
