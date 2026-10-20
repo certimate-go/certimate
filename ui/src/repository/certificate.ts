@@ -9,6 +9,7 @@ const pbco = pb.collection(COLLECTION_NAME_CERTIFICATE);
 const _commonFields = [
   "id",
   "source",
+  "ca",
   "serialNumber",
   "subjectName",
   "subjectAltNames",

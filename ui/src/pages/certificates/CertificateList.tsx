@@ -205,9 +205,9 @@ const CertificateList = () => {
               },
               {
                 key: "revoke",
-                label: t("certificate.action.revoke.menu"),
+                label: record.ca === "tencentcloud" ? t("certificate.action.revoke.tencentcloud") : t("certificate.action.revoke.menu"),
                 danger: true,
-                disabled: record.source !== CERTIFICATE_SOURCES.REQUEST || record.isRevoked,
+                disabled: record.source !== CERTIFICATE_SOURCES.REQUEST || record.ca === "tencentcloud" || record.isRevoked,
                 icon: (
                   <span className="anticon scale-125">
                     <IconShieldCancel size="1em" />

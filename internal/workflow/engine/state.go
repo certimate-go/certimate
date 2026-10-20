@@ -286,7 +286,8 @@ const (
 )
 
 const (
-	stateIOTypeRef = "ref"
+	stateIOTypeRef   = "ref"
+	stateIOTypePlain = "plain"
 )
 
 const (

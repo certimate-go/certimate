@@ -54,9 +54,10 @@ const (
 type bizApplyNodeExecutor struct {
 	nodeExecutor
 
-	accessRepo      accessRepository
-	certificateRepo certificateRepository
-	wfoutputRepo    workflowOutputRepository
+	accessRepo            accessRepository
+	certificateRepo       certificateRepository
+	wfoutputRepo          workflowOutputRepository
+	newTencentCloudClient tencentCloudClientFactory
 }
 
 func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExecutionResult, error) {
@@ -64,6 +65,30 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 
 	nodeCfg := execCtx.Node.Data.Config.AsBizApply()
 	ne.logger.Info("ready to request certificate ...", slog.Any("config", nodeCfg))
+	if nodeCfg.Source == "tencentcloud" {
+		request := tencentCloudRequestFromNode(&nodeCfg)
+		if err := request.Validate(); err != nil {
+			return execRes, err
+		}
+		if nodeCfg.TencentCloudAccessId == "" {
+			return execRes, fmt.Errorf("Tencent Cloud access is required")
+		}
+		if request.DvAuthMethod == "DNS" {
+			if nodeCfg.ProviderAccessId == "" {
+				return execRes, fmt.Errorf("DNS provider access is required")
+			}
+			switch nodeCfg.Provider {
+			case "tencentcloud-dns", "aliyun-dns", "cloudflare":
+			default:
+				return execRes, fmt.Errorf("unsupported Tencent Cloud validation DNS provider: %q", nodeCfg.Provider)
+			}
+			if nodeCfg.DnsTTL < 0 || nodeCfg.DnsTTL > 86400 {
+				return execRes, fmt.Errorf("DNS TTL must be between 0 and 86400 seconds")
+			}
+		}
+	} else if nodeCfg.Source != "acme" {
+		return execRes, fmt.Errorf("unsupported certificate application source: %q", nodeCfg.Source)
+	}
 
 	// 查询上次执行结果
 	lastOutput, lastCertificate, err := ne.getLastOutputArtifacts(execCtx)
@@ -98,7 +123,20 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 	}
 
 	// 申请证书
-	obtainResp, err := ne.execObtainCertificate(execCtx, &nodeCfg, lastCertificate)
+	var obtainResp *certacme.ObtainCertificateResponse
+	switch nodeCfg.Source {
+	case "acme":
+		obtainResp, err = ne.execObtainCertificate(execCtx, &nodeCfg, lastCertificate)
+	case "tencentcloud":
+		pendingOutput := lastOutput
+		if lastCertificate != nil {
+			// A saved certificate fulfills the order even if the success output was not saved.
+			pendingOutput = nil
+		}
+		obtainResp, err = ne.execObtainTencentCloudCertificate(execCtx, execRes, &nodeCfg, pendingOutput)
+	default:
+		return execRes, fmt.Errorf("unsupported certificate application source: %q", nodeCfg.Source)
+	}
 	if err != nil {
 		return execRes, err
 	}
@@ -159,10 +197,16 @@ func (ne *bizApplyNodeExecutor) getLastOutputArtifacts(execCtx *NodeExecutionCon
 func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, lastOutput *domain.WorkflowOutput, lastCertificate *domain.Certificate) (_skip bool, _reason string) {
 	thisNodeCfg := execCtx.Node.Data.Config.AsBizApply()
 
-	if lastOutput != nil && lastOutput.Succeeded {
+	if lastOutput != nil && (lastOutput.Succeeded || thisNodeCfg.Source == "tencentcloud" || lastOutput.NodeConfig.AsBizApply().Source == "tencentcloud") {
 		// 比较和上次申请时的关键配置（即影响证书签发的）参数是否一致
 		lastNodeCfg := lastOutput.NodeConfig.AsBizApply()
 
+		if thisNodeCfg.Source != lastNodeCfg.Source {
+			return false, "the configuration item 'Source' changed"
+		}
+		if thisNodeCfg.TencentCloudAccessId != lastNodeCfg.TencentCloudAccessId {
+			return false, "the configuration item 'TencentCloudAccessId' changed"
+		}
 		if !slices.Equal(thisNodeCfg.Domains, lastNodeCfg.Domains) {
 			return false, "the configuration item 'Domains' changed"
 		}
@@ -530,9 +574,10 @@ func (ne *bizApplyNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionConte
 
 func newBizApplyNodeExecutor() NodeExecutor {
 	return &bizApplyNodeExecutor{
-		nodeExecutor:    nodeExecutor{logger: slog.Default()},
-		accessRepo:      repository.NewAccessRepository(),
-		certificateRepo: repository.NewCertificateRepository(),
-		wfoutputRepo:    repository.NewWorkflowOutputRepository(),
+		nodeExecutor:          nodeExecutor{logger: slog.Default()},
+		accessRepo:            repository.NewAccessRepository(),
+		certificateRepo:       repository.NewCertificateRepository(),
+		wfoutputRepo:          repository.NewWorkflowOutputRepository(),
+		newTencentCloudClient: newTencentCloudIssuer,
 	}
 }

@@ -2,6 +2,7 @@ import { type WorkflowModel } from "./workflow";
 
 export interface CertificateModel extends BaseModel {
   source: string;
+  ca: string;
   certificate: string;
   privateKey: string;
   serialNumber: string;

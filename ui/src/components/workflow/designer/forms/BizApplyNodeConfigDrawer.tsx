@@ -26,10 +26,11 @@ const BizApplyNodeConfigDrawer = ({ node, ...props }: BizApplyNodeConfigDrawerPr
   const [formInst] = Form.useForm();
 
   const fieldIdentifier = Form.useWatch<WorkflowNodeConfigForBizApply["identifier"]>("identifier", { form: formInst, preserve: true });
+  const fieldSource = Form.useWatch<WorkflowNodeConfigForBizApply["source"]>("source", { form: formInst, preserve: true });
 
   return (
     <NodeConfigDrawer
-      anchor={fieldIdentifier ? { items: BizApplyNodeConfigForm.getAnchorItems({ i18n }) } : false}
+      anchor={fieldIdentifier ? { items: BizApplyNodeConfigForm.getAnchorItems({ i18n, source: fieldSource }) } : false}
       footer={fieldIdentifier ? void 0 : false}
       form={formInst}
       node={node}

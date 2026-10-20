@@ -142,6 +142,8 @@ func (c WorkflowNodeConfig) AsBranchBlock() WorkflowNodeConfigForBranchBlock {
 
 func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
 	return WorkflowNodeConfigForBizApply{
+		Source:                xmaps.GetOrDefaultString(c, "source", "acme"),
+		TencentCloudAccessId:  xmaps.GetString(c, "tencentcloudAccessId"),
 		Domains:               xmaps.GetStringsBySplit(c, "domains", ";"),
 		IPAddrs:               xmaps.GetStringsBySplit(c, "ipaddrs", ";"),
 		ContactEmail:          xmaps.GetString(c, "contactEmail"),
@@ -218,6 +220,8 @@ type WorkflowNodeConfigForBranchBlock struct {
 }
 
 type WorkflowNodeConfigForBizApply struct {
+	Source                string         `json:"source,omitempty"`
+	TencentCloudAccessId  string         `json:"tencentcloudAccessId,omitempty"`
 	Domains               []string       `json:"domains"`                         // 域名列表，以半角分号分隔
 	IPAddrs               []string       `json:"ipaddrs"`                         // IP 地址列表，以半角分号分隔
 	ContactEmail          string         `json:"contactEmail"`                    // 联系邮箱

@@ -18,6 +18,7 @@
     },
     "view.menu": "查看详情",
     "revoke.menu": "吊销证书",
+    "revoke.tencentcloud": "请在腾讯云控制台吊销",
     "revoke.modal": {
       "title": "吊销「{{name}}」",
       "content": "确定要吊销该证书吗？<br>注意此操作不可撤销，请谨慎操作。"

@@ -18,6 +18,7 @@
     },
     "view.menu": "View details",
     "revoke.menu": "Revoke",
+    "revoke.tencentcloud": "Revoke in the Tencent Cloud console",
     "revoke.modal": {
       "title": "Revoke \"{{name}}\"",
       "content": "Are you sure want to revoke this certificate? <br>This action cannot be undone."

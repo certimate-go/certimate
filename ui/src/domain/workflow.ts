@@ -92,6 +92,8 @@ export const defaultNodeConfigForBranchBlock = (): Partial<WorkflowNodeConfigFor
 };
 
 export type WorkflowNodeConfigForBizApply = {
+  source?: "acme" | "tencentcloud";
+  tencentcloudAccessId?: string;
   identifier: "domain" | "ip";
   domains: string;
   ipaddrs: string;
@@ -120,6 +122,7 @@ export type WorkflowNodeConfigForBizApply = {
 
 export const defaultNodeConfigForBizApply = (): Partial<WorkflowNodeConfigForBizApply> => {
   return {
+    source: "acme" as const,
     challengeType: "dns-01" as const,
     keySource: "auto" as const,
     keyAlgorithm: "RSA2048" as const,

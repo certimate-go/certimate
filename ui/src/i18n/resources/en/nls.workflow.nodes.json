@@ -85,6 +85,52 @@
       }
     },
     "form": {
+      "source": {
+        "label": "Issuance source",
+        "option": {
+          "acme": "ACME",
+          "tencentcloud": "Tencent Cloud free SSL (native)"
+        }
+      },
+      "tencentcloud_note": {
+        "title": "Tencent Cloud native free SSL requirements",
+        "dns": "Choose automatic DNS verification (DNS_AUTO) or your own DNS provider (DNS). Only DNS_AUTO requires DNS hosting in the same Tencent Cloud account as the SSL credential. Custom DNS supports Tencent Cloud, Alibaba Cloud and Cloudflare.",
+        "eligibility": "The Tencent Cloud account must be real-name verified and have available free certificate quota.",
+        "limits": "Only one non-wildcard domain and RSA2048 or EC256 are supported. Multiple domains, IP addresses, custom private keys and reused private keys are not supported. Tencent Cloud generates and stores the private key.",
+        "issuance": "Uses ApplyCertificate with PackageType=83 and ValidityPeriod=3 (3 months).",
+        "permissions": "Required IAM permissions: ssl:ApplyCertificate, ssl:DescribeCertificateDetail, ssl:CompleteCertificate, ssl:DownloadCertificate."
+      },
+      "tencentcloud_domain": {
+        "placeholder": "Enter a single domain, e.g. example.com",
+        "help": "Enter exactly one non-wildcard domain; multiple domains and IP addresses are not supported.",
+        "errmsg": "Enter one valid non-wildcard domain, not multiple domains or an IP address."
+      },
+      "tencentcloud_access": {
+        "label": "Tencent Cloud SSL credential",
+        "placeholder": "Select a Tencent Cloud SSL credential for certificate issuance"
+      },
+      "tencentcloud_key": {
+        "help": "Tencent Cloud generates and stores the private key. Only RSA2048 and EC256 are supported."
+      },
+      "tencentcloud_challenge": {
+        "option": {
+          "auto": "Automatic DNS (DNS_AUTO)",
+          "manual": "Custom DNS provider (DNS)"
+        },
+        "help": "DNS_AUTO verifies DNS automatically within the SSL credential's Tencent Cloud account, with no separate DNS credential. Custom DNS uses an independent DNS credential for validation records; Tencent Cloud still issues the certificate."
+      },
+      "tencentcloud_dns_provider": {
+        "errmsg": "Select Tencent Cloud, Alibaba Cloud or Cloudflare as the DNS provider."
+      },
+      "tencentcloud_dns_access": {
+        "help": "The DNS credential only creates and deletes validation TXT records and requires DNS record management permissions. It can belong to a different account from the SSL credential. Certificate application and download still use the Tencent Cloud SSL credential above."
+      },
+      "tencentcloud_dns_propagation_wait": {
+        "help": "Wait after creating TXT records before requesting Tencent Cloud validation (0–3600 seconds; default: 0). Tencent Cloud checks DNS propagation; local recursive nameservers and propagation check timeouts are not used."
+      },
+      "tencentcloud_dns_ttl": {
+        "help": "TTL of the validation TXT record, from 1 to 86400 seconds. Defaults to 600 seconds when left blank."
+      },
       "identifier": {
         "label": "Identifier type",
         "label2": "The certificate is issued for ...",

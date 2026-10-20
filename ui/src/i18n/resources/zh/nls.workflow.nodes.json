@@ -85,6 +85,52 @@
       }
     },
     "form": {
+      "source": {
+        "label": "签发来源",
+        "option": {
+          "acme": "ACME",
+          "tencentcloud": "腾讯云免费 SSL（原生）"
+        }
+      },
+      "tencentcloud_note": {
+        "title": "腾讯云原生免费 SSL 申请须知",
+        "dns": "可选择自动 DNS 验证（DNS_AUTO）或自选 DNS 提供商（DNS）。仅 DNS_AUTO 要求域名 DNS 托管在 SSL 授权对应的同一个腾讯云账号下；自选模式支持腾讯云、阿里云和 Cloudflare。",
+        "eligibility": "腾讯云账号必须已完成实名认证，并有可用的免费证书额度。",
+        "limits": "仅支持单个非泛域名及 RSA2048、EC256 算法。不支持多域名、IP 地址、自定义或复用私钥。私钥由腾讯云生成并存储。",
+        "issuance": "通过 ApplyCertificate 申请，固定使用 PackageType=83、ValidityPeriod=3（3 个月）。",
+        "permissions": "所需 IAM 权限：ssl:ApplyCertificate、ssl:DescribeCertificateDetail、ssl:CompleteCertificate、ssl:DownloadCertificate。"
+      },
+      "tencentcloud_domain": {
+        "placeholder": "请输入单个域名，例如 example.com",
+        "help": "仅支持单个非泛域名，不支持多域名或 IP 地址。",
+        "errmsg": "请输入单个有效的非泛域名，不支持多域名或 IP 地址。"
+      },
+      "tencentcloud_access": {
+        "label": "腾讯云 SSL 授权",
+        "placeholder": "请选择用于签发证书的腾讯云 SSL 授权"
+      },
+      "tencentcloud_key": {
+        "help": "私钥由腾讯云生成并存储，仅支持 RSA2048 和 EC256。"
+      },
+      "tencentcloud_challenge": {
+        "option": {
+          "auto": "自动 DNS（DNS_AUTO）",
+          "manual": "自选 DNS 提供商（DNS）"
+        },
+        "help": "DNS_AUTO 由腾讯云在 SSL 授权的同账号下自动验证，无需另选 DNS 授权。自选 DNS 模式使用独立 DNS 授权管理验证记录，证书仍由腾讯云签发。"
+      },
+      "tencentcloud_dns_provider": {
+        "errmsg": "请选择腾讯云、阿里云或 Cloudflare 作为 DNS 提供商。"
+      },
+      "tencentcloud_dns_access": {
+        "help": "DNS 授权仅用于增删域名验证 TXT 记录，请授予相应 DNS 记录管理权限。它可与 SSL 授权属于不同账号；证书申请和下载仍使用上方的腾讯云 SSL 授权。"
+      },
+      "tencentcloud_dns_propagation_wait": {
+        "help": "创建 TXT 记录后、提交腾讯云验证前的等待时间（0–3600 秒，默认 0）。DNS 传播验证由腾讯云执行，不使用本地递归服务器或传播检查超时设置。"
+      },
+      "tencentcloud_dns_ttl": {
+        "help": "验证 TXT 记录的 TTL，范围为 1–86400 秒；不填写时默认 600 秒。"
+      },
       "identifier": {
         "label": "证书标识",
         "label2": "请选择证书标识类型：",

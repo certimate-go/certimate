@@ -3,7 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconContract } from "@tabler/icons-react";
 import { Avatar } from "antd";
 
-import { acmeDns01ProvidersMap, acmeHttp01ProvidersMap } from "@/domain/provider";
+import { ACCESS_PROVIDERS, accessProvidersMap, acmeDns01ProvidersMap, acmeHttp01ProvidersMap } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizApply, newNode } from "@/domain/workflow";
 
 import { BaseNode } from "./_shared";
@@ -58,8 +58,12 @@ export const BizApplyNodeRegistry: NodeRegistry = {
                   return <div className="flex-1 truncate">{displayText || t("workflow.detail.design.editor.placeholder")}</div>;
                 }}
               </Field>
-              <Field<string> name="config.provider">
-                {({ field: { value } }) => (value ? <Avatar shape="square" src={acmeProvidersMap.get(value)?.icon} size={20} /> : <></>)}
+              <Field<WorkflowNodeConfigForBizApply> name="config">
+                {({ field: { value } }) => {
+                  const provider =
+                    value.source === "tencentcloud" ? accessProvidersMap.get(ACCESS_PROVIDERS.TENCENTCLOUD) : acmeProvidersMap.get(value.provider);
+                  return provider ? <Avatar shape="square" src={provider.icon} size={20} /> : <></>;
+                }}
               </Field>
             </div>
           }

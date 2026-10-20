@@ -222,6 +222,9 @@ func (s *CertificateService) RevokeCertificate(ctx context.Context, req *dtos.Ce
 		return nil, err
 	}
 
+	if certificate.CA == "tencentcloud" {
+		return nil, fmt.Errorf("Tencent Cloud native certificates must be revoked in the Tencent Cloud console")
+	}
 	if certificate.ACMEAccountUrl == "" || certificate.ACMECertificateUrl == "" {
 		return nil, fmt.Errorf("could not revoke a certificate which is not issued in Certimate")
 	}
