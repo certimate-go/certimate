@@ -41,6 +41,7 @@ type nativeTestAccessRepo struct{ provider string }
 func (r *nativeTestAccessRepo) GetById(context.Context, string) (*domain.Access, error) {
 	return &domain.Access{Provider: r.provider, Config: map[string]any{"secretId": "test-id", "secretKey": "test-secret", "projectId": 42}}, nil
 }
+
 func (r *nativeTestAccessRepo) Save(_ context.Context, access *domain.Access) (*domain.Access, error) {
 	return access, nil
 }
@@ -53,12 +54,14 @@ type nativeTestCertificateRepo struct {
 func (r *nativeTestCertificateRepo) GetById(context.Context, string) (*domain.Certificate, error) {
 	return r.certificate, nil
 }
+
 func (r *nativeTestCertificateRepo) GetByWorkflowRunIdAndNodeId(_ context.Context, runId, _ string) (*domain.Certificate, error) {
 	if r.certificate == nil || r.certificate.WorkflowRunId != runId {
 		return nil, domain.ErrRecordNotFound
 	}
 	return r.certificate, nil
 }
+
 func (r *nativeTestCertificateRepo) Save(_ context.Context, cert *domain.Certificate) (*domain.Certificate, error) {
 	if r.saveErr != nil {
 		return nil, r.saveErr
@@ -80,6 +83,7 @@ func (r *nativeTestOutputRepo) GetByWorkflowIdAndNodeId(context.Context, string,
 	}
 	return r.last, nil
 }
+
 func (r *nativeTestOutputRepo) Save(_ context.Context, output *domain.WorkflowOutput) (*domain.WorkflowOutput, error) {
 	if r.saveErr != nil {
 		return nil, r.saveErr

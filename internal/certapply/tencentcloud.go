@@ -154,6 +154,13 @@ func (c *TencentCloudClient) Obtain(ctx context.Context, request TencentCloudReq
 	}
 	certificateId := request.CertificateId
 	if certificateId == "" {
+		if request.DvAuthMethod == "DNS" {
+			if checker, ok := c.dnsProvider.(dnsDomainChecker); ok {
+				if err := checker.checkDomain(ctx, request.Domains[0]); err != nil {
+					return nil, fmt.Errorf("Tencent Cloud DNS validation preflight failed: %w", err)
+				}
+			}
+		}
 		req := ssl.NewApplyCertificateRequest()
 		req.DomainName = common.StringPtr(request.Domains[0])
 		req.DvAuthMethod = common.StringPtr(request.DvAuthMethod)

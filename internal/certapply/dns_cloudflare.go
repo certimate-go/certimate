@@ -139,7 +139,12 @@ func (p *dnsCloudflare) zone(ctx context.Context, name string) (dnsCFObject, err
 		}
 		_, candidate, _ = strings.Cut(candidate, ".")
 	}
-	return dnsCFObject{}, errors.New("DNS Cloudflare hosted zone not found")
+	return dnsCFObject{}, dnsHostedZoneNotFound("Cloudflare", name)
+}
+
+func (p *dnsCloudflare) checkDomain(ctx context.Context, name string) error {
+	_, err := p.zone(ctx, dnsName(name))
+	return err
 }
 
 func (p *dnsCloudflare) Present(ctx context.Context, record DNSRecord) (func(context.Context) error, error) {

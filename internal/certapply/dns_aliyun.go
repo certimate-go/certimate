@@ -90,9 +90,14 @@ func (p *dnsAliyun) zone(ctx context.Context, name string) (string, error) {
 		}
 	}
 	if best == "" {
-		return "", errors.New("DNS Aliyun hosted zone not found")
+		return "", dnsHostedZoneNotFound("Aliyun", name)
 	}
 	return best, nil
+}
+
+func (p *dnsAliyun) checkDomain(ctx context.Context, name string) error {
+	_, err := p.zone(ctx, dnsName(name))
+	return err
 }
 
 func (p *dnsAliyun) Present(ctx context.Context, record DNSRecord) (func(context.Context) error, error) {

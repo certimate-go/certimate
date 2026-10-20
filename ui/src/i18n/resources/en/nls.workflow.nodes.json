@@ -123,7 +123,7 @@
         "errmsg": "Select Tencent Cloud, Alibaba Cloud or Cloudflare as the DNS provider."
       },
       "tencentcloud_dns_access": {
-        "help": "The DNS credential only creates and deletes validation TXT records and requires DNS record management permissions. It can belong to a different account from the SSL credential. Certificate application and download still use the Tencent Cloud SSL credential above."
+        "help": "Select the DNS account that hosts the requested domain, with permission to list domains and manage TXT records. The hosted zone is checked before creating a new order. The DNS account can differ from the Tencent Cloud SSL account; certificate application and download still use the SSL credential above."
       },
       "tencentcloud_dns_propagation_wait": {
         "help": "Wait after creating TXT records before requesting Tencent Cloud validation (0–3600 seconds; default: 0). Tencent Cloud checks DNS propagation; local recursive nameservers and propagation check timeouts are not used."

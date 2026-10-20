@@ -20,9 +20,20 @@ type DNSRecord struct {
 	Value string
 }
 
-// A nil cleanup preserves existing records; a non-nil cleanup owns only the newly created ID.
+// DNSProvider presents raw CA validation TXT values instead of deriving an ACME
+// DNS-01 value from a key authorization. A nil cleanup preserves existing records;
+// a non-nil cleanup owns only the newly created ID.
 type DNSProvider interface {
 	Present(context.Context, DNSRecord) (func(context.Context) error, error)
+}
+
+// Check DNS account ownership before consuming a free certificate order.
+type dnsDomainChecker interface {
+	checkDomain(context.Context, string) error
+}
+
+func dnsHostedZoneNotFound(provider, name string) error {
+	return fmt.Errorf("DNS %s hosted zone not found for %q: check that the selected DNS account manages this domain and has the required permissions and resource group", provider, name)
 }
 
 type DNSProviderConfig struct {

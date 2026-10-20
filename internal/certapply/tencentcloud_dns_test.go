@@ -232,8 +232,8 @@ func TestTencentCloudDNSProviderIntegration(t *testing.T) {
 			request := validTencentCloudRequest()
 			request.DvAuthMethod, request.KeyAlgorithm = "DNS", "EC256"
 			result, err := client.Obtain(context.Background(), request, func(string) error {
-				if dns.requests != 0 {
-					t.Fatal("DNS called before order persistence")
+				if dns.creates != 0 || len(dns.deletes) != 0 {
+					t.Fatal("DNS records changed before order persistence")
 				}
 				return nil
 			})
@@ -250,5 +250,47 @@ func TestTencentCloudDNSRequiresProvider(t *testing.T) {
 	request.DvAuthMethod = "DNS"
 	if _, err := client.Obtain(context.Background(), request, nil); err == nil {
 		t.Fatal("missing DNS provider accepted")
+	}
+}
+
+func TestTencentCloudDNSPreflightRejectsWrongAccount(t *testing.T) {
+	for _, provider := range []string{"tencentcloud", "aliyun", "cloudflare"} {
+		for _, failure := range []string{"no-zone", "permission", "canceled"} {
+			t.Run(provider+"/"+failure, func(t *testing.T) {
+				dns := dnsTestFixture(t, provider)
+				dns.boundaryOnly = failure == "no-zone"
+				if failure == "permission" {
+					dns.fail = "zones"
+				}
+				client, _ := newTestTencentCloudClient(t, func(string, map[string]any) map[string]any {
+					t.Fatal("invalid DNS account must not consume a free certificate order")
+					return nil
+				})
+				client.dnsProvider = dns.providerClient()
+				ctx, cancel := context.WithCancel(context.Background())
+				defer cancel()
+				if failure == "canceled" {
+					cancel()
+				}
+				request := validTencentCloudRequest()
+				request.DvAuthMethod = "DNS"
+				result, err := client.Obtain(ctx, request, func(string) error {
+					t.Fatal("invalid DNS account must not persist a new order")
+					return nil
+				})
+				if result != nil || err == nil || dns.creates != 0 || len(dns.deletes) != 0 {
+					t.Fatalf("expected read-only preflight failure: result=%v err=%v", result, err)
+				}
+				if failure == "no-zone" && (!strings.Contains(err.Error(), request.Domains[0]) || !strings.Contains(err.Error(), "selected DNS account")) {
+					t.Fatalf("missing actionable domain/account diagnostic: %v", err)
+				}
+				if failure == "canceled" && !errors.Is(err, context.Canceled) {
+					t.Fatalf("lost context cancellation: %v", err)
+				}
+				if strings.Contains(err.Error(), dnsTestSecret) {
+					t.Fatal("DNS credentials leaked in preflight error")
+				}
+			})
+		}
 	}
 }

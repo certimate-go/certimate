@@ -74,9 +74,14 @@ func (p *dnsTencent) zone(ctx context.Context, name string) (string, error) {
 		}
 	}
 	if best == "" {
-		return "", errors.New("DNS Tencent hosted zone not found")
+		return "", dnsHostedZoneNotFound("Tencent", name)
 	}
 	return best, nil
+}
+
+func (p *dnsTencent) checkDomain(ctx context.Context, name string) error {
+	_, err := p.zone(ctx, dnsName(name))
+	return err
 }
 
 func (p *dnsTencent) Present(ctx context.Context, record DNSRecord) (func(context.Context) error, error) {
