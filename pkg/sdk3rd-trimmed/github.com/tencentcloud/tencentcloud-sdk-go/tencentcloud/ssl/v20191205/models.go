@@ -12,6 +12,10 @@ type DescribeCertificateRequest = ssl.DescribeCertificateRequest
 
 type DescribeCertificateResponse = ssl.DescribeCertificateResponse
 
+type DescribeCertificateDetailRequest = ssl.DescribeCertificateDetailRequest
+
+type DescribeCertificateDetailResponse = ssl.DescribeCertificateDetailResponse
+
 type DescribeHostCosInstanceListRequest = ssl.DescribeHostCosInstanceListRequest
 
 type DescribeHostCosInstanceListResponse = ssl.DescribeHostCosInstanceListResponse

@@ -27,6 +27,24 @@ func NewDescribeCertificateRequest() (request *DescribeCertificateRequest) {
 	return ssl.NewDescribeCertificateRequest()
 }
 
+func NewDescribeCertificateDetailRequest() *DescribeCertificateDetailRequest {
+	return ssl.NewDescribeCertificateDetailRequest()
+}
+
+func (c *Client) DescribeCertificateDetailWithContext(ctx context.Context, request *DescribeCertificateDetailRequest) (*DescribeCertificateDetailResponse, error) {
+	if request == nil {
+		request = NewDescribeCertificateDetailRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "ssl", ssl.APIVersion, "DescribeCertificateDetail")
+	if c.GetCredential() == nil {
+		return nil, errors.New("DescribeCertificateDetail require credential")
+	}
+	request.SetContext(ctx)
+	response := ssl.NewDescribeCertificateDetailResponse()
+	err := c.Send(request, response)
+	return response, err
+}
+
 func NewDescribeCertificateResponse() (response *DescribeCertificateResponse) {
 	return ssl.NewDescribeCertificateResponse()
 }

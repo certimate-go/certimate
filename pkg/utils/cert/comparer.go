@@ -2,6 +2,9 @@ package cert
 
 import (
 	"crypto/x509"
+	"slices"
+
+	"github.com/go-acme/lego/v5/certcrypto"
 )
 
 // 比较两个 x509.Certificate 对象，判断它们是否是同一张证书。
@@ -32,4 +35,19 @@ func EqualCertificatesFromPEM(a, b string) bool {
 	aCert, _ := ParseCertificateFromPEM(a)
 	bCert, _ := ParseCertificateFromPEM(b)
 	return EqualCertificates(aCert, bCert)
+}
+
+// EqualCertificateChainsFromPEM compares every certificate in two PEM chains,
+// in order. PEM whitespace and line wrapping do not affect equality. Invalid
+// or empty certificate chains are never considered equal.
+func EqualCertificateChainsFromPEM(a, b string) bool {
+	aCerts, err := certcrypto.ParsePEMBundle([]byte(a))
+	if err != nil {
+		return false
+	}
+	bCerts, err := certcrypto.ParsePEMBundle([]byte(b))
+	if err != nil {
+		return false
+	}
+	return slices.EqualFunc(aCerts, bCerts, EqualCertificates)
 }

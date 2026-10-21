@@ -12,6 +12,7 @@ import (
 	tcssl "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 )
 
 type (
@@ -76,6 +77,34 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	c.logger.Debug("sdk request 'ssl.UploadCertificate'", slog.Any("request", uploadCertificateReq), slog.Any("response", uploadCertificateResp))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'ssl.UploadCertificate': %w", err)
+	}
+	if uploadCertificateResp.Response == nil || lo.FromPtr(uploadCertificateResp.Response.CertificateId) == "" {
+		return nil, fmt.Errorf("ssl.UploadCertificate returned no certificate ID")
+	}
+
+	// Tencent Cloud deduplicates by the leaf fingerprint. Reuse an existing
+	// certificate only when its complete chain also matches the requested one.
+	if repeatedID := lo.FromPtr(uploadCertificateResp.Response.RepeatCertId); repeatedID != "" {
+		describeReq := tcssl.NewDescribeCertificateDetailRequest()
+		describeReq.CertificateId = common.StringPtr(repeatedID)
+		describeResp, describeErr := c.sdkClient.DescribeCertificateDetailWithContext(ctx, describeReq)
+		if describeErr == nil && describeResp.Response != nil &&
+			xcert.EqualCertificateChainsFromPEM(certPEM, lo.FromPtr(describeResp.Response.CertificatePublicKey)) {
+			return &UploadResult{CertId: repeatedID}, nil
+		}
+
+		// If the chain differs or cannot be read, create a separate cloud record
+		// instead of silently deploying the old chain. No extra read permission
+		// is required for callers that can already upload certificates.
+		uploadCertificateReq.Repeatable = common.BoolPtr(true)
+		uploadCertificateResp, err = c.sdkClient.UploadCertificateWithContext(ctx, uploadCertificateReq)
+		if err != nil {
+			return nil, fmt.Errorf("failed to upload replacement certificate chain: %w", err)
+		}
+		if uploadCertificateResp.Response == nil || lo.FromPtr(uploadCertificateResp.Response.CertificateId) == "" ||
+			lo.FromPtr(uploadCertificateResp.Response.CertificateId) == repeatedID {
+			return nil, fmt.Errorf("ssl.UploadCertificate did not create a replacement certificate chain")
+		}
 	}
 
 	return &UploadResult{
