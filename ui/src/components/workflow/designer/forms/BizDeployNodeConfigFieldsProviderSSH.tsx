@@ -30,9 +30,9 @@ export const initPresetScript = (
 # 脚本参考 https://github.com/catchdave/ssl-certs/blob/main/replace_synology_ssl_certs.sh
 
 # 请将以下变量替换为实际值
-$tmpFullchainPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
-$tmpCertPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}" # 服务器证书文件路径（与表单中保持一致）
-$tmpKeyPath = "\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
+tmpFullchainPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
+tmpCertPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}" # 服务器证书文件路径（与表单中保持一致）
+tmpKeyPath="\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
 
 DEBUG=1
 error_exit() { echo "[ERROR] $1"; exit 1; }
@@ -80,10 +80,29 @@ for target_dir in "\${target_cert_dirs[@]}"; do
     continue
   fi
   info "Copying certificates to '$target_dir'"
-  if ! (cp "\${certs_src_dir}/"{privkey,fullchain,cert}.pem "$target_dir/" && \
-    chown root:root "$target_dir/"{privkey,fullchain,cert}.pem); then
-      warn "Error copying or chowning certs to \${target_dir}"
-  fi
+  # 保留目标目录中已有文件的属主/属组/权限位：
+  # 这些目录的属组由 DSM 按套件的运行用户设置（如 ActiveBackup、SynologyDrive），
+  # 在此强制 chown root:root 会使套件无法读取 privkey.pem，导致 TLS 握手失败
+  # （例如 Active Backup for Business 报 "Convert to ssl channel failed: -2"）。
+  for name in privkey fullchain cert; do
+    src="\${certs_src_dir}/\${name}.pem"
+    dst="$target_dir/\${name}.pem"
+    if [[ -f "$dst" ]]; then
+      owner=$(stat -c '%U:%G' "$dst" 2>/dev/null)
+      mode=$(stat -c '%a' "$dst" 2>/dev/null)
+      if cp "$src" "$dst" 2>/dev/null; then
+        [[ -n "$owner" ]] && chown "$owner" "$dst" 2>/dev/null
+        [[ -n "$mode" ]] && chmod "$mode" "$dst" 2>/dev/null
+      else
+        warn "Error copying $src to $dst"
+      fi
+    elif cp "$src" "$dst" 2>/dev/null; then
+      # 文件不存在（如该套件尚未启用过 HTTPS）：按 DSM 惯例以 root:root 400 创建
+      chmod 400 "$dst" 2>/dev/null
+    else
+      warn "Error creating $dst"
+    fi
+  done
 done
 
 # 重启服务
