@@ -107,9 +107,11 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*bpcertificat
 		region = "ap-singapore-1" // 证书中心默认区域：新加坡
 	}
 
+	// 证书中心为全局服务，SDK 默认寻址未注册该服务，需显式指定端点
 	config := bp.NewConfig().
 		WithAkSk(accessKeyId, secretAccessKey).
-		WithRegion(region)
+		WithRegion(region).
+		WithEndpoint("certificate-service.byteplusapi.com")
 
 	session, err := bpsesion.NewSession(config)
 	if err != nil {
