@@ -67,26 +67,26 @@ func (c *Certmgr) SetLogger(logger *slog.Logger) {
 func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
 	// 上传证书
 	// REF: https://docs.byteplus.com/en/docs/byteplus-certificate-center/reference-uploadcertificate
-	uploadCertificateReq := &bpcertificateservice.UploadCertificateInput{
+	importCertificateReq := &bpcertificateservice.ImportCertificateInput{
 		ProjectName: lo.EmptyableToPtr(c.config.ProjectName),
-		CertificateInfo: &bpcertificateservice.CertificateInfoForUploadCertificateInput{
+		CertificateInfo: &bpcertificateservice.CertificateInfoForImportCertificateInput{
 			CertificateChain: bp.String(certPEM),
 			PrivateKey:       bp.String(privkeyPEM),
 		},
 		Repeatable: bp.Bool(false),
 	}
-	uploadCertificateResp, err := c.sdkClient.UploadCertificateWithContext(ctx, uploadCertificateReq)
-	c.logger.Debug("sdk request 'certificateservice.UploadCertificate'", slog.Any("request", uploadCertificateReq), slog.Any("response", uploadCertificateResp))
+	importCertificateResp, err := c.sdkClient.ImportCertificateWithContext(ctx, importCertificateReq)
+	c.logger.Debug("sdk request 'certificateservice.ImportCertificate'", slog.Any("request", importCertificateReq), slog.Any("response", importCertificateResp))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute sdk request 'certificateservice.UploadCertificate': %w", err)
+		return nil, fmt.Errorf("failed to execute sdk request 'certificateservice.ImportCertificate': %w", err)
 	}
 
 	var sslId string
-	if uploadCertificateResp.InstanceId != nil && *uploadCertificateResp.InstanceId != "" {
-		sslId = *uploadCertificateResp.InstanceId
+	if importCertificateResp.InstanceId != nil && *importCertificateResp.InstanceId != "" {
+		sslId = *importCertificateResp.InstanceId
 	}
-	if uploadCertificateResp.RepeatId != nil && *uploadCertificateResp.RepeatId != "" {
-		sslId = *uploadCertificateResp.RepeatId
+	if importCertificateResp.RepeatId != nil && *importCertificateResp.RepeatId != "" {
+		sslId = *importCertificateResp.RepeatId
 	}
 
 	if sslId == "" {
@@ -107,11 +107,10 @@ func createSDKClient(accessKeyId, secretAccessKey, region string) (*bpcertificat
 		region = "ap-singapore-1" // 证书中心默认区域：新加坡
 	}
 
-	// 证书中心为全局服务，SDK 默认寻址未注册该服务，需显式指定端点
 	config := bp.NewConfig().
 		WithAkSk(accessKeyId, secretAccessKey).
 		WithRegion(region).
-		WithEndpoint("certificate-service.byteplusapi.com")
+		WithEndpoint("certificate-service.byteplusapi.com") // SDK 默认寻址未注册证书中心服务，需显式指定端点
 
 	session, err := bpsesion.NewSession(config)
 	if err != nil {
