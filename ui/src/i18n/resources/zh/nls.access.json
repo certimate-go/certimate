@@ -1632,6 +1632,7 @@
     "webhook_preset_data": {
       "": "使用预设回调",
       "bark": "Bark",
+      "boop": "Boop",
       "gotify": "Gotify",
       "messagenest": "Message Nest",
       "ntfy": "ntfy",
