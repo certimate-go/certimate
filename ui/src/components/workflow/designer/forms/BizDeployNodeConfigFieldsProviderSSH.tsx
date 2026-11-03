@@ -28,6 +28,7 @@ export const initPresetScript = (
       return `# *** 需要 root 权限 ***
 # 注意仅支持替换证书，需本身已开启过一次 HTTPS
 # 脚本参考 https://github.com/catchdave/ssl-certs/blob/main/replace_synology_ssl_certs.sh
+set -u
 
 # 请将以下变量替换为实际值
 tmpFullchainPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
@@ -125,16 +126,17 @@ info "Completed"
       return `# *** 需要 root 权限 ***
 # 注意仅支持替换证书，需本身已开启过一次 HTTPS
 # 脚本参考 https://github.com/lfgyx/fnos_certificate_update/blob/main/src/update_cert.sh
+set -u
 
 # 请将以下变量替换为实际值
 # 飞牛证书实际存放路径请在 \`/usr/trim/etc/network_cert_all.conf\` 中查看，注意不要修改文件名
-$tmpFullchainPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
-$tmpCertPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}" # 服务器证书文件路径（与表单中保持一致）
-$tmpKeyPath = "\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
-$fnFullchainPath = "/usr/trim/var/trim_connect/ssls/example.com/1234567890/fullchain.crt" # 飞牛证书文件路径
-$fnCertPath = "/usr/trim/var/trim_connect/ssls/example.com/1234567890/example.com.crt" # 飞牛服务器证书文件路径
-$fnKeyPath = "/usr/trim/var/trim_connect/ssls/example.com/1234567890/example.com.key" # 飞牛私钥文件路径
-$domain = "<your-domain-name>" # 域名
+tmpFullchainPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
+tmpCertPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}" # 服务器证书文件路径（与表单中保持一致）
+tmpKeyPath="\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
+fnFullchainPath="/usr/trim/var/trim_connect/ssls/example.com/1234567890/fullchain.crt" # 飞牛证书文件路径
+fnCertPath="/usr/trim/var/trim_connect/ssls/example.com/1234567890/example.com.crt" # 飞牛服务器证书文件路径
+fnKeyPath="/usr/trim/var/trim_connect/ssls/example.com/1234567890/example.com.key" # 飞牛私钥文件路径
+domain="<your-domain-name>" # 域名
 
 # 复制文件
 cp -rf "$tmpFullchainPath" "$fnFullchainPath"
@@ -160,10 +162,11 @@ systemctl restart trim_nginx.service
     case "sh_replace_qnap_ssl":
       return `# *** 需要 root 权限 ***
 # 注意仅支持替换证书，需本身已开启过一次 HTTPS
+set -u
 
 # 请将以下变量替换为实际值
-$tmpFullchainPath = "\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}"}" # 证书文件路径（与表单中保持一致）
-$tmpKeyPath = "\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
+tmpFullchainPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
+tmpKeyPath="\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
 
 # 复制文件
 cp -rf "$tmpFullchainPath" /etc/stunnel/backup.cert
