@@ -37,7 +37,7 @@ func (c *CERTIFICATESERVICE) ImportCertificateWithContext(ctx byteplus.Context, 
 }
 
 type ImportCertificateInput struct {
-	_ struct{} `type:"structure" json:",omitempty"`
+	_ struct{} `type:"structure"`
 
 	CertificateInfo *CertificateInfoForImportCertificateInput `type:"structure" json:",omitempty"`
 
@@ -61,7 +61,7 @@ func (s ImportCertificateInput) GoString() string {
 }
 
 type ImportCertificateOutput struct {
-	_ struct{} `type:"structure" json:",omitempty"`
+	_ struct{} `type:"structure"`
 
 	Metadata *response.ResponseMetadata
 
@@ -79,7 +79,7 @@ func (s ImportCertificateOutput) GoString() string {
 }
 
 type CertificateInfoForImportCertificateInput struct {
-	_ struct{} `type:"structure" json:",omitempty"`
+	_ struct{} `type:"structure"`
 
 	CertificateChain *string `type:"string" json:",omitempty"`
 
@@ -95,7 +95,7 @@ func (s CertificateInfoForImportCertificateInput) GoString() string {
 }
 
 type TagForImportCertificateInput struct {
-	_ struct{} `type:"structure" json:",omitempty"`
+	_ struct{} `type:"structure"`
 
 	Key *string `type:"string" json:",omitempty"`
 

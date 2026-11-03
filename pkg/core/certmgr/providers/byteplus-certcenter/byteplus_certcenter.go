@@ -9,9 +9,8 @@ import (
 	bpsesion "github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/session"
 	"github.com/samber/lo"
 
-	bpcertificateservice "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/byteplus-sdk/byteplus-go-sdk-v2/service/certificateservice"
-
 	"github.com/certimate-go/certimate/pkg/core"
+	bpcertificateservice "github.com/certimate-go/certimate/pkg/sdk3rd/byteplus/certificateservice"
 )
 
 type (
