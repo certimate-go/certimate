@@ -44,7 +44,7 @@ jobs:
           submodules: true
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
 
@@ -90,7 +90,7 @@ jobs:
           submodules: true
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
 
@@ -130,7 +130,7 @@ jobs:
           submodules: true
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
 

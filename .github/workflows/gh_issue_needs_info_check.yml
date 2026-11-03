@@ -25,11 +25,14 @@ jobs:
       github.event.issue.user.type != 'Bot' &&
       !endsWith(github.event.issue.user.login, '[bot]')
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
         with:
-          python-version: "3.12"
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
 
       - name: Run issue body quality check
         id: quality
@@ -133,11 +136,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
         with:
-          python-version: "3.12"
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
 
       - name: Close stale needs-info issues
         env:
