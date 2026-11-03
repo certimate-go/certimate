@@ -79,6 +79,23 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
         );
         break;
 
+      case "boop":
+        formInst.setFieldValue([parentNamePath, "url"], "https://<your-boop-server>/api/v1/events");
+        formInst.setFieldValue([parentNamePath, "method"], "POST");
+        formInst.setFieldValue([parentNamePath, "headers"], "Content-Type: application/json\r\nAuthorization: Bearer <your-boop-apikey>");
+        formInst.setFieldValue(
+          [parentNamePath, "data"],
+          JSON.stringify(
+            {
+              title: "${CERTIMATE_NOTIFIER_SUBJECT}",
+              body: "${CERTIMATE_NOTIFIER_MESSAGE}",
+            },
+            null,
+            2
+          )
+        );
+        break;
+
       case "gotify":
         formInst.setFieldValue([parentNamePath, "url"], "https://<your-gotify-server>/");
         formInst.setFieldValue([parentNamePath, "method"], "POST");
@@ -323,13 +340,24 @@ const AccessConfigFormFieldsProviderWebhook = ({ usage = "none" }: AccessConfigF
           <div className="absolute -top-1.5 right-0 -translate-y-full">
             <Dropdown
               menu={{
-                items: ["bark", "ntfy", "gotify", "serverchan3", "serverchanturbo", "pushover", "pushplus", "messagenest", "wxpush", "pushme", "common"].map(
-                  (key) => ({
-                    key,
-                    label: <span dangerouslySetInnerHTML={{ __html: t(`access.form.webhook_preset_data.${key}`) }}></span>,
-                    onClick: () => handlePresetDataForNotificationClick(key),
-                  })
-                ),
+                items: [
+                  "bark",
+                  "boop",
+                  "ntfy",
+                  "gotify",
+                  "serverchan3",
+                  "serverchanturbo",
+                  "pushover",
+                  "pushplus",
+                  "messagenest",
+                  "wxpush",
+                  "pushme",
+                  "common",
+                ].map((key) => ({
+                  key,
+                  label: <span dangerouslySetInnerHTML={{ __html: t(`access.form.webhook_preset_data.${key}`) }}></span>,
+                  onClick: () => handlePresetDataForNotificationClick(key),
+                })),
               }}
               trigger={["click"]}
             >

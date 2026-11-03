@@ -1633,6 +1633,7 @@
     "webhook_preset_data": {
       "": "Use preset Webhook",
       "bark": "Bark",
+      "boop": "Boop",
       "gotify": "Gotify",
       "messagenest": "Message Nest",
       "ntfy": "ntfy",
