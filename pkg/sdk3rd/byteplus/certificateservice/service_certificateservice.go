@@ -1,3 +1,5 @@
+// An extension SDK client for BytePlus certificate service.
+// Based on github.com/byteplus-sdk/byteplus-go-sdk-v2.
 package certificateservice
 
 import (
