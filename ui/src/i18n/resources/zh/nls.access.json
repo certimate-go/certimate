@@ -109,7 +109,7 @@
     "1panel_api_key": {
       "label": "1Panel 接口密钥",
       "placeholder": "请输入 1Panel 接口密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://1panel.cn/docs/dev_manual/api_manual/\" target=\"_blank\">https://1panel.cn/docs/dev_manual/api_manual/</a>"
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.fit2cloud.com/1panel/dev_manual/api_manual\" target=\"_blank\">https://docs.fit2cloud.com/1panel/dev_manual/api_manual</a>"
     },
     "35cn_username": {
       "label": "三五互联代理商用户名",
@@ -1528,14 +1528,14 @@
     "todaynic_agent": {
       "guide": "时代互联 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384\" target=\"_blank\">https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384</a>"
     },
-    "ucloud_private_key": {
-      "label": "优刻得 API 私钥",
-      "placeholder": "请输入优刻得 API 私钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
-    },
     "ucloud_public_key": {
       "label": "优刻得 API 公钥",
-      "placeholder": "请输入优刻得 API 公钥",
+      "placeholder": "请输入优刻得 API 公钥（AccessKeyID）",
+      "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
+    },
+    "ucloud_private_key": {
+      "label": "优刻得 API 私钥",
+      "placeholder": "请输入优刻得 API 私钥（AccessKeySecret）",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
     },
     "ucloud_project_id": {

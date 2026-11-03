@@ -662,8 +662,8 @@ type AccessConfigForTencentCloud struct {
 }
 
 type AccessConfigForUCloud struct {
-	PrivateKey string `json:"privateKey"`
 	PublicKey  string `json:"publicKey"`
+	PrivateKey string `json:"privateKey"`
 	ProjectId  string `json:"projectId,omitempty"`
 }
 

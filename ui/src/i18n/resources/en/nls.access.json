@@ -109,7 +109,7 @@
     "1panel_api_key": {
       "label": "1Panel API key",
       "placeholder": "Please enter 1Panel API key",
-      "tooltip": "For more information, see <a href=\"https://docs.1panel.pro/dev_manual/api_manual/\" target=\"_blank\">https://docs.1panel.pro/dev_manual/api_manual/</a>"
+      "tooltip": "For more information, see <a href=\"https://1panel.pro/docs/v2/dev_manual/api_manual\" target=\"_blank\">https://1panel.pro/docs/v2/dev_manual/api_manual</a>"
     },
     "35cn_username": {
       "label": "35.cn agent username",
@@ -1529,14 +1529,14 @@
     "todaynic_agent": {
       "guide": "TodayNIC.com API only supports calls from agents. Learn more about this: <br><a href=\"https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384\" target=\"_blank\">https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384</a>"
     },
-    "ucloud_private_key": {
-      "label": "UCloud API private key",
-      "placeholder": "Please enter UCloud API private key",
-      "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>"
-    },
     "ucloud_public_key": {
       "label": "UCloud API public key",
-      "placeholder": "Please enter UCloud API public key",
+      "placeholder": "Please enter UCloud API public key (AccessKeyID)",
+      "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>"
+    },
+    "ucloud_private_key": {
+      "label": "UCloud API private key",
+      "placeholder": "Please enter UCloud API private key (AccessKeySecret)",
       "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>"
     },
     "ucloud_project_id": {
