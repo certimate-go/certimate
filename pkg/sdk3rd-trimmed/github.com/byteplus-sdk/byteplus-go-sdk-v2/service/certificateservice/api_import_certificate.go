@@ -4,23 +4,24 @@ import (
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/byteplusutil"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/request"
-	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/response"
+
+	"github.com/certimate-go/certimate/pkg/sdk3rd-patched/github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/response"
 )
 
-const opUploadCertificate = "UploadCertificate"
+const opImportCertificate = "ImportCertificate"
 
-func (c *CERTIFICATESERVICE) UploadCertificateRequest(input *UploadCertificateInput) (req *request.Request, output *UploadCertificateOutput) {
+func (c *CERTIFICATESERVICE) ImportCertificateRequest(input *ImportCertificateInput) (req *request.Request, output *ImportCertificateOutput) {
 	op := &request.Operation{
-		Name:       opUploadCertificate,
+		Name:       opImportCertificate,
 		HTTPMethod: "POST",
 		HTTPPath:   "/",
 	}
 
 	if input == nil {
-		input = &UploadCertificateInput{}
+		input = &ImportCertificateInput{}
 	}
 
-	output = &UploadCertificateOutput{}
+	output = &ImportCertificateOutput{}
 	req = c.newRequest(op, input, output)
 
 	req.HTTPRequest.Header.Set("Content-Type", "application/json; charset=utf-8")
@@ -28,17 +29,17 @@ func (c *CERTIFICATESERVICE) UploadCertificateRequest(input *UploadCertificateIn
 	return
 }
 
-func (c *CERTIFICATESERVICE) UploadCertificateWithContext(ctx byteplus.Context, input *UploadCertificateInput, opts ...request.Option) (*UploadCertificateOutput, error) {
-	req, out := c.UploadCertificateRequest(input)
+func (c *CERTIFICATESERVICE) ImportCertificateWithContext(ctx byteplus.Context, input *ImportCertificateInput, opts ...request.Option) (*ImportCertificateOutput, error) {
+	req, out := c.ImportCertificateRequest(input)
 	req.SetContext(ctx)
 	req.ApplyOptions(opts...)
 	return out, req.Send()
 }
 
-type UploadCertificateInput struct {
+type ImportCertificateInput struct {
 	_ struct{} `type:"structure" json:",omitempty"`
 
-	CertificateInfo *CertificateInfoForUploadCertificateInput `type:"structure" json:",omitempty"`
+	CertificateInfo *CertificateInfoForImportCertificateInput `type:"structure" json:",omitempty"`
 
 	NoVerifyAndFixChain *bool `type:"boolean" json:",omitempty"`
 
@@ -48,18 +49,18 @@ type UploadCertificateInput struct {
 
 	Tag *string `type:"string" json:",omitempty"`
 
-	Tags []*TagForUploadCertificateInput `type:"list" json:",omitempty"`
+	Tags []*TagForImportCertificateInput `type:"list" json:",omitempty"`
 }
 
-func (s UploadCertificateInput) String() string {
+func (s ImportCertificateInput) String() string {
 	return byteplusutil.Prettify(s)
 }
 
-func (s UploadCertificateInput) GoString() string {
+func (s ImportCertificateInput) GoString() string {
 	return s.String()
 }
 
-type UploadCertificateOutput struct {
+type ImportCertificateOutput struct {
 	_ struct{} `type:"structure" json:",omitempty"`
 
 	Metadata *response.ResponseMetadata
@@ -69,15 +70,15 @@ type UploadCertificateOutput struct {
 	RepeatId *string `type:"string" json:",omitempty"`
 }
 
-func (s UploadCertificateOutput) String() string {
+func (s ImportCertificateOutput) String() string {
 	return byteplusutil.Prettify(s)
 }
 
-func (s UploadCertificateOutput) GoString() string {
+func (s ImportCertificateOutput) GoString() string {
 	return s.String()
 }
 
-type CertificateInfoForUploadCertificateInput struct {
+type CertificateInfoForImportCertificateInput struct {
 	_ struct{} `type:"structure" json:",omitempty"`
 
 	CertificateChain *string `type:"string" json:",omitempty"`
@@ -85,15 +86,15 @@ type CertificateInfoForUploadCertificateInput struct {
 	PrivateKey *string `type:"string" json:",omitempty"`
 }
 
-func (s CertificateInfoForUploadCertificateInput) String() string {
+func (s CertificateInfoForImportCertificateInput) String() string {
 	return byteplusutil.Prettify(s)
 }
 
-func (s CertificateInfoForUploadCertificateInput) GoString() string {
+func (s CertificateInfoForImportCertificateInput) GoString() string {
 	return s.String()
 }
 
-type TagForUploadCertificateInput struct {
+type TagForImportCertificateInput struct {
 	_ struct{} `type:"structure" json:",omitempty"`
 
 	Key *string `type:"string" json:",omitempty"`
@@ -101,10 +102,10 @@ type TagForUploadCertificateInput struct {
 	Value *string `type:"string" json:",omitempty"`
 }
 
-func (s TagForUploadCertificateInput) String() string {
+func (s TagForImportCertificateInput) String() string {
 	return byteplusutil.Prettify(s)
 }
 
-func (s TagForUploadCertificateInput) GoString() string {
+func (s TagForImportCertificateInput) GoString() string {
 	return s.String()
 }
