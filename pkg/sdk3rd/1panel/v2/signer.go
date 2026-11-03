@@ -14,7 +14,7 @@ type signer struct {
 
 func (s *signer) Sign(req *http.Request) error {
 	// API 签名机制：
-	// https://1panel.cn/docs/v2/dev_manual/api_manual/
+	// https://docs.fit2cloud.com/1panel/dev_manual/api_manual
 
 	timestamp := fmt.Sprintf("%d", time.Now().Unix())
 

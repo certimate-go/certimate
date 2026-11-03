@@ -24,10 +24,10 @@ type (
 )
 
 type DeployerConfig struct {
-	// 优刻得 API 私钥。
-	PrivateKey string `json:"privateKey"`
 	// 优刻得 API 公钥。
 	PublicKey string `json:"publicKey"`
+	// 优刻得 API 私钥。
+	PrivateKey string `json:"privateKey"`
 	// 优刻得项目 ID。
 	ProjectId string `json:"projectId,omitempty"`
 	// 优刻得接口端点。
@@ -61,14 +61,14 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	client, err := createSDKClient(config.PrivateKey, config.PublicKey, config.ProjectId, config.Endpoint, config.Region)
+	client, err := createSDKClient(config.PublicKey, config.PrivateKey, config.ProjectId, config.Endpoint, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
 
 	pcertmgr, err := cmgrimpl.NewCertmgr(&cmgrimpl.CertmgrConfig{
-		PrivateKey: config.PrivateKey,
 		PublicKey:  config.PublicKey,
+		PrivateKey: config.PrivateKey,
 		ProjectId:  config.ProjectId,
 		Endpoint:   config.Endpoint,
 		Region:     config.Region,
@@ -254,12 +254,12 @@ func (d *Deployer) updateVServerCertificate(ctx context.Context, cloudLoadbalanc
 	return nil
 }
 
-func createSDKClient(privateKey, publicKey, projectId, endpoint, region string) (*ucloudsdk.ULBClient, error) {
-	if privateKey == "" {
-		return nil, fmt.Errorf("ucloud: invalid private key")
-	}
+func createSDKClient(publicKey, privateKey, projectId, endpoint, region string) (*ucloudsdk.ULBClient, error) {
 	if publicKey == "" {
 		return nil, fmt.Errorf("ucloud: invalid public key")
+	}
+	if privateKey == "" {
+		return nil, fmt.Errorf("ucloud: invalid private key")
 	}
 
 	cfg := ucloud.NewConfig()
@@ -278,8 +278,8 @@ func createSDKClient(privateKey, publicKey, projectId, endpoint, region string) 
 	}
 
 	credential := auth.NewCredential()
-	credential.PrivateKey = privateKey
 	credential.PublicKey = publicKey
+	credential.PrivateKey = privateKey
 
 	client := ucloudsdk.NewClient(&cfg, &credential)
 	return client, nil
