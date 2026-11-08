@@ -74,7 +74,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			PerPage: lo.ToPtr(listCertificatesPerPage),
 		}
 		listCertificatesResp, err := c.sdkClient.ListCertificatesWithContext(ctx, listCertificatesReq)
-		c.logger.Debug("sdk request 'Certificates.ListCertificates'", slog.Any("request", listCertificatesReq), slog.Any("response", listCertificatesResp))
+		c.logger.Debug("sdk request 'Certificates.ListCertificates'", slog.Any("request", listCertificatesReq))
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute sdk request 'Certificates.ListCertificates': %w", err)
 		} else {
@@ -111,7 +111,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 		PrivateKey:  lo.ToPtr(privkeyPEM),
 	}
 	addCertificateResp, err := c.sdkClient.AddCertificateWithContext(ctx, addCertificateReq)
-	c.logger.Debug("sdk request 'Certificates.AddCertificate'", slog.Any("request", addCertificateReq), slog.Any("response", addCertificateResp))
+	c.logger.Debug("sdk request 'Certificates.AddCertificate'", slog.String("name", *addCertificateReq.Name))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sdk request 'Certificates.AddCertificate': %w", err)
 	}
