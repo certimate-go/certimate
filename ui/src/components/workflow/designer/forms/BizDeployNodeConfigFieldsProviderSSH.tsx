@@ -123,37 +123,67 @@ info "Completed"
       `.trim();
 
     case "sh_replace_fnos_ssl":
-      return `# *** 需要 root 权限 ***
-# 注意仅支持替换证书，需本身已开启过一次 HTTPS
-# 脚本参考 https://github.com/lfgyx/fnos_certificate_update/blob/main/src/update_cert.sh
+      return `# 需要 root 权限运行！
+# 仅替换证书，需已开启过一次 HTTPS
+# 参考 https://github.com/lfgyx/fnos_certificate_update/blob/main/src/update_cert.sh
 set -u
 
-# 请将以下变量替换为实际值
-# 飞牛证书实际存放路径请在 \`/usr/trim/etc/network_cert_all.conf\` 中查看，注意不要修改文件名
-tmpFullchainPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单中保持一致）
-tmpCertPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}" # 服务器证书文件路径（与表单中保持一致）
-tmpKeyPath="\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥文件路径（与表单中保持一致）
-fnFullchainPath="/usr/trim/var/trim_connect/ssls/example.com/1234567890/fullchain.crt" # 飞牛证书文件路径
-fnCertPath="/usr/trim/var/trim_connect/ssls/example.com/1234567890/example.com.crt" # 飞牛服务器证书文件路径
-fnKeyPath="/usr/trim/var/trim_connect/ssls/example.com/1234567890/example.com.key" # 飞牛私钥文件路径
-domain="<your-domain-name>" # 域名
+tmpFullchainPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_PATH}" # 证书文件路径（与表单一致）
+tmpCertPath="\${CERTIMATE_DEPLOYER_CMDVAR_CERTIFICATE_SERVER_PATH}" # 服务器证书路径（与表单一致）
+tmpKeyPath="\${CERTIMATE_DEPLOYER_CMDVAR_PRIVATEKEY_PATH}" # 私钥路径（与表单一致）
+[ -f "$tmpFullchainPath" ] || { echo "[ERROR] 找不到证书文件 $tmpFullchainPath"; exit 1; }
+[ -f "$tmpKeyPath" ] || { echo "[ERROR] 找不到私钥文件 $tmpKeyPath"; exit 1; }
 
-# 复制文件
-cp -rf "$tmpFullchainPath" "$fnFullchainPath"
-cp -rf "$tmpCertPath" "$fnCertPath"
-cp -rf "$tmpKeyPath" "$fnKeyPath"
-chmod 755 "$fnFullchainPath"
-chmod 755 "$fnCertPath"
-chmod 755 "$fnKeyPath"
+# 目标证书路径：留空自动探测；多张证书时手工填写，路径见 /usr/trim/etc/network_cert_all.conf
+fnCertPath=""
+fnKeyPath=""
+fnFullchainPath=""
 
-# 更新数据库
+if [ -z "$fnCertPath" ] || [ -z "$fnKeyPath" ]; then
+  certConf="/usr/trim/etc/network_gateway_cert.conf"
+  if [ ! -f "$certConf" ]; then
+    echo "[ERROR] 找不到 $certConf，请先在飞牛面板启用一次 HTTPS"
+    exit 1
+  fi
+  certEntries=$(tr '}' '\\n' < "$certConf" | grep '"cert":"')
+  certCount=$(printf '%s\\n' "$certEntries" | grep -vc '"fallback"')
+  if [ "$certCount" -ne 1 ]; then
+    echo "[ERROR] 有 $certCount 张证书，请手工指定 fnCertPath 和 fnKeyPath"
+    exit 1
+  fi
+  certEntry=$(printf '%s\\n' "$certEntries" | grep -v '"fallback"')
+  [ -n "$fnCertPath" ] || fnCertPath=$(printf '%s' "$certEntry" | sed -n 's/.*"cert":"\\([^"]*\\)".*/\\1/p')
+  [ -n "$fnKeyPath" ] || fnKeyPath=$(printf '%s' "$certEntry" | sed -n 's/.*"key":"\\([^"]*\\)".*/\\1/p')
+fi
+[ -n "$fnCertPath" ] && [ -n "$fnKeyPath" ] || { echo "[ERROR] 无法解析目标证书路径，请手工填写 fnCertPath 和 fnKeyPath"; exit 1; }
+[ -n "$fnFullchainPath" ] || fnFullchainPath="$(dirname "$fnCertPath")/fullchain.crt"
+
+echo "[INFO] 目标证书: $fnCertPath"
+
+# 证书与私钥不匹配就别往下走
+if [ -f "$tmpCertPath" ]; then
+  if [ "$(openssl x509 -in "$tmpCertPath" -noout -pubkey)" != "$(openssl pkey -in "$tmpKeyPath" -pubout)" ]; then
+    echo "[ERROR] 证书与私钥不匹配"
+    exit 1
+  fi
+fi
+
+# nginx 原样下发 .crt，写入完整链，只写叶子会断链
+cp -f "$tmpFullchainPath" "$fnCertPath"
+cp -f "$tmpFullchainPath" "$fnFullchainPath"
+cp -f "$tmpKeyPath" "$fnKeyPath"
+chown root:www-data "$fnCertPath" "$fnFullchainPath" "$fnKeyPath"
+chmod 644 "$fnCertPath"
+chmod 644 "$fnFullchainPath"
+chmod 640 "$fnKeyPath"
+
+# 库里的 domain 不带 * 前缀，按证书路径匹配
 NEW_EFFECT_DATE=$(openssl x509 -startdate -noout -in "$fnCertPath" | sed "s/^.*=\\(.*\\)$/\\1/")
 NEW_EFFECT_TIMESTAMP=$(date -d "$NEW_EFFECT_DATE" +%s%3N)
 NEW_EXPIRY_DATE=$(openssl x509 -enddate -noout -in "$fnCertPath" | sed "s/^.*=\\(.*\\)$/\\1/")
 NEW_EXPIRY_TIMESTAMP=$(date -d "$NEW_EXPIRY_DATE" +%s%3N)
-psql -U postgres -d trim_connect -c "UPDATE cert SET valid_from=$NEW_EFFECT_TIMESTAMP, valid_to=$NEW_EXPIRY_TIMESTAMP WHERE domain='$domain'"
+psql -U postgres -d trim_connect -c "UPDATE cert SET valid_from=$NEW_EFFECT_TIMESTAMP, valid_to=$NEW_EXPIRY_TIMESTAMP WHERE certificate='$fnCertPath'"
 
-# 重启服务
 systemctl restart webdav.service
 systemctl restart smbftpd.service
 systemctl restart trim_nginx.service
