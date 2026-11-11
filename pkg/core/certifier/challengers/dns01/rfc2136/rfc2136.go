@@ -11,6 +11,8 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 )
 
+const TSIG_ALGORITHM_GSS = "gss-tsig."
+
 type ChallengerConfig struct {
 	Host                  string `json:"host"`
 	Port                  int32  `json:"port"`
@@ -35,6 +37,10 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 
 	if config.TsigAlgorithm == "" {
 		config.TsigAlgorithm = "hmac-sha1."
+	}
+
+	if config.TsigAlgorithm != TSIG_ALGORITHM_GSS && (config.TsigKey == "") != (config.TsigSecret == "") {
+		return nil, fmt.Errorf("tsig key and tsig secret must be provided together")
 	}
 
 	providerConfig := dnsupdate.NewDefaultConfig()

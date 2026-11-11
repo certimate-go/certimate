@@ -1279,11 +1279,19 @@
     },
     "rfc2136_tsig_key": {
       "label": "TSIG authentication key (Optional)",
-      "placeholder": "Please enter TSIG authentication key"
+      "placeholder": "Please enter TSIG authentication key",
+      "errmsg": {
+        "unpaired": "Please fill in both the TSIG key and the TSIG secret, or leave both empty to send unsigned updates."
+      },
+      "tooltip": "The name of the TSIG key configured on your DNS server, e.g. the name of the <b>key</b> statement in BIND. If only one of the key and the secret is provided, the configuration is invalid: leaving both empty sends unsigned updates, while a wrong key name or secret causes the server to reject the update."
     },
     "rfc2136_tsig_secret": {
       "label": "TSIG authentication secret (Optional)",
-      "placeholder": "Please enter TSIG authentication secret"
+      "placeholder": "Please enter TSIG authentication secret",
+      "errmsg": {
+        "unpaired": "Please fill in both the TSIG key and the TSIG secret, or leave both empty to send unsigned updates."
+      },
+      "tooltip": "The Base64-encoded secret of the TSIG key. It and the key name must be provided together."
     },
     "rfc2136_tsig_gss_realm": {
       "label": "GSS-TSIG Kerberos realm (Optional)",
