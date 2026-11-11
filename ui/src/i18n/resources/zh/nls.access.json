@@ -1279,11 +1279,19 @@
     },
     "rfc2136_tsig_key": {
       "label": "TSIG 认证密钥 Key（可选）",
-      "placeholder": "请输入 TSIG 认证密钥 Key"
+      "placeholder": "请输入 TSIG 认证密钥 Key",
+      "errmsg": {
+        "unpaired": "请同时填写 TSIG 密钥 Key 和 Secret，或两者都留空以发送未签名的更新。"
+      },
+      "tooltip": "在 DNS 服务器上配置的 TSIG 密钥名称，例如 BIND 中 <b>key</b> 语句定义的名称。Key 与 Secret 只填其一的配置无效：两者都留空将以未签名方式发送更新，而密钥名称或 Secret 填写错误都会导致服务器拒绝更新。"
     },
     "rfc2136_tsig_secret": {
       "label": "TSIG 认证密钥 Secret（可选）",
-      "placeholder": "请输入 TSIG 认证密钥 Secret"
+      "placeholder": "请输入 TSIG 认证密钥 Secret",
+      "errmsg": {
+        "unpaired": "请同时填写 TSIG 密钥 Key 和 Secret，或两者都留空以发送未签名的更新。"
+      },
+      "tooltip": "TSIG 密钥对应的 Base64 编码 Secret，必须与密钥名称成对填写。"
     },
     "rfc2136_tsig_gss_realm": {
       "label": "GSS-TSIG Kerberos 领域（可选）",
