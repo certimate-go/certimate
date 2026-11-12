@@ -47,20 +47,13 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: cannot set both apiKey and username/password")
 	}
 
-	baseUrl := strings.TrimSuffix(serverUrl, "/")
-	if opts.ApiKey != "" {
-		baseUrl += "/api/client"
-	} else {
-		baseUrl += "/prod-api"
-	}
-
 	client := &Client{
 		username: opts.Username,
 		password: opts.Password,
 		apiKey:   opts.ApiKey,
 	}
 	client.rc = resty.New().
-		SetBaseURL(baseUrl).
+		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/prod-api").
 		SetHeader("User-Agent", app.AppUserAgent).
 		SetPreRequestHook(func(_ *resty.Client, req *http.Request) error {
 			if client.apiKey != "" {
@@ -150,7 +143,7 @@ func (c *Client) ensureToken(ctx context.Context) error {
 		return nil
 	}
 
-	httpreq, err := c.newRequest(http.MethodPost, "/auth/login")
+	httpreq, err := c.newRequest(http.MethodPost, "/login")
 	if err != nil {
 		return err
 	} else {

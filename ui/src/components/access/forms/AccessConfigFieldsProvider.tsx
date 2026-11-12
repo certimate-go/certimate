@@ -74,6 +74,7 @@ import AccessConfigFieldsProviderLarkBot from "./AccessConfigFieldsProviderLarkB
 import AccessConfigFieldsProviderLeCDN from "./AccessConfigFieldsProviderLeCDN";
 import AccessConfigFieldsProviderLinode from "./AccessConfigFieldsProviderLinode";
 import AccessConfigFieldsProviderLiteSSL from "./AccessConfigFieldsProviderLiteSSL";
+import AccessConfigFieldsProviderLuaDNS from "./AccessConfigFieldsProviderLuaDNS";
 import AccessConfigFieldsProviderMatrix from "./AccessConfigFieldsProviderMatrix";
 import AccessConfigFieldsProviderMattermost from "./AccessConfigFieldsProviderMattermost";
 import AccessConfigFieldsProviderMohua from "./AccessConfigFieldsProviderMohua";
@@ -196,6 +197,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.INFOMANIAK]: AccessConfigFieldsProviderInfomaniak,
   [ACCESS_PROVIDERS.LINODE]: AccessConfigFieldsProviderLinode,
   [ACCESS_PROVIDERS.LITESSL]: AccessConfigFieldsProviderLiteSSL,
+  [ACCESS_PROVIDERS.LUADNS]: AccessConfigFieldsProviderLuaDNS,
   [ACCESS_PROVIDERS.MATRIX]: AccessConfigFieldsProviderMatrix,
   [ACCESS_PROVIDERS.MATTERMOST]: AccessConfigFieldsProviderMattermost,
   [ACCESS_PROVIDERS.MOHUA]: AccessConfigFieldsProviderMohua,

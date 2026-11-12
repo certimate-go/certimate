@@ -153,7 +153,7 @@ func createSDKClient(accessKeyId, accessKeySecret, poolId string) (*ecloudsdkvlb
 	client := ecloudsdkvlb.NewClient(&config.Config{
 		AccessKey: &accessKeyId,
 		SecretKey: &accessKeySecret,
-		RegionId:  &poolId,
+		PoolId:    &poolId,
 	})
 
 	return client, nil

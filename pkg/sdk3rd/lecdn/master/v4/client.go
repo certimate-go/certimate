@@ -47,16 +47,13 @@ func NewClient(serverUrl string, optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: cannot set both apiKey and username/password")
 	}
 
-	baseUrl := strings.TrimSuffix(serverUrl, "/")
-	baseUrl += "/prod-api"
-
 	client := &Client{
 		username: opts.Username,
 		password: opts.Password,
 		apiKey:   opts.ApiKey,
 	}
 	client.rc = resty.New().
-		SetBaseURL(baseUrl).
+		SetBaseURL(strings.TrimSuffix(serverUrl, "/")+"/prod-api").
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent).

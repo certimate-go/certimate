@@ -37,6 +37,8 @@ type ServerConfig struct {
 	SshKey string `json:"sshKey,omitempty"`
 	// SSH 登录私钥口令。
 	SshKeyPassphrase string `json:"sshKeyPassphrase,omitempty"`
+	// SSH 登录用户证书。
+	SshKeyCertificate string `json:"sshKeyCertificate,omitempty"`
 }
 
 type DeployerConfig struct {
@@ -257,6 +259,7 @@ func createSshClient(config DeployerConfig) (*ssh.Client, error) {
 	clientCfg.Password = config.SshPassword
 	clientCfg.Key = config.SshKey
 	clientCfg.KeyPassphrase = config.SshKeyPassphrase
+	clientCfg.KeyCertificate = config.SshKeyCertificate
 	for _, jumpServer := range config.JumpServers {
 		jumpServerCfg := ssh.NewServerConfig()
 		jumpServerCfg.Host = jumpServer.SshHost
@@ -266,6 +269,7 @@ func createSshClient(config DeployerConfig) (*ssh.Client, error) {
 		jumpServerCfg.Password = jumpServer.SshPassword
 		jumpServerCfg.Key = jumpServer.SshKey
 		jumpServerCfg.KeyPassphrase = jumpServer.SshKeyPassphrase
+		jumpServerCfg.KeyCertificate = jumpServer.SshKeyCertificate
 		clientCfg.JumpServers = append(clientCfg.JumpServers, *jumpServerCfg)
 	}
 

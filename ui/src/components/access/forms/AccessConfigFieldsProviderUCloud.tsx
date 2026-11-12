@@ -18,16 +18,6 @@ const AccessConfigFormFieldsProviderUCloud = () => {
   return (
     <>
       <Form.Item
-        name={[parentNamePath, "privateKey"]}
-        initialValue={initialValues.privateKey}
-        label={t("access.form.ucloud_private_key.label")}
-        rules={[formRule]}
-        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.ucloud_private_key.tooltip") }}></span>}
-      >
-        <Input autoComplete="new-password" placeholder={t("access.form.ucloud_private_key.placeholder")} />
-      </Form.Item>
-
-      <Form.Item
         name={[parentNamePath, "publicKey"]}
         initialValue={initialValues.publicKey}
         label={t("access.form.ucloud_public_key.label")}
@@ -35,6 +25,16 @@ const AccessConfigFormFieldsProviderUCloud = () => {
         tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.ucloud_public_key.tooltip") }}></span>}
       >
         <Input.Password autoComplete="new-password" placeholder={t("access.form.ucloud_public_key.placeholder")} />
+      </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "privateKey"]}
+        initialValue={initialValues.privateKey}
+        label={t("access.form.ucloud_private_key.label")}
+        rules={[formRule]}
+        tooltip={<span dangerouslySetInnerHTML={{ __html: t("access.form.ucloud_private_key.tooltip") }}></span>}
+      >
+        <Input autoComplete="new-password" placeholder={t("access.form.ucloud_private_key.placeholder")} />
       </Form.Item>
 
       <Form.Item
@@ -52,8 +52,8 @@ const AccessConfigFormFieldsProviderUCloud = () => {
 
 const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
-    privateKey: "",
     publicKey: "",
+    privateKey: "",
   };
 };
 
@@ -61,8 +61,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n: ReturnType<typeof getI18n> }) =
   const { t: _ } = i18n;
 
   return z.object({
-    privateKey: z.string().nonempty(),
     publicKey: z.string().nonempty(),
+    privateKey: z.string().nonempty(),
     projectId: z.string().nullish(),
   });
 };

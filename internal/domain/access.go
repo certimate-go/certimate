@@ -401,6 +401,11 @@ type AccessConfigForLiteSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
+type AccessConfigForLuaDNS struct {
+	Username string `json:"username"`
+	ApiKey   string `json:"apiKey"`
+}
+
 type AccessConfigForMatrix struct {
 	ServerUrl   string `json:"serverUrl"`
 	UserId      string `json:"userId"`
@@ -579,21 +584,23 @@ type AccessConfigForSpaceship struct {
 }
 
 type AccessConfigForSSH struct {
-	Host          string `json:"host"`
-	Port          int32  `json:"port"`
-	AuthMethod    string `json:"authMethod"`
-	Username      string `json:"username"`
-	Password      string `json:"password,omitempty"`
-	Key           string `json:"key,omitempty"`
-	KeyPassphrase string `json:"keyPassphrase,omitempty"`
-	JumpServers   []struct {
-		Host          string `json:"host"`
-		Port          int32  `json:"port"`
-		AuthMethod    string `json:"authMethod"`
-		Username      string `json:"username"`
-		Password      string `json:"password,omitempty"`
-		Key           string `json:"key,omitempty"`
-		KeyPassphrase string `json:"keyPassphrase,omitempty"`
+	Host           string `json:"host"`
+	Port           int32  `json:"port"`
+	AuthMethod     string `json:"authMethod"`
+	Username       string `json:"username"`
+	Password       string `json:"password,omitempty"`
+	Key            string `json:"key,omitempty"`
+	KeyPassphrase  string `json:"keyPassphrase,omitempty"`
+	KeyCertificate string `json:"keyCertificate,omitempty"`
+	JumpServers    []struct {
+		Host           string `json:"host"`
+		Port           int32  `json:"port"`
+		AuthMethod     string `json:"authMethod"`
+		Username       string `json:"username"`
+		Password       string `json:"password,omitempty"`
+		Key            string `json:"key,omitempty"`
+		KeyPassphrase  string `json:"keyPassphrase,omitempty"`
+		KeyCertificate string `json:"keyCertificate,omitempty"`
 	} `json:"jumpServers,omitempty"`
 }
 
@@ -632,8 +639,8 @@ type AccessConfigForTencentCloud struct {
 }
 
 type AccessConfigForUCloud struct {
-	PrivateKey string `json:"privateKey"`
 	PublicKey  string `json:"publicKey"`
+	PrivateKey string `json:"privateKey"`
 	ProjectId  string `json:"projectId,omitempty"`
 }
 

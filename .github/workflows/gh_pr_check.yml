@@ -43,12 +43,12 @@ jobs:
       git_head_repo: ${{ steps.pr_details.outputs.git_head_repo }}
       git_head_ref: ${{ steps.pr_details.outputs.git_head_ref }}
       git_head_sha: ${{ steps.pr_details.outputs.git_head_sha }}
-      no_compile: ${{ contains(github.event.comment.body, '-no-compile') }}
-      no_test: ${{ contains(github.event.comment.body, '-no-test') }}
-      no_lint: ${{ contains(github.event.comment.body, '-no-lint') }}
+      no_build: ${{ contains(github.event.comment.body, '--no-build') || contains(github.event.comment.body, '--no-compile') }}
+      no_test: ${{ contains(github.event.comment.body, '--no-test') }}
+      no_lint: ${{ contains(github.event.comment.body, '--no-lint') }}
 
   compile-build:
-    if: needs.pr-guard.outputs.no_compile != 'true'
+    if: needs.pr-guard.outputs.no_build != 'true'
     needs: pr-guard
     strategy:
       matrix:
@@ -84,7 +84,7 @@ jobs:
           node-version: 24
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
 
@@ -130,7 +130,7 @@ jobs:
           submodules: true
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
 
@@ -166,10 +166,14 @@ jobs:
       - name: Check state
         if: always()
         run: |
+          exitcode=0
+
           if [[ "${{ steps.gotest.outcome }}" == "failure" ]]; then
-            echo "::error::Some cases failed."
-            exit 1
+            echo "::error::Running Go unit tests failed."
+            exitcode=1
           fi
+
+          exit $exitcode
 
   lint-format:
     if: needs.pr-guard.outputs.no_lint != 'true'
@@ -204,7 +208,7 @@ jobs:
           node-version: 24
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
 
@@ -339,13 +343,26 @@ jobs:
       - name: Check state
         if: always()
         run: |
-          if [[ "${{ steps.jslint.outcome }}" == "failure" ||
-                "${{ steps.jsfmt.outcome }}" == "failure" ||
-                "${{ steps.golint.outcome }}" == "failure" ||
-                "${{ steps.gofmt.outcome }}" == "failure" ]]; then
-            echo "::error::Some cases failed."
-            exit 1
+          exitcode=0
+
+          if [[ "${{ steps.jslint.outcome }}" == "failure" ]]; then
+            echo "::error::Running Node.js code linter failed."
+            exitcode=1
           fi
+          if [[ "${{ steps.jsfmt.outcome }}" == "failure" ]]; then
+            echo "::error::Running Node.js code formatter failed."
+            exitcode=1
+          fi
+          if [[ "${{ steps.golint.outcome }}" == "failure" ]]; then
+            echo "::error::Running Go code linter failed."
+            exitcode=1
+          fi
+          if [[ "${{ steps.gofmt.outcome }}" == "failure" ]]; then
+            echo "::error::Running Go code formatter failed."
+            exitcode=1
+          fi
+
+          exit $exitcode
 
   ending:
     needs: [pr-guard, compile-build, unit-test, lint-format]
@@ -379,7 +396,7 @@ jobs:
               {
                 ctx: "pr-check/compile-build",
                 result: "${{ needs.compile-build.result }}",
-                skipped: "${{ needs.pr-guard.outputs.no_compile }}",
+                skipped: "${{ needs.pr-guard.outputs.no_build }}",
               },
               {
                 ctx: "pr-check/unit-test",
@@ -426,7 +443,7 @@ jobs:
               repo: context.repo.repo,
               issue_number: ${{ github.event.issue.number }},
               body: stateIcon + "PR check done, overall result: **" + "${{ steps.overall_state.outputs.state }}" + "**\n" +
-                "- _compile-build_: **" + ("${{ needs.pr-guard.outputs.no_compile }}" === "true" ? "skipped" : "${{ needs.compile-build.result }}") + "**\n" +
+                "- _compile-build_: **" + ("${{ needs.pr-guard.outputs.no_build }}" === "true" ? "skipped" : "${{ needs.compile-build.result }}") + "**\n" +
                 "- _unit-test_: **" + ("${{ needs.pr-guard.outputs.no_test }}" === "true" ? "skipped" : "${{ needs.unit-test.result }}") + "**\n" +
                 "- _lint-format_: **" + ("${{ needs.pr-guard.outputs.no_lint }}" === "true" ? "skipped" : "${{ needs.lint-format.result }}") + "**\n\n" +
                 "Click to [view details](" + `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}` + ").",

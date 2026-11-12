@@ -109,7 +109,7 @@
     "1panel_api_key": {
       "label": "1Panel 接口密钥",
       "placeholder": "请输入 1Panel 接口密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://1panel.cn/docs/dev_manual/api_manual/\" target=\"_blank\">https://1panel.cn/docs/dev_manual/api_manual/</a>"
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.fit2cloud.com/1panel/dev_manual/api_manual\" target=\"_blank\">https://docs.fit2cloud.com/1panel/dev_manual/api_manual</a>"
     },
     "35cn_username": {
       "label": "三五互联代理商用户名",
@@ -922,6 +922,15 @@
       "placeholder": "请输入 Linode AccessToken",
       "tooltip": "这是什么？请参阅 <a href=\"https://techdocs.akamai.com/linode-api/reference/get-started\" target=\"_blank\">https://techdocs.akamai.com/linode-api/reference/get-started</a>"
     },
+    "luadns_username": {
+      "label": "LuaDNS 用户名",
+      "placeholder": "请输入 LuaDNS 用户名"
+    },
+    "luadns_api_key": {
+      "label": "LuaDNS API Key",
+      "placeholder": "请输入 LuaDNS API Key",
+      "tooltip": "这是什么？请参阅 <a href=\"https://app.luadns.com/api_keys\" target=\"_blank\">https://app.luadns.com/api_keys</a>"
+    },
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
@@ -1409,6 +1418,13 @@
       "label": "SSH 密钥口令（可选）",
       "placeholder": "请输入 SSH 密钥口令"
     },
+    "ssh_key_certificate": {
+      "label": "SSH 用户证书（可选）",
+      "placeholder": "请输入 SSH 用户证书\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "errmsg": {
+        "invalid": "无效的 SSH 用户证书"
+      }
+    },
     "ssh_jump_servers": {
       "label": "跳板机（可选）",
       "errmsg": {
@@ -1488,14 +1504,14 @@
     "todaynic_agent": {
       "guide": "时代互联 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384\" target=\"_blank\">https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384</a>"
     },
-    "ucloud_private_key": {
-      "label": "优刻得 API 私钥",
-      "placeholder": "请输入优刻得 API 私钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
-    },
     "ucloud_public_key": {
       "label": "优刻得 API 公钥",
-      "placeholder": "请输入优刻得 API 公钥",
+      "placeholder": "请输入优刻得 API 公钥（AccessKeyID）",
+      "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
+    },
+    "ucloud_private_key": {
+      "label": "优刻得 API 私钥",
+      "placeholder": "请输入优刻得 API 私钥（AccessKeySecret）",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
     },
     "ucloud_project_id": {
@@ -1567,6 +1583,7 @@
     "webhook_preset_data": {
       "": "使用预设回调",
       "bark": "Bark",
+      "boop": "Boop",
       "gotify": "Gotify",
       "messagenest": "Message Nest",
       "ntfy": "ntfy",

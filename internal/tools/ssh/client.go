@@ -191,19 +191,14 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 
 			key := config.Key
 			keyPassphrase := config.KeyPassphrase
+			keyCertificate := config.KeyCertificate
 
-			var signer ssh.Signer
-			var err error
-			if keyPassphrase != "" {
-				signer, err = ssh.ParsePrivateKeyWithPassphrase([]byte(key), []byte(keyPassphrase))
-			} else {
-				signer, err = ssh.ParsePrivateKey([]byte(key))
-			}
+			signers, err := createSshSigners(key, keyPassphrase, keyCertificate)
 			if err != nil {
 				return nil, err
 			}
 
-			authMethods = append(authMethods, ssh.PublicKeys(signer))
+			authMethods = append(authMethods, ssh.PublicKeys(signers...))
 		}
 
 	default:
@@ -221,6 +216,43 @@ func createSshClientWithConn(config *ServerConfig, conn net.Conn) (*ssh.Client, 
 	}
 
 	return ssh.NewClient(sshConn, chans, reqs), nil
+}
+
+func createSshSigners(key, keyPassphrase, keyCertificate string) ([]ssh.Signer, error) {
+	var signer ssh.Signer
+	var err error
+	if keyPassphrase != "" {
+		signer, err = ssh.ParsePrivateKeyWithPassphrase([]byte(key), []byte(keyPassphrase))
+	} else {
+		signer, err = ssh.ParsePrivateKey([]byte(key))
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	keyCertificate = strings.TrimSpace(keyCertificate)
+	if keyCertificate == "" {
+		return []ssh.Signer{signer}, nil
+	}
+
+	parsed, _, _, _, err := ssh.ParseAuthorizedKey([]byte(keyCertificate))
+	if err != nil {
+		return nil, err
+	}
+
+	cert, ok := parsed.(*ssh.Certificate)
+	if !ok {
+		return nil, fmt.Errorf("key certificate is not an open-ssh certificate")
+	} else if cert.CertType != ssh.UserCert {
+		return nil, fmt.Errorf("key certificate is not a user certificate")
+	}
+
+	certSigner, err := ssh.NewCertSigner(cert, signer)
+	if err != nil {
+		return nil, err
+	}
+
+	return []ssh.Signer{certSigner, signer}, nil
 }
 
 func resolveAddr(host string, port int) string {

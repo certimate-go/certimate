@@ -134,7 +134,7 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 
 	// 二次检测是否可以跳过执行
 	if lastCertificate != nil {
-		if xcert.EqualCertificatesFromPEM(certPEM, lastCertificate.Certificate) {
+		if xcert.EqualCertificatesBundleFromPEM(certPEM, lastCertificate.Certificate) {
 			ne.logger.Info("skip this uploading, because the last uploaded certificate already exists")
 			return execRes, nil
 		}

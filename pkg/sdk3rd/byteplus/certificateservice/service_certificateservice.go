@@ -1,13 +1,16 @@
+// An extension SDK client for BytePlus certificate service.
+// Based on github.com/byteplus-sdk/byteplus-go-sdk-v2.
 package certificateservice
 
 import (
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus"
-	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/byteplusquery"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/client"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/client/metadata"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/corehandlers"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/request"
 	"github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/signer/byteplussign"
+
+	"github.com/certimate-go/certimate/pkg/sdk3rd-patched/github.com/byteplus-sdk/byteplus-go-sdk-v2/byteplus/byteplusquery"
 )
 
 type CERTIFICATESERVICE struct {
@@ -35,7 +38,7 @@ func newClient(cfg byteplus.Config, handlers request.Handlers, endpoint, signing
 				SigningName:   signingName,
 				SigningRegion: signingRegion,
 				Endpoint:      endpoint,
-				APIVersion:    "2021-06-01",
+				APIVersion:    "2024-10-01",
 			},
 			handlers,
 		),
