@@ -16,12 +16,8 @@ export interface PluginCatalogEntry {
 }
 
 export const listPluginCatalog = async (): Promise<PluginCatalogEntry[]> => {
-  try {
-    const resp = await httpGet<PluginCatalogEntry[]>({
-      url: "/api/plugin-catalog",
-    });
-    return resp.data ?? [];
-  } catch {
-    return [];
-  }
+  const resp = await httpGet<PluginCatalogEntry[]>({
+    url: "/api/plugin-catalog",
+  });
+  return resp.data ?? [];
 };

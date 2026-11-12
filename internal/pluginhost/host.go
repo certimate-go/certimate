@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
-	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/pkg/plugin"
 )
@@ -42,7 +41,7 @@ func ScanAndRegister(ctx context.Context, cfg plugin.PluginConfig, logger *slog.
 		errs = append(errs, f)
 	}
 	for _, dp := range discovered {
-		if err := registerOne(ctx, manager, dp, catalog, logger); err != nil {
+		if err := registerOne(ctx, manager, dp, catalog, logger, ""); err != nil {
 			logger.Error("plugin registration failed",
 				slog.String("provider", dp.Manifest.ProviderType),
 				slog.Any("error", err))
@@ -52,109 +51,105 @@ func ScanAndRegister(ctx context.Context, cfg plugin.PluginConfig, logger *slog.
 	return catalog, errs
 }
 
-func registerOne(ctx context.Context, manager *plugin.Manager, dp *plugin.DiscoveredPlugin, catalog *Catalog, logger *slog.Logger) error {
-	meta, schema, err := manager.Bootstrap(ctx, dp)
+func registerOne(ctx context.Context, manager *plugin.Manager, dp *plugin.DiscoveredPlugin, catalog *Catalog, logger *slog.Logger, fingerprint string) error {
+	prepared, err := preparePlugin(ctx, manager, dp, logger, fingerprint)
 	if err != nil {
-		return fmt.Errorf("bootstrap: %w", err)
+		return err
 	}
-	if meta.ProtocolVersion != plugin.ProtocolVersion {
-		return &plugin.ErrPluginIncompatible{
-			ProviderType: meta.ProviderType,
-			Have:         meta.ProtocolVersion,
-			Want:         plugin.ProtocolVersion,
+	if err := catalog.publish(prepared); err != nil {
+		os.RemoveAll(prepared.runtimeDir)
+		return err
+	}
+	return nil
+}
+
+func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.DiscoveredPlugin, logger *slog.Logger, fingerprint string) (*registeredPlugin, error) {
+	if fingerprint == "" {
+		var err error
+		fingerprint, err = pluginFingerprint(dp)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	deployType := meta.ProviderType
-	accessType := meta.AccessProviderType
-	if accessType == "" {
-		accessType = deployType
+	runtimeDP, runtimeDir, err := snapshotPlugin(dp, "")
+	if err != nil {
+		return nil, err
 	}
-
-	factory := &pluginDeployerFactory{
-		manager:      manager,
-		dp:           dp,
-		providerType: deployType,
-		logLevel:     manager.Config().LogLevel,
-		logger:       logger.With(slog.String("plugin", deployType)),
+	accepted := false
+	defer func() {
+		if !accepted {
+			os.RemoveAll(runtimeDir)
+		}
+	}()
+	meta, schema, err := manager.Bootstrap(ctx, runtimeDP)
+	if errors.Is(err, os.ErrPermission) {
+		os.RemoveAll(runtimeDir)
+		runtimeDP, runtimeDir, err = snapshotPlugin(dp, filepath.Dir(dp.Dir))
+		if err == nil {
+			meta, schema, err = manager.Bootstrap(ctx, runtimeDP)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("plugin runtime needs a writable executable directory; configure TMPDIR accordingly: %w", err)
+		}
 	}
-
-	if err := deployers.Registries.Register(domain.DeploymentProviderType(deployType), factory.new); err != nil {
-		logger.Warn("deployer registry register skipped",
-			slog.String("provider", deployType),
-			slog.Any("error", err))
+	if err != nil {
+		return nil, fmt.Errorf("bootstrap: %w", err)
 	}
-
-	registerAccessEnvelope(deployType, accessType, schema.AccessSchemaJSON, logger)
-	registerEnvelope(deployType, schema.DeploySchemaJSON, providerschema.CategoryDeploy, logger)
-
+	if meta == nil || schema == nil {
+		return nil, fmt.Errorf("plugin returned empty metadata or schema")
+	}
+	if meta.ProtocolVersion != plugin.ProtocolVersion {
+		return nil, &plugin.ErrPluginIncompatible{ProviderType: meta.ProviderType, Have: meta.ProtocolVersion, Want: plugin.ProtocolVersion}
+	}
+	if meta.AccessProviderType == "" {
+		meta.AccessProviderType = meta.ProviderType
+	}
+	if meta.ProviderType != dp.Manifest.ProviderType || meta.AccessProviderType != dp.Manifest.AccessProviderType {
+		return nil, fmt.Errorf("plugin metadata identity does not match manifest: provider %q/%q, access %q/%q", meta.ProviderType, dp.Manifest.ProviderType, meta.AccessProviderType, dp.Manifest.AccessProviderType)
+	}
+	deployType, accessType := meta.ProviderType, meta.AccessProviderType
+	var envelopes []*providerschema.Envelope
+	addEnvelope := func(name string, raw []byte, category providerschema.Category) error {
+		env, err := parseEnvelope(raw)
+		if err != nil {
+			return err
+		}
+		if env.SchemaVersion != "" && env.SchemaVersion != providerschema.SchemaVersion {
+			return fmt.Errorf("unsupported schema version %q", env.SchemaVersion)
+		}
+		env.SchemaVersion = providerschema.SchemaVersion
+		env.Provider = name
+		env.Category = category
+		envelopes = append(envelopes, env)
+		return nil
+	}
+	if err := addEnvelope(deployType, schema.DeploySchemaJSON, providerschema.CategoryDeploy); err != nil {
+		return nil, fmt.Errorf("deploy schema: %w", err)
+	}
+	builtinAccess, _ := providerschema.Registries.Get(accessType)
+	if len(schema.AccessSchemaJSON) > 0 && (builtinAccess == nil || builtinAccess.Category != providerschema.CategoryAccess) {
+		if err := addEnvelope(accessType, schema.AccessSchemaJSON, providerschema.CategoryAccess); err != nil {
+			return nil, fmt.Errorf("access schema: %w", err)
+		}
+	}
+	after, err := pluginFingerprint(dp)
+	if err != nil {
+		return nil, err
+	}
+	if fingerprint != after {
+		return nil, fmt.Errorf("plugin changed while loading")
+	}
 	usages := dp.Manifest.Usages
 	if len(usages) == 0 {
 		usages = []string{"hosting"}
 	}
-
-	catalog.Add(&CatalogEntry{
-		Source:               SourcePlugin,
-		ProviderType:         deployType,
-		AccessProviderType:   accessType,
-		DeployCategory:       meta.DeployCategory,
-		DisplayNameKey:       meta.DeployDisplayNameKey,
-		AccessDisplayNameKey: meta.AccessDisplayNameKey,
-		Icon:                 readIcon(dp, logger),
-		I18n:                 schema.I18n,
-		AccessUsages:         usages,
-		Priority:             dp.Manifest.Priority,
-		Description:          dp.Manifest.Description,
-	})
-
-	return nil
-}
-
-func registerAccessEnvelope(deployType, accessType string, raw []byte, logger *slog.Logger) {
-	if len(raw) == 0 {
-		logger.Info("plugin reuses an existing access type; no access schema registered",
-			slog.String("provider", deployType),
-			slog.String("accessType", accessType))
-		return
+	prepared := &registeredPlugin{
+		source: dp, fingerprint: fingerprint, runtimeDir: runtimeDir, envelopes: envelopes,
+		factory: &pluginDeployerFactory{manager: manager, dp: runtimeDP, providerType: deployType, logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", deployType))},
+		entry:   &CatalogEntry{Source: SourcePlugin, ProviderType: deployType, AccessProviderType: accessType, DeployCategory: meta.DeployCategory, DisplayNameKey: meta.DeployDisplayNameKey, AccessDisplayNameKey: meta.AccessDisplayNameKey, Icon: readIcon(dp, logger), I18n: schema.I18n, AccessUsages: usages, Priority: dp.Manifest.Priority, Description: dp.Manifest.Description},
 	}
-	if accessType == deployType {
-		logger.Warn("plugin access type equals deploy type; skipping access schema to avoid collision",
-			slog.String("provider", deployType))
-		return
-	}
-	if providerschema.Registries.Has(accessType) {
-		logger.Info("plugin reuses a built-in access type; keeping built-in access schema",
-			slog.String("provider", deployType),
-			slog.String("accessType", accessType))
-		return
-	}
-	if env, ok := providerschema.Envelopes.GetEnvelope(accessType); ok && env != nil {
-		logger.Info("plugin shares an access type already registered by another plugin; keeping existing schema",
-			slog.String("provider", deployType),
-			slog.String("accessType", accessType))
-		_ = env
-		return
-	}
-	registerEnvelope(accessType, raw, providerschema.CategoryAccess, logger)
-}
-
-func registerEnvelope(providerType string, raw []byte, category providerschema.Category, logger *slog.Logger) {
-	env, err := parseEnvelope(raw)
-	if err != nil {
-		logger.Warn("plugin schema envelope parse failed",
-			slog.String("provider", providerType),
-			slog.Any("error", err))
-		return
-	}
-	if env.Provider == "" {
-		env.Provider = providerType
-	}
-	env.Category = category
-	if err := providerschema.Envelopes.RegisterEnvelope(providerType, env); err != nil {
-		logger.Warn("envelope register skipped",
-			slog.String("provider", providerType),
-			slog.Any("error", err))
-	}
+	accepted = true
+	return prepared, nil
 }
 
 func parseEnvelope(raw []byte) (*providerschema.Envelope, error) {

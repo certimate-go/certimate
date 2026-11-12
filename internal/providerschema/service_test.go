@@ -34,7 +34,7 @@ func (f *fakeRepo) List(_ context.Context) ([]*Schema, error) {
 	return out, nil
 }
 
-func (f *fakeRepo) GetEnvelope(_ context.Context, _ string) (*Envelope, bool, error) {
+func (f *fakeRepo) GetEnvelope(_ context.Context, _ string, _ ...Category) (*Envelope, bool, error) {
 	return nil, false, nil
 }
 
@@ -47,7 +47,7 @@ type envelopeRepo struct {
 	envelopes map[string]*Envelope
 }
 
-func (e *envelopeRepo) GetEnvelope(_ context.Context, providerType string) (*Envelope, bool, error) {
+func (e *envelopeRepo) GetEnvelope(_ context.Context, providerType string, categories ...Category) (*Envelope, bool, error) {
 	env, ok := e.envelopes[providerType]
 	return env, ok, nil
 }

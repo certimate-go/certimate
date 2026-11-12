@@ -1,6 +1,6 @@
 import { type ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Form, Input, Radio, Select, Switch } from "antd";
+import { Form, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -66,9 +66,7 @@ const renderControl = (col: SchemaColumn, t: (key: string) => string): ReactNode
     case "switch":
       return <Switch />;
     case "number":
-      return (
-        <Input type="number" min={col.min} max={col.max} placeholder={placeholder} style={{ width: "100%" }} {...unitFieldProps("text", col.unitKey, t)} />
-      );
+      return <InputNumber min={col.min} max={col.max} placeholder={placeholder} style={{ width: "100%" }} {...unitFieldProps("digit", col.unitKey, t)} />;
     case "select":
       return <Select placeholder={placeholder} options={optionList(col, t)} style={{ width: "100%" }} />;
     case "radio":

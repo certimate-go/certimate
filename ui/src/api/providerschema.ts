@@ -59,28 +59,50 @@ export interface ProviderSchemaEnvelope {
 const CURRENT_SCHEMA_VERSION = "form/v1";
 
 const cache = new Map<string, ProviderSchemaEnvelope>();
+const pending = new Map<string, Promise<ProviderSchemaEnvelope | null>>();
 
-const cacheKey = (provider: string, schemaVersion: string) => `${schemaVersion}::${provider}`;
+let cacheGeneration = 0;
 
-export const getProviderSchema = async (provider: string): Promise<ProviderSchemaEnvelope | null> => {
-  const key = cacheKey(provider, CURRENT_SCHEMA_VERSION);
+const cacheKey = (provider: string, schemaVersion: string, category?: SchemaCategory) => `${schemaVersion}::${category ?? ""}::${provider}`;
+
+export const getProviderSchema = (provider: string, category?: SchemaCategory): Promise<ProviderSchemaEnvelope | null> => {
+  const key = cacheKey(provider, CURRENT_SCHEMA_VERSION, category);
+  const generation = cacheGeneration;
   const cached = cache.get(key);
   if (cached) {
-    return cached;
+    return Promise.resolve(cached);
+  }
+  const existing = pending.get(key);
+  if (existing) {
+    return existing;
   }
 
-  try {
-    const resp = await httpGet<ProviderSchemaEnvelope>({
-      url: `/api/provider-schemas/${encodeURIComponent(provider)}`,
-    });
-    const envelope = resp.data;
-    if (envelope && envelope.schemaVersion === CURRENT_SCHEMA_VERSION) {
-      cache.set(key, envelope);
+  const request = (async (): Promise<ProviderSchemaEnvelope | null> => {
+    try {
+      const resp = await httpGet<ProviderSchemaEnvelope>({
+        url: `/api/provider-schemas/${encodeURIComponent(provider)}${category ? `?category=${encodeURIComponent(category)}` : ""}`,
+      });
+      if (generation !== cacheGeneration) {
+        return getProviderSchema(provider, category);
+      }
+      const envelope = resp.data;
+      if (envelope && envelope.schemaVersion === CURRENT_SCHEMA_VERSION && (!category || envelope.category === category)) {
+        cache.set(key, envelope);
+      }
+      return envelope && (!category || envelope.category === category) ? envelope : null;
+    } catch {
+      if (generation !== cacheGeneration) {
+        return getProviderSchema(provider, category);
+      }
+      return null;
+    } finally {
+      if (generation === cacheGeneration) {
+        pending.delete(key);
+      }
     }
-    return envelope ?? null;
-  } catch {
-    return null;
-  }
+  })();
+  pending.set(key, request);
+  return request;
 };
 
 export const listProviderSchemas = async (): Promise<ProviderSchemaEnvelope[]> => {
@@ -95,9 +117,7 @@ export const listProviderSchemas = async (): Promise<ProviderSchemaEnvelope[]> =
 };
 
 export const clearProviderSchemaCache = () => {
+  cacheGeneration++;
   cache.clear();
-};
-
-export const isProviderSchemaCached = (provider: string) => {
-  return cache.has(cacheKey(provider, CURRENT_SCHEMA_VERSION));
+  pending.clear();
 };

@@ -183,6 +183,14 @@ func (s *MarketService) fetchMarketListing(ctx context.Context) ([]*plugin.Marke
 	if err := json.NewDecoder(resp.Body).Decode(&idx); err != nil {
 		return nil, fmt.Errorf("market: decode index: %w", err)
 	}
+	for i, manifest := range idx.Plugins {
+		if manifest == nil {
+			return nil, fmt.Errorf("market: null plugin at index %d", i)
+		}
+		if err := plugin.ValidateProviderType(manifest.ProviderType); err != nil {
+			return nil, err
+		}
+	}
 	return idx.Plugins, nil
 }
 
@@ -215,7 +223,7 @@ func (s *MarketService) GetMarketManifest(ctx context.Context, providerType stri
 		return nil, err
 	}
 	for _, mm := range manifests {
-		if mm.ProviderType == providerType {
+		if mm != nil && mm.ProviderType == providerType {
 			return mm, nil
 		}
 	}
@@ -261,20 +269,19 @@ func (s *MarketService) runInstall(providerType string, job *InstallJob) {
 		return
 	}
 
+	defer os.RemoveAll(tmpDir)
 	job.setState(JobReloading, "reloading")
-	targetDir := filepath.Join(s.pluginDir, providerType)
-	if err := os.Rename(tmpDir, targetDir); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		job.fail(fmt.Sprintf("market: install rename: %v", err))
-		return
-	}
-
 	reloader := GlobalReloader()
 	if reloader == nil {
 		job.fail("market: reloader not initialized")
 		return
 	}
-	job.succeed(reloader.ReloadWait(ctx))
+	result, err := reloader.activate(ctx, providerType, tmpDir, false)
+	if err != nil {
+		job.fail(err.Error())
+		return
+	}
+	job.succeed(result)
 }
 
 func (s *MarketService) Delete(ctx context.Context, providerType string) (*ReloadResult, error) {
@@ -296,15 +303,11 @@ func (s *MarketService) Delete(ctx context.Context, providerType string) (*Reloa
 		return nil, fmt.Errorf("market: plugin %q is not managed by marketplace", providerType)
 	}
 
-	if err := os.RemoveAll(targetDir); err != nil {
-		return nil, fmt.Errorf("market: remove plugin dir: %w", err)
-	}
-
 	reloader := GlobalReloader()
 	if reloader == nil {
 		return nil, fmt.Errorf("market: reloader not initialized")
 	}
-	return reloader.ReloadWait(ctx), nil
+	return reloader.remove(ctx, providerType)
 }
 
 func (s *MarketService) Update(ctx context.Context, providerType string) (*ReloadResult, error) {
@@ -340,31 +343,21 @@ func (s *MarketService) Update(ctx context.Context, providerType string) (*Reloa
 		return nil, err
 	}
 
-	backupDir := filepath.Join(s.pluginDir, ".bak-"+providerType)
-	_ = os.RemoveAll(backupDir)
-	if err := os.Rename(targetDir, backupDir); err != nil {
-		_ = os.RemoveAll(tmpDir)
-		return nil, fmt.Errorf("market: backup old plugin dir: %w", err)
-	}
-	if err := os.Rename(tmpDir, targetDir); err != nil {
-		if rerr := os.Rename(backupDir, targetDir); rerr != nil {
-			return nil, ErrUpdateCorrupted
-		}
-		return nil, ErrUpdateRolledBack
-	}
-	_ = os.RemoveAll(backupDir)
-
+	defer os.RemoveAll(tmpDir)
 	reloader := GlobalReloader()
 	if reloader == nil {
 		return nil, fmt.Errorf("market: reloader not initialized")
 	}
-	return reloader.ReloadWait(ctx), nil
+	return reloader.activate(ctx, providerType, tmpDir, true)
 }
 
 func (s *MarketService) installPipeline(ctx context.Context, providerType string, job *InstallJob) (tmpDir string, mm *plugin.MarketManifest, err error) {
 	mm, err = s.GetMarketManifest(ctx, providerType)
 	if err != nil {
 		return "", nil, err
+	}
+	if mm == nil || mm.Release == nil {
+		return "", nil, fmt.Errorf("market: plugin %q has no release", providerType)
 	}
 	if err := plugin.ValidateReleaseRepo(mm.Release.Repo); err != nil {
 		return "", nil, err
@@ -456,7 +449,16 @@ func (s *MarketService) installPipeline(ctx context.Context, providerType string
 		return "", nil, fmt.Errorf("market: bundled manifest binary %q does not match index %q", bm.Binary, mm.Binary)
 	}
 
-	localManifest := mm.Manifest
+	if err := bm.Validate(); err != nil {
+		return "", nil, err
+	}
+	if bm.Version != mm.Version {
+		return "", nil, fmt.Errorf("market: bundled version %q does not match index %q", bm.Version, mm.Version)
+	}
+	if mm.AccessProviderType != "" && bm.AccessProviderType != mm.AccessProviderType {
+		return "", nil, fmt.Errorf("market: bundled access identity does not match index")
+	}
+	localManifest := *bm
 	localManifest.OS = runtime.GOOS
 	localManifest.Arch = runtime.GOARCH
 	localManifest.SHA256 = computed

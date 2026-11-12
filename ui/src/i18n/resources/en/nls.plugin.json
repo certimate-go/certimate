@@ -9,6 +9,7 @@
     "empty": "No plugins available",
     "empty_filtered": "No plugins match your search",
     "error": {
+      "status_failed": "Unable to refresh installation status. Retrying automatically; you can also retry now.",
       "load_failed": "Failed to load plugin marketplace",
       "install_failed": "Failed to install plugin",
       "delete_failed": "Failed to delete plugin",

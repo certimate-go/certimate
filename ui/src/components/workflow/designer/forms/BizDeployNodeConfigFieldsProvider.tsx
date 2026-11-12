@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
 import { DEPLOYMENT_PROVIDERS, type DeploymentProviderType } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 import BizDeployNodeConfigFieldsProvider1Panel from "./BizDeployNodeConfigFieldsProvider1Panel";
 import BizDeployNodeConfigFieldsProvider1PanelConsole from "./BizDeployNodeConfigFieldsProvider1PanelConsole";
@@ -280,6 +281,7 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
   const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+  const catalogVersion = usePluginCatalogStore((s) => s.version);
 
   useEffect(() => {
     let cancelled = false;
@@ -287,7 +289,7 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     if (!provider) {
       return;
     }
-    void getProviderSchema(provider).then((env) => {
+    void getProviderSchema(provider, "deploy").then((env) => {
       if (!cancelled) {
         setEnvelope(env);
       }
@@ -295,7 +297,7 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     return () => {
       cancelled = true;
     };
-  }, [provider]);
+  }, [provider, catalogVersion]);
 
   const initComponent = () => {
     const Component = providerComponentMap[provider as DeploymentProviderType];

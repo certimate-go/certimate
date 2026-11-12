@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -104,8 +105,8 @@ func TestListMarket_Empty(t *testing.T) {
 
 func TestListMarket_UnsupportedPlatform(t *testing.T) {
 	body := indexJSON(t,
-		entry("noRelease", "1.0.0", nil),
-		entry("wrongAsset", "1.0.0", map[string]any{
+		entry("no-release", "1.0.0", nil),
+		entry("wrong-asset", "1.0.0", map[string]any{
 			"repo":      "x",
 			"tag":       "v1",
 			"assets":    map[string]any{"none/none": "bin"},
@@ -275,9 +276,9 @@ func alphaIndex(t *testing.T, version, checksum string) string {
 	key := plugin.AssetKey(runtime.GOOS, runtime.GOARCH)
 	asset := "alpha_" + runtime.GOOS + "_" + runtime.GOARCH + ".zip"
 	if checksum == "" {
-		return fmt.Sprintf(`{"plugins":[{"provider_type":"alpha","version":%q,"binary":"alpha","protocol_version":%d,"release":{"repo":"certimate-go/plugins","tag":"alpha/v%s","assets":{%q:%q}}}]}`, version, plugin.ProtocolVersion, version, key, asset)
+		return fmt.Sprintf(`{"plugins":[{"provider_type":"alpha","version":%q,"binary":"alpha","access_provider_type":"alpha","protocol_version":%d,"release":{"repo":"certimate-go/plugins","tag":"alpha/v%s","assets":{%q:%q}}}]}`, version, plugin.ProtocolVersion, version, key, asset)
 	}
-	return fmt.Sprintf(`{"plugins":[{"provider_type":"alpha","version":%q,"binary":"alpha","protocol_version":%d,"release":{"repo":"certimate-go/plugins","tag":"alpha/v%s","assets":{%q:%q},"checksums":{%q:%q}}}]}`, version, plugin.ProtocolVersion, version, key, asset, key, checksum)
+	return fmt.Sprintf(`{"plugins":[{"provider_type":"alpha","version":%q,"binary":"alpha","access_provider_type":"alpha","protocol_version":%d,"release":{"repo":"certimate-go/plugins","tag":"alpha/v%s","assets":{%q:%q},"checksums":{%q:%q}}}]}`, version, plugin.ProtocolVersion, version, key, asset, key, checksum)
 }
 
 func newZipTestService(t *testing.T, indexBody string, zipBytes []byte) *MarketService {
@@ -303,8 +304,10 @@ func newZipTestService(t *testing.T, indexBody string, zipBytes []byte) *MarketS
 
 func setupReloader(t *testing.T, pluginDir string) {
 	t.Helper()
-	cfg := plugin.PluginConfig{PluginDir: pluginDir, StartTimeout: 100 * time.Millisecond}
-	r := NewReloader(cfg, NewCatalog(), slog.Default())
+	cfg := plugin.PluginConfig{PluginDir: pluginDir, StartTimeout: 10 * time.Second}
+	catalog := NewCatalog()
+	t.Cleanup(catalog.Close)
+	r := NewReloader(cfg, catalog, slog.Default())
 	prev := GlobalReloader()
 	SetGlobalReloader(r)
 	t.Cleanup(func() { SetGlobalReloader(prev) })
@@ -323,12 +326,30 @@ func waitForJob(t *testing.T, job *InstallJob, timeout time.Duration) JobStatus 
 	return job.Status()
 }
 
-func TestInstall_AsyncZip(t *testing.T) {
-	zipBytes := buildZip(t, []zipEntry{
-		{Name: "alpha", Data: []byte("fake binary bytes")},
-		{Name: "manifest.json", Data: []byte(alphaManifestJSON("alpha", "1.0.0"))},
-		{Name: "alpha.svg", Data: []byte("<svg/>")},
+func realMarketFixture(t *testing.T, version string) []byte {
+	t.Helper()
+	binaryPath := filepath.Join(t.TempDir(), "market-plugin")
+	command := exec.Command("go", "build", "-o", binaryPath, "github.com/certimate-go/certimate/internal/pluginhost/testplugin")
+	if output, err := command.CombinedOutput(); err != nil {
+		t.Fatalf("build market fixture: %v: %s", err, output)
+	}
+	binary, err := os.ReadFile(binaryPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fixture, err := json.Marshal(map[string]any{"providerType": "alpha", "accessProviderType": "alpha", "schemaRevision": version})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return buildZip(t, []zipEntry{
+		{Name: "alpha", Data: binary},
+		{Name: "manifest.json", Data: []byte(alphaManifestJSON("alpha", version))},
+		{Name: "fixture.json", Data: fixture},
 	})
+}
+
+func TestInstall_AsyncZip(t *testing.T) {
+	zipBytes := realMarketFixture(t, "1.0.0")
 	sum := sha256.Sum256(zipBytes)
 	svc := newZipTestService(t, alphaIndex(t, "1.0.0", hex.EncodeToString(sum[:])), zipBytes)
 	setupReloader(t, svc.pluginDir)
@@ -492,10 +513,7 @@ func TestDelete_BlockedWhileInstallActive(t *testing.T) {
 }
 
 func TestUpdate_UpgradesToNewerVersion(t *testing.T) {
-	newZip := buildZip(t, []zipEntry{
-		{Name: "alpha", Data: []byte("new fake binary")},
-		{Name: "manifest.json", Data: []byte(alphaManifestJSON("alpha", "2.0.0"))},
-	})
+	newZip := realMarketFixture(t, "2.0.0")
 	sum := sha256.Sum256(newZip)
 	svc := newZipTestService(t, alphaIndex(t, "2.0.0", hex.EncodeToString(sum[:])), newZip)
 	setupReloader(t, svc.pluginDir)

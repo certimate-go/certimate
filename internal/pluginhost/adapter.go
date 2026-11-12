@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
+	"runtime"
 	"sync"
 
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
@@ -43,6 +44,7 @@ func (d *pluginDeployer) SetLogger(logger *slog.Logger) {
 }
 
 func (d *pluginDeployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*core.DeployerDeployResult, error) {
+	defer runtime.KeepAlive(d.factory)
 	d.factory.mu.Lock()
 	defer d.factory.mu.Unlock()
 

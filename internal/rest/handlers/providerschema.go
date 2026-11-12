@@ -6,12 +6,13 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
 
+	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/internal/rest/resp"
 )
 
 type providerSchemaService interface {
-	GetByProviderType(ctx context.Context, providerType string) (*providerschema.Envelope, error)
+	GetByProviderType(ctx context.Context, providerType string, categories ...providerschema.Category) (*providerschema.Envelope, error)
 	List(ctx context.Context) ([]*providerschema.Envelope, error)
 }
 
@@ -31,7 +32,13 @@ func NewProviderSchemaHandler(router *router.RouterGroup[*core.RequestEvent], se
 func (handler *ProviderSchemaHandler) getByProviderType(e *core.RequestEvent) error {
 	providerType := e.Request.PathValue("providerType")
 
-	res, err := handler.service.GetByProviderType(e.Request.Context(), providerType)
+	category := providerschema.Category(e.Request.URL.Query().Get("category"))
+	switch category {
+	case "", providerschema.CategoryAccess, providerschema.CategoryDeploy, providerschema.CategoryApply, providerschema.CategoryNotify:
+	default:
+		return resp.Err(e, domain.NewError(400, "invalid schema category"))
+	}
+	res, err := handler.service.GetByProviderType(e.Request.Context(), providerType, category)
 	if err != nil {
 		return resp.Err(e, err)
 	}

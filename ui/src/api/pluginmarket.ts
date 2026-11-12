@@ -24,6 +24,13 @@ export interface MarketEntry {
 
 export type InstallJobState = "queued" | "downloading" | "verifying" | "extracting" | "reloading" | "installed" | "failed";
 
+export interface ReloadResult {
+  added: string[] | null;
+  changed: string[] | null;
+  removed: string[] | null;
+  errors: string[] | null;
+}
+
 export interface InstallJobStatus {
   providerType: string;
   state: InstallJobState;
@@ -31,20 +38,16 @@ export interface InstallJobStatus {
   error?: string;
   downloaded?: number;
   total?: number;
-  result?: { added: string[]; changed: string[]; removed: string[]; errors: string[] };
+  result?: ReloadResult;
 }
 
 export const isTerminalState = (state: InstallJobState): boolean => state === "installed" || state === "failed";
 
 export const fetchMarketListing = async (): Promise<MarketEntry[]> => {
-  try {
-    const resp = await httpGet<MarketEntry[]>({
-      url: "/api/plugin/market",
-    });
-    return resp.data ?? [];
-  } catch {
-    return [];
-  }
+  const resp = await httpGet<MarketEntry[]>({
+    url: "/api/plugin/market",
+  });
+  return resp.data ?? [];
 };
 
 export const installPlugin = async (providerType: string): Promise<InstallJobStatus> => {
@@ -62,8 +65,8 @@ export const getInstallStatus = async (providerType: string): Promise<InstallJob
   return resp.data;
 };
 
-export const deletePlugin = async (providerType: string): Promise<unknown> => {
-  const resp = await pb.send<{ code: number; data: unknown }>(`/api/plugin/market/${providerType}`, {
+export const deletePlugin = async (providerType: string): Promise<ReloadResult> => {
+  const resp = await pb.send<{ code: number; data: ReloadResult }>(`/api/plugin/market/${providerType}`, {
     method: "DELETE",
   });
   if (resp.code !== 0) {
@@ -72,8 +75,8 @@ export const deletePlugin = async (providerType: string): Promise<unknown> => {
   return resp.data;
 };
 
-export const updatePlugin = async (providerType: string): Promise<unknown> => {
-  const resp = await httpPost<unknown>({
+export const updatePlugin = async (providerType: string): Promise<ReloadResult> => {
+  const resp = await httpPost<ReloadResult>({
     url: `/api/plugin/market/update/${providerType}`,
     body: { providerType },
   });

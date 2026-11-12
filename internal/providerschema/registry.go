@@ -84,15 +84,23 @@ func newRegistry[T comparable]() Registry[T] {
 var Registries = newRegistry[string]()
 
 type EnvelopeRegistry interface {
-	RegisterEnvelope(name string, env *Envelope) error
-	GetEnvelope(name string) (*Envelope, bool)
+	RegisterEnvelope(string, *Envelope) error
+	GetEnvelope(string, ...Category) (*Envelope, bool)
 	ListEnvelopes() []*Envelope
-	UnregisterEnvelope(name string)
+	UnregisterEnvelope(string)
+	ReplaceOwner(string, []*Envelope)
+}
+
+type envelopeKey struct {
+	name     string
+	category Category
 }
 
 type envelopeRegistry struct {
-	mu        sync.RWMutex
-	envelopes map[string]*Envelope
+	mu            sync.RWMutex
+	envelopes     map[envelopeKey]*Envelope
+	contributions map[string]map[envelopeKey]*Envelope
+	owners        map[envelopeKey]string
 }
 
 func (r *envelopeRegistry) RegisterEnvelope(name string, env *Envelope) error {
@@ -101,43 +109,96 @@ func (r *envelopeRegistry) RegisterEnvelope(name string, env *Envelope) error {
 	if env == nil {
 		return fmt.Errorf("providerschema: envelope must not be nil")
 	}
-	if _, exists := r.envelopes[name]; exists {
+	key := envelopeKey{name, env.Category}
+	if _, exists := r.envelopes[key]; exists {
 		return fmt.Errorf("providerschema: envelope for %q already registered", name)
 	}
-	r.envelopes[name] = env
+	r.envelopes[key] = env
 	return nil
 }
 
-func (r *envelopeRegistry) GetEnvelope(name string) (*Envelope, bool) {
+func (r *envelopeRegistry) GetEnvelope(name string, categories ...Category) (*Envelope, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	env, ok := r.envelopes[name]
-	return env, ok
+	if len(categories) > 0 && categories[0] != "" {
+		env, ok := r.envelopes[envelopeKey{name, categories[0]}]
+		return env, ok
+	}
+	for _, category := range []Category{CategoryDeploy, CategoryAccess, CategoryApply, CategoryNotify, ""} {
+		if env, ok := r.envelopes[envelopeKey{name, category}]; ok {
+			return env, true
+		}
+	}
+	return nil, false
 }
 
 func (r *envelopeRegistry) ListEnvelopes() []*Envelope {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	keys := make([]string, 0, len(r.envelopes))
-	for k := range r.envelopes {
-		keys = append(keys, k)
+	out := make([]*Envelope, 0, len(r.envelopes))
+	for _, env := range r.envelopes {
+		out = append(out, env)
 	}
-	sort.Strings(keys)
-	out := make([]*Envelope, 0, len(keys))
-	for _, k := range keys {
-		out = append(out, r.envelopes[k])
-	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].Provider == out[j].Provider {
+			return out[i].Category < out[j].Category
+		}
+		return out[i].Provider < out[j].Provider
+	})
 	return out
 }
 
 func (r *envelopeRegistry) UnregisterEnvelope(name string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	delete(r.envelopes, name)
+	for key := range r.envelopes {
+		if key.name == name {
+			delete(r.envelopes, key)
+			delete(r.owners, key)
+			for _, contribution := range r.contributions {
+				delete(contribution, key)
+			}
+		}
+	}
+}
+
+func (r *envelopeRegistry) ReplaceOwner(owner string, envs []*Envelope) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	next := make(map[envelopeKey]*Envelope, len(envs))
+	for _, env := range envs {
+		next[envelopeKey{env.Provider, env.Category}] = env
+	}
+	if len(next) == 0 {
+		delete(r.contributions, owner)
+	} else {
+		r.contributions[owner] = next
+	}
+	for key, previousOwner := range r.owners {
+		if env, ok := r.contributions[previousOwner][key]; ok {
+			r.envelopes[key] = env
+		} else {
+			delete(r.envelopes, key)
+			delete(r.owners, key)
+		}
+	}
+	names := make([]string, 0, len(r.contributions))
+	for name := range r.contributions {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		for key, env := range r.contributions[name] {
+			if _, ok := r.envelopes[key]; !ok {
+				r.envelopes[key] = env
+				r.owners[key] = name
+			}
+		}
+	}
 }
 
 func newEnvelopeRegistry() EnvelopeRegistry {
-	return &envelopeRegistry{envelopes: make(map[string]*Envelope)}
+	return &envelopeRegistry{envelopes: make(map[envelopeKey]*Envelope), contributions: make(map[string]map[envelopeKey]*Envelope), owners: make(map[envelopeKey]string)}
 }
 
 var Envelopes = newEnvelopeRegistry()

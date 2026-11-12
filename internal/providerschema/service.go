@@ -1,6 +1,9 @@
 package providerschema
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type ProviderSchemaService struct {
 	repo providerSchemaRepository
@@ -10,13 +13,16 @@ func NewProviderSchemaService(repo providerSchemaRepository) *ProviderSchemaServ
 	return &ProviderSchemaService{repo: repo}
 }
 
-func (s *ProviderSchemaService) GetByProviderType(ctx context.Context, providerType string) (*Envelope, error) {
-	if env, ok, _ := s.repo.GetEnvelope(ctx, providerType); ok && env != nil {
+func (s *ProviderSchemaService) GetByProviderType(ctx context.Context, providerType string, categories ...Category) (*Envelope, error) {
+	if env, ok, _ := s.repo.GetEnvelope(ctx, providerType, categories...); ok && env != nil {
 		return env, nil
 	}
 	schema, err := s.repo.Get(ctx, providerType)
 	if err != nil {
 		return nil, err
+	}
+	if len(categories) > 0 && categories[0] != "" && schema.Category != categories[0] {
+		return nil, fmt.Errorf("schema for provider %q in category %q not found", providerType, categories[0])
 	}
 	return Emit(schema), nil
 }

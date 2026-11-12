@@ -3,6 +3,7 @@
 import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
 import SchemaConfigFields from "@/components/workflow/designer/forms/SchemaConfigFields";
 import { ACCESS_PROVIDERS, type AccessProviderType } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 import AccessConfigFieldsProvider1Panel from "./AccessConfigFieldsProvider1Panel";
 import AccessConfigFieldsProvider35cn from "./AccessConfigFieldsProvider35cn";
@@ -246,6 +247,7 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
 
 const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
   const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+  const catalogVersion = usePluginCatalogStore((s) => s.version);
 
   useEffect(() => {
     let cancelled = false;
@@ -253,7 +255,7 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     if (!provider) {
       return;
     }
-    void getProviderSchema(provider).then((env) => {
+    void getProviderSchema(provider, "access").then((env) => {
       if (!cancelled) {
         setEnvelope(env);
       }
@@ -261,7 +263,7 @@ const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: 
     return () => {
       cancelled = true;
     };
-  }, [provider]);
+  }, [provider, catalogVersion]);
 
   const initComponent = () => {
     const Component = providerComponentMap[provider as AccessProviderType];

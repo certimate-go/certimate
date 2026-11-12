@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import { listPluginCatalog } from "@/api/plugincatalog";
+import { clearProviderSchemaCache } from "@/api/providerschema";
 import { applyPluginCatalog } from "@/domain/pluginCatalog";
 
 interface PluginCatalogState {
@@ -21,6 +22,7 @@ export const usePluginCatalogStore = create<PluginCatalogState>((set) => {
       try {
         const entries = await listPluginCatalog();
         applyPluginCatalog(entries);
+        clearProviderSchemaCache();
         set((s) => ({ loaded: true, version: s.version + 1 }));
       } catch {
         set({ loaded: true });
@@ -35,6 +37,12 @@ export const usePluginCatalogStore = create<PluginCatalogState>((set) => {
     loaded: false,
     version: 0,
     init: run,
-    reload: run,
+    reload: async () => {
+      clearProviderSchemaCache();
+      if (inflight) {
+        await inflight;
+      }
+      await run();
+    },
   };
 });

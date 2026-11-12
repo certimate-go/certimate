@@ -46,6 +46,7 @@ func main() {
 	pb.RootCmd.AddCommand(cmd.NewWinscCommand(pb))
 
 	isServeCmd := slices.Contains(os.Args[1:], "serve")
+	stopPlugins := func() {}
 
 	if isServeCmd {
 		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
@@ -54,7 +55,7 @@ func main() {
 			}
 
 			settings.Setup()
-			scanPlugins()
+			stopPlugins = scanPlugins()
 			return nil
 		})
 
@@ -84,6 +85,7 @@ func main() {
 		pb.OnTerminate().BindFunc(func(e *core.TerminateEvent) error {
 			if pb.IsBootstrapped() {
 				workflow.Teardown()
+				stopPlugins()
 			}
 
 			return e.Next()
@@ -99,10 +101,10 @@ func main() {
 	}
 }
 
-func scanPlugins() {
+func scanPlugins() func() {
 	pluginDir := resolvePluginDir()
 	if pluginDir == "" {
-		return
+		return func() {}
 	}
 	cfg := plugin.PluginConfig{
 		PluginDir:   pluginDir,
@@ -119,7 +121,6 @@ func scanPlugins() {
 	}
 
 	reloader := pluginhost.NewReloader(cfg, catalog, logger)
-	reloader.InitFromCatalog()
 	pluginhost.SetGlobalReloader(reloader)
 
 	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
@@ -130,8 +131,10 @@ func scanPlugins() {
 	pluginhost.SetGlobalMarketService(marketSvc)
 
 	watcher := pluginhost.NewWatcher(pluginDir, logger)
-	watcher.Start(context.Background())
-	reloader.Start(context.Background(), watcher)
+	ctx, cancel := context.WithCancel(context.Background())
+	watcher.Start(ctx)
+	reloader.Start(ctx, watcher)
+	return func() { cancel(); reloader.Close() }
 }
 
 func resolvePluginDir() string {

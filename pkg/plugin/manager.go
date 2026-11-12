@@ -36,6 +36,8 @@ func NewManager(cfg PluginConfig, logger *slog.Logger) *Manager {
 func (m *Manager) Config() PluginConfig { return m.cfg }
 
 func (m *Manager) Bootstrap(ctx context.Context, dp *DiscoveredPlugin) (*Metadata, *ConfigSchema, error) {
+	ctx, cancel := context.WithTimeout(ctx, m.cfg.StartTimeout)
+	defer cancel()
 	var meta *Metadata
 	var schema *ConfigSchema
 	err := m.withPlugin(ctx, dp, noopRedactor, func(d Deployer) error {

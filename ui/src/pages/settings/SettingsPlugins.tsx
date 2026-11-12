@@ -16,6 +16,7 @@ import {
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 const POLL_MS = 1000;
+const MAX_POLL_DELAY_MS = 30000;
 
 const statusLabel: Record<string, string> = {
   not_installed: "plugin.market.status.not_installed",
@@ -90,21 +91,27 @@ const SettingsPlugins = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "installed" | "not_installed">("all");
   const [jobs, setJobs] = useState<Record<string, InstallJobStatus>>({});
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
+  const [pollingErrors, setPollingErrors] = useState<Record<string, string>>({});
   const pollingRef = useRef<Set<string>>(new Set());
+  const pollingRequestsRef = useRef<Set<string>>(new Set());
+  const pollingRetryRef = useRef<Record<string, { attempts: number; nextAt: number }>>({});
   const lastSampleRef = useRef<Record<string, { bytes: number; t: number }>>({});
 
+  const listingRequestRef = useRef({ generation: 0 });
+
   const loadListing = useCallback(async (): Promise<MarketEntry[]> => {
+    const request = ++listingRequestRef.current.generation;
     setLoading(true);
     setError(null);
     try {
       const data = await fetchMarketListing();
-      setEntries(data);
+      if (request === listingRequestRef.current.generation) setEntries(data);
       return data;
     } catch {
-      setError(t("plugin.market.error.load_failed"));
+      if (request === listingRequestRef.current.generation) setError(t("plugin.market.error.load_failed"));
       return [];
     } finally {
-      setLoading(false);
+      if (request === listingRequestRef.current.generation) setLoading(false);
     }
   }, [t]);
 
@@ -112,23 +119,45 @@ const SettingsPlugins = () => {
     setOperating((prev) => ({ ...prev, [pt]: v }));
   };
 
-  const removeJob = (pt: string) => {
-    setJobs((prev) => {
+  const clearPollingError = useCallback((pt: string) => {
+    setPollingErrors((prev) => {
       if (!prev[pt]) return prev;
       const next = { ...prev };
       delete next[pt];
       return next;
     });
-    setSpeeds((prev) => {
-      if (!prev[pt]) return prev;
-      const next = { ...prev };
-      delete next[pt];
-      return next;
-    });
-    delete lastSampleRef.current[pt];
-  };
+    delete pollingRetryRef.current[pt];
+  }, []);
 
-  const recordSample = (pt: string, status: InstallJobStatus) => {
+  const startPolling = useCallback(
+    (pt: string) => {
+      clearPollingError(pt);
+      pollingRef.current.add(pt);
+    },
+    [clearPollingError]
+  );
+
+  const removeJob = useCallback(
+    (pt: string) => {
+      clearPollingError(pt);
+      setJobs((prev) => {
+        if (!prev[pt]) return prev;
+        const next = { ...prev };
+        delete next[pt];
+        return next;
+      });
+      setSpeeds((prev) => {
+        if (!prev[pt]) return prev;
+        const next = { ...prev };
+        delete next[pt];
+        return next;
+      });
+      delete lastSampleRef.current[pt];
+    },
+    [clearPollingError]
+  );
+
+  const recordSample = useCallback((pt: string, status: InstallJobStatus) => {
     const prev = lastSampleRef.current[pt];
     const now = Date.now();
     if (status.state === "downloading" && prev && now > prev.t) {
@@ -139,80 +168,102 @@ const SettingsPlugins = () => {
       }
     }
     lastSampleRef.current[pt] = { bytes: status.downloaded ?? 0, t: now };
-  };
+  }, []);
 
   useEffect(() => {
+    const polling = pollingRef.current;
+    const listingRequest = listingRequestRef.current;
     let cancelled = false;
-    (async () => {
-      const data = await loadListing();
-      if (cancelled) return;
-      for (const entry of data) {
-        if (entry.status !== "not_installed") continue;
-        getInstallStatus(entry.provider_type)
-          .then((st) => {
-            if (cancelled) return;
-            if (isTerminalState(st.state)) {
-              if (st.state === "failed") {
-                setJobs((prev) => ({ ...prev, [entry.provider_type]: st }));
-              }
-              return;
-            }
-            setJobs((prev) => ({ ...prev, [entry.provider_type]: st }));
-            pollingRef.current.add(entry.provider_type);
-          })
-          .catch(() => {});
-      }
-    })();
+    queueMicrotask(() => {
+      if (!cancelled) void loadListing();
+    });
     return () => {
       cancelled = true;
-      pollingRef.current.clear();
+      listingRequest.generation++;
+      polling.clear();
     };
   }, [loadListing]);
 
   useEffect(() => {
+    let cancelled = false;
+    for (const entry of entries) {
+      if (entry.status !== "not_installed") continue;
+      getInstallStatus(entry.provider_type)
+        .then((st) => {
+          if (cancelled) return;
+          if (isTerminalState(st.state)) {
+            if (st.state === "failed") {
+              setJobs((prev) => ({ ...prev, [entry.provider_type]: st }));
+            }
+            return;
+          }
+          setJobs((prev) => ({ ...prev, [entry.provider_type]: st }));
+          startPolling(entry.provider_type);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [entries, startPolling]);
+
+  useEffect(() => {
+    let cancelled = false;
     const id = window.setInterval(() => {
-      const active = Array.from(pollingRef.current);
-      if (active.length === 0) return;
-      Promise.all(
-        active.map(async (pt) => {
-          try {
-            const st = await getInstallStatus(pt);
-            setJobs((prev) => ({ ...prev, [pt]: st }));
-            recordSample(pt, st);
-            if (st.state === "installed") {
-              pollingRef.current.delete(pt);
+      const active = Array.from(pollingRef.current).filter(
+        (pt) => !pollingRequestsRef.current.has(pt) && Date.now() >= (pollingRetryRef.current[pt]?.nextAt ?? 0)
+      );
+      active.forEach(async (pt) => {
+        pollingRequestsRef.current.add(pt);
+        try {
+          const st = await getInstallStatus(pt);
+          if (cancelled) return;
+          clearPollingError(pt);
+          const reloadError = st.result?.errors?.join("\n");
+          const status = st.state === "installed" && reloadError ? { ...st, state: "failed" as const, error: reloadError } : st;
+          setJobs((prev) => ({ ...prev, [pt]: status }));
+          recordSample(pt, status);
+          if (isTerminalState(status.state)) {
+            pollingRef.current.delete(pt);
+            if (status.state === "installed") {
               removeJob(pt);
               message.success(t("plugin.market.msg.installed"));
-              await catalogReload();
-              await loadListing();
-            } else if (st.state === "failed") {
-              pollingRef.current.delete(pt);
+            } else {
               setSpeeds((prev) => {
-                if (!prev[pt]) return prev;
                 const next = { ...prev };
                 delete next[pt];
                 return next;
               });
               delete lastSampleRef.current[pt];
             }
-          } catch {
-            pollingRef.current.delete(pt);
+            await catalogReload();
+            if (!cancelled) await loadListing();
           }
-        })
-      );
+        } catch {
+          if (cancelled) return;
+          const attempts = (pollingRetryRef.current[pt]?.attempts ?? 0) + 1;
+          pollingRetryRef.current[pt] = { attempts, nextAt: Date.now() + Math.min(MAX_POLL_DELAY_MS, POLL_MS * 2 ** Math.min(attempts, 5)) };
+          setPollingErrors((prev) => ({ ...prev, [pt]: t("plugin.market.error.status_failed") }));
+        } finally {
+          pollingRequestsRef.current.delete(pt);
+        }
+      });
     }, POLL_MS);
-    return () => clearInterval(id);
-  }, [t, message, catalogReload, loadListing]);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [t, message, catalogReload, loadListing, clearPollingError, recordSample, removeJob]);
 
   const handleInstall = async (entry: MarketEntry) => {
     const pt = entry.provider_type;
     try {
       const initial = await installPlugin(pt);
       setJobs((prev) => ({ ...prev, [pt]: initial }));
-      pollingRef.current.add(pt);
+      startPolling(pt);
     } catch (err) {
       if (err && typeof err === "object" && "status" in err && err.status === 409) {
-        pollingRef.current.add(pt);
+        startPolling(pt);
         return;
       }
       const msg = err instanceof Error ? err.message : t("plugin.market.error.install_failed");
@@ -224,11 +275,12 @@ const SettingsPlugins = () => {
     const pt = entry.provider_type;
     setOp(pt, true);
     try {
-      await deletePlugin(pt);
-      message.success(t("plugin.market.msg.deleted"));
+      const result = await deletePlugin(pt);
       removeJob(pt);
       await catalogReload();
       await loadListing();
+      if (result.errors?.length) throw new Error(result.errors.join("\n"));
+      message.success(t("plugin.market.msg.deleted"));
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("plugin.market.error.delete_failed");
       message.error(msg);
@@ -258,10 +310,11 @@ const SettingsPlugins = () => {
     const pt = entry.provider_type;
     setOp(pt, true);
     try {
-      await updatePlugin(pt);
-      message.success(t("plugin.market.msg.updated"));
+      const result = await updatePlugin(pt);
       await catalogReload();
       await loadListing();
+      if (result.errors?.length) throw new Error(result.errors.join("\n"));
+      message.success(t("plugin.market.msg.updated"));
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("plugin.market.error.update_failed");
       message.error(msg);
@@ -276,6 +329,14 @@ const SettingsPlugins = () => {
     const busy = !!operating[pt];
     const installing = !!job && !isTerminalState(job.state);
     const failed = job?.state === "failed";
+
+    if (pollingErrors[pt]) {
+      return (
+        <Button size="small" icon={<IconRefresh size={14} />} onClick={() => startPolling(pt)}>
+          {t("plugin.market.action.retry")}
+        </Button>
+      );
+    }
 
     if (installing) {
       const total = job?.total ?? 0;
@@ -454,6 +515,12 @@ const SettingsPlugins = () => {
                   <div className="shrink-0">{renderActions(entry)}</div>
                 </div>
                 <div className="line-clamp-2 min-h-10 text-sm text-gray-500">{entry.description}</div>
+                {(pollingErrors[entry.provider_type] || jobs[entry.provider_type]?.error) && (
+                  <Alert
+                    type={pollingErrors[entry.provider_type] ? "warning" : "error"}
+                    message={pollingErrors[entry.provider_type] || jobs[entry.provider_type]?.error}
+                  />
+                )}
                 <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-2 text-xs text-gray-400 dark:border-gray-800">
                   {renderStatus(entry)}
                   <span>v{entry.version}</span>

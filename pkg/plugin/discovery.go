@@ -38,6 +38,8 @@ func Discover(ctx context.Context, cfg PluginConfig) ([]*DiscoveredPlugin, []Dis
 	}
 
 	var found []*DiscoveredPlugin
+	seen := make(map[string]*DiscoveredPlugin)
+	duplicates := make(map[string]bool)
 	var failures []DiscoveryFailure
 	for _, entry := range entries {
 		if ctx.Err() != nil {
@@ -55,9 +57,25 @@ func Discover(ctx context.Context, cfg PluginConfig) ([]*DiscoveredPlugin, []Dis
 			failures = append(failures, *ferr)
 			continue
 		}
+		name := dp.Manifest.ProviderType
+		if previous, ok := seen[name]; ok {
+			if !duplicates[name] {
+				failures = append(failures, DiscoveryFailure{ProviderType: name, Dir: previous.Dir, Err: fmt.Errorf("duplicate provider type %q", name)})
+			}
+			duplicates[name] = true
+			failures = append(failures, DiscoveryFailure{ProviderType: name, Dir: dp.Dir, Err: fmt.Errorf("duplicate provider type %q", name)})
+			continue
+		}
+		seen[name] = dp
 		found = append(found, dp)
 	}
-	return found, failures
+	valid := found[:0]
+	for _, dp := range found {
+		if !duplicates[dp.Manifest.ProviderType] {
+			valid = append(valid, dp)
+		}
+	}
+	return valid, failures
 }
 
 func discoverOne(dir, coreVersion string) (*DiscoveredPlugin, *DiscoveryFailure) {
@@ -158,3 +176,11 @@ const (
 	writeGroup = 0o020
 	writeOther = 0o002
 )
+
+func DiscoverPlugin(dir string, cfg PluginConfig) (*DiscoveredPlugin, error) {
+	dp, failure := discoverOne(dir, cfg.CoreVersion)
+	if failure != nil {
+		return nil, failure
+	}
+	return dp, nil
+}
