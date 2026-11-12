@@ -257,11 +257,6 @@
       "placeholder": "请输入 AWS SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html</a>"
     },
-    "axisnow_api_token": {
-      "label": "AxisNow API 令牌",
-      "placeholder": "请输入 AxisNow API 令牌",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.axisnow.io/zh/docs/edge/tenant/api-tokens\" target=\"_blank\">https://www.axisnow.io/zh/docs/edge/tenant/api-tokens</a>"
-    },
     "azure_tenant_id": {
       "label": "Azure 租户 ID",
       "placeholder": "请输入 Azure 租户 ID",
@@ -368,11 +363,6 @@
       "label": "BytePlus 项目名称（可选）",
       "placeholder": "请输入 BytePlus 项目名称",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/zh-CN/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/zh-CN/docs/resourcemanagement/Project_Management</a>"
-    },
-    "cachefly_api_token": {
-      "label": "CacheFly API Token",
-      "placeholder": "请输入 CacheFly API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228\" target=\"_blank\">https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228</a>"
     },
     "cdnfly_server_url": {
       "label": "Cdnfly 服务地址",
@@ -656,32 +646,6 @@
       "label": "收件人邮箱（可选）",
       "placeholder": "请输入默认的收件人邮箱",
       "help": "提示：可在工作流中覆盖此设置。"
-    },
-    "flexcdn_server_url": {
-      "label": "FlexCDN 服务地址",
-      "placeholder": "请输入 FlexCDN 服务地址"
-    },
-    "flexcdn_api_role": {
-      "label": "FlexCDN 用户角色",
-      "placeholder": "请选择 FlexCDN 用户角色",
-      "option": {
-        "user": {
-          "label": "平台用户"
-        },
-        "admin": {
-          "label": "系统管理员"
-        }
-      }
-    },
-    "flexcdn_access_key_id": {
-      "label": "FlexCDN AccessKeyID",
-      "placeholder": "请输入 FlexCDN AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
-    },
-    "flexcdn_access_key": {
-      "label": "FlexCDN AccessKey",
-      "placeholder": "请输入 FlexCDN AccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
     },
     "flyio_api_token": {
       "label": "Fly.io API Token",

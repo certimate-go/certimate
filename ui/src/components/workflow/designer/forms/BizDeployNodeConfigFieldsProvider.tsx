@@ -62,7 +62,6 @@ import BizDeployNodeConfigFieldsProviderCTCCCloudELB from "./BizDeployNodeConfig
 import BizDeployNodeConfigFieldsProviderCTCCCloudFaaS from "./BizDeployNodeConfigFieldsProviderCTCCCloudFaaS";
 import BizDeployNodeConfigFieldsProviderCTCCCloudICDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudICDN";
 import BizDeployNodeConfigFieldsProviderCTCCCloudLVDN from "./BizDeployNodeConfigFieldsProviderCTCCCloudLVDN";
-import BizDeployNodeConfigFieldsProviderFlexCDN from "./BizDeployNodeConfigFieldsProviderFlexCDN";
 import BizDeployNodeConfigFieldsProviderFlyIO from "./BizDeployNodeConfigFieldsProviderFlyIO";
 import BizDeployNodeConfigFieldsProviderFTP from "./BizDeployNodeConfigFieldsProviderFTP";
 import BizDeployNodeConfigFieldsProviderGcoreCDN from "./BizDeployNodeConfigFieldsProviderGcoreCDN";
@@ -203,7 +202,6 @@ const providerComponentMap: Partial<Record<DeploymentProviderType, React.Compone
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_FAAS]: BizDeployNodeConfigFieldsProviderCTCCCloudFaaS,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_ICDN]: BizDeployNodeConfigFieldsProviderCTCCCloudICDN,
   [DEPLOYMENT_PROVIDERS.CTCCCLOUD_LVDN]: BizDeployNodeConfigFieldsProviderCTCCCloudLVDN,
-  [DEPLOYMENT_PROVIDERS.FLEXCDN]: BizDeployNodeConfigFieldsProviderFlexCDN,
   [DEPLOYMENT_PROVIDERS.FLYIO]: BizDeployNodeConfigFieldsProviderFlyIO,
   [DEPLOYMENT_PROVIDERS.FTP]: BizDeployNodeConfigFieldsProviderFTP,
   [DEPLOYMENT_PROVIDERS.GCORE_CDN]: BizDeployNodeConfigFieldsProviderGcoreCDN,

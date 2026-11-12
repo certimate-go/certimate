@@ -92,10 +92,6 @@ type AccessConfigForAWS struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
-type AccessConfigForAxisNow struct {
-	ApiToken string `json:"apiToken"`
-}
-
 type AccessConfigForAzure struct {
 	TenantId          string `json:"tenantId"`
 	ClientId          string `json:"clientId"`
@@ -146,10 +142,6 @@ type AccessConfigForBytePlus struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
 	ProjectName     string `json:"projectName,omitempty"`
-}
-
-type AccessConfigForCacheFly struct {
-	ApiToken string `json:"apiToken"`
 }
 
 type AccessConfigForCdnfly struct {
@@ -265,14 +257,6 @@ type AccessConfigForEmail struct {
 	SenderAddress            string `json:"senderAddress"`
 	SenderName               string `json:"senderName"`
 	ReceiverAddress          string `json:"receiverAddress,omitempty"`
-	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForFlexCDN struct {
-	ServerUrl                string `json:"serverUrl"`
-	ApiRole                  string `json:"apiRole"`
-	AccessKeyId              string `json:"accessKeyId"`
-	AccessKey                string `json:"accessKey"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
 }
 

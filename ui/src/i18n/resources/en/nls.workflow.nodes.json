@@ -1570,18 +1570,6 @@
         "label": "CTCC StateCloud LVDN domain",
         "placeholder": "Please enter CTCC StateCloud LVDN domain name"
       },
-      "flexcdn_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "flexcdn_certificate_id": {
-        "label": "FlexCDN certificate ID",
-        "placeholder": "Please enter FlexCDN certificate ID",
-        "tooltip": "You can find it on FlexCDN dashboard. <br><br>(Please open the browser devtools, and visit the \"网站列表 -> 证书管理 -> 证书\" page to capture network requests, then you can get the certificate ID.)"
-      },
       "flyio_app_name": {
         "label": "Fly.io App name",
         "placeholder": "Please enter Fly.io App name"

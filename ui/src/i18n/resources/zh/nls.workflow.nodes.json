@@ -1569,18 +1569,6 @@
         "label": "天翼云 LVDN 加速域名",
         "placeholder": "请输入天翼云 LVDN 加速域名"
       },
-      "flexcdn_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "flexcdn_certificate_id": {
-        "label": "FlexCDN 证书 ID",
-        "placeholder": "请输入 FlexCDN 证书 ID",
-        "tooltip": "请登录 FlexCDN 控制台查看<br><br>（目前需要在「网站列表 -> 证书管理 -> 证书」页面，并打开浏览器开发者工具抓取网络请求后得到证书 ID）"
-      },
       "flyio_app_name": {
         "label": "Fly.io 应用名称",
         "placeholder": "请输入 Fly.io 应用名称"

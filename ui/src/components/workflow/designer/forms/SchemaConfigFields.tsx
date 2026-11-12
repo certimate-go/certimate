@@ -1,8 +1,6 @@
 import { type ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, Input, InputNumber, Radio, Select, Switch } from "antd";
-import { createSchemaFieldRule } from "antd-zod";
-import { z } from "zod";
 
 import type { ProviderSchemaEnvelope, SchemaColumn } from "@/api/providerschema";
 import CodeTextInput from "@/components/CodeTextInput";
@@ -23,8 +21,7 @@ const SchemaConfigFields = ({ envelope }: SchemaConfigFieldsProps) => {
   const providerConfig = Form.useWatch<Record<string, unknown> | undefined>(parentNamePath, { form: formInst, preserve: true });
   const getValue = (field: string) => providerConfig?.[field];
 
-  const formSchema = useMemo(() => z.object({ [parentNamePath]: deriveZodSchema(envelope) }), [envelope, parentNamePath]);
-  const formRule = createSchemaFieldRule(formSchema);
+  const formSchema = useMemo(() => deriveZodSchema(envelope), [envelope]);
 
   const columns = envelope.schema.columns.filter((col) => isColumnVisible(col, getValue));
 
@@ -38,7 +35,16 @@ const SchemaConfigFields = ({ envelope }: SchemaConfigFieldsProps) => {
           label={col.labelKey ? t(col.labelKey) : col.name}
           tooltip={renderTooltip(col, t)}
           extra={renderExtra(col, t)}
-          rules={[formRule as never]}
+          rules={[
+            {
+              validator: () => {
+                const result = formSchema.safeParse(formInst.getFieldValue(parentNamePath) ?? {});
+                if (result.success) return Promise.resolve();
+                const issue = result.error.issues.find((entry) => entry.path.length === 0 || entry.path[0] === col.name);
+                return issue ? Promise.reject(new Error(issue.message)) : Promise.resolve();
+              },
+            },
+          ]}
         >
           {renderControl(col, t)}
         </Form.Item>
@@ -66,7 +72,7 @@ const renderControl = (col: SchemaColumn, t: (key: string) => string): ReactNode
     case "switch":
       return <Switch />;
     case "number":
-      return <InputNumber min={col.min} max={col.max} placeholder={placeholder} style={{ width: "100%" }} {...unitFieldProps("digit", col.unitKey, t)} />;
+      return <InputNumber changeOnBlur={false} placeholder={placeholder} style={{ width: "100%" }} {...unitFieldProps("digit", col.unitKey, t)} />;
     case "select":
       return <Select placeholder={placeholder} options={optionList(col, t)} style={{ width: "100%" }} />;
     case "radio":

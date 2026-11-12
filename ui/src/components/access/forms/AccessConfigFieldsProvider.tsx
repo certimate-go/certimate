@@ -17,7 +17,6 @@ import AccessConfigFieldsProviderAPISIX from "./AccessConfigFieldsProviderAPISIX
 import AccessConfigFieldsProviderArvanCloud from "./AccessConfigFieldsProviderArvanCloud";
 import AccessConfigFieldsProviderAsiaISPCDN from "./AccessConfigFieldsProviderAsiaISPCDN";
 import AccessConfigFieldsProviderAWS from "./AccessConfigFieldsProviderAWS";
-import AccessConfigFieldsProviderAxisNow from "./AccessConfigFieldsProviderAxisNow";
 import AccessConfigFieldsProviderAzure from "./AccessConfigFieldsProviderAzure";
 import AccessConfigFieldsProviderBaiduCloud from "./AccessConfigFieldsProviderBaiduCloud";
 import AccessConfigFieldsProviderBaotaPanel from "./AccessConfigFieldsProviderBaotaPanel";
@@ -27,7 +26,6 @@ import AccessConfigFieldsProviderBeget from "./AccessConfigFieldsProviderBeget";
 import AccessConfigFieldsProviderBookMyName from "./AccessConfigFieldsProviderBookMyName";
 import AccessConfigFieldsProviderBunny from "./AccessConfigFieldsProviderBunny";
 import AccessConfigFieldsProviderBytePlus from "./AccessConfigFieldsProviderBytePlus";
-import AccessConfigFieldsProviderCacheFly from "./AccessConfigFieldsProviderCacheFly";
 import AccessConfigFieldsProviderCdnfly from "./AccessConfigFieldsProviderCdnfly";
 import AccessConfigFieldsProviderCloudflare from "./AccessConfigFieldsProviderCloudflare";
 import AccessConfigFieldsProviderClouDNS from "./AccessConfigFieldsProviderClouDNS";
@@ -50,7 +48,6 @@ import AccessConfigFieldsProviderDynadot from "./AccessConfigFieldsProviderDynad
 import AccessConfigFieldsProviderDynu from "./AccessConfigFieldsProviderDynu";
 import AccessConfigFieldsProviderDynv6 from "./AccessConfigFieldsProviderDynv6";
 import AccessConfigFieldsProviderEmail from "./AccessConfigFieldsProviderEmail";
-import AccessConfigFieldsProviderFlexCDN from "./AccessConfigFieldsProviderFlexCDN";
 import AccessConfigFieldsProviderFlyIO from "./AccessConfigFieldsProviderFlyIO";
 import AccessConfigFieldsProviderFTP from "./AccessConfigFieldsProviderFTP";
 import AccessConfigFieldsProviderGandinet from "./AccessConfigFieldsProviderGandinet";
@@ -140,7 +137,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.ARVANCLOUD]: AccessConfigFieldsProviderArvanCloud,
   [ACCESS_PROVIDERS.ASIAISPCDN]: AccessConfigFieldsProviderAsiaISPCDN,
   [ACCESS_PROVIDERS.AWS]: AccessConfigFieldsProviderAWS,
-  [ACCESS_PROVIDERS.AXISNOW]: AccessConfigFieldsProviderAxisNow,
   [ACCESS_PROVIDERS.AZURE]: AccessConfigFieldsProviderAzure,
   [ACCESS_PROVIDERS.BAIDUCLOUD]: AccessConfigFieldsProviderBaiduCloud,
   [ACCESS_PROVIDERS.BAOTAPANEL]: AccessConfigFieldsProviderBaotaPanel,
@@ -150,7 +146,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.BOOKMYNAME]: AccessConfigFieldsProviderBookMyName,
   [ACCESS_PROVIDERS.BUNNY]: AccessConfigFieldsProviderBunny,
   [ACCESS_PROVIDERS.BYTEPLUS]: AccessConfigFieldsProviderBytePlus,
-  [ACCESS_PROVIDERS.CACHEFLY]: AccessConfigFieldsProviderCacheFly,
   [ACCESS_PROVIDERS.CDNFLY]: AccessConfigFieldsProviderCdnfly,
   [ACCESS_PROVIDERS.CLOUDFLARE]: AccessConfigFieldsProviderCloudflare,
   [ACCESS_PROVIDERS.CLOUDNS]: AccessConfigFieldsProviderClouDNS,
@@ -173,7 +168,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.DYNU]: AccessConfigFieldsProviderDynu,
   [ACCESS_PROVIDERS.DYNV6]: AccessConfigFieldsProviderDynv6,
   [ACCESS_PROVIDERS.EMAIL]: AccessConfigFieldsProviderEmail,
-  [ACCESS_PROVIDERS.FLEXCDN]: AccessConfigFieldsProviderFlexCDN,
   [ACCESS_PROVIDERS.FLYIO]: AccessConfigFieldsProviderFlyIO,
   [ACCESS_PROVIDERS.FTP]: AccessConfigFieldsProviderFTP,
   [ACCESS_PROVIDERS.GANDINET]: AccessConfigFieldsProviderGandinet,

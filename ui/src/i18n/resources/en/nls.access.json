@@ -257,11 +257,6 @@
       "placeholder": "Please enter AWS SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/id_credentials_access-keys.html</a>"
     },
-    "axisnow_api_token": {
-      "label": "AxisNow API token",
-      "placeholder": "Please enter AxisNow API token",
-      "tooltip": "For more information, see <a href=\"https://www.axisnow.io/zh/docs/edge/tenant/api-tokens\" target=\"_blank\">https://www.axisnow.io/zh/docs/edge/tenant/api-tokens</a>"
-    },
     "azure_tenant_id": {
       "label": "Azure tenant ID",
       "placeholder": "Please enter Azure tenant ID",
@@ -368,11 +363,6 @@
       "label": "BytePlus project ID",
       "placeholder": "Please enter BytePlus project ID",
       "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management</a>"
-    },
-    "cachefly_api_token": {
-      "label": "CacheFly API token",
-      "placeholder": "Please enter CacheFly API token",
-      "tooltip": "For more information, see <a href=\"https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228\" target=\"_blank\">https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228</a>"
     },
     "cdnfly_server_url": {
       "label": "Cdnfly server URL",
@@ -656,32 +646,6 @@
       "label": "Receiver email address (Optional)",
       "placeholder": "Please enter the default receiver email address",
       "help": "Notes: It can be overrided in the workflows."
-    },
-    "flexcdn_server_url": {
-      "label": "FlexCDN server URL",
-      "placeholder": "Please enter FlexCDN server URL"
-    },
-    "flexcdn_api_role": {
-      "label": "FlexCDN user role",
-      "placeholder": "Please select FlexCDN user role",
-      "option": {
-        "user": {
-          "label": "Platform user"
-        },
-        "admin": {
-          "label": "Administrator user"
-        }
-      }
-    },
-    "flexcdn_access_key_id": {
-      "label": "FlexCDN AccessKeyID",
-      "placeholder": "Please enter FlexCDN AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
-    },
-    "flexcdn_access_key": {
-      "label": "FlexCDN AccessKey",
-      "placeholder": "Please enter FlexCDN AccessKey",
-      "tooltip": "For more information, see <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
     },
     "flyio_api_token": {
       "label": "Fly.io API token",
