@@ -96,10 +96,6 @@
     }
   },
 
-  "plugins": {
-    "tab": "Plugins"
-  },
-
   "acmeaccounts": {
     "tab": "ACME accounts",
     "title": "ACME account credentials",

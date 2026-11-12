@@ -96,10 +96,6 @@
     }
   },
 
-  "plugins": {
-    "tab": "插件"
-  },
-
   "acmeaccounts": {
     "tab": "ACME 账户",
     "title": "ACME 账户凭据",

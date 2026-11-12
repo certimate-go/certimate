@@ -1,16 +1,6 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import {
-  IconDatabaseCog,
-  IconHeartRateMonitor,
-  IconInfoCircle,
-  IconKey,
-  IconPalette,
-  IconPlugConnected,
-  IconPuzzle,
-  IconUserShield,
-} from "@tabler/icons-react";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { IconDatabaseCog, IconHeartRateMonitor, IconInfoCircle, IconKey, IconPalette, IconPlugConnected, IconUserShield } from "@tabler/icons-react";
 import { Menu } from "antd";
 
 const Settings = () => {
@@ -24,26 +14,19 @@ const Settings = () => {
     ["appearance", "settings.appearance.tab", <IconPalette size="1em" />],
     ["ssl-provider", "settings.sslprovider.tab", <IconPlugConnected size="1em" />],
     ["acme-accounts", "settings.acmeaccounts.tab", <IconKey size="1em" />],
-    ["plugins", "settings.plugins.tab", <IconPuzzle size="1em" />],
     ["persistence", "settings.persistence.tab", <IconDatabaseCog size="1em" />],
     ["diagnostics", "settings.diagnostics.tab", <IconHeartRateMonitor size="1em" />],
     ["about", "settings.about.tab", <IconInfoCircle size="1em" />],
   ] satisfies [string, string, React.ReactElement][];
-  const [menuKey, setMenuKey] = useState<string>(() => location.pathname.split("/")[2]);
-  useEffect(() => {
-    const subpath = location.pathname.split("/")[2];
-    if (!subpath) {
-      navigate("/settings/account");
-      return;
-    }
-
-    setMenuKey(subpath);
-  }, [location.pathname]);
+  const menuKey = location.pathname.split("/")[2];
 
   const handleMenuClick = ({ key }: { key: string }) => {
-    setMenuKey(key);
     navigate(`/settings/${key}`);
   };
+
+  if (!menuKey) {
+    return <Navigate to="/settings/account" replace />;
+  }
 
   return (
     <div className="px-6 py-4">

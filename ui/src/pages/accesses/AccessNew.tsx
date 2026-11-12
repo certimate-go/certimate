@@ -86,7 +86,7 @@ const AccessNew = () => {
             type="info"
             message={t("plugin.market.nudge")}
             action={
-              <Button size="small" onClick={() => navigate("/settings/plugins")}>
+              <Button size="small" onClick={() => navigate("/plugins")}>
                 {t("plugin.market.browse")}
               </Button>
             }

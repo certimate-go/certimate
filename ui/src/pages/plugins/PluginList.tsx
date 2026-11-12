@@ -78,7 +78,23 @@ const formatBytes = (n: number): string => {
   return `${value.toFixed(digits)} ${units[i]}`;
 };
 
-const SettingsPlugins = () => {
+const PluginList = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="px-6 py-4">
+      <div className="container">
+        <h1>{t("plugin.page.heading")}</h1>
+      </div>
+
+      <div className="container">
+        <PluginMarket />
+      </div>
+    </div>
+  );
+};
+
+const PluginMarket = () => {
   const { t } = useTranslation();
   const { message, modal } = App.useApp();
   const catalogReload = usePluginCatalogStore((s) => s.reload);
@@ -471,10 +487,8 @@ const SettingsPlugins = () => {
 
   return (
     <div>
-      <h2>{t("plugin.market.heading")}</h2>
-
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Segmented
             options={[
               { label: t("plugin.market.filter.all"), value: "all" },
@@ -534,4 +548,4 @@ const SettingsPlugins = () => {
   );
 };
 
-export default SettingsPlugins;
+export default PluginList;

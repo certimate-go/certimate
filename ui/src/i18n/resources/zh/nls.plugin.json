@@ -1,6 +1,10 @@
 {
   "$ns": "plugin",
 
+  "page": {
+    "heading": "插件"
+  },
+
   "market": {
     "nudge": "没找到你需要的提供商？前往插件市场发现更多。",
     "browse": "浏览插件市场",

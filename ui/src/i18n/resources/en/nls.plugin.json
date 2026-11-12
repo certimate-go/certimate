@@ -1,6 +1,10 @@
 {
   "$ns": "plugin",
 
+  "page": {
+    "heading": "Plugins"
+  },
+
   "market": {
     "nudge": "Didn't find the provider you need? Browse the plugin marketplace for more.",
     "browse": "Browse marketplace",

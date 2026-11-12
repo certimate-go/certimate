@@ -13,6 +13,7 @@ import {
   IconLayoutSidebarRightCollapse,
   IconMenu2,
   IconPower,
+  IconPuzzle,
   IconSettings,
 } from "@tabler/icons-react";
 import { Alert, Button, Drawer, Layout, Menu, type MenuProps, theme } from "antd";
@@ -180,14 +181,16 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
   const MENU_KEY_CERTIFICATES = "/certificates";
   const MENU_KEY_ACCESSES = "/accesses";
   const MENU_KEY_PRESETS = "/presets";
+  const MENU_KEY_PLUGINS = "/plugins";
   const MENU_KEY_SETTINGS = "/settings";
-  const menuItems: Required<MenuProps>["items"] = (
+  const menuItems = (
     [
       [MENU_KEY_HOME, "dashboard.page.heading", <IconHome size="1em" />],
       [MENU_KEY_WORKFLOWS, "workflow.page.heading", <IconHierarchy3 size="1em" />],
       [MENU_KEY_CERTIFICATES, "certificate.page.heading", <IconCertificate size="1em" />],
       [MENU_KEY_ACCESSES, "access.page.heading", <IconFingerprint size="1em" />],
       [MENU_KEY_PRESETS, "preset.page.heading", <IconCodeDots size="1em" />],
+      [MENU_KEY_PLUGINS, "plugin.page.heading", <IconPuzzle size="1em" />],
       [MENU_KEY_SETTINGS, "settings.page.heading", <IconSettings size="1em" />],
     ] satisfies Array<[string, string, React.ReactNode]>
   ).map(([key, label, icon]) => {
@@ -204,30 +207,10 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
         onSelect?.(key);
       },
     };
-  });
-  const [menuSelectedKey, setMenuSelectedKey] = useState<string>();
-
-  const getActiveMenuItem = () => {
-    const item =
-      menuItems.find((item) => item!.key === location.pathname) ??
-      menuItems.find((item) => item!.key !== MENU_KEY_HOME && location.pathname.startsWith(item!.key as string));
-    return item;
-  };
-
-  useEffect(() => {
-    const item = getActiveMenuItem();
-    if (item) {
-      setMenuSelectedKey(item.key as string);
-    } else {
-      setMenuSelectedKey(void 0);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (menuSelectedKey && menuSelectedKey !== getActiveMenuItem()?.key) {
-      navigate(menuSelectedKey);
-    }
-  }, [menuSelectedKey]);
+  }) satisfies Required<MenuProps>["items"];
+  const menuSelectedKey = (
+    menuItems.find((item) => item.key === location.pathname) ?? menuItems.find((item) => item.key !== MENU_KEY_HOME && location.pathname.startsWith(item.key))
+  )?.key;
 
   useEffect(() => {
     void usePluginCatalogStore.getState().reload();
@@ -251,9 +234,6 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
           items={menuItems}
           mode="vertical"
           selectedKeys={menuSelectedKey ? [menuSelectedKey] : []}
-          onSelect={({ key }) => {
-            setMenuSelectedKey(key);
-          }}
         />
       </div>
     </>

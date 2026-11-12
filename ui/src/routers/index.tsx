@@ -1,4 +1,4 @@
-﻿import { createHashRouter } from "react-router-dom";
+﻿import { Navigate, createHashRouter } from "react-router-dom";
 
 import AccessList from "@/pages/accesses/AccessList";
 import AccessNew from "@/pages/accesses/AccessNew";
@@ -8,6 +8,7 @@ import ConsoleLayout from "@/pages/ConsoleLayout";
 import Dashboard from "@/pages/dashboard/Dashboard";
 import ErrorLayout from "@/pages/ErrorLayout";
 import Login from "@/pages/login/Login";
+import PluginList from "@/pages/plugins/PluginList";
 import PresetList from "@/pages/presets/PresetList";
 import Settings from "@/pages/settings/Settings";
 import SettingsAbout from "@/pages/settings/SettingsAbout";
@@ -16,7 +17,6 @@ import SettingsAcmeAccounts from "@/pages/settings/SettingsAcmeAccounts";
 import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
-import SettingsPlugins from "@/pages/settings/SettingsPlugins";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
 import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
@@ -72,6 +72,14 @@ export const router = createHashRouter([
         element: <PresetList />,
       },
       {
+        path: "/plugins",
+        element: <PluginList />,
+      },
+      {
+        path: "/settings/plugins",
+        element: <Navigate to="/plugins" replace />,
+      },
+      {
         path: "/settings",
         element: <Settings />,
         children: [
@@ -94,10 +102,6 @@ export const router = createHashRouter([
           {
             path: "/settings/persistence",
             element: <SettingsPersistence />,
-          },
-          {
-            path: "/settings/plugins",
-            element: <SettingsPlugins />,
           },
           {
             path: "/settings/diagnostics",
