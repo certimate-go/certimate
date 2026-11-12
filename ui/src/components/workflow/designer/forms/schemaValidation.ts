@@ -31,28 +31,15 @@ export const matchCondition = (cond: SchemaCondition, value: unknown): boolean =
   }
 };
 
-const evalVisibilityFor = (col: SchemaColumn, discName: string, value: string): boolean => {
-  for (const cond of col.visibleWhen ?? []) {
-    if (cond.field !== discName) continue;
-    if (!matchCondition(cond, value)) return false;
-  }
-  return true;
-};
-
-const matchesDisc = (col: SchemaColumn, clause: "requiredWhen" | "validateWhen", discName: string, value: string): boolean => {
-  const list = (col[clause] ?? []) as SchemaCondition[];
-  for (const cond of list) {
-    if (cond.field !== discName) continue;
-    if (matchCondition(cond, value)) return true;
-  }
-  return false;
-};
-
 const runValidator = (name: string, params: Record<string, unknown> | undefined, value: unknown): boolean => {
   const s = String(value);
   switch (name) {
+    case "positiveInteger":
+      return z.coerce.number().int().positive().safeParse(value).success;
     case "domain":
       return isDomain(s, { allowWildcard: !!params?.allowWildcard });
+    case "hostname_or_url":
+      return isHostname(s) || isUrlWithHttpOrHttps(s);
     case "hostname":
       return isHostname(s);
     case "ipv4":
@@ -81,18 +68,32 @@ const runValidator = (name: string, params: Record<string, unknown> | undefined,
   }
 };
 
-const fieldBaseType = (col: SchemaColumn): z.ZodType => {
+const fieldBaseType = (col: SchemaColumn, required: boolean): z.ZodType => {
   switch (col.valueType) {
     case "switch":
       return z.boolean();
+    case "multipleSplit":
+      return z.string().refine((value) => (!required && value === "") || value.split(col.separator ?? ";").every((part) => part.trim().length > 0), {
+        message: i18n.t("common.errmsg.multiple_values_invalid"),
+      });
+    case "select":
+    case "radio":
+      if (col.options?.length && !col.allowCustomValue) return z.enum(col.options.map((option) => option.value));
+      return required ? z.string().min(1) : z.string();
     case "number": {
       let s = z.coerce.number();
       if (col.min != null) s = s.min(col.min);
       if (col.max != null) s = s.max(col.max);
       return s;
     }
-    default:
-      return z.string();
+    default: {
+      const text = required ? z.string().min(1) : z.string();
+      if (col.valueType === "text" && col.numericValue) {
+        const integer = col.numericValue === "positiveInteger" ? z.int().positive() : z.int();
+        return z.union([text, integer]);
+      }
+      return text;
+    }
   }
 };
 
@@ -105,79 +106,33 @@ const applyRules = (schema: z.ZodType, rules: SchemaValidationRule[], allowEmpty
 };
 
 const buildFieldSchema = (col: SchemaColumn, required: boolean, rules: SchemaValidationRule[]): z.ZodType => {
-  let schema = fieldBaseType(col);
-  if (col.valueType !== "switch" && col.valueType !== "number") {
-    schema = required ? (schema as z.ZodString).min(1) : schema.nullish();
-  } else if (!required) {
+  let schema = fieldBaseType(col, required);
+  if (!required) {
     schema = schema.nullish();
   }
   return applyRules(schema, rules, !required);
 };
 
-const detectDiscriminator = (columns: SchemaColumn[]): SchemaColumn | null => {
-  const referenced = new Set<string>();
-  for (const col of columns) {
-    for (const clause of ["visibleWhen", "requiredWhen", "validateWhen"] as const) {
-      for (const cond of (col[clause] ?? []) as SchemaCondition[]) {
-        referenced.add(cond.field);
-      }
-    }
-  }
-  if (referenced.size !== 1) return null;
-  const name = [...referenced][0];
-  const col = columns.find((c) => c.name === name);
-  if (!col || !col.options || col.options.length === 0) return null;
-  return col;
-};
-
-const buildDiscriminated = (disc: SchemaColumn, columns: SchemaColumn[]): z.ZodType => {
-  const variants = disc.options!.map((opt) => {
-    const shape: Record<string, z.ZodType> = {
-      [disc.name]: z.literal(opt.value),
-    };
-    for (const col of columns) {
-      if (col.name === disc.name) continue;
-      if (!evalVisibilityFor(col, disc.name, opt.value)) continue;
-      const required = col.required === true || matchesDisc(col, "requiredWhen", disc.name, opt.value);
-      const rules = (col.validateWhen ?? []).filter((r) => r.field === disc.name && matchCondition(r, opt.value));
-      shape[col.name] = buildFieldSchema(col, required, rules);
-    }
-    return z.object(shape);
-  });
-  return z.discriminatedUnion(disc.name, variants as unknown as Parameters<typeof z.discriminatedUnion>[1]);
-};
-
-const buildPlainObject = (columns: SchemaColumn[]): z.ZodType => {
-  const shape: Record<string, z.ZodType> = {};
-  for (const col of columns) {
-    shape[col.name] = buildFieldSchema(col, col.required === true, []);
-  }
-  const base = z.object(shape);
-  return base.superRefine((values, ctx) => {
-    const record = values as Record<string, unknown>;
-    for (const col of columns) {
-      const value = record[col.name];
-      for (const cond of col.requiredWhen ?? []) {
-        if (!matchCondition(cond, record[cond.field])) continue;
-        if (isEmpty(value)) {
-          ctx.addIssue({ code: "custom", message: i18n.t("common.errmsg.required"), path: [col.name] });
-        }
-      }
-      for (const rule of col.validateWhen ?? []) {
-        if (!matchCondition(rule, record[rule.field])) continue;
-        if (!isEmpty(value) && !runValidator(rule.validator, rule.params, value)) {
-          ctx.addIssue({ code: "custom", message: i18n.t(`common.errmsg.${rule.validator}_invalid`), path: [col.name] });
-        }
-      }
-    }
-  });
-};
-
 export const deriveZodSchema = (envelope: ProviderSchemaEnvelope): z.ZodType => {
   const columns = envelope.schema?.columns ?? [];
-  const disc = detectDiscriminator(columns);
-  if (disc) {
-    return buildDiscriminated(disc, columns);
-  }
-  return buildPlainObject(columns);
+  const shape = Object.fromEntries(columns.map((col) => [col.name, z.unknown().optional()]));
+  const defaults = new Map(columns.filter((col) => col.defaultOnMissing).map((col) => [col.name, col.default]));
+  return z.object(shape).transform((values, ctx) => {
+    const getValue = (field: string): unknown => (values[field] === undefined ? defaults.get(field) : values[field]);
+    const parsed: Record<string, unknown> = {};
+    for (const col of columns) {
+      if (!(col.visibleWhen ?? []).every((condition) => matchCondition(condition, getValue(condition.field)))) continue;
+      const required = col.required === true || (col.requiredWhen ?? []).some((condition) => matchCondition(condition, getValue(condition.field)));
+      const rules = (col.validateWhen ?? []).filter((rule) => matchCondition(rule, getValue(rule.field)));
+      const result = buildFieldSchema(col, required, rules).safeParse(getValue(col.name));
+      if (!result.success) {
+        for (const issue of result.error.issues) {
+          ctx.addIssue({ ...issue, path: [col.name, ...issue.path] });
+        }
+      } else if (col.name in values || defaults.has(col.name)) {
+        parsed[col.name] = result.data;
+      }
+    }
+    return parsed;
+  });
 };

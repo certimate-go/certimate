@@ -24,12 +24,13 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/internal/domain"
+	"github.com/certimate-go/certimate/internal/pluginhost/internal/markettest"
 	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 func newTestService(t *testing.T, handler http.HandlerFunc) *MarketService {
 	t.Helper()
-	srv := httptest.NewServer(handler)
+	srv := httptest.NewServer(markettest.WithReleaseDetails(handler))
 	t.Cleanup(srv.Close)
 	return NewMarketService(MarketConfig{
 		IndexURL:  srv.URL,
@@ -107,7 +108,7 @@ func TestListMarket_UnsupportedPlatform(t *testing.T) {
 	body := indexJSON(t,
 		entry("no-release", "1.0.0", nil),
 		entry("wrong-asset", "1.0.0", map[string]any{
-			"repo":      "x",
+			"repo":      "certimate-go/plugins",
 			"tag":       "v1",
 			"assets":    map[string]any{"none/none": "bin"},
 			"checksums": map[string]any{"none/none": "x"},
@@ -283,7 +284,7 @@ func alphaIndex(t *testing.T, version, checksum string) string {
 
 func newZipTestService(t *testing.T, indexBody string, zipBytes []byte) *MarketService {
 	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(markettest.WithReleaseDetails(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case strings.HasSuffix(r.URL.Path, "/index.json"):
 			io.WriteString(w, indexBody)
@@ -292,7 +293,7 @@ func newZipTestService(t *testing.T, indexBody string, zipBytes []byte) *MarketS
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
-	}))
+	})))
 	t.Cleanup(srv.Close)
 	return NewMarketService(MarketConfig{
 		IndexURL:       srv.URL + "/index.json",

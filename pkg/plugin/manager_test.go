@@ -128,6 +128,23 @@ func TestManager_Deploy_PluginConfigError_Mapped(t *testing.T) {
 	}
 }
 
+func TestManager_Deploy_RedactsReturnedError(t *testing.T) {
+	defer withFakeEnv("error-echo", "error-echo")()
+	dp := discoveredFake(t, "error-echo")
+	const token = "fixture-returned-error-token"
+	const key = "-----BEGIN PRIVATE KEY-----\nZmFrZS1wcml2YXRlLWtleS1ib2R5\n-----END PRIVATE KEY-----"
+	request := &DeployRequest{AccessConfigJSON: `{"apiToken":"` + token + `"}`, PrivateKeyPEM: key}
+	_, err := NewManager(PluginConfig{}, nil).Deploy(context.Background(), dp, request, nil)
+	if err == nil || !strings.Contains(err.Error(), "remote rejected") {
+		t.Fatalf("expected remote rejection, got %v", err)
+	}
+	for _, secret := range []string{token, key, "ZmFrZS1wcml2YXRlLWtleS1ib2R5"} {
+		if strings.Contains(err.Error(), secret) {
+			t.Fatal("plugin error exposed deployment credentials")
+		}
+	}
+}
+
 func TestSyncBuffer_ConcurrentWriteAndTail(t *testing.T) {
 	var b syncBuffer
 

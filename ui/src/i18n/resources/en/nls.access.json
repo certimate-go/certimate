@@ -1,17 +1,14 @@
 {
   "$ns": "access",
-
   "text": {
     "nodata": "No credentials",
     "nodata_description": "It looks like you don't have any credentials. Get started by adding one.",
     "nodata_button": "Create credential"
   },
-
   "page": {
     "heading": "Credentials",
     "subheading": "Credentials store authentication information (username and password, API key, tokens, etc.) to connect with specific third-party apps and services."
   },
-
   "action": {
     "search.input": {
       "placeholder": "Search by credential name ..."
@@ -39,7 +36,6 @@
     },
     "test_notify.button": "Test notify"
   },
-
   "props": {
     "name": "Name",
     "provider": {
@@ -59,12 +55,10 @@
     "created_at": "Created at",
     "updated_at": "Updated at"
   },
-
   "new": {
     "heading": "Create Credential",
     "subheading": "Use this credential to connect with specific third-party apps and services."
   },
-
   "form": {
     "name": {
       "label": "Name",
@@ -78,7 +72,6 @@
         "placeholder": "Search provider ..."
       }
     },
-
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "Please enter ACME EAB KID"
@@ -95,21 +88,6 @@
     },
     "shared_ca_access_optional": {
       "help": "Leave it empty to automatically obtain the EAB credentials from {{provider}} with the certificate contact email above. Note: the contact email will be sent to {{provider}}. You can still select an existing credential to use manual EAB credentials."
-    },
-
-    "1panel_server_url": {
-      "label": "1Panel server URL",
-      "placeholder": "Please enter 1Panel server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "1panel_api_version": {
-      "label": "1Panel version",
-      "placeholder": "Please select 1Panel version"
-    },
-    "1panel_api_key": {
-      "label": "1Panel API key",
-      "placeholder": "Please enter 1Panel API key",
-      "tooltip": "For more information, see <a href=\"https://1panel.pro/docs/v2/dev_manual/api_manual\" target=\"_blank\">https://1panel.pro/docs/v2/dev_manual/api_manual</a>"
     },
     "35cn_username": {
       "label": "35.cn agent username",
@@ -212,27 +190,10 @@
       "placeholder": "Please enter Aliyun resource group ID",
       "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/resource-management/product-overview\" target=\"_blank\">https://www.alibabacloud.com/help/en/resource-management/product-overview</a>"
     },
-    "apisix_server_url": {
-      "label": "APISIX server URL",
-      "placeholder": "Please enter APISIX server URL"
-    },
-    "apisix_api_key": {
-      "label": "APISIX Admin API key",
-      "placeholder": "Please enter APISIX Admin API key",
-      "tooltip": "For more information, see <a href=\"https://apisix.apache.org/docs/apisix/admin-api/\" target=\"_blank\">https://apisix.apache.org/docs/apisix/admin-api/</a>"
-    },
     "arvancloud_api_key": {
       "label": "ArvanCloud API key",
       "placeholder": "Please enter ArvanCloud API key",
       "tooltip": "For more information, see <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
-    },
-    "asiaispcdn_access_key_id": {
-      "label": "Asia-ISP CDN AccessKeyID",
-      "placeholder": "Please enter Asia-ISP CDN AccessKeyID"
-    },
-    "asiaispcdn_access_key_secret": {
-      "label": "Asia-ISP CDN AccessKeySecret",
-      "placeholder": "Please enter Asia-ISP CDN AccessKeySecret"
     },
     "aws_auth_method": {
       "label": "AWS API authentication method",
@@ -297,36 +258,6 @@
       "placeholder": "Please enter Baidu Cloud SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en\" target=\"_blank\">https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en</a>"
     },
-    "baotapanel_server_url": {
-      "label": "aaPanel server URL",
-      "placeholder": "Please enter aaPanel server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "baotapanel_api_key": {
-      "label": "aaPanel API key",
-      "placeholder": "Please enter aaPanel API key",
-      "tooltip": "For more information, see <a href=\"https://www.bt.cn/bbs/thread-20376-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-20376-1-1.html</a>"
-    },
-    "baotapanelgo_server_url": {
-      "label": "aaPanel WinGo server URL",
-      "placeholder": "Please enter aaPanel WinGo server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "baotapanelgo_api_key": {
-      "label": "aaPanel WinGo API key",
-      "placeholder": "Please enter aaPanel WinGo API key",
-      "tooltip": "For more information, see <a href=\"https://www.bt.cn/bbs/thread-20376-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-20376-1-1.html</a>"
-    },
-    "baotawaf_server_url": {
-      "label": "aaWAF server URL",
-      "placeholder": "Please enter aaWAF server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "baotawaf_api_key": {
-      "label": "aaWAF API key",
-      "placeholder": "Please enter aaWAF API key",
-      "tooltip": "For more information, see <a href=\"https://github.com/aaPanel/aaWAF/blob/main/API.md\" target=\"_blank\">https://github.com/aaPanel/aaWAF/blob/main/API.md</a>"
-    },
     "beget_username": {
       "label": "Beget username",
       "placeholder": "Please enter Beget username"
@@ -363,20 +294,6 @@
       "label": "BytePlus project ID",
       "placeholder": "Please enter BytePlus project ID",
       "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management</a>"
-    },
-    "cdnfly_server_url": {
-      "label": "Cdnfly server URL",
-      "placeholder": "Please enter Cdnfly server URL"
-    },
-    "cdnfly_api_key": {
-      "label": "Cdnfly user API key",
-      "placeholder": "Please enter Cdnfly user API key",
-      "tooltip": "For more information, see <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
-    },
-    "cdnfly_api_secret": {
-      "label": "Cdnfly user API secret",
-      "placeholder": "Please enter Cdnfly user API secret",
-      "tooltip": "For more information, see <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
     },
     "cloudflare_api_token": {
       "label": "Cloudflare API token",
@@ -572,15 +489,6 @@
       "placeholder": "Please enter Doge Cloud SecretKey",
       "tooltip": "For more information, see <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>"
     },
-    "dokploy_server_url": {
-      "label": "Dokploy server URL",
-      "placeholder": "Please enter Dokploy server URL"
-    },
-    "dokploy_api_key": {
-      "label": "Dokploy API key",
-      "placeholder": "Please enter Dokploy API key",
-      "tooltip": "For more information, see <a href=\"https://docs.dokploy.com/docs/api\" target=\"_blank\">https://docs.dokploy.com/docs/api</a>"
-    },
     "duckdns_token": {
       "label": "DuckDNS token",
       "placeholder": "Please enter DuckDNS token",
@@ -647,11 +555,6 @@
       "placeholder": "Please enter the default receiver email address",
       "help": "Notes: It can be overrided in the workflows."
     },
-    "flyio_api_token": {
-      "label": "Fly.io API token",
-      "placeholder": "Please enter Fly.io API token",
-      "tooltip": "For more information, see <a href=\"https://fly.io/docs/security/tokens/\" target=\"_blank\">https://fly.io/docs/security/tokens/</a>"
-    },
     "ftp_host": {
       "label": "Server host",
       "placeholder": "Please enter server host"
@@ -701,32 +604,6 @@
       "placeholder": "Please enter GoDaddy API secret",
       "tooltip": "For more information, see <a href=\"https://developer.godaddy.com/\" target=\"_blank\">https://developer.godaddy.com/</a>"
     },
-    "goedge_server_url": {
-      "label": "GoEdge server URL",
-      "placeholder": "Please enter GoEdge server URL"
-    },
-    "goedge_api_role": {
-      "label": "GoEdge user role",
-      "placeholder": "Please select GoEdge user role",
-      "option": {
-        "user": {
-          "label": "Platform user"
-        },
-        "admin": {
-          "label": "Administrator user"
-        }
-      }
-    },
-    "goedge_access_key_id": {
-      "label": "GoEdge AccessKeyID",
-      "placeholder": "Please enter GoEdge AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
-    },
-    "goedge_access_key": {
-      "label": "GoEdge AccessKey",
-      "placeholder": "Please enter GoEdge AccessKey",
-      "tooltip": "For more information, see <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
-    },
     "googlecloud_project_id": {
       "label": "GCP project ID",
       "placeholder": "Please enter GCP project ID\r\n\r\n{\r\n  \"name\": \"projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL/keys/KEY_ID\",\r\n  \"privateKeyType\": \"TYPE_GOOGLE_CREDENTIALS_FILE\",\r\n  \"privateKeyData\": \"ENCODED_PRIVATE_KEY\",\r\n  \"validAfterTime\": \"DATE\",\r\n  \"validBeforeTime\": \"DATE\",\r\n  \"keyAlgorithm\": \"KEY_ALG_RSA_2048\"\r\n}",
@@ -770,18 +647,6 @@
       "placeholder": "Please enter Huawei Cloud enterprise project ID",
       "tooltip": "For more information, see <a href=\"https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html\" target=\"_blank\">https://support.huaweicloud.com/intl/en-us/usermanual-em/em_03_0000.html</a>"
     },
-    "huaweiibmc_host": {
-      "label": "iBMC Redfish server host",
-      "placeholder": "Please enter iBMC Redfish server host"
-    },
-    "huaweiibmc_username": {
-      "label": "iBMC username",
-      "placeholder": "Please enter the iBMC username"
-    },
-    "huaweiibmc_password": {
-      "label": "iBMC password",
-      "placeholder": "Please enter the iBMC password"
-    },
     "infomaniak_access_token": {
       "label": "Infomaniak access token",
       "placeholder": "Please enter Infomaniak access token",
@@ -813,15 +678,6 @@
       "help": "Notes: Leave it blank to use the Pod's ServiceAccount.",
       "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a>"
     },
-    "kong_server_url": {
-      "label": "Kong admin API server URL",
-      "placeholder": "Please enter Kong admin API server URL"
-    },
-    "kong_api_token": {
-      "label": "Kong admin API token (Optional)",
-      "placeholder": "Please enter Kong admin API token",
-      "tooltip": "For more information, see <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>"
-    },
     "larkbot_webhook_url": {
       "label": "Lark bot Webhook URL",
       "placeholder": "Please enter Lark bot Webhook URL",
@@ -836,50 +692,6 @@
       "label": "Lark bot message payload (Optional)",
       "placeholder": "Please enter custom Lark bot message payload",
       "checkbox": "Customized message payload"
-    },
-    "lecdn_server_url": {
-      "label": "LeCDN server URL",
-      "placeholder": "Please enter LeCDN server URL"
-    },
-    "lecdn_api_version": {
-      "label": "LeCDN version",
-      "placeholder": "Please select LeCDN version"
-    },
-    "lecdn_api_role": {
-      "label": "LeCDN user role",
-      "placeholder": "Please select LeCDN user role",
-      "option": {
-        "client": {
-          "label": "Client"
-        },
-        "master": {
-          "label": "Master"
-        }
-      }
-    },
-    "lecdn_auth_method": {
-      "label": "LeCDN API authentication method",
-      "placeholder": "Please select LeCDN API authentication method",
-      "option": {
-        "password": {
-          "label": "Username & Password"
-        },
-        "apikey": {
-          "label": "API key"
-        }
-      }
-    },
-    "lecdn_username": {
-      "label": "LeCDN username",
-      "placeholder": "Please enter LeCDN username"
-    },
-    "lecdn_password": {
-      "label": "LeCDN password",
-      "placeholder": "Please enter LeCDN password"
-    },
-    "lecdn_api_key": {
-      "label": "LeCDN API key",
-      "placeholder": "Please enter LeCDN API key"
     },
     "linode_access_token": {
       "label": "Linode access token",
@@ -936,15 +748,6 @@
       "help": "Notes: It can be overrided in the workflows.",
       "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details”. You can directly see the channel ID on the pop-up page."
     },
-    "mohua_username": {
-      "label": "Mohua Cloud username",
-      "placeholder": "Please enter MoHua Cloud username"
-    },
-    "mohua_api_password": {
-      "label": "Mohua Cloud API password",
-      "placeholder": "Please enter Mohua Cloud API password",
-      "tooltip": "For more information, see <a href=\"https://cloud.mhjz1.cn/apimanage\" target=\"_blank\">https://cloud.mhjz1.cn/apimanage</a>"
-    },
     "namecheap_username": {
       "label": "Namecheap username",
       "placeholder": "Please enter Namecheap username",
@@ -989,34 +792,6 @@
       "label": "netcup API password",
       "placeholder": "Please enter netcup API password",
       "tooltip": "For more information, see <a href=\"https://helpcenter.netcup.com/en/wiki/general/our-api/\" target=\"_blank\">https://helpcenter.netcup.com/en/wiki/general/our-api/</a>"
-    },
-    "nginxproxymanager_server_url": {
-      "label": "NPM server URL",
-      "placeholder": "Please enter NPM server URL"
-    },
-    "nginxproxymanager_auth_method": {
-      "label": "NPM API authentication method",
-      "placeholder": "Please select NPM API authentication method",
-      "option": {
-        "password": {
-          "label": "Username & Password"
-        },
-        "token": {
-          "label": "API token"
-        }
-      }
-    },
-    "nginxproxymanager_username": {
-      "label": "NPM administrator username",
-      "placeholder": "Please enter NPM administrator username"
-    },
-    "nginxproxymanager_password": {
-      "label": "NPM administrator password",
-      "placeholder": "Please enter NPM administrator password"
-    },
-    "nginxproxymanager_api_token": {
-      "label": "NPM API token",
-      "placeholder": "Please enter NPM API token"
     },
     "ns1_api_key": {
       "label": "NS1 API key",
@@ -1123,34 +898,6 @@
       "placeholder": "Please enter PowerDNS API key",
       "tooltip": "For more information, see <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>"
     },
-    "proxmoxbs_server_url": {
-      "label": "Proxmox BS server URL",
-      "placeholder": "Please enter Proxmox BS server URL"
-    },
-    "proxmoxbs_api_token": {
-      "label": "Proxmox BS API token",
-      "placeholder": "Please enter Proxmox BS API token",
-      "tooltip": "For more information, see <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
-    },
-    "proxmoxbs_api_token_secret": {
-      "label": "Proxmox BS API token secret",
-      "placeholder": "Please enter Proxmox BS API token secret",
-      "tooltip": "For more information, see <a href=\"https://pbs.proxmox.com/docs/user-management.html#api-tokens\" target=\"_blank\">https://pbs.proxmox.com/docs/user-management.html#api-tokens</a>"
-    },
-    "proxmoxve_server_url": {
-      "label": "Proxmox VE server URL",
-      "placeholder": "Please enter Proxmox VE server URL"
-    },
-    "proxmoxve_api_token": {
-      "label": "Proxmox VE API token",
-      "placeholder": "Please enter Proxmox VE API token",
-      "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
-    "proxmoxve_api_token_secret": {
-      "label": "Proxmox VE API token secret",
-      "placeholder": "Please enter Proxmox VE API token secret",
-      "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
     "qingcloud_access_key_id": {
       "label": "QingCloud AccessKeyID",
       "placeholder": "Please enter QingCloud AccessKeyID",
@@ -1165,21 +912,6 @@
       "label": "Rain Yun API key",
       "placeholder": "Please enter Rain Yun API key",
       "tooltip": "For more information, see <a href=\"https://app.rainyun.com/account/settings/api-key\" target=\"_blank\">https://app.rainyun.com/account/settings/api-key</a>"
-    },
-    "ratpanel_server_url": {
-      "label": "RatPanel server URL",
-      "placeholder": "Please enter RatPanel server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "ratpanel_access_token_id": {
-      "label": "RatPanel access token ID",
-      "placeholder": "Please enter RatPanel access token ID",
-      "tooltip": "For more information, see <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
-    },
-    "ratpanel_access_token": {
-      "label": "RatPanel access token",
-      "placeholder": "Please enter RatPanel access token",
-      "tooltip": "For more information, see <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
     },
     "regru_username": {
       "label": "Reg.ru username",
@@ -1275,24 +1007,6 @@
     "s3_use_path_style": {
       "label": "Use path style addressing",
       "tooltip": "<ol style=\"list-style: disc;\"><li>Virtual-hosted style (default): https://&lt;BUCKET&gt;.&lt;ENDPOINT&gt;/&lt;KEY&gt; </li><li>Path style: https://&lt;ENDPOINT&gt;/&lt;BUCKET&gt;/&lt;KEY&gt; </li></ol>"
-    },
-    "samwaf_server_url": {
-      "label": "SamWAF server URL",
-      "placeholder": "Please enter SamWAF server URL"
-    },
-    "samwaf_api_key": {
-      "label": "SamWAF API Key",
-      "placeholder": "Please enter SamWAF API Key",
-      "tooltip": "For more information, see <a href=\"https://doc.samwaf.com/api/\" target=\"_blank\">https://doc.samwaf.com/api/</a>"
-    },
-    "safeline_server_url": {
-      "label": "SafeLine server URL",
-      "placeholder": "Please enter SafeLine server URL"
-    },
-    "safeline_api_token": {
-      "label": "SafeLine API token",
-      "placeholder": "Please enter SafeLine API token",
-      "tooltip": "For more information, see <a href=\"https://docs.waf.chaitin.com/en/reference/articles/openapi\" target=\"_blank\">https://docs.waf.chaitin.com/en/reference/articles/openapi</a>"
     },
     "sectigo_validation_type": {
       "label": "Domain validation type",
@@ -1404,25 +1118,6 @@
     "sslcom_eab": {
       "guide": "Learn more about using EAB key in SSL.com: <br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>"
     },
-    "synologydsm_server_url": {
-      "label": "Synology DSM server URL",
-      "placeholder": "http://192.168.1.100:5000",
-      "tooltip": "Format: http(s)://IP-or-hostname:port. Default port is 5000 for HTTP, 5001 for HTTPS. Example: http://192.168.1.100:5000 or https://nas.example.com:5001"
-    },
-    "synologydsm_username": {
-      "label": "Synology DSM username",
-      "placeholder": "Please enter Synology DSM username"
-    },
-    "synologydsm_password": {
-      "label": "Synology DSM password",
-      "placeholder": "Please enter Synology DSM password"
-    },
-    "synologydsm_totp_secret": {
-      "label": "Synology DSM 2FA TOTP secret key (Optional)",
-      "placeholder": "Please enter Synology DSM 2FA TOTP secret key",
-      "help": "Notes: Only required when you set up 2FA sign-in to Synology DSM.",
-      "tooltip": "How to get it? The secret key can be found by clicking \"Can't scan it\" when setting up 2FA, or by using a QRCode scanning tool."
-    },
     "telegrambot_token": {
       "label": "Telegram bot token",
       "placeholder": "Please enter Telegram bot token",
@@ -1483,14 +1178,6 @@
       "label": "UCloud project ID (Optional)",
       "placeholder": "Please enter UCloud project ID",
       "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/iam/project_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/iam/project_manage</a>"
-    },
-    "unicloud_username": {
-      "label": "uniCloud username",
-      "placeholder": "Please enter uniCloud username"
-    },
-    "unicloud_password": {
-      "label": "uniCloud password",
-      "placeholder": "Please enter uniCloud password"
     },
     "vercel_api_access_token": {
       "label": "Vercel API access token",

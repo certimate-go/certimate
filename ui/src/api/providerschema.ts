@@ -25,16 +25,25 @@ export interface SchemaValidationRule extends SchemaCondition {
 export interface SchemaColumn {
   name: string;
   valueType: string;
+  numericValue?: "integer" | "positiveInteger";
+  inputType?: "number";
+  allowClear?: boolean;
+  separator?: string;
+  modalTitleKey?: string;
+  modalPlaceholderKey?: string;
   labelKey?: string;
   placeholderKey?: string;
   tooltipKey?: string;
   extraKey?: string;
   tooltipHtml?: boolean;
   extraHtml?: boolean;
+  extraWhen?: SchemaCondition[];
   default?: unknown;
+  defaultOnMissing?: boolean;
   secret?: boolean;
   required?: boolean;
   options?: SchemaOption[];
+  allowCustomValue?: boolean;
   min?: number;
   max?: number;
   language?: string;
@@ -52,6 +61,8 @@ export interface ProviderSchemaEnvelope {
   provider: string;
   category: SchemaCategory;
   schema: {
+    noticeKey?: string;
+    noticeHtml?: boolean;
     columns: SchemaColumn[];
   };
 }

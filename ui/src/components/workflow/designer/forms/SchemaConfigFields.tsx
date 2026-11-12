@@ -4,9 +4,11 @@ import { Form, Input, InputNumber, Radio, Select, Switch } from "antd";
 
 import type { ProviderSchemaEnvelope, SchemaColumn } from "@/api/providerschema";
 import CodeTextInput from "@/components/CodeTextInput";
+import MultipleSplitValueInput from "@/components/MultipleSplitValueInput";
+import Tips from "@/components/Tips";
 
 import { useFormNestedFieldsContext } from "./_context";
-import { deriveZodSchema } from "./schemaValidation";
+import { deriveZodSchema, matchCondition } from "./schemaValidation";
 import { isColumnVisible, unitFieldProps } from "./schemaValueTypes";
 
 export interface SchemaConfigFieldsProps {
@@ -27,6 +29,13 @@ const SchemaConfigFields = ({ envelope }: SchemaConfigFieldsProps) => {
 
   return (
     <>
+      {envelope.schema.noticeKey && (
+        <Form.Item>
+          <Tips
+            message={envelope.schema.noticeHtml ? <span dangerouslySetInnerHTML={{ __html: t(envelope.schema.noticeKey) }} /> : t(envelope.schema.noticeKey)}
+          />
+        </Form.Item>
+      )}
       {columns.map((col) => (
         <Form.Item
           key={col.name}
@@ -34,7 +43,7 @@ const SchemaConfigFields = ({ envelope }: SchemaConfigFieldsProps) => {
           initialValue={col.default}
           label={col.labelKey ? t(col.labelKey) : col.name}
           tooltip={renderTooltip(col, t)}
-          extra={renderExtra(col, t)}
+          extra={(col.extraWhen ?? []).every((condition) => matchCondition(condition, getValue(condition.field))) ? renderExtra(col, t) : undefined}
           rules={[
             {
               validator: () => {
@@ -83,12 +92,22 @@ const renderControl = (col: SchemaColumn, t: (key: string) => string): ReactNode
       return (
         <CodeTextInput language={col.language ?? "json"} lineWrapping={false} height="auto" minHeight="64px" maxHeight="256px" placeholder={placeholder} />
       );
+    case "multipleSplit":
+      return (
+        <MultipleSplitValueInput
+          separator={col.separator ?? ";"}
+          modalTitle={col.modalTitleKey ? t(col.modalTitleKey) : undefined}
+          placeholderInModal={col.modalPlaceholderKey ? t(col.modalPlaceholderKey) : undefined}
+          placeholder={placeholder}
+          splitOptions={{ trimSpace: true, removeEmpty: true }}
+        />
+      );
     case "textarea":
       return <Input.TextArea placeholder={placeholder} autoSize={{ minRows: 2, maxRows: 6 }} />;
     case "text":
     case "autocomplete":
     default:
-      return <Input placeholder={placeholder} {...unitFieldProps("text", col.unitKey, t)} />;
+      return <Input type={col.inputType} allowClear={col.allowClear} placeholder={placeholder} {...unitFieldProps("text", col.unitKey, t)} />;
   }
 };
 

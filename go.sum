@@ -68,8 +68,6 @@ github.com/AzureAD/microsoft-authentication-library-for-go v1.10.1/go.mod h1:xdY
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/G-Core/gcorelabscdn-go v1.0.37 h1:IHqiSfnHp3tnuUSU1FIH5+3XepNnSsyJn0JoWgvUYL8=
-github.com/G-Core/gcorelabscdn-go v1.0.37/go.mod h1:iSGXaTvZBzDHQW+rKFS918BgFVpONcyLEijwh8WsXpE=
 github.com/HdrHistogram/hdrhistogram-go v1.1.0/go.mod h1:yDgFjdqOqDEKOvasDdhWNXYg9BVp4O+o5f6V/ehm6Oo=
 github.com/HdrHistogram/hdrhistogram-go v1.1.2/go.mod h1:yDgFjdqOqDEKOvasDdhWNXYg9BVp4O+o5f6V/ehm6Oo=
 github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
@@ -194,7 +192,6 @@ github.com/armon/go-radix v1.0.0/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgI
 github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496/go.mod h1:oGkLhpf+kjZl6xBf758TQhh5XrAeiJv/7FRz/2spLIg=
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 h1:DklsrG3dyBCFEj5IhUbnKptjxatkF07cF2ak3yi77so=
 github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
-github.com/avast/retry-go v3.0.0+incompatible h1:4SOWQ7Qs+oroOTQOYnAHqelpCO0biHSxpiH9JdtuBj0=
 github.com/avast/retry-go v3.0.0+incompatible/go.mod h1:XtSnn+n/sHqQIpZ10K1qAevBhOOCWBLXXy3hyiqqBrY=
 github.com/aws/aws-sdk-go v1.40.45/go.mod h1:585smgzpB/KqRA+K3y/NL/oYRqQvpNJYvLm+LY1U59Q=
 github.com/aws/aws-sdk-go-v2 v1.9.1/go.mod h1:cK/D0BBs0b/oWPIcX/Z/obahJK1TT7IPVjy53i/mX/4=
@@ -261,14 +258,8 @@ github.com/bodgit/gssapi v0.0.4 h1:FPou0NHDdn+HM1PpBlocDhtQXj0RVcZ4gc3frfYx1FE=
 github.com/bodgit/gssapi v0.0.4/go.mod h1:UwGfip4+LKhpIn3Y6tNw/12l1IVJkZvVOsJ1efNEEKo=
 github.com/bodgit/tsig v1.3.1 h1:wvyR60AWCH0wdJiloB9dPfg8M3NV42HGW8dce3Z0GDE=
 github.com/bodgit/tsig v1.3.1/go.mod h1:Ez+xu0W5Ew/D28XqthucLOX8k9A0UGVPETvagYxbIHU=
-github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
-github.com/boombuler/barcode v1.1.0 h1:ChaYjBR63fr4LFyGn8E8nt7dBSt3MiU3zMOZqFvVkHo=
-github.com/boombuler/barcode v1.1.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/bufbuild/protocompile v0.14.1 h1:iA73zAf/fyljNjQKwYzUHD6AD4R8KMasmwa/FBatYVw=
 github.com/bufbuild/protocompile v0.14.1/go.mod h1:ppVdAIhbr2H8asPk6k4pY7t9zB1OU5DoEw9xY/FUi1c=
-github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.80 h1:R/LnedXNfDM9jTEFRShv5B03HUsy183eSY8drLKAGEc=
-github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.80/go.mod h1:eqR3bDX3XtdPBcB9vERznOyi0MAcAI1GFAdcRspNMBU=
-github.com/byteplus-sdk/byteplus-sdk-golang v1.0.16/go.mod h1:7iCaE+dR9EycrJU0GQyMhptbInLbQhsKXiDKDjNi8Vs=
 github.com/byteplus-sdk/byteplus-sdk-golang v1.0.73 h1:rTF3N2DRGYi47gbl17v12rzTVIvFgVi8piUzMP+PkQk=
 github.com/byteplus-sdk/byteplus-sdk-golang v1.0.73/go.mod h1:CIL/T2dxgbIA79os+wl0Fq0vCbADTZNIddV6PNYB6DY=
 github.com/casbin/casbin/v2 v2.37.0/go.mod h1:vByNa/Fchek0KZUgG5wEsl7iFsiviAYKRtgrQfcJqHg=
@@ -711,8 +702,6 @@ github.com/nrdcg/goacmedns v0.2.0 h1:ADMbThobzEMnr6kg2ohs4KGa3LFqmgiBA22/6jUWJR0
 github.com/nrdcg/goacmedns v0.2.0/go.mod h1:T5o6+xvSLrQpugmwHvrSNkzWht0UGAwj2ACBMhh73Cg=
 github.com/nrdcg/namesilo v0.5.0 h1:6QNxT/XxE+f5B+7QlfWorthNzOzcGlBLRQxqi6YeBrE=
 github.com/nrdcg/namesilo v0.5.0/go.mod h1:4UkwlwQfDt74kSGmhLaDylnBrD94IfflnpoEaj6T2qw=
-github.com/nrdcg/oci-go-sdk/certificatesmanagement/v1065 v1065.127.0 h1:lRhBDcW6OgFTCfv2mdSFs+UzXxPP++fRuv4gTz7jd2I=
-github.com/nrdcg/oci-go-sdk/certificatesmanagement/v1065 v1065.127.0/go.mod h1:Hmo0Di+oAmhCYAQu1y3ZWjsFX0DiPwI9gF2cI9hpQYQ=
 github.com/nrdcg/oci-go-sdk/common/v1065 v1065.127.0 h1:UACJ5vGtkdFHZl67HsIHylzO/MAoF7XXHyC1ZP/kXk4=
 github.com/nrdcg/oci-go-sdk/common/v1065 v1065.127.0/go.mod h1:VyrVk2fFxwYamNGE2CzRCKD7mJqwDdVyBJD0EyTTQ1Y=
 github.com/nrdcg/oci-go-sdk/dns/v1065 v1065.120.0 h1:YKyz+tKJfVb0+2wC8yW1hCtjIhpDb7+pDqx1g/DZscg=
@@ -771,8 +760,6 @@ github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndr
 github.com/posener/complete v1.2.3/go.mod h1:WZIdtGGp+qx0sLrYKtIRAruyNpv6hFCicSgv7Sy7s/s=
 github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df h1:zEgSHrxo8f6hGG1xCaqunfBq8hlfDmFd1JM0QXiQi7o=
 github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df/go.mod h1:CiJNEeV6v0tUCNul/+gTjl+FgjfImoiuptJB9AEzqjE=
-github.com/pquerna/otp v1.5.0 h1:NMMR+WrmaqXU4EzdGJEE1aUUI0AMRzsp96fFFWNPwxs=
-github.com/pquerna/otp v1.5.0/go.mod h1:dkJfzwRKNiegxyNb54X/3fLwhCynbMspSyWKnvi1AEg=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v1.0.0/go.mod h1:db9x61etRT2tGnBNRi70OPL5FsnadC4Ky3P0J6CfImo=
 github.com/prometheus/client_golang v1.4.0/go.mod h1:e9GMxYsXl05ICDXkRhurwBS4Q3OK1iX/F2sw+iXX5zU=
@@ -925,8 +912,6 @@ github.com/xhit/go-str2duration/v2 v2.2.0 h1:SofrD1D+8IuhhkP+OiG1ij4Zq+FiiYSEY/s
 github.com/xhit/go-str2duration/v2 v2.2.0/go.mod h1:ohY8p+0f07DiV6Em5LKB0s2YpLtXVyJfNt1+BlmyAsU=
 github.com/yandex-cloud/go-genproto v0.128.0 h1:S3v0atr7h9qH2AHyhO3aLWqSoIq2Ff8zrbBgIlAhhcM=
 github.com/yandex-cloud/go-genproto v0.128.0/go.mod h1:0LDD/IZLIUIV4iPH+YcF+jysO3jkSvADFGm4dCAuwQo=
-github.com/yandex-cloud/go-sdk/services/certificatemanager v0.0.102 h1:EzeScm0I9jSESKCkK122EBuCAXl/Ac2GKvPJOvVeqZ8=
-github.com/yandex-cloud/go-sdk/services/certificatemanager v0.0.102/go.mod h1:Cr3/N9pANltUYBzwwhg6lOZzqs8uEVZQ3yPQgk1sd20=
 github.com/yandex-cloud/go-sdk/services/dns v0.0.65 h1:7jhZMHsK1GThGzAKC7Mjq8wu/Xbr/TbhRUoNFzot4K4=
 github.com/yandex-cloud/go-sdk/services/dns v0.0.65/go.mod h1:Qm5HbUbmFI2Y8eDv8tcwr7OHgNumHuN/RtK3icd3bYU=
 github.com/yandex-cloud/go-sdk/v2 v2.181.0 h1:5U88BGQGTGCyRQtikcjdPmc6rncO8f04FpGIuT3/FFI=
@@ -941,8 +926,6 @@ github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
-github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible h1:BssizMVdtgROoHKgeHZ6K+BkZ3RjmMyHv1Y0ursBGxU=
-github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible/go.mod h1:q4o/lbL+PCUIGbzyYzAHsbCgh3bQ/LA7VLFRQTlvrcM=
 github.com/zeebo/assert v1.3.0 h1:g7C04CbJuIDKNPFHmsk4hwZDO5O+kntRxzaUoNXj+IQ=
 github.com/zeebo/assert v1.3.0/go.mod h1:Pq9JiuJQpG8JLJdtkwrJESF0Foym2/D9XMU5ciN/wJ0=
 github.com/zeebo/xxh3 v1.1.0 h1:s7DLGDK45Dyfg7++yxI0khrfwq9661w9EN78eP/UZVs=

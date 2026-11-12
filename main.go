@@ -18,6 +18,7 @@ import (
 	"github.com/certimate-go/certimate/cmd"
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/pluginhost"
+	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
 	"github.com/certimate-go/certimate/internal/settings"
@@ -124,6 +125,7 @@ func scanPlugins() func() {
 	pluginhost.SetGlobalReloader(reloader)
 
 	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
+		Cache:          repository.NewPluginMarketCache(app.GetApp()),
 		PluginDir:      pluginDir,
 		DownloadMirror: os.Getenv("CERTIMATE_PLUGIN_DOWNLOAD_MIRROR"),
 		Logger:         logger,

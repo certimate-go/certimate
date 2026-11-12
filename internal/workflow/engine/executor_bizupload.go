@@ -50,7 +50,7 @@ func (ne *bizUploadNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeEx
 	execRes := newNodeExecutionResult(execCtx.Node)
 
 	nodeCfg := execCtx.Node.Data.Config.AsBizUpload()
-	ne.logger.Info("ready to upload certiticate ...", slog.Any("config", nodeCfg))
+	ne.logger.Info("ready to upload certificate ...", slog.String("source", string(nodeCfg.Source)))
 
 	// 查询上次执行结果
 	lastOutput, lastCertificate, err := ne.getLastOutputArtifacts(execCtx)

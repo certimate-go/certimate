@@ -121,3 +121,89 @@ describe("deriveZodSchema - graceful degradation (future plugin)", () => {
     expect(schema.safeParse({ port: 0 }).success).toBe(false);
   });
 });
+
+describe("saved identifier types", () => {
+  it.each([42, "42", "host-name"])("preserves a saved Mohua identifier %s", (hostId) => {
+    const schema = deriveZodSchema(envelope([{ name: "hostId", valueType: "text", numericValue: "positiveInteger", required: true }]));
+    expect(schema.parse({ hostId })).toEqual({ hostId });
+  });
+
+  it.each([0, -1, 1.5, "", undefined, null])("rejects an invalid required identifier %s", (hostId) => {
+    const schema = deriveZodSchema(envelope([{ name: "hostId", valueType: "text", numericValue: "positiveInteger", required: true }]));
+    expect(schema.safeParse({ hostId }).success).toBe(false);
+  });
+
+  it("preserves optional integer text and validates the selected target", () => {
+    const schema = deriveZodSchema(
+      envelope([
+        { name: "deployTarget", valueType: "select", options: [{ value: "certificate" }] },
+        {
+          name: "certificateId",
+          valueType: "text",
+          numericValue: "integer",
+          inputType: "number",
+          requiredWhen: [{ field: "deployTarget", op: "eq", values: ["certificate"] }],
+          validateWhen: [{ field: "deployTarget", op: "eq", values: ["certificate"], validator: "positiveInteger" }],
+        },
+        { name: "clientId", valueType: "text", numericValue: "integer", inputType: "number" },
+      ])
+    );
+    for (const certificateId of [42, "42"]) {
+      const value = { deployTarget: "certificate", certificateId, clientId: "" };
+      expect(schema.parse(value)).toEqual(value);
+    }
+    for (const certificateId of ["", "bad", "0", 0, -1, 1.5, "1.5"]) {
+      expect(schema.safeParse({ deployTarget: "certificate", certificateId }).success).toBe(false);
+    }
+  });
+});
+
+describe("panel form conditions", () => {
+  const schema = deriveZodSchema(
+    envelope([
+      { name: "deployTarget", valueType: "select", required: true, options: [{ value: "website" }, { value: "certificate" }] },
+      {
+        name: "match",
+        valueType: "radio",
+        options: [{ value: "exact" }, { value: "certsan" }],
+        visibleWhen: [{ field: "deployTarget", op: "eq", values: ["website"] }],
+      },
+      {
+        name: "websiteId",
+        valueType: "text",
+        required: true,
+        visibleWhen: [
+          { field: "deployTarget", op: "eq", values: ["website"] },
+          { field: "match", op: "eq", values: ["exact"] },
+        ],
+      },
+      { name: "certificateId", valueType: "number", required: true, visibleWhen: [{ field: "deployTarget", op: "eq", values: ["certificate"] }] },
+    ])
+  );
+
+  it("validates only fields visible for the selected target and matching mode", () => {
+    expect(schema.parse({ deployTarget: "website", match: "certsan", certificateId: "bad" })).toEqual({ deployTarget: "website", match: "certsan" });
+    expect(schema.safeParse({ deployTarget: "website", match: "exact" }).success).toBe(false);
+    expect(schema.parse({ deployTarget: "certificate", certificateId: "42", match: "bad" })).toEqual({ deployTarget: "certificate", certificateId: 42 });
+  });
+
+  it("preserves semicolon-separated site names and rejects empty entries", () => {
+    const sites = deriveZodSchema(envelope([{ name: "siteNames", valueType: "multipleSplit", required: true, separator: ";" }]));
+    expect(sites.parse({ siteNames: "one; two" })).toEqual({ siteNames: "one; two" });
+    for (const siteNames of ["", "one;", "one; ;two"]) expect(sites.safeParse({ siteNames }).success).toBe(false);
+  });
+
+  it("accepts device hostnames and HTTP URLs with the same validation", () => {
+    const host = deriveZodSchema(
+      envelope([{ name: "host", valueType: "text", required: true, validateWhen: [{ field: "host", op: "ne", values: [""], validator: "hostname_or_url" }] }])
+    );
+    for (const value of ["ibmc.example.com", "https://ibmc.example.com:443"]) expect(host.safeParse({ host: value }).success).toBe(true);
+    for (const value of ["", "bad host", "ftp://example.com"]) expect(host.safeParse({ host: value }).success).toBe(false);
+  });
+});
+
+it("accepts a saved backend-supported choice absent from the original select options", () => {
+  const schema = deriveZodSchema(envelope([{ name: "siteType", valueType: "select", required: true, options: [{ value: "php" }], allowCustomValue: true }]));
+  expect(schema.parse({ siteType: "aspx" })).toEqual({ siteType: "aspx" });
+  expect(schema.safeParse({ siteType: "" }).success).toBe(false);
+});

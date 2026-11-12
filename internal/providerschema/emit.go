@@ -10,32 +10,43 @@ type Envelope struct {
 }
 
 type EnvelopeSchema struct {
-	Columns []Column `json:"columns"`
+	NoticeKey  string   `json:"noticeKey,omitempty"`
+	NoticeHtml bool     `json:"noticeHtml,omitempty"`
+	Columns    []Column `json:"columns"`
 }
 
 type Column struct {
-	Name           string           `json:"name"`
-	ValueType      ValueType        `json:"valueType"`
-	LabelKey       string           `json:"labelKey,omitempty"`
-	PlaceholderKey string           `json:"placeholderKey,omitempty"`
-	TooltipKey     string           `json:"tooltipKey,omitempty"`
-	ExtraKey       string           `json:"extraKey,omitempty"`
-	TooltipHtml    bool             `json:"tooltipHtml,omitempty"`
-	ExtraHtml      bool             `json:"extraHtml,omitempty"`
-	Default        any              `json:"default,omitempty"`
-	Secret         bool             `json:"secret,omitempty"`
-	Required       bool             `json:"required,omitempty"`
-	Options        []Option         `json:"options,omitempty"`
-	Min            *float64         `json:"min,omitempty"`
-	Max            *float64         `json:"max,omitempty"`
-	Language       string           `json:"language,omitempty"`
-	UnitKey        string           `json:"unitKey,omitempty"`
-	FilterMode     FilterMode       `json:"filterMode,omitempty"`
-	Span           int              `json:"span,omitempty"`
-	Dependencies   []string         `json:"dependencies,omitempty"`
-	VisibleWhen    []Condition      `json:"visibleWhen,omitempty"`
-	RequiredWhen   []Condition      `json:"requiredWhen,omitempty"`
-	ValidateWhen   []ValidationRule `json:"validateWhen,omitempty"`
+	AllowClear          bool             `json:"allowClear,omitempty"`
+	AllowCustomValue    bool             `json:"allowCustomValue,omitempty"`
+	Separator           string           `json:"separator,omitempty"`
+	ModalTitleKey       string           `json:"modalTitleKey,omitempty"`
+	ModalPlaceholderKey string           `json:"modalPlaceholderKey,omitempty"`
+	NumericValue        string           `json:"numericValue,omitempty"`
+	InputType           string           `json:"inputType,omitempty"`
+	Name                string           `json:"name"`
+	ValueType           ValueType        `json:"valueType"`
+	LabelKey            string           `json:"labelKey,omitempty"`
+	PlaceholderKey      string           `json:"placeholderKey,omitempty"`
+	TooltipKey          string           `json:"tooltipKey,omitempty"`
+	ExtraKey            string           `json:"extraKey,omitempty"`
+	TooltipHtml         bool             `json:"tooltipHtml,omitempty"`
+	ExtraHtml           bool             `json:"extraHtml,omitempty"`
+	ExtraWhen           []Condition      `json:"extraWhen,omitempty"`
+	DefaultOnMissing    bool             `json:"defaultOnMissing,omitempty"`
+	Default             any              `json:"default,omitempty"`
+	Secret              bool             `json:"secret,omitempty"`
+	Required            bool             `json:"required,omitempty"`
+	Options             []Option         `json:"options,omitempty"`
+	Min                 *float64         `json:"min,omitempty"`
+	Max                 *float64         `json:"max,omitempty"`
+	Language            string           `json:"language,omitempty"`
+	UnitKey             string           `json:"unitKey,omitempty"`
+	FilterMode          FilterMode       `json:"filterMode,omitempty"`
+	Span                int              `json:"span,omitempty"`
+	Dependencies        []string         `json:"dependencies,omitempty"`
+	VisibleWhen         []Condition      `json:"visibleWhen,omitempty"`
+	RequiredWhen        []Condition      `json:"requiredWhen,omitempty"`
+	ValidateWhen        []ValidationRule `json:"validateWhen,omitempty"`
 }
 
 func Emit(s *Schema) *Envelope {

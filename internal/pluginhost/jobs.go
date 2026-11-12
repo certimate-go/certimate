@@ -163,3 +163,15 @@ func (p *pluginOps) release(providerType string) {
 	defer p.mu.Unlock()
 	delete(p.active, providerType)
 }
+
+func (s *jobStore) active() []JobStatus {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	statuses := make([]JobStatus, 0)
+	for _, job := range s.jobs {
+		if status := job.Status(); !status.State.Terminal() {
+			statuses = append(statuses, status)
+		}
+	}
+	return statuses
+}

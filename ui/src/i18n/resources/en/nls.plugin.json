@@ -12,7 +12,9 @@
 
     "empty": "No plugins available",
     "empty_filtered": "No plugins match your search",
+    "synced_at": "Last synced {{time}}",
     "error": {
+      "refresh_failed": "Unable to refresh the plugin directory. Showing cached results.",
       "status_failed": "Unable to refresh installation status. Retrying automatically; you can also retry now.",
       "load_failed": "Failed to load plugin marketplace",
       "install_failed": "Failed to install plugin",

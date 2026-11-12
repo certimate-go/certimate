@@ -91,3 +91,28 @@ describe.each([
     await waitFor(() => expect(finish).toHaveBeenCalledWith({ providerConfig: { ...extra, certificateId: 42 } }));
   });
 });
+
+describe("saved text identifiers", () => {
+  it.each([42, "42"])("preserves %s until the user edits it", async (initialId) => {
+    const finish = vi.fn();
+    const schema: ProviderSchemaEnvelope = {
+      schemaVersion: "form/v1",
+      provider: "saved-id",
+      category: "deploy",
+      schema: { columns: [{ name: "hostId", valueType: "text", numericValue: "positiveInteger", required: true }] },
+    };
+    render(
+      <Form initialValues={{ providerConfig: { hostId: initialId } }} onFinish={finish}>
+        <FormNestedFieldsContextProvider value={{ parentNamePath: "providerConfig" }}>
+          <SchemaConfigFields envelope={schema} />
+        </FormNestedFieldsContextProvider>
+        <button type="submit">Save</button>
+      </Form>
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(finish).toHaveBeenCalledWith({ providerConfig: { hostId: initialId } }));
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "43" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(finish).toHaveBeenCalledWith({ providerConfig: { hostId: "43" } }));
+  });
+});

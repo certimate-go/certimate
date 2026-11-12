@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconDownload, IconPuzzle, IconRefresh, IconTrash } from "@tabler/icons-react";
-import { Alert, App, Button, Card, Empty, Input, Progress, Segmented, Skeleton, Tag, Tooltip } from "antd";
+import { Alert, App, Button, Card, Empty, Input, Pagination, Progress, Segmented, Skeleton, Tag, Tooltip } from "antd";
 
 import {
   type InstallJobStatus,
   type MarketEntry,
+  type MarketFilter,
+  type MarketPage,
   deletePlugin,
   fetchMarketListing,
   getInstallStatus,
@@ -32,20 +34,6 @@ const statusColor: Record<string, string> = {
   update_available: "bg-blue-500",
   installed_manual: "bg-gray-400",
   unsupported_platform: "bg-gray-400",
-};
-
-const marketIconSrc = (entry: MarketEntry): string => {
-  if (!entry.icon || !entry.release) {
-    return "";
-  }
-  return `https://cdn.jsdelivr.net/gh/${entry.release.repo}@main/${entry.provider_type}/${entry.icon}`;
-};
-
-const statusToSegment = (status: string): "installed" | "not_installed" => {
-  if (status === "installed" || status === "update_available" || status === "installed_manual") {
-    return "installed";
-  }
-  return "not_installed";
 };
 
 const jobStageLabelKey = (state: InstallJobStatus["state"]): string => {
@@ -83,11 +71,11 @@ const PluginList = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="container">
+      <div className="mx-auto max-w-[1920px]">
         <h1>{t("plugin.page.heading")}</h1>
       </div>
 
-      <div className="container">
+      <div className="mx-auto max-w-[1920px]">
         <PluginMarket />
       </div>
     </div>
@@ -95,16 +83,19 @@ const PluginList = () => {
 };
 
 const PluginMarket = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { message, modal } = App.useApp();
   const catalogReload = usePluginCatalogStore((s) => s.reload);
 
-  const [entries, setEntries] = useState<MarketEntry[]>([]);
+  const [listing, setListing] = useState<MarketPage>();
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(30);
+  const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [operating, setOperating] = useState<Record<string, boolean>>({});
   const [keyword, setKeyword] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "installed" | "not_installed">("all");
+  const [statusFilter, setStatusFilter] = useState<MarketFilter>("all");
   const [jobs, setJobs] = useState<Record<string, InstallJobStatus>>({});
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
   const [pollingErrors, setPollingErrors] = useState<Record<string, string>>({});
@@ -115,21 +106,22 @@ const PluginMarket = () => {
 
   const listingRequestRef = useRef({ generation: 0 });
 
-  const loadListing = useCallback(async (): Promise<MarketEntry[]> => {
-    const request = ++listingRequestRef.current.generation;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchMarketListing();
-      if (request === listingRequestRef.current.generation) setEntries(data);
-      return data;
-    } catch {
-      if (request === listingRequestRef.current.generation) setError(t("plugin.market.error.load_failed"));
-      return [];
-    } finally {
-      if (request === listingRequestRef.current.generation) setLoading(false);
-    }
-  }, [t]);
+  const loadListing = useCallback(
+    async (refresh = false, quiet = false) => {
+      const request = ++listingRequestRef.current.generation;
+      if (!quiet) setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchMarketListing({ page, perPage, keyword, status: statusFilter, locale: i18n.language, refresh });
+        if (request === listingRequestRef.current.generation) setListing(data);
+      } catch {
+        if (request === listingRequestRef.current.generation) setError(t("plugin.market.error.load_failed"));
+      } finally {
+        if (request === listingRequestRef.current.generation) setLoading(false);
+      }
+    },
+    [t, page, perPage, keyword, statusFilter, i18n.language]
+  );
 
   const setOp = (pt: string, v: boolean) => {
     setOperating((prev) => ({ ...prev, [pt]: v }));
@@ -187,7 +179,6 @@ const PluginMarket = () => {
   }, []);
 
   useEffect(() => {
-    const polling = pollingRef.current;
     const listingRequest = listingRequestRef.current;
     let cancelled = false;
     queueMicrotask(() => {
@@ -196,32 +187,19 @@ const PluginMarket = () => {
     return () => {
       cancelled = true;
       listingRequest.generation++;
-      polling.clear();
     };
-  }, [loadListing]);
+  }, [loadListing, revision]);
 
   useEffect(() => {
-    let cancelled = false;
-    for (const entry of entries) {
-      if (entry.status !== "not_installed") continue;
-      getInstallStatus(entry.provider_type)
-        .then((st) => {
-          if (cancelled) return;
-          if (isTerminalState(st.state)) {
-            if (st.state === "failed") {
-              setJobs((prev) => ({ ...prev, [entry.provider_type]: st }));
-            }
-            return;
-          }
-          setJobs((prev) => ({ ...prev, [entry.provider_type]: st }));
-          startPolling(entry.provider_type);
-        })
-        .catch(() => {});
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [entries, startPolling]);
+    if (!listing?.refreshing || loading || error) return;
+    const id = window.setTimeout(() => void loadListing(false, true), POLL_MS);
+    return () => clearTimeout(id);
+  }, [listing, loading, error, loadListing]);
+
+  useEffect(() => {
+    if (!listing?.activeJobs.length) return;
+    for (const job of listing.activeJobs) pollingRef.current.add(job.providerType);
+  }, [listing]);
 
   useEffect(() => {
     let cancelled = false;
@@ -253,7 +231,7 @@ const PluginMarket = () => {
               delete lastSampleRef.current[pt];
             }
             await catalogReload();
-            if (!cancelled) await loadListing();
+            if (!cancelled) setRevision((prev) => prev + 1);
           }
         } catch {
           if (cancelled) return;
@@ -269,7 +247,7 @@ const PluginMarket = () => {
       cancelled = true;
       clearInterval(id);
     };
-  }, [t, message, catalogReload, loadListing, clearPollingError, recordSample, removeJob]);
+  }, [t, message, catalogReload, clearPollingError, recordSample, removeJob]);
 
   const handleInstall = async (entry: MarketEntry) => {
     const pt = entry.provider_type;
@@ -294,7 +272,7 @@ const PluginMarket = () => {
       const result = await deletePlugin(pt);
       removeJob(pt);
       await catalogReload();
-      await loadListing();
+      setRevision((prev) => prev + 1);
       if (result.errors?.length) throw new Error(result.errors.join("\n"));
       message.success(t("plugin.market.msg.deleted"));
     } catch (err) {
@@ -328,7 +306,7 @@ const PluginMarket = () => {
     try {
       const result = await updatePlugin(pt);
       await catalogReload();
-      await loadListing();
+      setRevision((prev) => prev + 1);
       if (result.errors?.length) throw new Error(result.errors.join("\n"));
       message.success(t("plugin.market.msg.updated"));
     } catch (err) {
@@ -341,7 +319,7 @@ const PluginMarket = () => {
 
   const renderActions = (entry: MarketEntry) => {
     const pt = entry.provider_type;
-    const job = jobs[pt];
+    const job = jobs[pt] ?? entry.job;
     const busy = !!operating[pt];
     const installing = !!job && !isTerminalState(job.state);
     const failed = job?.state === "failed";
@@ -413,7 +391,7 @@ const PluginMarket = () => {
   };
 
   const renderStatus = (entry: MarketEntry) => {
-    const job = jobs[entry.provider_type];
+    const job = jobs[entry.provider_type] ?? entry.job;
     const installing = !!job && !isTerminalState(job.state);
     const failed = job?.state === "failed";
 
@@ -446,76 +424,64 @@ const PluginMarket = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton active />
-        <Skeleton active />
-        <Skeleton active />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert
-        type="error"
-        message={error}
-        action={
-          <Button size="small" onClick={loadListing}>
-            {t("plugin.market.action.retry")}
-          </Button>
-        }
-      />
-    );
-  }
-
-  const filtered = entries.filter((entry) => {
-    if (statusFilter !== "all" && statusToSegment(entry.status) !== statusFilter) {
-      return false;
-    }
-    const kw = keyword.trim().toLowerCase();
-    if (kw) {
-      const name = (entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type).toLowerCase();
-      const desc = (entry.description ?? "").toLowerCase();
-      if (!name.includes(kw) && !entry.provider_type.toLowerCase().includes(kw) && !desc.includes(kw)) {
-        return false;
-      }
-    }
-    return true;
-  });
-
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Segmented
+          <Segmented<MarketFilter>
             options={[
               { label: t("plugin.market.filter.all"), value: "all" },
               { label: t("plugin.market.filter.installed"), value: "installed" },
               { label: t("plugin.market.filter.not_installed"), value: "not_installed" },
             ]}
             value={statusFilter}
-            onChange={(value) => setStatusFilter(value as typeof statusFilter)}
+            onChange={(value) => {
+              setStatusFilter(value);
+              setPage(1);
+            }}
           />
-          <Input.Search allowClear className="w-48" placeholder={t("plugin.market.action.search_placeholder")} onSearch={(value) => setKeyword(value)} />
+          <Input.Search
+            allowClear
+            className="w-48"
+            placeholder={t("plugin.market.action.search_placeholder")}
+            onSearch={(value) => {
+              setKeyword(value.trim());
+              setPage(1);
+            }}
+          />
         </div>
-        <Button icon={<IconRefresh size={16} />} onClick={() => loadListing()} loading={loading}>
+        <Button icon={<IconRefresh size={16} />} onClick={() => void loadListing(true)} loading={loading || listing?.refreshing}>
           {t("plugin.market.action.refresh")}
         </Button>
       </div>
 
-      {filtered.length === 0 ? (
-        <Empty description={entries.length === 0 ? t("plugin.market.empty") : t("plugin.market.empty_filtered")} />
+      {listing?.syncedAt && (
+        <p className="mb-3 text-xs text-gray-500">{t("plugin.market.synced_at", { time: new Date(listing.syncedAt).toLocaleString(i18n.language) })}</p>
+      )}
+      {listing?.refreshFailed && <Alert className="mb-4" type="warning" message={t("plugin.market.error.refresh_failed")} />}
+      {error ? (
+        <Alert
+          type="error"
+          message={error}
+          action={
+            <Button size="small" onClick={() => void loadListing(true)}>
+              {t("plugin.market.action.retry")}
+            </Button>
+          }
+        />
+      ) : loading ? (
+        <Skeleton active />
+      ) : !listing?.items.length ? (
+        <Empty description={t(keyword || statusFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty")} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((entry) => (
-            <Card key={entry.provider_type} hoverable className="flex flex-col">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
+          {listing.items.map((entry) => (
+            <Card key={entry.provider_type} hoverable className="flex min-w-0 flex-col">
               <div className="flex h-full flex-col gap-3">
                 <div className="flex items-start gap-3">
                   <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 p-2.5 dark:bg-gray-800">
-                    {marketIconSrc(entry) ? (
-                      <img src={marketIconSrc(entry)} alt={entry.provider_type} className="size-full object-contain" />
+                    {entry.icon_url ? (
+                      <img src={entry.icon_url} alt={entry.provider_type} loading="lazy" className="size-full object-contain" />
                     ) : (
                       <IconPuzzle size={22} className="text-gray-400" />
                     )}
@@ -529,10 +495,10 @@ const PluginMarket = () => {
                   <div className="shrink-0">{renderActions(entry)}</div>
                 </div>
                 <div className="line-clamp-2 min-h-10 text-sm text-gray-500">{entry.description}</div>
-                {(pollingErrors[entry.provider_type] || jobs[entry.provider_type]?.error) && (
+                {(pollingErrors[entry.provider_type] || (jobs[entry.provider_type] ?? entry.job)?.error) && (
                   <Alert
                     type={pollingErrors[entry.provider_type] ? "warning" : "error"}
-                    message={pollingErrors[entry.provider_type] || jobs[entry.provider_type]?.error}
+                    message={pollingErrors[entry.provider_type] || (jobs[entry.provider_type] ?? entry.job)?.error}
                   />
                 )}
                 <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-2 text-xs text-gray-400 dark:border-gray-800">
@@ -543,6 +509,21 @@ const PluginMarket = () => {
             </Card>
           ))}
         </div>
+      )}
+      {listing && listing.totalItems > 0 && !error && (
+        <Pagination
+          className="mt-4 justify-end"
+          current={listing.page}
+          pageSize={perPage}
+          total={listing.totalItems}
+          pageSizeOptions={[15, 30, 60]}
+          showSizeChanger
+          disabled={loading}
+          onChange={(nextPage, nextSize) => {
+            setPage(nextSize === perPage ? nextPage : 1);
+            setPerPage(nextSize);
+          }}
+        />
       )}
     </div>
   );

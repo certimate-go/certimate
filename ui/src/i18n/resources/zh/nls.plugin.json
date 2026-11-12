@@ -12,7 +12,9 @@
 
     "empty": "暂无可用插件",
     "empty_filtered": "没有匹配的插件",
+    "synced_at": "最近同步于 {{time}}",
     "error": {
+      "refresh_failed": "刷新插件目录失败，正在显示缓存结果。",
       "status_failed": "暂时无法获取安装状态，正在自动重试；也可以点击重试立即查询。",
       "load_failed": "加载插件市场失败",
       "install_failed": "安装插件失败",

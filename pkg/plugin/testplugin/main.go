@@ -56,6 +56,8 @@ func (f *fakeDeployer) Deploy(ctx context.Context, req *plugin.DeployRequest, lo
 		os.Exit(2)
 	case "configerror":
 		return nil, fmt.Errorf("bad config: missing field")
+	case "error-echo":
+		return nil, fmt.Errorf("remote rejected access %s and key %s", req.AccessConfigJSON, req.PrivateKeyPEM)
 	}
 	return &plugin.DeployResult{ExtendedDataJSON: `{"deployed":true}`}, nil
 }

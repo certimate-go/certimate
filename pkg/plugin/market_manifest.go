@@ -18,9 +18,17 @@ type Release struct {
 	Checksums map[string]string `json:"checksums,omitempty"`
 }
 
+type MarketDetailRef struct {
+	SHA256    string   `json:"sha256"`
+	Repo      string   `json:"repo"`
+	Platforms []string `json:"platforms"`
+}
+
 type MarketManifest struct {
 	Manifest
-	Release *Release `json:"release,omitempty"`
+	Release  *Release         `json:"release,omitempty"`
+	Detail   *MarketDetailRef `json:"detail,omitempty"`
+	IconPath string           `json:"icon_path,omitempty"`
 }
 
 func ParseMarketManifest(data []byte) (*MarketManifest, error) {

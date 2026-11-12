@@ -6,7 +6,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.23.3
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.15.0
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates v1.5.0
-	github.com/G-Core/gcorelabscdn-go v1.0.37
 	github.com/akamai/AkamaiOPEN-edgegrid-golang/v13 v13.4.0
 	github.com/alibabacloud-go/alb-20200616/v2 v2.3.2
 	github.com/alibabacloud-go/apig-20240327/v11 v11.5.0
@@ -42,7 +41,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/lightsail v1.66.4
 	github.com/aws/smithy-go v1.28.5
 	github.com/baidubce/bce-sdk-go v0.9.276
-	github.com/byteplus-sdk/byteplus-go-sdk-v2 v1.0.80
 	github.com/byteplus-sdk/byteplus-sdk-golang v1.0.73
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/go-acme/lego/v5 v5.3.1
@@ -56,15 +54,14 @@ require (
 	github.com/jdcloud-api/jdcloud-sdk-go v1.67.0
 	github.com/jlaffaye/ftp v0.2.4
 	github.com/microcosm-cc/bluemonday v1.0.27
+	github.com/miekg/dns v1.1.72
 	github.com/minio/minio-go/v7 v7.3.0
-	github.com/nrdcg/oci-go-sdk/certificatesmanagement/v1065 v1065.127.0
 	github.com/nrdcg/oci-go-sdk/common/v1065 v1065.127.0
 	github.com/pavlo-v-chernykh/keystore-go/v4 v4.5.0
 	github.com/pkg/sftp v1.13.11
 	github.com/pocketbase/dbx v1.12.0
 	github.com/pocketbase/pocketbase v0.39.10
 	github.com/povsister/scp v0.0.0-20250701154629-777cf82de5df
-	github.com/pquerna/otp v1.5.0
 	github.com/samber/lo v1.53.0
 	github.com/spf13/cobra v1.10.2
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/antiddos v1.3.131
@@ -81,19 +78,12 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.3.186
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/waf v1.3.186
 	github.com/ucloud/ucloud-sdk-go v0.22.136
-	github.com/volcengine/volc-sdk-golang v1.0.258
 	github.com/volcengine/volcengine-go-sdk v1.2.58
 	github.com/wneessen/go-mail v0.8.1
 	github.com/xhit/go-str2duration/v2 v2.2.0
 	github.com/yandex-cloud/go-genproto v0.128.0
-	github.com/yandex-cloud/go-sdk/services/certificatemanager v0.0.102
-	github.com/yandex-cloud/go-sdk/v2 v2.181.0
-	github.com/yunify/qingcloud-sdk-go v2.0.0-alpha.38+incompatible
 	gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0
 	gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1
-	gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0
-	gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.6
-	gitlab.ecloud.com/ecloud/ecloudsdkvlb v1.0.7
 	golang.org/x/crypto v0.55.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.22.0
@@ -112,7 +102,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/internal v1.2.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.10.1 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-fc-util v0.0.7 // indirect
-	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/aws/aws-sdk-go-v2/service/route53 v1.64.1 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
@@ -121,7 +110,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
-	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
@@ -170,7 +159,6 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bodgit/gssapi v0.0.4 // indirect
 	github.com/bodgit/tsig v1.3.1 // indirect
-	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
@@ -219,7 +207,6 @@ require (
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.23 // indirect
 	github.com/maxatome/go-testdeep v1.14.0 // indirect
-	github.com/miekg/dns v1.1.72 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -239,7 +226,9 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
+	github.com/volcengine/volc-sdk-golang v1.0.258 // indirect
 	github.com/yandex-cloud/go-sdk/services/dns v0.0.65 // indirect
+	github.com/yandex-cloud/go-sdk/v2 v2.181.0 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	github.com/zeebo/xxh3 v1.1.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
@@ -266,11 +255,3 @@ require (
 replace gitlab.ecloud.com/ecloud/ecloudsdkcloudcore v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcloudcore@v1.0.0+mod
 
 replace gitlab.ecloud.com/ecloud/ecloudsdkclouddns v1.0.1 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkclouddns@v1.0.1+mod
-
-replace gitlab.ecloud.com/ecloud/ecloudsdkcmcdn v1.0.0 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcmcdn@v1.0.0
-
-replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.2 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.2
-
-replace gitlab.ecloud.com/ecloud/ecloudsdkcore v1.0.6 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkcore@v1.0.6
-
-replace gitlab.ecloud.com/ecloud/ecloudsdkvlb v1.0.7 => ./pkg/sdk3rd-forked/gitlab.ecloud.com/ecloud/ecloudsdkvlb@v1.0.7

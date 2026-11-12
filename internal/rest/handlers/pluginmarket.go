@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/router"
@@ -13,7 +14,7 @@ import (
 )
 
 type marketService interface {
-	ListMarket(ctx context.Context) ([]pluginhost.MarketEntry, error)
+	ListMarketPage(ctx context.Context, query pluginhost.MarketQuery) (*pluginhost.MarketPage, error)
 	Install(ctx context.Context, providerType string) (*pluginhost.InstallJob, error)
 	Delete(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
 	Update(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
@@ -34,7 +35,27 @@ func NewPluginMarketHandler(rg *router.RouterGroup[*core.RequestEvent], service 
 }
 
 func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
-	entries, err := h.service.ListMarket(e.Request.Context())
+	query := e.Request.URL.Query()
+	page, perPage := 1, 30
+	for key, dest := range map[string]*int{"page": &page, "perPage": &perPage} {
+		if query.Has(key) {
+			value, err := strconv.Atoi(query.Get(key))
+			if err != nil || value < 1 {
+				return resp.Err(e, domain.NewError(400, "invalid "+key))
+			}
+			*dest = value
+		}
+	}
+	status := query.Get("status")
+	switch status {
+	case "", "all", "installed", "not_installed":
+	default:
+		return resp.Err(e, domain.NewError(400, "invalid status"))
+	}
+	entries, err := h.service.ListMarketPage(e.Request.Context(), pluginhost.MarketQuery{
+		Page: page, PerPage: perPage, Keyword: query.Get("keyword"), Status: status,
+		Locale: query.Get("locale"), Refresh: query.Get("refresh") == "true",
+	})
 	if err != nil {
 		return resp.Err(e, err)
 	}

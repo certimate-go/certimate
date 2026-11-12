@@ -22,6 +22,7 @@ import (
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/pluginhost"
+	"github.com/certimate-go/certimate/internal/pluginhost/internal/markettest"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -111,7 +112,7 @@ func TestE2E_MarketInstallUpgradeRollbackAndDelete(t *testing.T) {
 	release := buildMarketRelease(t, providerType, "1.0.0", "")
 	var releaseMu sync.RWMutex
 	results := make(chan webhookResult, 5)
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	server := httptest.NewServer(markettest.WithReleaseDetails(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path == "/deploy" {
 			var result webhookResult
 			if err := json.NewDecoder(req.Body).Decode(&result); err != nil {
@@ -135,7 +136,7 @@ func TestE2E_MarketInstallUpgradeRollbackAndDelete(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusNotFound)
-	}))
+	})))
 	defer server.Close()
 	root := t.TempDir()
 	catalog := pluginhost.NewCatalog()
@@ -247,7 +248,7 @@ func TestE2E_MarketMissingReleaseFailsWithoutStoppingService(t *testing.T) {
 	var indexMu sync.RWMutex
 	index := `{"plugins":[{"provider_type":"e2e-market-no-release","version":"1.0.0","binary":"webhook-deployer","access_provider_type":"e2e-market-no-release-access","protocol_version":1}]}`
 	release := buildMarketRelease(t, providerType, "1.0.0", "")
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	server := httptest.NewServer(markettest.WithReleaseDetails(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if req.URL.Path == "/index.json" {
 			indexMu.RLock()
 			defer indexMu.RUnlock()
@@ -259,7 +260,7 @@ func TestE2E_MarketMissingReleaseFailsWithoutStoppingService(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusNotFound)
-	}))
+	})))
 	defer server.Close()
 	root := t.TempDir()
 	catalog := pluginhost.NewCatalog()
@@ -313,7 +314,7 @@ func TestE2E_MarketCannotReplaceManualPluginInAnotherDirectory(t *testing.T) {
 	t.Cleanup(func() { pluginhost.SetGlobalReloader(previous) })
 	release := buildMarketRelease(t, providerType, "2.0.0", "")
 	results := make(chan webhookResult, 1)
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	server := httptest.NewServer(markettest.WithReleaseDetails(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		switch req.URL.Path {
 		case "/index.json":
 			_ = json.NewEncoder(w).Encode(map[string]any{"plugins": []plugin.MarketManifest{release.manifest}})
@@ -326,7 +327,7 @@ func TestE2E_MarketCannotReplaceManualPluginInAnotherDirectory(t *testing.T) {
 		default:
 			_, _ = w.Write(release.archive)
 		}
-	}))
+	})))
 	defer server.Close()
 	market := pluginhost.NewMarketService(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL})
 	job, err := market.Install(context.Background(), providerType)

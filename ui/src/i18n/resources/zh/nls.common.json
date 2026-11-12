@@ -1,6 +1,5 @@
 {
   "$ns": "common",
-
   "button": {
     "add": "新增",
     "cancel": "取消",
@@ -20,7 +19,6 @@
     "submit": "提交",
     "view": "查看"
   },
-
   "text": {
     "copied": "已复制到剪贴板",
     "import_from_file": "从文件导入 ……",
@@ -36,7 +34,6 @@
     "saving": "保存中 ……",
     "search": "搜索 ……"
   },
-
   "menu": {
     "document": "文档",
     "theme": "切换主题",
@@ -44,19 +41,20 @@
     "gethelp": "获取帮助",
     "logout": "退出登录"
   },
-
   "theme": {
     "light": "浅色",
     "dark": "暗黑",
     "system": "自动"
   },
-
   "errmsg": {
+    "positiveInteger_invalid": "请输入正整数",
     "domain_invalid": "无效域名",
     "host_invalid": "无效主机：不是一个有效的域名或 IP 地址",
     "port_invalid": "无效端口号",
     "ip_invalid": "无效 IP 地址",
     "json_invalid": "无效 JSON 格式字符串",
-    "form_invalid": "请检查表单内容"
+    "form_invalid": "请检查表单内容",
+    "hostname_or_url_invalid": "无效主机：不是一个有效的域名或 IP 地址",
+    "multiple_values_invalid": "请输入非空的分隔值。"
   }
 }

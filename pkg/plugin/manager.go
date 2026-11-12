@@ -20,6 +20,15 @@ const stderrTailLimit = 8 * 1024
 
 type secretRedactor func(string) string
 
+type redactedPluginError struct {
+	error
+	message string
+}
+
+func (e *redactedPluginError) Error() string { return e.message }
+
+func (e *redactedPluginError) Unwrap() error { return e.error }
+
 type Manager struct {
 	cfg    PluginConfig
 	logger *slog.Logger
@@ -169,17 +178,18 @@ func (m *Manager) wrapError(dp *DiscoveredPlugin, d *dispensed, redact secretRed
 		return err
 	}
 	tail := stderrTail(d.stderr, redact)
+	safeErr := &redactedPluginError{error: err, message: redact(err.Error())}
 	if d.client.Exited() {
-		return &ErrPluginCrashed{ProviderType: dp.Manifest.ProviderType, StderrTail: tail, Inner: err}
+		return &ErrPluginCrashed{ProviderType: dp.Manifest.ProviderType, StderrTail: tail, Inner: safeErr}
 	}
 	if st, ok := status.FromError(err); ok {
 		switch st.Code() {
 		case codes.Unavailable, codes.Canceled:
-			return &ErrPluginCrashed{ProviderType: dp.Manifest.ProviderType, StderrTail: tail, Inner: err}
+			return &ErrPluginCrashed{ProviderType: dp.Manifest.ProviderType, StderrTail: tail, Inner: safeErr}
 		}
-		return fmt.Errorf("plugin %q: %s", dp.Manifest.ProviderType, st.Message())
+		return fmt.Errorf("plugin %q: %s", dp.Manifest.ProviderType, redact(st.Message()))
 	}
-	return fmt.Errorf("plugin %q: %w", dp.Manifest.ProviderType, err)
+	return fmt.Errorf("plugin %q: %w", dp.Manifest.ProviderType, safeErr)
 }
 
 func mapStartError(dp *DiscoveredPlugin, err error) error {

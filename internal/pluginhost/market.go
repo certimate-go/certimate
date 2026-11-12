@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -21,6 +22,7 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/internal/domain"
+	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/pkg/plugin"
 	xhttp "github.com/certimate-go/certimate/pkg/utils/http"
 )
@@ -46,12 +48,18 @@ type MarketEntry struct {
 }
 
 type MarketService struct {
-	marketRepo     string
+	details        map[string]*plugin.MarketManifest
 	indexURL       string
 	downloadMirror string
 	pluginDir      string
 	cache          []*plugin.MarketManifest
 	cachedAt       time.Time
+	store          marketCache
+	loaded         bool
+	syncInfo       repository.PluginMarketSync
+	refreshing     chan struct{}
+	retryAt        time.Time
+	refreshErr     error
 	cacheTTL       time.Duration
 	mu             sync.RWMutex
 	httpClient     *http.Client
@@ -63,6 +71,7 @@ type MarketService struct {
 }
 
 type MarketConfig struct {
+	Cache          marketCache
 	MarketRepo     string
 	IndexURL       string
 	DownloadMirror string
@@ -83,7 +92,7 @@ func NewMarketService(cfg MarketConfig) *MarketService {
 		cfg.MarketRepo = "certimate-go/plugins"
 	}
 	if cfg.IndexURL == "" {
-		cfg.IndexURL = fmt.Sprintf("https://raw.githubusercontent.com/%s/main/index.json", cfg.MarketRepo)
+		cfg.IndexURL = fmt.Sprintf("https://raw.githubusercontent.com/%s/refs/heads/main/index.json", cfg.MarketRepo)
 	}
 	if cfg.StallTimeout <= 0 {
 		cfg.StallTimeout = defaultDownloadStallTimeout
@@ -91,7 +100,8 @@ func NewMarketService(cfg MarketConfig) *MarketService {
 	dlTransport := xhttp.NewDefaultTransport()
 	dlTransport.ResponseHeaderTimeout = 30 * time.Second
 	return &MarketService{
-		marketRepo:     cfg.MarketRepo,
+		details:        make(map[string]*plugin.MarketManifest),
+		store:          cfg.Cache,
 		indexURL:       cfg.IndexURL,
 		downloadMirror: cfg.DownloadMirror,
 		pluginDir:      cfg.PluginDir,
@@ -117,86 +127,9 @@ func (s *MarketService) ListMarket(ctx context.Context) ([]MarketEntry, error) {
 	return entries, nil
 }
 
-func (s *MarketService) manifests(ctx context.Context) ([]*plugin.MarketManifest, error) {
-	s.mu.RLock()
-	if s.cache != nil && time.Since(s.cachedAt) < s.cacheTTL {
-		manifests := s.cache
-		s.mu.RUnlock()
-		s.logger.Debug("market manifests served from cache", slog.Int("entries", len(manifests)))
-		return manifests, nil
-	}
-	s.mu.RUnlock()
-
-	return s.fetchAndCache(ctx)
-}
-
-func (s *MarketService) fetchAndCache(ctx context.Context) ([]*plugin.MarketManifest, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if s.cache != nil && time.Since(s.cachedAt) < s.cacheTTL {
-		return s.cache, nil
-	}
-
-	manifests, err := s.fetchMarketListing(ctx)
-	if err != nil {
-		if s.cache != nil {
-			s.logger.Warn("market fetch failed, returning stale cache", slog.Any("error", err))
-			return s.cache, nil
-		}
-		return nil, err
-	}
-
-	s.cache = manifests
-	s.cachedAt = time.Now()
-	s.logger.Info("market listing fetched", slog.Int("entries", len(manifests)))
-	return manifests, nil
-}
-
-func (s *MarketService) fetchMarketListing(ctx context.Context) ([]*plugin.MarketManifest, error) {
-	url := s.indexURL
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("market: create request: %w", err)
-	}
-
-	resp, err := s.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("market: fetch index: %w", err)
-	}
-	defer resp.Body.Close()
-
-	switch resp.StatusCode {
-	case http.StatusOK:
-	case http.StatusNotFound:
-		return nil, fmt.Errorf("market: index not available at %s", url)
-	case http.StatusForbidden, http.StatusTooManyRequests:
-		return nil, fmt.Errorf("market: rate limited (status %d)", resp.StatusCode)
-	default:
-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		return nil, fmt.Errorf("market: index fetch returned status %d: %s", resp.StatusCode, string(body))
-	}
-
-	var idx struct {
-		Plugins []*plugin.MarketManifest `json:"plugins"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&idx); err != nil {
-		return nil, fmt.Errorf("market: decode index: %w", err)
-	}
-	for i, manifest := range idx.Plugins {
-		if manifest == nil {
-			return nil, fmt.Errorf("market: null plugin at index %d", i)
-		}
-		if err := plugin.ValidateProviderType(manifest.ProviderType); err != nil {
-			return nil, err
-		}
-	}
-	return idx.Plugins, nil
-}
-
 func (s *MarketService) computeStatus(mm *plugin.MarketManifest) string {
 	key := plugin.AssetKey(runtime.GOOS, runtime.GOARCH)
-	if mm.Release == nil || mm.Release.Assets[key] == "" {
+	if mm.Detail == nil || !slices.Contains(mm.Detail.Platforms, key) {
 		return "unsupported_platform"
 	}
 
@@ -224,7 +157,7 @@ func (s *MarketService) GetMarketManifest(ctx context.Context, providerType stri
 	}
 	for _, mm := range manifests {
 		if mm != nil && mm.ProviderType == providerType {
-			return mm, nil
+			return s.resolveMarketDetail(ctx, mm)
 		}
 	}
 	return nil, fmt.Errorf("market: plugin %q not found in market listing", providerType)
@@ -262,7 +195,12 @@ func (s *MarketService) runInstall(providerType string, job *InstallJob) {
 	defer s.ops.release(providerType)
 	ctx := context.Background()
 
-	tmpDir, _, err := s.installPipeline(ctx, providerType, job)
+	mm, err := s.GetMarketManifest(ctx, providerType)
+	if err != nil {
+		job.fail(err.Error())
+		return
+	}
+	tmpDir, err := s.installPipeline(ctx, mm, job)
 	if err != nil {
 		job.fail(err.Error())
 		s.logger.Warn("market: async install failed", slog.String("provider", providerType), slog.Any("error", err))
@@ -338,7 +276,7 @@ func (s *MarketService) Update(ctx context.Context, providerType string) (*Reloa
 		return nil, fmt.Errorf("market: plugin %q is already up to date", providerType)
 	}
 
-	tmpDir, _, err := s.installPipeline(ctx, providerType, nil)
+	tmpDir, err := s.installPipeline(ctx, mm, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -351,34 +289,31 @@ func (s *MarketService) Update(ctx context.Context, providerType string) (*Reloa
 	return reloader.activate(ctx, providerType, tmpDir, true)
 }
 
-func (s *MarketService) installPipeline(ctx context.Context, providerType string, job *InstallJob) (tmpDir string, mm *plugin.MarketManifest, err error) {
-	mm, err = s.GetMarketManifest(ctx, providerType)
-	if err != nil {
-		return "", nil, err
-	}
-	if mm == nil || mm.Release == nil {
-		return "", nil, fmt.Errorf("market: plugin %q has no release", providerType)
+func (s *MarketService) installPipeline(ctx context.Context, mm *plugin.MarketManifest, job *InstallJob) (resultDir string, err error) {
+	providerType := mm.ProviderType
+	if mm.Release == nil {
+		return "", fmt.Errorf("market: plugin %q has no release", providerType)
 	}
 	if err := plugin.ValidateReleaseRepo(mm.Release.Repo); err != nil {
-		return "", nil, err
+		return "", err
 	}
 	if err := plugin.ValidateBinaryName(mm.Binary); err != nil {
-		return "", nil, err
+		return "", err
 	}
 
 	key := plugin.AssetKey(runtime.GOOS, runtime.GOARCH)
 	assetName := mm.Release.Assets[key]
 	if assetName == "" {
-		return "", nil, fmt.Errorf("market: plugin %q has no asset for %s", providerType, key)
+		return "", fmt.Errorf("market: plugin %q has no asset for %s", providerType, key)
 	}
 	if !strings.HasSuffix(assetName, ".zip") {
-		return "", nil, fmt.Errorf("market: plugin %q asset %q is not a zip archive", providerType, assetName)
+		return "", fmt.Errorf("market: plugin %q asset %q is not a zip archive", providerType, assetName)
 	}
 
-	tmpDir = filepath.Join(s.pluginDir, ".tmp-"+providerType)
+	tmpDir := filepath.Join(s.pluginDir, ".tmp-"+providerType)
 	_ = os.RemoveAll(tmpDir)
 	if err := os.MkdirAll(tmpDir, 0o755); err != nil {
-		return "", nil, fmt.Errorf("market: create temp dir: %w", err)
+		return "", fmt.Errorf("market: create temp dir: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -395,68 +330,68 @@ func (s *MarketService) installPipeline(ctx context.Context, providerType string
 	if err := s.fetchZip(ctx, downloadURL, downloadPath, func(downloaded, total int64) {
 		job.setProgress(downloaded, total)
 	}); err != nil {
-		return "", nil, err
+		return "", err
 	}
 
 	job.setState(JobVerifying, "verifying")
 	computed, err := sha256Path(downloadPath)
 	if err != nil {
-		return "", nil, fmt.Errorf("market: compute sha256: %w", err)
+		return "", fmt.Errorf("market: compute sha256: %w", err)
 	}
 	expected := mm.Release.Checksums[key]
 	if expected == "" {
 		_ = os.Remove(downloadPath)
-		return "", nil, fmt.Errorf("market: plugin %q has no published checksum for %s", providerType, key)
+		return "", fmt.Errorf("market: plugin %q has no published checksum for %s", providerType, key)
 	}
 	if expected != computed {
 		_ = os.Remove(downloadPath)
-		return "", nil, fmt.Errorf("market: plugin %q checksum mismatch for %s: expected %s, got %s", providerType, key, expected, computed)
+		return "", fmt.Errorf("market: plugin %q checksum mismatch for %s: expected %s, got %s", providerType, key, expected, computed)
 	}
 
 	job.setState(JobExtracting, "extracting")
 	zipFile, err := os.Open(downloadPath)
 	if err != nil {
-		return "", nil, fmt.Errorf("market: open download: %w", err)
+		return "", fmt.Errorf("market: open download: %w", err)
 	}
 	zipStat, err := zipFile.Stat()
 	if err != nil {
 		zipFile.Close()
-		return "", nil, fmt.Errorf("market: stat download: %w", err)
+		return "", fmt.Errorf("market: stat download: %w", err)
 	}
 	_, extractErr := extractZipArchive(zipFile, zipStat.Size(), tmpDir, mm.Binary)
 	zipFile.Close()
 	_ = os.Remove(downloadPath)
 	if extractErr != nil {
-		return "", nil, extractErr
+		return "", extractErr
 	}
 
 	bundledPath := filepath.Join(tmpDir, "manifest.json")
 	bundled, err := os.ReadFile(bundledPath)
 	if err != nil {
-		return "", nil, fmt.Errorf("market: read bundled manifest: %w", err)
+		return "", fmt.Errorf("market: read bundled manifest: %w", err)
 	}
 	bm, err := plugin.ParseManifest(bundled)
 	if err != nil {
-		return "", nil, fmt.Errorf("market: parse bundled manifest: %w", err)
+		return "", fmt.Errorf("market: parse bundled manifest: %w", err)
 	}
 	if bm.ProviderType != providerType {
-		return "", nil, fmt.Errorf("market: bundled manifest provider_type %q does not match %q", bm.ProviderType, providerType)
+		return "", fmt.Errorf("market: bundled manifest provider_type %q does not match %q", bm.ProviderType, providerType)
 	}
 	if bm.ProtocolVersion != mm.ProtocolVersion {
-		return "", nil, fmt.Errorf("market: bundled manifest protocol_version %d does not match index %d", bm.ProtocolVersion, mm.ProtocolVersion)
+		return "", fmt.Errorf("market: bundled manifest protocol_version %d does not match index %d", bm.ProtocolVersion, mm.ProtocolVersion)
 	}
 	if bm.Binary != mm.Binary {
-		return "", nil, fmt.Errorf("market: bundled manifest binary %q does not match index %q", bm.Binary, mm.Binary)
+		return "", fmt.Errorf("market: bundled manifest binary %q does not match index %q", bm.Binary, mm.Binary)
 	}
 
 	if err := bm.Validate(); err != nil {
-		return "", nil, err
+		return "", err
 	}
 	if bm.Version != mm.Version {
-		return "", nil, fmt.Errorf("market: bundled version %q does not match index %q", bm.Version, mm.Version)
+		return "", fmt.Errorf("market: bundled version %q does not match index %q", bm.Version, mm.Version)
 	}
 	if mm.AccessProviderType != "" && bm.AccessProviderType != mm.AccessProviderType {
-		return "", nil, fmt.Errorf("market: bundled access identity does not match index")
+		return "", fmt.Errorf("market: bundled access identity does not match index")
 	}
 	localManifest := *bm
 	localManifest.OS = runtime.GOOS
@@ -464,17 +399,17 @@ func (s *MarketService) installPipeline(ctx context.Context, providerType string
 	localManifest.SHA256 = computed
 	manifestData, err := json.MarshalIndent(&localManifest, "", "  ")
 	if err != nil {
-		return "", nil, fmt.Errorf("market: marshal manifest: %w", err)
+		return "", fmt.Errorf("market: marshal manifest: %w", err)
 	}
 	if err := os.WriteFile(bundledPath, manifestData, 0o644); err != nil {
-		return "", nil, fmt.Errorf("market: write manifest: %w", err)
+		return "", fmt.Errorf("market: write manifest: %w", err)
 	}
 
 	meta := plugin.NewMarketMeta("official", mm.Version, mm.Version, mm.Release.Tag)
 	if err := plugin.WriteMarketMeta(tmpDir, ".", meta); err != nil {
-		return "", nil, err
+		return "", err
 	}
-	return tmpDir, mm, nil
+	return tmpDir, nil
 }
 
 const maxDownloadRetries = 3

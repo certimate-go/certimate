@@ -7,19 +7,36 @@ const pb = getPocketBase();
 
 export interface MarketEntry {
   provider_type: string;
-  access_provider_type: string;
   display_name_key: string;
   deploy_category: string;
   version: string;
   description: string;
-  icon: string;
-  protocol_version: number;
+  icon_url?: string;
   status: "not_installed" | "installed" | "update_available" | "installed_manual" | "unsupported_platform";
-  release?: {
-    repo: string;
-    tag: string;
-    assets: Record<string, string>;
-  };
+  job?: InstallJobStatus;
+}
+
+export type MarketFilter = "all" | "installed" | "not_installed";
+
+export interface MarketQuery {
+  page: number;
+  perPage: number;
+  keyword: string;
+  status: MarketFilter;
+  locale: string;
+  refresh: boolean;
+}
+
+export interface MarketPage {
+  items: MarketEntry[];
+  page: number;
+  perPage: number;
+  totalItems: number;
+  totalPages: number;
+  syncedAt?: string;
+  refreshFailed: boolean;
+  refreshing: boolean;
+  activeJobs: InstallJobStatus[];
 }
 
 export type InstallJobState = "queued" | "downloading" | "verifying" | "extracting" | "reloading" | "installed" | "failed";
@@ -43,11 +60,17 @@ export interface InstallJobStatus {
 
 export const isTerminalState = (state: InstallJobState): boolean => state === "installed" || state === "failed";
 
-export const fetchMarketListing = async (): Promise<MarketEntry[]> => {
-  const resp = await httpGet<MarketEntry[]>({
-    url: "/api/plugin/market",
+export const fetchMarketListing = async (query: MarketQuery): Promise<MarketPage> => {
+  const params = new URLSearchParams({
+    page: String(query.page),
+    perPage: String(query.perPage),
+    keyword: query.keyword,
+    status: query.status,
+    locale: query.locale,
+    refresh: String(query.refresh),
   });
-  return resp.data ?? [];
+  const resp = await httpGet<MarketPage>({ url: `/api/plugin/market?${params}` });
+  return resp.data;
 };
 
 export const installPlugin = async (providerType: string): Promise<InstallJobStatus> => {

@@ -1,12 +1,10 @@
 {
   "$ns": "workflow_node",
-
   "kind": {
     "basis": "基础",
     "business": "业务",
     "logic": "逻辑"
   },
-
   "variables": {
     "type": {
       "certificate": {
@@ -25,7 +23,6 @@
       }
     }
   },
-
   "start": {
     "label": "开始",
     "default_name": "开始",
@@ -59,7 +56,6 @@
       }
     }
   },
-
   "apply": {
     "label": "申请签发证书",
     "default_name": "申请",
@@ -276,7 +272,6 @@
         "help": "提示：证书实际续期时机同时受工作流 CRON 表达式和 CA 的 ARI 建议（如支持）影响。",
         "ari_notice": "证书续期由两个条件共同决定：你设置的续期阈值和 CA 的 ARI 建议窗口（如果 CA 支持）。任一条件满足时都会触发续期。如需完全由你控制续期时间，可在「高级设置」中关闭 ARI。"
       },
-
       "aliyun_esa_region": {
         "label": "阿里云服务地域",
         "placeholder": "请输入阿里云 ESA 服务地域（例如：cn-hangzhou）",
@@ -352,7 +347,6 @@
       }
     }
   },
-
   "upload": {
     "label": "上传自有证书",
     "default_name": "上传",
@@ -414,7 +408,6 @@
       }
     }
   },
-
   "monitor": {
     "label": "监控网站证书",
     "default_name": "监控",
@@ -444,7 +437,6 @@
       }
     }
   },
-
   "deploy": {
     "label": "部署证书到 ...",
     "default_name": "部署",
@@ -499,7 +491,6 @@
           "off": "不跳过"
         }
       },
-
       "shared_deploy_target": {
         "label": "证书部署方式",
         "placeholder": "请选择证书部署方式"
@@ -594,49 +585,6 @@
         "label": "JKS 密钥库存储口令",
         "placeholder": "请输入 JKS 密钥库存储口令",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
-      },
-
-      "1panel_node_name": {
-        "label": "1Panel 子节点名称（可选）",
-        "placeholder": "请输入 1Panel 子节点名称",
-        "help": "提示：仅 1Panel v2+ 需要填写。不填写时，将替换主控节点证书；否则，将替换被控节点证书。",
-        "tooltip": "请登录 1Panel 面板查看"
-      },
-      "1panel_deploy_target": {
-        "option": {
-          "website": {
-            "label": "部署到指定网站"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "1panel_website_match_pattern": {
-        "label": "网站匹配模式",
-        "placeholder": "请选择部署网站匹配模式",
-        "option": {
-          "specified": {
-            "label": "指定 ID"
-          },
-          "certsan": {
-            "label": "根据证书自动匹配",
-            "help": "提示：网站名称需要是域名、且包含开启了 SSL 的域名配置。"
-          }
-        }
-      },
-      "1panel_website_id": {
-        "label": "1Panel 网站 ID",
-        "placeholder": "请输入 1Panel 网站 ID",
-        "tooltip": "请登录 1Panel 面板查看"
-      },
-      "1panel_certificate_id": {
-        "label": "1Panel 证书 ID",
-        "placeholder": "请输入 1Panel 证书 ID",
-        "tooltip": "请登录 1Panel 面板查看"
-      },
-      "1panel_console_auto_restart": {
-        "label": "部署后自动重启 1Panel 服务"
       },
       "aliyun_alb_region": {
         "label": "阿里云服务地域",
@@ -985,25 +933,6 @@
         "placeholder": "请输入阿里云 WAF 扩展域名",
         "help": "提示：不填写时，将替换实例的默认证书；否则，将替换扩展域名证书。"
       },
-      "apisix": {
-        "guide": "需要 APISIX v3.0 或更高版本。"
-      },
-      "apisix_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "apisix_certificate_id": {
-        "label": "APISIX 证书 ID",
-        "placeholder": "请输入 APISIX 证书 ID",
-        "tooltip": "请登录 APISIX 控制台查看"
-      },
-      "asiaispcdn_domain": {
-        "label": "橙域网络网迹 CDN 加速域名",
-        "placeholder": "请输入橙域网络网迹 CDN 加速域名"
-      },
       "aws_acm_region": {
         "label": "AWS 服务区域",
         "placeholder": "请输入 AWS ACM 服务区域（例如：us-east-1）",
@@ -1154,689 +1083,6 @@
         },
         "help": "提示：不填写时，将由 Certimate 自动生成证书名称。"
       },
-      "baiducloud_appblb_region": {
-        "label": "百度智能云服务地域",
-        "placeholder": "请输入百度智能云 BLB 服务地域（例如：bj）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
-      },
-      "baiducloud_appblb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS/SSL 监听"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS/SSL 监听"
-          }
-        }
-      },
-      "baiducloud_appblb_loadbalancer_id": {
-        "label": "百度智能云 BLB 负载均衡器 ID",
-        "placeholder": "请输入百度智能云 BLB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.bce.baidu.com/blb/#/appblb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/appblb/list</a>"
-      },
-      "baiducloud_appblb_listener_port": {
-        "label": "百度智能云 BLB 监听端口",
-        "placeholder": "请输入百度智能云 BLB 监听端口",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.bce.baidu.com/blb/#/appblb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/appblb/list</a>"
-      },
-      "baiducloud_appblb_snidomain": {
-        "label": "百度智能云 BLB 扩展域名（可选）",
-        "placeholder": "请输入百度智能云 BLB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "baiducloud_blb_region": {
-        "label": "百度智能云服务地域",
-        "placeholder": "请输入百度智能云 BLB 服务地域（例如：bj）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
-      },
-      "baiducloud_blb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS/SSL 监听"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS/SSL 监听"
-          }
-        }
-      },
-      "baiducloud_blb_loadbalancer_id": {
-        "label": "百度智能云 BLB 负载均衡器 ID",
-        "placeholder": "请输入百度智能云 BLB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.bce.baidu.com/blb/#/blb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/blb/list</a>"
-      },
-      "baiducloud_blb_listener_port": {
-        "label": "百度智能云 BLB 监听端口",
-        "placeholder": "请输入百度智能云 BLB 监听端口",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.bce.baidu.com/blb/#/blb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/blb/list</a>"
-      },
-      "baiducloud_blb_snidomain": {
-        "label": "百度智能云 BLB 扩展域名（可选）",
-        "placeholder": "请输入百度智能云 BLB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "baiducloud_cdn_domain": {
-        "label": "百度智能云 CDN 加速域名",
-        "placeholder": "请输入百度智能云 CDN 加速域名"
-      },
-      "baotapanel": {
-        "guide": "需要宝塔面板 v8.3 / aaPanel v7.0 或更高版本。"
-      },
-      "baotapanel_site_type": {
-        "label": "宝塔面板网站类型",
-        "placeholder": "请选择宝塔面板网站类型",
-        "option": {
-          "php": {
-            "label": "PHP 项目"
-          },
-          "java": {
-            "label": "Java 项目"
-          },
-          "nodejs": {
-            "label": "Node.js 项目"
-          },
-          "go": {
-            "label": "Golang 项目"
-          },
-          "python": {
-            "label": "Python 项目"
-          },
-          "proxy": {
-            "label": "反向代理"
-          },
-          "html": {
-            "label": "HTML 项目"
-          },
-          "general": {
-            "label": "通用项目"
-          },
-          "any": {
-            "label": "任意类型（需要宝塔面板 v9.4+ / aaPanel v7.26+）"
-          }
-        }
-      },
-      "baotapanel_site_names": {
-        "label": "宝塔面板网站名称",
-        "placeholder": "请输入宝塔面板网站名称（多个值请用半角分号隔开）",
-        "errmsg": {
-          "invalid": "无效的网站名称"
-        },
-        "help": "提示：支持多个网站名称，以半角分号隔开。",
-        "tooltip": "请登录宝塔面板查看",
-        "multiple_input_modal": {
-          "title": "修改宝塔面板网站名称",
-          "placeholder": "请输入宝塔面板网站名称"
-        }
-      },
-      "baotapanel_console": {
-        "guide": "需要宝塔面板 v8.3 或更高版本。"
-      },
-      "baotapanel_console_auto_restart": {
-        "label": "部署后自动重启宝塔面板服务"
-      },
-      "baotapanelgo_site_type": {
-        "label": "宝塔面板极速版网站类型",
-        "placeholder": "请选择宝塔面板极速版网站类型",
-        "option": {
-          "php": {
-            "label": "PHP 项目"
-          },
-          "java": {
-            "label": "Java 项目"
-          },
-          "asp": {
-            "label": ".NET 项目"
-          },
-          "go": {
-            "label": "Golang 项目"
-          },
-          "python": {
-            "label": "Python 项目"
-          },
-          "nodejs": {
-            "label": "Node.js 项目"
-          },
-          "proxy": {
-            "label": "反向代理"
-          },
-          "general": {
-            "label": "通用项目"
-          }
-        }
-      },
-      "baotapanelgo_site_names": {
-        "label": "宝塔面板极速版网站名称",
-        "placeholder": "请输入宝塔面板极速版网站名称（多个值请用半角分号隔开）",
-        "errmsg": {
-          "invalid": "请输入正确的宝塔面板极速版网站名称"
-        },
-        "help": "提示：支持多个网站名称，以半角分号隔开。",
-        "tooltip": "请登录宝塔面板极速版查看",
-        "multiple_input_modal": {
-          "title": "修改宝塔面板极速版网站名称",
-          "placeholder": "请输入宝塔面板极速版网站名称"
-        }
-      },
-      "baotawaf": {
-        "guide": "需要堡塔云 WAF v5.7 或更高版本。"
-      },
-      "baotawaf_site_names": {
-        "label": "堡塔云 WAF 网站名称",
-        "placeholder": "请输入堡塔云 WAF 网站名称（多个值请用半角分号隔开）",
-        "errmsg": {
-          "invalid": "无效的网站名称"
-        },
-        "help": "提示：支持多个网站名称，以半角分号隔开。",
-        "tooltip": "请登录堡塔云 WAF 查看",
-        "multiple_input_modal": {
-          "title": "修改堡塔云 WAF 网站名称",
-          "placeholder": "请输入堡塔云 WAF 网站名称"
-        }
-      },
-      "baotawaf_site_port": {
-        "label": "堡塔云 WAF 网站 SSL 端口",
-        "placeholder": "请输入堡塔云 WAF 网站 SSL 端口"
-      },
-      "baotawaf_console": {
-        "guide": "需要堡塔云 WAF v5.7 或更高版本。"
-      },
-      "bunny_cdn_pull_zone_id": {
-        "label": "Bunny CDN 拉取区域 ID",
-        "placeholder": "请输入 Bunny CDN 拉取区域 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>"
-      },
-      "bunny_cdn_hostname": {
-        "label": "Bunny CDN 主机名",
-        "placeholder": "请输入 Bunny CDN 主机名",
-        "tooltip": "这是什么？请参阅 <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>"
-      },
-      "byteplus_alb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          }
-        }
-      },
-      "byteplus_alb_region": {
-        "label": "BytePlus 服务地域",
-        "placeholder": "请输入 BytePlus ALB 服务地域（例如：ap-southeast-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones</a>"
-      },
-      "byteplus_alb_loadbalancer_id": {
-        "label": "BytePlus ALB 负载均衡器 ID",
-        "placeholder": "请输入 BytePlus ALB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
-      },
-      "byteplus_alb_listener_id": {
-        "label": "BytePlus ALB 监听器 ID",
-        "placeholder": "请输入 BytePlus ALB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
-      },
-      "byteplus_alb_snidomain": {
-        "label": "BytePlus ALB 扩展域名（可选）",
-        "placeholder": "请输入 BytePlus ALB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "byteplus_apig_region": {
-        "label": "BytePlus 服务地域",
-        "placeholder": "请输入 BytePlus API 网关服务地域（例如：ap-southeast-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones</a>"
-      },
-      "byteplus_apig_domain": {
-        "label": "BytePlus API 网关自定义域名",
-        "placeholder": "请输入 BytePlus API 网关自定义域名"
-      },
-      "byteplus_cdn_domain": {
-        "label": "BytePlus CDN 域名",
-        "placeholder": "请输入 BytePlus CDN 域名"
-      },
-      "byteplus_certcenter_region": {
-        "label": "BytePlus 服务地域",
-        "placeholder": "请输入 BytePlus 证书中心服务地域（例如：ap-singapore-1）"
-      },
-      "byteplus_clb_region": {
-        "label": "BytePlus 服务地域",
-        "placeholder": "请输入 BytePlus CLB 服务地域（例如：ap-southeast-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/en/docs/clb/Product-Overview-08\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Product-Overview-08</a>"
-      },
-      "byteplus_clb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
-          },
-          "listener": {
-            "label": "部署到 HTTPS 监听器"
-          }
-        }
-      },
-      "byteplus_clb_loadbalancer_id": {
-        "label": "BytePlus CLB 负载均衡器 ID",
-        "placeholder": "请输入 BytePlus CLB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
-      },
-      "byteplus_clb_listener_id": {
-        "label": "BytePlus CLB 监听器 ID",
-        "placeholder": "请输入 BytePlus CLB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
-      },
-      "byteplus_medialive_domain": {
-        "label": "BytePlus 视频平台直播流域名",
-        "placeholder": "请输入 BytePlus 视频平台直播流域名"
-      },
-      "byteplus_tos_region": {
-        "label": "BytePlus 服务地域",
-        "placeholder": "请输入 BytePlus TOS 服务地域（例如：ap-southeast-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint\" target=\"_blank\">https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint</a>"
-      },
-      "byteplus_tos_bucket": {
-        "label": "BytePlus TOS 存储桶名",
-        "placeholder": "请输入 BytePlus TOS 存储桶名"
-      },
-      "byteplus_tos_domain": {
-        "label": "BytePlus TOS 自定义域名",
-        "placeholder": "请输入 BytePlus TOS 自定义域名"
-      },
-      "cdnfly_deploy_target": {
-        "option": {
-          "website": {
-            "label": "部署到指定网站"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "cdnfly_site_id": {
-        "label": "Cdnfly 网站 ID",
-        "placeholder": "请输入 Cdnfly 网站 ID",
-        "tooltip": "请登录 Cdnfly 控制台查看"
-      },
-      "cdnfly_certificate_id": {
-        "label": "Cdnfly 证书 ID",
-        "placeholder": "请输入 Cdnfly 证书 ID",
-        "tooltip": "请登录 Cdnfly 控制台查看"
-      },
-      "cloudflare_ssl_environment": {
-        "label": "Cloudflare 部署环境（可选）",
-        "placeholder": "请输入 Cloudflare 部署环境",
-        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
-      },
-      "cloudflare_ssl_zone_id": {
-        "label": "Cloudflare DNS 区域 ID",
-        "placeholder": "请输入 Cloudflare DNS 区域 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/#copy-your-zone-id\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/</a>"
-      },
-      "cloudflare_ssl_certificate_id": {
-        "label": "Cloudflare 自定义证书 ID（可选）",
-        "placeholder": "请输入 Cloudflare 自定义证书 ID",
-        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
-        "tooltip": "这是什么？请参阅 <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
-      },
-      "cmcccloud_cdn_domain": {
-        "label": "移动云 CDN 加速域名",
-        "placeholder": "请输入移动云 CDN 加速域名"
-      },
-      "cmcccloud_vlb_pool_id": {
-        "label": "移动云资源池 ID",
-        "placeholder": "请输入移动云 VLB 资源池 ID（例如：CIDC-RP-29）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/op-help-center/doc/article/54462\" target=\"_blank\">https://ecloud.10086.cn/op-help-center/doc/article/54462</a>"
-      },
-      "cmcccloud_vlb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          }
-        }
-      },
-      "cmcccloud_vlb_loadbalancer_id": {
-        "label": "移动云 VLB 负载均衡器 ID",
-        "placeholder": "请输入移动云 VLB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
-      },
-      "cmcccloud_vlb_listener_id": {
-        "label": "移动云 VLB 监听器 ID",
-        "placeholder": "请输入移动云 VLB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist\" target=\"_blank\">https://ecloud.10086.cn/api/page/lb-console-manage-web/CIDC-RP-29/elb/instancelist</a>"
-      },
-      "cmcccloud_vlb_snidomain": {
-        "label": "移动云 VLB 扩展域名（可选）",
-        "placeholder": "请输入移动云 VLB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "cpanel_deploy_target": {
-        "option": {
-          "website": {
-            "label": "部署到指定网站"
-          }
-        }
-      },
-      "cpanel_domain": {
-        "label": "cPanel 网站域名",
-        "placeholder": "请输入 cPanel 网站域名"
-      },
-      "ctcccloud_ao_domain": {
-        "label": "天翼云 AccessOne 加速域名",
-        "placeholder": "请输入天翼云 AccessOne 加速域名"
-      },
-      "ctcccloud_cdn_domain": {
-        "label": "天翼云 CDN 加速域名",
-        "placeholder": "请输入天翼云 CDN 加速域名"
-      },
-      "ctcccloud_elb_region_id": {
-        "label": "天翼云资源池 ID",
-        "placeholder": "请输入天翼云 ELB 资源池 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>"
-      },
-      "ctcccloud_elb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          }
-        }
-      },
-      "ctcccloud_elb_loadbalancer_id": {
-        "label": "天翼云 ELB 负载均衡器 ID",
-        "placeholder": "请输入天翼云 ELB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ctyun.cn/network/index/#/elb/elbList\" target=\"_blank\">https://console.ctyun.cn/network/index/#/elb/elbList</a>"
-      },
-      "ctcccloud_elb_listener_id": {
-        "label": "天翼云 ELB 监听器 ID",
-        "placeholder": "请输入天翼云 ELB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ctyun.cn/network/index/#/elb/elbList\" target=\"_blank\">https://console.ctyun.cn/network/index/#/elb/elbList</a>"
-      },
-      "ctcccloud_faas_region_id": {
-        "label": "天翼云资源池 ID",
-        "placeholder": "请输入天翼云 FaaS 资源池 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>"
-      },
-      "ctcccloud_faas_domain": {
-        "label": "天翼云 FaaS 自定义域名",
-        "placeholder": "请输入天翼云 FaaS 自定义域名"
-      },
-      "ctcccloud_icdn_domain": {
-        "label": "天翼云 ICDN 加速域名",
-        "placeholder": "请输入天翼云 ICDN 加速域名"
-      },
-      "ctcccloud_lvdn_domain": {
-        "label": "天翼云 LVDN 加速域名",
-        "placeholder": "请输入天翼云 LVDN 加速域名"
-      },
-      "flyio_app_name": {
-        "label": "Fly.io 应用名称",
-        "placeholder": "请输入 Fly.io 应用名称"
-      },
-      "flyio_domain": {
-        "label": "Fly.io 自定义域名",
-        "placeholder": "请输入 Fly.io 自定义域名",
-        "help": "提示：首次导入自定义证书后，请登录 Fly.io 控制台完成域名所有权验证。"
-      },
-      "gcore_cdn_resource_id": {
-        "label": "G-Core CDN 资源 ID",
-        "placeholder": "请输入 G-Core CDN 资源 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cdn.gcore.com/resources/list\" target=\"_blank\">https://cdn.gcore.com/resources/list</a>"
-      },
-      "gcore_cdn_certificate_id": {
-        "label": "G-Core CDN 原证书 ID（可选）",
-        "placeholder": "请输入 G-Core CDN 原证书 ID",
-        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cdn.gcore.com/ssl\" target=\"_blank\">https://cdn.gcore.com/ssl</a>"
-      },
-      "goedge_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "goedge_certificate_id": {
-        "label": "GoEdge 证书 ID",
-        "placeholder": "请输入 GoEdge 证书 ID",
-        "tooltip": "请登录 GoEdge 控制台查看<br><br>（目前需要在「网站列表 -> 证书管理 -> 证书」页面，并打开浏览器开发者工具抓取网络请求后得到证书 ID）"
-      },
-      "huaweicloud_aad_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云 DDoS 高防服务区域（例如：cn-north-4）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/aad\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/aad</a>"
-      },
-      "huaweicloud_aad_instance_id": {
-        "label": "华为云 DDoS 高防实例 ID",
-        "placeholder": "请输入华为云 DDoS 高防实例 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/cnad/#/cnad/cad/list\" target=\"_blank\">https://console.huaweicloud.com/cnad/#/cnad/cad/list</a>"
-      },
-      "huaweicloud_aad_domain": {
-        "label": "华为云 DDoS 高防网站域名",
-        "placeholder": "请输入华为云 DDoS 高防网站域名"
-      },
-      "huaweicloud_apig_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云 API 网关服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/apig\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/apig</a>"
-      },
-      "huaweicloud_apig_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "huaweicloud_apig_certificate_id": {
-        "label": "华为云 API 网关证书 ID",
-        "placeholder": "请输入华为云 API 网关证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apig2/#/overview\" target=\"_blank\">https://console.huaweicloud.com/apig2/#/overview</a>"
-      },
-      "huaweicloud_cdn_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云 CDN 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/cdn\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/cdn</a>"
-      },
-      "huaweicloud_cdn_domain": {
-        "label": "华为云 CDN 加速域名",
-        "placeholder": "请输入华为云 CDN 加速域名"
-      },
-      "huaweicloud_obs_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云 OBS 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/obs\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/obs</a>"
-      },
-      "huaweicloud_obs_bucket": {
-        "label": "华为云 OBS 存储桶名",
-        "placeholder": "请输入华为云 OBS 存储桶名"
-      },
-      "huaweicloud_obs_domain": {
-        "label": "华为云 OBS 自定义域名",
-        "placeholder": "请输入华为云 OBS 自定义域名"
-      },
-      "huaweicloud_elb_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云 ELB 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/elb\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
-      },
-      "huaweicloud_elb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "huaweicloud_elb_loadbalancer_id": {
-        "label": "华为云 ELB 负载均衡器 ID",
-        "placeholder": "请输入华为云 ELB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/list/grid</a>"
-      },
-      "huaweicloud_elb_listener_id": {
-        "label": "华为云 ELB 监听器 ID",
-        "placeholder": "请输入华为云 ELB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/list/grid</a>"
-      },
-      "huaweicloud_elb_certificate_id": {
-        "label": "华为云 ELB 证书 ID",
-        "placeholder": "请输入华为云 ELB 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
-      "huaweicloud_live_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云视频直播服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/live\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/live</a>"
-      },
-      "huaweicloud_live_domain": {
-        "label": "华为云视频直播流域名",
-        "placeholder": "请输入华为云视频直播流域名"
-      },
-      "huaweicloud_vod_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云视频点播服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/vod\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/vod</a>"
-      },
-      "huaweicloud_vod_domain": {
-        "label": "华为云视频点播加速域名",
-        "placeholder": "请输入华为云视频点播加速域名"
-      },
-      "huaweicloud_waf_region": {
-        "label": "华为云服务区域",
-        "placeholder": "请输入华为云 WAF 服务区域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/apiexplorer/#/endpoint/waf\" target=\"_blank\">https://console.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
-      },
-      "huaweicloud_waf_deploy_target": {
-        "option": {
-          "cloudserver": {
-            "label": "部署到指定云模式防护网站"
-          },
-          "premiumhost": {
-            "label": "部署到指定独享模式防护网站"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "huaweicloud_waf_domain": {
-        "label": "华为云 WAF 防护域名",
-        "placeholder": "请输入华为云 WAF 防护域名"
-      },
-      "huaweicloud_waf_certificate_id": {
-        "label": "华为云 WAF 证书 ID",
-        "placeholder": "请输入华为云 WAF 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.huaweicloud.com/console/#/waf/certificateManagement\" target=\"_blank\">https://console.huaweicloud.com/console/#/waf/certificateManagement</a>"
-      },
-      "huaweiibmc_auto_restart": {
-        "label": "部署后自动重启 iBMC 服务"
-      },
-      "jdcloud_alb_region_id": {
-        "label": "京东云服务地域 ID",
-        "placeholder": "请输入京东云 ALB 服务地域 ID（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.jdcloud.com/cn/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/cn/common-declaration/api/introduction</a>"
-      },
-      "jdcloud_alb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS/TLS 监听"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS/TLS 监听器"
-          }
-        }
-      },
-      "jdcloud_alb_loadbalancer_id": {
-        "label": "京东云 ALB 负载均衡器 ID",
-        "placeholder": "请输入京东云 ALB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cns-console.jdcloud.com/host/loadBalance/list\" target=\"_blank\">https://cns-console.jdcloud.com/host/loadBalance/list</a>"
-      },
-      "jdcloud_alb_listener_id": {
-        "label": "京东云 ALB 监听器 ID",
-        "placeholder": "请输入京东云 ALB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cns-console.jdcloud.com/host/loadBalance/list\" target=\"_blank\">https://cns-console.jdcloud.com/host/loadBalance/list</a>"
-      },
-      "jdcloud_alb_snidomain": {
-        "label": "京东云 ALB 扩展域名（可选）",
-        "placeholder": "请输入京东云 ALB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "jdcloud_cdn_domain": {
-        "label": "京东云 CDN 加速域名",
-        "placeholder": "请输入京东云 CDN 加速域名"
-      },
-      "jdcloud_live_domain": {
-        "label": "京东云视频直播流域名",
-        "placeholder": "请输入京东云视频直播流域名"
-      },
-      "jdcloud_vod_domain": {
-        "label": "京东云视频点播加速域名",
-        "placeholder": "请输入京东云视频点播加速域名"
-      },
-      "jdcloud_waf_region_id": {
-        "label": "京东云服务地域 ID",
-        "placeholder": "请输入京东云 WAF 服务地域 ID（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.jdcloud.com/cn/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/cn/common-declaration/api/introduction</a>"
-      },
-      "jdcloud_waf_instance_id": {
-        "label": "京东云 WAF 实例 ID",
-        "placeholder": "请输入京东云 WAF 实例 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cloudwaf-console.jdcloud.com/instance\" target=\"_blank\">https://cloudwaf-console.jdcloud.com/instance</a>"
-      },
-      "jdcloud_waf_domain": {
-        "label": "京东云 WAF 防护域名",
-        "placeholder": "请输入京东云 WAF 防护域名"
-      },
-      "kong": {
-        "guide": "需要 Kong v2.0 或更高版本。"
-      },
-      "kong_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "kong_workspace": {
-        "label": "Kong 工作空间（可选）",
-        "placeholder": "请输入 Kong 工作空间",
-        "tooltip": "请登录 Kong 控制台查看"
-      },
-      "kong_certificate_id": {
-        "label": "Kong 证书 ID",
-        "placeholder": "请输入 Kong 证书 ID",
-        "tooltip": "请登录 Kong 控制台查看"
-      },
-      "lecdn_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "lecdn_certificate_id": {
-        "label": "LeCDN 证书 ID",
-        "placeholder": "请输入 LeCDN 证书 ID",
-        "tooltip": "请登录 LeCDN 控制台查看"
-      },
-      "lecdn_client_id": {
-        "label": "LeCDN 客户 ID（可选）",
-        "placeholder": "请输入 LeCDN 客户 ID",
-        "tooltip": "请登录 LeCDN 控制台查看。<br>使用的是系统管理员的授权信息时必填，需与证书所属客户相同。"
-      },
-      "linode_los_region_id": {
-        "label": "Linode 服务区域 ID",
-        "placeholder": "请输入 Linode 对象存储区域 ID（例如：us-east）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://techdocs.akamai.com/cloud-computing/docs/endpoint-types#supported-endpoint-types-by-region\" target=\"_blank\">https://techdocs.akamai.com/cloud-computing/docs/endpoint-types</a>"
-      },
-      "linode_los_bucket": {
-        "label": "Linode 对象存储桶名",
-        "placeholder": "请输入 Linode 对象存储桶名"
-      },
       "local": {
         "guide": "如果你正在使用容器化运行 Certimate，「本地」指的是容器内而非宿主机。"
       },
@@ -1871,174 +1117,6 @@
         "ps_binding_netsh": "PowerShell - 导入并绑定到 netsh",
         "ps_binding_rdp": "PowerShell - 导入并绑定到 RDP"
       },
-      "mohua_mvh_host_id": {
-        "label": "嘿华云虚拟主机 ID",
-        "placeholder": "请输入嘿华云虚拟主机 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.mhjz1.cn/service?groupid=328\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328</a>"
-      },
-      "mohua_mvh_domain_id": {
-        "label": "嘿华云虚拟主机域名 ID",
-        "placeholder": "请输入嘿华云虚拟主机域名 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://cloud.mhjz1.cn/service?groupid=328\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328</a>"
-      },
-      "netlify_deploy_target": {
-        "option": {
-          "website": {
-            "label": "部署到指定网站"
-          }
-        }
-      },
-      "netlify_site_id": {
-        "label": "Netlify 网站 ID",
-        "placeholder": "请输入 netlify 网站 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.netlify.com/api/get-started/#get-site\" target=\"_blank\">https://docs.netlify.com/api/get-started/#get-site</a>"
-      },
-      "nginxproxymanager_deploy_target": {
-        "option": {
-          "host": {
-            "label": "部署到指定主机"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "nginxproxymanager_host_match_pattern": {
-        "label": "主机匹配模式",
-        "placeholder": "请选择部署主机匹配模式",
-        "option": {
-          "specified": {
-            "label": "指定 ID"
-          },
-          "certsan": {
-            "label": "根据证书自动匹配"
-          }
-        }
-      },
-      "nginxproxymanager_host_type": {
-        "label": "NPM 主机类型",
-        "placeholder": "请输入 NPM 主机类型",
-        "option": {
-          "proxy": {
-            "label": "代理服务"
-          },
-          "redirection": {
-            "label": "重定向主机"
-          },
-          "stream": {
-            "label": "端口转发"
-          },
-          "dead": {
-            "label": "错误页面"
-          }
-        }
-      },
-      "nginxproxymanager_host_id": {
-        "label": "NPM 主机 ID",
-        "placeholder": "请输入 NPM 主机 ID",
-        "tooltip": "请登录 NPM 面板查看"
-      },
-      "nginxproxymanager_certificate_id": {
-        "label": "NPM 证书 ID",
-        "placeholder": "请输入 NPM 证书 ID",
-        "tooltip": "请登录 NPM 面板查看"
-      },
-      "oraclecloud_certificatesmgmt_compartment_ocid": {
-        "label": "OCI 资源区间 OCID",
-        "placeholder": "请输入 OCI 资源区间 OCID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
-      },
-      "proxmoxbs": {
-        "guide": "需要 Proxmox Backup Server v2.1 或更高版本。"
-      },
-      "proxmoxbs_node_name": {
-        "label": "Proxmox BS 节点名称",
-        "placeholder": "请输入 Proxmox BS 节点名称"
-      },
-      "proxmoxbs_auto_restart": {
-        "label": "部署后自动重启 Proxmox BS 服务"
-      },
-      "proxmoxve": {
-        "guide": "需要 Proxmox Virtual Environment v5.2 或更高版本。"
-      },
-      "proxmoxve_node_name": {
-        "label": "Proxmox VE 节点名称",
-        "placeholder": "请输入 Proxmox VE 节点名称"
-      },
-      "proxmoxve_auto_restart": {
-        "label": "部署后自动重启 Proxmox VE 服务"
-      },
-      "qingcloud_lb_zone_id": {
-        "label": "青云服务区域 ID",
-        "placeholder": "请输入青云 ELB 服务区域 ID（例如：pek3a）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
-      },
-      "qingcloud_lb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          }
-        }
-      },
-      "qingcloud_lb_loadbalancer_id": {
-        "label": "青云 LB 负载均衡器 ID",
-        "placeholder": "请输入青云 LB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
-      },
-      "qingcloud_lb_listener_id": {
-        "label": "青云 LB 监听器 ID",
-        "placeholder": "请输入青云 LB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
-      },
-      "rainyun_rcdn_instance_id": {
-        "label": "雨云 RCDN 实例 ID",
-        "placeholder": "请输入雨云 RCDN 实例 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://app.rainyun.com/apps/rcdn/list\" target=\"_blank\">https://app.rainyun.com/apps/rcdn/list</a>"
-      },
-      "rainyun_rcdn_domain": {
-        "label": "雨云 RCDN 加速域名",
-        "placeholder": "请输入雨云 RCDN 加速域名"
-      },
-      "rainyun_sslcenter_certificate_id": {
-        "label": "雨云 RCDN 证书 ID",
-        "placeholder": "请输入雨云 RCDN 证书 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://app.rainyun.com/apps/ssl/list\" target=\"_blank\">https://app.rainyun.com/apps/ssl/list</a>",
-        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
-      },
-      "ratpanel": {
-        "guide": "需要耗子面板 v2.5 或更高版本。"
-      },
-      "ratpanel_deploy_target": {
-        "option": {
-          "website": {
-            "label": "部署到指定网站"
-          },
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "ratpanel_site_names": {
-        "label": "耗子面板网站名称",
-        "placeholder": "请输入耗子面板网站名称（多个值请用半角分号隔开）",
-        "errmsg": {
-          "invalid": "无效的网站名称"
-        },
-        "help": "提示：支持多个网站名称，以半角分号隔开。",
-        "tooltip": "请登录耗子面板查看",
-        "multiple_input_modal": {
-          "title": "修改耗子面板网站名称",
-          "placeholder": "请输入耗子面板网站名称"
-        }
-      },
-      "ratpanel_certificate_id": {
-        "label": "耗子面板证书 ID",
-        "placeholder": "请输入耗子面板证书 ID",
-        "tooltip": "请登录耗子面板查看"
-      },
       "s3_region": {
         "label": "对象存储区域",
         "placeholder": "请输入对象存储区域"
@@ -2064,42 +1142,6 @@
         "label": "证书文件（仅含中间证书）对象键（可选）",
         "placeholder": "请输入中间证书文件对象键",
         "help": "提示：不填写时将不会保存中间证书。"
-      },
-      "safeline": {
-        "guide": "需要雷池 v6.6 或更高版本。"
-      },
-      "safeline_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "safeline_certificate_id": {
-        "label": "雷池证书 ID",
-        "placeholder": "请输入雷池证书 ID",
-        "tooltip": "请登录雷池控制台查看"
-      },
-      "samwaf": {
-        "guide": "需要 SamWAF v1.3.20 或更高版本。"
-      },
-      "samwaf_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "替换指定证书"
-          }
-        }
-      },
-      "samwaf_certificate_id": {
-        "label": "SamWAF 证书 ID",
-        "placeholder": "请输入 SamWAF 证书 ID",
-        "tooltip": "请登录 SamWAF 控制台查看"
-      },
-      "samwaf_console": {
-        "guide": "需要 SamWAF v1.3.21 或更高版本。"
-      },
-      "samwaf_console_auto_restart": {
-        "label": "部署后自动重启 SamWAF 服务"
       },
       "ssh_pre_command": {
         "label": "前置命令（可选）",
@@ -2127,18 +1169,6 @@
       "ssh_use_repl": {
         "label": "使用 REPL 模式执行命令（可选）",
         "tooltip": "如果你的远程服务器未提供 Shell、不支持多行命令，请勾选此选项启用 REPL 模式以逐行执行命令。"
-      },
-      "synologydsm": {
-        "guide": "需要群晖 DSM v6.0 或更高版本。"
-      },
-      "synologydsm_certificate_id_or_desc": {
-        "label": "群晖 DSM 原证书 ID 或描述（可选）",
-        "placeholder": "请输入群晖 DSM 原证书 ID 或描述",
-        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。",
-        "tooltip": "请登录群晖 DSM 面板查看<br><br>（目前需要在「控制面板 -> 安全性 -> 证书」页面，并打开浏览器开发者工具抓取网络请求后得到证书 ID）"
-      },
-      "synologydsm_is_default": {
-        "label": "设为默认证书并应用到所有 DSM 服务"
       },
       "tencentcloud_cdn_endpoint": {
         "label": "腾讯云接口端点（可选）",
@@ -2509,331 +1539,12 @@
         "placeholder": "请输入腾讯云 WAF 域名 ID",
         "tooltip": "这是什么？请参阅 <a href=\"https://console.cloud.tencent.com/waf\" target=\"_blank\">https://console.cloud.tencent.com/waf</a>"
       },
-      "ucloud_ualb_endpoint": {
-        "label": "优刻得接口端点（可选）",
-        "placeholder": "请输入优刻得 UALB 接口端点（例如：api.ucloud.cn）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
-      },
-      "ucloud_ualb_region": {
-        "label": "优刻得服务地域",
-        "placeholder": "请输入优刻得 UALB 服务地域（例如：cn-bj2）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
-      },
-      "ucloud_ualb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听器"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          }
-        }
-      },
-      "ucloud_ualb_loadbalancer_id": {
-        "label": "优刻得 UALB 负载均衡器实例 ID",
-        "placeholder": "请输入优刻得 UALB 负载均衡器实例 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ulb/alb\" target=\"_blank\">https://console.ucloud.cn/ulb/alb</a>"
-      },
-      "ucloud_ualb_listener_id": {
-        "label": "优刻得 UALB 监听器 ID",
-        "placeholder": "请输入优刻得 UALB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ulb/alb\" target=\"_blank\">https://console.ucloud.cn/ulb/alb</a>"
-      },
-      "ucloud_ualb_snidomain": {
-        "label": "优刻得 UALB 扩展域名（可选）",
-        "placeholder": "请输入优刻得 UALB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "ucloud_ualb_auto_prune": {
-        "label": "部署后自动移除具有相同 SAN 的旧证书"
-      },
-      "ucloud_ucdn_endpoint": {
-        "label": "优刻得接口端点（可选）",
-        "placeholder": "请输入优刻得 UCDN 接口端点（例如：api.ucloud.cn）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
-      },
-      "ucloud_ucdn_domain_id": {
-        "label": "优刻得 UCDN 域名 ID",
-        "placeholder": "请输入优刻得 UCDN 域名 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ucdn\" target=\"_blank\">https://console.ucloud.cn/ucdn</a>"
-      },
-      "ucloud_uclb_endpoint": {
-        "label": "优刻得接口端点（可选）",
-        "placeholder": "请输入优刻得 UCLB 接口端点（例如：api.ucloud.cn）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
-      },
-      "ucloud_uclb_region": {
-        "label": "优刻得服务地域",
-        "placeholder": "请输入优刻得 UCLB 服务地域（例如：cn-bj2）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
-      },
-      "ucloud_uclb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS VServer"
-          },
-          "vserver": {
-            "label": "部署到指定 HTTPS VServer"
-          }
-        }
-      },
-      "ucloud_uclb_loadbalancer_id": {
-        "label": "优刻得 UCLB 负载均衡器实例 ID",
-        "placeholder": "请输入优刻得 UCLB 负载均衡器实例 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ulb/ulb\" target=\"_blank\">https://console.ucloud.cn/ulb/ulb</a>"
-      },
-      "ucloud_uclb_vserver_id": {
-        "label": "优刻得 UCLB VServer ID",
-        "placeholder": "请输入优刻得 UCLB VServer ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/ulb/ulb\" target=\"_blank\">https://console.ucloud.cn/ulb/ulb</a>"
-      },
-      "ucloud_upathx_endpoint": {
-        "label": "优刻得接口端点（可选）",
-        "placeholder": "请输入优刻得 UPathX 接口端点（例如：api.ucloud.cn）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
-      },
-      "ucloud_upathx_accelerator_id": {
-        "label": "优刻得 UPathX 加速器实例 ID",
-        "placeholder": "请输入优刻得 UPathX 加速器实例 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/upathx/accelerate\" target=\"_blank\">https://console.ucloud.cn/upathx/accelerate</a>"
-      },
-      "ucloud_upathx_listener_port": {
-        "label": "优刻得 UPathX 加速器监听端口",
-        "placeholder": "请输入优刻得 UPathX 加速器监听端口",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/upathx/accelerate\" target=\"_blank\">https://console.ucloud.cn/upathx/accelerate</a>"
-      },
-      "ucloud_us3_endpoint": {
-        "label": "优刻得接口端点（可选）",
-        "placeholder": "请输入优刻得 US3 接口端点（例如：api.ucloud.cn）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
-      },
-      "ucloud_us3_region": {
-        "label": "优刻得服务地域",
-        "placeholder": "请输入优刻得 US3 服务地域（例如：cn-bj2）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/regionlist\" target=\"_blank\">https://docs.ucloud.cn/api/summary/regionlist</a>"
-      },
-      "ucloud_us3_bucket": {
-        "label": "优刻得 US3 存储桶名",
-        "placeholder": "请输入优刻得 US3 存储桶名"
-      },
-      "ucloud_us3_domain": {
-        "label": "优刻得 US3 自定义域名",
-        "placeholder": "请输入优刻得 US3 自定义域名"
-      },
-      "ucloud_uewaf_endpoint": {
-        "label": "优刻得接口端点（可选）",
-        "placeholder": "请输入优刻得 UEWAF 接口端点（例如：api.ucloud.cn）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
-      },
-      "ucloud_uewaf_domain": {
-        "label": "优刻得 UEWAF 防护域名",
-        "placeholder": "请输入优刻得 UEWAF 防护域名"
-      },
-      "unicloud_webhost": {
-        "guide": "由于 uniCloud 未公开相关 API，这里将使用网页模拟登录方式部署，但无法保证稳定性。如遇 uniCloud 接口变更，请到 GitHub 发起 Issue 告知。"
-      },
-      "unicloud_webhost_space_provider": {
-        "label": "uniCloud 服务空间提供商",
-        "placeholder": "请选择 uniCloud 服务空间提供商",
-        "option": {
-          "aliyun": {
-            "label": "阿里云"
-          },
-          "alipay": {
-            "label": "支付宝云"
-          },
-          "tencent": {
-            "label": "腾讯云"
-          }
-        }
-      },
-      "unicloud_webhost_space_id": {
-        "label": "uniCloud 服务空间 ID",
-        "placeholder": "请输入 uniCloud 服务空间 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://doc.dcloud.net.cn/uniCloud/concepts/space.html\" target=\"_blank\">https://doc.dcloud.net.cn/uniCloud/concepts/space.html</a>"
-      },
-      "unicloud_webhost_domain": {
-        "label": "uniCloud 前端网页托管网站域名",
-        "placeholder": "请输入 uniCloud 前端网页托管网站域名"
-      },
-      "volcengine_alb_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 ALB 服务地域（例如：cn-beijing）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
-      },
-      "volcengine_alb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
-          },
-          "listener": {
-            "label": "部署到指定 HTTPS 监听器"
-          }
-        }
-      },
-      "volcengine_alb_loadbalancer_id": {
-        "label": "火山引擎 ALB 负载均衡器 ID",
-        "placeholder": "请输入火山引擎 ALB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/alb\" target=\"_blank\">https://console.volcengine.com/alb</a>"
-      },
-      "volcengine_alb_listener_id": {
-        "label": "火山引擎 ALB 监听器 ID",
-        "placeholder": "请输入火山引擎 ALB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/alb\" target=\"_blank\">https://console.volcengine.com/alb</a>"
-      },
-      "volcengine_alb_snidomain": {
-        "label": "火山引擎 ALB 扩展域名（可选）",
-        "placeholder": "请输入火山引擎 ALB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "volcengine_apig_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 API 网关服务地域（例如：cn-beijing）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.volcengine.com/docs/6569/111925\" target=\"_blank\">https://www.volcengine.com/docs/6569/111925</a>"
-      },
-      "volcengine_apig_domain": {
-        "label": "火山引擎 API 网关自定义域名",
-        "placeholder": "请输入火山引擎 API 网关自定义域名"
-      },
-      "volcengine_cdn_domain": {
-        "label": "火山引擎 CDN 加速域名",
-        "placeholder": "请输入火山引擎 CDN 加速域名"
-      },
-      "volcengine_certcenter_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎证书中心服务地域（例如：cn-beijing）"
-      },
-      "volcengine_clb_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 CLB 服务地域（例如：cn-beijing）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.volcengine.com/docs/6406/74892\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
-      },
-      "volcengine_clb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "部署到指定负载均衡器下的全部 HTTPS 监听"
-          },
-          "listener": {
-            "label": "部署到 HTTPS 监听器"
-          }
-        }
-      },
-      "volcengine_clb_loadbalancer_id": {
-        "label": "火山引擎 CLB 负载均衡器 ID",
-        "placeholder": "请输入火山引擎 CLB 负载均衡器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
-      },
-      "volcengine_clb_listener_id": {
-        "label": "火山引擎 CLB 监听器 ID",
-        "placeholder": "请输入火山引擎 CLB 监听器 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
-      },
-      "volcengine_clb_snidomain": {
-        "label": "火山引擎 CLB 扩展域名（可选）",
-        "placeholder": "请输入火山引擎 CLB 扩展域名",
-        "help": "提示：不填写时，将替换监听器的默认证书；否则，将替换扩展域名证书。"
-      },
-      "volcengine_dcdn_domain": {
-        "label": "火山引擎 DCDN 加速域名",
-        "placeholder": "请输入火山引擎 DCDN 加速域名"
-      },
-      "volcengine_imagex_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 ImageX 服务地域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.volcengine.com/docs/508/23757\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>"
-      },
-      "volcengine_imagex_service_id": {
-        "label": "火山引擎 ImageX 服务 ID",
-        "placeholder": "请输入火山引擎 ImageX 服务 ID",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/imagex\" target=\"_blank\">https://console.volcengine.com/imagex</a>"
-      },
-      "volcengine_imagex_domain": {
-        "label": "火山引擎 ImageX 绑定域名",
-        "placeholder": "请输入火山引擎 ImageX 绑定域名"
-      },
-      "volcengine_live_domain": {
-        "label": "火山引擎视频直播流域名",
-        "placeholder": "请输入火山引擎视频直播流域名"
-      },
-      "volcengine_tos_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 TOS 服务地域（例如：cn-beijing）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
-      },
-      "volcengine_tos_bucket": {
-        "label": "火山引擎 TOS 存储桶名",
-        "placeholder": "请输入火山引擎 TOS 存储桶名"
-      },
-      "volcengine_tos_domain": {
-        "label": "火山引擎 TOS 自定义域名",
-        "placeholder": "请输入火山引擎 TOS 自定义域名"
-      },
-      "volcengine_vod_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 VOD 服务地域（例如：cn-north-1）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://docs.volcengine.com/docs/4/1215505\" target=\"_blank\">https://docs.volcengine.com/docs/4/1215505</a>"
-      },
-      "volcengine_vod_space_name": {
-        "label": "火山引擎 VOD 空间名称",
-        "placeholder": "请输入火山引擎 VOD 空间名称",
-        "tooltip": "这是什么？请参阅 <a href=\"https://console.volcengine.com/vod/overview\" target=\"_blank\">https://console.volcengine.com/vod/overview</a>"
-      },
-      "volcengine_vod_domain_type": {
-        "label": "火山引擎 VOD 域名类型",
-        "placeholder": "请选择火山引擎 VOD 域名类型",
-        "option": {
-          "play": {
-            "label": "点播加速域名"
-          },
-          "image": {
-            "label": "封面加速域名"
-          },
-          "third": {
-            "label": "自定义源站加速域名"
-          }
-        }
-      },
-      "volcengine_vod_domain": {
-        "label": "火山引擎 VOD 加速域名",
-        "placeholder": "请输入火山引擎 VOD 加速域名"
-      },
-      "volcengine_waf_region": {
-        "label": "火山引擎服务地域",
-        "placeholder": "请输入火山引擎 WAF 服务地域（例如：cn-beijing）",
-        "tooltip": "这是什么？请参阅 <a href=\"https://www.volcengine.com/docs/6511/1594024\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>"
-      },
-      "volcengine_waf_access_mode": {
-        "label": "火山引擎 WAF 接入模式",
-        "placeholder": "请选择火山引擎 WAF 接入模式",
-        "option": {
-          "cname": {
-            "label": "CNAME 接入"
-          }
-        }
-      },
       "volcengine_waf_domain": {
         "label": "火山引擎 WAF 防护域名",
         "placeholder": "请输入火山引擎 WAF 防护域名"
-      },
-      "webhook_data": {
-        "label": "Webhook 回调数据（可选）",
-        "placeholder": "请输入 Webhook 回调数据以覆盖默认值",
-        "help": "提示：不填写时，将使用所选提供商授权的默认 Webhook 回调数据。",
-        "vartips": "支持的变量：<br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>：<br>证书的主域名或 IP。</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>：<br>证书的多域名或 IP，以半角分号隔开。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>：<br>证书文件 PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>：<br>证书文件（仅含服务器证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>：<br>证书文件（仅含中间证书）PEM 格式内容。</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>：<br>私钥文件 PEM 格式内容。</li></ol>"
-      },
-      "webhook_timeout": {
-        "label": "Webhook 超时时间（可选）",
-        "placeholder": "请输入 Webhook 超时时间",
-        "unit": "秒"
-      },
-      "yandexcloud_certificatemanager_certificate_id": {
-        "label": "Yandex Cloud 证书管理器证书 ID（可选）",
-        "placeholder": "请输入 Yandex Cloud 证书管理器证书 ID",
-        "help": "提示：不填写时，将上传新证书；否则，将替换原证书。"
       }
     }
   },
-
   "purge": {
     "label": "清除过期证书",
     "default_name": "清除",
@@ -2871,7 +1582,6 @@
         "suffix": "的证书。",
         "unit": "天"
       },
-
       "aliyun_cas_region": {
         "label": "阿里云服务地域",
         "placeholder": "请输入阿里云 CAS 服务地域（例如：cn-hangzhou）",
@@ -2970,7 +1680,6 @@
       }
     }
   },
-
   "notify": {
     "label": "推送通知",
     "default_name": "通知",
@@ -3014,7 +1723,6 @@
       "params_config": {
         "label": "参数设置"
       },
-
       "discordbot_channel_id": {
         "label": "Discord 频道 ID（可选）",
         "placeholder": "请输入 Discord 频道 ID",
@@ -3079,7 +1787,6 @@
       }
     }
   },
-
   "delay": {
     "label": "延迟等待",
     "default_name": "延迟",
@@ -3096,7 +1803,6 @@
       }
     }
   },
-
   "condition": {
     "label": "并行/条件分支",
     "default_name": {
@@ -3105,7 +1811,6 @@
       "template_certtest_on_expired": "若网站证书已过期…"
     }
   },
-
   "branch_block": {
     "label": "分支",
     "default_name": "分支",
@@ -3184,17 +1889,14 @@
       }
     }
   },
-
   "try_catch": {
     "label": "执行结果分支",
     "default_name": "尝试执行…"
   },
-
   "catch_block": {
     "label": "执行失败分支",
     "default_name": "若执行失败…"
   },
-
   "end": {
     "label": "结束",
     "default_name": "结束"
