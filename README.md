@@ -57,6 +57,9 @@ An open-source and free self-hosted SSL certificates ACME tool, automates the fu
 
 ## 🚀 Quick Start
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/certimate)
+
+
 **Run Certimate in 1 minute!**
 
 <details>
