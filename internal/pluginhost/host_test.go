@@ -57,6 +57,7 @@ func setupPluginDir(t *testing.T, providerType, accessType string) (string, *plu
 		"version":              "0.1.0",
 		"provider_type":        providerType,
 		"access_provider_type": accessType,
+		"capability":           plugin.CapabilityDeploy,
 		"display_name_key":     "plugin." + providerType + ".name",
 		"deploy_category":      "other",
 		"protocol_version":     plugin.ProtocolVersion,

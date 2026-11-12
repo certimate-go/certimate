@@ -2,8 +2,10 @@ import { get as httpGet } from "./_api";
 
 export interface PluginCatalogEntry {
   source: string;
+  capability: string;
   providerType: string;
   accessProviderType: string;
+  ownsAccess: boolean;
   deployCategory: string;
   displayNameKey: string;
   accessDisplayNameKey: string;

@@ -35,23 +35,33 @@ type marketReleaseFixture struct {
 
 func buildMarketRelease(t *testing.T, providerType, version, bootstrapError string) marketReleaseFixture {
 	t.Helper()
+	return buildMarketReleaseShared(t, providerType, providerType+"-access", version, bootstrapError, false)
+}
+
+func buildMarketReleaseShared(t *testing.T, providerType, accessType, version, bootstrapError string, omitAccessSchema bool) marketReleaseFixture {
+	t.Helper()
 	binary, err := os.ReadFile(buildPilot(t))
 	if err != nil {
 		t.Fatal(err)
 	}
 	manifest := plugin.Manifest{
-		ProviderType: providerType, AccessProviderType: providerType + "-access", Version: version,
+		ProviderType: providerType, AccessProviderType: accessType, Version: version,
+		Capability: plugin.CapabilityDeploy,
 		Binary: "webhook-deployer", ProtocolVersion: plugin.ProtocolVersion,
 	}
 	manifestJSON, err := json.Marshal(manifest)
 	if err != nil {
 		t.Fatal(err)
 	}
-	configJSON, err := json.Marshal(map[string]any{
-		"providerType": providerType, "accessProviderType": manifest.AccessProviderType,
+	fixture := map[string]any{
+		"providerType": providerType, "accessProviderType": accessType,
 		"schemaRevision": version, "bootstrapError": bootstrapError,
 		"accessField": "token-" + version, "deployField": "message-" + version,
-	})
+	}
+	if omitAccessSchema {
+		fixture["omitAccessSchema"] = true
+	}
+	configJSON, err := json.Marshal(fixture)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -240,6 +250,85 @@ func TestE2E_MarketInstallUpgradeRollbackAndDelete(t *testing.T) {
 	}
 	if result := deployFixture(t, oldFactory, server.URL+"/deploy", results); result.Version != "1.0.0" {
 		t.Fatalf("previously acquired factory lost its deployment version: %+v", result)
+	}
+}
+
+func TestE2E_MarketDeleteRefusedWhileAccessReuserInstalled(t *testing.T) {
+	const ownerType = "e2e-market-access-owner"
+	const reuserType = "e2e-market-access-reuser"
+	const sharedAccess = "e2e-market-shared-access"
+	ownerRelease := buildMarketReleaseShared(t, ownerType, sharedAccess, "1.0.0", "", false)
+	reuserRelease := buildMarketReleaseShared(t, reuserType, sharedAccess, "1.0.0", "", true)
+	server := httptest.NewServer(markettest.WithReleaseDetails(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == "/index.json" {
+			if err := json.NewEncoder(w).Encode(map[string]any{"plugins": []plugin.MarketManifest{ownerRelease.manifest, reuserRelease.manifest}}); err != nil {
+				t.Error(err)
+			}
+			return
+		}
+		if strings.Contains(req.URL.Path, ownerType) {
+			_, _ = w.Write(ownerRelease.archive)
+			return
+		}
+		if strings.Contains(req.URL.Path, reuserType) {
+			_, _ = w.Write(reuserRelease.archive)
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	})))
+	defer server.Close()
+	root := t.TempDir()
+	catalog := pluginhost.NewCatalog()
+	t.Cleanup(catalog.Close)
+	previous := pluginhost.GlobalReloader()
+	pluginhost.SetGlobalReloader(pluginhost.NewReloader(plugin.PluginConfig{PluginDir: root, CoreVersion: "0.4.28"}, catalog, slog.Default()))
+	t.Cleanup(func() { pluginhost.SetGlobalReloader(previous) })
+	market := pluginhost.NewMarketService(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
+
+	if job, err := market.Install(context.Background(), reuserType); err != nil {
+		t.Fatal(err)
+	} else if status := marketJobResult(t, job); status.State != pluginhost.JobFailed || !strings.Contains(status.Error, sharedAccess) {
+		t.Fatalf("reuser install before owner must fail naming the access type: %+v", status)
+	}
+
+	ownerJob, err := market.Install(context.Background(), ownerType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if status := marketJobResult(t, ownerJob); status.State != pluginhost.JobInstalled {
+		t.Fatalf("owner install failed: %+v", status)
+	}
+	reuserJob, err := market.Install(context.Background(), reuserType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if status := marketJobResult(t, reuserJob); status.State != pluginhost.JobInstalled {
+		t.Fatalf("reuser install after owner failed: %+v", status)
+	}
+
+	if _, err := market.Delete(context.Background(), ownerType); err == nil {
+		t.Fatal("owner delete must be refused while reuser is installed")
+	} else if !strings.Contains(err.Error(), reuserType) || !strings.Contains(err.Error(), sharedAccess) {
+		t.Fatalf("refusal must name reuser and access type: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, ownerType)); err != nil {
+		t.Fatalf("refused delete removed the owner directory: %v", err)
+	}
+	if _, err := deployers.Registries.Get(domain.DeploymentProviderType(ownerType)); err != nil {
+		t.Fatalf("refused delete unregistered the owner: %v", err)
+	}
+
+	if _, err := market.Delete(context.Background(), reuserType); err != nil {
+		t.Fatalf("reuser delete failed: %v", err)
+	}
+	if _, err := market.Delete(context.Background(), ownerType); err != nil {
+		t.Fatalf("owner delete after reuser removal failed: %v", err)
+	}
+	if _, ok := providerschema.Envelopes.GetEnvelope(sharedAccess, providerschema.CategoryAccess); ok {
+		t.Fatal("owner access schema survived final delete")
+	}
+	if len(catalog.Entries()) != 0 {
+		t.Fatalf("catalog not empty after deletes: %+v", catalog.Entries())
 	}
 }
 

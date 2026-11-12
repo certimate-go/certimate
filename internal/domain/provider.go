@@ -149,7 +149,7 @@ func (t ACMEChallengeProviderType) String() string {
 type ACMEDns01ProviderType ACMEChallengeProviderType
 
 func (t ACMEDns01ProviderType) String() string {
-	return t.String()
+	return string(t)
 }
 
 /*

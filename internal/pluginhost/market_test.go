@@ -269,7 +269,7 @@ func buildZip(t *testing.T, entries []zipEntry) []byte {
 }
 
 func alphaManifestJSON(providerType, version string) string {
-	return fmt.Sprintf(`{"provider_type":%q,"version":%q,"binary":%q,"protocol_version":%d,"access_provider_type":%q,"deploy_category":"cdn","usages":["hosting"]}`, providerType, version, providerType, plugin.ProtocolVersion, providerType)
+	return fmt.Sprintf(`{"provider_type":%q,"version":%q,"binary":%q,"protocol_version":%d,"capability":"deploy","access_provider_type":%q,"deploy_category":"cdn","usages":["hosting"]}`, providerType, version, providerType, plugin.ProtocolVersion, providerType)
 }
 
 func alphaIndex(t *testing.T, version, checksum string) string {

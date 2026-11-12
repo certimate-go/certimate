@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 var (
@@ -271,5 +272,165 @@ func sampleDeployReq() *DeployRequest {
 		ExtendedConfigJSON: `{"method":"POST"}`,
 		CertificatePEM:     "CERT",
 		PrivateKeyPEM:      "KEY",
+	}
+}
+
+func discoveredFakeCapability(t *testing.T, providerType, capability, behavior string) *DiscoveredPlugin {
+	t.Helper()
+	bin := fakeBinary(t)
+	dir := t.TempDir()
+	manifest := manifestJSON(func(m map[string]any) {
+		m["provider_type"] = providerType
+		m["access_provider_type"] = providerType
+		m["binary"] = "fakeplugin"
+		m["capability"] = capability
+	})
+	if err := os.WriteFile(filepath.Join(dir, "manifest.json"), []byte(manifest), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(dir, "fakeplugin")
+	if err := os.Symlink(bin, link); err != nil {
+		t.Fatal(err)
+	}
+	dp, ferr := discoverOne(dir, "0.1.0")
+	if ferr != nil {
+		t.Fatalf("discoverOne: %v", ferr.Err)
+	}
+	t.Setenv("FAKEPLUGIN_PROVIDER_TYPE", providerType)
+	t.Setenv("FAKEPLUGIN_CAPABILITY", capability)
+	t.Setenv("FAKEPLUGIN_BEHAVIOR", behavior)
+	state := filepath.Join(t.TempDir(), "state.txt")
+	t.Setenv("FAKEPLUGIN_STATE_FILE", state)
+	return dp
+}
+
+func readState(t *testing.T, path string) []string {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	var lines []string
+	for _, line := range strings.Split(strings.TrimSpace(string(data)), "\n") {
+		if line != "" {
+			lines = append(lines, line)
+		}
+	}
+	return lines
+}
+
+func TestManager_DnsHeldLifecycle_SameProcessAcrossPresentAndCleanUp(t *testing.T) {
+	dp := discoveredFakeCapability(t, "dns-demo", CapabilityDns, "ok")
+	state := os.Getenv("FAKEPLUGIN_STATE_FILE")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	held, err := mgr.StartDnsProvider(context.Background(), dp)
+	if err != nil {
+		t.Fatalf("start dns provider: %v", err)
+	}
+	req := &DnsRequest{Domain: "example.test", Token: "tok", KeyAuth: "ka"}
+	if err := held.Present(context.Background(), req); err != nil {
+		t.Fatalf("present: %v", err)
+	}
+	if err := held.CleanUp(context.Background(), req); err != nil {
+		t.Fatalf("cleanup: %v", err)
+	}
+	held.Close()
+	events := readState(t, state)
+	if len(events) != 2 || events[0] != "present" || events[1] != "cleanup" {
+		t.Fatalf("expected present then cleanup in one process, got %v", events)
+	}
+}
+
+func TestManager_DnsHeldLifecycle_ProcessDeathFailsCleanUp(t *testing.T) {
+	dp := discoveredFakeCapability(t, "dns-crash", CapabilityDns, "present-crash")
+	state := os.Getenv("FAKEPLUGIN_STATE_FILE")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	held, err := mgr.StartDnsProvider(context.Background(), dp)
+	if err != nil {
+		t.Fatalf("start dns provider: %v", err)
+	}
+	req := &DnsRequest{Domain: "example.test"}
+	if err := held.Present(context.Background(), req); err != nil {
+		t.Fatalf("present: %v", err)
+	}
+	time.Sleep(300 * time.Millisecond)
+	err = held.CleanUp(context.Background(), req)
+	if err == nil {
+		t.Fatal("expected cleanup failure after process death")
+	}
+	var crashed *ErrPluginCrashed
+	if !errors.As(err, &crashed) {
+		t.Fatalf("expected ErrPluginCrashed, got %v", err)
+	}
+	events := readState(t, state)
+	if len(events) != 1 || events[0] != "present" {
+		t.Fatalf("expected no respawn cleanup, got %v", events)
+	}
+}
+
+func TestManager_Dns_PresentErrorReleasesProcess(t *testing.T) {
+	dp := discoveredFakeCapability(t, "dns-err", CapabilityDns, "present-error")
+	state := os.Getenv("FAKEPLUGIN_STATE_FILE")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	held, err := mgr.StartDnsProvider(context.Background(), dp)
+	if err != nil {
+		t.Fatalf("start dns provider: %v", err)
+	}
+	req := &DnsRequest{Domain: "example.test"}
+	if err := held.Present(context.Background(), req); err == nil {
+		t.Fatal("expected present error")
+	}
+	err = held.CleanUp(context.Background(), req)
+	if err == nil {
+		t.Fatal("expected cleanup error after release")
+	}
+	events := readState(t, state)
+	if len(events) != 1 || events[0] != "present:error" {
+		t.Fatalf("expected present error only, got %v", events)
+	}
+}
+
+func TestManager_Notify_RoundTrip(t *testing.T) {
+	dp := discoveredFakeCapability(t, "notify-demo", CapabilityNotify, "ok")
+	state := os.Getenv("FAKEPLUGIN_STATE_FILE")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	res, err := mgr.Notify(context.Background(), dp, &NotifyRequest{Subject: "hello", Message: "world"})
+	if err != nil {
+		t.Fatalf("notify: %v", err)
+	}
+	if res == nil {
+		t.Fatal("nil notify result")
+	}
+	events := readState(t, state)
+	if len(events) != 1 || events[0] != "notify:hello|world" {
+		t.Fatalf("unexpected notify events: %v", events)
+	}
+}
+
+func TestManager_Notify_ErrorPropagates(t *testing.T) {
+	dp := discoveredFakeCapability(t, "notify-err", CapabilityNotify, "notify-error")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	_, err := mgr.Notify(context.Background(), dp, &NotifyRequest{Subject: "x", Message: "y"})
+	if err == nil || !strings.Contains(err.Error(), "fake notify failure") {
+		t.Fatalf("expected notify failure, got %v", err)
+	}
+}
+
+func TestManager_Deploy_RejectsWrongCapability(t *testing.T) {
+	dp := discoveredFakeCapability(t, "dns-only", CapabilityDns, "ok")
+
+	mgr := NewManager(PluginConfig{}, nil)
+	_, err := mgr.Deploy(context.Background(), dp, sampleDeployReq(), nil)
+	if err == nil {
+		t.Fatal("expected deploy on dns capability to fail")
+	}
+	var inc *ErrPluginIncompatible
+	if !errors.As(err, &inc) {
+		t.Fatalf("expected ErrPluginIncompatible, got %v", err)
 	}
 }

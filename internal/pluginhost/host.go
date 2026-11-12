@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/pkg/plugin"
 )
@@ -40,12 +41,30 @@ func ScanAndRegister(ctx context.Context, cfg plugin.PluginConfig, logger *slog.
 			slog.Any("error", f.Err))
 		errs = append(errs, f)
 	}
+
+	var prepared []*registeredPlugin
 	for _, dp := range discovered {
-		if err := registerOne(ctx, manager, dp, catalog, logger, ""); err != nil {
+		p, err := preparePlugin(ctx, manager, dp, logger, "")
+		if err != nil {
 			logger.Error("plugin registration failed",
 				slog.String("provider", dp.Manifest.ProviderType),
 				slog.Any("error", err))
 			errs = append(errs, fmt.Errorf("plugin %q: %w", dp.Manifest.ProviderType, err))
+			continue
+		}
+		prepared = append(prepared, p)
+	}
+	ordered, resolveErrs := catalog.resolveAccessOwnership(prepared)
+	for _, err := range resolveErrs {
+		logger.Error("plugin access ownership conflict", slog.Any("error", err))
+		errs = append(errs, err)
+	}
+	for _, p := range ordered {
+		if err := catalog.publish(p); err != nil {
+			logger.Error("plugin registration failed",
+				slog.String("provider", p.source.Manifest.ProviderType),
+				slog.Any("error", err))
+			errs = append(errs, fmt.Errorf("plugin %q: %w", p.source.Manifest.ProviderType, err))
 		}
 	}
 	return catalog, errs
@@ -56,11 +75,48 @@ func registerOne(ctx context.Context, manager *plugin.Manager, dp *plugin.Discov
 	if err != nil {
 		return err
 	}
-	if err := catalog.publish(prepared); err != nil {
+	ordered, resolveErrs := catalog.resolveAccessOwnership([]*registeredPlugin{prepared})
+	if len(resolveErrs) > 0 {
+		os.RemoveAll(prepared.runtimeDir)
+		return resolveErrs[0]
+	}
+	if err := catalog.publish(ordered[0]); err != nil {
 		os.RemoveAll(prepared.runtimeDir)
 		return err
 	}
 	return nil
+}
+
+func configSchemaCategory(capability string) providerschema.Category {
+	switch capability {
+	case plugin.CapabilityDns:
+		return providerschema.CategoryApply
+	case plugin.CapabilityNotify:
+		return providerschema.CategoryNotify
+	default:
+		return providerschema.CategoryDeploy
+	}
+}
+
+func defaultAccessUsages(capability string) []string {
+	switch capability {
+	case plugin.CapabilityDns:
+		return []string{"dns"}
+	case plugin.CapabilityNotify:
+		return []string{"notification"}
+	default:
+		return []string{"hosting"}
+	}
+}
+
+func isCoreOwnedAccessType(accessType string) bool {
+	if domain.IsBuiltInAccessProviderType(domain.AccessProviderType(accessType)) {
+		return true
+	}
+	if schema, err := providerschema.Registries.Get(accessType); err == nil && schema.Category == providerschema.CategoryAccess {
+		return true
+	}
+	return false
 }
 
 func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.DiscoveredPlugin, logger *slog.Logger, fingerprint string) (*registeredPlugin, error) {
@@ -107,7 +163,8 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 	if meta.ProviderType != dp.Manifest.ProviderType || meta.AccessProviderType != dp.Manifest.AccessProviderType {
 		return nil, fmt.Errorf("plugin metadata identity does not match manifest: provider %q/%q, access %q/%q", meta.ProviderType, dp.Manifest.ProviderType, meta.AccessProviderType, dp.Manifest.AccessProviderType)
 	}
-	deployType, accessType := meta.ProviderType, meta.AccessProviderType
+	capability := dp.Manifest.Capability
+	providerType, accessType := meta.ProviderType, meta.AccessProviderType
 	var envelopes []*providerschema.Envelope
 	addEnvelope := func(name string, raw []byte, category providerschema.Category) error {
 		env, err := parseEnvelope(raw)
@@ -123,14 +180,18 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		envelopes = append(envelopes, env)
 		return nil
 	}
-	if err := addEnvelope(deployType, schema.DeploySchemaJSON, providerschema.CategoryDeploy); err != nil {
-		return nil, fmt.Errorf("deploy schema: %w", err)
+	if err := addEnvelope(providerType, schema.DeploySchemaJSON, configSchemaCategory(capability)); err != nil {
+		return nil, fmt.Errorf("provider schema: %w", err)
 	}
-	builtinAccess, _ := providerschema.Registries.Get(accessType)
-	if len(schema.AccessSchemaJSON) > 0 && (builtinAccess == nil || builtinAccess.Category != providerschema.CategoryAccess) {
+	ownsAccess := false
+	if len(schema.AccessSchemaJSON) > 0 {
+		if isCoreOwnedAccessType(accessType) {
+			return nil, fmt.Errorf("access type %q is owned by core built-ins; plugin %q must reuse it without shipping an access schema", accessType, providerType)
+		}
 		if err := addEnvelope(accessType, schema.AccessSchemaJSON, providerschema.CategoryAccess); err != nil {
 			return nil, fmt.Errorf("access schema: %w", err)
 		}
+		ownsAccess = true
 	}
 	after, err := pluginFingerprint(dp)
 	if err != nil {
@@ -141,15 +202,44 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 	}
 	usages := dp.Manifest.Usages
 	if len(usages) == 0 {
-		usages = []string{"hosting"}
+		usages = defaultAccessUsages(capability)
 	}
-	prepared := &registeredPlugin{
-		source: dp, fingerprint: fingerprint, runtimeDir: runtimeDir, envelopes: envelopes,
-		factory: &pluginDeployerFactory{manager: manager, dp: runtimeDP, providerType: deployType, logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", deployType))},
-		entry:   &CatalogEntry{Source: SourcePlugin, ProviderType: deployType, AccessProviderType: accessType, DeployCategory: meta.DeployCategory, DisplayNameKey: meta.DeployDisplayNameKey, AccessDisplayNameKey: meta.AccessDisplayNameKey, Icon: readIcon(dp, logger), I18n: schema.I18n, AccessUsages: usages, Priority: dp.Manifest.Priority, Description: dp.Manifest.Description},
+	registered := &registeredPlugin{
+		source: dp, fingerprint: fingerprint, runtimeDir: runtimeDir,
+		capability: capability, accessType: accessType, ownsAccess: ownsAccess,
+		envelopes: envelopes,
+		entry: &CatalogEntry{
+			Source: SourcePlugin, Capability: capability, ProviderType: providerType, AccessProviderType: accessType,
+			OwnsAccess: ownsAccess, DeployCategory: meta.DeployCategory, DisplayNameKey: meta.DeployDisplayNameKey,
+			AccessDisplayNameKey: meta.AccessDisplayNameKey, Icon: readIcon(dp, logger), I18n: schema.I18n,
+			AccessUsages: usages, Priority: dp.Manifest.Priority, Description: dp.Manifest.Description,
+		},
+	}
+	switch capability {
+	case plugin.CapabilityDns:
+		factory := &pluginDnsChallengerFactory{
+			manager: manager, dp: runtimeDP, providerType: providerType,
+			logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", providerType)),
+		}
+		registered.factory = factory
+		registered.newChallenger = factory.new
+	case plugin.CapabilityNotify:
+		factory := &pluginNotifierFactory{
+			manager: manager, dp: runtimeDP, providerType: providerType,
+			logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", providerType)),
+		}
+		registered.factory = factory
+		registered.newNotifier = factory.new
+	default:
+		factory := &pluginDeployerFactory{
+			manager: manager, dp: runtimeDP, providerType: providerType,
+			logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", providerType)),
+		}
+		registered.factory = factory
+		registered.newDeployer = factory.new
 	}
 	accepted = true
-	return prepared, nil
+	return registered, nil
 }
 
 func parseEnvelope(raw []byte) (*providerschema.Envelope, error) {

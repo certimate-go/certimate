@@ -14,10 +14,27 @@ var validAccessUsages = map[string]bool{
 	"ca":           true,
 }
 
+const (
+	CapabilityDeploy = "deploy"
+	CapabilityDns    = "dns"
+	CapabilityNotify = "notify"
+)
+
+var validCapabilities = map[string]bool{
+	CapabilityDeploy: true,
+	CapabilityDns:    true,
+	CapabilityNotify: true,
+}
+
+func IsValidCapability(capability string) bool {
+	return validCapabilities[capability]
+}
+
 type Manifest struct {
 	Version            string   `json:"version"`
 	ProviderType       string   `json:"provider_type"`
 	AccessProviderType string   `json:"access_provider_type"`
+	Capability         string   `json:"capability"`
 	DisplayNameKey     string   `json:"display_name_key"`
 	DeployCategory     string   `json:"deploy_category"`
 	ProtocolVersion    uint32   `json:"protocol_version"`
@@ -34,11 +51,43 @@ type Manifest struct {
 }
 
 func ParseManifest(data []byte) (*Manifest, error) {
-	var m Manifest
-	if err := json.Unmarshal(data, &m); err != nil {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
 		return nil, fmt.Errorf("plugin: invalid manifest json: %w", err)
 	}
+	capability, err := parseCapabilityField(fields["capability"])
+	if err != nil {
+		return nil, fmt.Errorf("plugin: invalid manifest json: %w", err)
+	}
+	delete(fields, "capability")
+	rest, err := json.Marshal(fields)
+	if err != nil {
+		return nil, fmt.Errorf("plugin: invalid manifest json: %w", err)
+	}
+	var m Manifest
+	if err := json.Unmarshal(rest, &m); err != nil {
+		return nil, fmt.Errorf("plugin: invalid manifest json: %w", err)
+	}
+	m.Capability = capability
 	return &m, nil
+}
+
+func parseCapabilityField(raw json.RawMessage) (string, error) {
+	if len(raw) == 0 || string(raw) == "null" {
+		return "", nil
+	}
+	var single string
+	if err := json.Unmarshal(raw, &single); err == nil {
+		return single, nil
+	}
+	var multiple []string
+	if err := json.Unmarshal(raw, &multiple); err == nil {
+		if len(multiple) == 1 {
+			return multiple[0], nil
+		}
+		return "", fmt.Errorf("capability must declare exactly one of deploy, dns, notify (got %d)", len(multiple))
+	}
+	return "", fmt.Errorf("capability must be a string or a single-element array")
 }
 
 func (m *Manifest) Validate() error {
@@ -48,6 +97,9 @@ func (m *Manifest) Validate() error {
 	}
 	if m.AccessProviderType == "" {
 		problems = append(problems, "access_provider_type must not be empty")
+	}
+	if !validCapabilities[m.Capability] {
+		problems = append(problems, fmt.Sprintf("capability must be one of deploy, dns, notify (got %q)", m.Capability))
 	}
 	if m.Binary == "" {
 		problems = append(problems, "binary must not be empty")

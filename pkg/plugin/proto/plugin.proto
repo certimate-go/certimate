@@ -10,6 +10,19 @@ service DeployerPlugin {
   rpc Deploy(DeployRequest) returns (stream DeployFrame);
 }
 
+service DnsPlugin {
+  rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse);
+  rpc GetConfigSchema(GetConfigSchemaRequest) returns (GetConfigSchemaResponse);
+  rpc Present(DnsRequest) returns (DnsResponse);
+  rpc CleanUp(DnsRequest) returns (DnsResponse);
+}
+
+service NotifyPlugin {
+  rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse);
+  rpc GetConfigSchema(GetConfigSchemaRequest) returns (GetConfigSchemaResponse);
+  rpc Notify(NotifyRequest) returns (NotifyResponse);
+}
+
 message GetMetadataRequest {}
 
 message GetMetadataResponse {
@@ -57,4 +70,27 @@ message DeployFrame {
     LogEntry log = 1;
     DeployResponse result = 2;
   }
+}
+
+message DnsRequest {
+  string log_level = 1;
+  string access_config_json = 2;
+  string extended_config_json = 3;
+  string domain = 4;
+  string token = 5;
+  string key_auth = 6;
+}
+
+message DnsResponse {}
+
+message NotifyRequest {
+  string log_level = 1;
+  string access_config_json = 2;
+  string extended_config_json = 3;
+  string subject = 4;
+  string message = 5;
+}
+
+message NotifyResponse {
+  string extended_data_json = 1;
 }

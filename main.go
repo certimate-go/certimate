@@ -47,16 +47,22 @@ func main() {
 	pb.RootCmd.AddCommand(cmd.NewWinscCommand(pb))
 
 	isServeCmd := slices.Contains(os.Args[1:], "serve")
+	isInterCmd := len(os.Args) > 1 && os.Args[1] == "intercmd"
 	stopPlugins := func() {}
 
-	if isServeCmd {
+	if isServeCmd || isInterCmd {
 		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
 			if err := e.Next(); err != nil {
 				return err
 			}
 
-			settings.Setup()
-			stopPlugins = scanPlugins()
+			if isServeCmd {
+				settings.Setup()
+				stopPlugins = scanPlugins()
+			} else {
+				childLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(slog.String("component", "pluginhost"))
+				stopPlugins = registerPlugins(childLogger)
+			}
 			return nil
 		})
 
@@ -102,7 +108,7 @@ func main() {
 	}
 }
 
-func scanPlugins() func() {
+func registerPlugins(logger *slog.Logger) func() {
 	pluginDir := resolvePluginDir()
 	if pluginDir == "" {
 		return func() {}
@@ -111,17 +117,31 @@ func scanPlugins() func() {
 		PluginDir:   pluginDir,
 		CoreVersion: app.AppVersion,
 	}
-	logger := slog.Default().With(slog.String("component", "pluginhost"))
-
-	pluginhost.SweepOrphans(pluginDir, logger)
 
 	catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, logger)
 	pluginhost.SetGlobalCatalog(catalog)
 	for _, err := range errs {
 		logger.Warn("[CERTIMATE] plugin registration error", slog.Any("error", err))
 	}
+	return func() {}
+}
 
-	reloader := pluginhost.NewReloader(cfg, catalog, logger)
+func scanPlugins() func() {
+	pluginDir := resolvePluginDir()
+	if pluginDir == "" {
+		return func() {}
+	}
+	logger := slog.Default().With(slog.String("component", "pluginhost"))
+
+	pluginhost.SweepOrphans(pluginDir, logger)
+
+	stop := registerPlugins(logger)
+
+	cfg := plugin.PluginConfig{
+		PluginDir:   pluginDir,
+		CoreVersion: app.AppVersion,
+	}
+	reloader := pluginhost.NewReloader(cfg, pluginhost.GlobalCatalog(), logger)
 	pluginhost.SetGlobalReloader(reloader)
 
 	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
@@ -136,7 +156,7 @@ func scanPlugins() func() {
 	ctx, cancel := context.WithCancel(context.Background())
 	watcher.Start(ctx)
 	reloader.Start(ctx, watcher)
-	return func() { cancel(); reloader.Close() }
+	return func() { stop(); cancel(); reloader.Close() }
 }
 
 func resolvePluginDir() string {

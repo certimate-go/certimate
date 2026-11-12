@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	githubplugin "github.com/hashicorp/go-plugin"
@@ -51,6 +52,82 @@ func PluginSetForDeployer() PluginSet {
 	return PluginSet{PluginName: &DeployerGRPCPlugin{}}
 }
 
+func PluginSetForCapability(capability string) (PluginSet, string, error) {
+	switch capability {
+	case CapabilityDeploy, "":
+		return PluginSetForDeployer(), PluginName, nil
+	case CapabilityDns:
+		return PluginSetForDns(), DnsPluginName, nil
+	case CapabilityNotify:
+		return PluginSetForNotify(), NotifyPluginName, nil
+	default:
+		return nil, "", &ErrPluginIncompatible{Reason: fmt.Sprintf("unknown capability %q", capability)}
+	}
+}
+
+func ServiceNameForCapability(capability string) string {
+	switch capability {
+	case CapabilityDns:
+		return DnsPluginName
+	case CapabilityNotify:
+		return NotifyPluginName
+	default:
+		return PluginName
+	}
+}
+
+func encodeMetadata(m *Metadata, err error) (*proto.GetMetadataResponse, error) {
+	if err != nil {
+		return nil, err
+	}
+	return &proto.GetMetadataResponse{
+		ProviderType:         m.ProviderType,
+		AccessProviderType:   m.AccessProviderType,
+		ProtocolVersion:      m.ProtocolVersion,
+		DeployCategory:       m.DeployCategory,
+		DeployDisplayNameKey: m.DeployDisplayNameKey,
+		AccessDisplayNameKey: m.AccessDisplayNameKey,
+	}, nil
+}
+
+func decodeMetadata(resp *proto.GetMetadataResponse) *Metadata {
+	return &Metadata{
+		ProviderType:         resp.ProviderType,
+		AccessProviderType:   resp.AccessProviderType,
+		ProtocolVersion:      resp.ProtocolVersion,
+		DeployCategory:       resp.DeployCategory,
+		DeployDisplayNameKey: resp.DeployDisplayNameKey,
+		AccessDisplayNameKey: resp.AccessDisplayNameKey,
+	}
+}
+
+func encodeConfigSchema(cs *ConfigSchema, err error) (*proto.GetConfigSchemaResponse, error) {
+	if err != nil {
+		return nil, err
+	}
+	i18n := make(map[string]*proto.StringMap, len(cs.I18n))
+	for locale, entries := range cs.I18n {
+		i18n[locale] = &proto.StringMap{Entries: entries}
+	}
+	return &proto.GetConfigSchemaResponse{
+		AccessSchemaJson: cs.AccessSchemaJSON,
+		DeploySchemaJson: cs.DeploySchemaJSON,
+		I18NResources:    i18n,
+	}, nil
+}
+
+func decodeConfigSchema(resp *proto.GetConfigSchemaResponse) *ConfigSchema {
+	i18n := make(map[string]map[string]string, len(resp.I18NResources))
+	for locale, sm := range resp.I18NResources {
+		i18n[locale] = sm.GetEntries()
+	}
+	return &ConfigSchema{
+		AccessSchemaJSON: resp.AccessSchemaJson,
+		DeploySchemaJSON: resp.DeploySchemaJson,
+		I18n:             i18n,
+	}
+}
+
 type DeployerGRPCPlugin struct {
 	githubplugin.NetRPCUnsupportedPlugin
 
@@ -72,34 +149,11 @@ type deployerGRPCServer struct {
 }
 
 func (s *deployerGRPCServer) GetMetadata(ctx context.Context, _ *proto.GetMetadataRequest) (*proto.GetMetadataResponse, error) {
-	m, err := s.impl.GetMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return &proto.GetMetadataResponse{
-		ProviderType:         m.ProviderType,
-		AccessProviderType:   m.AccessProviderType,
-		ProtocolVersion:      m.ProtocolVersion,
-		DeployCategory:       m.DeployCategory,
-		DeployDisplayNameKey: m.DeployDisplayNameKey,
-		AccessDisplayNameKey: m.AccessDisplayNameKey,
-	}, nil
+	return encodeMetadata(s.impl.GetMetadata(ctx))
 }
 
 func (s *deployerGRPCServer) GetConfigSchema(ctx context.Context, _ *proto.GetConfigSchemaRequest) (*proto.GetConfigSchemaResponse, error) {
-	cs, err := s.impl.GetConfigSchema(ctx)
-	if err != nil {
-		return nil, err
-	}
-	i18n := make(map[string]*proto.StringMap, len(cs.I18n))
-	for locale, entries := range cs.I18n {
-		i18n[locale] = &proto.StringMap{Entries: entries}
-	}
-	return &proto.GetConfigSchemaResponse{
-		AccessSchemaJson: cs.AccessSchemaJSON,
-		DeploySchemaJson: cs.DeploySchemaJSON,
-		I18NResources:    i18n,
-	}, nil
+	return encodeConfigSchema(s.impl.GetConfigSchema(ctx))
 }
 
 func (s *deployerGRPCServer) Deploy(req *proto.DeployRequest, stream proto.DeployerPlugin_DeployServer) error {
@@ -131,14 +185,7 @@ func (c *deployerGRPCClient) GetMetadata(ctx context.Context) (*Metadata, error)
 	if err != nil {
 		return nil, err
 	}
-	return &Metadata{
-		ProviderType:         resp.ProviderType,
-		AccessProviderType:   resp.AccessProviderType,
-		ProtocolVersion:      resp.ProtocolVersion,
-		DeployCategory:       resp.DeployCategory,
-		DeployDisplayNameKey: resp.DeployDisplayNameKey,
-		AccessDisplayNameKey: resp.AccessDisplayNameKey,
-	}, nil
+	return decodeMetadata(resp), nil
 }
 
 func (c *deployerGRPCClient) GetConfigSchema(ctx context.Context) (*ConfigSchema, error) {
@@ -146,15 +193,7 @@ func (c *deployerGRPCClient) GetConfigSchema(ctx context.Context) (*ConfigSchema
 	if err != nil {
 		return nil, err
 	}
-	i18n := make(map[string]map[string]string, len(resp.I18NResources))
-	for locale, sm := range resp.I18NResources {
-		i18n[locale] = sm.GetEntries()
-	}
-	return &ConfigSchema{
-		AccessSchemaJSON: resp.AccessSchemaJson,
-		DeploySchemaJSON: resp.DeploySchemaJson,
-		I18n:             i18n,
-	}, nil
+	return decodeConfigSchema(resp), nil
 }
 
 func (c *deployerGRPCClient) Deploy(ctx context.Context, req *DeployRequest, logger *slog.Logger) (*DeployResult, error) {

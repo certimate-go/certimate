@@ -18,18 +18,23 @@ func TestRuntimeDirectoryFollowsFactoryLifetime(t *testing.T) {
 	dir := t.TempDir()
 	publish := func() deployers.ProviderFactoryFunc {
 		t.Helper()
+		factory := &pluginDeployerFactory{}
 		p := &registeredPlugin{
-			source:     &plugin.DiscoveredPlugin{Manifest: &plugin.Manifest{ProviderType: name}},
-			runtimeDir: dir, factory: &pluginDeployerFactory{}, entry: &CatalogEntry{ProviderType: name},
+			source:      &plugin.DiscoveredPlugin{Manifest: &plugin.Manifest{ProviderType: name, Capability: plugin.CapabilityDeploy}},
+			runtimeDir:  dir,
+			capability:  plugin.CapabilityDeploy,
+			factory:     factory,
+			newDeployer: factory.new,
+			entry:       &CatalogEntry{ProviderType: name},
 		}
 		if err := catalog.publish(p); err != nil {
 			t.Fatal(err)
 		}
-		factory, err := deployers.Registries.Get(domain.DeploymentProviderType(name))
+		factoryFn, err := deployers.Registries.Get(domain.DeploymentProviderType(name))
 		if err != nil {
 			t.Fatal(err)
 		}
-		return factory
+		return factoryFn
 	}
 	factory := publish()
 	catalog.unregister(name)

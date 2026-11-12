@@ -31,6 +31,7 @@ func manifestJSON(overrides ...func(map[string]any)) string {
 		"version":              "0.1.0",
 		"provider_type":        "demo",
 		"access_provider_type": "demo",
+		"capability":           CapabilityDeploy,
 		"display_name_key":     "plugin.demo.name",
 		"deploy_category":      "other",
 		"protocol_version":     ProtocolVersion,

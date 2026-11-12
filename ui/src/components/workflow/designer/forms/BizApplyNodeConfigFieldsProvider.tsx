@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
 import { type ACMEDns01ProviderType, type ACMEHttp01ProviderType, ACME_DNS01_PROVIDERS, ACME_HTTP01_PROVIDERS } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 import BizApplyNodeConfigFieldsProviderAliyunESA from "./BizApplyNodeConfigFieldsProviderAliyunESA";
 import BizApplyNodeConfigFieldsProviderAWSLightsail from "./BizApplyNodeConfigFieldsProviderAWSLightsail";
@@ -13,6 +15,7 @@ import BizApplyNodeConfigFieldsProviderOracleCloudDNS from "./BizApplyNodeConfig
 import BizApplyNodeConfigFieldsProviderS3 from "./BizApplyNodeConfigFieldsProviderS3";
 import BizApplyNodeConfigFieldsProviderSSH from "./BizApplyNodeConfigFieldsProviderSSH";
 import BizApplyNodeConfigFieldsProviderUCloudUDNR from "./BizApplyNodeConfigFieldsProviderUCloudUDNR";
+import SchemaConfigFields from "./SchemaConfigFields";
 
 const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React.ComponentType<any>>> = {
   /*
@@ -49,6 +52,25 @@ const useComponent = (
   provider: string,
   { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }
 ) => {
+  const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+  const catalogVersion = usePluginCatalogStore((s) => s.version);
+
+  useEffect(() => {
+    let cancelled = false;
+    setEnvelope(null);
+    if (!provider || challenge !== "dns-01") {
+      return;
+    }
+    void getProviderSchema(provider, "apply").then((env) => {
+      if (!cancelled) {
+        setEnvelope(env);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [challenge, provider, catalogVersion]);
+
   const initComponent = () => {
     const Component =
       challenge === "dns-01"
@@ -68,8 +90,13 @@ const useComponent = (
 
   const [component, setComponent] = useState(() => initComponent());
 
-  useEffect(() => setComponent(initComponent()), [challenge, provider]);
-  useEffect(() => setComponent(initComponent()), deps);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [challenge, provider, envelope]);
+  useEffect(() => {
+    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
+  }, deps);
 
   return component;
 };

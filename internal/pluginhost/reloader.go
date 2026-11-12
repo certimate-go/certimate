@@ -113,6 +113,11 @@ func (r *Reloader) reloadLocked(ctx context.Context) *ReloadResult {
 			continue
 		}
 		if _, err := os.Stat(old.source.Dir); os.IsNotExist(err) {
+			if old.ownsAccess {
+				if reusers := r.catalog.accessReusers(old.accessType); len(reusers) > 0 {
+					result.Errors = append(result.Errors, fmt.Sprintf("access owner %q is missing; access type %q still used by %v", name, old.accessType, reusers))
+				}
+			}
 			r.catalog.unregister(name)
 			result.Removed = append(result.Removed, name)
 		}
@@ -193,7 +198,11 @@ func (r *Reloader) activate(ctx context.Context, providerType, tmpDir string, up
 	if err != nil {
 		return rollback(err)
 	}
-	if err := r.catalog.publish(prepared); err != nil {
+	ordered, resolveErrs := r.catalog.resolveAccessOwnership([]*registeredPlugin{prepared})
+	if len(resolveErrs) > 0 {
+		return rollback(resolveErrs[0])
+	}
+	if err := r.catalog.publish(ordered[0]); err != nil {
 		return rollback(err)
 	}
 	published = true
@@ -211,6 +220,9 @@ func (r *Reloader) remove(ctx context.Context, providerType string) (*ReloadResu
 		return nil, err
 	}
 	defer r.mu.Unlock()
+	if err := r.catalog.refuseRemoval(providerType); err != nil {
+		return nil, err
+	}
 	if err := os.RemoveAll(filepath.Join(r.cfg.PluginDir, providerType)); err != nil {
 		return nil, err
 	}

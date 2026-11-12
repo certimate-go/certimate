@@ -4,11 +4,11 @@ import (
 	githubplugin "github.com/hashicorp/go-plugin"
 )
 
-const ProtocolVersion = 2
+const ProtocolVersion = 3
 
 const MagicCookieKey = "CERTIMATE_PLUGIN"
 
-const MagicCookieValue = "certimate-deployer-plugin"
+const MagicCookieValue = "certimate-plugin"
 
 var HandshakeConfig = githubplugin.HandshakeConfig{
 	ProtocolVersion:  ProtocolVersion,

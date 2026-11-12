@@ -16,6 +16,14 @@ func LoadDeploySchema(fsys embed.FS) ([]byte, error) {
 	return data, nil
 }
 
+func LoadProviderSchema(fsys embed.FS) ([]byte, error) {
+	data, err := fsys.ReadFile("schema/config.json")
+	if err != nil {
+		return nil, fmt.Errorf("plugin: embedded provider schema not found: %w", err)
+	}
+	return data, nil
+}
+
 func LoadAccessSchema(fsys embed.FS) ([]byte, error) {
 	data, err := fsys.ReadFile("schema/access.json")
 	if err != nil {

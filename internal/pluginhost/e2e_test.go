@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"math/big"
@@ -25,8 +26,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
 	"github.com/certimate-go/certimate/internal/domain"
+	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/internal/repository"
@@ -94,15 +97,20 @@ func setupE2EPlugin(t *testing.T, root, providerType, accessType string, fixture
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatal(err)
 	}
+	if fixture == nil {
+		fixture = map[string]any{}
+	}
+	capability := plugin.CapabilityDeploy
+	if c, ok := fixture["capability"].(string); ok && c != "" {
+		capability = c
+	}
 	manifest := plugin.Manifest{
 		Version: "0.1.0", ProviderType: providerType, AccessProviderType: accessType,
+		Capability: capability,
 		DisplayNameKey: "plugin.e2e.name", DeployCategory: "other",
 		ProtocolVersion: plugin.ProtocolVersion, Binary: "webhook-deployer",
 	}
 	writeFixtureJSON(t, filepath.Join(dir, "manifest.json"), manifest)
-	if fixture == nil {
-		fixture = map[string]any{}
-	}
 	if _, ok := fixture["providerType"]; !ok {
 		fixture["providerType"] = providerType
 	}
@@ -269,42 +277,47 @@ func TestE2E_SchemaEndpointServesPluginEnvelope(t *testing.T) {
 }
 
 func TestE2E_IncompatibleVersionRejected(t *testing.T) {
-	bin := buildPilot(t)
-	dir := t.TempDir()
-	pluginDir := filepath.Join(dir, "bad-version")
-	if err := os.MkdirAll(pluginDir, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	manifest := map[string]any{
-		"provider_type":        "bad-version",
-		"access_provider_type": "bad-version-access",
-		"protocol_version":     999,
-		"binary":               "webhook-deployer",
-	}
-	mb, _ := json.Marshal(manifest)
-	if err := os.WriteFile(filepath.Join(pluginDir, "manifest.json"), mb, 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Symlink(bin, filepath.Join(pluginDir, "webhook-deployer")); err != nil {
-		t.Fatal(err)
-	}
+	for _, protocolVersion := range []int{2, 999} {
+		t.Run(fmt.Sprintf("v%d", protocolVersion), func(t *testing.T) {
+			bin := buildPilot(t)
+			dir := t.TempDir()
+			pluginDir := filepath.Join(dir, "bad-version")
+			if err := os.MkdirAll(pluginDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			manifest := map[string]any{
+				"provider_type":        "bad-version",
+				"access_provider_type": "bad-version-access",
+				"capability":           plugin.CapabilityDeploy,
+				"protocol_version":     protocolVersion,
+				"binary":               "webhook-deployer",
+			}
+			mb, _ := json.Marshal(manifest)
+			if err := os.WriteFile(filepath.Join(pluginDir, "manifest.json"), mb, 0o644); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Symlink(bin, filepath.Join(pluginDir, "webhook-deployer")); err != nil {
+				t.Fatal(err)
+			}
 
-	_, errs := pluginhost.ScanAndRegister(context.Background(), plugin.PluginConfig{
-		PluginDir: dir, CoreVersion: "0.4.28",
-	}, slog.Default())
-	if len(errs) == 0 {
-		t.Fatal("expected incompatible-version plugin to be rejected")
-	}
-	var inc *plugin.ErrPluginIncompatible
-	found := false
-	for _, e := range errs {
-		if errors.As(e, &inc) {
-			found = true
-			break
-		}
-	}
-	if !found {
-		t.Fatalf("expected ErrPluginIncompatible, got %+v", errs)
+			_, errs := pluginhost.ScanAndRegister(context.Background(), plugin.PluginConfig{
+				PluginDir: dir, CoreVersion: "0.4.28",
+			}, slog.Default())
+			if len(errs) == 0 {
+				t.Fatal("expected incompatible-version plugin to be rejected")
+			}
+			var inc *plugin.ErrPluginIncompatible
+			found := false
+			for _, e := range errs {
+				if errors.As(e, &inc) {
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("expected ErrPluginIncompatible, got %+v", errs)
+			}
+		})
 	}
 }
 
@@ -567,6 +580,156 @@ func jsonMap(raw []byte) map[string]any {
 	return m
 }
 
+type dnsFixtureCall struct {
+	Action  string `json:"action"`
+	Domain  string `json:"domain"`
+	Token   string `json:"token"`
+	KeyAuth string `json:"keyAuth"`
+	Auth    string `json:"-"`
+	Pid     int    `json:"pid"`
+}
+
+func TestE2E_DnsChallengerThroughCatalog(t *testing.T) {
+	const providerType = "e2e-dns-provider"
+	const accessType = "e2e-dns-access"
+	calls := make(chan dnsFixtureCall, 4)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var call dnsFixtureCall
+		if err := json.NewDecoder(r.Body).Decode(&call); err != nil {
+			t.Error(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		call.Auth = r.Header.Get("Authorization")
+		calls <- call
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	root := t.TempDir()
+	setupE2EPlugin(t, root, providerType, accessType, map[string]any{"capability": plugin.CapabilityDns})
+	catalog, errs := pluginhost.ScanAndRegister(context.Background(), plugin.PluginConfig{PluginDir: root, CoreVersion: "0.4.28"}, slog.Default())
+	t.Cleanup(catalog.Close)
+	if len(errs) != 0 {
+		t.Fatal(errs)
+	}
+	entries := catalog.Entries()
+	if len(entries) != 1 || entries[0].Capability != plugin.CapabilityDns || !entries[0].OwnsAccess {
+		t.Fatalf("dns plugin catalog entry wrong: %+v", entries)
+	}
+	if _, err := deployers.Registries.Get(domain.DeploymentProviderType(providerType)); err == nil {
+		t.Fatal("dns plugin must not register as deployer")
+	}
+	factory, err := certifiers.ACMEDns01Registries.Get(domain.ACMEDns01ProviderType(providerType))
+	if err != nil {
+		t.Fatalf("dns plugin not in dns01 registry: %v", err)
+	}
+	challenger, err := factory(&certifiers.ProviderFactoryOptions{
+		ProviderAccessConfig:   map[string]any{"url": srv.URL, "token": "dns-secret"},
+		ProviderExtendedConfig: map[string]any{},
+		DnsPropagationTimeout:  120,
+		DnsTTL:                 60,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	if err := challenger.Present(ctx, "_acme-challenge.example.com", "dns-token-1", "dns-key-1"); err != nil {
+		t.Fatalf("present: %v", err)
+	}
+	if err := challenger.CleanUp(ctx, "_acme-challenge.example.com", "dns-token-1", "dns-key-1"); err != nil {
+		t.Fatalf("cleanup: %v", err)
+	}
+	var present, cleanup dnsFixtureCall
+	select {
+	case present = <-calls:
+	default:
+		t.Fatal("present did not reach fixture dns api")
+	}
+	select {
+	case cleanup = <-calls:
+	default:
+		t.Fatal("cleanup did not reach fixture dns api")
+	}
+	if present.Action != "present" || cleanup.Action != "cleanup" {
+		t.Fatalf("unexpected actions: %+v %+v", present, cleanup)
+	}
+	if present.Domain != "_acme-challenge.example.com" || present.Token != "dns-token-1" || present.KeyAuth != "dns-key-1" {
+		t.Fatalf("challenge material not forwarded: %+v", present)
+	}
+	if present.Auth != "Bearer dns-secret" || cleanup.Auth != "Bearer dns-secret" {
+		t.Fatalf("access credentials not forwarded: %+v %+v", present, cleanup)
+	}
+	if present.Pid == 0 || present.Pid != cleanup.Pid {
+		t.Fatalf("present and cleanup must run in the same held process: %d vs %d", present.Pid, cleanup.Pid)
+	}
+}
+
+type notifyFixtureCall struct {
+	Subject string `json:"subject"`
+	Message string `json:"message"`
+	Auth    string `json:"-"`
+}
+
+func TestE2E_NotifierThroughCatalog(t *testing.T) {
+	const providerType = "e2e-notify-provider"
+	calls := make(chan notifyFixtureCall, 2)
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var call notifyFixtureCall
+		if err := json.NewDecoder(r.Body).Decode(&call); err != nil {
+			t.Error(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		call.Auth = r.Header.Get("Authorization")
+		calls <- call
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	root := t.TempDir()
+	setupE2EPlugin(t, root, providerType, providerType, map[string]any{"capability": plugin.CapabilityNotify})
+	catalog, errs := pluginhost.ScanAndRegister(context.Background(), plugin.PluginConfig{PluginDir: root, CoreVersion: "0.4.28"}, slog.Default())
+	t.Cleanup(catalog.Close)
+	if len(errs) != 0 {
+		t.Fatal(errs)
+	}
+	entries := catalog.Entries()
+	if len(entries) != 1 || entries[0].Capability != plugin.CapabilityNotify {
+		t.Fatalf("notify plugin catalog entry wrong: %+v", entries)
+	}
+	factory, err := notifiers.Registries.Get(domain.NotificationProviderType(providerType))
+	if err != nil {
+		t.Fatalf("notify plugin not in notifier registry: %v", err)
+	}
+	notifier, err := factory(&notifiers.ProviderFactoryOptions{
+		ProviderAccessConfig:   map[string]any{"url": srv.URL, "token": "notify-secret"},
+		ProviderExtendedConfig: map[string]any{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := notifier.Notify(context.Background(), "cert issued", "example.com done")
+	if err != nil {
+		t.Fatalf("notify: %v", err)
+	}
+	if result == nil || result.ExtendedData["notified"] != true {
+		t.Fatalf("notify result missing extended data: %+v", result)
+	}
+	select {
+	case call := <-calls:
+		if call.Subject != "cert issued" || call.Message != "example.com done" {
+			t.Fatalf("notify payload wrong: %+v", call)
+		}
+		if call.Auth != "Bearer notify-secret" {
+			t.Fatalf("notify credentials not forwarded: %+v", call)
+		}
+	default:
+		t.Fatal("notify did not reach fixture endpoint")
+	}
+}
+
 type captureSink struct {
 	mu      sync.Mutex
 	records []sinkRecord
@@ -621,62 +784,109 @@ func TestE2E_AccessSchemaCanShareBuiltInDeployName(t *testing.T) {
 	}
 }
 
-func TestE2E_SharedAccessSchemaOwnerHandoff(t *testing.T) {
+func TestE2E_AccessOwnershipSingleOwnerRules(t *testing.T) {
 	const accessType = "e2e-shared-access"
-	root := t.TempDir()
-	owner := setupE2EPlugin(t, root, "e2e-shared-a", accessType, map[string]any{"accessField": "tokenA"})
-	backup := setupE2EPlugin(t, root, "e2e-shared-b", accessType, map[string]any{"accessField": "tokenB"})
-	cfg := plugin.PluginConfig{PluginDir: root}
-	catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, slog.Default())
-	t.Cleanup(catalog.Close)
-	if len(errs) != 0 {
-		t.Fatal(errs)
-	}
 	svc := providerschema.NewProviderSchemaService(repository.NewProviderSchemaRepository())
-	first, err := svc.GetByProviderType(context.Background(), accessType, providerschema.CategoryAccess)
-	if err != nil || !hasColumn(first, "tokenA") {
-		t.Fatalf("wrong initial owner: %+v %v", first, err)
-	}
-	fixturePath := filepath.Join(owner, "fixture.json")
-	info, err := os.Stat(fixturePath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	original, err := os.ReadFile(fixturePath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(fixturePath, []byte(strings.ReplaceAll(string(original), "tokenA", "tokenZ")), info.Mode()); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chtimes(fixturePath, info.ModTime(), info.ModTime()); err != nil {
-		t.Fatal(err)
-	}
-	reloader := pluginhost.NewReloader(cfg, catalog, slog.Default())
-	if result := reloader.ReloadNow(context.Background()); len(result.Errors) != 0 {
-		t.Fatal(result.Errors)
-	}
-	updated, err := svc.GetByProviderType(context.Background(), accessType, providerschema.CategoryAccess)
-	if err != nil || !hasColumn(updated, "tokenZ") || hasColumn(updated, "tokenA") {
-		t.Fatalf("shared owner update stale: %+v %v", updated, err)
-	}
-	if err := os.RemoveAll(owner); err != nil {
-		t.Fatal(err)
-	}
-	if result := reloader.ReloadNow(context.Background()); len(result.Errors) != 0 {
-		t.Fatal(result.Errors)
-	}
-	remaining, err := svc.GetByProviderType(context.Background(), accessType, providerschema.CategoryAccess)
-	if err != nil || !hasColumn(remaining, "tokenB") || hasColumn(remaining, "tokenZ") {
-		t.Fatalf("remaining contributor lost schema: %+v %v", remaining, err)
-	}
-	if err := os.RemoveAll(backup); err != nil {
-		t.Fatal(err)
-	}
-	if result := reloader.ReloadNow(context.Background()); len(result.Errors) != 0 {
-		t.Fatal(result.Errors)
-	}
-	if _, err := svc.GetByProviderType(context.Background(), accessType, providerschema.CategoryAccess); err == nil {
-		t.Fatal("schema survived after last contributor was removed")
-	}
+
+	t.Run("dual owner fails naming both", func(t *testing.T) {
+		root := t.TempDir()
+		setupE2EPlugin(t, root, "e2e-shared-a", accessType, map[string]any{"accessField": "tokenA"})
+		setupE2EPlugin(t, root, "e2e-shared-b", accessType, map[string]any{"accessField": "tokenB"})
+		catalog, errs := pluginhost.ScanAndRegister(context.Background(), plugin.PluginConfig{PluginDir: root}, slog.Default())
+		t.Cleanup(catalog.Close)
+		if len(errs) != 1 {
+			t.Fatalf("expected exactly one ownership error: %+v", errs)
+		}
+		msg := errs[0].Error()
+		if !strings.Contains(msg, "e2e-shared-a") || !strings.Contains(msg, "e2e-shared-b") || !strings.Contains(msg, accessType) {
+			t.Fatalf("error must name both claimants and the access type: %s", msg)
+		}
+		if len(catalog.Entries()) != 1 || catalog.Entries()[0].ProviderType != "e2e-shared-a" {
+			t.Fatalf("first owner must load, second must fail: %+v", catalog.Entries())
+		}
+		if !catalog.Entries()[0].OwnsAccess {
+			t.Fatal("owner entry must expose ownsAccess")
+		}
+	})
+
+	t.Run("reuser without owner fails", func(t *testing.T) {
+		root := t.TempDir()
+		setupE2EPlugin(t, root, "e2e-orphan-reuser", accessType, map[string]any{"omitAccessSchema": true})
+		catalog, errs := pluginhost.ScanAndRegister(context.Background(), plugin.PluginConfig{PluginDir: root}, slog.Default())
+		t.Cleanup(catalog.Close)
+		if len(errs) != 1 {
+			t.Fatalf("expected one orphan-reuser error: %+v", errs)
+		}
+		msg := errs[0].Error()
+		if !strings.Contains(msg, "e2e-orphan-reuser") || !strings.Contains(msg, accessType) {
+			t.Fatalf("error must name reuser and access type: %s", msg)
+		}
+		if len(catalog.Entries()) != 0 {
+			t.Fatalf("orphan reuser must not register: %+v", catalog.Entries())
+		}
+	})
+
+	t.Run("owner updates schema and vanishing reports missing", func(t *testing.T) {
+		root := t.TempDir()
+		owner := setupE2EPlugin(t, root, "e2e-dns-owner", accessType, map[string]any{"accessField": "tokenA"})
+		reuser := setupE2EPlugin(t, root, "e2e-deploy-reuser", accessType, map[string]any{"omitAccessSchema": true})
+		cfg := plugin.PluginConfig{PluginDir: root}
+		catalog, errs := pluginhost.ScanAndRegister(context.Background(), cfg, slog.Default())
+		t.Cleanup(catalog.Close)
+		if len(errs) != 0 {
+			t.Fatal(errs)
+		}
+		if len(catalog.Entries()) != 2 {
+			t.Fatalf("owner + reuser must both register: %+v", catalog.Entries())
+		}
+		reloader := pluginhost.NewReloader(cfg, catalog, slog.Default())
+
+		fixturePath := filepath.Join(owner, "fixture.json")
+		info, err := os.Stat(fixturePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		original, err := os.ReadFile(fixturePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(fixturePath, []byte(strings.ReplaceAll(string(original), "tokenA", "tokenZ")), info.Mode()); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Chtimes(fixturePath, info.ModTime(), info.ModTime()); err != nil {
+			t.Fatal(err)
+		}
+		if result := reloader.ReloadNow(context.Background()); len(result.Errors) != 0 || len(result.Changed) != 1 {
+			t.Fatalf("owner update failed: %+v", result)
+		}
+		updated, err := svc.GetByProviderType(context.Background(), accessType, providerschema.CategoryAccess)
+		if err != nil || !hasColumn(updated, "tokenZ") || hasColumn(updated, "tokenA") {
+			t.Fatalf("owner update stale: %+v %v", updated, err)
+		}
+
+		if err := os.RemoveAll(owner); err != nil {
+			t.Fatal(err)
+		}
+		vanished := reloader.ReloadNow(context.Background())
+		if len(vanished.Removed) != 1 || vanished.Removed[0] != "e2e-dns-owner" {
+			t.Fatalf("owner vanish must unregister owner: %+v", vanished)
+		}
+		if len(vanished.Errors) != 1 || !strings.Contains(vanished.Errors[0], accessType) || !strings.Contains(vanished.Errors[0], "e2e-deploy-reuser") {
+			t.Fatalf("owner vanish must report access owner missing with reuser: %+v", vanished)
+		}
+		if _, err := deployers.Registries.Get(domain.DeploymentProviderType("e2e-deploy-reuser")); err != nil {
+			t.Fatalf("reuser deployer must survive owner vanish: %v", err)
+		}
+		if _, err := svc.GetByProviderType(context.Background(), accessType, providerschema.CategoryAccess); err == nil {
+			t.Fatal("access schema must be gone after owner vanish")
+		}
+
+		if err := os.RemoveAll(reuser); err != nil {
+			t.Fatal(err)
+		}
+		final := reloader.ReloadNow(context.Background())
+		if len(final.Errors) != 0 || len(final.Removed) != 1 {
+			t.Fatalf("reuser removal after owner gone must be clean: %+v", final)
+		}
+	})
 }

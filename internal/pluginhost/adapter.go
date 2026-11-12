@@ -6,8 +6,13 @@ import (
 	"log/slog"
 	"runtime"
 	"sync"
+	"time"
 
+	"github.com/go-acme/lego/v5/challenge/dns01"
+
+	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
+	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/plugin"
 )
@@ -66,6 +71,144 @@ func (d *pluginDeployer) Deploy(ctx context.Context, certPEM, privkeyPEM string)
 	}
 
 	result := &core.DeployerDeployResult{}
+	if res != nil && res.ExtendedDataJSON != "" {
+		var extended map[string]any
+		if err := json.Unmarshal([]byte(res.ExtendedDataJSON), &extended); err == nil {
+			result.ExtendedData = extended
+		}
+	}
+	return result, nil
+}
+
+type pluginDnsChallengerFactory struct {
+	manager      *plugin.Manager
+	dp           *plugin.DiscoveredPlugin
+	providerType string
+	logLevel     string
+	logger       *slog.Logger
+}
+
+func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOptions) (core.ACMEChallenger, error) {
+	held, err := f.manager.StartDnsProvider(context.Background(), f.dp)
+	if err != nil {
+		return nil, err
+	}
+	challenger := &pluginDnsChallenger{
+		held:                held,
+		access:              options.ProviderAccessConfig,
+		extended:            options.ProviderExtendedConfig,
+		logLevel:            f.logLevel,
+		propagationTimeout:  options.DnsPropagationTimeout,
+		ttl:                 options.DnsTTL,
+		logger:              f.logger,
+	}
+	runtime.AddCleanup(challenger, func(h *plugin.HeldDnsProvider) { h.Close() }, held)
+	return challenger, nil
+}
+
+type pluginDnsChallenger struct {
+	held               *plugin.HeldDnsProvider
+	access             map[string]any
+	extended           map[string]any
+	logLevel           string
+	propagationTimeout int
+	ttl                int
+	logger             *slog.Logger
+}
+
+func (c *pluginDnsChallenger) Present(ctx context.Context, domain, token, keyAuth string) error {
+	if c.logger != nil {
+		c.logger.Info("presenting dns-01 challenge via plugin", slog.String("domain", domain))
+	}
+	req := &plugin.DnsRequest{
+		LogLevel:           c.logLevel,
+		AccessConfigJSON:   marshalJSON(c.access),
+		ExtendedConfigJSON: marshalJSON(c.extended),
+		Domain:             domain,
+		Token:              token,
+		KeyAuth:            keyAuth,
+	}
+	return c.held.Present(ctx, req)
+}
+
+func (c *pluginDnsChallenger) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	req := &plugin.DnsRequest{
+		LogLevel:           c.logLevel,
+		AccessConfigJSON:   marshalJSON(c.access),
+		ExtendedConfigJSON: marshalJSON(c.extended),
+		Domain:             domain,
+		Token:              token,
+		KeyAuth:            keyAuth,
+	}
+	return c.held.CleanUp(ctx, req)
+}
+
+func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {
+	timeout := dns01.DefaultPropagationTimeout
+	if c.propagationTimeout > 0 {
+		timeout = time.Duration(c.propagationTimeout) * time.Second
+	}
+	interval := dns01.DefaultPollingInterval
+	if c.ttl > 0 {
+		interval = time.Duration(c.ttl) * time.Second
+	}
+	return timeout, interval
+}
+
+type pluginNotifierFactory struct {
+	manager      *plugin.Manager
+	dp           *plugin.DiscoveredPlugin
+	providerType string
+	logLevel     string
+	logger       *slog.Logger
+	mu           sync.Mutex
+}
+
+func (f *pluginNotifierFactory) new(options *notifiers.ProviderFactoryOptions) (core.Notifier, error) {
+	return &pluginNotifier{
+		factory:  f,
+		access:   options.ProviderAccessConfig,
+		extended: options.ProviderExtendedConfig,
+		logger:   f.logger,
+	}, nil
+}
+
+type pluginNotifier struct {
+	factory  *pluginNotifierFactory
+	access   map[string]any
+	extended map[string]any
+	logger   *slog.Logger
+}
+
+func (n *pluginNotifier) SetLogger(logger *slog.Logger) {
+	if logger != nil {
+		n.logger = logger
+	}
+}
+
+func (n *pluginNotifier) Notify(ctx context.Context, subject, message string) (*core.NotifierNotifyResult, error) {
+	defer runtime.KeepAlive(n.factory)
+	n.factory.mu.Lock()
+	defer n.factory.mu.Unlock()
+
+	if n.logger != nil {
+		n.logger.Info("notifying via plugin", slog.String("provider", n.factory.providerType))
+	}
+
+	req := &plugin.NotifyRequest{
+		LogLevel:           n.factory.logLevel,
+		AccessConfigJSON:   marshalJSON(n.access),
+		ExtendedConfigJSON: marshalJSON(n.extended),
+		Subject:            subject,
+		Message:            message,
+	}
+
+	res, err := n.factory.manager.Notify(ctx, n.factory.dp, req)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &core.NotifierNotifyResult{}
 	if res != nil && res.ExtendedDataJSON != "" {
 		var extended map[string]any
 		if err := json.Unmarshal([]byte(res.ExtendedDataJSON), &extended); err == nil {

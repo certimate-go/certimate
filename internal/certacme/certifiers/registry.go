@@ -2,6 +2,7 @@ package certifiers
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
@@ -22,13 +23,20 @@ type Registry[T comparable] interface {
 	MustRegister(T, ProviderFactoryFunc)
 	MustRegisterAlias(T, T)
 	Get(T) (ProviderFactoryFunc, error)
+	Unregister(T)
+	SetOwned(T, string, ProviderFactoryFunc) error
+	RemoveOwned(T, string)
 }
 
 type registry[T comparable] struct {
+	mu        sync.RWMutex
 	factories map[T]ProviderFactoryFunc
+	owners    map[T]string
 }
 
 func (r *registry[T]) Register(name T, factory ProviderFactoryFunc) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if _, exists := r.factories[name]; exists {
 		return fmt.Errorf("provider '%v' already registered", name)
 	}
@@ -52,9 +60,12 @@ func (r *registry[T]) RegisterAlias(name T, alias T) error {
 }
 
 func (r *registry[T]) MustRegister(name T, factory ProviderFactoryFunc) {
-	if err := r.Register(name, factory); err != nil {
-		panic(err)
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if _, exists := r.factories[name]; exists {
+		panic(fmt.Sprintf("provider '%v' already registered", name))
 	}
+	r.factories[name] = factory
 }
 
 func (r *registry[T]) MustRegisterAlias(name T, alias T) {
@@ -64,6 +75,8 @@ func (r *registry[T]) MustRegisterAlias(name T, alias T) {
 }
 
 func (r *registry[T]) Get(name T) (ProviderFactoryFunc, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	if factory, exists := r.factories[name]; exists {
 		return factory, nil
 	}
@@ -71,8 +84,35 @@ func (r *registry[T]) Get(name T) (ProviderFactoryFunc, error) {
 	return nil, fmt.Errorf("provider '%v' not registered", name)
 }
 
+func (r *registry[T]) Unregister(name T) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.factories, name)
+	delete(r.owners, name)
+}
+
+func (r *registry[T]) SetOwned(name T, owner string, factory ProviderFactoryFunc) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if _, exists := r.factories[name]; exists && r.owners[name] != owner {
+		return fmt.Errorf("provider '%v' already registered", name)
+	}
+	r.factories[name] = factory
+	r.owners[name] = owner
+	return nil
+}
+
+func (r *registry[T]) RemoveOwned(name T, owner string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.owners[name] == owner {
+		delete(r.factories, name)
+		delete(r.owners, name)
+	}
+}
+
 func newRegistry[T comparable]() Registry[T] {
-	return &registry[T]{factories: make(map[T]ProviderFactoryFunc)}
+	return &registry[T]{factories: make(map[T]ProviderFactoryFunc), owners: make(map[T]string)}
 }
 
 var (

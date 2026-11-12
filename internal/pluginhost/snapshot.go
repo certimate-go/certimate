@@ -9,17 +9,26 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/certimate-go/certimate/internal/certacme/certifiers"
+	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
+	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 type registeredPlugin struct {
-	source      *plugin.DiscoveredPlugin
-	fingerprint string
-	runtimeDir  string
-	factory     *pluginDeployerFactory
-	envelopes   []*providerschema.Envelope
-	entry       *CatalogEntry
+	source        *plugin.DiscoveredPlugin
+	fingerprint   string
+	runtimeDir    string
+	capability    string
+	accessType    string
+	ownsAccess    bool
+	factory       any
+	newDeployer   deployers.ProviderFactoryFunc
+	newChallenger certifiers.ProviderFactoryFunc
+	newNotifier   notifiers.ProviderFactoryFunc
+	envelopes     []*providerschema.Envelope
+	entry         *CatalogEntry
 }
 
 func pluginFingerprint(dp *plugin.DiscoveredPlugin) (string, error) {

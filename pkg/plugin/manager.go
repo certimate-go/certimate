@@ -49,7 +49,7 @@ func (m *Manager) Bootstrap(ctx context.Context, dp *DiscoveredPlugin) (*Metadat
 	defer cancel()
 	var meta *Metadata
 	var schema *ConfigSchema
-	err := m.withPlugin(ctx, dp, noopRedactor, func(d Deployer) error {
+	err := m.withPlugin(ctx, dp, noopRedactor, func(d capabilityClient) error {
 		var err error
 		meta, err = d.GetMetadata(ctx)
 		if err != nil {
@@ -73,12 +73,86 @@ func (m *Manager) Deploy(ctx context.Context, dp *DiscoveredPlugin, req *DeployR
 	redact := redactorFor(req)
 	sink := newForwardLogger(forward, redact, m.cfg.MaxLogFrames)
 	var res *DeployResult
-	err := m.withPlugin(ctx, dp, redact, func(d Deployer) error {
+	err := m.withPlugin(ctx, dp, redact, func(d capabilityClient) error {
+		deployer, ok := d.(Deployer)
+		if !ok {
+			return &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve deploy", dp.Manifest.Capability)}
+		}
 		var err error
-		res, err = d.Deploy(ctx, req, sink)
+		res, err = deployer.Deploy(ctx, req, sink)
 		return err
 	})
 	return res, err
+}
+
+func (m *Manager) Notify(ctx context.Context, dp *DiscoveredPlugin, req *NotifyRequest) (*NotifyResult, error) {
+	if m.cfg.DeployTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, m.cfg.DeployTimeout)
+		defer cancel()
+	}
+	redact := redactorFor(&DeployRequest{
+		AccessConfigJSON:   req.AccessConfigJSON,
+		ExtendedConfigJSON: req.ExtendedConfigJSON,
+	})
+	var res *NotifyResult
+	err := m.withPlugin(ctx, dp, redact, func(d capabilityClient) error {
+		notifier, ok := d.(Notifier)
+		if !ok {
+			return &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve notify", dp.Manifest.Capability)}
+		}
+		var err error
+		res, err = notifier.Notify(ctx, req)
+		return err
+	})
+	return res, err
+}
+
+func (m *Manager) StartDnsProvider(ctx context.Context, dp *DiscoveredPlugin) (*HeldDnsProvider, error) {
+	ctx, cancel := context.WithTimeout(ctx, m.cfg.StartTimeout)
+	defer cancel()
+	d, err := m.dispense(dp)
+	if err != nil {
+		return nil, err
+	}
+	provider, ok := d.impl.(DnsProvider)
+	if !ok {
+		d.client.Kill()
+		return nil, &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve dns", dp.Manifest.Capability)}
+	}
+	return &HeldDnsProvider{manager: m, dp: dp, session: d, provider: provider}, nil
+}
+
+type HeldDnsProvider struct {
+	manager  *Manager
+	dp       *DiscoveredPlugin
+	session  *dispensed
+	provider DnsProvider
+	once     sync.Once
+}
+
+func (h *HeldDnsProvider) Present(ctx context.Context, req *DnsRequest) error {
+	err := h.provider.Present(ctx, req)
+	if err != nil {
+		h.release()
+	}
+	return h.manager.wrapError(h.dp, h.session, noopRedactor, err)
+}
+
+func (h *HeldDnsProvider) CleanUp(ctx context.Context, req *DnsRequest) error {
+	defer h.release()
+	err := h.provider.CleanUp(ctx, req)
+	return h.manager.wrapError(h.dp, h.session, noopRedactor, err)
+}
+
+func (h *HeldDnsProvider) Close() {
+	h.release()
+}
+
+func (h *HeldDnsProvider) release() {
+	h.once.Do(func() {
+		h.session.client.Kill()
+	})
 }
 
 type syncBuffer struct {
@@ -108,16 +182,25 @@ func (b *syncBuffer) tail(limit int) []byte {
 	return bytes.Clone(data)
 }
 
-type dispensed struct {
-	client   *githubplugin.Client
-	deployer Deployer
-	stderr   *syncBuffer
+type capabilityClient interface {
+	GetMetadata(ctx context.Context) (*Metadata, error)
+	GetConfigSchema(ctx context.Context) (*ConfigSchema, error)
 }
 
-func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *syncBuffer) *githubplugin.ClientConfig {
+type dispensed struct {
+	client *githubplugin.Client
+	impl   capabilityClient
+	stderr *syncBuffer
+}
+
+func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *syncBuffer) (*githubplugin.ClientConfig, error) {
+	plugins, _, err := PluginSetForCapability(dp.Manifest.Capability)
+	if err != nil {
+		return nil, &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: err.Error()}
+	}
 	cfg := &githubplugin.ClientConfig{
 		HandshakeConfig:  HandshakeConfig,
-		Plugins:          PluginSetForDeployer(),
+		Plugins:          plugins,
 		Cmd:              exec.Command(dp.BinaryPath),
 		AllowedProtocols: []githubplugin.Protocol{githubplugin.ProtocolGRPC},
 		Logger:           NewHclogLogger(m.logger),
@@ -129,31 +212,39 @@ func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *syncBuffer) *github
 	if stderr != nil {
 		cfg.Stderr = stderr
 	}
-	return cfg
+	return cfg, nil
 }
 
 func (m *Manager) dispense(dp *DiscoveredPlugin) (*dispensed, error) {
+	_, serviceName, err := PluginSetForCapability(dp.Manifest.Capability)
+	if err != nil {
+		return nil, &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: err.Error()}
+	}
 	stderr := &syncBuffer{}
-	client := githubplugin.NewClient(m.clientConfig(dp, stderr))
+	cfg, err := m.clientConfig(dp, stderr)
+	if err != nil {
+		return nil, err
+	}
+	client := githubplugin.NewClient(cfg)
 	rpcClient, err := client.Client()
 	if err != nil {
 		client.Kill()
 		return nil, mapStartError(dp, err)
 	}
-	raw, err := rpcClient.Dispense(PluginName)
+	raw, err := rpcClient.Dispense(serviceName)
 	if err != nil {
 		client.Kill()
 		return nil, fmt.Errorf("plugin: dispense %q: %w", dp.Manifest.ProviderType, err)
 	}
-	d, ok := raw.(Deployer)
+	impl, ok := raw.(capabilityClient)
 	if !ok {
 		client.Kill()
-		return nil, fmt.Errorf("plugin: dispensed %q is not a Deployer (%T)", dp.Manifest.ProviderType, raw)
+		return nil, fmt.Errorf("plugin: dispensed %q does not implement capability %q (%T)", dp.Manifest.ProviderType, dp.Manifest.Capability, raw)
 	}
-	return &dispensed{client: client, deployer: d, stderr: stderr}, nil
+	return &dispensed{client: client, impl: impl, stderr: stderr}, nil
 }
 
-func (m *Manager) withPlugin(ctx context.Context, dp *DiscoveredPlugin, redact secretRedactor, fn func(Deployer) error) error {
+func (m *Manager) withPlugin(ctx context.Context, dp *DiscoveredPlugin, redact secretRedactor, fn func(capabilityClient) error) error {
 	d, err := m.dispense(dp)
 	if err != nil {
 		return err
@@ -161,7 +252,7 @@ func (m *Manager) withPlugin(ctx context.Context, dp *DiscoveredPlugin, redact s
 	defer d.client.Kill()
 
 	done := make(chan error, 1)
-	go func() { done <- fn(d.deployer) }()
+	go func() { done <- fn(d.impl) }()
 	select {
 	case <-ctx.Done():
 		return ctx.Err()

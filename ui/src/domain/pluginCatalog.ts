@@ -1,5 +1,12 @@
 import type { PluginCatalogEntry } from "@/api/plugincatalog";
-import { ACCESS_USAGES, DEPLOYMENT_CATEGORIES, accessProvidersMap, deploymentProvidersMap } from "@/domain/provider";
+import {
+  ACCESS_USAGES,
+  DEPLOYMENT_CATEGORIES,
+  accessProvidersMap,
+  acmeDns01ProvidersMap,
+  deploymentProvidersMap,
+  notificationProvidersMap,
+} from "@/domain/provider";
 import i18n from "@/i18n";
 
 const PLUGIN_PLACEHOLDER_ICON =
@@ -17,9 +24,21 @@ const usageMap: Record<string, string> = {
   ca: ACCESS_USAGES.CA,
 };
 
+const defaultUsages: Record<string, string[]> = {
+  deploy: ["hosting"],
+  dns: ["dns"],
+  notify: ["notification"],
+};
+
 export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
   for (const [key, val] of deploymentProvidersMap) {
     if (val.source === "plugin") deploymentProvidersMap.delete(key);
+  }
+  for (const [key, val] of acmeDns01ProvidersMap) {
+    if (val.source === "plugin") acmeDns01ProvidersMap.delete(key);
+  }
+  for (const [key, val] of notificationProvidersMap) {
+    if (val.source === "plugin") notificationProvidersMap.delete(key);
   }
   for (const [key, val] of accessProvidersMap) {
     if (val.source === "plugin") accessProvidersMap.delete(key);
@@ -28,9 +47,31 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
   for (const entry of entries) {
     const accessType = entry.accessProviderType || entry.providerType;
 
-    const usages = (entry.accessUsages || ["hosting"]).map((u) => usageMap[u]).filter(Boolean);
+    const usages = (entry.accessUsages || defaultUsages[entry.capability] || ["hosting"]).map((u) => usageMap[u]).filter(Boolean);
 
-    if (entry.providerType && !deploymentProvidersMap.has(entry.providerType)) {
+    if (entry.capability === "dns") {
+      if (entry.providerType && !acmeDns01ProvidersMap.has(entry.providerType)) {
+        acmeDns01ProvidersMap.set(entry.providerType, {
+          type: entry.providerType as never,
+          provider: accessType as never,
+          name: entry.displayNameKey || `${pluginNamespace(entry.providerType)}.name`,
+          icon: entry.icon || PLUGIN_PLACEHOLDER_ICON,
+          builtin: false,
+          source: "plugin",
+        });
+      }
+    } else if (entry.capability === "notify") {
+      if (entry.providerType && !notificationProvidersMap.has(entry.providerType)) {
+        notificationProvidersMap.set(entry.providerType, {
+          type: entry.providerType as never,
+          provider: accessType as never,
+          name: entry.displayNameKey || `${pluginNamespace(entry.providerType)}.name`,
+          icon: entry.icon || PLUGIN_PLACEHOLDER_ICON,
+          builtin: false,
+          source: "plugin",
+        });
+      }
+    } else if (entry.providerType && !deploymentProvidersMap.has(entry.providerType)) {
       deploymentProvidersMap.set(entry.providerType, {
         type: entry.providerType as never,
         provider: accessType as never,
@@ -42,7 +83,7 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
       });
     }
 
-    if (accessType && !accessProvidersMap.has(accessType)) {
+    if (entry.ownsAccess && accessType && !accessProvidersMap.has(accessType)) {
       accessProvidersMap.set(accessType, {
         type: accessType as never,
         name: entry.accessDisplayNameKey || `${pluginNamespace(accessType)}.name`,
