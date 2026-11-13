@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -17,9 +18,13 @@ import (
 
 type marketService interface {
 	ListMarketPage(ctx context.Context, query pluginhost.MarketQuery) (*pluginhost.MarketPage, error)
-	Install(ctx context.Context, providerType string) (*pluginhost.InstallJob, error)
-	Delete(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
-	Update(ctx context.Context, providerType string) (*pluginhost.ReloadResult, error)
+	Install(ctx context.Context, providerType string, sources ...string) (*pluginhost.InstallJob, error)
+	Delete(ctx context.Context, providerType string, expected ...string) (*pluginhost.ReloadResult, error)
+	Update(ctx context.Context, providerType string, expected ...string) (*pluginhost.ReloadResult, error)
+	ListSources(context.Context) ([]pluginhost.MarketSourceStatus, error)
+	AddSource(context.Context, string) (pluginhost.MarketSourceStatus, error)
+	RemoveSource(context.Context, string) error
+	RefreshSource(context.Context, string) (pluginhost.MarketSourceStatus, error)
 	JobStatus(providerType string) (pluginhost.JobStatus, bool)
 }
 
@@ -30,6 +35,10 @@ type PluginMarketHandler struct {
 func NewPluginMarketHandler(rg *router.RouterGroup[*core.RequestEvent], service marketService) {
 	h := &PluginMarketHandler{service: service}
 	rg.GET("/plugin/market", h.listMarket)
+	rg.GET("/plugin/market/sources", h.listSources)
+	rg.POST("/plugin/market/sources", h.addSource)
+	rg.POST("/plugin/market/sources/{source}/refresh", h.refreshSource)
+	rg.DELETE("/plugin/market/sources/{source}", h.removeSource)
 	rg.POST("/plugin/market/install", h.install)
 	rg.GET("/plugin/market/install/status/{providerType}", h.installStatus)
 	rg.DELETE("/plugin/market/{providerType}", h.delete)
@@ -62,7 +71,7 @@ func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
 	}
 	entries, err := h.service.ListMarketPage(e.Request.Context(), pluginhost.MarketQuery{
 		Page: page, PerPage: perPage, Keyword: query.Get("keyword"), Status: status,
-		Capability: capability, Locale: query.Get("locale"), Refresh: query.Get("refresh") == "true",
+		Source: query.Get("source"), Capability: capability, Locale: query.Get("locale"), Refresh: query.Get("refresh") == "true",
 	})
 	if err != nil {
 		return resp.Err(e, err)
@@ -71,7 +80,8 @@ func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
 }
 
 type installRequest struct {
-	ProviderType string `json:"providerType"`
+	ProviderType string  `json:"providerType"`
+	Source       *string `json:"source"`
 }
 
 func (h *PluginMarketHandler) install(e *core.RequestEvent) error {
@@ -82,9 +92,9 @@ func (h *PluginMarketHandler) install(e *core.RequestEvent) error {
 	if req.ProviderType == "" {
 		return resp.Err(e, pluginhost.ErrMissingProviderType)
 	}
-	job, err := h.service.Install(e.Request.Context(), req.ProviderType)
+	job, err := h.service.Install(e.Request.Context(), req.ProviderType, optionalSource(req.Source)...)
 	if err != nil {
-		return resp.Err(e, err)
+		return marketError(e, err)
 	}
 	return resp.Ok(e, job.Status())
 }
@@ -106,7 +116,11 @@ func (h *PluginMarketHandler) delete(e *core.RequestEvent) error {
 	if providerType == "" {
 		return resp.Err(e, pluginhost.ErrMissingProviderType)
 	}
-	result, err := h.service.Delete(e.Request.Context(), providerType)
+	var expected []string
+	if query := e.Request.URL.Query(); query.Has("source") {
+		expected = []string{query.Get("source")}
+	}
+	result, err := h.service.Delete(e.Request.Context(), providerType, expected...)
 	if err != nil {
 		var dependencyError *pluginhost.AccessOwnerInUseError
 		if errors.As(err, &dependencyError) {
@@ -115,30 +129,89 @@ func (h *PluginMarketHandler) delete(e *core.RequestEvent) error {
 				*pluginhost.AccessOwnerInUseError
 			}{Reason: "access_owner_in_use", AccessOwnerInUseError: dependencyError}})
 		}
-		return resp.Err(e, err)
+		return marketError(e, err)
 	}
 	return resp.Ok(e, result)
 }
 
-type updateRequest struct {
-	ProviderType string `json:"providerType"`
-}
-
 func (h *PluginMarketHandler) updatePlugin(e *core.RequestEvent) error {
-	var req updateRequest
-	if err := json.NewDecoder(e.Request.Body).Decode(&req); err != nil {
+	var req installRequest
+	if err := json.NewDecoder(e.Request.Body).Decode(&req); err != nil && !errors.Is(err, io.EOF) {
 		return resp.Err(e, err)
 	}
-	providerType := req.ProviderType
-	if providerType == "" {
-		providerType = e.Request.PathValue("providerType")
+	providerType := e.Request.PathValue("providerType")
+	if req.ProviderType != "" && req.ProviderType != providerType {
+		return resp.Err(e, domain.ErrInvalidParams)
 	}
 	if providerType == "" {
 		return resp.Err(e, pluginhost.ErrMissingProviderType)
 	}
-	result, err := h.service.Update(e.Request.Context(), providerType)
+	result, err := h.service.Update(e.Request.Context(), providerType, optionalSource(req.Source)...)
+	if err != nil {
+		return marketError(e, err)
+	}
+	return resp.Ok(e, result)
+}
+
+func optionalSource(source *string) []string {
+	if source == nil {
+		return nil
+	}
+	return []string{*source}
+}
+
+func marketError(e *core.RequestEvent, err error) error {
+	var reason string
+	switch err {
+	case pluginhost.ErrInstallInProgress:
+		reason = "install_in_progress"
+	case pluginhost.ErrOwnershipConflict:
+		reason = "ownership_conflict"
+	case pluginhost.ErrOpInProgress:
+		reason = "operation_in_progress"
+	case pluginhost.ErrMarketBusy:
+		reason = "source_busy"
+	case pluginhost.ErrDuplicateMarket:
+		reason = "duplicate_source"
+	default:
+		return resp.Err(e, err)
+	}
+	return e.JSON(http.StatusOK, resp.Response{Code: http.StatusConflict, Msg: err.Error(), Data: map[string]string{"reason": reason}})
+}
+
+func (h *PluginMarketHandler) listSources(e *core.RequestEvent) error {
+	sources, err := h.service.ListSources(e.Request.Context())
 	if err != nil {
 		return resp.Err(e, err)
 	}
-	return resp.Ok(e, result)
+	return resp.Ok(e, sources)
+}
+
+func (h *PluginMarketHandler) addSource(e *core.RequestEvent) error {
+	var req struct {
+		Repository string `json:"repository"`
+	}
+	if err := e.BindBody(&req); err != nil {
+		return resp.Err(e, domain.ErrInvalidParams)
+	}
+	source, err := h.service.AddSource(e.Request.Context(), req.Repository)
+	if err != nil {
+		return marketError(e, err)
+	}
+	return resp.Ok(e, source)
+}
+
+func (h *PluginMarketHandler) refreshSource(e *core.RequestEvent) error {
+	source, err := h.service.RefreshSource(e.Request.Context(), e.Request.PathValue("source"))
+	if err != nil {
+		return marketError(e, err)
+	}
+	return resp.Ok(e, source)
+}
+
+func (h *PluginMarketHandler) removeSource(e *core.RequestEvent) error {
+	if err := h.service.RemoveSource(e.Request.Context(), e.Request.PathValue("source")); err != nil {
+		return marketError(e, err)
+	}
+	return resp.Ok(e, nil)
 }

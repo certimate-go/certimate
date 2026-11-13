@@ -1,10 +1,12 @@
 package pluginhost
 
 import (
+	"crypto/rand"
 	"sync"
 	"time"
 
 	"github.com/certimate-go/certimate/internal/domain"
+	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 type JobState string
@@ -24,16 +26,20 @@ func (s JobState) Terminal() bool {
 }
 
 type JobStatus struct {
-	ProviderType string        `json:"providerType"`
-	State        JobState      `json:"state"`
-	Stage        string        `json:"stage,omitempty"`
-	Error        string        `json:"error,omitempty"`
-	Downloaded   int64         `json:"downloaded,omitempty"`
-	Total        int64         `json:"total,omitempty"`
-	Result       *ReloadResult `json:"result,omitempty"`
+	ID           string              `json:"id"`
+	Source       plugin.MarketSource `json:"source"`
+	ProviderType string              `json:"providerType"`
+	State        JobState            `json:"state"`
+	Stage        string              `json:"stage,omitempty"`
+	Error        string              `json:"error,omitempty"`
+	Downloaded   int64               `json:"downloaded,omitempty"`
+	Total        int64               `json:"total,omitempty"`
+	Result       *ReloadResult       `json:"result,omitempty"`
 }
 
 type InstallJob struct {
+	id           string
+	source       plugin.MarketSource
 	providerType string
 	state        JobState
 	stage        string
@@ -46,7 +52,7 @@ type InstallJob struct {
 }
 
 func newInstallJob(providerType string) *InstallJob {
-	return &InstallJob{providerType: providerType, state: JobQueued, startedAt: time.Now()}
+	return &InstallJob{id: rand.Text(), providerType: providerType, state: JobQueued, startedAt: time.Now()}
 }
 
 func (j *InstallJob) setState(s JobState, stage string) {
@@ -97,7 +103,9 @@ func (j *InstallJob) Status() JobStatus {
 	defer j.mu.RUnlock()
 	total := max(0, j.total)
 	return JobStatus{
+		ID:           j.id,
 		ProviderType: j.providerType,
+		Source:       j.source,
 		State:        j.state,
 		Stage:        j.stage,
 		Error:        j.err,
@@ -174,4 +182,14 @@ func (s *jobStore) active() []JobStatus {
 		}
 	}
 	return statuses
+}
+
+func (s *jobStore) removeSource(source string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for provider, job := range s.jobs {
+		if job.source.ID == source {
+			delete(s.jobs, provider)
+		}
+	}
 }

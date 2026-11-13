@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconCheck, IconChevronDown, IconDots, IconDownload, IconFilter, IconPuzzle, IconRefresh, IconTrash, IconX } from "@tabler/icons-react";
-import { Alert, App, Button, Card, Dropdown, Empty, Input, type MenuProps, Pagination, Progress, Skeleton, Tag, Tooltip, theme } from "antd";
+import { Alert, App, Button, Card, Dropdown, Empty, Input, type MenuProps, Pagination, Progress, Select, Skeleton, Tag, Tooltip, theme } from "antd";
 import { ClientResponseError } from "pocketbase";
 
 import {
@@ -10,15 +10,19 @@ import {
   type MarketEntry,
   type MarketFilter,
   type MarketPage,
+  type PluginTarget,
   accessDependencyErrorSchema,
   deletePlugin,
   fetchMarketListing,
   getInstallStatus,
   installPlugin,
   isTerminalState,
+  marketConflictSchema,
   updatePlugin,
 } from "@/api/pluginmarket";
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
+import MarketSourcesModal from "./MarketSourcesModal";
+import OfficialBadge from "./OfficialBadge";
 
 const POLL_MS = 1000;
 const MAX_POLL_DELAY_MS = 30000;
@@ -28,6 +32,7 @@ const statusLabel: Record<string, string> = {
   update_available: "plugin.market.status.update_available",
   installed_manual: "plugin.market.status.installed_manual",
   unsupported_platform: "plugin.market.status.unsupported_platform",
+  ownership_conflict: "plugin.market.status.ownership_conflict",
 };
 
 const statusColor: Record<Exclude<MarketEntry["status"], "not_installed">, string> = {
@@ -35,6 +40,7 @@ const statusColor: Record<Exclude<MarketEntry["status"], "not_installed">, strin
   update_available: "processing",
   installed_manual: "default",
   unsupported_platform: "default",
+  ownership_conflict: "warning",
 };
 
 const jobStageLabelKey = (state: InstallJobStatus["state"]): string => {
@@ -83,6 +89,94 @@ const PluginList = () => {
   );
 };
 
+const pluginTarget = (entry: MarketEntry): PluginTarget => ({ providerType: entry.provider_type, source: entry.source.id });
+const cardKey = ({ source, providerType }: PluginTarget) => `${source}/${providerType}`;
+
+interface MarketCardActionsProps {
+  entry: MarketEntry;
+  job?: InstallJobStatus;
+  pollingError?: string;
+  speed?: number;
+  busy: boolean;
+  onRetry: () => void;
+  onInstall: () => void;
+  onUpdate: () => void;
+  onDelete: () => void;
+}
+
+const MarketCardActions = ({ entry, job, pollingError, speed, busy, onRetry, onInstall, onUpdate, onDelete }: MarketCardActionsProps) => {
+  const { t } = useTranslation();
+  const installing = !!job && !isTerminalState(job.state);
+  const failed = job?.state === "failed";
+
+  if (entry.canInstall && (pollingError || failed)) {
+    return (
+      <Button size="small" icon={<IconRefresh size={14} />} loading={busy} onClick={onRetry}>
+        {t("plugin.market.action.retry")}
+      </Button>
+    );
+  }
+
+  if (installing) {
+    const total = job?.total ?? 0;
+    const downloaded = job?.downloaded ?? 0;
+    const detailParts: string[] = [t(jobStageLabelKey(job!.state))];
+    if (total > 0) {
+      const pct = Math.min(100, Math.round((downloaded / total) * 100));
+      detailParts.push(`${formatBytes(downloaded)} / ${formatBytes(total)} (${pct}%)`);
+    } else if (downloaded > 0) {
+      detailParts.push(formatBytes(downloaded));
+    }
+    const sp = speed;
+    if (sp && sp > 0) {
+      detailParts.push(`${formatBytes(sp)}/s`);
+    }
+    const detail = detailParts.join("  ·  ");
+
+    if (job!.state === "downloading" && total > 0) {
+      const pct = Math.min(100, Math.max(0, Math.round((downloaded / total) * 100)));
+      return (
+        <Tooltip title={detail}>
+          <Progress type="circle" percent={pct} size={34} strokeWidth={10} />
+        </Tooltip>
+      );
+    }
+    return (
+      <Tooltip title={detail}>
+        <Tag color="processing" className="flex items-center gap-1">
+          <IconRefresh size={12} className="animate-spin" />
+          {job!.state === "downloading" ? formatBytes(downloaded) : t(jobStageLabelKey(job!.state))}
+        </Tag>
+      </Tooltip>
+    );
+  }
+
+  if (entry.canInstall) {
+    return (
+      <Button color="primary" variant="filled" size="small" icon={<IconDownload size={14} />} loading={busy} onClick={onInstall}>
+        {t("plugin.market.action.install")}
+      </Button>
+    );
+  }
+  const items: MenuProps["items"] = [];
+  if (entry.canUpdate) items.push({ key: "update", label: t("plugin.market.action.update"), icon: <IconRefresh size={14} />, onClick: onUpdate });
+  if (entry.canDelete) items.push({ key: "delete", label: t("plugin.market.action.delete"), icon: <IconTrash size={14} />, danger: true, onClick: onDelete });
+  if (!items.length) return null;
+  const name = entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+  return (
+    <Dropdown autoFocus placement="bottomRight" trigger={["click"]} menu={{ items }} disabled={busy}>
+      <Button
+        type="text"
+        size="small"
+        icon={<IconDots size={16} />}
+        loading={busy}
+        aria-haspopup="menu"
+        aria-label={t("plugin.market.action.more", { name })}
+      />
+    </Dropdown>
+  );
+};
+
 const PluginMarket = () => {
   const { t, i18n } = useTranslation();
   const { message, modal } = App.useApp();
@@ -99,11 +193,13 @@ const PluginMarket = () => {
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketFilter>("all");
   const [capabilityFilter, setCapabilityFilter] = useState<MarketCapabilityFilter>("all");
+  const [sourceFilter, setSourceFilter] = useState("");
+  const [sourcesOpen, setSourcesOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [jobs, setJobs] = useState<Record<string, InstallJobStatus>>({});
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
   const [pollingErrors, setPollingErrors] = useState<Record<string, string>>({});
-  const pollingRef = useRef<Set<string>>(new Set());
+  const pollingRef = useRef(new Map<string, PluginTarget & { jobId?: string }>());
   const pollingRequestsRef = useRef<Set<string>>(new Set());
   const pollingRetryRef = useRef<Record<string, { attempts: number; nextAt: number }>>({});
   const lastSampleRef = useRef<Record<string, { bytes: number; t: number }>>({});
@@ -116,15 +212,30 @@ const PluginMarket = () => {
       if (!quiet) setLoading(true);
       setError(null);
       try {
-        const data = await fetchMarketListing({ page, perPage, keyword, status: statusFilter, capability: capabilityFilter, locale: i18n.language, refresh });
-        if (request === listingRequestRef.current.generation) setListing(data);
+        const data = await fetchMarketListing({
+          page,
+          perPage,
+          keyword,
+          status: statusFilter,
+          capability: capabilityFilter,
+          locale: i18n.language,
+          refresh,
+          source: sourceFilter,
+        });
+        if (request === listingRequestRef.current.generation) {
+          if (sourceFilter && !data.sources.some(({ id }) => id === sourceFilter)) {
+            setSourceFilter("");
+            setPage(1);
+          }
+          setListing(data);
+        }
       } catch {
         if (request === listingRequestRef.current.generation) setError(t("plugin.market.error.load_failed"));
       } finally {
         if (request === listingRequestRef.current.generation) setLoading(false);
       }
     },
-    [t, page, perPage, keyword, statusFilter, capabilityFilter, i18n.language]
+    [t, page, perPage, keyword, statusFilter, capabilityFilter, sourceFilter, i18n.language]
   );
 
   const setOp = (pt: string, v: boolean) => {
@@ -142,9 +253,10 @@ const PluginMarket = () => {
   }, []);
 
   const startPolling = useCallback(
-    (pt: string) => {
-      clearPollingError(pt);
-      pollingRef.current.add(pt);
+    (target: PluginTarget, jobId?: string) => {
+      const key = cardKey(target);
+      clearPollingError(key);
+      pollingRef.current.set(key, { ...target, jobId });
     },
     [clearPollingError]
   );
@@ -202,20 +314,32 @@ const PluginMarket = () => {
 
   useEffect(() => {
     if (!listing?.activeJobs.length) return;
-    for (const job of listing.activeJobs) pollingRef.current.add(job.providerType);
+    for (const job of listing.activeJobs) {
+      const target = { providerType: job.providerType, source: job.source.id };
+      const key = cardKey(target);
+      if (pollingRef.current.get(key)?.jobId !== job.id) {
+        pollingRef.current.set(key, { ...target, jobId: job.id });
+      }
+    }
   }, [listing]);
 
   useEffect(() => {
     let cancelled = false;
     const id = window.setInterval(() => {
       const active = Array.from(pollingRef.current).filter(
-        (pt) => !pollingRequestsRef.current.has(pt) && Date.now() >= (pollingRetryRef.current[pt]?.nextAt ?? 0)
+        ([pt]) => !pollingRequestsRef.current.has(pt) && Date.now() >= (pollingRetryRef.current[pt]?.nextAt ?? 0)
       );
-      active.forEach(async (pt) => {
+      active.forEach(async ([pt, target]) => {
         pollingRequestsRef.current.add(pt);
         try {
-          const st = await getInstallStatus(pt);
-          if (cancelled) return;
+          const st = await getInstallStatus(target.providerType);
+          if (cancelled || pollingRef.current.get(pt) !== target) return;
+          if (st.source.id !== target.source || (target.jobId && st.id !== target.jobId)) {
+            pollingRef.current.delete(pt);
+            removeJob(pt);
+            setRevision((prev) => prev + 1);
+            return;
+          }
           clearPollingError(pt);
           const reloadError = st.result?.errors?.join("\n");
           const status = st.state === "installed" && reloadError ? { ...st, state: "failed" as const, error: reloadError } : st;
@@ -238,7 +362,7 @@ const PluginMarket = () => {
             if (!cancelled) setRevision((prev) => prev + 1);
           }
         } catch {
-          if (cancelled) return;
+          if (cancelled || pollingRef.current.get(pt) !== target) return;
           const attempts = (pollingRetryRef.current[pt]?.attempts ?? 0) + 1;
           pollingRetryRef.current[pt] = { attempts, nextAt: Date.now() + Math.min(MAX_POLL_DELAY_MS, POLL_MS * 2 ** Math.min(attempts, 5)) };
           setPollingErrors((prev) => ({ ...prev, [pt]: t("plugin.market.error.status_failed") }));
@@ -254,15 +378,17 @@ const PluginMarket = () => {
   }, [t, message, catalogReload, clearPollingError, recordSample, removeJob]);
 
   const handleInstall = async (entry: MarketEntry) => {
-    const pt = entry.provider_type;
+    const target = pluginTarget(entry);
+    const pt = cardKey(target);
     setOp(pt, true);
     try {
-      const initial = await installPlugin(pt);
+      const initial = await installPlugin(target);
       setJobs((prev) => ({ ...prev, [pt]: initial }));
-      startPolling(pt);
+      startPolling(target, initial.id);
     } catch (err) {
-      if (err && typeof err === "object" && "status" in err && err.status === 409) {
-        startPolling(pt);
+      const conflict = marketConflictSchema.safeParse(err instanceof ClientResponseError ? err.response.data : undefined);
+      if (conflict.success && conflict.data.reason === "install_in_progress") {
+        startPolling(target);
         return;
       }
       const msg = err instanceof Error ? err.message : t("plugin.market.error.install_failed");
@@ -273,10 +399,11 @@ const PluginMarket = () => {
   };
 
   const handleDelete = async (entry: MarketEntry) => {
-    const pt = entry.provider_type;
+    const target = pluginTarget(entry);
+    const pt = cardKey(target);
     setOp(pt, true);
     try {
-      const result = await deletePlugin(pt);
+      const result = await deletePlugin(target);
       removeJob(pt);
       await catalogReload();
       setRevision((prev) => prev + 1);
@@ -308,7 +435,7 @@ const PluginMarket = () => {
     const name = entry.display_name_key ? t(entry.display_name_key, pt) : pt;
     modal.confirm({
       title: <span className="text-error">{t("plugin.market.action.delete_modal_title")}</span>,
-      content: <span dangerouslySetInnerHTML={{ __html: t("plugin.market.action.delete_modal_content", { name }) }} />,
+      content: t("plugin.market.action.delete_modal_content", { name }),
       icon: (
         <span className="anticon" role="img">
           <IconTrash className="text-error" size="1em" />
@@ -321,10 +448,11 @@ const PluginMarket = () => {
   };
 
   const handleUpdate = async (entry: MarketEntry) => {
-    const pt = entry.provider_type;
+    const target = pluginTarget(entry);
+    const pt = cardKey(target);
     setOp(pt, true);
     try {
-      const result = await updatePlugin(pt);
+      const result = await updatePlugin(target);
       await catalogReload();
       setRevision((prev) => prev + 1);
       if (result.errors?.length) throw new Error(result.errors.join("\n"));
@@ -337,90 +465,16 @@ const PluginMarket = () => {
     }
   };
 
-  const renderActions = (entry: MarketEntry) => {
-    const pt = entry.provider_type;
-    const job = jobs[pt] ?? entry.job;
-    const busy = !!operating[pt];
-    const installing = !!job && !isTerminalState(job.state);
-    const failed = job?.state === "failed";
-
-    if (pollingErrors[pt] || (failed && entry.status === "not_installed")) {
-      return (
-        <Button size="small" icon={<IconRefresh size={14} />} loading={busy} onClick={() => (pollingErrors[pt] ? startPolling(pt) : void handleInstall(entry))}>
-          {t("plugin.market.action.retry")}
-        </Button>
-      );
-    }
-
-    if (installing) {
-      const total = job?.total ?? 0;
-      const downloaded = job?.downloaded ?? 0;
-      const detailParts: string[] = [t(jobStageLabelKey(job!.state))];
-      if (total > 0) {
-        const pct = Math.min(100, Math.round((downloaded / total) * 100));
-        detailParts.push(`${formatBytes(downloaded)} / ${formatBytes(total)} (${pct}%)`);
-      } else if (downloaded > 0) {
-        detailParts.push(formatBytes(downloaded));
-      }
-      const sp = speeds[pt];
-      if (sp && sp > 0) {
-        detailParts.push(`${formatBytes(sp)}/s`);
-      }
-      const detail = detailParts.join("  ·  ");
-
-      if (job!.state === "downloading" && total > 0) {
-        const pct = Math.min(100, Math.max(0, Math.round((downloaded / total) * 100)));
-        return (
-          <Tooltip title={detail}>
-            <Progress type="circle" percent={pct} size={34} strokeWidth={10} />
-          </Tooltip>
-        );
-      }
-      return (
-        <Tooltip title={detail}>
-          <Tag color="processing" className="flex items-center gap-1">
-            <IconRefresh size={12} className="animate-spin" />
-            {job!.state === "downloading" ? formatBytes(downloaded) : t(jobStageLabelKey(job!.state))}
-          </Tag>
-        </Tooltip>
-      );
-    }
-
-    let items: MenuProps["items"];
-    switch (entry.status) {
-      case "not_installed":
-        return (
-          <Button color="primary" variant="filled" size="small" icon={<IconDownload size={14} />} loading={busy} onClick={() => void handleInstall(entry)}>
-            {t("plugin.market.action.install")}
-          </Button>
-        );
-      case "installed":
-        items = [{ key: "delete", label: t("plugin.market.action.delete"), icon: <IconTrash size={14} />, danger: true, onClick: () => confirmDelete(entry) }];
-        break;
-      case "update_available":
-        items = [{ key: "update", label: t("plugin.market.action.update"), icon: <IconRefresh size={14} />, onClick: () => void handleUpdate(entry) }];
-        break;
-      default:
-        return null;
-    }
-    const name = entry.display_name_key ? t(entry.display_name_key, pt) : pt;
-    return (
-      <Dropdown autoFocus placement="bottomRight" trigger={["click"]} menu={{ items }} disabled={busy}>
-        <Button
-          type="text"
-          size="small"
-          icon={<IconDots size={16} />}
-          loading={busy}
-          aria-haspopup="menu"
-          aria-label={t("plugin.market.action.more", { name })}
-        />
-      </Dropdown>
-    );
+  const retryInstall = (entry: MarketEntry, job?: InstallJobStatus) => {
+    const target = pluginTarget(entry);
+    if (pollingErrors[cardKey(target)]) startPolling(target, job?.id);
+    else void handleInstall(entry);
   };
 
   const renderStatus = (entry: MarketEntry) => {
-    const job = jobs[entry.provider_type] ?? entry.job;
-    const pollingError = pollingErrors[entry.provider_type];
+    const key = cardKey(pluginTarget(entry));
+    const job = jobs[key] ?? entry.job;
+    const pollingError = pollingErrors[key];
     const errorDetails = [job?.error, pollingError].filter(Boolean).join("\n");
     const installing = !!job && !isTerminalState(job.state);
 
@@ -531,6 +585,20 @@ const PluginMarket = () => {
             <IconChevronDown size={14} />
           </Button>
         </Dropdown>
+        <Select
+          size="large"
+          className="min-w-40"
+          aria-label={t("plugin.market.sources.filter")}
+          value={sourceFilter}
+          options={[
+            { value: "", label: t("plugin.market.sources.all") },
+            ...(listing?.sources ?? []).map((source) => ({ value: source.id, label: source.repository })),
+          ]}
+          onChange={(value) => {
+            setSourceFilter(value);
+            setPage(1);
+          }}
+        />
         <Input.Search
           allowClear
           className="max-w-80 min-w-32 flex-1 text-sm placeholder:text-sm"
@@ -551,7 +619,39 @@ const PluginMarket = () => {
         >
           {t("plugin.market.action.refresh")}
         </Button>
+        <Button className="text-sm" size="large" onClick={() => setSourcesOpen(true)}>
+          {t("plugin.market.sources.manage")}
+        </Button>
       </div>
+      {sourcesOpen && (
+        <MarketSourcesModal
+          sources={listing?.sources ?? []}
+          onClose={() => setSourcesOpen(false)}
+          onChange={(removed) => {
+            listingRequestRef.current.generation++;
+            if (removed) {
+              for (const [key, target] of pollingRef.current) {
+                if (target.source === removed) {
+                  pollingRef.current.delete(key);
+                  removeJob(key);
+                }
+              }
+              setListing(
+                (current) =>
+                  current && {
+                    ...current,
+                    sources: current.sources.filter((source) => source.id !== removed),
+                    items: current.items.filter((entry) => entry.source.id !== removed),
+                    activeJobs: current.activeJobs.filter((job) => job.source.id !== removed),
+                  }
+              );
+              setSourceFilter((current) => (current === removed ? "" : current));
+              setPage(1);
+            }
+            setRevision((previous) => previous + 1);
+          }}
+        />
+      )}
       {activeFilters.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {activeFilters.map(({ value, options, clear, label }) => (
@@ -565,7 +665,17 @@ const PluginMarket = () => {
       {listing?.syncedAt && (
         <p className="mb-3 text-xs text-gray-500">{t("plugin.market.synced_at", { time: new Date(listing.syncedAt).toLocaleString(i18n.language) })}</p>
       )}
-      {listing?.refreshFailed && <Alert className="mb-4" type="warning" message={t("plugin.market.error.refresh_failed")} />}
+      {listing?.sources
+        .filter((source) => source.error && (!sourceFilter || source.id === sourceFilter))
+        .map((source) => (
+          <Alert
+            key={source.id}
+            className="mb-3"
+            type="warning"
+            title={`${source.repository} · ${t(source.stale ? "plugin.market.sources.stale" : "plugin.market.sources.unavailable")}`}
+            description={source.error}
+          />
+        ))}
       {error ? (
         <Alert
           type="error"
@@ -579,14 +689,20 @@ const PluginMarket = () => {
       ) : loading ? (
         <Skeleton active />
       ) : !listing?.items.length ? (
-        <Empty description={t(keyword || statusFilter !== "all" || capabilityFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty")} />
+        <Empty
+          description={t(
+            keyword || sourceFilter || statusFilter !== "all" || capabilityFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty"
+          )}
+        />
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
           {listing.items.map((entry) => {
-            const name = entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+            const name = entry.display_name_key && i18n.exists(entry.display_name_key) ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+            const key = cardKey(pluginTarget(entry));
+            const job = jobs[key] ?? entry.job;
             return (
               <Card
-                key={entry.provider_type}
+                key={cardKey(pluginTarget(entry))}
                 size="small"
                 className="flex min-w-0 flex-col"
                 classNames={{ body: "flex grow flex-col gap-2" }}
@@ -601,11 +717,24 @@ const PluginMarket = () => {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <Tooltip title={name} trigger={["hover", "focus"]}>
-                      <h2 className="m-0 line-clamp-2 text-sm/5 font-semibold wrap-anywhere" tabIndex={0}>
-                        {name}
-                      </h2>
-                    </Tooltip>
+                    <div className="flex items-start gap-1">
+                      <Tooltip title={name} trigger={["hover", "focus"]}>
+                        <h2 className="m-0 line-clamp-2 text-sm/5 font-semibold wrap-anywhere" tabIndex={0}>
+                          {name}
+                        </h2>
+                      </Tooltip>
+                      {entry.official && <OfficialBadge />}
+                    </div>
+                    <div className="text-xs wrap-anywhere" style={{ color: token.colorTextSecondary }}>
+                      {entry.source.repository || t("plugin.market.sources.local")}
+                      {entry.canDelete && !entry.sourceAvailable && ` · ${t("plugin.market.sources.removed")}`}
+                      {entry.canDelete && entry.sourceAvailable && !entry.listed && ` · ${t("plugin.market.sources.unlisted")}`}
+                      {entry.status === "ownership_conflict" && (
+                        <div>
+                          {t("plugin.market.sources.installed_from", { repository: entry.installedOrigin?.repository || t("plugin.market.sources.local") })}
+                        </div>
+                      )}
+                    </div>
                     <div className="mt-0.5 text-xs/4 wrap-anywhere" style={{ color: token.colorTextSecondary }}>
                       {entry.capability
                         ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
@@ -620,10 +749,22 @@ const PluginMarket = () => {
                 )}
                 <div className="mt-auto flex min-h-8 flex-wrap items-center justify-between gap-x-2 gap-y-1">
                   <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs" style={{ color: token.colorTextSecondary }}>
-                    <span className="wrap-anywhere tabular-nums">v{entry.version}</span>
+                    {entry.version && <span className="wrap-anywhere tabular-nums">v{entry.version}</span>}
                     {renderStatus(entry)}
                   </div>
-                  <div className="ml-auto flex items-center">{renderActions(entry)}</div>
+                  <div className="ml-auto flex items-center">
+                    <MarketCardActions
+                      entry={entry}
+                      job={job}
+                      pollingError={pollingErrors[key]}
+                      speed={speeds[key]}
+                      busy={!!operating[key]}
+                      onRetry={() => retryInstall(entry, job)}
+                      onInstall={() => void handleInstall(entry)}
+                      onUpdate={() => void handleUpdate(entry)}
+                      onDelete={() => confirmDelete(entry)}
+                    />
+                  </div>
                 </div>
               </Card>
             );

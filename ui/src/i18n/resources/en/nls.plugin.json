@@ -6,6 +6,27 @@
   },
 
   "market": {
+    "sources": {
+      "manage": "Manage markets",
+      "filter": "Market source",
+      "all": "All markets",
+      "repository": "GitHub repository URL",
+      "convention": "Use a public repository with index.json at the root of the main branch. Adding a market does not install plugins.",
+      "add": "Add market",
+      "refresh_one": "Refresh {{repository}}",
+      "remove_one": "Remove {{repository}}",
+      "remove_confirm": "Remove this market? Its installed plugins will remain available.",
+      "official": "Official distribution",
+      "official_tooltip": "Distributed through the official Certimate plugin market",
+      "busy": "An installation or update is using this market. Try again when it finishes.",
+      "duplicate": "This GitHub repository is already registered.",
+      "stale": "Showing cached catalog",
+      "unavailable": "Catalog unavailable",
+      "removed": "Market removed",
+      "unlisted": "No longer listed",
+      "local": "Local or unknown source",
+      "installed_from": "Installed from {{repository}}"
+    },
     "nudge": "Didn't find the provider you need? Browse the plugin marketplace for more.",
     "browse": "Browse marketplace",
     "heading": "Plugin marketplace",
@@ -37,7 +58,7 @@
       "refresh": "Refresh",
       "search_placeholder": "Search plugins",
       "delete_modal_title": "Remove plugin",
-      "delete_modal_content": "This removes the plugin <b>{{name}}</b> from this server. Any access or workflow using it will stop working until it is reinstalled."
+      "delete_modal_content": "This removes the plugin {{name}} from this server. Any access or workflow using it will stop working until it is reinstalled."
     },
     "filter": {
       "label": "Filters",
@@ -69,6 +90,7 @@
       "unsupported_platform": "Unsupported platform"
     },
     "status": {
+      "ownership_conflict": "Provider already installed",
       "not_installed": "Not installed",
       "installed": "Installed",
       "update_available": "Update available",

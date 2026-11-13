@@ -6,6 +6,27 @@
   },
 
   "market": {
+    "sources": {
+      "manage": "管理插件市场",
+      "filter": "市场来源",
+      "all": "全部市场",
+      "repository": "GitHub 仓库地址",
+      "convention": "请使用公开仓库，并在 main 分支的根目录提供 index.json。添加市场不会安装插件。",
+      "add": "添加市场",
+      "refresh_one": "刷新 {{repository}}",
+      "remove_one": "移除 {{repository}}",
+      "remove_confirm": "移除此市场？已安装的插件仍可使用。",
+      "official": "官方分发",
+      "official_tooltip": "由 Certimate 官方插件市场分发",
+      "busy": "此市场正在用于安装或更新，请等待操作完成后重试。",
+      "duplicate": "此 GitHub 仓库已添加。",
+      "stale": "正在显示缓存目录",
+      "unavailable": "目录不可用",
+      "removed": "市场已移除",
+      "unlisted": "目录未收录",
+      "local": "本地或未知来源",
+      "installed_from": "安装来源：{{repository}}"
+    },
     "nudge": "没找到你需要的提供商？前往插件市场发现更多。",
     "browse": "浏览插件市场",
     "heading": "插件市场",
@@ -37,7 +58,7 @@
       "refresh": "刷新",
       "search_placeholder": "搜索插件",
       "delete_modal_title": "移除插件",
-      "delete_modal_content": "将从本机移除插件 <b>{{name}}</b>。依赖该插件的授权配置和工作流在重新安装前将无法正常工作。"
+      "delete_modal_content": "将从本机移除插件 {{name}}。依赖该插件的授权配置和工作流在重新安装前将无法正常工作。"
     },
     "filter": {
       "label": "筛选",
@@ -69,6 +90,7 @@
       "unsupported_platform": "不支持当前平台"
     },
     "status": {
+      "ownership_conflict": "插件标识已被占用",
       "not_installed": "未安装",
       "installed": "已安装",
       "update_available": "可更新",

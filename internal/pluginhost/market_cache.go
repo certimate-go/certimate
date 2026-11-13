@@ -20,12 +20,16 @@ type marketCache interface {
 	Save(context.Context, string, []*plugin.MarketManifest, repository.PluginMarketSync) error
 }
 
-func (s *MarketService) manifests(ctx context.Context) ([]*plugin.MarketManifest, error) {
+func (s *marketCatalog) manifests(ctx context.Context) ([]*plugin.MarketManifest, error) {
 	return s.marketSnapshot(ctx, false, false)
 }
 
-func (s *MarketService) marketSnapshot(ctx context.Context, background, force bool) ([]*plugin.MarketManifest, error) {
+func (s *marketCatalog) marketSnapshot(ctx context.Context, background, force bool) ([]*plugin.MarketManifest, error) {
 	s.mu.Lock()
+	if s.retired {
+		s.mu.Unlock()
+		return nil, ErrMarketUnavailable
+	}
 	if !s.loaded {
 		if s.store != nil {
 			entries, info, err := s.store.Load(ctx, s.indexURL)
@@ -75,8 +79,17 @@ func (s *MarketService) marketSnapshot(ctx context.Context, background, force bo
 	return s.refreshMarket(ctx, info)
 }
 
-func (s *MarketService) refreshMarket(ctx context.Context, info repository.PluginMarketSync) ([]*plugin.MarketManifest, error) {
+func (s *marketCatalog) refreshMarket(ctx context.Context, info repository.PluginMarketSync) ([]*plugin.MarketManifest, error) {
 	entries, err := s.fetchMarketIndex(ctx, &info)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	defer func() {
+		close(s.refreshing)
+		s.refreshing = nil
+	}()
+	if s.retired {
+		return nil, ErrMarketUnavailable
+	}
 	if err == nil {
 		info.SyncedAt = time.Now()
 		if s.store != nil {
@@ -84,12 +97,6 @@ func (s *MarketService) refreshMarket(ctx context.Context, info repository.Plugi
 		}
 	}
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	defer func() {
-		close(s.refreshing)
-		s.refreshing = nil
-	}()
 	s.refreshErr = err
 	if err != nil {
 		if !errors.Is(err, context.Canceled) {
@@ -109,7 +116,7 @@ func (s *MarketService) refreshMarket(ctx context.Context, info repository.Plugi
 	return s.cache, nil
 }
 
-func (s *MarketService) fetchMarketIndex(ctx context.Context, info *repository.PluginMarketSync) ([]*plugin.MarketManifest, error) {
+func (s *marketCatalog) fetchMarketIndex(ctx context.Context, info *repository.PluginMarketSync) ([]*plugin.MarketManifest, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.indexURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("market: create request: %w", err)
@@ -174,7 +181,7 @@ func (s *MarketService) fetchMarketIndex(ctx context.Context, info *repository.P
 			return nil, fmt.Errorf("market: unexpected inline release for %q", manifest.ProviderType)
 		}
 		if detail := manifest.Detail; detail != nil {
-			if !validDetailSHA(detail.SHA256) || manifest.Version == "" || plugin.ValidateReleaseRepo(detail.Repo) != nil || len(detail.Platforms) == 0 || slices.Contains(detail.Platforms, "") {
+			if !validDetailSHA(detail.SHA256) || manifest.Version == "" || s.validateReleaseRepo(detail.Repo) != nil || len(detail.Platforms) == 0 || slices.Contains(detail.Platforms, "") {
 				return nil, fmt.Errorf("market: invalid detail reference for %q", manifest.ProviderType)
 			}
 		}

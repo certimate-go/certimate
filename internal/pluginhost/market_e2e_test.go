@@ -41,13 +41,18 @@ func buildMarketRelease(t *testing.T, providerType, version, bootstrapError stri
 
 func buildMarketReleaseShared(t *testing.T, providerType, accessType, version, bootstrapError string, omitAccessSchema bool) marketReleaseFixture {
 	t.Helper()
+	return buildMarketReleaseCapability(t, providerType, accessType, version, bootstrapError, omitAccessSchema, plugin.CapabilityDeploy)
+}
+
+func buildMarketReleaseCapability(t *testing.T, providerType, accessType, version, bootstrapError string, omitAccessSchema bool, capability string) marketReleaseFixture {
+	t.Helper()
 	binary, err := os.ReadFile(buildPilot(t))
 	if err != nil {
 		t.Fatal(err)
 	}
 	manifest := plugin.Manifest{
 		ProviderType: providerType, AccessProviderType: accessType, Version: version,
-		Capability: plugin.CapabilityDeploy,
+		Capability: capability,
 		Binary:     "webhook-deployer", ProtocolVersion: plugin.ProtocolVersion,
 	}
 	manifestJSON, err := json.Marshal(manifest)
@@ -55,7 +60,7 @@ func buildMarketReleaseShared(t *testing.T, providerType, accessType, version, b
 		t.Fatal(err)
 	}
 	fixture := map[string]any{
-		"providerType": providerType, "accessProviderType": accessType,
+		"providerType": providerType, "accessProviderType": accessType, "capability": capability,
 		"schemaRevision": version, "bootstrapError": bootstrapError,
 		"accessField": "token-" + version, "deployField": "message-" + version,
 	}
@@ -205,7 +210,7 @@ func TestE2E_MarketInstallUpgradeRollbackAndDelete(t *testing.T) {
 		t.Fatalf("failed update changed access schema: %+v %v", preservedSchema, err)
 	}
 	metadata, err := plugin.ReadMarketMeta(root, providerType)
-	if err != nil || metadata == nil || metadata.InstalledVersion != "1.0.0" {
+	if err != nil || metadata == nil || metadata.InstalledVersion != "1.0.0" || metadata.Origin() != plugin.OfficialMarketSource() {
 		t.Fatalf("failed update changed installed version: %+v %v", metadata, err)
 	}
 	retained, err := deployers.Registries.Get(domain.DeploymentProviderType(providerType))

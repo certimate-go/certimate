@@ -18,12 +18,12 @@ func validDetailSHA(value string) bool {
 	return err == nil && len(digest) == sha256.Size && value == strings.ToLower(value)
 }
 
-func (s *MarketService) resolveMarketDetail(ctx context.Context, summary *plugin.MarketManifest) (*plugin.MarketManifest, error) {
+func (s *marketCatalog) resolveMarketDetail(ctx context.Context, summary *plugin.MarketManifest) (*plugin.MarketManifest, error) {
 	ref := summary.Detail
 	if ref == nil {
 		return nil, fmt.Errorf("market: plugin %q has no release", summary.ProviderType)
 	}
-	if !validDetailSHA(ref.SHA256) {
+	if !validDetailSHA(ref.SHA256) || s.validateReleaseRepo(ref.Repo) != nil {
 		return nil, fmt.Errorf("market: invalid detail source for %q", summary.ProviderType)
 	}
 
@@ -56,7 +56,7 @@ func (s *MarketService) resolveMarketDetail(ctx context.Context, summary *plugin
 	return detail, nil
 }
 
-func (s *MarketService) fetchMarketDetail(ctx context.Context, digest string) (*plugin.MarketManifest, error) {
+func (s *marketCatalog) fetchMarketDetail(ctx context.Context, digest string) (*plugin.MarketManifest, error) {
 	base, err := url.Parse(s.indexURL)
 	if err != nil {
 		return nil, err
@@ -87,4 +87,14 @@ func (s *MarketService) fetchMarketDetail(ctx context.Context, digest string) (*
 		return nil, fmt.Errorf("detail checksum mismatch")
 	}
 	return plugin.ParseMarketManifest(body)
+}
+
+func (s *marketCatalog) validateReleaseRepo(repo string) error {
+	if err := plugin.ValidateGitHubRepo(repo); err != nil {
+		return err
+	}
+	if s.source == plugin.OfficialMarketSource() {
+		return plugin.ValidateReleaseRepo(repo)
+	}
+	return nil
 }

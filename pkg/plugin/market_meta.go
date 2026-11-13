@@ -11,11 +11,12 @@ import (
 // MarketMeta records provenance and version information for a marketplace-installed
 // plugin. Stored as .market.json alongside the plugin's manifest.json.
 type MarketMeta struct {
-	Source                 string `json:"source"`
-	InstalledVersion       string `json:"installed_version"`
-	MarketVersionAtInstall string `json:"market_version_at_install"`
-	InstalledAt            string `json:"installed_at"`
-	ReleaseTag             string `json:"release_tag"`
+	Market                 *MarketSource `json:"market,omitempty"`
+	Source                 string        `json:"source"`
+	InstalledVersion       string        `json:"installed_version"`
+	MarketVersionAtInstall string        `json:"market_version_at_install"`
+	InstalledAt            string        `json:"installed_at"`
+	ReleaseTag             string        `json:"release_tag"`
 }
 
 // ReadMarketMeta reads the .market.json file for a plugin in the given directory.
@@ -65,4 +66,21 @@ func NewMarketMeta(source, installedVersion, marketVersion, releaseTag string) *
 // Falls back to string comparison for non-semver versions.
 func CompareVersions(a, b string) int {
 	return semverCompare(a, b)
+}
+
+func (m *MarketMeta) Origin() MarketSource {
+	if m == nil {
+		return MarketSource{}
+	}
+	if m.Market == nil {
+		if m.Source == "official" {
+			return OfficialMarketSource()
+		}
+		return MarketSource{}
+	}
+	canonical, err := ParseMarketSource("https://github.com/" + m.Market.Repository)
+	if err != nil || canonical != *m.Market || m.Source != canonical.ID {
+		return MarketSource{}
+	}
+	return canonical
 }
