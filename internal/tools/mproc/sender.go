@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/exec"
 
 	"github.com/go-cmd/cmd"
 
@@ -82,7 +83,7 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 
 	// 初始化子进程
 	done := make(chan struct{})
-	mcmd := cmd.NewCmdOptions(cmd.Options{Buffered: false, Streaming: true},
+	mcmd := exec.Command(
 		s.getEntrypoint(),
 		"intercmd",
 		s.command,
@@ -93,14 +94,18 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 		"--mprocErr", tempErr.Name(),
 		"--mprocSecret", hex.EncodeToString(aesKey),
 	)
+	stdout, stderr := make(chan string, cmd.DEFAULT_STREAM_CHAN_SIZE), make(chan string, cmd.DEFAULT_STREAM_CHAN_SIZE)
+	stdoutStream, stderrStream := cmd.NewOutputStream(stdout), cmd.NewOutputStream(stderr)
+	mcmd.Stdout, mcmd.Stderr = stdoutStream, stderrStream
 	go func() {
 		defer close(done)
-		for mcmd.Stdout != nil || mcmd.Stderr != nil {
+		out, errOut := stdout, stderr
+		for out != nil || errOut != nil {
 			select {
-			case line, open := <-mcmd.Stdout:
+			case line, open := <-out:
 				{
 					if !open {
-						mcmd.Stdout = nil
+						out = nil
 						continue
 					}
 
@@ -135,10 +140,10 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 					}
 				}
 
-			case line, open := <-mcmd.Stderr:
+			case line, open := <-errOut:
 				{
 					if !open {
-						mcmd.Stderr = nil
+						errOut = nil
 						continue
 					}
 
@@ -152,10 +157,14 @@ func (s *sender[TIn, TOut]) SendWithContext(ctx context.Context, params *TIn) (*
 	}()
 
 	// 等待子进程退出
-	<-mcmd.Start()
+	runErr := runWorkerCommand(mcmd)
+	stdoutStream.Flush()
+	stderrStream.Flush()
+	close(stdout)
+	close(stderr)
 	<-done
-	if err := mcmd.Status().Error; err != nil {
-		return nil, fmt.Errorf("mproc: failed to exec child process: %w", err)
+	if runErr != nil {
+		return nil, fmt.Errorf("mproc: failed to exec child process: %w", runErr)
 	}
 
 	// 读取输出

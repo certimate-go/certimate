@@ -22,6 +22,7 @@ import (
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
 	"github.com/certimate-go/certimate/internal/settings"
+	"github.com/certimate-go/certimate/internal/tools/mproc"
 	"github.com/certimate-go/certimate/internal/workflow"
 	"github.com/certimate-go/certimate/pkg/plugin"
 	"github.com/certimate-go/certimate/ui"
@@ -48,6 +49,12 @@ func main() {
 
 	isServeCmd := slices.Contains(os.Args[1:], "serve")
 	isInterCmd := len(os.Args) > 1 && os.Args[1] == "intercmd"
+	if isInterCmd && len(os.Args) > 2 && os.Args[2] == "certapply" {
+		if err := mproc.BindWorkerChildLifetime(); err != nil {
+			slog.Error("[CERTIMATE] Failed to bind certificate worker child processes.", slog.Any("error", err))
+			os.Exit(1)
+		}
+	}
 	stopPlugins := func() {}
 
 	if isServeCmd || isInterCmd {
