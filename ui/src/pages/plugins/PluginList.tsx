@@ -5,6 +5,7 @@ import { Alert, App, Button, Card, Empty, Input, Pagination, Progress, Segmented
 
 import {
   type InstallJobStatus,
+  type MarketCapabilityFilter,
   type MarketEntry,
   type MarketFilter,
   type MarketPage,
@@ -96,6 +97,7 @@ const PluginMarket = () => {
   const [operating, setOperating] = useState<Record<string, boolean>>({});
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketFilter>("all");
+  const [capabilityFilter, setCapabilityFilter] = useState<MarketCapabilityFilter>("all");
   const [jobs, setJobs] = useState<Record<string, InstallJobStatus>>({});
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
   const [pollingErrors, setPollingErrors] = useState<Record<string, string>>({});
@@ -112,7 +114,7 @@ const PluginMarket = () => {
       if (!quiet) setLoading(true);
       setError(null);
       try {
-        const data = await fetchMarketListing({ page, perPage, keyword, status: statusFilter, locale: i18n.language, refresh });
+        const data = await fetchMarketListing({ page, perPage, keyword, status: statusFilter, capability: capabilityFilter, locale: i18n.language, refresh });
         if (request === listingRequestRef.current.generation) setListing(data);
       } catch {
         if (request === listingRequestRef.current.generation) setError(t("plugin.market.error.load_failed"));
@@ -120,7 +122,7 @@ const PluginMarket = () => {
         if (request === listingRequestRef.current.generation) setLoading(false);
       }
     },
-    [t, page, perPage, keyword, statusFilter, i18n.language]
+    [t, page, perPage, keyword, statusFilter, capabilityFilter, i18n.language]
   );
 
   const setOp = (pt: string, v: boolean) => {
@@ -440,6 +442,19 @@ const PluginMarket = () => {
               setPage(1);
             }}
           />
+          <Segmented<MarketCapabilityFilter>
+            options={[
+              { label: t("plugin.market.filter.all"), value: "all" },
+              { label: t("plugin.market.capability.deploy"), value: "deploy" },
+              { label: t("plugin.market.capability.dns"), value: "dns" },
+              { label: t("plugin.market.capability.notify"), value: "notify" },
+            ]}
+            value={capabilityFilter}
+            onChange={(value) => {
+              setCapabilityFilter(value);
+              setPage(1);
+            }}
+          />
           <Input.Search
             allowClear
             className="w-48"
@@ -472,7 +487,7 @@ const PluginMarket = () => {
       ) : loading ? (
         <Skeleton active />
       ) : !listing?.items.length ? (
-        <Empty description={t(keyword || statusFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty")} />
+        <Empty description={t(keyword || statusFilter !== "all" || capabilityFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty")} />
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
           {listing.items.map((entry) => (
@@ -490,7 +505,11 @@ const PluginMarket = () => {
                     <div className="truncate text-base font-semibold">
                       {entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type}
                     </div>
-                    <div className="mt-0.5 text-xs text-gray-400">{entry.deploy_category}</div>
+                    <div className="mt-0.5 text-xs text-gray-400">
+                      {entry.capability
+                        ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
+                        : entry.deploy_category}
+                    </div>
                   </div>
                   <div className="shrink-0">{renderActions(entry)}</div>
                 </div>

@@ -9,6 +9,7 @@ export interface MarketEntry {
   provider_type: string;
   display_name_key: string;
   deploy_category: string;
+  capability?: string;
   version: string;
   description: string;
   icon_url?: string;
@@ -18,11 +19,14 @@ export interface MarketEntry {
 
 export type MarketFilter = "all" | "installed" | "not_installed";
 
+export type MarketCapabilityFilter = "all" | "deploy" | "dns" | "notify";
+
 export interface MarketQuery {
   page: number;
   perPage: number;
   keyword: string;
   status: MarketFilter;
+  capability: MarketCapabilityFilter;
   locale: string;
   refresh: boolean;
 }
@@ -66,6 +70,7 @@ export const fetchMarketListing = async (query: MarketQuery): Promise<MarketPage
     perPage: String(query.perPage),
     keyword: query.keyword,
     status: query.status,
+    capability: query.capability,
     locale: query.locale,
     refresh: String(query.refresh),
   });

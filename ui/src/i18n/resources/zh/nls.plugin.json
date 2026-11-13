@@ -41,6 +41,11 @@
       "installed": "已安装",
       "not_installed": "未安装"
     },
+    "capability": {
+      "deploy": "部署",
+      "dns": "DNS",
+      "notify": "通知"
+    },
     "job": {
       "installing": "安装中…",
       "queued": "排队中…",

@@ -52,9 +52,15 @@ func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
 	default:
 		return resp.Err(e, domain.NewError(400, "invalid status"))
 	}
+	capability := query.Get("capability")
+	switch capability {
+	case "", "all", "deploy", "dns", "notify":
+	default:
+		return resp.Err(e, domain.NewError(400, "invalid capability"))
+	}
 	entries, err := h.service.ListMarketPage(e.Request.Context(), pluginhost.MarketQuery{
 		Page: page, PerPage: perPage, Keyword: query.Get("keyword"), Status: status,
-		Locale: query.Get("locale"), Refresh: query.Get("refresh") == "true",
+		Capability: capability, Locale: query.Get("locale"), Refresh: query.Get("refresh") == "true",
 	})
 	if err != nil {
 		return resp.Err(e, err)

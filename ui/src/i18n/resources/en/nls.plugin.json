@@ -41,6 +41,11 @@
       "installed": "Installed",
       "not_installed": "Not installed"
     },
+    "capability": {
+      "deploy": "Deploy",
+      "dns": "DNS",
+      "notify": "Notify"
+    },
     "job": {
       "installing": "Installing…",
       "queued": "Queued…",

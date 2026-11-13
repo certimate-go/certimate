@@ -14,18 +14,20 @@ import (
 )
 
 type MarketQuery struct {
-	Page    int
-	PerPage int
-	Keyword string
-	Status  string
-	Locale  string
-	Refresh bool
+	Page       int
+	PerPage    int
+	Keyword    string
+	Status     string
+	Capability string
+	Locale     string
+	Refresh    bool
 }
 
 type MarketCard struct {
 	ProviderType   string     `json:"provider_type"`
 	DisplayNameKey string     `json:"display_name_key"`
 	DeployCategory string     `json:"deploy_category"`
+	Capability     string     `json:"capability,omitempty"`
 	Version        string     `json:"version"`
 	Description    string     `json:"description"`
 	IconURL        string     `json:"icon_url,omitempty"`
@@ -74,6 +76,13 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 		if query.Status == "installed" && !isInstalled || query.Status == "not_installed" && isInstalled {
 			return
 		}
+		capability := mm.Capability
+		if capability == "" {
+			capability = plugin.CapabilityDeploy
+		}
+		if query.Capability != "" && query.Capability != "all" && capability != query.Capability {
+			return
+		}
 		if keyword != "" && !marketMatches(mm, registered[mm.ProviderType], query.Locale, keyword) {
 			return
 		}
@@ -111,9 +120,13 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 		if installed[mm.ProviderType] && status == "unsupported_platform" {
 			status = "installed_manual"
 		}
+		capability := mm.Capability
+		if capability == "" {
+			capability = plugin.CapabilityDeploy
+		}
 		card := MarketCard{
 			ProviderType: mm.ProviderType, DisplayNameKey: mm.DisplayNameKey,
-			DeployCategory: mm.DeployCategory, Version: mm.Version,
+			DeployCategory: mm.DeployCategory, Capability: capability, Version: mm.Version,
 			Description: mm.Description, IconURL: s.marketIconURL(mm.IconPath), Status: status,
 		}
 		if job, ok := s.JobStatus(mm.ProviderType); ok && job.State != JobInstalled {
