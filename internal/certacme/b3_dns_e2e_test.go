@@ -24,6 +24,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -31,6 +32,13 @@ import (
 
 	"github.com/miekg/dns"
 )
+
+type b3WildcardChallenge struct {
+	token      string
+	expected   string
+	value      string
+	authorized bool
+}
 
 type b3DNSFixture struct {
 	t               *testing.T
@@ -47,6 +55,7 @@ type b3DNSFixture struct {
 	value           string
 	expected        string
 	authorized      bool
+	wildcard        *b3WildcardChallenge
 	mode            string
 	creates         int
 	deletes         int
@@ -97,10 +106,18 @@ func TestB3DNSWorkflow(t *testing.T) {
 type dnsWorkflowPlugins struct {
 	dir              string
 	accessByProvider map[string]string
+	configureDNS     func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
+	wildcardOrder    bool
 }
 
 func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlugins) {
 	f := &b3DNSFixture{t: t, family: family, proxyTargets: map[string]string{}, domain: "b3-" + family + ".example.test", token: "b3-fixture-challenge-token"}
+	domains := []string{f.domain}
+	if plugins.wildcardOrder {
+		f.domain = "example.com"
+		f.wildcard = &b3WildcardChallenge{token: "b3-fixture-wildcard-token"}
+		domains = []string{f.domain, "*." + f.domain}
+	}
 	var err error
 	f.key, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -125,7 +142,13 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 	dnsServer := &dns.Server{PacketConn: udp, Handler: dns.HandlerFunc(f.dns)}
 	go dnsServer.ActivateAndServe()
 	defer dnsServer.Shutdown()
-	providerConfig, ok := b4DNSConfig(t, f)
+	var providerConfig b3DNSProviderConfig
+	ok := plugins.configureDNS != nil
+	if ok {
+		providerConfig = plugins.configureDNS(t, f)
+	} else {
+		providerConfig, ok = b4DNSConfig(t, f)
+	}
 	if !ok {
 		providerConfig, ok = b5DNSConfig(f)
 	}
@@ -149,7 +172,7 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 	if pluginDir == "" {
 		pluginDir = t.TempDir()
 	}
-	env := append(os.Environ(), "HTTPS_PROXY="+proxyURL, "HTTP_PROXY="+proxyURL, "NO_PROXY=127.0.0.1,localhost", "SSL_CERT_FILE="+caPath, "CERTIMATE_PLUGIN_DIR="+pluginDir)
+	env := append(os.Environ(), "HTTPS_PROXY="+proxyURL, "HTTP_PROXY="+proxyURL, "NO_PROXY=127.0.0.1,localhost", "SSL_CERT_FILE="+caPath, "LEGO_CA_CERTIFICATES="+caPath, "CERTIMATE_PLUGIN_DIR="+pluginDir)
 	env = append(env, providerConfig.Env...)
 	dataDir := t.TempDir()
 	log := new(bytes.Buffer)
@@ -247,10 +270,10 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 		}
 		for provider, accessType := range plugins.accessByProvider {
 			if providers[provider] != accessType {
-				t.Fatalf("expected installed plugin %q to use built-in access %q, got %q", provider, accessType, providers[provider])
+				t.Fatalf("expected installed plugin %q to use access %q, got %q", provider, accessType, providers[provider])
 			}
 		}
-		t.Logf("%d deployment plugins loaded with built-in access types", len(plugins.accessByProvider))
+		t.Logf("%d plugins loaded with the expected access types", len(plugins.accessByProvider))
 	}
 	create := func(collection string, body any) string {
 		var result struct {
@@ -264,11 +287,18 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 	accessConfig, provider := providerConfig.Access, providerConfig.Provider
 	accessID := create("access", map[string]any{"name": "B3 " + family, "provider": family, "config": accessConfig})
 	caID := create("access", map[string]any{"name": "B3 ACME", "provider": "acmeca", "config": map[string]any{"endpoint": ca.URL + "/directory"}})
-	for _, step := range []string{"initial", "auth-failure", "recovery"} {
+	steps := []string{"initial", "auth-failure", "recovery"}
+	if f.wildcard != nil {
+		steps = []string{"initial", "auth-failure", "partial-present-failure", "recovery"}
+	}
+	for _, step := range steps {
 		t.Run(step, func(t *testing.T) {
 			f.mu.Lock()
 			f.mode = step
 			f.authorized = false
+			if f.wildcard != nil {
+				f.wildcard.authorized = false
+			}
 			f.chain = nil
 			f.txtResponses = 0
 			creates, deletes, issued, denied := f.creates, f.deletes, f.issued, f.denied
@@ -276,7 +306,7 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 			node := func(id, kind string, config map[string]any) map[string]any {
 				return map[string]any{"id": id, "type": kind, "data": map[string]any{"name": id, "config": config}}
 			}
-			config := map[string]any{"domains": f.domain, "contactEmail": "dns@example.test", "challengeType": "dns-01", "provider": provider, "providerAccessId": accessID, "caProvider": "acmeca", "caProviderAccessId": caID, "keyAlgorithm": "EC256", "nameservers": udp.LocalAddr().String(), "dnsPropagationTimeout": 10, "dnsTTL": 60, "disableARI": true, "disableFollowCNAME": true}
+			config := map[string]any{"domains": strings.Join(domains, ";"), "contactEmail": "dns@example.test", "challengeType": "dns-01", "provider": provider, "providerAccessId": accessID, "caProvider": "acmeca", "caProviderAccessId": caID, "keyAlgorithm": "EC256", "nameservers": udp.LocalAddr().String(), "dnsPropagationTimeout": 10, "dnsTTL": 60, "disableARI": true, "disableFollowCNAME": true}
 			for key, value := range providerConfig.Apply {
 				config[key] = value
 			}
@@ -307,6 +337,17 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 				}
 				time.Sleep(30 * time.Millisecond)
 			}
+			if f.wildcard != nil && (result.Status == "succeeded" || step == "partial-present-failure") {
+				query := new(dns.Msg).SetQuestion("_acme-challenge."+f.domain+".", dns.TypeTXT)
+				client := &dns.Client{Timeout: time.Second}
+				reply, _, err := client.Exchange(query, udp.LocalAddr().String())
+				if err != nil {
+					t.Fatalf("query TXT after issuance: %v", err)
+				}
+				if reply.Rcode != dns.RcodeSuccess || len(reply.Answer) != 0 {
+					t.Errorf("DNS still returns challenge TXT after the workflow: %v", reply)
+				}
+			}
 			f.mu.Lock()
 			defer f.mu.Unlock()
 			if step == "auth-failure" {
@@ -316,11 +357,25 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 				t.Log("authorization failure rejected without issuance")
 				return
 			}
+			var remaining []string
+			if f.value != "" {
+				remaining = append(remaining, f.value)
+			}
+			if f.wildcard != nil && f.wildcard.value != "" {
+				remaining = append(remaining, f.wildcard.value)
+			}
+			if step == "partial-present-failure" {
+				if result.Status != "failed" || f.denied-denied != 1 || f.creates-creates != 1 || f.deletes-deletes != 1 || f.issued != issued || len(remaining) != 0 {
+					t.Fatalf("partial failure status=%s creates=%d deletes=%d issued=%d denied=%d residual=%q error=%s", result.Status, f.creates-creates, f.deletes-deletes, f.issued-issued, f.denied-denied, remaining, result.Error)
+				}
+				t.Log("one TXT write was rejected and the other TXT was cleaned up without issuance")
+				return
+			}
 			if result.Status != "succeeded" {
 				t.Fatalf("workflow %s: %s", result.Status, result.Error)
 			}
-			if f.creates != creates+1 || f.deletes != deletes+1 || f.issued != issued+1 || f.value != "" {
-				t.Fatalf("DNS lifecycle creates=%d deletes=%d issued=%d residual=%q", f.creates, f.deletes, f.issued, f.value)
+			if f.creates-creates != len(domains) || f.deletes-deletes != len(domains) || f.issued-issued != 1 || len(remaining) != 0 {
+				t.Fatalf("DNS lifecycle creates=%d deletes=%d issued=%d residual=%q; want %d creates and deletes, one certificate and no residual TXT values", f.creates-creates, f.deletes-deletes, f.issued-issued, remaining, len(domains))
 			}
 			if f.txtResponses == 0 {
 				t.Fatal("no DNS query received the expected TXT value")
@@ -346,6 +401,9 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 					if err != nil || parsed.VerifyHostname(f.domain) != nil {
 						t.Fatal("persisted certificate SAN mismatch")
 					}
+					if f.wildcard != nil && (len(parsed.DNSNames) != len(domains) || !slices.Contains(parsed.DNSNames, domains[1])) {
+						t.Fatalf("persisted certificate SANs = %v, want %v", parsed.DNSNames, domains)
+					}
 					if _, err := tls.X509KeyPair([]byte(record.Certificate), []byte(record.PrivateKey)); err != nil {
 						t.Fatal(err)
 					}
@@ -355,7 +413,7 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 			if !found {
 				t.Fatal("issued chain and matching key not persisted")
 			}
-			t.Logf("workflow %s issued and persisted certificate for %s; TXT created, served in %d DNS responses, validated, deleted", run.Data.RunID, f.domain, f.txtResponses)
+			t.Logf("workflow %s issued and persisted certificate for %v; %d TXT values created and deleted, with %d DNS responses", run.Data.RunID, domains, len(domains), f.txtResponses)
 		})
 	}
 }
@@ -370,13 +428,17 @@ func (f *b3DNSFixture) dns(w dns.ResponseWriter, r *dns.Msg) {
 	for _, q := range r.Question {
 		switch q.Qtype {
 		case dns.TypeSOA:
-			if q.Name == "example.test." {
+			if q.Name == "example.test." || (f.wildcard != nil && q.Name == "example.com.") {
 				m.Answer = append(m.Answer, &dns.SOA{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeSOA, Class: dns.ClassINET, Ttl: 60}, Ns: "ns.example.test.", Mbox: "admin.example.test.", Serial: 1, Refresh: 60, Retry: 60, Expire: 3600, Minttl: 60})
 			}
 		case dns.TypeTXT:
+			if f.wildcard != nil && q.Name == "_acme-challenge."+f.domain+"." && f.wildcard.value != "" {
+				m.Answer = append(m.Answer, &dns.TXT{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeTXT, Class: dns.ClassINET, Ttl: 60}, Txt: []string{f.wildcard.value}})
+				matchedTXT = f.wildcard.value == f.wildcard.expected
+			}
 			if q.Name == "_acme-challenge."+f.domain+"." && f.value != "" {
 				m.Answer = append(m.Answer, &dns.TXT{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeTXT, Class: dns.ClassINET, Ttl: 60}, Txt: []string{f.value}})
-				matchedTXT = f.value == f.expected
+				matchedTXT = matchedTXT || f.value == f.expected
 			}
 		case dns.TypeNS:
 			m.Answer = append(m.Answer, &dns.NS{Hdr: dns.RR_Header{Name: "example.test.", Rrtype: dns.TypeNS, Class: dns.ClassINET, Ttl: 60}, Ns: "ns.example.test."})
@@ -407,8 +469,15 @@ func (f *b3DNSFixture) acme(w http.ResponseWriter, r *http.Request) {
 		raw, _ := base64.RawURLEncoding.DecodeString(jws.Payload)
 		json.Unmarshal(raw, &payload)
 	}
+	authorized := f.authorized && (f.wildcard == nil || f.wildcard.authorized)
 	order := func(status string) map[string]any {
-		v := map[string]any{"status": status, "identifiers": []any{map[string]string{"type": "dns", "value": f.domain}}, "authorizations": []string{f.base + "/authz"}, "finalize": f.base + "/finalize"}
+		identifiers := []map[string]string{{"type": "dns", "value": f.domain}}
+		authorizations := []string{f.base + "/authz"}
+		if f.wildcard != nil {
+			identifiers = append(identifiers, map[string]string{"type": "dns", "value": "*." + f.domain})
+			authorizations = append(authorizations, f.base+"/authz-wildcard")
+		}
+		v := map[string]any{"status": status, "identifiers": identifiers, "authorizations": authorizations, "finalize": f.base + "/finalize"}
 		if status == "valid" {
 			v["certificate"] = f.base + "/certificate"
 		}
@@ -430,17 +499,36 @@ func (f *b3DNSFixture) acme(w http.ResponseWriter, r *http.Request) {
 			thumb := sha256.Sum256(canonical)
 			digest := sha256.Sum256([]byte(f.token + "." + base64.RawURLEncoding.EncodeToString(thumb[:])))
 			f.expected = base64.RawURLEncoding.EncodeToString(digest[:])
+			if f.wildcard != nil {
+				digest := sha256.Sum256([]byte(f.wildcard.token + "." + base64.RawURLEncoding.EncodeToString(thumb[:])))
+				f.wildcard.expected = base64.RawURLEncoding.EncodeToString(digest[:])
+			}
 		}
 		w.Header().Set("Location", f.base+"/account/1")
 		reply(201, map[string]any{"status": "valid", "contact": []string{"mailto:dns@example.test"}, "orders": f.base + "/orders"})
 	case "/account/1":
 		reply(200, map[string]any{"status": "valid", "contact": []string{"mailto:dns@example.test"}})
 	case "/new-order":
+		if f.wildcard != nil {
+			identifiers, _ := payload["identifiers"].([]any)
+			want := []string{f.domain, "*." + f.domain}
+			var got []string
+			for _, item := range identifiers {
+				id, _ := item.(map[string]any)
+				value, _ := id["value"].(string)
+				got = append(got, value)
+			}
+			slices.Sort(got)
+			slices.Sort(want)
+			if !slices.Equal(got, want) {
+				f.t.Errorf("ACME order identifiers = %v, want %v", got, want)
+			}
+		}
 		w.Header().Set("Location", f.base+"/order")
 		reply(201, order("pending"))
 	case "/order":
 		state := "pending"
-		if f.authorized {
+		if authorized {
 			state = "ready"
 		}
 		if len(f.chain) > 0 {
@@ -460,8 +548,21 @@ func (f *b3DNSFixture) acme(w http.ResponseWriter, r *http.Request) {
 		}
 		f.authorized = true
 		reply(200, map[string]string{"type": "dns-01", "url": f.base + "/challenge", "token": f.token, "status": "valid"})
+	case "/authz-wildcard":
+		state := "pending"
+		if f.wildcard.authorized {
+			state = "valid"
+		}
+		reply(200, map[string]any{"status": state, "wildcard": true, "identifier": map[string]string{"type": "dns", "value": f.domain}, "challenges": []any{map[string]string{"type": "dns-01", "url": f.base + "/challenge-wildcard", "token": f.wildcard.token, "status": state}}})
+	case "/challenge-wildcard":
+		if f.wildcard.value == "" || f.wildcard.value != f.wildcard.expected {
+			reply(400, map[string]string{"type": "urn:ietf:params:acme:error:unauthorized", "detail": "wildcard TXT does not match account key authorization"})
+			return
+		}
+		f.wildcard.authorized = true
+		reply(200, map[string]string{"type": "dns-01", "url": f.base + "/challenge-wildcard", "token": f.wildcard.token, "status": "valid"})
 	case "/finalize":
-		if !f.authorized {
+		if !authorized {
 			reply(400, map[string]string{"type": "urn:ietf:params:acme:error:orderNotReady"})
 			return
 		}

@@ -633,6 +633,7 @@ func TestE2E_DnsChallengerThroughCatalog(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(challenger.(interface{ Close() }).Close)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := challenger.Present(ctx, "_acme-challenge.example.com", "dns-token-1", "dns-key-1"); err != nil {

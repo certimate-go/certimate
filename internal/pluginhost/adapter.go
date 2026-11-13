@@ -94,13 +94,13 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 		return nil, err
 	}
 	challenger := &pluginDnsChallenger{
-		held:                held,
-		access:              options.ProviderAccessConfig,
-		extended:            options.ProviderExtendedConfig,
-		logLevel:            f.logLevel,
-		propagationTimeout:  options.DnsPropagationTimeout,
-		ttl:                 options.DnsTTL,
-		logger:              f.logger,
+		held:               held,
+		access:             options.ProviderAccessConfig,
+		extended:           options.ProviderExtendedConfig,
+		logLevel:           f.logLevel,
+		propagationTimeout: options.DnsPropagationTimeout,
+		ttl:                options.DnsTTL,
+		logger:             f.logger,
 	}
 	runtime.AddCleanup(challenger, func(h *plugin.HeldDnsProvider) { h.Close() }, held)
 	return challenger, nil
@@ -117,6 +117,7 @@ type pluginDnsChallenger struct {
 }
 
 func (c *pluginDnsChallenger) Present(ctx context.Context, domain, token, keyAuth string) error {
+	defer runtime.KeepAlive(c)
 	if c.logger != nil {
 		c.logger.Info("presenting dns-01 challenge via plugin", slog.String("domain", domain))
 	}
@@ -132,6 +133,7 @@ func (c *pluginDnsChallenger) Present(ctx context.Context, domain, token, keyAut
 }
 
 func (c *pluginDnsChallenger) CleanUp(ctx context.Context, domain, token, keyAuth string) error {
+	defer runtime.KeepAlive(c)
 	req := &plugin.DnsRequest{
 		LogLevel:           c.logLevel,
 		AccessConfigJSON:   marshalJSON(c.access),
@@ -141,6 +143,10 @@ func (c *pluginDnsChallenger) CleanUp(ctx context.Context, domain, token, keyAut
 		KeyAuth:            keyAuth,
 	}
 	return c.held.CleanUp(ctx, req)
+}
+
+func (c *pluginDnsChallenger) Close() {
+	c.held.Close()
 }
 
 func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {

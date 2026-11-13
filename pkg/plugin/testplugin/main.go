@@ -119,8 +119,10 @@ func (f *fakeDnsProvider) Present(ctx context.Context, req *plugin.DnsRequest) e
 		time.AfterFunc(150*time.Millisecond, func() { os.Exit(2) })
 		return nil
 	case "present-error":
-		appendState("present:error")
-		return fmt.Errorf("fake present failure")
+		if req.Domain == "failed.example.test" {
+			appendState("present:error")
+			return fmt.Errorf("fake present failure")
+		}
 	}
 	appendState("present")
 	return nil

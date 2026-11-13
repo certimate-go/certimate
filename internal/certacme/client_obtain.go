@@ -104,6 +104,9 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 			if err != nil {
 				return nil, fmt.Errorf("failed to initialize dns-01 provider '%s': %w", request.Provider, err)
 			}
+			if closer, ok := provider.(interface{ Close() }); ok {
+				defer closer.Close()
+			}
 
 			opts := &dns01.Options{}
 			opts.RecursiveNameservers = request.Nameservers

@@ -133,23 +133,15 @@ type HeldDnsProvider struct {
 
 func (h *HeldDnsProvider) Present(ctx context.Context, req *DnsRequest) error {
 	err := h.provider.Present(ctx, req)
-	if err != nil {
-		h.release()
-	}
 	return h.manager.wrapError(h.dp, h.session, noopRedactor, err)
 }
 
 func (h *HeldDnsProvider) CleanUp(ctx context.Context, req *DnsRequest) error {
-	defer h.release()
 	err := h.provider.CleanUp(ctx, req)
 	return h.manager.wrapError(h.dp, h.session, noopRedactor, err)
 }
 
 func (h *HeldDnsProvider) Close() {
-	h.release()
-}
-
-func (h *HeldDnsProvider) release() {
 	h.once.Do(func() {
 		h.session.client.Kill()
 	})

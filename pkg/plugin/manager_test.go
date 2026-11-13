@@ -328,6 +328,7 @@ func TestManager_DnsHeldLifecycle_SameProcessAcrossPresentAndCleanUp(t *testing.
 	if err != nil {
 		t.Fatalf("start dns provider: %v", err)
 	}
+	t.Cleanup(held.Close)
 	req := &DnsRequest{Domain: "example.test", Token: "tok", KeyAuth: "ka"}
 	if err := held.Present(context.Background(), req); err != nil {
 		t.Fatalf("present: %v", err)
@@ -351,6 +352,7 @@ func TestManager_DnsHeldLifecycle_ProcessDeathFailsCleanUp(t *testing.T) {
 	if err != nil {
 		t.Fatalf("start dns provider: %v", err)
 	}
+	t.Cleanup(held.Close)
 	req := &DnsRequest{Domain: "example.test"}
 	if err := held.Present(context.Background(), req); err != nil {
 		t.Fatalf("present: %v", err)
@@ -370,7 +372,7 @@ func TestManager_DnsHeldLifecycle_ProcessDeathFailsCleanUp(t *testing.T) {
 	}
 }
 
-func TestManager_Dns_PresentErrorReleasesProcess(t *testing.T) {
+func TestManager_Dns_PresentErrorAllowsCleanupOfEarlierChallenge(t *testing.T) {
 	dp := discoveredFakeCapability(t, "dns-err", CapabilityDns, "present-error")
 	state := os.Getenv("FAKEPLUGIN_STATE_FILE")
 
@@ -379,17 +381,21 @@ func TestManager_Dns_PresentErrorReleasesProcess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("start dns provider: %v", err)
 	}
+	t.Cleanup(held.Close)
 	req := &DnsRequest{Domain: "example.test"}
-	if err := held.Present(context.Background(), req); err == nil {
+	if err := held.Present(context.Background(), req); err != nil {
+		t.Fatalf("first present: %v", err)
+	}
+	if err := held.Present(context.Background(), &DnsRequest{Domain: "failed.example.test"}); err == nil {
 		t.Fatal("expected present error")
 	}
-	err = held.CleanUp(context.Background(), req)
-	if err == nil {
-		t.Fatal("expected cleanup error after release")
+	if err := held.CleanUp(context.Background(), req); err != nil {
+		t.Fatalf("cleanup of earlier challenge: %v", err)
 	}
+	held.Close()
 	events := readState(t, state)
-	if len(events) != 1 || events[0] != "present:error" {
-		t.Fatalf("expected present error only, got %v", events)
+	if len(events) != 3 || events[0] != "present" || events[1] != "present:error" || events[2] != "cleanup" {
+		t.Fatalf("expected present, present error, and cleanup, got %v", events)
 	}
 }
 
