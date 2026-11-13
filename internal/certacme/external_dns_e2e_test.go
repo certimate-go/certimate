@@ -17,9 +17,23 @@ import (
 )
 
 func TestExternalDNSPluginsWorkflow(t *testing.T) {
-	if binary := os.Getenv("CERTIMATE_EXTERNAL_DNS_CMCC_CORE"); binary != "" {
-		runCMCCCloudDNSWorkflow(t, binary, os.Getenv("CERTIMATE_EXTERNAL_DNS_CMCC_PLUGINS"))
-		return
+	cloudPlugins := []struct {
+		name string
+		icon string
+		run  func(*testing.T, string, string)
+	}{
+		{name: "cmcccloud-dns", icon: "cmcccloud.svg", run: runCMCCCloudDNSWorkflow},
+		{name: "googlecloud-dns", icon: "google.svg", run: runGoogleCloudDNSWorkflow},
+	}
+	if binary := os.Getenv("CERTIMATE_EXTERNAL_DNS_CORE"); binary != "" {
+		name := os.Getenv("CERTIMATE_EXTERNAL_DNS_PROVIDER")
+		for _, provider := range cloudPlugins {
+			if provider.name == name {
+				provider.run(t, binary, os.Getenv("CERTIMATE_EXTERNAL_DNS_PLUGINS"))
+				return
+			}
+		}
+		t.Fatalf("unknown DNS plugin fixture %q", name)
 	}
 	pluginRoot := filepath.Join("..", "..", "..", "plugins")
 	if _, err := os.Stat(filepath.Join(pluginRoot, "go.mod")); os.IsNotExist(err) {
@@ -73,61 +87,63 @@ func TestExternalDNSPluginsWorkflow(t *testing.T) {
 			})
 		})
 	}
-	t.Run("cmcccloud-dns", func(t *testing.T) {
-		stage := t.TempDir()
-		pluginDir := filepath.Join(stage, "plugins")
-		destination := filepath.Join(pluginDir, "cmcccloud-dns")
-		if err := os.MkdirAll(destination, 0o755); err != nil {
-			t.Fatal(err)
-		}
-		source := filepath.Join(pluginRoot, "cmcccloud-dns")
-		for _, name := range []string{"manifest.json", "cmcccloud.svg"} {
-			data, err := os.ReadFile(filepath.Join(source, name))
+	for _, provider := range cloudPlugins {
+		t.Run(provider.name, func(t *testing.T) {
+			stage := t.TempDir()
+			pluginDir := filepath.Join(stage, "plugins")
+			destination := filepath.Join(pluginDir, provider.name)
+			if err := os.MkdirAll(destination, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			source := filepath.Join(pluginRoot, provider.name)
+			for _, name := range []string{"manifest.json", provider.icon} {
+				data, err := os.ReadFile(filepath.Join(source, name))
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(destination, name), data, 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			cmd := exec.Command("go", "build", "-o", filepath.Join(destination, provider.name), ".")
+			cmd.Dir = source
+			if runtime.GOOS != "linux" {
+				cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
+			}
+			if out, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("build %s plugin: %v\n%s", provider.name, err, out)
+			}
+			if runtime.GOOS == "linux" {
+				provider.run(t, core, pluginDir)
+				return
+			}
+			for _, build := range []struct {
+				dir  string
+				args []string
+			}{
+				{dir: "../..", args: []string{"build", "-o", filepath.Join(stage, "core"), "."}},
+				{dir: ".", args: []string{"test", "-c", "-o", filepath.Join(stage, "dns.test"), "."}},
+			} {
+				cmd := exec.Command("go", build.args...)
+				cmd.Dir = build.dir
+				cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
+				if out, err := cmd.CombinedOutput(); err != nil {
+					t.Fatalf("build %s workflow fixture: %v\n%s", provider.name, err, out)
+				}
+			}
+			cmd = exec.Command("docker", "run", "--rm", "--network=none",
+				"--mount", "type=bind,src="+stage+",dst=/fixture,readonly",
+				"-e", "CERTIMATE_EXTERNAL_DNS_CORE=/fixture/core",
+				"-e", "CERTIMATE_EXTERNAL_DNS_PLUGINS=/fixture/plugins",
+				"-e", "CERTIMATE_EXTERNAL_DNS_PROVIDER="+provider.name,
+				"alpine:latest", "/fixture/dns.test", "-test.run=^TestExternalDNSPluginsWorkflow$", "-test.v", "-test.timeout=4m")
+			out, err := cmd.CombinedOutput()
+			t.Log(string(out))
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := os.WriteFile(filepath.Join(destination, name), data, 0o644); err != nil {
-				t.Fatal(err)
-			}
-		}
-		plugin := filepath.Join(destination, "cmcccloud-dns")
-		cmd := exec.Command("go", "build", "-o", plugin, ".")
-		cmd.Dir = source
-		if runtime.GOOS != "linux" {
-			cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
-		}
-		if out, err := cmd.CombinedOutput(); err != nil {
-			t.Fatalf("build CMCC Cloud DNS plugin: %v\n%s", err, out)
-		}
-		if runtime.GOOS == "linux" {
-			runCMCCCloudDNSWorkflow(t, core, pluginDir)
-			return
-		}
-		for _, build := range []struct {
-			dir  string
-			args []string
-		}{
-			{dir: "../..", args: []string{"build", "-o", filepath.Join(stage, "core"), "."}},
-			{dir: ".", args: []string{"test", "-c", "-o", filepath.Join(stage, "dns.test"), "."}},
-		} {
-			cmd := exec.Command("go", build.args...)
-			cmd.Dir = build.dir
-			cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
-			if out, err := cmd.CombinedOutput(); err != nil {
-				t.Fatalf("build CMCC Cloud DNS workflow fixture: %v\n%s", err, out)
-			}
-		}
-		cmd = exec.Command("docker", "run", "--rm", "--network=none",
-			"--mount", "type=bind,src="+stage+",dst=/fixture,readonly",
-			"-e", "CERTIMATE_EXTERNAL_DNS_CMCC_CORE=/fixture/core",
-			"-e", "CERTIMATE_EXTERNAL_DNS_CMCC_PLUGINS=/fixture/plugins",
-			"alpine:latest", "/fixture/dns.test", "-test.run=^TestExternalDNSPluginsWorkflow$", "-test.v", "-test.timeout=4m")
-		out, err := cmd.CombinedOutput()
-		t.Log(string(out))
-		if err != nil {
-			t.Fatal(err)
-		}
-	})
+		})
+	}
 }
 
 func runCMCCCloudDNSWorkflow(t *testing.T, binary, pluginDir string) {
@@ -142,6 +158,26 @@ func runCMCCCloudDNSWorkflow(t *testing.T, binary, pluginDir string) {
 					config, _ := b6B8DNSConfig(t, f)
 					config.Provider = provider
 					config.Apply = map[string]any{"dnsTTL": 123, "disableFollowCNAME": f.cname == ""}
+					return config
+				},
+			})
+		})
+	}
+}
+
+func runGoogleCloudDNSWorkflow(t *testing.T, binary, pluginDir string) {
+	for _, provider := range []string{"googlecloud", "googlecloud-dns"} {
+		t.Run(provider, func(t *testing.T) {
+			runDNSWorkflow(t, binary, "googlecloud", dnsWorkflowPlugins{
+				dir:              pluginDir,
+				accessByProvider: map[string]string{"googlecloud-dns": "googlecloud"},
+				cname:            provider == "googlecloud",
+				configureDNS: func(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
+					config := b3DNSConfig(t, f, "googlecloud")
+					config.Provider = provider
+					f.googleTTL = 123
+					config.Apply = map[string]any{"dnsTTL": f.googleTTL, "disableFollowCNAME": f.cname == ""}
+					config.Env = []string{"GCE_ZONE_ID=", "GCE_POLLING_INTERVAL=1"}
 					return config
 				},
 			})

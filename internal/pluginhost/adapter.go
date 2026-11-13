@@ -97,12 +97,20 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 	if err != nil {
 		return nil, err
 	}
+	extended := options.ProviderExtendedConfig
+	if f.providerType == string(domain.ACMEDns01ProviderTypeGoogleCloudDNS) {
+		extended = map[string]any{
+			"nameservers":        slices.Clone(options.DnsNameservers),
+			"ttl":                options.DnsTTL,
+			"disableFollowCNAME": options.DisableFollowCNAME,
+		}
+	}
 	challenger := &pluginDnsChallenger{
 		held:               held,
 		providerType:       f.providerType,
 		nameservers:        slices.Clone(options.DnsNameservers),
 		access:             options.ProviderAccessConfig,
-		extended:           options.ProviderExtendedConfig,
+		extended:           extended,
 		logLevel:           f.logLevel,
 		propagationTimeout: options.DnsPropagationTimeout,
 		ttl:                options.DnsTTL,
@@ -170,11 +178,17 @@ func (c *pluginDnsChallenger) Close() {
 func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {
 	timeout := dns01.DefaultPropagationTimeout
 	interval := dns01.DefaultPollingInterval
-	if c.providerType == string(domain.ACMEDns01ProviderTypeCMCCCloudDNS) {
+	switch domain.ACMEDns01ProviderType(c.providerType) {
+	case domain.ACMEDns01ProviderTypeCMCCCloudDNS:
 		timeout = env.GetOrDefaultSecond("CMCCCLOUD_PROPAGATION_TIMEOUT", 10*time.Minute)
 		interval = env.GetOrDefaultSecond("CMCCCLOUD_POLLING_INTERVAL", interval)
-	} else if c.ttl > 0 {
-		interval = time.Duration(c.ttl) * time.Second
+	case domain.ACMEDns01ProviderTypeGoogleCloudDNS:
+		timeout = env.GetOrDefaultSecond("GCE_PROPAGATION_TIMEOUT", 180*time.Second)
+		interval = env.GetOrDefaultSecond("GCE_POLLING_INTERVAL", 5*time.Second)
+	default:
+		if c.ttl > 0 {
+			interval = time.Duration(c.ttl) * time.Second
+		}
 	}
 	if c.propagationTimeout > 0 {
 		timeout = time.Duration(c.propagationTimeout) * time.Second

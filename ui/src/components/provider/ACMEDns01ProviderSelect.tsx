@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
-import { type ACMEDns01Provider, ACME_DNS01_PROVIDERS, acmeDns01ProvidersMap, getACMEDns01Provider } from "@/domain/provider";
+import { type ACMEDns01Provider, acmeDns01ProvidersMap, getACMEDns01Provider } from "@/domain/provider";
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { matchSearchOption } from "@/utils/search";
 
@@ -48,7 +48,7 @@ const ACMEDns01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACMED
 
   const renderOption = (key: string) => {
     const provider = getACMEDns01Provider(key);
-    const needsPlugin = provider?.type === ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS && !acmeDns01ProvidersMap.has(provider.type);
+    const needsPlugin = provider != null && !acmeDns01ProvidersMap.has(provider.type);
     return (
       <div className="flex items-center gap-2 truncate overflow-hidden">
         <Avatar shape="square" src={provider?.icon} size="small" />

@@ -449,7 +449,6 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws_route53"],
       [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL, "provider.aws_lightsail"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure_dns"],
-      [ACME_DNS01_PROVIDERS.GOOGLECLOUD_DNS, "provider.googlecloud_dns"],
       [ACME_DNS01_PROVIDERS.ORACLECLOUD_DNS, "provider.oraclecloud_dns"],
       [ACME_DNS01_PROVIDERS.AKAMAI_EDGEDNS, "provider.akamai_edgedns"],
       [ACME_DNS01_PROVIDERS.ARVANCLOUD, "provider.arvancloud"],
@@ -524,19 +523,28 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
     },
   ])
 );
+const migratedACMEDns01Providers: Array<ACMEDns01Provider & { legacyType: ACMEDns01ProviderType }> = [
+  {
+    type: ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS,
+    legacyType: ACME_DNS01_PROVIDERS.CMCCCLOUD,
+    provider: ACCESS_PROVIDERS.CMCCCLOUD,
+    name: "provider.cmcccloud_dns",
+    icon: "/imgs/providers/cmcccloud.svg",
+    builtin: false,
+  },
+  {
+    type: ACME_DNS01_PROVIDERS.GOOGLECLOUD_DNS,
+    legacyType: ACME_DNS01_PROVIDERS.GOOGLECLOUD,
+    provider: ACCESS_PROVIDERS.GOOGLECLOUD,
+    name: "provider.googlecloud_dns",
+    icon: "/imgs/providers/google.svg",
+    builtin: false,
+  },
+];
+
 export const getACMEDns01Provider = (type: string): ACMEDns01Provider | undefined => {
-  if (type === ACME_DNS01_PROVIDERS.CMCCCLOUD || type === ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS) {
-    return (
-      acmeDns01ProvidersMap.get(ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS) ?? {
-        type: ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS,
-        provider: ACCESS_PROVIDERS.CMCCCLOUD,
-        name: "provider.cmcccloud_dns",
-        icon: "/imgs/providers/cmcccloud.svg",
-        builtin: false,
-      }
-    );
-  }
-  return acmeDns01ProvidersMap.get(type);
+  const migratedProvider = migratedACMEDns01Providers.find((provider) => provider.type === type || provider.legacyType === type);
+  return acmeDns01ProvidersMap.get(migratedProvider?.type ?? type) ?? migratedProvider;
 };
 
 // #endregion

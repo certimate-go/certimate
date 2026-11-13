@@ -91,13 +91,19 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 	case CHALLENGE_TYPE_DNS01:
 		{
 			providerType := domain.ACMEDns01ProviderType(request.Provider)
-			if providerType == domain.ACMEDns01ProviderTypeCMCCCloud {
+			switch providerType {
+			case domain.ACMEDns01ProviderTypeCMCCCloud:
 				providerType = domain.ACMEDns01ProviderTypeCMCCCloudDNS
+			case domain.ACMEDns01ProviderTypeGoogleCloud:
+				providerType = domain.ACMEDns01ProviderTypeGoogleCloudDNS
 			}
 			providerFactory, err := certifiers.ACMEDns01Registries.Get(providerType)
 			if err != nil {
-				if providerType == domain.ACMEDns01ProviderTypeCMCCCloudDNS {
+				switch providerType {
+				case domain.ACMEDns01ProviderTypeCMCCCloudDNS:
 					return nil, fmt.Errorf("install the cmcccloud-dns plugin to use CMCC Cloud DNS: %w", err)
+				case domain.ACMEDns01ProviderTypeGoogleCloudDNS:
+					return nil, fmt.Errorf("install the googlecloud-dns plugin to use Google Cloud DNS: %w", err)
 				}
 				return nil, err
 			}
@@ -108,6 +114,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 				DnsPropagationTimeout:  request.DnsPropagationTimeout,
 				DnsTTL:                 request.DnsTTL,
 				DnsNameservers:         request.Nameservers,
+				DisableFollowCNAME:     request.DisableFollowCNAME,
 			})
 			if err != nil {
 				return nil, fmt.Errorf("failed to initialize dns-01 provider '%s': %w", request.Provider, err)

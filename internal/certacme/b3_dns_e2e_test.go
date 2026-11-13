@@ -48,6 +48,7 @@ type b3DNSFixture struct {
 	proxyTLSAddress string
 	extraTrust      []byte
 	credentialKey   *rsa.PrivateKey
+	googleTTL       int
 	mu              sync.Mutex
 	base            string
 	domain          string
@@ -95,7 +96,7 @@ func TestB3DNSWorkflow(t *testing.T) {
 		}
 		return
 	}
-	families := []string{"linode", "qingcloud", "bunny", "cloudflare", "cpanel", "digitalocean", "gcore", "googlecloud", "netlify", "oraclecloud", "vercel", "yandexcloud"}
+	families := []string{"linode", "qingcloud", "bunny", "cloudflare", "cpanel", "digitalocean", "gcore", "netlify", "oraclecloud", "vercel", "yandexcloud"}
 	if filter := os.Getenv("CERTIMATE_B3_DNS_FAMILIES"); filter != "" {
 		families = strings.Split(filter, ",")
 	}

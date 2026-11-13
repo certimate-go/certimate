@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconCheck, IconChevronDown, IconDots, IconDownload, IconFilter, IconPuzzle, IconRefresh, IconTrash, IconX } from "@tabler/icons-react";
-import { Alert, App, Button, Card, Dropdown, Empty, Input, type MenuProps, Pagination, Progress, Skeleton, Tag, Tooltip } from "antd";
+import { Alert, App, Button, Card, Dropdown, Empty, Input, type MenuProps, Pagination, Progress, Skeleton, Tag, Tooltip, theme } from "antd";
 import { ClientResponseError } from "pocketbase";
 
 import {
@@ -24,19 +24,17 @@ const POLL_MS = 1000;
 const MAX_POLL_DELAY_MS = 30000;
 
 const statusLabel: Record<string, string> = {
-  not_installed: "plugin.market.status.not_installed",
   installed: "plugin.market.status.installed",
   update_available: "plugin.market.status.update_available",
   installed_manual: "plugin.market.status.installed_manual",
   unsupported_platform: "plugin.market.status.unsupported_platform",
 };
 
-const statusColor: Record<string, string> = {
-  not_installed: "bg-gray-400",
-  installed: "bg-green-500",
-  update_available: "bg-blue-500",
-  installed_manual: "bg-gray-400",
-  unsupported_platform: "bg-gray-400",
+const statusColor: Record<Exclude<MarketEntry["status"], "not_installed">, string> = {
+  installed: "success",
+  update_available: "processing",
+  installed_manual: "default",
+  unsupported_platform: "default",
 };
 
 const jobStageLabelKey = (state: InstallJobStatus["state"]): string => {
@@ -88,6 +86,7 @@ const PluginList = () => {
 const PluginMarket = () => {
   const { t, i18n } = useTranslation();
   const { message, modal } = App.useApp();
+  const { token } = theme.useToken();
   const catalogReload = usePluginCatalogStore((s) => s.reload);
 
   const [listing, setListing] = useState<MarketPage>();
@@ -256,6 +255,7 @@ const PluginMarket = () => {
 
   const handleInstall = async (entry: MarketEntry) => {
     const pt = entry.provider_type;
+    setOp(pt, true);
     try {
       const initial = await installPlugin(pt);
       setJobs((prev) => ({ ...prev, [pt]: initial }));
@@ -267,6 +267,8 @@ const PluginMarket = () => {
       }
       const msg = err instanceof Error ? err.message : t("plugin.market.error.install_failed");
       message.error(msg);
+    } finally {
+      setOp(pt, false);
     }
   };
 
@@ -344,7 +346,7 @@ const PluginMarket = () => {
 
     if (pollingErrors[pt] || (failed && entry.status === "not_installed")) {
       return (
-        <Button size="small" icon={<IconRefresh size={14} />} onClick={() => (pollingErrors[pt] ? startPolling(pt) : void handleInstall(entry))}>
+        <Button size="small" icon={<IconRefresh size={14} />} loading={busy} onClick={() => (pollingErrors[pt] ? startPolling(pt) : void handleInstall(entry))}>
           {t("plugin.market.action.retry")}
         </Button>
       );
@@ -387,8 +389,11 @@ const PluginMarket = () => {
     let items: MenuProps["items"];
     switch (entry.status) {
       case "not_installed":
-        items = [{ key: "install", label: t("plugin.market.action.install"), icon: <IconDownload size={14} />, onClick: () => void handleInstall(entry) }];
-        break;
+        return (
+          <Button color="primary" variant="filled" size="small" icon={<IconDownload size={14} />} loading={busy} onClick={() => void handleInstall(entry)}>
+            {t("plugin.market.action.install")}
+          </Button>
+        );
       case "installed":
         items = [{ key: "delete", label: t("plugin.market.action.delete"), icon: <IconTrash size={14} />, danger: true, onClick: () => confirmDelete(entry) }];
         break;
@@ -451,11 +456,12 @@ const PluginMarket = () => {
         </span>
       );
     }
+    if (entry.status === "not_installed") return null;
+
     return (
-      <span className="flex items-center gap-1.5">
-        <span className={`inline-block size-2 rounded-full ${statusColor[entry.status] ?? "bg-gray-400"}`} />
+      <Tag color={statusColor[entry.status]} variant="filled" className="m-0 rounded-full whitespace-normal">
         {t(statusLabel[entry.status], entry.status)}
-      </span>
+      </Tag>
     );
   };
 
@@ -527,7 +533,7 @@ const PluginMarket = () => {
         </Dropdown>
         <Input.Search
           allowClear
-          className="min-w-32 flex-1"
+          className="max-w-80 min-w-32 flex-1"
           aria-label={t("plugin.market.action.search_placeholder")}
           placeholder={t("plugin.market.action.search_placeholder")}
           onSearch={(value) => {
@@ -569,37 +575,52 @@ const PluginMarket = () => {
         <Empty description={t(keyword || statusFilter !== "all" || capabilityFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty")} />
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
-          {listing.items.map((entry) => (
-            <Card key={entry.provider_type} size="small" className="flex min-w-0 flex-col" classNames={{ body: "flex grow flex-col gap-3" }}>
-              <div className="flex items-start gap-3">
-                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 p-2.5 dark:bg-gray-800">
-                  {entry.icon_url ? (
-                    <img src={entry.icon_url} alt={entry.provider_type} loading="lazy" className="size-full object-contain" />
-                  ) : (
-                    <IconPuzzle size={22} className="text-gray-400" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-base font-semibold wrap-anywhere">
-                    {entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type}
+          {listing.items.map((entry) => {
+            const name = entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+            return (
+              <Card
+                key={entry.provider_type}
+                size="small"
+                className="flex min-w-0 flex-col"
+                classNames={{ body: "flex grow flex-col gap-2" }}
+                styles={{ body: { padding: 16 } }}
+              >
+                <div className="flex items-start gap-3 sm:min-h-15">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-lg p-2" style={{ background: token.colorFillQuaternary }}>
+                    {entry.icon_url ? (
+                      <img src={entry.icon_url} alt="" loading="lazy" className="size-full object-contain" />
+                    ) : (
+                      <IconPuzzle size={20} color={token.colorTextTertiary} />
+                    )}
                   </div>
-                  <div className="mt-0.5 text-xs text-gray-400">
-                    {entry.capability
-                      ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
-                      : entry.deploy_category}
+                  <div className="min-w-0 flex-1">
+                    <Tooltip title={name} trigger={["hover", "focus"]}>
+                      <h2 className="m-0 line-clamp-2 text-sm/5 font-semibold wrap-anywhere" tabIndex={0}>
+                        {name}
+                      </h2>
+                    </Tooltip>
+                    <div className="mt-0.5 text-xs/4 wrap-anywhere" style={{ color: token.colorTextSecondary }}>
+                      {entry.capability
+                        ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
+                        : entry.deploy_category}
+                    </div>
                   </div>
                 </div>
-              </div>
-              {entry.description && <div className="line-clamp-2 text-sm text-gray-500">{entry.description}</div>}
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-2 dark:border-gray-800">
-                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-400">
-                  {renderStatus(entry)}
-                  <span className="wrap-anywhere">v{entry.version}</span>
+                {entry.description && (
+                  <div className="line-clamp-2 text-xs" style={{ color: token.colorTextSecondary }}>
+                    {entry.description}
+                  </div>
+                )}
+                <div className="mt-auto flex min-h-8 flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                  <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs" style={{ color: token.colorTextSecondary }}>
+                    <span className="wrap-anywhere tabular-nums">v{entry.version}</span>
+                    {renderStatus(entry)}
+                  </div>
+                  <div className="ml-auto flex items-center">{renderActions(entry)}</div>
                 </div>
-                <div className="ml-auto flex items-center">{renderActions(entry)}</div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
       {listing && listing.totalItems > 0 && !error && (

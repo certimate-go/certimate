@@ -16,6 +16,7 @@ type ProviderFactoryOptions struct {
 	DnsPropagationTimeout  int
 	DnsTTL                 int
 	DnsNameservers         []string
+	DisableFollowCNAME     bool
 }
 
 type Registry[T comparable] interface {

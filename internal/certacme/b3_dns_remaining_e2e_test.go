@@ -292,10 +292,13 @@ func (f *b3DNSFixture) remainingCloud(w http.ResponseWriter, r *http.Request) bo
 		}
 		prefix := "/dns/v1/projects/fixture-project/managedZones"
 		record := func() map[string]any {
-			return map[string]any{"name": "_acme-challenge." + f.domain + ".", "type": "TXT", "ttl": 60, "rrdatas": []string{fmt.Sprintf("%q", f.value)}}
+			return map[string]any{"name": f.challengeRecordName(), "type": "TXT", "ttl": f.googleTTL, "rrdatas": []string{fmt.Sprintf("%q", f.value)}}
 		}
 		switch {
 		case r.Method == "GET" && r.URL.Path == prefix:
+			if r.URL.Query().Get("dnsName") != "example.test." {
+				f.t.Errorf("Google managed zone query: %s", r.URL)
+			}
 			reply(200, map[string]any{"managedZones": []any{map[string]string{"name": "fixture-zone", "dnsName": "example.test.", "visibility": "public"}}})
 		case r.Method == "GET" && r.URL.Path == prefix+"/fixture-zone/rrsets":
 			records := []any{}
@@ -307,14 +310,23 @@ func (f *b3DNSFixture) remainingCloud(w http.ResponseWriter, r *http.Request) bo
 			var body struct {
 				Additions, Deletions []struct {
 					Name, Type string
+					TTL        int
 					Data       []string `json:"rrdatas"`
 				}
 			}
 			json.NewDecoder(r.Body).Decode(&body)
 			if len(body.Additions) == 1 && len(body.Additions[0].Data) == 1 {
 				record := body.Additions[0]
-				create(record.Name, record.Type, strings.Trim(record.Data[0], "\""))
-			} else if len(body.Deletions) == 1 {
+				if record.Name != f.challengeRecordName() || record.Type != "TXT" || strings.Trim(record.Data[0], "\"") != f.expected || record.TTL != f.googleTTL {
+					f.t.Errorf("Google TXT addition mismatch: %+v", record)
+				}
+				f.value = strings.Trim(record.Data[0], "\"")
+				f.creates++
+			} else if len(body.Deletions) == 1 && len(body.Deletions[0].Data) == 1 {
+				record := body.Deletions[0]
+				if record.Name != f.challengeRecordName() || record.Type != "TXT" || strings.Trim(record.Data[0], "\"") != f.value || record.TTL != f.googleTTL {
+					f.t.Errorf("Google TXT deletion mismatch: %+v", record)
+				}
 				remove()
 			} else {
 				f.t.Error("Google change shape mismatch")
