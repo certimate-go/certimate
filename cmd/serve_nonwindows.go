@@ -4,7 +4,7 @@
 package cmd
 
 import (
-	"github.com/pocketbase/pocketbase"
+	"ganigeorgiev.com/pocketbase/pocketbase"
 )
 
 func Serve(app *pocketbase.PocketBase) error {

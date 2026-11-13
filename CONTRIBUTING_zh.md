@@ -26,12 +26,12 @@
 
 ### 要求
 
-- Go 1.25+（用于修改后端代码）
+- Go 1.27.4+（用于修改后端代码）
 - Node.js 22.12+（用于修改前端代码）
 
 ### 后端代码
 
-Certimate 的后端代码是使用 Golang 开发的，是一个基于 [Pocketbase](https://github.com/pocketbase/pocketbase) 构建的单体应用。
+Certimate 的后端代码是使用 Golang 开发的，是一个基于 [Pocketbase](https://ganigeorgiev.com/pocketbase/pocketbase) 构建的单体应用。
 
 假设你已经对 Certimate 的后端代码做出了一些修改，现在你想要运行它，请遵循以下步骤：
 

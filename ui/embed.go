@@ -3,7 +3,7 @@ package ui
 import (
 	"embed"
 
-	"github.com/pocketbase/pocketbase/apis"
+	"ganigeorgiev.com/pocketbase/pocketbase/apis"
 )
 
 //go:embed all:dist

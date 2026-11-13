@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/pocketbase/pocketbase/tools/cron"
+	"ganigeorgiev.com/pocketbase/pocketbase/tools/cron"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/app"

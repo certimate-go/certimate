@@ -3,8 +3,8 @@ package snaps
 import (
 	"fmt"
 
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 	"github.com/go-viper/mapstructure/v2"
-	"github.com/pocketbase/pocketbase/core"
 )
 
 type WorkflowGraphWalker struct {

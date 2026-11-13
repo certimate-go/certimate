@@ -26,12 +26,12 @@ Index:
 
 ### Prerequisites
 
-- Go 1.25+ (for backend code changes)
+- Go 1.27.4+ (for backend code changes)
 - Node.js 22.12+ (for frontend code changes)
 
 ### Backend Code
 
-The backend code of Certimate is developed using Golang. It is a monolithic application based on [Pocketbase](https://github.com/pocketbase/pocketbase).
+The backend code of Certimate is developed using Golang. It is a monolithic application based on [Pocketbase](https://ganigeorgiev.com/pocketbase/pocketbase).
 
 Once you have made changes to the backend code in Certimate, follow these steps to run the project:
 

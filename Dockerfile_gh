@@ -2,7 +2,7 @@
 # and it doesn't support armv7 (see https://github.com/parcel-bundler/lightningcss/issues/988).
 # So we pre-build webui, and just use simple Dockerfile here.
 
-FROM golang:1.25-alpine AS server-builder
+FROM golang:1.27-alpine AS server-builder
 WORKDIR /app
 COPY ../. /app/
 ENV CGO_ENABLED=0

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"strings"
 
+	"ganigeorgiev.com/pocketbase/dbx"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
+	m "ganigeorgiev.com/pocketbase/pocketbase/migrations"
 	"github.com/go-viper/mapstructure/v2"
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	m "github.com/pocketbase/pocketbase/migrations"
 
 	snaps "github.com/certimate-go/certimate/migrations/snaps/v0.4"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"

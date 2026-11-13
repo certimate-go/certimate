@@ -3,7 +3,7 @@ package workflow
 import (
 	"context"
 
-	"github.com/pocketbase/dbx"
+	"ganigeorgiev.com/pocketbase/dbx"
 
 	"github.com/certimate-go/certimate/internal/domain"
 )

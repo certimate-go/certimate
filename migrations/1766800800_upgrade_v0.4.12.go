@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/pocketbase/pocketbase/core"
-	m "github.com/pocketbase/pocketbase/migrations"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
+	m "ganigeorgiev.com/pocketbase/pocketbase/migrations"
 
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertx509 "github.com/certimate-go/certimate/pkg/utils/cert/x509"

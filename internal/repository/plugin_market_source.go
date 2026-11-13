@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
+	"ganigeorgiev.com/pocketbase/dbx"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 	"github.com/certimate-go/certimate/pkg/plugin"
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
 )
 
 type PluginMarketSources struct{ app core.App }

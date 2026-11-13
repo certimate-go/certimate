@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
+	"ganigeorgiev.com/pocketbase/dbx"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 	"github.com/go-acme/lego/v5/acme"
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"

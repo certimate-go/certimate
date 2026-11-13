@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pocketbase/pocketbase/core"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 
 	_ "github.com/certimate-go/certimate/migrations"
 	"github.com/certimate-go/certimate/pkg/plugin"

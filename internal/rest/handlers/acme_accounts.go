@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/router"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
+	"ganigeorgiev.com/pocketbase/pocketbase/tools/router"
 
 	"github.com/certimate-go/certimate/internal/domain/dtos"
 	"github.com/certimate-go/certimate/internal/rest/resp"

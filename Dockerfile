@@ -8,7 +8,7 @@ RUN \
 
 
 
-FROM golang:1.25-alpine AS server-builder
+FROM golang:1.27-alpine AS server-builder
 WORKDIR /app
 COPY ../. /app/
 RUN rm -rf /app/ui/dist
