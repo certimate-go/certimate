@@ -526,22 +526,29 @@ const PluginMarket = () => {
             ],
           }}
         >
-          <Button icon={<IconFilter size={16} />} aria-haspopup="menu" aria-expanded={filtersOpen}>
+          <Button className="text-sm" icon={<IconFilter size="1.25em" />} size="large" aria-haspopup="menu" aria-expanded={filtersOpen}>
             {t("plugin.market.filter.label")}
             <IconChevronDown size={14} />
           </Button>
         </Dropdown>
         <Input.Search
           allowClear
-          className="max-w-80 min-w-32 flex-1"
+          className="max-w-80 min-w-32 flex-1 text-sm placeholder:text-sm"
           aria-label={t("plugin.market.action.search_placeholder")}
           placeholder={t("plugin.market.action.search_placeholder")}
+          size="large"
           onSearch={(value) => {
             setKeyword(value.trim());
             setPage(1);
           }}
         />
-        <Button icon={<IconRefresh size={16} />} onClick={() => void loadListing(true)} loading={loading || listing?.refreshing}>
+        <Button
+          className="text-sm"
+          icon={<IconRefresh size="1.25em" />}
+          size="large"
+          onClick={() => void loadListing(true)}
+          loading={loading || listing?.refreshing}
+        >
           {t("plugin.market.action.refresh")}
         </Button>
       </div>
