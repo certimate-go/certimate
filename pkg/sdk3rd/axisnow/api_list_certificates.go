@@ -17,11 +17,10 @@ type ListCertificatesResponse struct {
 	sdkResponseBase
 
 	ResultInfo *struct {
-		Page            int `json:"page"`
-		PerPage         int `json:"per_page"`
-		Count           int `json:"count"`
-		TotalCount      int `json:"total_count"`
-		SubscribedTotal int `json:"subscribed_total"`
+		Page       int `json:"page"`
+		PerPage    int `json:"per_page"`
+		Count      int `json:"count"`
+		TotalCount int `json:"total_count"`
 	} `json:"result_info,omitempty"`
 	Results []*Certificate `json:"result,omitempty"`
 }
