@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconDownload, IconPuzzle, IconRefresh, IconTrash } from "@tabler/icons-react";
-import { Alert, App, Button, Card, Empty, Input, Pagination, Progress, Segmented, Skeleton, Tag, Tooltip } from "antd";
+import { IconCheck, IconChevronDown, IconDots, IconDownload, IconFilter, IconPuzzle, IconRefresh, IconTrash, IconX } from "@tabler/icons-react";
+import { Alert, App, Button, Card, Dropdown, Empty, Input, type MenuProps, Pagination, Progress, Skeleton, Tag, Tooltip } from "antd";
+import { ClientResponseError } from "pocketbase";
 
 import {
   type InstallJobStatus,
@@ -9,6 +10,7 @@ import {
   type MarketEntry,
   type MarketFilter,
   type MarketPage,
+  accessDependencyErrorSchema,
   deletePlugin,
   fetchMarketListing,
   getInstallStatus,
@@ -98,6 +100,7 @@ const PluginMarket = () => {
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketFilter>("all");
   const [capabilityFilter, setCapabilityFilter] = useState<MarketCapabilityFilter>("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [jobs, setJobs] = useState<Record<string, InstallJobStatus>>({});
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
   const [pollingErrors, setPollingErrors] = useState<Record<string, string>>({});
@@ -278,6 +281,19 @@ const PluginMarket = () => {
       if (result.errors?.length) throw new Error(result.errors.join("\n"));
       message.success(t("plugin.market.msg.deleted"));
     } catch (err) {
+      const dependency = accessDependencyErrorSchema.safeParse(err instanceof ClientResponseError ? err.response.data : undefined);
+      if (dependency.success) {
+        modal.warning({
+          title: t("plugin.market.error.delete_dependency_title"),
+          content: t("plugin.market.error.delete_dependency", {
+            name: dependency.data.providerType,
+            accessType: dependency.data.accessType,
+            dependents: dependency.data.dependents.join(", "),
+          }),
+          okText: t("common.button.confirm"),
+        });
+        return;
+      }
       const msg = err instanceof Error ? err.message : t("plugin.market.error.delete_failed");
       message.error(msg);
     } finally {
@@ -326,9 +342,9 @@ const PluginMarket = () => {
     const installing = !!job && !isTerminalState(job.state);
     const failed = job?.state === "failed";
 
-    if (pollingErrors[pt]) {
+    if (pollingErrors[pt] || (failed && entry.status === "not_installed")) {
       return (
-        <Button size="small" icon={<IconRefresh size={14} />} onClick={() => startPolling(pt)}>
+        <Button size="small" icon={<IconRefresh size={14} />} onClick={() => (pollingErrors[pt] ? startPolling(pt) : void handleInstall(entry))}>
           {t("plugin.market.action.retry")}
         </Button>
       );
@@ -368,35 +384,55 @@ const PluginMarket = () => {
       );
     }
 
+    let items: MenuProps["items"];
     switch (entry.status) {
       case "not_installed":
-        return (
-          <Button type="primary" size="small" icon={<IconDownload size={14} />} onClick={() => handleInstall(entry)}>
-            {failed ? t("plugin.market.action.retry") : t("plugin.market.action.install")}
-          </Button>
-        );
+        items = [{ key: "install", label: t("plugin.market.action.install"), icon: <IconDownload size={14} />, onClick: () => void handleInstall(entry) }];
+        break;
       case "installed":
-        return (
-          <Button danger size="small" icon={<IconTrash size={14} />} loading={busy} onClick={() => confirmDelete(entry)}>
-            {t("plugin.market.action.delete")}
-          </Button>
-        );
+        items = [{ key: "delete", label: t("plugin.market.action.delete"), icon: <IconTrash size={14} />, danger: true, onClick: () => confirmDelete(entry) }];
+        break;
       case "update_available":
-        return (
-          <Button type="primary" size="small" icon={<IconRefresh size={14} />} loading={busy} onClick={() => handleUpdate(entry)}>
-            {t("plugin.market.action.update")}
-          </Button>
-        );
+        items = [{ key: "update", label: t("plugin.market.action.update"), icon: <IconRefresh size={14} />, onClick: () => void handleUpdate(entry) }];
+        break;
       default:
         return null;
     }
+    const name = entry.display_name_key ? t(entry.display_name_key, pt) : pt;
+    return (
+      <Dropdown autoFocus placement="bottomRight" trigger={["click"]} menu={{ items }} disabled={busy}>
+        <Button
+          type="text"
+          size="small"
+          icon={<IconDots size={16} />}
+          loading={busy}
+          aria-haspopup="menu"
+          aria-label={t("plugin.market.action.more", { name })}
+        />
+      </Dropdown>
+    );
   };
 
   const renderStatus = (entry: MarketEntry) => {
     const job = jobs[entry.provider_type] ?? entry.job;
+    const pollingError = pollingErrors[entry.provider_type];
+    const errorDetails = [job?.error, pollingError].filter(Boolean).join("\n");
     const installing = !!job && !isTerminalState(job.state);
-    const failed = job?.state === "failed";
 
+    if (job?.state === "failed" || errorDetails) {
+      const failureLabel = t(pollingError ? "plugin.market.job.status_unavailable" : "plugin.market.job.failed");
+      if (!errorDetails) return <span className="text-xs text-error">{failureLabel}</span>;
+      return (
+        <Tooltip title={<span className="wrap-anywhere whitespace-pre-wrap">{errorDetails}</span>} trigger={["hover", "focus", "click"]}>
+          <button
+            type="button"
+            className="cursor-help appearance-none border-0 bg-transparent p-0 text-left text-xs text-error underline decoration-dotted underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            {failureLabel}
+          </button>
+        </Tooltip>
+      );
+    }
     if (installing) {
       const total = job?.total ?? 0;
       const downloaded = job?.downloaded ?? 0;
@@ -415,9 +451,6 @@ const PluginMarket = () => {
         </span>
       );
     }
-    if (failed) {
-      return <span className="text-xs text-red-500">{t("plugin.market.job.failed")}</span>;
-    }
     return (
       <span className="flex items-center gap-1.5">
         <span className={`inline-block size-2 rounded-full ${statusColor[entry.status] ?? "bg-gray-400"}`} />
@@ -426,49 +459,95 @@ const PluginMarket = () => {
     );
   };
 
+  const statusOptions: { value: MarketFilter; label: string }[] = [
+    { value: "all", label: t("plugin.market.filter.all") },
+    { value: "installed", label: t("plugin.market.filter.installed") },
+    { value: "not_installed", label: t("plugin.market.filter.not_installed") },
+  ];
+  const capabilityOptions: { value: MarketCapabilityFilter; label: string }[] = [
+    { value: "all", label: t("plugin.market.filter.all") },
+    { value: "deploy", label: t("plugin.market.capability.deploy") },
+    { value: "dns", label: t("plugin.market.capability.dns") },
+    { value: "notify", label: t("plugin.market.capability.notify") },
+  ];
+  const changeStatus = (value: MarketFilter) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
+  const changeCapability = (value: MarketCapabilityFilter) => {
+    setCapabilityFilter(value);
+    setPage(1);
+  };
+  const activeFilters = [
+    { value: statusFilter, options: statusOptions, clear: () => changeStatus("all"), label: t("plugin.market.filter.status") },
+    { value: capabilityFilter, options: capabilityOptions, clear: () => changeCapability("all"), label: t("plugin.market.filter.capability") },
+  ].filter(({ value }) => value !== "all");
+
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Segmented<MarketFilter>
-            options={[
-              { label: t("plugin.market.filter.all"), value: "all" },
-              { label: t("plugin.market.filter.installed"), value: "installed" },
-              { label: t("plugin.market.filter.not_installed"), value: "not_installed" },
-            ]}
-            value={statusFilter}
-            onChange={(value) => {
-              setStatusFilter(value);
-              setPage(1);
-            }}
-          />
-          <Segmented<MarketCapabilityFilter>
-            options={[
-              { label: t("plugin.market.filter.all"), value: "all" },
-              { label: t("plugin.market.capability.deploy"), value: "deploy" },
-              { label: t("plugin.market.capability.dns"), value: "dns" },
-              { label: t("plugin.market.capability.notify"), value: "notify" },
-            ]}
-            value={capabilityFilter}
-            onChange={(value) => {
-              setCapabilityFilter(value);
-              setPage(1);
-            }}
-          />
-          <Input.Search
-            allowClear
-            className="w-48"
-            placeholder={t("plugin.market.action.search_placeholder")}
-            onSearch={(value) => {
-              setKeyword(value.trim());
-              setPage(1);
-            }}
-          />
-        </div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Dropdown
+          autoFocus
+          placement="bottomLeft"
+          trigger={["click"]}
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+          menu={{
+            selectable: true,
+            multiple: true,
+            selectedKeys: [`status-${statusFilter}`, `capability-${capabilityFilter}`],
+            items: [
+              {
+                type: "group",
+                label: t("plugin.market.filter.status"),
+                children: statusOptions.map(({ value, label }) => ({
+                  key: `status-${value}`,
+                  label,
+                  icon: <IconCheck size={14} className={value === statusFilter ? undefined : "invisible"} />,
+                  onClick: () => changeStatus(value),
+                })),
+              },
+              {
+                type: "group",
+                label: t("plugin.market.filter.capability"),
+                children: capabilityOptions.map(({ value, label }) => ({
+                  key: `capability-${value}`,
+                  label,
+                  icon: <IconCheck size={14} className={value === capabilityFilter ? undefined : "invisible"} />,
+                  onClick: () => changeCapability(value),
+                })),
+              },
+            ],
+          }}
+        >
+          <Button icon={<IconFilter size={16} />} aria-haspopup="menu" aria-expanded={filtersOpen}>
+            {t("plugin.market.filter.label")}
+            <IconChevronDown size={14} />
+          </Button>
+        </Dropdown>
+        <Input.Search
+          allowClear
+          className="min-w-32 flex-1"
+          aria-label={t("plugin.market.action.search_placeholder")}
+          placeholder={t("plugin.market.action.search_placeholder")}
+          onSearch={(value) => {
+            setKeyword(value.trim());
+            setPage(1);
+          }}
+        />
         <Button icon={<IconRefresh size={16} />} onClick={() => void loadListing(true)} loading={loading || listing?.refreshing}>
           {t("plugin.market.action.refresh")}
         </Button>
       </div>
+      {activeFilters.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {activeFilters.map(({ value, options, clear, label }) => (
+            <Tag key={label} closeIcon={<IconX size={12} aria-label={t("plugin.market.filter.clear", { filter: label })} />} onClose={clear} className="m-0">
+              {options.find((option) => option.value === value)?.label}
+            </Tag>
+          ))}
+        </div>
+      )}
 
       {listing?.syncedAt && (
         <p className="mb-3 text-xs text-gray-500">{t("plugin.market.synced_at", { time: new Date(listing.syncedAt).toLocaleString(i18n.language) })}</p>
@@ -491,39 +570,33 @@ const PluginMarket = () => {
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
           {listing.items.map((entry) => (
-            <Card key={entry.provider_type} hoverable className="flex min-w-0 flex-col">
-              <div className="flex h-full flex-col gap-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 p-2.5 dark:bg-gray-800">
-                    {entry.icon_url ? (
-                      <img src={entry.icon_url} alt={entry.provider_type} loading="lazy" className="size-full object-contain" />
-                    ) : (
-                      <IconPuzzle size={22} className="text-gray-400" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-base font-semibold">
-                      {entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type}
-                    </div>
-                    <div className="mt-0.5 text-xs text-gray-400">
-                      {entry.capability
-                        ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
-                        : entry.deploy_category}
-                    </div>
-                  </div>
-                  <div className="shrink-0">{renderActions(entry)}</div>
+            <Card key={entry.provider_type} size="small" className="flex min-w-0 flex-col" classNames={{ body: "flex grow flex-col gap-3" }}>
+              <div className="flex items-start gap-3">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 p-2.5 dark:bg-gray-800">
+                  {entry.icon_url ? (
+                    <img src={entry.icon_url} alt={entry.provider_type} loading="lazy" className="size-full object-contain" />
+                  ) : (
+                    <IconPuzzle size={22} className="text-gray-400" />
+                  )}
                 </div>
-                <div className="line-clamp-2 min-h-10 text-sm text-gray-500">{entry.description}</div>
-                {(pollingErrors[entry.provider_type] || (jobs[entry.provider_type] ?? entry.job)?.error) && (
-                  <Alert
-                    type={pollingErrors[entry.provider_type] ? "warning" : "error"}
-                    message={pollingErrors[entry.provider_type] || (jobs[entry.provider_type] ?? entry.job)?.error}
-                  />
-                )}
-                <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-2 text-xs text-gray-400 dark:border-gray-800">
+                <div className="min-w-0 flex-1">
+                  <div className="text-base font-semibold wrap-anywhere">
+                    {entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type}
+                  </div>
+                  <div className="mt-0.5 text-xs text-gray-400">
+                    {entry.capability
+                      ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
+                      : entry.deploy_category}
+                  </div>
+                </div>
+              </div>
+              {entry.description && <div className="line-clamp-2 text-sm text-gray-500">{entry.description}</div>}
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-2 dark:border-gray-800">
+                <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-400">
                   {renderStatus(entry)}
-                  <span>v{entry.version}</span>
+                  <span className="wrap-anywhere">v{entry.version}</span>
                 </div>
+                <div className="ml-auto flex items-center">{renderActions(entry)}</div>
               </div>
             </Card>
           ))}

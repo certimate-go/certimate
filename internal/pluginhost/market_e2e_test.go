@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -47,7 +48,7 @@ func buildMarketReleaseShared(t *testing.T, providerType, accessType, version, b
 	manifest := plugin.Manifest{
 		ProviderType: providerType, AccessProviderType: accessType, Version: version,
 		Capability: plugin.CapabilityDeploy,
-		Binary: "webhook-deployer", ProtocolVersion: plugin.ProtocolVersion,
+		Binary:     "webhook-deployer", ProtocolVersion: plugin.ProtocolVersion,
 	}
 	manifestJSON, err := json.Marshal(manifest)
 	if err != nil {
@@ -306,9 +307,15 @@ func TestE2E_MarketDeleteRefusedWhileAccessReuserInstalled(t *testing.T) {
 		t.Fatalf("reuser install after owner failed: %+v", status)
 	}
 
-	if _, err := market.Delete(context.Background(), ownerType); err == nil {
-		t.Fatal("owner delete must be refused while reuser is installed")
-	} else if !strings.Contains(err.Error(), reuserType) || !strings.Contains(err.Error(), sharedAccess) {
+	_, err = market.Delete(context.Background(), ownerType)
+	var dependency *pluginhost.AccessOwnerInUseError
+	if !errors.As(err, &dependency) || !errors.Is(err, pluginhost.ErrAccessOwnerInUse) {
+		t.Fatalf("expected structured dependency error, got %v", err)
+	}
+	if dependency.ProviderType != ownerType || dependency.AccessType != sharedAccess || len(dependency.Dependents) != 1 || dependency.Dependents[0] != reuserType {
+		t.Fatalf("incorrect dependency details: %+v", dependency)
+	}
+	if !strings.Contains(err.Error(), reuserType) || !strings.Contains(err.Error(), sharedAccess) {
 		t.Fatalf("refusal must name reuser and access type: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(root, ownerType)); err != nil {

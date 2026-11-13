@@ -26,6 +26,20 @@ const (
 
 var ErrAccessOwnerInUse = errors.New("pluginhost: access owner still in use")
 
+type AccessOwnerInUseError struct {
+	ProviderType string   `json:"providerType"`
+	AccessType   string   `json:"accessType"`
+	Dependents   []string `json:"dependents"`
+}
+
+func (e *AccessOwnerInUseError) Error() string {
+	return fmt.Sprintf("%s: plugin %q owns access type %q still used by %s; remove them first", ErrAccessOwnerInUse, e.ProviderType, e.AccessType, strings.Join(e.Dependents, ", "))
+}
+
+func (e *AccessOwnerInUseError) Unwrap() error {
+	return ErrAccessOwnerInUse
+}
+
 type CatalogEntry struct {
 	Source               string                       `json:"source"`
 	Capability           string                       `json:"capability"`
@@ -243,7 +257,7 @@ func (c *Catalog) refuseRemoval(name string) error {
 		return nil
 	}
 	sort.Strings(reusers)
-	return fmt.Errorf("%w: plugin %q owns access type %q still used by %s; remove them first", ErrAccessOwnerInUse, name, p.accessType, strings.Join(reusers, ", "))
+	return &AccessOwnerInUseError{ProviderType: name, AccessType: p.accessType, Dependents: reusers}
 }
 
 func (c *Catalog) publish(p *registeredPlugin) error {

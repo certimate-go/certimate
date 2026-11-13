@@ -1,9 +1,17 @@
 import { ClientResponseError } from "pocketbase";
+import { z } from "zod";
 
 import { getPocketBase } from "@/repository/_pocketbase";
 import { get as httpGet, post as httpPost } from "./_api";
 
 const pb = getPocketBase();
+
+export const accessDependencyErrorSchema = z.object({
+  reason: z.literal("access_owner_in_use"),
+  providerType: z.string(),
+  accessType: z.string(),
+  dependents: z.array(z.string()).nonempty(),
+});
 
 export interface MarketEntry {
   provider_type: string;
@@ -94,11 +102,11 @@ export const getInstallStatus = async (providerType: string): Promise<InstallJob
 };
 
 export const deletePlugin = async (providerType: string): Promise<ReloadResult> => {
-  const resp = await pb.send<{ code: number; data: ReloadResult }>(`/api/plugin/market/${providerType}`, {
+  const resp = await pb.send<{ code: number; msg: string; data: ReloadResult }>(`/api/plugin/market/${providerType}`, {
     method: "DELETE",
   });
   if (resp.code !== 0) {
-    throw new ClientResponseError({ status: resp.code, response: resp, data: {} });
+    throw new ClientResponseError({ status: resp.code, response: { ...resp, message: resp.msg }, data: {} });
   }
   return resp.data;
 };

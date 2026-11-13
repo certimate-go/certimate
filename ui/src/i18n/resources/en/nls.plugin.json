@@ -19,6 +19,8 @@
       "load_failed": "Failed to load plugin marketplace",
       "install_failed": "Failed to install plugin",
       "delete_failed": "Failed to delete plugin",
+      "delete_dependency_title": "Cannot remove plugin",
+      "delete_dependency": "Cannot remove {{name}} because {{dependents}} still uses its {{accessType}} credential type. Remove the dependent plugins first, then try again.",
       "update_failed": "Failed to update plugin"
     },
     "msg": {
@@ -27,6 +29,7 @@
       "updated": "Plugin updated"
     },
     "action": {
+      "more": "Actions for {{name}}",
       "install": "Install",
       "delete": "Delete",
       "update": "Update",
@@ -37,6 +40,10 @@
       "delete_modal_content": "This removes the plugin <b>{{name}}</b> from this server. Any access or workflow using it will stop working until it is reinstalled."
     },
     "filter": {
+      "label": "Filters",
+      "status": "Installation status",
+      "capability": "Plugin type",
+      "clear": "Clear filter: {{filter}}",
       "all": "All",
       "installed": "Installed",
       "not_installed": "Not installed"
@@ -53,6 +60,7 @@
       "verifying": "Verifying…",
       "extracting": "Extracting…",
       "reloading": "Reloading…",
+      "status_unavailable": "Status unavailable",
       "failed": "Install failed"
     },
     "label": {

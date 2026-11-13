@@ -3,6 +3,8 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"net/http"
 	"strconv"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -106,6 +108,13 @@ func (h *PluginMarketHandler) delete(e *core.RequestEvent) error {
 	}
 	result, err := h.service.Delete(e.Request.Context(), providerType)
 	if err != nil {
+		var dependencyError *pluginhost.AccessOwnerInUseError
+		if errors.As(err, &dependencyError) {
+			return e.JSON(http.StatusOK, resp.Response{Code: http.StatusConflict, Msg: dependencyError.Error(), Data: struct {
+				Reason string `json:"reason"`
+				*pluginhost.AccessOwnerInUseError
+			}{Reason: "access_owner_in_use", AccessOwnerInUseError: dependencyError}})
+		}
 		return resp.Err(e, err)
 	}
 	return resp.Ok(e, result)
