@@ -3,7 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconSend } from "@tabler/icons-react";
 import { Avatar } from "antd";
 
-import { notificationProvidersMap } from "@/domain/provider";
+import { getNotificationProvider } from "@/domain/provider";
 import { newNode } from "@/domain/workflow";
 
 import { BaseNode } from "./_shared";
@@ -51,8 +51,8 @@ export const BizNotifyNodeRegistry: NodeRegistry = {
                   <>
                     {value ? (
                       <>
-                        <div className="flex-1 truncate">{t(notificationProvidersMap.get(value)?.name ?? "")}</div>
-                        <Avatar shape="square" src={notificationProvidersMap.get(value)?.icon} size={20} />
+                        <div className="flex-1 truncate">{t(getNotificationProvider(value)?.name ?? value)}</div>
+                        <Avatar shape="square" src={getNotificationProvider(value)?.icon} size={20} />
                       </>
                     ) : (
                       t("workflow.detail.design.editor.placeholder")

@@ -13,10 +13,11 @@ import CopyableText from "@/components/CopyableText";
 import Empty from "@/components/Empty";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { ACCESS_USAGES, accessProvidersMap } from "@/domain/provider";
+import { ACCESS_USAGES, accessProvidersMap, getAccessProvider } from "@/domain/provider";
 import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { get as getAccess } from "@/repository/access";
 import { useAccessesStore } from "@/stores/access";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { unwrapErrMsg } from "@/utils/error";
 
 type AccessUsages = AccessEditDrawerProps["usage"];
@@ -31,6 +32,7 @@ const AccessList = () => {
 
   const { modal, notification } = App.useApp();
 
+  const catalogVersion = usePluginCatalogStore((state) => state.version);
   const { appSettings: globalAppSettings } = useAppSettings();
 
   const { fetchAccesses, deleteAccess } = useAccessesStore(useZustandShallowSelector(["loadedAtOnce", "fetchAccesses", "deleteAccess"]));
@@ -74,13 +76,14 @@ const AccessList = () => {
       key: "name",
       title: t("access.props.name"),
       render: (_, record) => {
+        const provider = getAccessProvider(record.provider);
         return (
           <div className="flex max-w-full items-center gap-4 overflow-hidden">
-            <Avatar shape="square" size={28} src={accessProvidersMap.get(record.provider)?.icon} />
+            <Avatar shape="square" size={28} src={provider?.icon} />
             <div className="flex max-w-full flex-col gap-1 truncate">
               <Typography.Text ellipsis>{record.name || "\u00A0"}</Typography.Text>
               <Typography.Text ellipsis type="secondary">
-                {t(accessProvidersMap.get(record.provider)?.name ?? "") || "\u00A0"}
+                {t(provider?.name ?? record.provider)}
               </Typography.Text>
             </div>
           </div>
@@ -216,7 +219,7 @@ const AccessList = () => {
             case "ca":
               return e.reserve === "ca" && provider?.usages?.includes(ACCESS_USAGES.CA);
             case "notification":
-              return e.reserve === "notif" && provider?.usages?.includes(ACCESS_USAGES.NOTIFICATION);
+              return e.reserve === "notif";
           }
         });
       return Promise.resolve({
@@ -225,7 +228,7 @@ const AccessList = () => {
       });
     },
     {
-      refreshDeps: [filters, page, pageSize],
+      refreshDeps: [filters, page, pageSize, catalogVersion],
       onBefore: () => {
         setSearchParams((prev) => {
           if (filters["keyword"]) {

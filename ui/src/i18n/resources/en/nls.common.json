@@ -23,6 +23,7 @@
     "copied": "Copied",
     "import_from_file": "Import from file ...",
     "happy_browser": "The browser version is too low to make Certimate WebUI working well. Recommend using modern browsers such as Google Chrome v119.0 or higher.",
+    "loading": "Loading ...",
     "nodata": "No data available",
     "nodata_failed": "Failed to load data",
     "operation_confirm": "Operation confirm",

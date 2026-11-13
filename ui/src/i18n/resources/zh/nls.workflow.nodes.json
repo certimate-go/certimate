@@ -1723,11 +1723,6 @@
       "params_config": {
         "label": "参数设置"
       },
-      "discordbot_channel_id": {
-        "label": "Discord 频道 ID（可选）",
-        "placeholder": "请输入 Discord 频道 ID",
-        "help": "提示：不填写时，将使用所选通知渠道授权的默认频道 ID。"
-      },
       "email_format": {
         "label": "消息格式（可选）",
         "placeholder": "请选择消息格式",
@@ -1744,26 +1739,6 @@
         "label": "收件人邮箱（可选）",
         "placeholder": "请输入收件人邮箱以覆盖默认值",
         "help": "提示：不填写时，将使用所选通知渠道授权的默认收件人邮箱。"
-      },
-      "matrix_room_id": {
-        "label": "Matrix 房间 ID（可选）",
-        "placeholder": "请输入 Matrix 房间 ID",
-        "help": "提示：不填写时，将使用所选通知渠道授权的默认房间 ID。"
-      },
-      "mattermost_channel_id": {
-        "label": "Mattermost 频道 ID（可选）",
-        "placeholder": "请输入 Mattermost 频道 ID",
-        "help": "提示：不填写时，将使用所选通知渠道授权的默认频道 ID。"
-      },
-      "slackbot_channel_id": {
-        "label": "Slack 频道 ID（可选）",
-        "placeholder": "请输入 Slack 频道 ID",
-        "help": "提示：不填写时，将使用所选通知渠道授权的默认频道 ID。"
-      },
-      "telegrambot_chat_id": {
-        "label": "Telegram 会话 ID（可选）",
-        "placeholder": "请输入 Telegram 会话 ID",
-        "help": "提示：不填写时，将使用所选通知渠道授权的默认会话 ID。"
       },
       "webhook_data": {
         "label": "Webhook 回调数据（可选）",

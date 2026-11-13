@@ -8,9 +8,10 @@ import { testPushNotification } from "@/api/notifications";
 import AccessProviderPicker from "@/components/provider/AccessProviderPicker";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { ACCESS_USAGES } from "@/domain/provider";
+import { ACCESS_USAGES, accessProvidersMap } from "@/domain/provider";
 import { useTriggerElement, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { unwrapErrMsg } from "@/utils/error";
 import { applyTrimmedFormValues } from "@/utils/form";
 
@@ -109,6 +110,9 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
 
   const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
 
+  usePluginCatalogStore((state) => state.version);
+  const providerUnavailable = usage === "notification" && !!fieldProvider && !accessProvidersMap.has(fieldProvider);
+
   const [isTesting, setIsTesting] = useState(false);
 
   const handleProviderPick = (value: string) => {
@@ -168,7 +172,12 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
           fieldProvider ? (
             <Flex className="px-2" justify="space-between">
               {usage === "notification" ? (
-                <Button className="max-sm:invisible" disabled={mode !== "modify" || formChanged} loading={isTesting} onClick={handleTestPushClick}>
+                <Button
+                  className="max-sm:invisible"
+                  disabled={mode !== "modify" || formChanged || providerUnavailable || loading}
+                  loading={isTesting}
+                  onClick={handleTestPushClick}
+                >
                   {t("access.action.test_notify.button")}
                 </Button>
               ) : (
@@ -179,7 +188,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
                   {t("common.button.cancel")}
                 </Button>
                 <Space.Compact>
-                  <Button disabled={isTesting} loading={formPending} type="primary" onClick={handleOkClick}>
+                  <Button disabled={isTesting || providerUnavailable || loading} loading={formPending} type="primary" onClick={handleOkClick}>
                     {mode === "modify" ? t("common.button.save") : t("common.button.submit")}
                   </Button>
                   <Show when={mode === "modify"}>
@@ -196,7 +205,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
                       placement="bottomRight"
                       trigger={["click"]}
                     >
-                      <Button disabled={formPending || isTesting} icon={<IconChevronDown size="1.25em" />} type="primary" />
+                      <Button disabled={formPending || isTesting || providerUnavailable || loading} icon={<IconChevronDown size="1.25em" />} type="primary" />
                     </Dropdown>
                   </Show>
                 </Space.Compact>
@@ -242,7 +251,14 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
         </Show>
 
         <div style={{ display: fieldProvider || data?.provider ? "block" : "none" }}>
-          <AccessForm form={formInst} disabled={formPending} initialValues={data} mode={mode} usage={usage} onFormValuesChange={handleFormChange} />
+          <AccessForm
+            form={formInst}
+            disabled={formPending || providerUnavailable}
+            initialValues={data}
+            mode={mode}
+            usage={usage}
+            onFormValuesChange={handleFormChange}
+          />
         </div>
       </Drawer>
     </>

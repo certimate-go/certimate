@@ -157,17 +157,6 @@ type AccessConfigForDigitalOcean struct {
 	AccessToken string `json:"accessToken"`
 }
 
-type AccessConfigForDingTalkBot struct {
-	WebhookUrl    string `json:"webhookUrl"`
-	Secret        string `json:"secret,omitempty"`
-	CustomPayload string `json:"customPayload,omitempty"`
-}
-
-type AccessConfigForDiscordBot struct {
-	BotToken  string `json:"botToken"`
-	ChannelId string `json:"channelId,omitempty"`
-}
-
 type AccessConfigForDNSExit struct {
 	ApiKey string `json:"apiKey"`
 }
@@ -286,12 +275,6 @@ type AccessConfigForJDCloud struct {
 	AccessKeySecret string `json:"accessKeySecret"`
 }
 
-type AccessConfigForLarkBot struct {
-	WebhookUrl    string `json:"webhookUrl"`
-	Secret        string `json:"secret,omitempty"`
-	CustomPayload string `json:"customPayload,omitempty"`
-}
-
 type AccessConfigForLinode struct {
 	AccessToken string `json:"accessToken"`
 }
@@ -303,20 +286,6 @@ type AccessConfigForLiteSSL struct {
 type AccessConfigForLuaDNS struct {
 	Username string `json:"username"`
 	ApiKey   string `json:"apiKey"`
-}
-
-type AccessConfigForMatrix struct {
-	ServerUrl   string `json:"serverUrl"`
-	UserId      string `json:"userId"`
-	AccessToken string `json:"accessToken"`
-	RoomId      string `json:"roomId,omitempty"`
-}
-
-type AccessConfigForMattermost struct {
-	ServerUrl string `json:"serverUrl"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	ChannelId string `json:"channelId,omitempty"`
 }
 
 type AccessConfigForNamecheap struct {
@@ -425,11 +394,6 @@ type AccessConfigForSimplyCom struct {
 	ApiKey        string `json:"apiKey"`
 }
 
-type AccessConfigForSlackBot struct {
-	BotToken  string `json:"botToken"`
-	ChannelId string `json:"channelId,omitempty"`
-}
-
 type AccessConfigForSpaceship struct {
 	ApiKey    string `json:"apiKey"`
 	ApiSecret string `json:"apiSecret"`
@@ -464,11 +428,6 @@ type AccessConfigForTechnitiumDNS struct {
 	ServerUrl                string `json:"serverUrl"`
 	ApiToken                 string `json:"apiToken"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForTelegramBot struct {
-	BotToken string `json:"botToken"`
-	ChatId   string `json:"chatId,omitempty"`
 }
 
 type AccessConfigForTodayNIC struct {
@@ -509,11 +468,6 @@ type AccessConfigForWebhook struct {
 	HeadersString            string `json:"headers,omitempty"`
 	DataString               string `json:"data,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForWeComBot struct {
-	WebhookUrl    string `json:"webhookUrl"`
-	CustomPayload string `json:"customPayload,omitempty"`
 }
 
 type AccessConfigForWestcn struct {

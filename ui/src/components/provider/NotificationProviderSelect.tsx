@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
-import { type NotificationProvider, notificationProvidersMap } from "@/domain/provider";
+import { type NotificationProvider, getNotificationProvider, notificationProvidersMap } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { matchSearchOption } from "@/utils/search";
 
 import { type SharedSelectProps, useSelectDataSource } from "./_shared";
@@ -16,6 +17,7 @@ const NotificationProviderSelect = ({ showAvailability = false, onFilter, ...pro
 
   const { token: themeToken } = theme.useToken();
 
+  usePluginCatalogStore((state) => state.version);
   const dataSources = useSelectDataSource({
     dataSource: Array.from(notificationProvidersMap.values()),
     filters: [onFilter!],
@@ -42,14 +44,15 @@ const NotificationProviderSelect = ({ showAvailability = false, onFilter, ...pro
           },
         ].filter((group) => group.options.length > 0)
       : convert(dataSources.filtered);
-  }, [showAvailability, dataSources]);
+  }, [showAvailability, dataSources, t]);
 
   const renderOption = (key: string) => {
-    const provider = notificationProvidersMap.get(key);
+    const provider = getNotificationProvider(key);
     return (
       <div className="flex items-center gap-2 truncate overflow-hidden">
         <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text ellipsis>{t(provider?.name ?? "")}</Typography.Text>
+        <Typography.Text ellipsis>{t(provider?.name ?? key)}</Typography.Text>
+        {!notificationProvidersMap.has(key) && <Typography.Text type="secondary">{t("plugin.market.status.not_installed")}</Typography.Text>}
       </div>
     );
   };
@@ -58,15 +61,15 @@ const NotificationProviderSelect = ({ showAvailability = false, onFilter, ...pro
     <Select
       {...props}
       labelRender={({ value }) => {
-        if (value != null) {
-          return renderOption(value as string);
+        if (typeof value === "string") {
+          return renderOption(value);
         }
 
         return <span style={{ color: themeToken.colorTextPlaceholder }}>{props.placeholder}</span>;
       }}
       options={options}
       optionLabelProp={void 0}
-      optionRender={(option) => renderOption(option.data.value as string)}
+      optionRender={({ data: { value } }) => (typeof value === "string" ? renderOption(value) : null)}
       showSearch={{
         filterOption: (inputValue, option) => matchSearchOption(inputValue, option!),
       }}

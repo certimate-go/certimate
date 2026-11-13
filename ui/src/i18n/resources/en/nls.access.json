@@ -428,32 +428,6 @@
       "placeholder": "Please enter DigitalOcean access token",
       "tooltip": "For more information, see <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>"
     },
-    "dingtalkbot_webhook_url": {
-      "label": "DingTalk bot Webhook URL",
-      "placeholder": "Please enter DingTalk bot Webhook URL",
-      "tooltip": "For more information, see <a href=\"https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot</a>"
-    },
-    "dingtalkbot_secret": {
-      "label": "DingTalk bot secret",
-      "placeholder": "Please enter DingTalk bot secret",
-      "tooltip": "For more information, see <a href=\"https://open.dingtalk.com/document/orgapp/customize-robot-security-settings\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/customize-robot-security-settings</a>"
-    },
-    "dingtalkbot_custom_payload": {
-      "label": "DingTalk bot message payload (Optional)",
-      "placeholder": "Please enter custom DingTalk bot message payload",
-      "checkbox": "Customized message payload"
-    },
-    "discordbot_token": {
-      "label": "Discord bot token",
-      "placeholder": "Please enter Discord bot token",
-      "tooltip": "For more information, see <a href=\"https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token\" target=\"_blank\">https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token</a>"
-    },
-    "discordbot_channel_id": {
-      "label": "Discord channel ID (Optional)",
-      "placeholder": "Please enter the default Discord channel ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "For more information, see <a href=\"https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID\" target=\"_blank\">https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID</a>"
-    },
     "dnsexit_api_key": {
       "label": "DNSExit API key",
       "placeholder": "Please enter DNSExit API key",
@@ -678,21 +652,6 @@
       "help": "Notes: Leave it blank to use the Pod's ServiceAccount.",
       "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a>"
     },
-    "larkbot_webhook_url": {
-      "label": "Lark bot Webhook URL",
-      "placeholder": "Please enter Lark bot Webhook URL",
-      "tooltip": "For more information, see <a href=\"https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_secret": {
-      "label": "Lark bot secret",
-      "placeholder": "Please enter Lark bot secret",
-      "tooltip": "For more information, see <a href=\"hhttps://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_custom_payload": {
-      "label": "Lark bot message payload (Optional)",
-      "placeholder": "Please enter custom Lark bot message payload",
-      "checkbox": "Customized message payload"
-    },
     "linode_access_token": {
       "label": "Linode access token",
       "placeholder": "Please enter Linode access token",
@@ -709,44 +668,6 @@
       "label": "LuaDNS API key",
       "placeholder": "Please enter LuaDNS API key",
       "tooltip": "For more information, see <a href=\"https://app.luadns.com/api_keys\" target=\"_blank\">https://app.luadns.com/api_keys</a>"
-    },
-    "matrix_server_url": {
-      "label": "Matrix server URL",
-      "placeholder": "Please enter Matrix server URL"
-    },
-    "matrix_user_id": {
-      "label": "Matrix user ID",
-      "placeholder": "Please enter Matrix user ID",
-      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
-    },
-    "matrix_access_token": {
-      "label": "Matrix access token",
-      "placeholder": "Please enter Matrix access token",
-      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
-    },
-    "matrix_room_id": {
-      "label": "Matrix room ID (Optional)",
-      "placeholder": "Please enter the default Matrix room ID",
-      "help": "Notes: It can be overrided in the workflows. Invite the bot to the room first.",
-      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
-    },
-    "mattermost_server_url": {
-      "label": "Mattermost server URL",
-      "placeholder": "Please enter Mattermost server URL"
-    },
-    "mattermost_username": {
-      "label": "Mattermost username",
-      "placeholder": "Please enter Mattermost username"
-    },
-    "mattermost_password": {
-      "label": "Mattermost password",
-      "placeholder": "Please enter Mattermost password"
-    },
-    "mattermost_channel_id": {
-      "label": "Mattermost channel ID (Optional)",
-      "placeholder": "Please enter the default Mattermost channel ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details”. You can directly see the channel ID on the pop-up page."
     },
     "namecheap_username": {
       "label": "Namecheap username",
@@ -1044,17 +965,6 @@
       "placeholder": "Please enter Simply.com API key",
       "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
     },
-    "slackbot_token": {
-      "label": "Slack bot token",
-      "placeholder": "Please enter Slack bot token",
-      "tooltip": "For more information, see <a href=\"https://docs.slack.dev/authentication/tokens#bot\" target=\"_blank\">https://docs.slack.dev/authentication/tokens#bot</a>"
-    },
-    "slackbot_channel_id": {
-      "label": "Slack channel ID (Optional)",
-      "placeholder": "Please enter the default Slack channel ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Please refer to <a href=\"https://www.youtube.com/watch?v=Uz5Yi5C2pwQ\" target=\"_blank\">https://www.youtube.com/watch?v=Uz5Yi5C2pwQ</a>"
-    },
     "spaceship_api_key": {
       "label": "Spaceship API key",
       "placeholder": "Please enter Spaceship API key",
@@ -1126,11 +1036,6 @@
     "sslcom_eab": {
       "guide": "Learn more about using EAB key in SSL.com: <br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>"
     },
-    "telegrambot_token": {
-      "label": "Telegram bot token",
-      "placeholder": "Please enter Telegram bot token",
-      "tooltip": "How to get it? Please refer to <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
-    },
     "technitiumdns_server_url": {
       "label": "Technitium DNS server URL",
       "placeholder": "Please enter Technitium DNS server URL"
@@ -1139,12 +1044,6 @@
       "label": "Technitium DNS API token",
       "placeholder": "Please enter Technitium DNS API token",
       "tooltip": "For more information, see <a href=\"https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md\" target=\"_blank\">https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md</a>"
-    },
-    "telegrambot_chat_id": {
-      "label": "Telegram chat ID (Optional)",
-      "placeholder": "Please enter the default Telegram chat ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Please refer to <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
     },
     "tencentcloud_secret_id": {
       "label": "Tencent Cloud SecretID",
@@ -1254,16 +1153,6 @@
       "serverchanturbo": "ServerChan<sup>Turbo</sup>",
       "wxpush": "WXPush",
       "common": "General data"
-    },
-    "wecombot_webhook_url": {
-      "label": "WeCom bot Webhook URL",
-      "placeholder": "Please enter WeCom bot Webhook URL",
-      "tooltip": "For more information, see <a href=\"https://www.west.cn/CustomerCenter/doc/apiv2.html#12u3001u8eabu4efdu9a8cu8bc10a3ca20id3d12u3001u8eabu4efdu9a8cu8bc13e203ca3e\" target=\"_blank\">https://www.west.cn/CustomerCenter/doc/apiv2.html</a>"
-    },
-    "wecombot_custom_payload": {
-      "label": "WeCom bot message payload (Optional)",
-      "placeholder": "Please enter custom WeCom bot message payload",
-      "checkbox": "Customized message payload"
     },
     "westcn_username": {
       "label": "West.cn agent username",

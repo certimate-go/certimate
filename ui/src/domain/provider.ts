@@ -235,14 +235,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.ACMECA, "provider.acmeca", "/imgs/providers/acmeca.svg", [ACCESS_USAGES.CA]],
 
       [ACCESS_PROVIDERS.EMAIL, "provider.email", "/imgs/providers/email.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.DINGTALKBOT, "provider.dingtalkbot", "/imgs/providers/dingtalk.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.LARKBOT, "provider.larkbot", "/imgs/providers/lark.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.WECOMBOT, "provider.wecombot", "/imgs/providers/wecom.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.DISCORDBOT, "provider.discordbot", "/imgs/providers/discord.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.SLACKBOT, "provider.slackbot", "/imgs/providers/slack.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.TELEGRAMBOT, "provider.telegrambot", "/imgs/providers/telegram.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.MATRIX, "provider.matrix", "/imgs/providers/matrix.svg", [ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.MATTERMOST, "provider.mattermost", "/imgs/providers/mattermost.svg", [ACCESS_USAGES.NOTIFICATION]],
     ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[], "builtin"] | [AccessProviderType, string, string, AccessUsageType[]]>
   ).map(([type, name, icon, usages, builtin]) => [
     type,
@@ -255,6 +247,23 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
     },
   ])
 );
+const migratedNotificationAccessProviders = new Map<string, AccessProvider>(
+  (
+    [
+      [ACCESS_PROVIDERS.DINGTALKBOT, "provider.dingtalkbot", "/imgs/providers/dingtalk.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.LARKBOT, "provider.larkbot", "/imgs/providers/lark.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.WECOMBOT, "provider.wecombot", "/imgs/providers/wecom.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.DISCORDBOT, "provider.discordbot", "/imgs/providers/discord.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.SLACKBOT, "provider.slackbot", "/imgs/providers/slack.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.TELEGRAMBOT, "provider.telegrambot", "/imgs/providers/telegram.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.MATRIX, "provider.matrix", "/imgs/providers/matrix.svg", [ACCESS_USAGES.NOTIFICATION]],
+      [ACCESS_PROVIDERS.MATTERMOST, "provider.mattermost", "/imgs/providers/mattermost.svg", [ACCESS_USAGES.NOTIFICATION]],
+    ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[]]>
+  ).map(([type, name, icon, usages]) => [type, { type, name, icon: withBasePath(icon), usages, builtin: false, source: "plugin" }])
+);
+
+export const getAccessProvider = (type: string): AccessProvider | undefined => accessProvidersMap.get(type) ?? migratedNotificationAccessProviders.get(type);
+
 // #endregion
 
 // #region CAProvider
@@ -796,56 +805,33 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
 // #endregion
 
 // #region NotificationProvider
-export const NOTIFICATION_PROVIDERS = Object.freeze(
-  /*
-    注意：如果追加新的常量值，请保持以 ASCII 排序。
-    NOTICE: If you add new constant, please keep ASCII order.
-  */
-  {
-    DINGTALKBOT: `${ACCESS_PROVIDERS.DINGTALKBOT}`,
-    DISCORDBOT: `${ACCESS_PROVIDERS.DISCORDBOT}`,
-    EMAIL: `${ACCESS_PROVIDERS.EMAIL}`,
-    LARKBOT: `${ACCESS_PROVIDERS.LARKBOT}`,
-    MATRIX: `${ACCESS_PROVIDERS.MATRIX}`,
-    MATTERMOST: `${ACCESS_PROVIDERS.MATTERMOST}`,
-    SLACKBOT: `${ACCESS_PROVIDERS.SLACKBOT}`,
-    TELEGRAMBOT: `${ACCESS_PROVIDERS.TELEGRAMBOT}`,
-    WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
-    WECOMBOT: `${ACCESS_PROVIDERS.WECOMBOT}`,
-  } as const
-);
+export const NOTIFICATION_PROVIDERS = Object.freeze({
+  EMAIL: ACCESS_PROVIDERS.EMAIL,
+  WEBHOOK: ACCESS_PROVIDERS.WEBHOOK,
+} as const);
 
-export type NotificationProviderType = (typeof NOTIFICATION_PROVIDERS)[keyof typeof NOTIFICATION_PROVIDERS];
+export interface NotificationProvider extends BaseProvider<string> {
+  provider: string;
+}
 
-export interface NotificationProvider extends BaseProviderWithAccess<NotificationProviderType> {}
-
-export const notificationProvidersMap: Map<NotificationProvider["type"] | string, NotificationProvider> = new Map(
-  /*
-    注意：此处的顺序决定显示在前端的顺序。
-    NOTICE: The following order determines the order displayed at the frontend.
-   */
-  (
-    [
-      [NOTIFICATION_PROVIDERS.EMAIL],
-      [NOTIFICATION_PROVIDERS.WEBHOOK],
-      [NOTIFICATION_PROVIDERS.DINGTALKBOT],
-      [NOTIFICATION_PROVIDERS.LARKBOT],
-      [NOTIFICATION_PROVIDERS.WECOMBOT],
-      [NOTIFICATION_PROVIDERS.DISCORDBOT],
-      [NOTIFICATION_PROVIDERS.SLACKBOT],
-      [NOTIFICATION_PROVIDERS.TELEGRAMBOT],
-      [NOTIFICATION_PROVIDERS.MATRIX],
-      [NOTIFICATION_PROVIDERS.MATTERMOST],
-    ] satisfies Array<[NotificationProviderType]>
-  ).map(([type]) => [
+export const notificationProvidersMap = new Map<string, NotificationProvider>(
+  [NOTIFICATION_PROVIDERS.EMAIL, NOTIFICATION_PROVIDERS.WEBHOOK].map((type) => [
     type,
     {
-      type: type,
-      name: accessProvidersMap.get(type.split("-")[0])!.name,
-      icon: accessProvidersMap.get(type.split("-")[0])!.icon,
-      provider: type.split("-")[0] as AccessProviderType,
+      type,
+      name: `provider.${type}`,
+      icon: withBasePath(`/imgs/providers/${type}.svg`),
+      provider: type,
       builtin: false,
     },
   ])
 );
+
+export const getNotificationProvider = (type: string): NotificationProvider | undefined => {
+  const provider = notificationProvidersMap.get(type);
+  if (provider) return provider;
+
+  const migrated = migratedNotificationAccessProviders.get(type);
+  if (migrated) return { ...migrated, provider: type };
+};
 // #endregion

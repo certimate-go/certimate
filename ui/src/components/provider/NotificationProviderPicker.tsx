@@ -4,6 +4,7 @@ import { Avatar, Card, Divider, Empty, Input, type InputRef, Tooltip, Typography
 
 import Show from "@/components/Show";
 import { type NotificationProvider, notificationProvidersMap } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { mergeCls } from "@/utils/css";
 
 import { type SharedPickerProps, usePickerDataSource, usePickerWrapperCols } from "./_shared";
@@ -25,6 +26,7 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
+    usePluginCatalogStore((state) => state.version);
     const dataSources = usePickerDataSource({
       dataSource: Array.from(notificationProvidersMap.values()),
       filters: [onFilter!],

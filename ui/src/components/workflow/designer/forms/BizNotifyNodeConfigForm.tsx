@@ -18,6 +18,7 @@ import { notificationProvidersMap } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizNotify, defaultNodeConfigForBizNotify } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 import { FormNestedFieldsContextProvider, NodeFormContextProvider } from "./_context";
 import BizNotifyNodeConfigFieldsProvider from "./BizNotifyNodeConfigFieldsProvider";
@@ -36,11 +37,6 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
   const { i18n, t } = useTranslation();
 
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
-  const accessOptionFilter = (_: string, option: AccessModel) => {
-    if (option.reserve !== "notif") return false;
-    return notificationProvidersMap.get(fieldProvider)?.provider === option.provider;
-  };
-
   const initialValues = useMemo(() => {
     return node.form?.getValueIn("config") as WorkflowNodeConfigForBizNotify | undefined;
   }, [node]);
@@ -53,10 +49,11 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
     initialValues: initialValues ?? getInitialValues(),
   });
 
-  const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
-  const fieldProviderAccessId = Form.useWatch("providerAccessId", { form: formInst, preserve: true });
-
-  const renderNestedFieldProviderComponent = BizNotifyNodeConfigFieldsProvider.useComponent(fieldProvider, {});
+  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
+  const fieldProviderAccessId = Form.useWatch<string>("providerAccessId", { form: formInst, preserve: true });
+  usePluginCatalogStore((state) => state.version);
+  const accessProviderType = fieldProvider ? notificationProvidersMap.get(fieldProvider)?.provider : undefined;
+  const accessOptionFilter = (_: string, option: AccessModel) => option.reserve === "notif" && option.provider === accessProviderType;
 
   useEffect(() => {
     // 如果未选择通知渠道，则清空授权信息
@@ -66,15 +63,13 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
     }
 
     // 如果已选择通知渠道只有一个授权信息，则自动选择该授权信息
-    if (fieldProvider && !fieldProviderAccessId) {
-      const availableAccesses = accesses
-        .filter((access) => accessOptionFilter(access.provider, access))
-        .filter((access) => notificationProvidersMap.get(fieldProvider)?.provider === access.provider);
+    if (accessProviderType && !fieldProviderAccessId) {
+      const availableAccesses = accesses.filter((access) => access.reserve === "notif" && access.provider === accessProviderType);
       if (availableAccesses.length === 1) {
         formInst.setFieldValue("providerAccessId", availableAccesses[0].id);
       }
     }
-  }, [fieldProvider, fieldProviderAccessId]);
+  }, [accessProviderType, accesses, fieldProvider, fieldProviderAccessId, formInst]);
 
   const handleProviderPick = (value: string) => {
     // 首次选择提供商时重置表单，避免来自导入的配置字段残留
@@ -160,26 +155,27 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
 
             <Form.Item label={t("workflow_node.notify.form.provider_access.label")}>
               <div className="absolute -top-1.5 right-0 -translate-y-full">
-                <AccessEditDrawer
-                  data={{ provider: notificationProvidersMap.get(fieldProvider!)?.provider }}
-                  mode="create"
-                  trigger={
-                    <Button size="small" type="link">
-                      {t("workflow_node.notify.form.provider_access.button")}
-                      <IconPlus size="1.25em" />
-                    </Button>
-                  }
-                  usage="notification"
-                  afterSubmit={(record) => {
-                    if (!accessOptionFilter(record.provider, record)) return;
-                    if (notificationProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
-                    formInst.setFieldValue("providerAccessId", record.id);
-                  }}
-                />
+                {accessProviderType && (
+                  <AccessEditDrawer
+                    data={{ provider: accessProviderType }}
+                    mode="create"
+                    trigger={
+                      <Button size="small" type="link">
+                        {t("workflow_node.notify.form.provider_access.button")}
+                        <IconPlus size="1.25em" />
+                      </Button>
+                    }
+                    usage="notification"
+                    afterSubmit={(record) => {
+                      if (!accessOptionFilter(record.provider, record)) return;
+                      formInst.setFieldValue("providerAccessId", record.id);
+                    }}
+                  />
+                )}
               </div>
               <Form.Item name="providerAccessId" dependencies={["provider"]} noStyle rules={[formRule]}>
                 <AccessSelect
-                  disabled={!fieldProvider}
+                  disabled={!accessProviderType}
                   placeholder={t("workflow_node.notify.form.provider_access.placeholder")}
                   showSearch
                   onFilter={accessOptionFilter}
@@ -188,7 +184,7 @@ const BizNotifyNodeConfigForm = ({ node, ...props }: BizNotifyNodeConfigFormProp
             </Form.Item>
 
             <FormNestedFieldsContextProvider value={{ parentNamePath: "providerConfig" }}>
-              {renderNestedFieldProviderComponent && <>{renderNestedFieldProviderComponent}</>}
+              <BizNotifyNodeConfigFieldsProvider key={fieldProvider} provider={fieldProvider} />
             </FormNestedFieldsContextProvider>
           </div>
 

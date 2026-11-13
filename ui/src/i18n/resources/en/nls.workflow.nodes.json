@@ -1733,11 +1733,6 @@
           "off": "not skip"
         }
       },
-      "discordbot_channel_id": {
-        "label": "Discord channel ID (Optional)",
-        "placeholder": "Please enter Discord channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
-      },
       "email_format": {
         "label": "Message format (Optional)",
         "placeholder": "Please select message format",
@@ -1754,26 +1749,6 @@
         "label": "Receiver email address (Optional)",
         "placeholder": "Please enter receiver email address",
         "help": "Notes: Leave it blank to use the default receiver email address provided by the selected credential."
-      },
-      "matrix_room_id": {
-        "label": "Matrix room ID (Optional)",
-        "placeholder": "Please enter Matrix room ID",
-        "help": "Notes: Leave it blank to use the default room ID provided by the selected credential."
-      },
-      "mattermost_channel_id": {
-        "label": "Mattermost channel ID (Optional)",
-        "placeholder": "Please enter Mattermost channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
-      },
-      "slackbot_channel_id": {
-        "label": "Slack channel ID (Optional)",
-        "placeholder": "Please enter Slack channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
-      },
-      "telegrambot_chat_id": {
-        "label": "Telegram chat ID (Optional)",
-        "placeholder": "Please enter Telegram chat ID",
-        "help": "Notes: Leave it blank to use the default chat ID provided by the selected credential."
       },
       "webhook_data": {
         "label": "Webhook data (Optional)",

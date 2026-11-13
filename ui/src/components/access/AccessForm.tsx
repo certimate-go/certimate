@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { Form, type FormInstance, Input } from "antd";
+import { Form, type FormInstance, Input, Spin } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
 import AccessProviderSelect from "@/components/provider/AccessProviderSelect";
 import { type AccessModel } from "@/domain/access";
-import { ACCESS_PROVIDERS, ACCESS_USAGES } from "@/domain/provider";
+import { ACCESS_PROVIDERS, ACCESS_USAGES, accessProvidersMap } from "@/domain/provider";
 import { useAntdForm } from "@/hooks";
 
 import { FormNestedFieldsContextProvider } from "./forms/_context";
@@ -44,9 +44,11 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
     initialValues: initialValues,
   });
 
-  const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
+  const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
+  const provider = fieldProvider ? accessProvidersMap.get(fieldProvider) : undefined;
+  const needsSchema = usage === "notification" && provider?.source === "plugin";
 
-  const renderNestedFieldProviderComponent = AccessConfigFieldsProvider.useComponent(fieldProvider, {
+  const { fields, schemaStatus } = AccessConfigFieldsProvider.useComponent(fieldProvider, {
     initProps: (provider) => {
       let props: object = { disabled: disabled };
 
@@ -63,7 +65,6 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
 
       return props;
     },
-    deps: [disabled, usage],
   });
 
   return (
@@ -87,7 +88,19 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
         name="provider"
         label={t("access.form.provider.label")}
         extra={usage === "dns-hosting" ? <span dangerouslySetInnerHTML={{ __html: t("access.form.provider.help") }}></span> : null}
-        rules={[formRule]}
+        rules={[
+          formRule,
+          {
+            validator: async () => {
+              if (usage === "notification" && fieldProvider && !provider) {
+                throw new Error(t("plugin.market.status.not_installed"));
+              }
+              if (needsSchema && schemaStatus !== "ready") {
+                throw new Error(t(schemaStatus === "loading" ? "common.text.loading" : "common.text.nodata_failed"));
+              }
+            },
+          },
+        ]}
       >
         <AccessProviderSelect
           disabled={mode !== "create"}
@@ -101,7 +114,8 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
       </Form.Item>
 
       <FormNestedFieldsContextProvider value={{ parentNamePath: "config" }}>
-        {renderNestedFieldProviderComponent && <>{renderNestedFieldProviderComponent}</>}
+        {needsSchema && schemaStatus === "loading" && <Spin aria-label={t("common.text.loading")} size="small" />}
+        {fields}
       </FormNestedFieldsContextProvider>
     </Form>
   );

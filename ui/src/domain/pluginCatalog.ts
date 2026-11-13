@@ -63,8 +63,8 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
     } else if (entry.capability === "notify") {
       if (entry.providerType && !notificationProvidersMap.has(entry.providerType)) {
         notificationProvidersMap.set(entry.providerType, {
-          type: entry.providerType as never,
-          provider: accessType as never,
+          type: entry.providerType,
+          provider: accessType,
           name: entry.displayNameKey || `${pluginNamespace(entry.providerType)}.name`,
           icon: entry.icon || PLUGIN_PLACEHOLDER_ICON,
           builtin: false,

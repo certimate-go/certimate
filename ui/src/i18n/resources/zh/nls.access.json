@@ -428,32 +428,6 @@
       "placeholder": "请输入 DigitalOcean Access Token",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>"
     },
-    "dingtalkbot_webhook_url": {
-      "label": "钉钉群机器人 Webhook 地址",
-      "placeholder": "请输入钉钉群机器人 Webhook 地址",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot</a>"
-    },
-    "dingtalkbot_secret": {
-      "label": "钉钉群机器人签名密钥（可选）",
-      "placeholder": "请输入钉钉群机器人签名密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.dingtalk.com/document/orgapp/customize-robot-security-settings\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/customize-robot-security-settings</a>"
-    },
-    "dingtalkbot_custom_payload": {
-      "label": "钉钉群机器人消息数据（可选）",
-      "placeholder": "请输入自定义的钉钉群机器人消息数据",
-      "checkbox": "使用自定义的消息数据格式"
-    },
-    "discordbot_token": {
-      "label": "Discord 机器人 API Token",
-      "placeholder": "请输入 Discord 机器人 API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token\" target=\"_blank\">https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token</a>"
-    },
-    "discordbot_channel_id": {
-      "label": "Discord 频道 ID（可选）",
-      "placeholder": "请输入默认的 Discord 频道 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "这是什么？请参阅 <a href=\"https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID\" target=\"_blank\">https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID</a>"
-    },
     "dnsmadeeasy_api_key": {
       "label": "DNS Made Easy API Key",
       "placeholder": "请输入 DNS Made Easy API Key",
@@ -678,21 +652,6 @@
       "help": "提示：不填写时，将使用 Pod 的 ServiceAccount 作为凭证。",
       "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a>"
     },
-    "larkbot_webhook_url": {
-      "label": "飞书群机器人 Webhook 地址",
-      "placeholder": "请输入飞书群机器人 Webhook 地址",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_secret": {
-      "label": "飞书群机器人签名密钥（可选）",
-      "placeholder": "请输入飞书群机器人签名密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_custom_payload": {
-      "label": "飞书群机器人消息数据（可选）",
-      "placeholder": "请输入自定义的飞书群机器人消息数据",
-      "checkbox": "使用自定义的消息数据格式"
-    },
     "linode_access_token": {
       "label": "Linode AccessToken",
       "placeholder": "请输入 Linode AccessToken",
@@ -709,44 +668,6 @@
     },
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
-    },
-    "matrix_server_url": {
-      "label": "Matrix 服务地址",
-      "placeholder": "请输入 Matrix 服务地址"
-    },
-    "matrix_user_id": {
-      "label": "Matrix 用户 ID",
-      "placeholder": "请输入 Matrix 用户 ID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
-    },
-    "matrix_access_token": {
-      "label": "Matrix Access token",
-      "placeholder": "请输入 Matrix Access token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
-    },
-    "matrix_room_id": {
-      "label": "Matrix 房间 ID（可选）",
-      "placeholder": "请输入默认的 Matrix 房间 ID",
-      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
-    },
-    "mattermost_server_url": {
-      "label": "Mattermost 服务地址",
-      "placeholder": "请输入 Mattermost 服务地址"
-    },
-    "mattermost_username": {
-      "label": "Mattermost 用户名",
-      "placeholder": "请输入 Mattermost 用户名"
-    },
-    "mattermost_password": {
-      "label": "Mattermost 密码",
-      "placeholder": "请输入 Mattermost 密码"
-    },
-    "mattermost_channel_id": {
-      "label": "Mattermost 频道 ID（可选）",
-      "placeholder": "请输入默认的 Mattermost 频道 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "如何获取此参数？从左侧边栏中选择目标频道，点击顶部的频道名称，选择“频道详情”，即可在弹出页面中直接看到频道 ID。"
     },
     "namecheap_username": {
       "label": "Namecheap 用户名",
@@ -1044,17 +965,6 @@
       "placeholder": "请输入 Simply.com API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
     },
-    "slackbot_token": {
-      "label": "Slack 机器人 Token",
-      "placeholder": "请输入 Slack 机器人 Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.slack.dev/authentication/tokens#bot\" target=\"_blank\">https://docs.slack.dev/authentication/tokens#bot</a>"
-    },
-    "slackbot_channel_id": {
-      "label": "Slack 频道 ID（可选）",
-      "placeholder": "请输入默认的 Slack 频道 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "如何获取此参数？请参阅 <a href=\"https://www.youtube.com/watch?v=Uz5Yi5C2pwQ\" target=\"_blank\">https://www.youtube.com/watch?v=Uz5Yi5C2pwQ</a>"
-    },
     "spaceship_api_key": {
       "label": "Spaceship API Key",
       "placeholder": "请输入 Spaceship API Key",
@@ -1134,17 +1044,6 @@
       "label": "Technitium DNS API Token",
       "placeholder": "请输入 Technitium DNS API Token",
       "tooltip": "这是什么？请参阅 <a href=\"https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md\" target=\"_blank\">https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md</a>"
-    },
-    "telegrambot_token": {
-      "label": "Telegram 机器人 API Token",
-      "placeholder": "请输入 Telegram 机器人 API Token",
-      "tooltip": "如何获取此参数？请参阅 <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
-    },
-    "telegrambot_chat_id": {
-      "label": "Telegram 会话 ID（可选）",
-      "placeholder": "请输入默认的 Telegram 会话 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "如何获取此参数？请参阅 <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
     },
     "tencentcloud_secret_id": {
       "label": "腾讯云 SecretID",
@@ -1254,16 +1153,6 @@
       "serverchanturbo": "Server酱 <sup>Turbo</sup>",
       "wxpush": "WXPush",
       "common": "通用内容"
-    },
-    "wecombot_webhook_url": {
-      "label": "企业微信群机器人 Webhook 地址",
-      "placeholder": "请输入企业微信群机器人 Webhook 地址",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.work.weixin.qq.com/help2/pc/18401#%E5%85%AD%E3%80%81%E7%BE%A4%E6%9C%BA%E5%99%A8%E4%BA%BAWebhook%E5%9C%B0%E5%9D%80\" target=\"_blank\">https://open.work.weixin.qq.com/help2/pc/18401</a>"
-    },
-    "wecombot_custom_payload": {
-      "label": "企业微信群机器人消息格式（可选）",
-      "placeholder": "请输入自定义的企业微信群机器人消息格式",
-      "checkbox": "使用自定义的消息数据格式"
     },
     "westcn_username": {
       "label": "西部数码代理商用户名",

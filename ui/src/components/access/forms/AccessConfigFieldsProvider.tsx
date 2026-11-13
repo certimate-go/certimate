@@ -30,8 +30,6 @@ import AccessConfigFieldsProviderCTCCCloud from "./AccessConfigFieldsProviderCTC
 import AccessConfigFieldsProviderDeSEC from "./AccessConfigFieldsProviderDeSEC";
 import AccessConfigFieldsProviderDigiCert from "./AccessConfigFieldsProviderDigiCert";
 import AccessConfigFieldsProviderDigitalOcean from "./AccessConfigFieldsProviderDigitalOcean";
-import AccessConfigFieldsProviderDingTalkBot from "./AccessConfigFieldsProviderDingTalkBot";
-import AccessConfigFieldsProviderDiscordBot from "./AccessConfigFieldsProviderDiscordBot";
 import AccessConfigFieldsProviderDNSExit from "./AccessConfigFieldsProviderDNSExit";
 import AccessConfigFieldsProviderDNSLA from "./AccessConfigFieldsProviderDNSLA";
 import AccessConfigFieldsProviderDNSMadeEasy from "./AccessConfigFieldsProviderDNSMadeEasy";
@@ -55,12 +53,9 @@ import AccessConfigFieldsProviderHuaweiCloud from "./AccessConfigFieldsProviderH
 import AccessConfigFieldsProviderInfomaniak from "./AccessConfigFieldsProviderInfomaniak";
 import AccessConfigFieldsProviderIONOS from "./AccessConfigFieldsProviderIONOS";
 import AccessConfigFieldsProviderJDCloud from "./AccessConfigFieldsProviderJDCloud";
-import AccessConfigFieldsProviderLarkBot from "./AccessConfigFieldsProviderLarkBot";
 import AccessConfigFieldsProviderLinode from "./AccessConfigFieldsProviderLinode";
 import AccessConfigFieldsProviderLiteSSL from "./AccessConfigFieldsProviderLiteSSL";
 import AccessConfigFieldsProviderLuaDNS from "./AccessConfigFieldsProviderLuaDNS";
-import AccessConfigFieldsProviderMatrix from "./AccessConfigFieldsProviderMatrix";
-import AccessConfigFieldsProviderMattermost from "./AccessConfigFieldsProviderMattermost";
 import AccessConfigFieldsProviderNamecheap from "./AccessConfigFieldsProviderNamecheap";
 import AccessConfigFieldsProviderNameDotCom from "./AccessConfigFieldsProviderNameDotCom";
 import AccessConfigFieldsProviderNameSilo from "./AccessConfigFieldsProviderNameSilo";
@@ -79,12 +74,10 @@ import AccessConfigFieldsProviderRuCenter from "./AccessConfigFieldsProviderRuCe
 import AccessConfigFieldsProviderS3 from "./AccessConfigFieldsProviderS3";
 import AccessConfigFieldsProviderSectigo from "./AccessConfigFieldsProviderSectigo";
 import AccessConfigFieldsProviderSimplyCom from "./AccessConfigFieldsProviderSimplyCom";
-import AccessConfigFieldsProviderSlackBot from "./AccessConfigFieldsProviderSlackBot";
 import AccessConfigFieldsProviderSpaceship from "./AccessConfigFieldsProviderSpaceship";
 import AccessConfigFieldsProviderSSH from "./AccessConfigFieldsProviderSSH";
 import AccessConfigFieldsProviderSSLCom from "./AccessConfigFieldsProviderSSLCom";
 import AccessConfigFieldsProviderTechnitiumDNS from "./AccessConfigFieldsProviderTechnitiumDNS";
-import AccessConfigFieldsProviderTelegramBot from "./AccessConfigFieldsProviderTelegramBot";
 import AccessConfigFieldsProviderTencentCloud from "./AccessConfigFieldsProviderTencentCloud";
 import AccessConfigFieldsProviderTodayNIC from "./AccessConfigFieldsProviderTodayNIC";
 import AccessConfigFieldsProviderUCloud from "./AccessConfigFieldsProviderUCloud";
@@ -92,7 +85,6 @@ import AccessConfigFieldsProviderVercel from "./AccessConfigFieldsProviderVercel
 import AccessConfigFieldsProviderVolcEngine from "./AccessConfigFieldsProviderVolcEngine";
 import AccessConfigFieldsProviderVultr from "./AccessConfigFieldsProviderVultr";
 import AccessConfigFieldsProviderWebhook from "./AccessConfigFieldsProviderWebhook";
-import AccessConfigFieldsProviderWeComBot from "./AccessConfigFieldsProviderWeComBot";
 import AccessConfigFieldsProviderWestcn from "./AccessConfigFieldsProviderWestcn";
 import AccessConfigFieldsProviderXinnet from "./AccessConfigFieldsProviderXinnet";
 import AccessConfigFieldsProviderYandexCloud from "./AccessConfigFieldsProviderYandexCloud";
@@ -128,8 +120,6 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.DESEC]: AccessConfigFieldsProviderDeSEC,
   [ACCESS_PROVIDERS.DIGICERT]: AccessConfigFieldsProviderDigiCert,
   [ACCESS_PROVIDERS.DIGITALOCEAN]: AccessConfigFieldsProviderDigitalOcean,
-  [ACCESS_PROVIDERS.DINGTALKBOT]: AccessConfigFieldsProviderDingTalkBot,
-  [ACCESS_PROVIDERS.DISCORDBOT]: AccessConfigFieldsProviderDiscordBot,
   [ACCESS_PROVIDERS.DNSEXIT]: AccessConfigFieldsProviderDNSExit,
   [ACCESS_PROVIDERS.DNSLA]: AccessConfigFieldsProviderDNSLA,
   [ACCESS_PROVIDERS.DNSMADEEASY]: AccessConfigFieldsProviderDNSMadeEasy,
@@ -152,13 +142,10 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.HUAWEICLOUD]: AccessConfigFieldsProviderHuaweiCloud,
   [ACCESS_PROVIDERS.IONOS]: AccessConfigFieldsProviderIONOS,
   [ACCESS_PROVIDERS.JDCLOUD]: AccessConfigFieldsProviderJDCloud,
-  [ACCESS_PROVIDERS.LARKBOT]: AccessConfigFieldsProviderLarkBot,
   [ACCESS_PROVIDERS.INFOMANIAK]: AccessConfigFieldsProviderInfomaniak,
   [ACCESS_PROVIDERS.LINODE]: AccessConfigFieldsProviderLinode,
   [ACCESS_PROVIDERS.LITESSL]: AccessConfigFieldsProviderLiteSSL,
   [ACCESS_PROVIDERS.LUADNS]: AccessConfigFieldsProviderLuaDNS,
-  [ACCESS_PROVIDERS.MATRIX]: AccessConfigFieldsProviderMatrix,
-  [ACCESS_PROVIDERS.MATTERMOST]: AccessConfigFieldsProviderMattermost,
   [ACCESS_PROVIDERS.NAMECHEAP]: AccessConfigFieldsProviderNamecheap,
   [ACCESS_PROVIDERS.NAMEDOTCOM]: AccessConfigFieldsProviderNameDotCom,
   [ACCESS_PROVIDERS.NAMESILO]: AccessConfigFieldsProviderNameSilo,
@@ -177,12 +164,10 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.S3]: AccessConfigFieldsProviderS3,
   [ACCESS_PROVIDERS.SECTIGO]: AccessConfigFieldsProviderSectigo,
   [ACCESS_PROVIDERS.SIMPLYCOM]: AccessConfigFieldsProviderSimplyCom,
-  [ACCESS_PROVIDERS.SLACKBOT]: AccessConfigFieldsProviderSlackBot,
   [ACCESS_PROVIDERS.SPACESHIP]: AccessConfigFieldsProviderSpaceship,
   [ACCESS_PROVIDERS.SSLCOM]: AccessConfigFieldsProviderSSLCom,
   [ACCESS_PROVIDERS.SSH]: AccessConfigFieldsProviderSSH,
   [ACCESS_PROVIDERS.TECHNITIUMDNS]: AccessConfigFieldsProviderTechnitiumDNS,
-  [ACCESS_PROVIDERS.TELEGRAMBOT]: AccessConfigFieldsProviderTelegramBot,
   [ACCESS_PROVIDERS.TENCENTCLOUD]: AccessConfigFieldsProviderTencentCloud,
   [ACCESS_PROVIDERS.TODAYNIC]: AccessConfigFieldsProviderTodayNIC,
   [ACCESS_PROVIDERS.UCLOUD]: AccessConfigFieldsProviderUCloud,
@@ -190,56 +175,46 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.VOLCENGINE]: AccessConfigFieldsProviderVolcEngine,
   [ACCESS_PROVIDERS.VULTR]: AccessConfigFieldsProviderVultr,
   [ACCESS_PROVIDERS.WEBHOOK]: AccessConfigFieldsProviderWebhook,
-  [ACCESS_PROVIDERS.WECOMBOT]: AccessConfigFieldsProviderWeComBot,
   [ACCESS_PROVIDERS.WESTCN]: AccessConfigFieldsProviderWestcn,
   [ACCESS_PROVIDERS.XINNET]: AccessConfigFieldsProviderXinnet,
   [ACCESS_PROVIDERS.YANDEXCLOUD]: AccessConfigFieldsProviderYandexCloud,
   [ACCESS_PROVIDERS.ZEROSSL]: AccessConfigFieldsProviderZeroSSL,
 };
 
-const useComponent = (provider: string, { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }) => {
-  const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
+const useComponent = (provider: string | undefined, { initProps }: { initProps?: (provider: string) => object }) => {
+  const [result, setResult] = useState<{
+    provider: string;
+    catalogVersion: number;
+    status: "ready" | "unavailable";
+    envelope?: ProviderSchemaEnvelope;
+  }>();
   const catalogVersion = usePluginCatalogStore((s) => s.version);
 
   useEffect(() => {
+    if (!provider) return;
+
     let cancelled = false;
-    setEnvelope(null);
-    if (!provider) {
-      return;
-    }
-    void getProviderSchema(provider, "access").then((env) => {
-      if (!cancelled) {
-        setEnvelope(env);
-      }
+    void getProviderSchema(provider, "access").then((envelope) => {
+      if (cancelled) return;
+      setResult((previous) => ({
+        provider,
+        catalogVersion,
+        status: envelope ? "ready" : "unavailable",
+        envelope: envelope ?? (previous?.provider === provider ? previous.envelope : undefined),
+      }));
     });
     return () => {
       cancelled = true;
     };
   }, [provider, catalogVersion]);
 
-  const initComponent = () => {
-    const Component = providerComponentMap[provider as AccessProviderType];
-    if (!Component) return null;
+  const matched = result?.provider === provider ? result : undefined;
+  const envelope = matched?.envelope;
+  const schemaStatus = matched?.catalogVersion === catalogVersion ? matched.status : "loading";
 
-    const props = initProps?.(provider);
-    if (props) {
-      return <Component {...props} />;
-    }
-
-    return <Component />;
-  };
-
-  const [component, setComponent] = useState<React.ReactNode>(() => initComponent());
-
-  useEffect(() => {
-    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider, envelope]);
-  useEffect(() => {
-    setComponent(envelope ? <SchemaConfigFields envelope={envelope} /> : initComponent());
-  }, deps);
-
-  return component;
+  if (envelope) return { schemaStatus, fields: <SchemaConfigFields key={provider} envelope={envelope} /> };
+  const Component = provider ? providerComponentMap[provider as AccessProviderType] : undefined;
+  return { schemaStatus, fields: Component && provider ? <Component {...initProps?.(provider)} /> : null };
 };
 
 const _default = {

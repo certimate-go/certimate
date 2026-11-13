@@ -3,7 +3,7 @@ import { useMount } from "ahooks";
 import { Avatar, Select, type SelectProps, Typography, theme } from "antd";
 
 import { type AccessModel } from "@/domain/access";
-import { accessProvidersMap } from "@/domain/provider";
+import { getAccessProvider } from "@/domain/provider";
 import { useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
 import { matchSearchOption } from "@/utils/search";
@@ -44,7 +44,7 @@ const AccessSelect = ({ onFilter, ...props }: AccessTypeSelectProps) => {
       );
     }
 
-    const provider = accessProvidersMap.get(access.provider);
+    const provider = getAccessProvider(access.provider);
     return (
       <div className="flex items-center gap-2 truncate overflow-hidden">
         <Avatar shape="square" src={provider?.icon} size="small" />
