@@ -486,7 +486,6 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.VULTR, "provider.vultr"],
       [ACME_DNS01_PROVIDERS.YANDEXCLOUD_DNS, "provider.yandexcloud_dns"],
       [ACME_DNS01_PROVIDERS.BAIDUCLOUD_DNS, "provider.baiducloud_dns"],
-      [ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS, "provider.cmcccloud_dns"],
       [ACME_DNS01_PROVIDERS.CTCCCLOUD_SMARTDNS, "provider.ctcccloud_smartdns"],
       [ACME_DNS01_PROVIDERS.JDCLOUD_DNS, "provider.jdcloud_dns"],
       [ACME_DNS01_PROVIDERS.RAINYUN, "provider.rainyun"],
@@ -516,6 +515,21 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
     },
   ])
 );
+export const getACMEDns01Provider = (type: string): ACMEDns01Provider | undefined => {
+  if (type === ACME_DNS01_PROVIDERS.CMCCCLOUD || type === ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS) {
+    return (
+      acmeDns01ProvidersMap.get(ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS) ?? {
+        type: ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS,
+        provider: ACCESS_PROVIDERS.CMCCCLOUD,
+        name: "provider.cmcccloud_dns",
+        icon: "/imgs/providers/cmcccloud.svg",
+        builtin: false,
+      }
+    );
+  }
+  return acmeDns01ProvidersMap.get(type);
+};
+
 // #endregion
 
 // #region ACMEHTTP01Provider

@@ -15,6 +15,7 @@ type ProviderFactoryOptions struct {
 	ProviderExtendedConfig map[string]any
 	DnsPropagationTimeout  int
 	DnsTTL                 int
+	DnsNameservers         []string
 }
 
 type Registry[T comparable] interface {

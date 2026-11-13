@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"testing"
 	"time"
@@ -16,6 +17,10 @@ import (
 )
 
 func TestExternalDNSPluginsWorkflow(t *testing.T) {
+	if binary := os.Getenv("CERTIMATE_EXTERNAL_DNS_CMCC_CORE"); binary != "" {
+		runCMCCCloudDNSWorkflow(t, binary, os.Getenv("CERTIMATE_EXTERNAL_DNS_CMCC_PLUGINS"))
+		return
+	}
 	pluginRoot := filepath.Join("..", "..", "..", "plugins")
 	if _, err := os.Stat(filepath.Join(pluginRoot, "go.mod")); os.IsNotExist(err) {
 		t.Skip("requires the sibling plugins checkout")
@@ -31,12 +36,10 @@ func TestExternalDNSPluginsWorkflow(t *testing.T) {
 
 	for _, provider := range []struct {
 		name      string
-		family    string
 		configure func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
 	}{
-		{name: "rfc2136-dns", family: "rfc2136-dns", configure: configureRFC2136Fixture},
-		{name: "powerdns-dns", family: "powerdns-dns", configure: configurePowerDNSFixture},
-		{name: "cmcccloud-dns", family: "cmcccloud", configure: configureCMCCCloudFixture},
+		{name: "rfc2136-dns", configure: configureRFC2136Fixture},
+		{name: "powerdns-dns", configure: configurePowerDNSFixture},
 	} {
 		t.Run(provider.name, func(t *testing.T) {
 			plugins := t.TempDir()
@@ -62,20 +65,88 @@ func TestExternalDNSPluginsWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			runDNSWorkflow(t, core, provider.family, dnsWorkflowPlugins{
+			runDNSWorkflow(t, core, provider.name, dnsWorkflowPlugins{
 				dir:              plugins,
-				accessByProvider: map[string]string{provider.name: provider.family},
+				accessByProvider: map[string]string{provider.name: provider.name},
 				configureDNS:     provider.configure,
-				wildcardOrder:    provider.family != "cmcccloud",
+				wildcardOrder:    true,
 			})
 		})
 	}
+	t.Run("cmcccloud-dns", func(t *testing.T) {
+		stage := t.TempDir()
+		pluginDir := filepath.Join(stage, "plugins")
+		destination := filepath.Join(pluginDir, "cmcccloud-dns")
+		if err := os.MkdirAll(destination, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		source := filepath.Join(pluginRoot, "cmcccloud-dns")
+		for _, name := range []string{"manifest.json", "cmcccloud.svg"} {
+			data, err := os.ReadFile(filepath.Join(source, name))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(destination, name), data, 0o644); err != nil {
+				t.Fatal(err)
+			}
+		}
+		plugin := filepath.Join(destination, "cmcccloud-dns")
+		cmd := exec.Command("go", "build", "-o", plugin, ".")
+		cmd.Dir = source
+		if runtime.GOOS != "linux" {
+			cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
+		}
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("build CMCC Cloud DNS plugin: %v\n%s", err, out)
+		}
+		if runtime.GOOS == "linux" {
+			runCMCCCloudDNSWorkflow(t, core, pluginDir)
+			return
+		}
+		for _, build := range []struct {
+			dir  string
+			args []string
+		}{
+			{dir: "../..", args: []string{"build", "-o", filepath.Join(stage, "core"), "."}},
+			{dir: ".", args: []string{"test", "-c", "-o", filepath.Join(stage, "dns.test"), "."}},
+		} {
+			cmd := exec.Command("go", build.args...)
+			cmd.Dir = build.dir
+			cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH="+runtime.GOARCH, "CGO_ENABLED=0")
+			if out, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("build CMCC Cloud DNS workflow fixture: %v\n%s", err, out)
+			}
+		}
+		cmd = exec.Command("docker", "run", "--rm", "--network=none",
+			"--mount", "type=bind,src="+stage+",dst=/fixture,readonly",
+			"-e", "CERTIMATE_EXTERNAL_DNS_CMCC_CORE=/fixture/core",
+			"-e", "CERTIMATE_EXTERNAL_DNS_CMCC_PLUGINS=/fixture/plugins",
+			"alpine:latest", "/fixture/dns.test", "-test.run=^TestExternalDNSPluginsWorkflow$", "-test.v", "-test.timeout=4m")
+		out, err := cmd.CombinedOutput()
+		t.Log(string(out))
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
 }
 
-func configureCMCCCloudFixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
-	config, _ := b6B8DNSConfig(t, f)
-	config.Provider = "cmcccloud"
-	return config
+func runCMCCCloudDNSWorkflow(t *testing.T, binary, pluginDir string) {
+	for _, provider := range []string{"cmcccloud", "cmcccloud-dns"} {
+		t.Run(provider, func(t *testing.T) {
+			runDNSWorkflow(t, binary, "cmcccloud", dnsWorkflowPlugins{
+				dir:              pluginDir,
+				accessByProvider: map[string]string{"cmcccloud-dns": "cmcccloud"},
+				wildcardOrder:    true,
+				cname:            provider == "cmcccloud",
+				configureDNS: func(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
+					config, _ := b6B8DNSConfig(t, f)
+					config.Provider = provider
+					config.Apply = map[string]any{"dnsTTL": 123, "disableFollowCNAME": f.cname == ""}
+					return config
+				},
+			})
+		})
+	}
 }
 
 func configureRFC2136Fixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
@@ -215,7 +286,7 @@ func applyExternalDNSUpdate(t *testing.T, f *b3DNSFixture, name, value string, p
 		t.Errorf("unexpected challenge TXT value %q", value)
 		return
 	}
-	if name != "_acme-challenge."+f.domain+"." {
+	if name != f.challengeRecordName() {
 		t.Errorf("unexpected challenge TXT name=%q value=%q", name, value)
 	}
 	if present {

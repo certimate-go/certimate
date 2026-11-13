@@ -1,6 +1,0 @@
-[submodule "pkg/sdk3rd-forked"]
-	path = pkg/sdk3rd-forked
-	url = git@github.com:certimate-go/.deps-repo-go.git
-	branch = main
-	shallow = true
-  ignore = all

@@ -90,8 +90,15 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 	switch strings.ToLower(request.ChallengeType) {
 	case CHALLENGE_TYPE_DNS01:
 		{
-			providerFactory, err := certifiers.ACMEDns01Registries.Get(domain.ACMEDns01ProviderType(request.Provider))
+			providerType := domain.ACMEDns01ProviderType(request.Provider)
+			if providerType == domain.ACMEDns01ProviderTypeCMCCCloud {
+				providerType = domain.ACMEDns01ProviderTypeCMCCCloudDNS
+			}
+			providerFactory, err := certifiers.ACMEDns01Registries.Get(providerType)
 			if err != nil {
+				if providerType == domain.ACMEDns01ProviderTypeCMCCCloudDNS {
+					return nil, fmt.Errorf("install the cmcccloud-dns plugin to use CMCC Cloud DNS: %w", err)
+				}
 				return nil, err
 			}
 
@@ -100,6 +107,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 				ProviderExtendedConfig: request.ProviderExtendedConfig,
 				DnsPropagationTimeout:  request.DnsPropagationTimeout,
 				DnsTTL:                 request.DnsTTL,
+				DnsNameservers:         request.Nameservers,
 			})
 			if err != nil {
 				return nil, fmt.Errorf("failed to initialize dns-01 provider '%s': %w", request.Provider, err)

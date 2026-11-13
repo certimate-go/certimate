@@ -5,13 +5,17 @@ import (
 	"encoding/json"
 	"log/slog"
 	"runtime"
+	"slices"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/platform/env"
 
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
+	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -95,6 +99,8 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 	}
 	challenger := &pluginDnsChallenger{
 		held:               held,
+		providerType:       f.providerType,
+		nameservers:        slices.Clone(options.DnsNameservers),
 		access:             options.ProviderAccessConfig,
 		extended:           options.ProviderExtendedConfig,
 		logLevel:           f.logLevel,
@@ -108,6 +114,8 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 
 type pluginDnsChallenger struct {
 	held               *plugin.HeldDnsProvider
+	providerType       string
+	nameservers        []string
 	access             map[string]any
 	extended           map[string]any
 	logLevel           string
@@ -116,16 +124,26 @@ type pluginDnsChallenger struct {
 	logger             *slog.Logger
 }
 
-func (c *pluginDnsChallenger) Present(ctx context.Context, domain, token, keyAuth string) error {
+func (c *pluginDnsChallenger) Present(ctx context.Context, name, token, keyAuth string) error {
 	defer runtime.KeepAlive(c)
 	if c.logger != nil {
-		c.logger.Info("presenting dns-01 challenge via plugin", slog.String("domain", domain))
+		c.logger.Info("presenting dns-01 challenge via plugin", slog.String("domain", name))
+	}
+	extended := c.extended
+	if c.providerType == string(domain.ACMEDns01ProviderTypeCMCCCloudDNS) {
+		info := dns01.GetChallengeInfo(ctx, strings.TrimPrefix(name, "*."), keyAuth)
+		extended = map[string]any{
+			"recordName":  info.EffectiveFQDN,
+			"recordValue": info.Value,
+			"nameservers": c.nameservers,
+			"ttl":         c.ttl,
+		}
 	}
 	req := &plugin.DnsRequest{
 		LogLevel:           c.logLevel,
 		AccessConfigJSON:   marshalJSON(c.access),
-		ExtendedConfigJSON: marshalJSON(c.extended),
-		Domain:             domain,
+		ExtendedConfigJSON: marshalJSON(extended),
+		Domain:             name,
 		Token:              token,
 		KeyAuth:            keyAuth,
 	}
@@ -151,12 +169,15 @@ func (c *pluginDnsChallenger) Close() {
 
 func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {
 	timeout := dns01.DefaultPropagationTimeout
+	interval := dns01.DefaultPollingInterval
+	if c.providerType == string(domain.ACMEDns01ProviderTypeCMCCCloudDNS) {
+		timeout = env.GetOrDefaultSecond("CMCCCLOUD_PROPAGATION_TIMEOUT", 10*time.Minute)
+		interval = env.GetOrDefaultSecond("CMCCCLOUD_POLLING_INTERVAL", interval)
+	} else if c.ttl > 0 {
+		interval = time.Duration(c.ttl) * time.Second
+	}
 	if c.propagationTimeout > 0 {
 		timeout = time.Duration(c.propagationTimeout) * time.Second
-	}
-	interval := dns01.DefaultPollingInterval
-	if c.ttl > 0 {
-		interval = time.Duration(c.ttl) * time.Second
 	}
 	return timeout, interval
 }

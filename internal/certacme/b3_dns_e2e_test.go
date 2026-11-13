@@ -52,6 +52,7 @@ type b3DNSFixture struct {
 	base            string
 	domain          string
 	token           string
+	cname           string
 	value           string
 	expected        string
 	authorized      bool
@@ -108,6 +109,7 @@ type dnsWorkflowPlugins struct {
 	accessByProvider map[string]string
 	configureDNS     func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
 	wildcardOrder    bool
+	cname            bool
 }
 
 func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlugins) {
@@ -117,6 +119,9 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 		f.domain = "example.com"
 		f.wildcard = &b3WildcardChallenge{token: "b3-fixture-wildcard-token"}
 		domains = []string{f.domain, "*." + f.domain}
+	}
+	if plugins.cname {
+		f.cname = "_acme-challenge.delegated.example.test."
 	}
 	var err error
 	f.key, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
@@ -338,7 +343,7 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 				time.Sleep(30 * time.Millisecond)
 			}
 			if f.wildcard != nil && (result.Status == "succeeded" || step == "partial-present-failure") {
-				query := new(dns.Msg).SetQuestion("_acme-challenge."+f.domain+".", dns.TypeTXT)
+				query := new(dns.Msg).SetQuestion(f.challengeRecordName(), dns.TypeTXT)
 				client := &dns.Client{Timeout: time.Second}
 				reply, _, err := client.Exchange(query, udp.LocalAddr().String())
 				if err != nil {
@@ -418,6 +423,13 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 	}
 }
 
+func (f *b3DNSFixture) challengeRecordName() string {
+	if f.cname != "" {
+		return f.cname
+	}
+	return "_acme-challenge." + f.domain + "."
+}
+
 func (f *b3DNSFixture) dns(w dns.ResponseWriter, r *dns.Msg) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -431,12 +443,16 @@ func (f *b3DNSFixture) dns(w dns.ResponseWriter, r *dns.Msg) {
 			if q.Name == "example.test." || (f.wildcard != nil && q.Name == "example.com.") {
 				m.Answer = append(m.Answer, &dns.SOA{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeSOA, Class: dns.ClassINET, Ttl: 60}, Ns: "ns.example.test.", Mbox: "admin.example.test.", Serial: 1, Refresh: 60, Retry: 60, Expire: 3600, Minttl: 60})
 			}
+		case dns.TypeCNAME:
+			if f.cname != "" && q.Name == "_acme-challenge."+f.domain+"." {
+				m.Answer = append(m.Answer, &dns.CNAME{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeCNAME, Class: dns.ClassINET, Ttl: 60}, Target: f.cname})
+			}
 		case dns.TypeTXT:
-			if f.wildcard != nil && q.Name == "_acme-challenge."+f.domain+"." && f.wildcard.value != "" {
+			if f.wildcard != nil && q.Name == f.challengeRecordName() && f.wildcard.value != "" {
 				m.Answer = append(m.Answer, &dns.TXT{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeTXT, Class: dns.ClassINET, Ttl: 60}, Txt: []string{f.wildcard.value}})
 				matchedTXT = f.wildcard.value == f.wildcard.expected
 			}
-			if q.Name == "_acme-challenge."+f.domain+"." && f.value != "" {
+			if q.Name == f.challengeRecordName() && f.value != "" {
 				m.Answer = append(m.Answer, &dns.TXT{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeTXT, Class: dns.ClassINET, Ttl: 60}, Txt: []string{f.value}})
 				matchedTXT = matchedTXT || f.value == f.expected
 			}

@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
-import { type ACMEDns01Provider, acmeDns01ProvidersMap } from "@/domain/provider";
+import { type ACMEDns01Provider, ACME_DNS01_PROVIDERS, acmeDns01ProvidersMap, getACMEDns01Provider } from "@/domain/provider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { matchSearchOption } from "@/utils/search";
 
 import { type SharedSelectProps, useSelectDataSource } from "./_shared";
@@ -16,6 +17,7 @@ const ACMEDns01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACMED
 
   const { token: themeToken } = theme.useToken();
 
+  usePluginCatalogStore((state) => state.version);
   const dataSources = useSelectDataSource({
     dataSource: Array.from(acmeDns01ProvidersMap.values()),
     filters: [onFilter!],
@@ -42,14 +44,16 @@ const ACMEDns01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACMED
           },
         ].filter((group) => group.options.length > 0)
       : convert(dataSources.filtered);
-  }, [showAvailability, dataSources]);
+  }, [showAvailability, dataSources, t]);
 
   const renderOption = (key: string) => {
-    const provider = acmeDns01ProvidersMap.get(key);
+    const provider = getACMEDns01Provider(key);
+    const needsPlugin = provider?.type === ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS && !acmeDns01ProvidersMap.has(provider.type);
     return (
       <div className="flex items-center gap-2 truncate overflow-hidden">
         <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text ellipsis>{t(provider?.name ?? "")}</Typography.Text>
+        <Typography.Text ellipsis>{t(provider?.name ?? key)}</Typography.Text>
+        {needsPlugin && <Typography.Text type="secondary">{t("plugin.market.status.not_installed")}</Typography.Text>}
       </div>
     );
   };

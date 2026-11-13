@@ -34,7 +34,7 @@ import ACMEHttp01ProviderSelect from "@/components/provider/ACMEHttp01ProviderSe
 import CAProviderSelect from "@/components/provider/CAProviderSelect";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { CA_PROVIDERS, acmeDns01ProvidersMap, acmeHttp01ProvidersMap, caProvidersMap } from "@/domain/provider";
+import { CA_PROVIDERS, acmeHttp01ProvidersMap, caProvidersMap, getACMEDns01Provider } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
@@ -75,7 +75,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
   const accessOptionFilter = (_: string, option: AccessModel) => {
     if (option.reserve) return false;
-    if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return acmeDns01ProvidersMap.get(fieldProvider)?.provider === option.provider;
+    if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return getACMEDns01Provider(fieldProvider)?.provider === option.provider;
     if (fieldChallengeType === CHALLENGE_TYPE_HTTP01) return acmeHttp01ProvidersMap.get(fieldProvider)?.provider === option.provider;
     return false;
   };
@@ -122,7 +122,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
       case CHALLENGE_TYPE_DNS01:
         {
           if (fieldProvider) {
-            const provider = acmeDns01ProvidersMap.get(fieldProvider);
+            const provider = getACMEDns01Provider(fieldProvider);
             return !provider?.builtin;
           }
         }
@@ -172,7 +172,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
       const availableAccesses = accesses
         .filter((access) => accessOptionFilter(access.provider, access))
         .filter((access) => {
-          if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return acmeDns01ProvidersMap.get(fieldProvider)?.provider === access.provider;
+          if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return getACMEDns01Provider(fieldProvider)?.provider === access.provider;
           if (fieldChallengeType === CHALLENGE_TYPE_HTTP01) return acmeHttp01ProvidersMap.get(fieldProvider)?.provider === access.provider;
           return false;
         });
@@ -457,7 +457,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
                   usage={fieldChallengeType === CHALLENGE_TYPE_DNS01 ? "dns" : fieldChallengeType === CHALLENGE_TYPE_HTTP01 ? "hosting" : "dns-hosting"}
                   afterSubmit={(record) => {
                     if (!accessOptionFilter(record.provider, record)) return;
-                    if (fieldChallengeType === CHALLENGE_TYPE_DNS01 && acmeDns01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
+                    if (fieldChallengeType === CHALLENGE_TYPE_DNS01 && getACMEDns01Provider(fieldProvider!)?.provider !== record.provider) return;
                     if (fieldChallengeType === CHALLENGE_TYPE_HTTP01 && acmeHttp01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
                     formInst.setFieldValue("providerAccessId", record.id);
                   }}
@@ -1206,7 +1206,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         switch (values.challengeType) {
           case CHALLENGE_TYPE_DNS01:
             {
-              const provider = acmeDns01ProvidersMap.get(values.provider);
+              const provider = getACMEDns01Provider(values.provider);
               if (!provider?.builtin && !values.providerAccessId) {
                 ctx.addIssue({
                   code: "custom",

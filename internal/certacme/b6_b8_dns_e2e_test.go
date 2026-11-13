@@ -66,12 +66,12 @@ func TestB6B8DNSWorkflow(t *testing.T) {
 		}
 		return
 	}
-	for _, family := range []string{"ctcccloud", "cmcccloud", "huaweicloud", "byteplus", "volcengine"} {
+	for _, family := range []string{"ctcccloud", "huaweicloud", "byteplus", "volcengine"} {
 		t.Run(family, func(t *testing.T) {
 			var plugins dnsWorkflowPlugins
 			if pluginDir != "" {
 				selected := map[string]string{
-					"ctcccloud": "ctcccloud-cms", "cmcccloud": "cmcccloud-cdn", "huaweicloud": "huaweicloud-scm", "byteplus": "byteplus-apig", "volcengine": "volcengine-apig",
+					"ctcccloud": "ctcccloud-cms", "huaweicloud": "huaweicloud-scm", "byteplus": "byteplus-apig", "volcengine": "volcengine-apig",
 				}
 				provider := selected[family]
 				plugins.dir = t.TempDir()
@@ -201,9 +201,10 @@ func (f *b3DNSFixture) b6B8DNSCloud(w http.ResponseWriter, r *http.Request) bool
 		}
 	case "cmcccloud":
 		var body struct {
-			Api, AccessKey, Product string
-			BodyParameter           struct {
+			Api, AccessKey, SecretKey, Product, PoolID string
+			BodyParameter                              struct {
 				Rr, DomainName, Type, Value string
+				TTL                         int
 				RecordIDList                []string
 			}
 		}
@@ -214,7 +215,7 @@ func (f *b3DNSFixture) b6B8DNSCloud(w http.ResponseWriter, r *http.Request) bool
 		if !decode(&body) {
 			break
 		}
-		if body.AccessKey != "fixture-dns-id" || body.Product != "clouddns" {
+		if body.AccessKey != "fixture-dns-id" || body.SecretKey != "fixture-dns-secret" || body.Product != "clouddns" || body.PoolID != "CIDC-CORE-00" {
 			reject("incorrect CMCC account or product")
 			break
 		}
@@ -226,19 +227,42 @@ func (f *b3DNSFixture) b6B8DNSCloud(w http.ResponseWriter, r *http.Request) bool
 			return map[string]any{"body": map[string]string{"responseBody": string(encoded)}}
 		}
 		record := body.BodyParameter
+		zone := "example.test"
+		if f.wildcard != nil && f.cname == "" {
+			zone = "example.com"
+		}
+		target := f.challengeRecordName()
 		switch body.Api {
 		case "createRecordOpenapi":
-			if record.Rr != name || record.DomainName != zone || record.Type != "TXT" {
-				reject("incorrect record target")
+			if record.Rr != strings.TrimSuffix(target, "."+zone+".") || record.DomainName != zone || record.Type != "TXT" || record.TTL != 123 {
+				reject("incorrect record target or TTL")
 				break
 			}
-			create(record.Value, cmccReply(map[string]any{"state": "OK", "body": map[string]string{"recordId": "record-7"}}))
+			if rejectChallengeWrite(f, record.Value) {
+				w.WriteHeader(http.StatusForbidden)
+				break
+			}
+			id := "record-7"
+			if f.wildcard != nil && record.Value == f.wildcard.expected {
+				id = "record-8"
+			}
+			applyExternalDNSUpdate(f.t, f, target, record.Value, true)
+			reply(cmccReply(map[string]any{"state": "OK", "body": map[string]string{"recordId": id}}))
 		case "deleteRecordOpenapi":
-			if len(record.RecordIDList) != 1 || record.RecordIDList[0] != "record-7" {
-				reject("incorrect record ID")
+			if len(record.RecordIDList) != 1 {
+				reject("incorrect record ID list")
 				break
 			}
-			remove(cmccReply(map[string]string{"state": "OK"}))
+			switch record.RecordIDList[0] {
+			case "record-7":
+				applyExternalDNSUpdate(f.t, f, target, f.expected, false)
+			case "record-8":
+				applyExternalDNSUpdate(f.t, f, target, f.wildcard.expected, false)
+			default:
+				reject("incorrect record ID")
+				return true
+			}
+			reply(cmccReply(map[string]string{"state": "OK"}))
 		default:
 			reject("unexpected CMCC operation")
 		}

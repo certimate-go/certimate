@@ -53,7 +53,6 @@ jobs:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
           fetch-depth: 1
           persist-credentials: false
-          submodules: true
 
       - name: Free disk space
         uses: BRAINSia/free-disk-space@v2
