@@ -13,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
+	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
 	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
 )
@@ -115,7 +116,12 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 				return nil, err
 			}
 
-			domains = domainCandidates
+			domains = lo.Filter(domainCandidates, func(domain string, _ int) bool {
+				return xcerthostname.IsMatchByCertificatePEM(certPEM, domain)
+			})
+			if len(domains) == 0 {
+				return nil, fmt.Errorf("could not find any domains matched by certificate")
+			}
 		}
 
 	default:
