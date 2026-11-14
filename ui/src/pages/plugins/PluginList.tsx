@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconCheck, IconChevronDown, IconDots, IconDownload, IconFilter, IconPuzzle, IconRefresh, IconTrash, IconX } from "@tabler/icons-react";
-import { Alert, App, Button, Card, Dropdown, Empty, Input, type MenuProps, Pagination, Progress, Select, Skeleton, Tag, Tooltip, theme } from "antd";
+import { Alert, App, Button, Card, Dropdown, Empty, type MenuProps, Pagination, Progress, Select, Skeleton, Tag, Tooltip, theme } from "antd";
 import { ClientResponseError } from "pocketbase";
 
 import {
@@ -23,6 +23,7 @@ import {
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import MarketSourcesModal from "./MarketSourcesModal";
 import OfficialBadge from "./OfficialBadge";
+import PluginMarketSearch from "./PluginMarketSearch";
 
 const POLL_MS = 1000;
 const MAX_POLL_DELAY_MS = 30000;
@@ -177,6 +178,8 @@ const MarketCardActions = ({ entry, job, pollingError, speed, busy, onRetry, onI
   );
 };
 
+type MarketSearch = { kind: "keyword"; keyword: string } | { kind: "plugin"; target: PluginTarget };
+
 const PluginMarket = () => {
   const { t, i18n } = useTranslation();
   const { message, modal } = App.useApp();
@@ -190,7 +193,8 @@ const PluginMarket = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [operating, setOperating] = useState<Record<string, boolean>>({});
-  const [keyword, setKeyword] = useState("");
+  const [search, setSearch] = useState<MarketSearch>({ kind: "keyword", keyword: "" });
+  const [searchDraft, setSearchDraft] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketFilter>("all");
   const [capabilityFilter, setCapabilityFilter] = useState<MarketCapabilityFilter>("all");
   const [sourceFilter, setSourceFilter] = useState("");
@@ -215,12 +219,13 @@ const PluginMarket = () => {
         const data = await fetchMarketListing({
           page,
           perPage,
-          keyword,
+          keyword: search.kind === "keyword" ? search.keyword : "",
           status: statusFilter,
           capability: capabilityFilter,
           locale: i18n.language,
           refresh,
-          source: sourceFilter,
+          source: search.kind === "plugin" ? search.target.source : sourceFilter,
+          providerType: search.kind === "plugin" ? search.target.providerType : undefined,
         });
         if (request === listingRequestRef.current.generation) {
           if (sourceFilter && !data.sources.some(({ id }) => id === sourceFilter)) {
@@ -235,7 +240,7 @@ const PluginMarket = () => {
         if (request === listingRequestRef.current.generation) setLoading(false);
       }
     },
-    [t, page, perPage, keyword, statusFilter, capabilityFilter, sourceFilter, i18n.language]
+    [t, page, perPage, search, statusFilter, capabilityFilter, sourceFilter, i18n.language]
   );
 
   const setOp = (pt: string, v: boolean) => {
@@ -532,10 +537,12 @@ const PluginMarket = () => {
   ];
   const changeStatus = (value: MarketFilter) => {
     setStatusFilter(value);
+    setSearch({ kind: "keyword", keyword: searchDraft.trim() });
     setPage(1);
   };
   const changeCapability = (value: MarketCapabilityFilter) => {
     setCapabilityFilter(value);
+    setSearch({ kind: "keyword", keyword: searchDraft.trim() });
     setPage(1);
   };
   const activeFilters = [
@@ -596,17 +603,20 @@ const PluginMarket = () => {
           ]}
           onChange={(value) => {
             setSourceFilter(value);
+            setSearch({ kind: "keyword", keyword: searchDraft.trim() });
             setPage(1);
           }}
         />
-        <Input.Search
-          allowClear
-          className="max-w-80 min-w-32 flex-1 text-sm placeholder:text-sm"
-          aria-label={t("plugin.market.action.search_placeholder")}
-          placeholder={t("plugin.market.action.search_placeholder")}
-          size="large"
+        <PluginMarketSearch
+          draft={searchDraft}
+          filters={{ status: statusFilter, capability: capabilityFilter, source: sourceFilter, locale: i18n.language }}
+          onDraftChange={setSearchDraft}
           onSearch={(value) => {
-            setKeyword(value.trim());
+            setSearch({ kind: "keyword", keyword: value });
+            setPage(1);
+          }}
+          onSelect={(target) => {
+            setSearch({ kind: "plugin", target });
             setPage(1);
           }}
         />
@@ -646,6 +656,7 @@ const PluginMarket = () => {
                   }
               );
               setSourceFilter((current) => (current === removed ? "" : current));
+              setSearch({ kind: "keyword", keyword: searchDraft.trim() });
               setPage(1);
             }
             setRevision((previous) => previous + 1);
@@ -691,7 +702,9 @@ const PluginMarket = () => {
       ) : !listing?.items.length ? (
         <Empty
           description={t(
-            keyword || sourceFilter || statusFilter !== "all" || capabilityFilter !== "all" ? "plugin.market.empty_filtered" : "plugin.market.empty"
+            search.kind === "plugin" || search.keyword || sourceFilter || statusFilter !== "all" || capabilityFilter !== "all"
+              ? "plugin.market.empty_filtered"
+              : "plugin.market.empty"
           )}
         />
       ) : (

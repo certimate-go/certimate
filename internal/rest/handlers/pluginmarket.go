@@ -14,6 +14,7 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/rest/resp"
+	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 type marketService interface {
@@ -69,9 +70,16 @@ func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
 	default:
 		return resp.Err(e, domain.NewError(400, "invalid capability"))
 	}
+	providerType := query.Get("providerType")
+	if providerType != "" {
+		if err := plugin.ValidateProviderType(providerType); err != nil {
+			return resp.Err(e, domain.NewError(400, "invalid providerType"))
+		}
+	}
 	entries, err := h.service.ListMarketPage(e.Request.Context(), pluginhost.MarketQuery{
 		Page: page, PerPage: perPage, Keyword: query.Get("keyword"), Status: status,
 		Source: query.Get("source"), Capability: capability, Locale: query.Get("locale"), Refresh: query.Get("refresh") == "true",
+		ProviderType: providerType,
 	})
 	if err != nil {
 		return resp.Err(e, err)

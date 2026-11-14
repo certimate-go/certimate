@@ -60,6 +60,7 @@ export interface MarketQuery {
   locale: string;
   refresh: boolean;
   source: string;
+  providerType?: string;
 }
 
 const reloadResultSchema = z.object({
@@ -112,6 +113,7 @@ export const fetchMarketListing = async (query: MarketQuery): Promise<MarketPage
     refresh: String(query.refresh),
     source: query.source,
   });
+  if (query.providerType) params.set("providerType", query.providerType);
   const resp = await httpGet<unknown>({ url: `/api/plugin/market?${params}` });
   return marketPageSchema.parse(resp.data);
 };

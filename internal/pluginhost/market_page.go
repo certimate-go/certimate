@@ -18,14 +18,15 @@ import (
 )
 
 type MarketQuery struct {
-	Page       int
-	PerPage    int
-	Keyword    string
-	Status     string
-	Capability string
-	Locale     string
-	Refresh    bool
-	Source     string
+	Page         int
+	PerPage      int
+	Keyword      string
+	Status       string
+	Capability   string
+	Locale       string
+	Refresh      bool
+	Source       string
+	ProviderType string
 }
 
 type MarketCard struct {
@@ -125,6 +126,9 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 	keyword := strings.ToLower(strings.TrimSpace(query.Keyword))
 	matches := make([]MarketCard, 0)
 	include := func(card MarketCard, mm *plugin.MarketManifest, owns bool) {
+		if query.ProviderType != "" && (card.ProviderType != query.ProviderType || card.Source.ID != query.Source) {
+			return
+		}
 		if query.Source != "" && card.Source.ID != query.Source {
 			return
 		}

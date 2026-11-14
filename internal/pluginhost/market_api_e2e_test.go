@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -222,6 +223,26 @@ func TestE2E_CustomMarketsHTTP(t *testing.T) {
 		card(list, a.ID, fixtureProvider).Official || !card(list, b.ID, fixtureProvider).CanInstall {
 		t.Fatalf("bad source identity or eligibility: %+v", list.Items)
 	}
+	for _, selected := range []struct{ source, provider string }{
+		{a.ID, fixtureProvider},
+		{b.ID, fixtureProvider},
+		{"", "fixture-manual"},
+		{"official", "fixture-manual"},
+	} {
+		query := url.Values{"providerType": {selected.provider}, "source": {selected.source}, "perPage": {"1"}, "page": {"2"}}
+		exact := page("?" + query.Encode())
+		if exact.TotalItems != 1 || exact.TotalPages != 1 || exact.Page != 1 || len(exact.Items) != 1 ||
+			exact.Items[0].ProviderType != selected.provider || exact.Items[0].Source.ID != selected.source {
+			t.Fatalf("exact plugin selection %v returned %+v", selected, exact)
+		}
+	}
+	if matches := page("?keyword=fixture-manual"); matches.TotalItems != 2 {
+		t.Fatalf("keyword query should include both origins: %+v", matches)
+	}
+	if missing := page("?providerType=fixture-missing&source=official"); missing.TotalItems != 0 || len(missing.Items) != 0 {
+		t.Fatalf("unknown exact plugin matched other cards: %+v", missing)
+	}
+	api.market("GET", "?providerType=../invalid", nil, 400, "", nil)
 	api.market("POST", "/install", map[string]string{"providerType": fixtureConsumer, "source": b.ID}, 0, "", nil)
 	waitMarketInstall(t, api, fixtureConsumer, b.ID, pluginhost.JobFailed)
 	api.market("POST", "/install", map[string]string{"providerType": fixtureProvider, "source": a.ID}, 0, "", nil)
