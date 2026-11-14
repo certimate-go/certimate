@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
 
@@ -153,8 +154,14 @@ func (c *Certmgr) tryGetResultIfCertExists(ctx context.Context, certPEM string) 
 		}
 
 		for _, certItem := range getCertificateListResp.CertificateList {
-			// 对比证书备用名称
-			if len(certX509.DNSNames) == 0 || certItem.Domains != strings.Join(certX509.DNSNames, ",") {
+			// 对比证书备用名称（这里需忽略顺序）
+			if !lo.ElementsMatch(
+				lo.Map(
+					strings.Split(certItem.Domains, ","),
+					func(s string, _ int) string { return strings.TrimSpace(s) },
+				),
+				certX509.DNSNames,
+			) {
 				continue
 			}
 

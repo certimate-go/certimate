@@ -15,15 +15,15 @@ var (
 	fp            = tester.InitArgs("UCLOUDUSSL_")
 	fTestCertPath string
 	fTestKeyPath  string
-	fPrivateKey   string
 	fPublicKey    string
+	fPrivateKey   string
 )
 
 func init() {
 	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
 	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
-	fp.DefineString(&fPrivateKey, "PRIVATEKEY")
 	fp.DefineString(&fPublicKey, "PUBLICKEY")
+	fp.DefineString(&fPrivateKey, "PRIVATEKEY")
 }
 
 /*
@@ -32,16 +32,16 @@ Shell command to run this test:
 	go test -tags=tester -v ./ucloud_ussl_test.go -args \
 	--UCLOUDUSSL_TESTCERTPATH="/path/to/your-test-cert.pem" \
 	--UCLOUDUSSL_TESTKEYPATH="/path/to/your-test-key.pem" \
-	--UCLOUDUSSL_PRIVATEKEY="your-private-key" \
-	--UCLOUDUSSL_PUBLICKEY="your-public-key"
+	--UCLOUDUSSL_PUBLICKEY="your-public-key" \
+	--UCLOUDUSSL_PRIVATEKEY="your-private-key"
 */
 func TestProvider(t *testing.T) {
 	fp.Parse()
 
 	t.Run("Upload", func(t *testing.T) {
 		provider, err := impl.NewCertmgr(&impl.CertmgrConfig{
-			PrivateKey: fPrivateKey,
 			PublicKey:  fPublicKey,
+			PrivateKey: fPrivateKey,
 		})
 		require.NoError(t, err)
 
