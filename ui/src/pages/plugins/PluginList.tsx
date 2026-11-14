@@ -723,7 +723,11 @@ const PluginMarket = () => {
                           {name}
                         </h2>
                       </Tooltip>
-                      {entry.official && <OfficialBadge />}
+                      {entry.official && (
+                        <div className="flex h-5 shrink-0 items-center">
+                          <OfficialBadge />
+                        </div>
+                      )}
                     </div>
                     <div className="text-xs wrap-anywhere" style={{ color: token.colorTextSecondary }}>
                       {entry.source.repository || t("plugin.market.sources.local")}
