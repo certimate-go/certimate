@@ -1,4 +1,11 @@
-import { type ACMEAccountImportPayload, type ACMEAccountView } from "@/domain/acmeAccount";
+import {
+  type ACMEAccountImportPayload,
+  type ACMEAccountView,
+  type DNSPersistPreparePayload,
+  type DNSPersistRecord,
+  dnsPersistCheckSchema,
+  dnsPersistPreparationSchema,
+} from "@/domain/acmeAccount";
 
 import { get as httpGet, post as httpPost } from "./_api";
 
@@ -56,4 +63,14 @@ export const rotateAccount = (accountId: string) => {
   return httpPost<RespData>({
     url: `/api/acme-accounts/${encodeURIComponent(accountId)}/rotate`,
   });
+};
+
+export const prepareDNSPersist = async (payload: DNSPersistPreparePayload) => {
+  const response = await httpPost<unknown>({ url: "/api/acme-accounts/dns-persist/prepare", body: payload });
+  return { ...response, data: dnsPersistPreparationSchema.parse(response.data) };
+};
+
+export const checkDNSPersist = async (payload: { records: DNSPersistRecord[]; nameservers?: string[] }) => {
+  const response = await httpPost<unknown>({ url: "/api/acme-accounts/dns-persist/check", body: payload });
+  return { ...response, data: dnsPersistCheckSchema.parse(response.data) };
 };

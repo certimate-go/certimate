@@ -1,6 +1,10 @@
 package dtos
 
-import "time"
+import (
+	"time"
+
+	"github.com/certimate-go/certimate/internal/domain"
+)
 
 type ACMEAccountView struct {
 	Id               string    `json:"id"`
@@ -42,4 +46,31 @@ type ACMEAccountExportResp struct {
 
 type ACMEAccountRotateResp struct {
 	Item *ACMEAccountView `json:"item"`
+}
+
+type DNSPersistPrepareReq struct {
+	Domains            []string       `json:"domains"`
+	ContactEmail       string         `json:"contactEmail"`
+	CAProvider         string         `json:"caProvider"`
+	CAProviderAccessId string         `json:"caProviderAccessId"`
+	CAProviderConfig   map[string]any `json:"caProviderConfig"`
+	KeyAlgorithm       string         `json:"keyAlgorithm"`
+	ACMEProfile        string         `json:"acmeProfile"`
+	Nameservers        []string       `json:"nameservers"`
+}
+
+type DNSPersistPrepareResp struct {
+	AccountId  string                    `json:"accountId"`
+	AccountUrl string                    `json:"accountUrl"`
+	Records    []domain.DNSPersistRecord `json:"records"`
+}
+
+type DNSPersistCheckReq struct {
+	Records     []domain.DNSPersistRecord `json:"records"`
+	Nameservers []string                  `json:"nameservers"`
+}
+
+type DNSPersistCheckResp struct {
+	Ready   bool                            `json:"ready"`
+	Records []domain.DNSPersistRecordStatus `json:"records"`
 }

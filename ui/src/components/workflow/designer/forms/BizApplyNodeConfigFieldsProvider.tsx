@@ -48,8 +48,8 @@ const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, Rea
 };
 
 const useComponent = (
-  challenge: "dns-01" | "http-01",
-  provider: string,
+  challenge: "dns-01" | "http-01" | "dns-persist-01",
+  provider: string | null | undefined,
   { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }
 ) => {
   const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
@@ -72,6 +72,7 @@ const useComponent = (
   }, [challenge, provider, catalogVersion]);
 
   const initComponent = () => {
+    if (!provider) return null;
     const Component =
       challenge === "dns-01"
         ? acmeDns01ProviderComponentMap[provider as ACMEDns01ProviderType]

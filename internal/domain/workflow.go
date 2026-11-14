@@ -3,6 +3,7 @@ package domain
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/certimate-go/certimate/internal/domain/expr"
@@ -142,11 +143,16 @@ func (c WorkflowNodeConfig) AsBranchBlock() WorkflowNodeConfigForBranchBlock {
 }
 
 func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
+	challengeType := xmaps.GetString(c, "challengeType")
+	if strings.EqualFold(challengeType, ACMEChallengeDNSPersist01) {
+		challengeType = ACMEChallengeDNSPersist01
+	}
 	return WorkflowNodeConfigForBizApply{
 		Domains:               xmaps.GetStringsBySplit(c, "domains", ";"),
 		IPAddrs:               xmaps.GetStringsBySplit(c, "ipaddrs", ";"),
 		ContactEmail:          xmaps.GetString(c, "contactEmail"),
-		ChallengeType:         xmaps.GetString(c, "challengeType"),
+		ChallengeType:         challengeType,
+		DNSPersistAccountId:   xmaps.GetString(c, "dnsPersistAccountId"),
 		Provider:              xmaps.GetString(c, "provider"),
 		ProviderAccessId:      xmaps.GetString(c, "providerAccessId"),
 		ProviderConfig:        xmaps.GetKVMapAny(c, "providerConfig"),
@@ -228,6 +234,7 @@ type WorkflowNodeConfigForBranchBlock struct {
 }
 
 type WorkflowNodeConfigForBizApply struct {
+	DNSPersistAccountId   string         `json:"dnsPersistAccountId,omitempty"`
 	Domains               []string       `json:"domains"`                         // 域名列表，以半角分号分隔
 	IPAddrs               []string       `json:"ipaddrs"`                         // IP 地址列表，以半角分号分隔
 	ContactEmail          string         `json:"contactEmail"`                    // 联系邮箱

@@ -46,6 +46,7 @@ import { getPrivateKeyAlgorithm as getPKIXPrivateKeyAlgorithm, validatePEMPrivat
 
 import { FormNestedFieldsContextProvider, NodeFormContextProvider } from "./_context";
 import BizApplyNodeConfigFieldsProvider from "./BizApplyNodeConfigFieldsProvider";
+import DNSPersistSetup from "./DNSPersistSetup";
 import { NodeType } from "../nodes/typings";
 
 const MULTIPLE_INPUT_SEPARATOR = ";";
@@ -54,6 +55,7 @@ const IDENTIFIER_DOMAIN = "domain" as const;
 const IDENTIFIER_IP = "ip" as const;
 
 const CHALLENGE_TYPE_DNS01 = "dns-01" as const;
+const CHALLENGE_TYPE_DNSPERSIST01 = "dns-persist-01" as const;
 const CHALLENGE_TYPE_HTTP01 = "http-01" as const;
 
 const KEY_SOURCE_AUTO = "auto" as const;
@@ -75,6 +77,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
   const accessOptionFilter = (_: string, option: AccessModel) => {
     if (option.reserve) return false;
+    if (!fieldProvider) return false;
     if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return getACMEDns01Provider(fieldProvider)?.provider === option.provider;
     if (fieldChallengeType === CHALLENGE_TYPE_HTTP01) return acmeHttp01ProvidersMap.get(fieldProvider)?.provider === option.provider;
     return false;
@@ -247,7 +250,20 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   };
 
   const handleChallengeTypeChange = (value: string) => {
+    formInst.setFieldValue("dnsPersistAccountId", void 0);
     switch (value) {
+      case CHALLENGE_TYPE_DNSPERSIST01:
+        {
+          formInst.setFieldValue("provider", void 0);
+          formInst.setFieldValue("providerAccessId", void 0);
+          formInst.setFieldValue("providerConfig", void 0);
+          resetFieldIfInvalid("dnsPropagationWait");
+          resetFieldIfInvalid("dnsPropagationTimeout");
+          resetFieldIfInvalid("dnsTTL");
+          resetFieldIfInvalid("httpDelayWait");
+        }
+        break;
+
       case CHALLENGE_TYPE_DNS01:
         {
           formInst.setFieldValue("provider", void 0);
@@ -398,11 +414,15 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
                   DNS-01
                 </Radio.Button>
                 <Radio.Button value={CHALLENGE_TYPE_HTTP01}>HTTP-01</Radio.Button>
+                <Radio.Button disabled={fieldIdentifier === IDENTIFIER_IP} value={CHALLENGE_TYPE_DNSPERSIST01}>
+                  {t("workflow_node.apply.form.dns_persist.label")}
+                </Radio.Button>
               </Radio.Group>
             </Form.Item>
 
             <Form.Item
               name="provider"
+              hidden={fieldChallengeType === CHALLENGE_TYPE_DNSPERSIST01}
               dependencies={["challengeType"]}
               label={
                 fieldChallengeType === CHALLENGE_TYPE_DNS01
@@ -482,6 +502,10 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
             <FormNestedFieldsContextProvider value={{ parentNamePath: "providerConfig" }}>
               {renderNestedFieldProviderComponent && <>{renderNestedFieldProviderComponent}</>}
             </FormNestedFieldsContextProvider>
+
+            <Form.Item name="dnsPersistAccountId" hidden={fieldChallengeType !== CHALLENGE_TYPE_DNSPERSIST01} rules={[formRule]}>
+              <DNSPersistSetup enabled={fieldChallengeType === CHALLENGE_TYPE_DNSPERSIST01} form={formInst} />
+            </Form.Item>
           </div>
 
           <div id="certificate" data-anchor="certificate">
@@ -1082,8 +1106,9 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           return v.split(MULTIPLE_INPUT_SEPARATOR).every((e) => isIPv4(e) || isIPv6(e));
         }, t("common.errmsg.ip_invalid")),
       contactEmail: z.email(),
-      challengeType: z.enum([CHALLENGE_TYPE_DNS01, CHALLENGE_TYPE_HTTP01]),
-      provider: z.string().nonempty(),
+      challengeType: z.enum([CHALLENGE_TYPE_DNS01, CHALLENGE_TYPE_HTTP01, CHALLENGE_TYPE_DNSPERSIST01]),
+      dnsPersistAccountId: z.string().nullish(),
+      provider: z.string().nullish(),
       providerAccessId: z.string().nullish(),
       providerConfig: z.any().nullish(),
       caProvider: z.string().nullish(),
@@ -1149,6 +1174,25 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 
       if (values.challengeType) {
         switch (values.challengeType) {
+          case CHALLENGE_TYPE_DNSPERSIST01:
+            {
+              if (values.identifier !== IDENTIFIER_DOMAIN || values.ipaddrs) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("workflow_node.apply.form.dns_persist.no_ip"),
+                  path: ["challengeType"],
+                });
+              }
+              if (!values.dnsPersistAccountId) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("workflow_node.apply.form.dns_persist.binding_required"),
+                  path: ["dnsPersistAccountId"],
+                });
+              }
+            }
+            break;
+
           case CHALLENGE_TYPE_DNS01:
             {
               if (values.ipaddrs) {
@@ -1200,6 +1244,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
             }
             break;
         }
+      }
+
+      if (values.challengeType !== CHALLENGE_TYPE_DNSPERSIST01 && !values.provider) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("workflow_node.apply.form.provider.placeholder"),
+          path: ["provider"],
+        });
       }
 
       if (values.provider) {

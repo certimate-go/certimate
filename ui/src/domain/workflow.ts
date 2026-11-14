@@ -98,6 +98,7 @@ export type WorkflowNodeConfigForBizApply = {
   ipaddrs: string;
   contactEmail: string;
   challengeType: string;
+  dnsPersistAccountId?: string;
   provider: string;
   providerAccessId: string;
   providerConfig?: Record<string, unknown>;

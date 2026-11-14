@@ -87,7 +87,7 @@
         "option": {
           "domain": {
             "label": "域名证书",
-            "description": "<ul style=\"margin: 0;\"><li>支持单域名、多域名、泛域名（取决于具体证书颁发机构）</li><li>支持 DNS-01、HTTP-01 质询验证</li></ul>"
+            "description": "<ul style=\"margin: 0;\"><li>支持单域名、多域名、泛域名（取决于具体证书颁发机构）</li><li>支持 DNS-01、HTTP-01 和实验性 DNS-PERSIST-01 质询验证</li></ul>"
           },
           "ip": {
             "label": "IP 地址证书",
@@ -129,7 +129,7 @@
           "no_wildcard_in_http01": "HTTP-01 质询无法用于申请泛域名证书。",
           "no_ip_in_dns01": "DNS-01 质询无法用于申请 IP 地址证书。"
         },
-        "tooltip": "表示证书颁发机构如何验证你对域名的控制权。<br><a href=\"https://letsencrypt.org/zh-cn/docs/challenge-types/\" target=\"_blank\">点此了解更多</a>。"
+        "tooltip": "表示证书颁发机构如何验证你对域名的控制权。<br><a href=\"https://letsencrypt.org/zh-cn/docs/challenge-types/\" target=\"_blank\">点此了解更多</a>。<br><br>DNS-PERSIST-01（实验性）：通过手动管理的持久 TXT 记录授权 ACME 账户。"
       },
       "provider": {
         "label": "提供商",
@@ -344,6 +344,28 @@
         "label": "优刻得接口端点（可选）",
         "placeholder": "请输入优刻得 UDNR 接口端点（例如：api.ucloud.cn）",
         "tooltip": "这是什么？请参阅 <a href=\"https://docs.ucloud.cn/api/summary/gateway\" target=\"_blank\">https://docs.ucloud.cn/api/summary/gateway</a><br>国际站用户请填写 <em>api.ucloud-global.com</em>。"
+      },
+      "dns_persist": {
+        "label": "DNS-PERSIST-01（实验性）",
+        "description": "首批目标为 Google Trust Services 和 LiteSSL。自定义 ACME CA 需实际提供兼容的质询。该功能基于仍在演进的草案，兼容性可能变化。",
+        "instructions": "选择域名、CA 和联系邮箱后生成 TXT 记录，在 DNS 控制台添加并保留记录以供续期。无需 DNS 厂商凭据，签发时会再次检查记录。",
+        "saved_binding": "此节点已保存 ACME 账户绑定，可重新生成以查看 TXT 记录。",
+        "generate": "生成 TXT 记录",
+        "check": "检查 TXT 记录",
+        "failed": "操作未完成，请根据错误信息调整后重试。",
+        "account": "ACME 账户地址",
+        "name": "记录名称",
+        "value": "记录值",
+        "ready": "所有 TXT 记录均已就绪，请保留记录以供后续续期。",
+        "not_ready": "部分 TXT 记录尚未就绪，请修正记录或等待 DNS 生效后重新检查。",
+        "binding_required": "请先生成 TXT 记录以绑定 ACME 账户，再保存配置。",
+        "no_ip": "DNS-PERSIST-01 仅支持域名。",
+        "status": {
+          "ready": "已就绪",
+          "missing": "记录缺失",
+          "mismatch": "记录值不匹配",
+          "lookup_failed": "DNS 查询失败"
+        }
       }
     }
   },

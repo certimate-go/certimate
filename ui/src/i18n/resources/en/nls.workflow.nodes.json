@@ -87,7 +87,7 @@
         "option": {
           "domain": {
             "label": "Domains",
-            "description": "<ul style=\"margin: 0;\"><li>Supports single-domain, multi-domain and wildcard domains (Depends on CA).</li><li>Supports DNS-01 or HTTP-01 challenge.</li></ul>"
+            "description": "<ul style=\"margin: 0;\"><li>Supports single-domain, multi-domain and wildcard domains (Depends on CA).</li><li>Supports DNS-01, HTTP-01 or experimental DNS-PERSIST-01 challenge.</li></ul>"
           },
           "ip": {
             "label": "IP addresses",
@@ -129,7 +129,7 @@
           "no_wildcard_in_http01": "Could not use HTTP-01 challenge to request wildcard domain certificates.",
           "no_ip_in_dns01": "Could not use DNS-01 challenge to request IP address certificates."
         },
-        "tooltip": "It determines how the CAs verifies your control over the domain names. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Click here to learn more</a>."
+        "tooltip": "It determines how the CAs verifies your control over the domain names. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Click here to learn more</a>.<br><br>DNS-PERSIST-01 (Experimental): authorize an ACME account with persistent TXT records that you manage manually."
       },
       "provider": {
         "label": "Provider",
@@ -345,6 +345,28 @@
         "label": "UCloud API endpoint (Optional)",
         "placeholder": "Please enter UCloud UDNR API endpoint (e.g. api.ucloud-global.com)",
         "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
+      "dns_persist": {
+        "label": "DNS-PERSIST-01 (Experimental)",
+        "description": "Initial targets: Google Trust Services and LiteSSL. Custom ACME CAs must offer a compatible challenge. This feature uses an evolving draft, so compatibility may change.",
+        "instructions": "Select the domains, CA and contact email, then generate the TXT records. Add them in your DNS console and keep them for renewal. DNS provider credentials are not needed. Issuance checks the records again.",
+        "saved_binding": "This node has a saved ACME account binding. Generate again to view its TXT records.",
+        "generate": "Generate TXT records",
+        "check": "Check TXT records",
+        "failed": "Unable to complete this step. Review the error and retry.",
+        "account": "ACME account URL",
+        "name": "Record name",
+        "value": "Record value",
+        "ready": "All TXT records are ready. Keep them in DNS for future renewals.",
+        "not_ready": "Some TXT records are not ready. Update them or wait for DNS propagation, then check again.",
+        "binding_required": "Generate TXT records to bind an ACME account before saving.",
+        "no_ip": "DNS-PERSIST-01 supports domain names only.",
+        "status": {
+          "ready": "Ready",
+          "missing": "Missing",
+          "mismatch": "Value mismatch",
+          "lookup_failed": "DNS lookup failed"
+        }
       }
     }
   },

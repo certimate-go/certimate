@@ -83,13 +83,21 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		return nil, fmt.Errorf("the request is nil")
 	}
 
-	os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
+	challengeType := strings.ToLower(request.ChallengeType)
+	certifier := c.client.Certificate
 
 	const CHALLENGE_TYPE_DNS01 = "dns-01"
 	const CHALLENGE_TYPE_HTTP01 = "http-01"
-	switch strings.ToLower(request.ChallengeType) {
+	switch challengeType {
+	case domain.ACMEChallengeDNSPersist01:
+		var err error
+		certifier, err = c.newDNSPersistCertifier(ctx, request)
+		if err != nil {
+			return nil, err
+		}
 	case CHALLENGE_TYPE_DNS01:
 		{
+			os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
 			providerType := domain.ACMEDns01ProviderType(request.Provider)
 			switch providerType {
 			case domain.ACMEDns01ProviderTypeCMCCCloud:
@@ -186,7 +194,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		NotAfter:         request.ValidityNotAfter,
 		ReplacesCertID:   lo.If(request.ARIReplacesAccountUrl == c.account.ACMEAccountUrl, request.ARIReplacesCertId).Else(""),
 	}
-	resp, err := c.client.Certificate.Obtain(ctx, req)
+	resp, err := certifier.Obtain(ctx, req)
 	if err != nil {
 		ariErr := &acme.AlreadyReplacedError{}
 		if !errors.As(err, &ariErr) {
@@ -197,7 +205,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 
 		// reset ARI and retry if failure
 		req.ReplacesCertID = ""
-		resp, err = c.client.Certificate.Obtain(ctx, req)
+		resp, err = certifier.Obtain(ctx, req)
 		if err != nil {
 			return nil, err
 		}

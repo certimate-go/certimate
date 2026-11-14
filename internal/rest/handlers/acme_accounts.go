@@ -16,6 +16,8 @@ type acmeAccountService interface {
 	Import(ctx context.Context, req *dtos.ACMEAccountImportReq) (*dtos.ACMEAccountImportResp, error)
 	Export(ctx context.Context, accountId string) (*dtos.ACMEAccountExportResp, error)
 	Rotate(ctx context.Context, accountId string) (*dtos.ACMEAccountRotateResp, error)
+	PrepareDNSPersist(ctx context.Context, req *dtos.DNSPersistPrepareReq) (*dtos.DNSPersistPrepareResp, error)
+	CheckDNSPersist(ctx context.Context, req *dtos.DNSPersistCheckReq) (*dtos.DNSPersistCheckResp, error)
 }
 
 type ACMEAccountsHandler struct {
@@ -30,6 +32,32 @@ func NewACMEAccountsHandler(router *router.RouterGroup[*core.RequestEvent], serv
 	group.POST("/import", handler.importAccount)
 	group.POST("/{accountId}/export", handler.exportAccount)
 	group.POST("/{accountId}/rotate", handler.rotateAccount)
+	group.POST("/dns-persist/prepare", handler.prepareDNSPersist)
+	group.POST("/dns-persist/check", handler.checkDNSPersist)
+}
+
+func (handler *ACMEAccountsHandler) prepareDNSPersist(e *core.RequestEvent) error {
+	req := &dtos.DNSPersistPrepareReq{}
+	if err := e.BindBody(req); err != nil {
+		return resp.Err(e, err)
+	}
+	res, err := handler.service.PrepareDNSPersist(e.Request.Context(), req)
+	if err != nil {
+		return resp.Err(e, err)
+	}
+	return resp.Ok(e, res)
+}
+
+func (handler *ACMEAccountsHandler) checkDNSPersist(e *core.RequestEvent) error {
+	req := &dtos.DNSPersistCheckReq{}
+	if err := e.BindBody(req); err != nil {
+		return resp.Err(e, err)
+	}
+	res, err := handler.service.CheckDNSPersist(e.Request.Context(), req)
+	if err != nil {
+		return resp.Err(e, err)
+	}
+	return resp.Ok(e, res)
 }
 
 func (handler *ACMEAccountsHandler) list(e *core.RequestEvent) error {

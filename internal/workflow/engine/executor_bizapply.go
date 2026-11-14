@@ -165,6 +165,9 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 	if lastOutput != nil && lastOutput.Succeeded {
 		// 比较和上次申请时的关键配置（即影响证书签发的）参数是否一致
 		lastNodeCfg := lastOutput.NodeConfig.AsBizApply()
+		if thisNodeCfg.ChallengeType != lastNodeCfg.ChallengeType || thisNodeCfg.DNSPersistAccountId != lastNodeCfg.DNSPersistAccountId {
+			return false, "the challenge type or persistent DNS account changed"
+		}
 
 		if !slices.Equal(thisNodeCfg.Domains, lastNodeCfg.Domains) {
 			return false, "the configuration item 'Domains' changed"
@@ -282,7 +285,7 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 读取质询提供商授权
 	providerAccessConfig := make(map[string]any)
-	if nodeCfg.ProviderAccessId != "" {
+	if nodeCfg.ChallengeType != domain.ACMEChallengeDNSPersist01 && nodeCfg.ProviderAccessId != "" {
 		if access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.ProviderAccessId); err != nil {
 			return nil, fmt.Errorf("failed to get access #%s record: %w", nodeCfg.ProviderAccessId, err)
 		} else {
@@ -335,7 +338,18 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 初始化 ACME 账户
 	// 注意此步骤仍需在主进程中进行，以保证并发安全
-	acmeAcct, err := certacme.CreateACMEAccountWithSingleFlight(execCtx.Context(), acmeCfg, nodeCfg.ContactEmail)
+	var acmeAcct *certacme.ACMEAccount
+	if nodeCfg.ChallengeType == domain.ACMEChallengeDNSPersist01 {
+		if nodeCfg.DNSPersistAccountId == "" {
+			return nil, fmt.Errorf("generate DNS-PERSIST-01 TXT records before running this workflow")
+		}
+		acmeAcct, err = ne.acmeAccountRepo.GetById(execCtx.Context(), nodeCfg.DNSPersistAccountId)
+		if err == nil && (acmeAcct.CA != acmeCfg.CAProvider.String() || acmeAcct.ACMEDirectoryUrl != acmeCfg.CADirUrl || acmeAcct.Email != nodeCfg.ContactEmail) {
+			return nil, fmt.Errorf("the DNS-PERSIST-01 account no longer matches the CA or contact email; generate TXT records again")
+		}
+	} else {
+		acmeAcct, err = certacme.CreateACMEAccountWithSingleFlight(execCtx.Context(), acmeCfg, nodeCfg.ContactEmail)
+	}
 	if err != nil {
 		ne.logger.Warn("could not initialize acme account")
 		return nil, err
