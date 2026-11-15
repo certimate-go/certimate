@@ -172,11 +172,9 @@ func PrepareDNSPersist(ctx context.Context, account *ACMEAccount, domains []stri
 		if err != nil && auth.Status == acme.StatusValid {
 			issuer := ""
 			switch account.ACMEDirectoryUrl {
-			case caDirUrls[domain.CAProviderTypeGoogleTrustServices.String()]:
-				issuer = "pki.goog"
-			case caDirUrls[domain.CAProviderTypeLiteSSL.String()]:
-				issuer = "trustasia.com"
-			}
+				case caDirUrls[domain.CAProviderTypeGoogleTrustServices.String()]:
+					issuer = "pki.goog"
+				}
 			if issuer != "" {
 				ch = acme.Challenge{Type: domain.ACMEChallengeDNSPersist01, AccountURI: account.ACMEAccountUrl, IssuerDomainNames: []string{issuer}}
 				err = nil

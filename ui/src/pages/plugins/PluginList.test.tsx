@@ -25,7 +25,7 @@ const custom = { id: "custom", repository: "fixture/plugins" };
 const base: MarketAPI.MarketEntry = {
   provider_type: "sample",
   display_name_key: "",
-  deploy_category: "",
+  category: "",
   version: "1.0.0",
   description: "",
   status: "not_installed",
@@ -256,6 +256,26 @@ it("ignores delayed suggestions after a keyword submit and keeps search usable a
   await waitFor(() => expect(MarketAPI.fetchMarketListing).toHaveBeenCalledTimes(2));
   pressKey("Enter", 13);
   expect(onSearch).toHaveBeenLastCalledWith("other");
+});
+
+it("lists purge plugins and filters the market by the purge capability", async () => {
+  vi.mocked(MarketAPI.fetchMarketListing).mockResolvedValue({
+    ...listing,
+    items: [{ ...base, capability: "purge", provider_type: "baiducloud-cert-purger" }],
+    totalItems: 1,
+  });
+  render(
+    <App>
+      <PluginList />
+    </App>
+  );
+  await screen.findByText("baiducloud-cert-purger");
+  expect(screen.getByText("purge")).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: /plugin.market.filter.label/u }));
+  await screen.findByText("plugin.market.capability.purge");
+  fireEvent.click(screen.getByText("plugin.market.capability.purge"));
+  await waitFor(() => expect(MarketAPI.fetchMarketListing).toHaveBeenCalledWith(expect.objectContaining({ capability: "purge", providerType: undefined })));
 });
 
 it("keeps showing suggestions when whitespace around the keyword changes", async () => {

@@ -4,6 +4,7 @@ go 1.27.4
 
 require (
 	ganigeorgiev.com/pocketbase/dbx v1.13.0
+	ganigeorgiev.com/pocketbase/ozzo-validation/v4 v4.4.1
 	ganigeorgiev.com/pocketbase/pocketbase v0.42.2
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.23.3
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.15.0
@@ -85,6 +86,7 @@ require (
 	github.com/xhit/go-str2duration/v2 v2.2.0
 	github.com/yandex-cloud/go-genproto v0.133.0
 	golang.org/x/crypto v0.58.0
+	golang.org/x/net v0.62.0
 	golang.org/x/sync v0.25.0
 	golang.org/x/sys v0.50.0
 	google.golang.org/grpc v1.84.0
@@ -94,7 +96,6 @@ require (
 
 require (
 	ganigeorgiev.com/fexpr v0.7.0 // indirect
-	ganigeorgiev.com/pocketbase/ozzo-validation/v4 v4.4.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.13.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/dns/armdns v1.2.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/privatedns/armprivatedns/v2 v2.0.0 // indirect
@@ -218,7 +219,6 @@ require (
 	go.uber.org/zap v1.28.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/image v0.48.0 // indirect
-	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/oauth2 v0.38.0 // indirect
 	golang.org/x/text v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260715232425-e75dac1f907d // indirect

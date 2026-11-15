@@ -11,7 +11,7 @@ import (
 )
 
 type frameSender interface {
-	Send(*proto.DeployFrame) error
+	Send(*proto.LogEntry) error
 }
 
 type streamLogHandler struct {
@@ -31,13 +31,11 @@ func (h *streamLogHandler) Enabled(_ context.Context, l slog.Level) bool {
 func (h *streamLogHandler) Handle(_ context.Context, r slog.Record) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	return h.sender.Send(&proto.DeployFrame{
-		Frame: &proto.DeployFrame_Log{Log: &proto.LogEntry{
-			TimestampMilli: r.Time.UnixMilli(),
-			Level:          int32(r.Level),
-			Message:        r.Message,
-			Data:           recordToMap(r),
-		}},
+	return h.sender.Send(&proto.LogEntry{
+		TimestampMilli: r.Time.UnixMilli(),
+		Level:          int32(r.Level),
+		Message:        r.Message,
+		Data:           recordToMap(r),
 	})
 }
 

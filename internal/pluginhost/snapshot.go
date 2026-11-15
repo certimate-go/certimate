@@ -11,6 +11,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
+	"github.com/certimate-go/certimate/internal/certmgmt/purgers"
 	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -27,6 +28,7 @@ type registeredPlugin struct {
 	newDeployer   deployers.ProviderFactoryFunc
 	newChallenger certifiers.ProviderFactoryFunc
 	newNotifier   notifiers.ProviderFactoryFunc
+	newPurger     purgers.ProviderFactoryFunc
 	envelopes     []*providerschema.Envelope
 	entry         *CatalogEntry
 }

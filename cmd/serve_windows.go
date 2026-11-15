@@ -8,6 +8,7 @@ import (
 
 	"ganigeorgiev.com/pocketbase/pocketbase"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+	"ganigeorgiev.com/pocketbase/pocketbase/tools/hook"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 )
@@ -18,15 +19,38 @@ type winscHandler struct {
 }
 
 func (h *winscHandler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (bool, uint32) {
+	s <- svc.Status{State: svc.StartPending}
+	ready := make(chan struct{})
+	finished := make(chan error, 1)
+	h.pb.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
+		Priority: -1000,
+		Func: func(e *core.ServeEvent) error {
+			if err := e.Next(); err != nil {
+				return err
+			}
+			close(ready)
+			return nil
+		},
+	})
 	go func() {
-		if err := h.pb.Start(); err != nil {
-			h.elog.Error(999, fmt.Sprintf("Start failed: %v", err))
-		}
+		finished <- h.pb.Start()
 	}()
 
-	s <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
 	for {
 		select {
+		case <-ready:
+			ready = nil
+			s <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
+		case err := <-finished:
+			if err != nil {
+				if h.elog != nil {
+					h.elog.Error(999, fmt.Sprintf("Start failed: %v", err))
+				}
+				s <- svc.Status{State: svc.Stopped}
+				return true, 1
+			}
+			s <- svc.Status{State: svc.Stopped}
+			return false, 0
 		case c := <-r:
 			switch c.Cmd {
 			case svc.Interrogate:
@@ -40,7 +64,9 @@ func (h *winscHandler) Execute(args []string, r <-chan svc.ChangeRequest, s chan
 				s <- svc.Status{State: svc.Stopped}
 				return false, 0
 			default:
-				h.elog.Warning(998, fmt.Sprintf("unexpected control request: %v", c.Cmd))
+				if h.elog != nil {
+					h.elog.Warning(998, fmt.Sprintf("unexpected control request: %v", c.Cmd))
+				}
 			}
 		}
 	}
@@ -48,7 +74,10 @@ func (h *winscHandler) Execute(args []string, r <-chan svc.ChangeRequest, s chan
 
 func Serve(app *pocketbase.PocketBase) error {
 	if isWinsc, _ := svc.IsWindowsService(); isWinsc {
-		elog, _ := eventlog.Open(winscName)
+		elog, err := eventlog.Open(winscName)
+		if err != nil {
+			return err
+		}
 		defer elog.Close()
 		return svc.Run(winscName, &winscHandler{pb: app, elog: elog})
 	}

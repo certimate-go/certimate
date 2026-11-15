@@ -36,7 +36,7 @@ const renderMarket = async (resources = {}) => {
       {
         provider_type: "sample",
         display_name_key: "plugin.sample.name",
-        deploy_category: "",
+        category: "",
         version: "1.0.0",
         description: "",
         status: "not_installed",

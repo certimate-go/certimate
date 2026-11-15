@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -29,6 +30,8 @@ type fixtureConfig struct {
 	BootstrapError         string          `json:"bootstrapError"`
 	NotifyError            string          `json:"notifyError"`
 	PresentError           string          `json:"presentError"`
+	CleanUpError           string          `json:"cleanUpError"`
+	PurgeError             string          `json:"purgeError"`
 	MetadataDelayMS        int             `json:"metadataDelayMs"`
 	MetadataURL            string          `json:"metadataUrl"`
 	StartupLog             string          `json:"startupLog"`
@@ -36,11 +39,13 @@ type fixtureConfig struct {
 	DeploySchema           json.RawMessage `json:"deploySchema"`
 }
 
-type fixtureDeployer struct {
+type fixturePlugin struct {
+	plugin.NoopFinalizer
 	config fixtureConfig
 }
 
-func fixtureMetadata(ctx context.Context, config fixtureConfig) (*plugin.Metadata, error) {
+func (d *fixturePlugin) metadata(ctx context.Context) (*plugin.Metadata, error) {
+	config := d.config
 	if config.MetadataURL != "" {
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, config.MetadataURL, nil)
 		if err != nil {
@@ -69,14 +74,16 @@ func fixtureMetadata(ctx context.Context, config fixtureConfig) (*plugin.Metadat
 	return &plugin.Metadata{
 		ProviderType:         config.ProviderType,
 		AccessProviderType:   accessType,
+		Capability:           config.Capability,
 		ProtocolVersion:      plugin.ProtocolVersion,
-		DeployCategory:       "other",
-		DeployDisplayNameKey: "plugin.e2e.name",
+		Category:             "other",
+		DisplayNameKey:       "plugin.e2e.name",
 		AccessDisplayNameKey: "plugin.e2e.access",
 	}, nil
 }
 
-func fixtureConfigSchema(config fixtureConfig) *plugin.ConfigSchema {
+func (d *fixturePlugin) configSchema() *plugin.ConfigSchema {
+	config := d.config
 	access := config.AccessSchema
 	if len(access) == 0 {
 		access = schema(config.AccessProviderType, "access", []map[string]any{
@@ -87,16 +94,16 @@ func fixtureConfigSchema(config fixtureConfig) *plugin.ConfigSchema {
 	if config.OmitAccessSchema {
 		access = nil
 	}
-	deploy := config.DeploySchema
-	if len(deploy) == 0 {
-		deploy = schema(config.ProviderType, "deploy", []map[string]any{
+	provider := config.DeploySchema
+	if len(provider) == 0 {
+		provider = schema(config.ProviderType, "deploy", []map[string]any{
 			{"name": "count", "valueType": "number", "labelKey": "plugin.e2e.count", "default": 1},
 			{"name": config.DeployField, "valueType": "text", "labelKey": "plugin.e2e.message"},
 		})
 	}
 	return &plugin.ConfigSchema{
 		AccessSchemaJSON: access,
-		DeploySchemaJSON: deploy,
+		ProviderSchemaJSON: provider,
 		I18n: map[string]map[string]string{
 			"en": {"plugin.e2e.name": "E2E Webhook", "plugin.e2e.access": "E2E Access", "plugin.e2e.url": "Webhook URL", "plugin.e2e.token": "Token " + config.SchemaRevision, "plugin.e2e.count": "Count", "plugin.e2e.message": "Message " + config.SchemaRevision},
 			"zh": {"plugin.e2e.name": "E2E Webhook", "plugin.e2e.access": "E2E Access", "plugin.e2e.url": "Webhook URL", "plugin.e2e.token": "Token " + config.SchemaRevision, "plugin.e2e.count": "Count", "plugin.e2e.message": "Message " + config.SchemaRevision},
@@ -104,12 +111,12 @@ func fixtureConfigSchema(config fixtureConfig) *plugin.ConfigSchema {
 	}
 }
 
-func (d *fixtureDeployer) GetMetadata(ctx context.Context) (*plugin.Metadata, error) {
-	return fixtureMetadata(ctx, d.config)
+func (d *fixturePlugin) GetMetadata(ctx context.Context) (*plugin.Metadata, error) {
+	return d.metadata(ctx)
 }
 
-func (d *fixtureDeployer) GetConfigSchema(context.Context) (*plugin.ConfigSchema, error) {
-	return fixtureConfigSchema(d.config), nil
+func (d *fixturePlugin) GetConfigSchema(context.Context) (*plugin.ConfigSchema, error) {
+	return d.configSchema(), nil
 }
 
 func schema(provider, category string, columns []map[string]any) []byte {
@@ -120,7 +127,21 @@ func schema(provider, category string, columns []map[string]any) []byte {
 	return data
 }
 
-func (d *fixtureDeployer) Deploy(ctx context.Context, req *plugin.DeployRequest, logger *slog.Logger) (*plugin.DeployResult, error) {
+func (d *fixturePlugin) Process(ctx context.Context, req *plugin.Request, logger *slog.Logger) (*plugin.Result, error) {
+	switch req.Capability {
+	case plugin.CapabilityDeploy:
+		return d.processDeploy(ctx, req, logger)
+	case plugin.CapabilityDns:
+		return d.processDns(ctx, req)
+	case plugin.CapabilityNotify:
+		return d.processNotify(ctx, req)
+	case plugin.CapabilityPurge:
+		return d.processPurge(ctx, req, logger)
+	}
+	return nil, fmt.Errorf("unsupported capability %q", req.Capability)
+}
+
+func (d *fixturePlugin) processDeploy(ctx context.Context, req *plugin.Request, logger *slog.Logger) (*plugin.Result, error) {
 	var access struct {
 		URL     string `json:"url"`
 		Method  string `json:"method"`
@@ -137,7 +158,7 @@ func (d *fixtureDeployer) Deploy(ctx context.Context, req *plugin.DeployRequest,
 		return nil, err
 	}
 	data, err := json.Marshal(map[string]any{
-		"cert": req.CertificatePEM, "key": req.PrivateKeyPEM,
+		"cert": req.Deploy.CertificatePEM, "key": req.Deploy.PrivateKeyPEM,
 		"access": json.RawMessage(req.AccessConfigJSON), "config": json.RawMessage(req.ExtendedConfigJSON),
 		"version": d.config.SchemaRevision,
 	})
@@ -170,81 +191,99 @@ func (d *fixtureDeployer) Deploy(ctx context.Context, req *plugin.DeployRequest,
 		return nil, fmt.Errorf("webhook status %d", response.StatusCode)
 	}
 	logger.Info("webhook responded")
-	return &plugin.DeployResult{ExtendedDataJSON: `{"deployed":true}`}, nil
+	return &plugin.Result{Deploy: &plugin.DeployResult{ExtendedDataJSON: `{"deployed":true}`}}, nil
 }
 
-type fixtureDnsProvider struct {
-	config fixtureConfig
-}
-
-func (d *fixtureDnsProvider) GetMetadata(ctx context.Context) (*plugin.Metadata, error) {
-	return fixtureMetadata(ctx, d.config)
-}
-
-func (d *fixtureDnsProvider) GetConfigSchema(context.Context) (*plugin.ConfigSchema, error) {
-	return fixtureConfigSchema(d.config), nil
-}
-
-func (d *fixtureDnsProvider) Present(ctx context.Context, req *plugin.DnsRequest) error {
+func (d *fixturePlugin) processDns(ctx context.Context, req *plugin.Request) (*plugin.Result, error) {
 	if d.config.PresentError != "" {
-		return fmt.Errorf("%s", d.config.PresentError)
+		return nil, fmt.Errorf("%s", d.config.PresentError)
 	}
-	return postFixtureJSON(ctx, d.config, req.AccessConfigJSON, map[string]any{
-		"action": "present", "domain": req.Domain, "token": req.Token, "keyAuth": req.KeyAuth,
+	if err := postFixtureJSON(ctx, d.config, req.AccessConfigJSON, map[string]any{
+		"action": "present", "domain": req.Dns.Domain, "token": req.Dns.Token, "keyAuth": req.Dns.KeyAuth,
 		"pid": os.Getpid(), "version": d.config.SchemaRevision,
-	})
-}
-
-func (d *fixtureDnsProvider) CleanUp(ctx context.Context, req *plugin.DnsRequest) error {
-	return postFixtureJSON(ctx, d.config, req.AccessConfigJSON, map[string]any{
-		"action": "cleanup", "domain": req.Domain, "token": req.Token, "keyAuth": req.KeyAuth,
-		"pid": os.Getpid(), "version": d.config.SchemaRevision,
-	})
-}
-
-type fixtureNotifier struct {
-	config fixtureConfig
-}
-
-func (n *fixtureNotifier) GetMetadata(ctx context.Context) (*plugin.Metadata, error) {
-	return fixtureMetadata(ctx, n.config)
-}
-
-func (n *fixtureNotifier) GetConfigSchema(context.Context) (*plugin.ConfigSchema, error) {
-	return fixtureConfigSchema(n.config), nil
-}
-
-func (n *fixtureNotifier) Notify(ctx context.Context, req *plugin.NotifyRequest) (*plugin.NotifyResult, error) {
-	if n.config.NotifyError != "" {
-		return nil, fmt.Errorf("%s", n.config.NotifyError)
-	}
-	if err := postFixtureJSON(ctx, n.config, req.AccessConfigJSON, map[string]any{
-		"subject": req.Subject, "message": req.Message,
-		"pid": os.Getpid(), "version": n.config.SchemaRevision,
 	}); err != nil {
 		return nil, err
 	}
-	return &plugin.NotifyResult{ExtendedDataJSON: `{"notified":true}`}, nil
+	return &plugin.Result{Dns: &plugin.DnsResult{}}, nil
+}
+
+func (d *fixturePlugin) processNotify(ctx context.Context, req *plugin.Request) (*plugin.Result, error) {
+	if d.config.NotifyError != "" {
+		return nil, fmt.Errorf("%s", d.config.NotifyError)
+	}
+	if err := postFixtureJSON(ctx, d.config, req.AccessConfigJSON, map[string]any{
+		"subject": req.Notify.Subject, "message": req.Notify.Message,
+		"pid": os.Getpid(), "version": d.config.SchemaRevision,
+	}); err != nil {
+		return nil, err
+	}
+	return &plugin.Result{Notify: &plugin.NotifyResult{ExtendedDataJSON: `{"notified":true}`}}, nil
+}
+
+func (d *fixturePlugin) processPurge(ctx context.Context, req *plugin.Request, logger *slog.Logger) (*plugin.Result, error) {
+	if d.config.PurgeError != "" {
+		return nil, fmt.Errorf("%s", d.config.PurgeError)
+	}
+	body, err := postFixtureJSONResponse(ctx, d.config, req.AccessConfigJSON, map[string]any{
+		"action": "purge", "expirySeconds": req.Purge.ExpirySeconds,
+		"pid": os.Getpid(), "version": d.config.SchemaRevision,
+		"config": json.RawMessage(req.ExtendedConfigJSON),
+	})
+	if err != nil {
+		return nil, err
+	}
+	var vendor struct {
+		Count int `json:"count"`
+	}
+	count := 0
+	if len(body) > 0 {
+		if err := json.Unmarshal(body, &vendor); err != nil {
+			return nil, err
+		}
+		count = vendor.Count
+	}
+	if logger != nil {
+		logger.Info("purge fixture responded", slog.Int("count", count))
+	}
+	return &plugin.Result{Purge: &plugin.PurgeResult{Count: count, ExtendedDataJSON: `{"purged":true}`}}, nil
+}
+
+func (d *fixturePlugin) PostProcess(ctx context.Context, req *plugin.Request, logger *slog.Logger) error {
+	if req.Capability != plugin.CapabilityDns {
+		return plugin.NoopFinalizer{}.PostProcess(ctx, req, logger)
+	}
+	if d.config.CleanUpError != "" {
+		return fmt.Errorf("%s", d.config.CleanUpError)
+	}
+	return postFixtureJSON(ctx, d.config, req.AccessConfigJSON, map[string]any{
+		"action": "cleanup", "domain": req.Dns.Domain, "token": req.Dns.Token, "keyAuth": req.Dns.KeyAuth,
+		"pid": os.Getpid(), "version": d.config.SchemaRevision,
+	})
 }
 
 func postFixtureJSON(ctx context.Context, config fixtureConfig, accessJSON string, payload map[string]any) error {
+	_, err := postFixtureJSONResponse(ctx, config, accessJSON, payload)
+	return err
+}
+
+func postFixtureJSONResponse(ctx context.Context, config fixtureConfig, accessJSON string, payload map[string]any) ([]byte, error) {
 	var access struct {
 		URL   string `json:"url"`
 		Token string `json:"token"`
 	}
 	if err := json.Unmarshal([]byte(accessJSON), &access); err != nil {
-		return err
+		return nil, err
 	}
 	if access.URL == "" {
-		return nil
+		return nil, nil
 	}
 	data, err := json.Marshal(payload)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, access.URL, bytes.NewReader(data))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	if access.Token != "" {
@@ -252,13 +291,17 @@ func postFixtureJSON(ctx context.Context, config fixtureConfig, accessJSON strin
 	}
 	response, err := (&http.Client{Timeout: 10 * time.Second}).Do(httpReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer response.Body.Close()
-	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return fmt.Errorf("webhook status %d", response.StatusCode)
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return nil, fmt.Errorf("webhook status %d", response.StatusCode)
+	}
+	return body, nil
 }
 
 func main() {
@@ -294,20 +337,5 @@ func main() {
 			panic(err)
 		}
 	}
-	var served githubplugin.Plugin
-	switch config.Capability {
-	case plugin.CapabilityDns:
-		served = &plugin.DnsGRPCPlugin{Impl: &fixtureDnsProvider{config: config}}
-	case plugin.CapabilityNotify:
-		served = &plugin.NotifyGRPCPlugin{Impl: &fixtureNotifier{config: config}}
-	default:
-		served = &plugin.DeployerGRPCPlugin{Impl: &fixtureDeployer{config: config}}
-	}
-	githubplugin.Serve(&githubplugin.ServeConfig{
-		HandshakeConfig: plugin.HandshakeConfig,
-		Plugins: map[string]githubplugin.Plugin{
-			plugin.ServiceNameForCapability(config.Capability): served,
-		},
-		GRPCServer: githubplugin.DefaultGRPCServer,
-	})
+	githubplugin.Serve(plugin.ServeConfig(&fixturePlugin{config: config}))
 }

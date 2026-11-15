@@ -8,14 +8,6 @@ import (
 	"strings"
 )
 
-func LoadDeploySchema(fsys embed.FS) ([]byte, error) {
-	data, err := fsys.ReadFile("schema/deploy.json")
-	if err != nil {
-		return nil, fmt.Errorf("plugin: embedded deploy schema not found: %w", err)
-	}
-	return data, nil
-}
-
 func LoadProviderSchema(fsys embed.FS) ([]byte, error) {
 	data, err := fsys.ReadFile("schema/config.json")
 	if err != nil {

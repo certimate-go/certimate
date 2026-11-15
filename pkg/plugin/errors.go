@@ -67,6 +67,20 @@ func (e *ErrPluginConfig) Error() string {
 
 func (e *ErrPluginConfig) Unwrap() error { return e.Inner }
 
+type ErrPluginProtocol struct {
+	ProviderType string
+	Reason       string
+}
+
+func (e *ErrPluginProtocol) Error() string {
+	return fmt.Sprintf("plugin: provider %q protocol violation: %s", e.ProviderType, e.Reason)
+}
+
+func IsPluginProtocol(err error) bool {
+	var e *ErrPluginProtocol
+	return errors.As(err, &e)
+}
+
 func AsPluginError(err error) error {
 	if err == nil {
 		return nil

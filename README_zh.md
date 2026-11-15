@@ -88,12 +88,21 @@ docker run -d \
 
 浏览器中访问 `http://127.0.0.1:8090`。
 
-初始的管理员账号及密码：
+首次启动不再提供默认管理员账号。Certimate 会在启动控制台输出一次性初始化口令（Docker 部署可通过 `docker logs certimate` 查看），有效期 30 分钟。打开站点后输入该口令以及自定义的邮箱和密码即可创建管理员账号，之后按常规方式登录。口令过期后重启 Certimate 即可获取新口令。
 
-- 账号：`admin@certimate.fun`
-- 密码：`1234567890`
+无人值守部署可以在首次启动前通过环境变量预设凭据——两个变量必须同时提供，否则启动失败：
 
-即刻使用 Certimate。或者阅读文档中的其他内容以了解更多。
+```bash
+CERTIMATE_ADMIN_USERNAME=admin@example.com \
+CERTIMATE_ADMIN_PASSWORD='your-password' \
+./certimate serve
+```
+
+说明：
+
+- `certimate migrate up` 仅执行迁移，不再创建管理员。如需显式的 CLI 预设或恢复（例如 Windows 服务模式下无法查看控制台输出），可对数据目录执行 `certimate superuser upsert EMAIL PASS`。
+- 从旧版本升级的实例保留原有管理员账号，包括仍在使用历史默认凭据的账号；初始化入口保持关闭，不会重置或覆盖任何账号。
+- 已存在管理员时环境变量预设会被忽略。
 
 ## 📄 使用手册
 

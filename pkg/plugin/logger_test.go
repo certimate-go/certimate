@@ -8,11 +8,11 @@ import (
 )
 
 type fakeSender struct {
-	frames []*proto.DeployFrame
+	frames []*proto.LogEntry
 	err    error
 }
 
-func (s *fakeSender) Send(f *proto.DeployFrame) error {
+func (s *fakeSender) Send(f *proto.LogEntry) error {
 	if s.err != nil {
 		return s.err
 	}
@@ -49,7 +49,7 @@ func TestStreamLoggerEmitsFramesAndRespectsLevel(t *testing.T) {
 	if len(s.frames) != 2 {
 		t.Fatalf("expected 2 frames (warn+error), got %d", len(s.frames))
 	}
-	w := s.frames[0].GetLog()
+	w := s.frames[0]
 	if w.Message != "w" || w.Level != int32(slog.LevelWarn) {
 		t.Fatalf("warn frame mismatch: %+v", w)
 	}
@@ -59,8 +59,8 @@ func TestStreamLoggerEmitsFramesAndRespectsLevel(t *testing.T) {
 	if w.TimestampMilli == 0 {
 		t.Fatal("timestamp not set")
 	}
-	if s.frames[1].GetLog().Level != int32(slog.LevelError) {
-		t.Fatalf("error level mismatch: %+v", s.frames[1].GetLog())
+	if s.frames[1].Level != int32(slog.LevelError) {
+		t.Fatalf("error level mismatch: %+v", s.frames[1])
 	}
 }
 
@@ -70,7 +70,7 @@ func TestStreamLoggerNoAttrsNilMap(t *testing.T) {
 	if len(s.frames) != 1 {
 		t.Fatalf("expected 1 frame, got %d", len(s.frames))
 	}
-	if s.frames[0].GetLog().Data != nil {
-		t.Fatalf("expected nil data for no-attr record, got %+v", s.frames[0].GetLog().Data)
+	if s.frames[0].Data != nil {
+		t.Fatalf("expected nil data for no-attr record, got %+v", s.frames[0].Data)
 	}
 }

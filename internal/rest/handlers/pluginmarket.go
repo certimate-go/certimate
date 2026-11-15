@@ -66,7 +66,7 @@ func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
 	}
 	capability := query.Get("capability")
 	switch capability {
-	case "", "all", "deploy", "dns", "notify":
+	case "", "all", "deploy", "dns", "notify", "purge":
 	default:
 		return resp.Err(e, domain.NewError(400, "invalid capability"))
 	}

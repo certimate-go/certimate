@@ -7,6 +7,7 @@ const (
 	CategoryAccess Category = "access"
 	CategoryApply  Category = "apply"
 	CategoryNotify Category = "notify"
+	CategoryPurge  Category = "purge"
 )
 
 type ValueType string

@@ -30,7 +30,7 @@ export const marketConflictSchema = z.object({
 const marketEntrySchema = z.object({
   provider_type: z.string(),
   display_name_key: z.string(),
-  deploy_category: z.string(),
+  category: z.string(),
   capability: z.string().optional(),
   version: z.string(),
   description: z.string(),
@@ -49,7 +49,7 @@ export type MarketEntry = z.infer<typeof marketEntryWithJobSchema>;
 
 export type MarketFilter = "all" | "installed" | "not_installed";
 
-export type MarketCapabilityFilter = "all" | "deploy" | "dns" | "notify";
+export type MarketCapabilityFilter = "all" | "deploy" | "dns" | "notify" | "purge";
 
 export interface MarketQuery {
   page: number;

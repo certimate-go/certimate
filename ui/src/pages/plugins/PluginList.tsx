@@ -534,6 +534,7 @@ const PluginMarket = () => {
     { value: "deploy", label: t("plugin.market.capability.deploy") },
     { value: "dns", label: t("plugin.market.capability.dns") },
     { value: "notify", label: t("plugin.market.capability.notify") },
+    { value: "purge", label: t("plugin.market.capability.purge") },
   ];
   const changeStatus = (value: MarketFilter) => {
     setStatusFilter(value);
@@ -754,8 +755,8 @@ const PluginMarket = () => {
                     </div>
                     <div className="mt-0.5 text-xs/4 wrap-anywhere" style={{ color: token.colorTextSecondary }}>
                       {entry.capability
-                        ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.deploy_category].filter(Boolean).join(" · ")
-                        : entry.deploy_category}
+                        ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.category].filter(Boolean).join(" · ")
+                        : entry.category}
                     </div>
                   </div>
                 </div>

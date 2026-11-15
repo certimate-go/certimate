@@ -107,7 +107,7 @@ func setupE2EPlugin(t *testing.T, root, providerType, accessType string, fixture
 	manifest := plugin.Manifest{
 		Version: "0.1.0", ProviderType: providerType, AccessProviderType: accessType,
 		Capability: capability,
-		DisplayNameKey: "plugin.e2e.name", DeployCategory: "other",
+		DisplayNameKey: "plugin.e2e.name", Category: "other",
 		ProtocolVersion: plugin.ProtocolVersion, Binary: "webhook-deployer",
 	}
 	writeFixtureJSON(t, filepath.Join(dir, "manifest.json"), manifest)

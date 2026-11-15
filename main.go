@@ -22,6 +22,7 @@ import (
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
 	"github.com/certimate-go/certimate/internal/settings"
+	"github.com/certimate-go/certimate/internal/setup"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
 	"github.com/certimate-go/certimate/internal/workflow"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -84,9 +85,14 @@ func main() {
 		})
 
 		pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
+			e.InstallerFunc = nil
+			setupService := setup.NewService(e.App)
+			if err := setupService.Prepare(os.Getenv("CERTIMATE_ADMIN_USERNAME"), os.Getenv("CERTIMATE_ADMIN_PASSWORD"), os.Stdout); err != nil {
+				return err
+			}
 			scheduler.Setup()
 			workflow.Setup()
-			routes.BindRouter(e.Router)
+			routes.BindRouter(e.Router, setupService)
 
 			if err := e.Next(); err != nil {
 				return err
@@ -112,6 +118,7 @@ func main() {
 		} else {
 			slog.Error("[CERTIMATE] Start failed.", slog.Any("error", err))
 		}
+		os.Exit(1)
 	}
 }
 

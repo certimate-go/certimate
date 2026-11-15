@@ -41,7 +41,7 @@ type MarketCard struct {
 
 	ProviderType   string     `json:"provider_type"`
 	DisplayNameKey string     `json:"display_name_key"`
-	DeployCategory string     `json:"deploy_category"`
+	Category        string     `json:"category"`
 	Capability     string     `json:"capability,omitempty"`
 	Version        string     `json:"version"`
 	Description    string     `json:"description"`
@@ -237,7 +237,7 @@ func newMarketCard(mm *plugin.MarketManifest, source plugin.MarketSource) Market
 	return MarketCard{
 		Source: source, Official: source == plugin.OfficialMarketSource(),
 		ProviderType: mm.ProviderType, DisplayNameKey: mm.DisplayNameKey,
-		DeployCategory: mm.DeployCategory, Capability: capability, Version: mm.Version, Description: mm.Description,
+		Category: mm.Category, Capability: capability, Version: mm.Version, Description: mm.Description,
 	}
 }
 

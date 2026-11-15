@@ -18,6 +18,8 @@ import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
+import Setup from "@/pages/setup/Setup";
+import SetupGate from "@/pages/SetupGate";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
 import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
 import WorkflowDetailRuns from "@/pages/workflows/WorkflowDetailRuns";
@@ -27,7 +29,11 @@ import WorkflowNew from "@/pages/workflows/WorkflowNew";
 export const router = createHashRouter([
   {
     path: "/",
-    element: <ConsoleLayout />,
+    element: (
+      <SetupGate>
+        <ConsoleLayout />
+      </SetupGate>
+    ),
     children: [
       {
         path: "/",
@@ -117,11 +123,29 @@ export const router = createHashRouter([
   },
   {
     path: "/login",
-    element: <AuthLayout />,
+    element: (
+      <SetupGate>
+        <AuthLayout />
+      </SetupGate>
+    ),
     children: [
       {
         path: "/login",
         element: <Login />,
+      },
+    ],
+  },
+  {
+    path: "/setup",
+    element: (
+      <SetupGate mode="setup">
+        <AuthLayout />
+      </SetupGate>
+    ),
+    children: [
+      {
+        path: "/setup",
+        element: <Setup />,
       },
     ],
   },

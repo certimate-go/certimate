@@ -795,7 +795,6 @@ export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvide
       [PURGE_PROVIDERS.AWS_ACM, "provider.aws_acm"],
       [PURGE_PROVIDERS.AWS_IAM, "provider.aws_iam"],
       [PURGE_PROVIDERS.AZURE_KEYVAULT, "provider.azure_keyvault"],
-      [PURGE_PROVIDERS.BAIDUCLOUD_CERT, "provider.baiducloud_cert"],
       [PURGE_PROVIDERS.JDCLOUD_SSL, "provider.jdcloud_ssl"],
       [PURGE_PROVIDERS.UCLOUD_USSL, "provider.ucloud_ussl"],
     ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>

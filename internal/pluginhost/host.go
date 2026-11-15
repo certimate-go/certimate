@@ -93,6 +93,8 @@ func configSchemaCategory(capability string) providerschema.Category {
 		return providerschema.CategoryApply
 	case plugin.CapabilityNotify:
 		return providerschema.CategoryNotify
+	case plugin.CapabilityPurge:
+		return providerschema.CategoryPurge
 	default:
 		return providerschema.CategoryDeploy
 	}
@@ -164,6 +166,9 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		return nil, fmt.Errorf("plugin metadata identity does not match manifest: provider %q/%q, access %q/%q", meta.ProviderType, dp.Manifest.ProviderType, meta.AccessProviderType, dp.Manifest.AccessProviderType)
 	}
 	capability := dp.Manifest.Capability
+	if meta.Capability != "" && meta.Capability != capability {
+		return nil, fmt.Errorf("plugin metadata capability %q does not match manifest capability %q", meta.Capability, capability)
+	}
 	providerType, accessType := meta.ProviderType, meta.AccessProviderType
 	var envelopes []*providerschema.Envelope
 	addEnvelope := func(name string, raw []byte, category providerschema.Category) error {
@@ -180,7 +185,7 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		envelopes = append(envelopes, env)
 		return nil
 	}
-	if err := addEnvelope(providerType, schema.DeploySchemaJSON, configSchemaCategory(capability)); err != nil {
+	if err := addEnvelope(providerType, schema.ProviderSchemaJSON, configSchemaCategory(capability)); err != nil {
 		return nil, fmt.Errorf("provider schema: %w", err)
 	}
 	ownsAccess := false
@@ -210,7 +215,7 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		envelopes: envelopes,
 		entry: &CatalogEntry{
 			Source: SourcePlugin, Capability: capability, ProviderType: providerType, AccessProviderType: accessType,
-			OwnsAccess: ownsAccess, DeployCategory: meta.DeployCategory, DisplayNameKey: meta.DeployDisplayNameKey,
+			OwnsAccess: ownsAccess, Category: meta.Category, DisplayNameKey: meta.DisplayNameKey,
 			AccessDisplayNameKey: meta.AccessDisplayNameKey, Icon: readIcon(dp, logger), I18n: schema.I18n,
 			AccessUsages: usages, Priority: dp.Manifest.Priority, Description: dp.Manifest.Description,
 		},
@@ -230,6 +235,13 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		}
 		registered.factory = factory
 		registered.newNotifier = factory.new
+	case plugin.CapabilityPurge:
+		factory := &pluginPurgerFactory{
+			manager: manager, dp: runtimeDP, providerType: providerType,
+			logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", providerType)),
+		}
+		registered.factory = factory
+		registered.newPurger = factory.new
 	default:
 		factory := &pluginDeployerFactory{
 			manager: manager, dp: runtimeDP, providerType: providerType,

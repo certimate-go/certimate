@@ -87,7 +87,7 @@ func TestDNSPersistWorkflowE2E(t *testing.T) {
 		omitAccount bool
 		multiproc   bool
 	}{
-		{name: "litessl-shaped-multiprocess", multiproc: true},
+		{name: "accounturi-shaped-multiprocess", multiproc: true},
 		{name: "gts-shaped-multiprocess", omitAccount: true, multiproc: true},
 		{name: "gts-shaped-single-process", omitAccount: true},
 	} {

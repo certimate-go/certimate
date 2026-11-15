@@ -18,47 +18,48 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// DeployerPluginClient is the client API for DeployerPlugin service.
+// PluginServiceClient is the client API for PluginService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type DeployerPluginClient interface {
+type PluginServiceClient interface {
 	GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
 	GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error)
-	Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (DeployerPlugin_DeployClient, error)
+	Process(ctx context.Context, in *ProcessRequest, opts ...grpc.CallOption) (PluginService_ProcessClient, error)
+	PostProcess(ctx context.Context, in *PostProcessRequest, opts ...grpc.CallOption) (PluginService_PostProcessClient, error)
 }
 
-type deployerPluginClient struct {
+type pluginServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewDeployerPluginClient(cc grpc.ClientConnInterface) DeployerPluginClient {
-	return &deployerPluginClient{cc}
+func NewPluginServiceClient(cc grpc.ClientConnInterface) PluginServiceClient {
+	return &pluginServiceClient{cc}
 }
 
-func (c *deployerPluginClient) GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
+func (c *pluginServiceClient) GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
 	out := new(GetMetadataResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.DeployerPlugin/GetMetadata", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.PluginService/GetMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *deployerPluginClient) GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error) {
+func (c *pluginServiceClient) GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error) {
 	out := new(GetConfigSchemaResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.DeployerPlugin/GetConfigSchema", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.PluginService/GetConfigSchema", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *deployerPluginClient) Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (DeployerPlugin_DeployClient, error) {
-	stream, err := c.cc.NewStream(ctx, &DeployerPlugin_ServiceDesc.Streams[0], "/certimate.plugin.v1.DeployerPlugin/Deploy", opts...)
+func (c *pluginServiceClient) Process(ctx context.Context, in *ProcessRequest, opts ...grpc.CallOption) (PluginService_ProcessClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PluginService_ServiceDesc.Streams[0], "/certimate.plugin.v1.PluginService/Process", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &deployerPluginDeployClient{stream}
+	x := &pluginServiceProcessClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -68,490 +69,200 @@ func (c *deployerPluginClient) Deploy(ctx context.Context, in *DeployRequest, op
 	return x, nil
 }
 
-type DeployerPlugin_DeployClient interface {
-	Recv() (*DeployFrame, error)
+type PluginService_ProcessClient interface {
+	Recv() (*ProcessFrame, error)
 	grpc.ClientStream
 }
 
-type deployerPluginDeployClient struct {
+type pluginServiceProcessClient struct {
 	grpc.ClientStream
 }
 
-func (x *deployerPluginDeployClient) Recv() (*DeployFrame, error) {
-	m := new(DeployFrame)
+func (x *pluginServiceProcessClient) Recv() (*ProcessFrame, error) {
+	m := new(ProcessFrame)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// DeployerPluginServer is the server API for DeployerPlugin service.
-// All implementations must embed UnimplementedDeployerPluginServer
+func (c *pluginServiceClient) PostProcess(ctx context.Context, in *PostProcessRequest, opts ...grpc.CallOption) (PluginService_PostProcessClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PluginService_ServiceDesc.Streams[1], "/certimate.plugin.v1.PluginService/PostProcess", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &pluginServicePostProcessClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type PluginService_PostProcessClient interface {
+	Recv() (*PostProcessFrame, error)
+	grpc.ClientStream
+}
+
+type pluginServicePostProcessClient struct {
+	grpc.ClientStream
+}
+
+func (x *pluginServicePostProcessClient) Recv() (*PostProcessFrame, error) {
+	m := new(PostProcessFrame)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// PluginServiceServer is the server API for PluginService service.
+// All implementations must embed UnimplementedPluginServiceServer
 // for forward compatibility
-type DeployerPluginServer interface {
+type PluginServiceServer interface {
 	GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
 	GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error)
-	Deploy(*DeployRequest, DeployerPlugin_DeployServer) error
-	mustEmbedUnimplementedDeployerPluginServer()
+	Process(*ProcessRequest, PluginService_ProcessServer) error
+	PostProcess(*PostProcessRequest, PluginService_PostProcessServer) error
+	mustEmbedUnimplementedPluginServiceServer()
 }
 
-// UnimplementedDeployerPluginServer must be embedded to have forward compatible implementations.
-type UnimplementedDeployerPluginServer struct {
+// UnimplementedPluginServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedPluginServiceServer struct {
 }
 
-func (UnimplementedDeployerPluginServer) GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
+func (UnimplementedPluginServiceServer) GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
 }
-func (UnimplementedDeployerPluginServer) GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error) {
+func (UnimplementedPluginServiceServer) GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConfigSchema not implemented")
 }
-func (UnimplementedDeployerPluginServer) Deploy(*DeployRequest, DeployerPlugin_DeployServer) error {
-	return status.Errorf(codes.Unimplemented, "method Deploy not implemented")
+func (UnimplementedPluginServiceServer) Process(*ProcessRequest, PluginService_ProcessServer) error {
+	return status.Errorf(codes.Unimplemented, "method Process not implemented")
 }
-func (UnimplementedDeployerPluginServer) mustEmbedUnimplementedDeployerPluginServer() {}
+func (UnimplementedPluginServiceServer) PostProcess(*PostProcessRequest, PluginService_PostProcessServer) error {
+	return status.Errorf(codes.Unimplemented, "method PostProcess not implemented")
+}
+func (UnimplementedPluginServiceServer) mustEmbedUnimplementedPluginServiceServer() {}
 
-// UnsafeDeployerPluginServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to DeployerPluginServer will
+// UnsafePluginServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PluginServiceServer will
 // result in compilation errors.
-type UnsafeDeployerPluginServer interface {
-	mustEmbedUnimplementedDeployerPluginServer()
+type UnsafePluginServiceServer interface {
+	mustEmbedUnimplementedPluginServiceServer()
 }
 
-func RegisterDeployerPluginServer(s grpc.ServiceRegistrar, srv DeployerPluginServer) {
-	s.RegisterService(&DeployerPlugin_ServiceDesc, srv)
+func RegisterPluginServiceServer(s grpc.ServiceRegistrar, srv PluginServiceServer) {
+	s.RegisterService(&PluginService_ServiceDesc, srv)
 }
 
-func _DeployerPlugin_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PluginService_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DeployerPluginServer).GetMetadata(ctx, in)
+		return srv.(PluginServiceServer).GetMetadata(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.DeployerPlugin/GetMetadata",
+		FullMethod: "/certimate.plugin.v1.PluginService/GetMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeployerPluginServer).GetMetadata(ctx, req.(*GetMetadataRequest))
+		return srv.(PluginServiceServer).GetMetadata(ctx, req.(*GetMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DeployerPlugin_GetConfigSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PluginService_GetConfigSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetConfigSchemaRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DeployerPluginServer).GetConfigSchema(ctx, in)
+		return srv.(PluginServiceServer).GetConfigSchema(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.DeployerPlugin/GetConfigSchema",
+		FullMethod: "/certimate.plugin.v1.PluginService/GetConfigSchema",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeployerPluginServer).GetConfigSchema(ctx, req.(*GetConfigSchemaRequest))
+		return srv.(PluginServiceServer).GetConfigSchema(ctx, req.(*GetConfigSchemaRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DeployerPlugin_Deploy_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(DeployRequest)
+func _PluginService_Process_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ProcessRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(DeployerPluginServer).Deploy(m, &deployerPluginDeployServer{stream})
+	return srv.(PluginServiceServer).Process(m, &pluginServiceProcessServer{stream})
 }
 
-type DeployerPlugin_DeployServer interface {
-	Send(*DeployFrame) error
+type PluginService_ProcessServer interface {
+	Send(*ProcessFrame) error
 	grpc.ServerStream
 }
 
-type deployerPluginDeployServer struct {
+type pluginServiceProcessServer struct {
 	grpc.ServerStream
 }
 
-func (x *deployerPluginDeployServer) Send(m *DeployFrame) error {
+func (x *pluginServiceProcessServer) Send(m *ProcessFrame) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-// DeployerPlugin_ServiceDesc is the grpc.ServiceDesc for DeployerPlugin service.
+func _PluginService_PostProcess_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PostProcessRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PluginServiceServer).PostProcess(m, &pluginServicePostProcessServer{stream})
+}
+
+type PluginService_PostProcessServer interface {
+	Send(*PostProcessFrame) error
+	grpc.ServerStream
+}
+
+type pluginServicePostProcessServer struct {
+	grpc.ServerStream
+}
+
+func (x *pluginServicePostProcessServer) Send(m *PostProcessFrame) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+// PluginService_ServiceDesc is the grpc.ServiceDesc for PluginService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var DeployerPlugin_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "certimate.plugin.v1.DeployerPlugin",
-	HandlerType: (*DeployerPluginServer)(nil),
+var PluginService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "certimate.plugin.v1.PluginService",
+	HandlerType: (*PluginServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetMetadata",
-			Handler:    _DeployerPlugin_GetMetadata_Handler,
+			Handler:    _PluginService_GetMetadata_Handler,
 		},
 		{
 			MethodName: "GetConfigSchema",
-			Handler:    _DeployerPlugin_GetConfigSchema_Handler,
+			Handler:    _PluginService_GetConfigSchema_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Deploy",
-			Handler:       _DeployerPlugin_Deploy_Handler,
+			StreamName:    "Process",
+			Handler:       _PluginService_Process_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "PostProcess",
+			Handler:       _PluginService_PostProcess_Handler,
 			ServerStreams: true,
 		},
 	},
-	Metadata: "plugin.proto",
-}
-
-// DnsPluginClient is the client API for DnsPlugin service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type DnsPluginClient interface {
-	GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
-	GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error)
-	Present(ctx context.Context, in *DnsRequest, opts ...grpc.CallOption) (*DnsResponse, error)
-	CleanUp(ctx context.Context, in *DnsRequest, opts ...grpc.CallOption) (*DnsResponse, error)
-}
-
-type dnsPluginClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewDnsPluginClient(cc grpc.ClientConnInterface) DnsPluginClient {
-	return &dnsPluginClient{cc}
-}
-
-func (c *dnsPluginClient) GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
-	out := new(GetMetadataResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.DnsPlugin/GetMetadata", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dnsPluginClient) GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error) {
-	out := new(GetConfigSchemaResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.DnsPlugin/GetConfigSchema", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dnsPluginClient) Present(ctx context.Context, in *DnsRequest, opts ...grpc.CallOption) (*DnsResponse, error) {
-	out := new(DnsResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.DnsPlugin/Present", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *dnsPluginClient) CleanUp(ctx context.Context, in *DnsRequest, opts ...grpc.CallOption) (*DnsResponse, error) {
-	out := new(DnsResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.DnsPlugin/CleanUp", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// DnsPluginServer is the server API for DnsPlugin service.
-// All implementations must embed UnimplementedDnsPluginServer
-// for forward compatibility
-type DnsPluginServer interface {
-	GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
-	GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error)
-	Present(context.Context, *DnsRequest) (*DnsResponse, error)
-	CleanUp(context.Context, *DnsRequest) (*DnsResponse, error)
-	mustEmbedUnimplementedDnsPluginServer()
-}
-
-// UnimplementedDnsPluginServer must be embedded to have forward compatible implementations.
-type UnimplementedDnsPluginServer struct {
-}
-
-func (UnimplementedDnsPluginServer) GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
-}
-func (UnimplementedDnsPluginServer) GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetConfigSchema not implemented")
-}
-func (UnimplementedDnsPluginServer) Present(context.Context, *DnsRequest) (*DnsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Present not implemented")
-}
-func (UnimplementedDnsPluginServer) CleanUp(context.Context, *DnsRequest) (*DnsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CleanUp not implemented")
-}
-func (UnimplementedDnsPluginServer) mustEmbedUnimplementedDnsPluginServer() {}
-
-// UnsafeDnsPluginServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to DnsPluginServer will
-// result in compilation errors.
-type UnsafeDnsPluginServer interface {
-	mustEmbedUnimplementedDnsPluginServer()
-}
-
-func RegisterDnsPluginServer(s grpc.ServiceRegistrar, srv DnsPluginServer) {
-	s.RegisterService(&DnsPlugin_ServiceDesc, srv)
-}
-
-func _DnsPlugin_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMetadataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DnsPluginServer).GetMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.DnsPlugin/GetMetadata",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsPluginServer).GetMetadata(ctx, req.(*GetMetadataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DnsPlugin_GetConfigSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetConfigSchemaRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DnsPluginServer).GetConfigSchema(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.DnsPlugin/GetConfigSchema",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsPluginServer).GetConfigSchema(ctx, req.(*GetConfigSchemaRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DnsPlugin_Present_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DnsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DnsPluginServer).Present(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.DnsPlugin/Present",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsPluginServer).Present(ctx, req.(*DnsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _DnsPlugin_CleanUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DnsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DnsPluginServer).CleanUp(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.DnsPlugin/CleanUp",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DnsPluginServer).CleanUp(ctx, req.(*DnsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// DnsPlugin_ServiceDesc is the grpc.ServiceDesc for DnsPlugin service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var DnsPlugin_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "certimate.plugin.v1.DnsPlugin",
-	HandlerType: (*DnsPluginServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetMetadata",
-			Handler:    _DnsPlugin_GetMetadata_Handler,
-		},
-		{
-			MethodName: "GetConfigSchema",
-			Handler:    _DnsPlugin_GetConfigSchema_Handler,
-		},
-		{
-			MethodName: "Present",
-			Handler:    _DnsPlugin_Present_Handler,
-		},
-		{
-			MethodName: "CleanUp",
-			Handler:    _DnsPlugin_CleanUp_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "plugin.proto",
-}
-
-// NotifyPluginClient is the client API for NotifyPlugin service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type NotifyPluginClient interface {
-	GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error)
-	GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error)
-	Notify(ctx context.Context, in *NotifyRequest, opts ...grpc.CallOption) (*NotifyResponse, error)
-}
-
-type notifyPluginClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewNotifyPluginClient(cc grpc.ClientConnInterface) NotifyPluginClient {
-	return &notifyPluginClient{cc}
-}
-
-func (c *notifyPluginClient) GetMetadata(ctx context.Context, in *GetMetadataRequest, opts ...grpc.CallOption) (*GetMetadataResponse, error) {
-	out := new(GetMetadataResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.NotifyPlugin/GetMetadata", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *notifyPluginClient) GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error) {
-	out := new(GetConfigSchemaResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.NotifyPlugin/GetConfigSchema", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *notifyPluginClient) Notify(ctx context.Context, in *NotifyRequest, opts ...grpc.CallOption) (*NotifyResponse, error) {
-	out := new(NotifyResponse)
-	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.NotifyPlugin/Notify", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// NotifyPluginServer is the server API for NotifyPlugin service.
-// All implementations must embed UnimplementedNotifyPluginServer
-// for forward compatibility
-type NotifyPluginServer interface {
-	GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error)
-	GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error)
-	Notify(context.Context, *NotifyRequest) (*NotifyResponse, error)
-	mustEmbedUnimplementedNotifyPluginServer()
-}
-
-// UnimplementedNotifyPluginServer must be embedded to have forward compatible implementations.
-type UnimplementedNotifyPluginServer struct {
-}
-
-func (UnimplementedNotifyPluginServer) GetMetadata(context.Context, *GetMetadataRequest) (*GetMetadataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
-}
-func (UnimplementedNotifyPluginServer) GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetConfigSchema not implemented")
-}
-func (UnimplementedNotifyPluginServer) Notify(context.Context, *NotifyRequest) (*NotifyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Notify not implemented")
-}
-func (UnimplementedNotifyPluginServer) mustEmbedUnimplementedNotifyPluginServer() {}
-
-// UnsafeNotifyPluginServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to NotifyPluginServer will
-// result in compilation errors.
-type UnsafeNotifyPluginServer interface {
-	mustEmbedUnimplementedNotifyPluginServer()
-}
-
-func RegisterNotifyPluginServer(s grpc.ServiceRegistrar, srv NotifyPluginServer) {
-	s.RegisterService(&NotifyPlugin_ServiceDesc, srv)
-}
-
-func _NotifyPlugin_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMetadataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NotifyPluginServer).GetMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.NotifyPlugin/GetMetadata",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotifyPluginServer).GetMetadata(ctx, req.(*GetMetadataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NotifyPlugin_GetConfigSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetConfigSchemaRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NotifyPluginServer).GetConfigSchema(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.NotifyPlugin/GetConfigSchema",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotifyPluginServer).GetConfigSchema(ctx, req.(*GetConfigSchemaRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NotifyPlugin_Notify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NotifyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NotifyPluginServer).Notify(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/certimate.plugin.v1.NotifyPlugin/Notify",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotifyPluginServer).Notify(ctx, req.(*NotifyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// NotifyPlugin_ServiceDesc is the grpc.ServiceDesc for NotifyPlugin service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var NotifyPlugin_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "certimate.plugin.v1.NotifyPlugin",
-	HandlerType: (*NotifyPluginServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetMetadata",
-			Handler:    _NotifyPlugin_GetMetadata_Handler,
-		},
-		{
-			MethodName: "GetConfigSchema",
-			Handler:    _NotifyPlugin_GetConfigSchema_Handler,
-		},
-		{
-			MethodName: "Notify",
-			Handler:    _NotifyPlugin_Notify_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "plugin.proto",
 }

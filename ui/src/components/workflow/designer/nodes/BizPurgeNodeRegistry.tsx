@@ -3,7 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconBucketDroplet } from "@tabler/icons-react";
 import { Avatar } from "antd";
 
-import { purgeProvidersMap } from "@/domain/provider";
+import { getPurgeProvider } from "@/domain/purgeProvider";
 import { newNode } from "@/domain/workflow";
 
 import { BaseNode } from "./_shared";
@@ -51,8 +51,8 @@ export const BizPurgeNodeRegistry: NodeRegistry = {
                   <>
                     {value ? (
                       <>
-                        <div className="flex-1 truncate">{t(purgeProvidersMap.get(value)?.name ?? "")}</div>
-                        <Avatar shape="square" src={purgeProvidersMap.get(value)?.icon} size={20} />
+                        <div className="flex-1 truncate">{t(getPurgeProvider(value)?.name ?? value)}</div>
+                        {getPurgeProvider(value) ? <Avatar shape="square" src={getPurgeProvider(value)?.icon} size={20} /> : null}
                       </>
                     ) : (
                       t("workflow.detail.design.editor.placeholder")

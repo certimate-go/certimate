@@ -34,7 +34,7 @@ func (handler *ProviderSchemaHandler) getByProviderType(e *core.RequestEvent) er
 
 	category := providerschema.Category(e.Request.URL.Query().Get("category"))
 	switch category {
-	case "", providerschema.CategoryAccess, providerschema.CategoryDeploy, providerschema.CategoryApply, providerschema.CategoryNotify:
+	case "", providerschema.CategoryAccess, providerschema.CategoryDeploy, providerschema.CategoryApply, providerschema.CategoryNotify, providerschema.CategoryPurge:
 	default:
 		return resp.Err(e, domain.NewError(400, "invalid schema category"))
 	}

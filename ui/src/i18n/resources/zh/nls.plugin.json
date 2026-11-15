@@ -72,7 +72,8 @@
     "capability": {
       "deploy": "部署",
       "dns": "DNS",
-      "notify": "通知"
+      "notify": "通知",
+      "purge": "清除"
     },
     "job": {
       "installing": "安装中…",

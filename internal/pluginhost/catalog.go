@@ -13,6 +13,7 @@ import (
 
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
+	"github.com/certimate-go/certimate/internal/certmgmt/purgers"
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/internal/providerschema"
@@ -46,7 +47,7 @@ type CatalogEntry struct {
 	ProviderType         string                       `json:"providerType"`
 	AccessProviderType   string                       `json:"accessProviderType"`
 	OwnsAccess           bool                         `json:"ownsAccess"`
-	DeployCategory       string                       `json:"deployCategory"`
+	Category             string                       `json:"category"`
 	DisplayNameKey       string                       `json:"displayNameKey"`
 	AccessDisplayNameKey string                       `json:"accessDisplayNameKey"`
 	Icon                 string                       `json:"icon,omitempty"`
@@ -287,6 +288,8 @@ func (c *Catalog) addRuntimeCleanup(p *registeredPlugin) {
 		runtime.AddCleanup(f, removeRuntimeDirectory, dir)
 	case *pluginNotifierFactory:
 		runtime.AddCleanup(f, removeRuntimeDirectory, dir)
+	case *pluginPurgerFactory:
+		runtime.AddCleanup(f, removeRuntimeDirectory, dir)
 	}
 }
 
@@ -296,6 +299,8 @@ func (c *Catalog) registerFactoryLocked(name string, p *registeredPlugin) error 
 		return certifiers.ACMEDns01Registries.SetOwned(domain.ACMEDns01ProviderType(name), c.owner, p.newChallenger)
 	case plugin.CapabilityNotify:
 		return notifiers.Registries.SetOwned(domain.NotificationProviderType(name), c.owner, p.newNotifier)
+	case plugin.CapabilityPurge:
+		return purgers.Registries.SetOwned(domain.PurgeProviderType(name), c.owner, p.newPurger)
 	default:
 		return deployers.Registries.SetOwned(domain.DeploymentProviderType(name), c.owner, p.newDeployer)
 	}
@@ -307,6 +312,8 @@ func (c *Catalog) unregisterFactoryLocked(name string, p *registeredPlugin) {
 		certifiers.ACMEDns01Registries.RemoveOwned(domain.ACMEDns01ProviderType(name), c.owner)
 	case plugin.CapabilityNotify:
 		notifiers.Registries.RemoveOwned(domain.NotificationProviderType(name), c.owner)
+	case plugin.CapabilityPurge:
+		purgers.Registries.RemoveOwned(domain.PurgeProviderType(name), c.owner)
 	default:
 		deployers.Registries.RemoveOwned(domain.DeploymentProviderType(name), c.owner)
 	}

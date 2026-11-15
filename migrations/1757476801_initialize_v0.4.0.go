@@ -2,8 +2,6 @@ package migrations
 
 import (
 	"errors"
-	"os"
-	"strings"
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
@@ -1176,36 +1174,6 @@ func init() {
 
 			if err := app.ImportCollectionsByMarshaledJSON([]byte(jsonData), false); err != nil {
 				return err
-			}
-		}
-
-		// initialize superuser
-		{
-			collection, err := app.FindCollectionByNameOrId(core.CollectionNameSuperusers)
-			if err != nil {
-				return err
-			}
-
-			records, err := app.FindAllRecords(collection)
-			if err != nil {
-				return err
-			}
-
-			if len(records) == 0 {
-				envUsername := strings.TrimSpace(os.Getenv("CERTIMATE_ADMIN_USERNAME"))
-				if envUsername == "" {
-					envUsername = "admin@certimate.fun"
-				}
-
-				envPassword := strings.TrimSpace(os.Getenv("CERTIMATE_ADMIN_PASSWORD"))
-				if envPassword == "" {
-					envPassword = "1234567890"
-				}
-
-				record := core.NewRecord(collection)
-				record.Set("email", envUsername)
-				record.Set("password", envPassword)
-				return app.Save(record)
 			}
 		}
 

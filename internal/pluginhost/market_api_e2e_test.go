@@ -261,9 +261,22 @@ func TestE2E_CustomMarketsHTTP(t *testing.T) {
 	}
 
 	observed := make(chan string, 12)
+	purged := make(chan string, 4)
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var result struct{ Version, Message string }
+		var result struct {
+			Action         string          `json:"action"`
+			Version        string          `json:"version"`
+			Message        string          `json:"message"`
+			ExpirySeconds  int64           `json:"expirySeconds"`
+			ExtendedConfig json.RawMessage `json:"config"`
+		}
 		_ = json.NewDecoder(r.Body).Decode(&result)
+		if result.Action == "purge" {
+			purged <- fmt.Sprintf("%s:%s:%d:%s", r.Header.Get("Authorization"), result.Version, result.ExpirySeconds, result.ExtendedConfig)
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"count":2}`))
+			return
+		}
 		observed <- fmt.Sprintf("%s:%s:%s", r.Header.Get("Authorization"), result.Version, result.Message)
 	}))
 	defer upstream.Close()
@@ -339,6 +352,63 @@ func TestE2E_CustomMarketsHTTP(t *testing.T) {
 	}
 	notify(fixtureProvider, "1.0.0")
 	workflowNotify()
+
+	purgeList := page("?capability=purge")
+	purgeCard := card(purgeList, b.ID, fixturePurger)
+	if purgeList.TotalItems != 1 || purgeCard.Capability != "purge" || !purgeCard.CanInstall {
+		t.Fatalf("bad purge card: total=%d %+v", purgeList.TotalItems, purgeCard)
+	}
+	api.market("POST", "/install", map[string]string{"providerType": fixturePurger, "source": b.ID}, 0, "", nil)
+	waitMarketInstall(t, api, fixturePurger, b.ID, pluginhost.JobInstalled)
+	workflowPurge := func() {
+		t.Helper()
+		node := func(id, kind string, config map[string]any) map[string]any {
+			return map[string]any{"id": id, "type": kind, "data": map[string]any{"name": id, "config": config}}
+		}
+		graph := map[string]any{"nodes": []any{
+			node("start", "start", nil),
+			node("purge", "bizPurge", map[string]any{"provider": fixturePurger, "providerAccessId": access.ID, "providerConfig": map[string]any{"scope": "market"}, "expiredDays": 7}),
+			node("end", "end", nil),
+		}}
+		var workflow struct{ ID string }
+		if status := api.request("POST", "/api/collections/workflow/records", map[string]any{
+			"name": "Market purge workflow", "trigger": "manual", "enabled": true,
+			"hasContent": true, "hasDraft": false, "graphContent": graph, "graphDraft": graph,
+		}, &workflow); status != 200 || workflow.ID == "" {
+			t.Fatalf("save purge workflow: HTTP %d", status)
+		}
+		var started struct {
+			Code int
+			Msg  string
+			Data struct{ RunID string }
+		}
+		if status := api.request("POST", "/api/workflows/"+workflow.ID+"/runs", map[string]string{"trigger": "manual"}, &started); status != 200 || started.Code != 0 || started.Data.RunID == "" {
+			t.Fatalf("start purge workflow: HTTP %d %+v", status, started)
+		}
+		for deadline := time.Now().Add(10 * time.Second); time.Now().Before(deadline); {
+			var run struct{ Status, Error string }
+			if status := api.request("GET", "/api/collections/workflow_run/records/"+started.Data.RunID, nil, &run); status != 200 {
+				t.Fatalf("get purge run: HTTP %d", status)
+			}
+			switch run.Status {
+			case "succeeded":
+				select {
+				case got := <-purged:
+					if got != `Bearer fixture-token:1.0.0:604800:{"scope":"market"}` {
+						t.Fatalf("purge dispatch: %s", got)
+					}
+				default:
+					t.Fatal("market-installed purger did not receive the purge request")
+				}
+				return
+			case "failed", "canceled":
+				t.Fatalf("purge workflow did not succeed: %+v", run)
+			}
+			time.Sleep(50 * time.Millisecond)
+		}
+		t.Fatal("purge workflow did not complete")
+	}
+	workflowPurge()
 	stop()
 	anonymous, _ = startMarketFixture(t, state)
 	api = anonymous.login(fixtureEmail)
@@ -385,6 +455,7 @@ func TestE2E_CustomMarketsHTTP(t *testing.T) {
 	api.market("POST", "/update/fixture-legacy", nil, 0, "", nil)
 	api.market("POST", "/update/fixture-manual", nil, 409, "ownership_conflict", nil)
 	api.market("DELETE", "/"+fixtureConsumer+"?source="+b.ID, nil, 0, "", nil)
+	api.market("DELETE", "/"+fixturePurger+"?source="+b.ID, nil, 0, "", nil)
 	api.market("DELETE", "/sources/"+a.ID, nil, 0, "", nil)
 	api.market("DELETE", "/"+fixtureProvider+"?source="+a.ID, nil, 0, "", nil)
 	if _, err := os.Stat(filepath.Join(state, "plugins", fixtureProvider)); !os.IsNotExist(err) {

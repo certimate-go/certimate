@@ -4,7 +4,7 @@ import (
 	githubplugin "github.com/hashicorp/go-plugin"
 )
 
-const ProtocolVersion = 3
+const ProtocolVersion = 4
 
 const MagicCookieKey = "CERTIMATE_PLUGIN"
 
