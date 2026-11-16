@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
+	"strings"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
 	hwaadmodelv1 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/aad/v1/model"
