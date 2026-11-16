@@ -18,14 +18,15 @@ import (
 )
 
 type MarketQuery struct {
-	Page       int
-	PerPage    int
-	Keyword    string
-	Status     string
-	Capability string
-	Locale     string
-	Refresh    bool
-	Source     string
+	Page         int
+	PerPage      int
+	Keyword      string
+	Status       string
+	Capability   string
+	Locale       string
+	Refresh      bool
+	Source       string
+	ProviderType string
 }
 
 type MarketCard struct {
@@ -40,7 +41,7 @@ type MarketCard struct {
 
 	ProviderType   string     `json:"provider_type"`
 	DisplayNameKey string     `json:"display_name_key"`
-	DeployCategory string     `json:"deploy_category"`
+	Category        string     `json:"category"`
 	Capability     string     `json:"capability,omitempty"`
 	Version        string     `json:"version"`
 	Description    string     `json:"description"`
@@ -125,6 +126,9 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 	keyword := strings.ToLower(strings.TrimSpace(query.Keyword))
 	matches := make([]MarketCard, 0)
 	include := func(card MarketCard, mm *plugin.MarketManifest, owns bool) {
+		if query.ProviderType != "" && (card.ProviderType != query.ProviderType || card.Source.ID != query.Source) {
+			return
+		}
 		if query.Source != "" && card.Source.ID != query.Source {
 			return
 		}
@@ -233,7 +237,7 @@ func newMarketCard(mm *plugin.MarketManifest, source plugin.MarketSource) Market
 	return MarketCard{
 		Source: source, Official: source == plugin.OfficialMarketSource(),
 		ProviderType: mm.ProviderType, DisplayNameKey: mm.DisplayNameKey,
-		DeployCategory: mm.DeployCategory, Capability: capability, Version: mm.Version, Description: mm.Description,
+		Category: mm.Category, Capability: capability, Version: mm.Version, Description: mm.Description,
 	}
 }
 

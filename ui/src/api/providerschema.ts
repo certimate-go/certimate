@@ -1,6 +1,6 @@
 import { get as httpGet } from "./_api";
 
-export type SchemaCategory = "deploy" | "access" | "apply" | "notify";
+export type SchemaCategory = "deploy" | "access" | "apply" | "notify" | "purge";
 
 export type SchemaFilterMode = "fuzzy" | "prefix" | "none";
 

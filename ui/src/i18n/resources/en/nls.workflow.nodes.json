@@ -87,7 +87,7 @@
         "option": {
           "domain": {
             "label": "Domains",
-            "description": "<ul style=\"margin: 0;\"><li>Supports single-domain, multi-domain and wildcard domains (Depends on CA).</li><li>Supports DNS-01 or HTTP-01 challenge.</li></ul>"
+            "description": "<ul style=\"margin: 0;\"><li>Supports single-domain, multi-domain and wildcard domains (Depends on CA).</li><li>Supports DNS-01, HTTP-01 or experimental DNS-PERSIST-01 challenge.</li></ul>"
           },
           "ip": {
             "label": "IP addresses",
@@ -129,7 +129,7 @@
           "no_wildcard_in_http01": "Could not use HTTP-01 challenge to request wildcard domain certificates.",
           "no_ip_in_dns01": "Could not use DNS-01 challenge to request IP address certificates."
         },
-        "tooltip": "It determines how the CAs verifies your control over the domain names. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Click here to learn more</a>."
+        "tooltip": "It determines how the CAs verifies your control over the domain names. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Click here to learn more</a>.<br><br>DNS-PERSIST-01 (Experimental): authorize an ACME account with persistent TXT records that you manage manually."
       },
       "provider": {
         "label": "Provider",
@@ -345,6 +345,28 @@
         "label": "UCloud API endpoint (Optional)",
         "placeholder": "Please enter UCloud UDNR API endpoint (e.g. api.ucloud-global.com)",
         "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
+      "dns_persist": {
+        "label": "DNS-PERSIST-01 (Experimental)",
+        "description": "Initial target: Google Trust Services. Custom ACME CAs must offer a compatible challenge. This feature uses an evolving draft, so compatibility may change.",
+        "instructions": "Select the domains, CA and contact email, then generate the TXT records. Add them in your DNS console and keep them for renewal. DNS provider credentials are not needed. Issuance checks the records again.",
+        "saved_binding": "This node has a saved ACME account binding. Generate again to view its TXT records.",
+        "generate": "Generate TXT records",
+        "check": "Check TXT records",
+        "failed": "Unable to complete this step. Review the error and retry.",
+        "account": "ACME account URL",
+        "name": "Record name",
+        "value": "Record value",
+        "ready": "All TXT records are ready. Keep them in DNS for future renewals.",
+        "not_ready": "Some TXT records are not ready. Update them or wait for DNS propagation, then check again.",
+        "binding_required": "Generate TXT records to bind an ACME account before saving.",
+        "no_ip": "DNS-PERSIST-01 supports domain names only.",
+        "status": {
+          "ready": "Ready",
+          "missing": "Missing",
+          "mismatch": "Value mismatch",
+          "lookup_failed": "DNS lookup failed"
+        }
       }
     }
   },
@@ -1571,6 +1593,7 @@
           "placeholder": "Search hosting provider ..."
         }
       },
+      "unavailable": "Plugin is not installed or unavailable. Install it from the plugin market before saving",
       "provider_access": {
         "label": "Hosting provider credential",
         "placeholder": "Please select an credential of the hosting provider",
@@ -1582,102 +1605,6 @@
         "prefix": "Perform purge if the certificate has expired ≥",
         "suffix": ".",
         "unit": "days"
-      },
-      "aliyun_cas_region": {
-        "label": "Alibaba Cloud region",
-        "placeholder": "Please enter Alibaba Cloud CAS region (e.g. cn-hangzhou)",
-        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints\" target=\"_blank\">https://www.alibabacloud.com/help/en/ssl-certificate/developer-reference/endpoints</a>"
-      },
-      "aliyun_clb_region": {
-        "label": "Alibaba Cloud region",
-        "placeholder": "Please enter Alibaba Cloud CLB region (e.g. cn-hangzhou)",
-        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb\" target=\"_blank\">https://www.alibabacloud.com/help/en/slb/classic-load-balancer/product-overview/regions-that-support-clb</a>"
-      },
-      "aliyun_esa_region": {
-        "label": "Alibaba Cloud region",
-        "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
-        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint\" target=\"_blank\">https://www.alibabacloud.com/help/en/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint</a>"
-      },
-      "aliyun_esa_site_id": {
-        "label": "Alibaba Cloud ESA site ID",
-        "placeholder": "Please enter Alibaba Cloud ESA site ID",
-        "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
-      },
-      "aws_acm_region": {
-        "label": "AWS Region",
-        "placeholder": "Please enter AWS ACM region (e.g. us-east-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
-      },
-      "aws_iam_region": {
-        "label": "AWS Region",
-        "placeholder": "Please enter AWS IAM region (e.g. us-east-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints\" target=\"_blank\">https://docs.aws.amazon.com/en_us/general/latest/gr/rande.html#regional-endpoints</a>"
-      },
-      "aws_iam_certificate_path": {
-        "label": "AWS IAM certificate path (Optional)",
-        "placeholder": "Please enter AWS IAM certificate path",
-        "errmsg": {
-          "invalid": "Invalid certificate path"
-        },
-        "tooltip": "For more information, see <a href=\"https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/IAM/latest/UserGuide/reference_identifiers.html</a>"
-      },
-      "azure_keyvault_name": {
-        "label": "Azure KeyVault name",
-        "placeholder": "Please enter Azure KeyVault name",
-        "tooltip": "For more information, see <a href=\"https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates\" target=\"_blank\">https://learn.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates</a>"
-      },
-      "huaweicloud_elb_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/elb</a>"
-      },
-      "huaweicloud_waf_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/waf</a>"
-      },
-      "tencentcloud_gaap_endpoint": {
-        "label": "Tencent Cloud API endpoint (Optional)",
-        "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
-      },
-      "tencentcloud_ssl_endpoint": {
-        "label": "Tencent Cloud API endpoint (Optional)",
-        "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
-      },
-      "tencentcloud_tse_endpoint": {
-        "label": "Tencent Cloud API endpoint (Optional)",
-        "placeholder": "Please enter Tencent Cloud TSE API endpoint (e.g. tse.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
-      },
-      "tencentcloud_tse_region": {
-        "label": "Tencent Cloud region",
-        "placeholder": "Please enter Tencent Cloud TSE region (e.g. ap-guangzhou)",
-        "tooltip": "For more information, see <a href=\"https://www.tencentcloud.com/document/product/1290/79214\" target=\"_blank\">https://www.tencentcloud.com/document/product/1290/79214</a>"
-      },
-      "tencentcloud_tse_service_type": {
-        "label": "Tencent Cloud TSE service type",
-        "placeholder": "Please select Tencent Cloud TSE service type",
-        "option": {
-          "cloudnative": {
-            "label": "Cloud-native API gateway"
-          }
-        }
-      },
-      "tencentcloud_tse_gateway_id": {
-        "label": "Tencent Cloud TSE Cloud-native API gateway ID",
-        "placeholder": "Please enter Tencent Cloud TSE Cloud-native API gateway ID",
-        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/rcc/governance\" target=\"_blank\">https://console.tencentcloud.com/rcc/governance</a>"
-      },
-      "ucloud_ussl_endpoint": {
-        "label": "UCloud API endpoint (Optional)",
-        "placeholder": "Please enter UCloud USSL API endpoint (e.g. api.ucloud-global.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
-      },
-      "volcengine_certcenter_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine Certificate Center region (e.g. cn-beijing)"
       }
     }
   },

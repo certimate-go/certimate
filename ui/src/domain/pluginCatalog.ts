@@ -6,6 +6,7 @@ import {
   acmeDns01ProvidersMap,
   deploymentProvidersMap,
   notificationProvidersMap,
+  purgeProvidersMap,
 } from "@/domain/provider";
 import i18n from "@/i18n";
 
@@ -40,6 +41,9 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
   for (const [key, val] of notificationProvidersMap) {
     if (val.source === "plugin") notificationProvidersMap.delete(key);
   }
+  for (const [key, val] of purgeProvidersMap) {
+    if (val.source === "plugin") purgeProvidersMap.delete(key);
+  }
   for (const [key, val] of accessProvidersMap) {
     if (val.source === "plugin") accessProvidersMap.delete(key);
   }
@@ -71,6 +75,17 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
           source: "plugin",
         });
       }
+    } else if (entry.capability === "purge") {
+      if (entry.providerType && !purgeProvidersMap.has(entry.providerType)) {
+        purgeProvidersMap.set(entry.providerType, {
+          type: entry.providerType as never,
+          provider: accessType as never,
+          name: entry.displayNameKey || `${pluginNamespace(entry.providerType)}.name`,
+          icon: entry.icon || PLUGIN_PLACEHOLDER_ICON,
+          builtin: false,
+          source: "plugin",
+        });
+      }
     } else if (entry.providerType && !deploymentProvidersMap.has(entry.providerType)) {
       deploymentProvidersMap.set(entry.providerType, {
         type: entry.providerType as never,
@@ -79,7 +94,7 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
         icon: entry.icon || PLUGIN_PLACEHOLDER_ICON,
         builtin: false,
         source: "plugin",
-        category: (entry.deployCategory as never) || DEPLOYMENT_CATEGORIES.OTHER,
+        category: (entry.category as never) || DEPLOYMENT_CATEGORIES.OTHER,
       });
     }
 

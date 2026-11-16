@@ -124,7 +124,7 @@ func (r *envelopeRegistry) GetEnvelope(name string, categories ...Category) (*En
 		env, ok := r.envelopes[envelopeKey{name, categories[0]}]
 		return env, ok
 	}
-	for _, category := range []Category{CategoryDeploy, CategoryAccess, CategoryApply, CategoryNotify, ""} {
+	for _, category := range []Category{CategoryDeploy, CategoryAccess, CategoryApply, CategoryNotify, CategoryPurge, ""} {
 		if env, ok := r.envelopes[envelopeKey{name, category}]; ok {
 			return env, true
 		}

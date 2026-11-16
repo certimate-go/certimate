@@ -13,6 +13,7 @@ import (
 type ACMEClient struct {
 	client  *lego.Client
 	account *ACMEAccount
+	config  *lego.Config
 }
 
 // Deprecated: use [NewACMEClientWithAccount] instead.
@@ -64,5 +65,6 @@ func newACMEClientWithAccount(account *ACMEAccount, configures ...func(*lego.Con
 	return &ACMEClient{
 		client:  legoClient,
 		account: account,
+		config:  legoCfg,
 	}, nil
 }

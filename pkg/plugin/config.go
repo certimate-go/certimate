@@ -3,22 +3,24 @@ package plugin
 import "time"
 
 const (
-	defaultMinPort       = 10000
-	defaultMaxPort       = 25000
-	defaultStartTimeout  = 10 * time.Second
-	defaultDeployTimeout = 30 * time.Minute
-	defaultMaxLogFrames  = 1000
+	defaultMinPort           = 10000
+	defaultMaxPort           = 25000
+	defaultStartTimeout      = 10 * time.Second
+	defaultProcessTimeout    = 30 * time.Minute
+	defaultPostProcessTimeout = 30 * time.Second
+	defaultMaxLogFrames      = 1000
 )
 
 type PluginConfig struct {
-	PluginDir     string
-	MinPort       uint
-	MaxPort       uint
-	StartTimeout  time.Duration
-	DeployTimeout time.Duration
-	MaxLogFrames  int
-	LogLevel      string
-	CoreVersion   string
+	PluginDir          string
+	MinPort            uint
+	MaxPort            uint
+	StartTimeout       time.Duration
+	ProcessTimeout     time.Duration
+	PostProcessTimeout time.Duration
+	MaxLogFrames       int
+	LogLevel           string
+	CoreVersion        string
 }
 
 func (c *PluginConfig) defaults() {
@@ -34,8 +36,11 @@ func (c *PluginConfig) defaults() {
 	if c.StartTimeout == 0 {
 		c.StartTimeout = defaultStartTimeout
 	}
-	if c.DeployTimeout == 0 {
-		c.DeployTimeout = defaultDeployTimeout
+	if c.ProcessTimeout == 0 {
+		c.ProcessTimeout = defaultProcessTimeout
+	}
+	if c.PostProcessTimeout == 0 {
+		c.PostProcessTimeout = defaultPostProcessTimeout
 	}
 	if c.MaxLogFrames == 0 {
 		c.MaxLogFrames = defaultMaxLogFrames

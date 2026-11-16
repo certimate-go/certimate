@@ -30,7 +30,7 @@ export const marketConflictSchema = z.object({
 const marketEntrySchema = z.object({
   provider_type: z.string(),
   display_name_key: z.string(),
-  deploy_category: z.string(),
+  category: z.string(),
   capability: z.string().optional(),
   version: z.string(),
   description: z.string(),
@@ -49,7 +49,7 @@ export type MarketEntry = z.infer<typeof marketEntryWithJobSchema>;
 
 export type MarketFilter = "all" | "installed" | "not_installed";
 
-export type MarketCapabilityFilter = "all" | "deploy" | "dns" | "notify";
+export type MarketCapabilityFilter = "all" | "deploy" | "dns" | "notify" | "purge";
 
 export interface MarketQuery {
   page: number;
@@ -60,6 +60,7 @@ export interface MarketQuery {
   locale: string;
   refresh: boolean;
   source: string;
+  providerType?: string;
 }
 
 const reloadResultSchema = z.object({
@@ -112,6 +113,7 @@ export const fetchMarketListing = async (query: MarketQuery): Promise<MarketPage
     refresh: String(query.refresh),
     source: query.source,
   });
+  if (query.providerType) params.set("providerType", query.providerType);
   const resp = await httpGet<unknown>({ url: `/api/plugin/market?${params}` });
   return marketPageSchema.parse(resp.data);
 };

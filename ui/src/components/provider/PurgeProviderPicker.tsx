@@ -1,9 +1,11 @@
-﻿import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+﻿import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Card, Divider, Empty, Input, type InputRef, Tooltip, Typography } from "antd";
 
 import Show from "@/components/Show";
-import { type PurgeProvider, purgeProvidersMap } from "@/domain/provider";
+import { type PurgeProvider } from "@/domain/provider";
+import { listPurgeProviders } from "@/domain/purgeProvider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { mergeCls } from "@/utils/css";
 
 import { type SharedPickerProps, usePickerDataSource, usePickerWrapperCols } from "./_shared";
@@ -20,13 +22,17 @@ const PurgeProviderPicker = forwardRef<PurgeProviderPickerInstance, PurgeProvide
   ({ className, style, gap = "medium", placeholder, showAvailability = false, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
+    const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
+
     const { wrapperElRef, cols } = usePickerWrapperCols(320);
 
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
+    const allProviders = useMemo(() => listPurgeProviders(), [pluginCatalogVersion]);
+
     const dataSources = usePickerDataSource({
-      dataSource: Array.from(purgeProvidersMap.values()),
+      dataSource: allProviders,
       filters: [onFilter!],
       keyword: keyword,
     });

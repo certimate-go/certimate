@@ -21,30 +21,40 @@ type PurgeCertificateRequest struct {
 	Expiry time.Duration
 }
 
-type PurgeCertificateResponse struct{}
+type PurgeCertificateResponse struct {
+	Count int
+}
 
 func (c *Client) PurgeCertificate(ctx context.Context, request *PurgeCertificateRequest) (*PurgeCertificateResponse, error) {
 	if request == nil {
 		return nil, fmt.Errorf("the request is nil")
 	}
+	if request.Expiry < 0 {
+		return nil, fmt.Errorf("the expiry must not be negative, got %s", request.Expiry)
+	}
 
-	providerFactory, err := purgers.Registries.Get(request.Provider)
+	provider := domain.ResolvePurgeProviderAlias(request.Provider)
+	providerFactory, err := purgers.Registries.Get(provider)
 	if err != nil {
 		return nil, err
 	}
 
-	provider, err := providerFactory(&purgers.ProviderFactoryOptions{
+	providerImpl, err := providerFactory(&purgers.ProviderFactoryOptions{
 		ProviderAccessConfig:   request.ProviderAccessConfig,
 		ProviderExtendedConfig: request.ProviderExtendedConfig,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize purge provider '%s': %w", request.Provider, err)
+		return nil, fmt.Errorf("failed to initialize purge provider '%s': %w", provider, err)
 	}
 
-	provider.SetLogger(c.logger)
-	if _, err := provider.Purge(ctx, request.Expiry); err != nil {
+	providerImpl.SetLogger(c.logger)
+	purgeRes, err := providerImpl.Purge(ctx, request.Expiry)
+	if err != nil {
 		return nil, err
 	}
+	if purgeRes == nil {
+		return nil, fmt.Errorf("purge provider '%s' returned no result", provider)
+	}
 
-	return &PurgeCertificateResponse{}, nil
+	return &PurgeCertificateResponse{Count: purgeRes.Count}, nil
 }

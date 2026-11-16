@@ -18,12 +18,14 @@ const (
 	CapabilityDeploy = "deploy"
 	CapabilityDns    = "dns"
 	CapabilityNotify = "notify"
+	CapabilityPurge  = "purge"
 )
 
 var validCapabilities = map[string]bool{
 	CapabilityDeploy: true,
 	CapabilityDns:    true,
 	CapabilityNotify: true,
+	CapabilityPurge:  true,
 }
 
 func IsValidCapability(capability string) bool {
@@ -36,7 +38,7 @@ type Manifest struct {
 	AccessProviderType string   `json:"access_provider_type"`
 	Capability         string   `json:"capability"`
 	DisplayNameKey     string   `json:"display_name_key"`
-	DeployCategory     string   `json:"deploy_category"`
+	Category           string   `json:"category"`
 	ProtocolVersion    uint32   `json:"protocol_version"`
 	MinCoreVersion     string   `json:"min_core_version"`
 	MaxCoreVersion     string   `json:"max_core_version"`
@@ -85,7 +87,7 @@ func parseCapabilityField(raw json.RawMessage) (string, error) {
 		if len(multiple) == 1 {
 			return multiple[0], nil
 		}
-		return "", fmt.Errorf("capability must declare exactly one of deploy, dns, notify (got %d)", len(multiple))
+		return "", fmt.Errorf("capability must declare exactly one of deploy, dns, notify, purge (got %d)", len(multiple))
 	}
 	return "", fmt.Errorf("capability must be a string or a single-element array")
 }
@@ -99,7 +101,7 @@ func (m *Manifest) Validate() error {
 		problems = append(problems, "access_provider_type must not be empty")
 	}
 	if !validCapabilities[m.Capability] {
-		problems = append(problems, fmt.Sprintf("capability must be one of deploy, dns, notify (got %q)", m.Capability))
+		problems = append(problems, fmt.Sprintf("capability must be one of deploy, dns, notify, purge (got %q)", m.Capability))
 	}
 	if m.Binary == "" {
 		problems = append(problems, "binary must not be empty")

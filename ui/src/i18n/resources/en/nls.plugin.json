@@ -72,7 +72,8 @@
     "capability": {
       "deploy": "Deploy",
       "dns": "DNS",
-      "notify": "Notify"
+      "notify": "Notify",
+      "purge": "Purge"
     },
     "job": {
       "installing": "Installing…",

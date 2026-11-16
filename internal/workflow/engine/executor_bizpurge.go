@@ -3,7 +3,6 @@ package engine
 import (
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/certimate-go/certimate/internal/certmgmt"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -26,6 +25,12 @@ func (ne *bizPurgeNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 	nodeCfg := execCtx.Node.Data.Config.AsBizPurge()
 	ne.logger.Info("ready to purge certificate ...", slog.Any("config", nodeCfg))
 
+	expiry, err := domain.ParsePurgeExpiryDuration(execCtx.Node.Data.Config["expiredDays"])
+	if err != nil {
+		ne.logger.Warn("invalid expired days", slog.Any("error", err))
+		return nil, err
+	}
+
 	// 读取清除提供商授权
 	providerAccessConfig := make(map[string]any)
 	if nodeCfg.ProviderAccessId != "" {
@@ -42,9 +47,10 @@ func (ne *bizPurgeNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		Provider:               domain.PurgeProviderType(nodeCfg.Provider),
 		ProviderAccessConfig:   providerAccessConfig,
 		ProviderExtendedConfig: nodeCfg.ProviderConfig,
-		Expiry:                 time.Duration(nodeCfg.ExpiredDays) * time.Hour * 24,
+		Expiry:                 expiry,
 	}
-	if _, err := purger.PurgeCertificate(execCtx.Context(), purgeReq); err != nil {
+	purgeRes, err := purger.PurgeCertificate(execCtx.Context(), purgeReq)
+	if err != nil {
 		ne.logger.Warn("could not purge certificate")
 		return execRes, err
 	}
@@ -52,7 +58,7 @@ func (ne *bizPurgeNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 	// 节点输出
 	execRes.AddVariableWithScope(execCtx.Node.Id, stateVarKeyNodeSkipped, false, stateValTypeBoolean)
 
-	ne.logger.Info("purge completed")
+	ne.logger.Info("purge completed", slog.Int("count", purgeRes.Count))
 	return execRes, nil
 }
 

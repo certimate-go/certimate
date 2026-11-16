@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
-import { type PurgeProvider, purgeProvidersMap } from "@/domain/provider";
+import { type PurgeProvider } from "@/domain/provider";
+import { getPurgeProvider, listPurgeProviders } from "@/domain/purgeProvider";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { matchSearchOption } from "@/utils/search";
 
 import { type SharedSelectProps, useSelectDataSource } from "./_shared";
@@ -16,8 +18,12 @@ const PurgeProviderSelect = ({ showAvailability = false, onFilter, ...props }: P
 
   const { token: themeToken } = theme.useToken();
 
+  const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
+
+  const allProviders = useMemo(() => listPurgeProviders(), [pluginCatalogVersion]);
+
   const dataSources = useSelectDataSource({
-    dataSource: Array.from(purgeProvidersMap.values()),
+    dataSource: allProviders,
     filters: [onFilter!],
   });
   const options = useMemo(() => {
@@ -45,11 +51,11 @@ const PurgeProviderSelect = ({ showAvailability = false, onFilter, ...props }: P
   }, [showAvailability, dataSources]);
 
   const renderOption = (key: string) => {
-    const provider = purgeProvidersMap.get(key);
+    const provider = getPurgeProvider(key);
     return (
       <div className="flex items-center gap-2 truncate overflow-hidden">
-        <Avatar shape="square" src={provider?.icon} size="small" />
-        <Typography.Text ellipsis>{t(provider?.name ?? "")}</Typography.Text>
+        {provider ? <Avatar shape="square" src={provider?.icon} size="small" /> : null}
+        <Typography.Text ellipsis>{provider ? t(provider.name) : key}</Typography.Text>
       </div>
     );
   };

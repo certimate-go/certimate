@@ -6,7 +6,7 @@ export interface PluginCatalogEntry {
   providerType: string;
   accessProviderType: string;
   ownsAccess: boolean;
-  deployCategory: string;
+  category: string;
   displayNameKey: string;
   accessDisplayNameKey: string;
   icon?: string;

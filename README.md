@@ -88,12 +88,21 @@ docker run -d \
 
 Visit `http://127.0.0.1:8090` in your browser.
 
-Default administrator account:
+On the first launch there is no default administrator account. Certimate prints a one-time initialization token to the startup console (for Docker, check it with `docker logs certimate`), valid for 30 minutes. Open the site, enter the token together with your own email and password to create the administrator account, then log in as usual. If the token expires, restart Certimate to get a new one.
 
-- Username: `admin@certimate.fun`
-- Password: `1234567890`
+For unattended deployments, preset the credentials via environment variables before the first start — both variables must be provided together, otherwise the startup fails:
 
-Work with Certimate right now. Or read other content in the documentation to learn more.
+```bash
+CERTIMATE_ADMIN_USERNAME=admin@example.com \
+CERTIMATE_ADMIN_PASSWORD='your-password' \
+./certimate serve
+```
+
+Notes:
+
+- `certimate migrate up` only applies migrations; it never creates an administrator. Use `certimate superuser upsert EMAIL PASS` on the data directory if you need explicit CLI provisioning or recovery (for example when running as a Windows service whose console output is unavailable).
+- Instances upgraded from previous versions keep their existing administrator accounts, including accounts still using the historical default credentials; the setup entry stays closed and nothing is reset or overwritten.
+- Environment variables are ignored once an administrator exists.
 
 ## 📄 Documentation
 

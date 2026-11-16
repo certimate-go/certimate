@@ -59,7 +59,7 @@ func setupPluginDir(t *testing.T, providerType, accessType string) (string, *plu
 		"access_provider_type": accessType,
 		"capability":           plugin.CapabilityDeploy,
 		"display_name_key":     "plugin." + providerType + ".name",
-		"deploy_category":      "other",
+		"category":             "other",
 		"protocol_version":     plugin.ProtocolVersion,
 		"binary":               "fakeplugin",
 	}

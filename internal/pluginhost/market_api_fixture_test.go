@@ -23,6 +23,7 @@ import (
 	"github.com/certimate-go/certimate/internal/pluginhost/internal/markettest"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/routes"
+	"github.com/certimate-go/certimate/internal/setup"
 	_ "github.com/certimate-go/certimate/migrations"
 	"github.com/certimate-go/certimate/pkg/plugin"
 	"github.com/certimate-go/certimate/ui"
@@ -37,6 +38,7 @@ const (
 	fixtureRepoB          = "fixture-b/plugins"
 	fixtureConsumer       = "market-consumer"
 	fixtureDuplicateOwner = "market-duplicate-owner"
+	fixturePurger         = "market-purger"
 )
 
 type fixtureTransport func(*http.Request) (*http.Response, error)
@@ -142,7 +144,7 @@ func TestMarketBrowserFixture(t *testing.T) {
 	a1 := makeFixtureRelease("fixture-a/releases", notifyRelease(fixtureProvider, fixtureAccess, "1.0.0", "", false))
 	a2 := makeFixtureRelease("fixture-a/releases", notifyRelease(fixtureProvider, fixtureAccess, "2.0.0", "", false))
 	broken := makeFixtureRelease("fixture-a/releases", notifyRelease(fixtureProvider, fixtureAccess, "2.0.0", "broken fixture", false))
-	b := makeFixtureRelease("fixture-b/releases", notifyRelease(fixtureProvider, fixtureAccess, "9.0.0", "", false), notifyRelease(fixtureConsumer, fixtureAccess, "1.0.0", "", true), notifyRelease(fixtureDuplicateOwner, fixtureAccess, "1.0.0", "", false))
+	b := makeFixtureRelease("fixture-b/releases", notifyRelease(fixtureProvider, fixtureAccess, "9.0.0", "", false), notifyRelease(fixtureConsumer, fixtureAccess, "1.0.0", "", true), notifyRelease(fixtureDuplicateOwner, fixtureAccess, "1.0.0", "", false), buildMarketReleaseCapability(t, fixturePurger, fixtureAccess, "1.0.0", "", true, plugin.CapabilityPurge))
 	official := makeFixtureRelease("certimate-go/plugins", buildMarketRelease(t, "fixture-legacy", "1.0.0", ""), buildMarketRelease(t, "fixture-manual", "1.0.0", ""))
 	var mu sync.RWMutex
 	currentA := a1
@@ -233,7 +235,7 @@ func TestMarketBrowserFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	routes.BindRouter(router)
+	routes.BindRouter(router, setup.NewService(pb))
 	router.GET("/{path...}", apis.Static(ui.DistDirFS, false))
 	mux, err := router.BuildMux()
 	if err != nil {

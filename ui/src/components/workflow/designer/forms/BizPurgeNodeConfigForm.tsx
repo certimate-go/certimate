@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { IconPlus } from "@tabler/icons-react";
@@ -6,6 +6,7 @@ import { type AnchorProps, Button, Divider, Form, type FormInstance, InputNumber
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
 import AccessEditDrawer from "@/components/access/AccessEditDrawer";
 import AccessSelect from "@/components/access/AccessSelect";
 import PurgeProviderPicker from "@/components/provider/PurgeProviderPicker";
@@ -13,10 +14,11 @@ import PurgeProviderSelect from "@/components/provider/PurgeProviderSelect";
 import Show from "@/components/Show";
 import Tips from "@/components/Tips";
 import { type AccessModel } from "@/domain/access";
-import { purgeProvidersMap } from "@/domain/provider";
+import { getPurgeProvider, normalizePurgeProviderType, resolvePurgeProvider } from "@/domain/purgeProvider";
 import { type WorkflowNodeConfigForBizPurge, defaultNodeConfigForBizPurge } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
+import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 import { FormNestedFieldsContextProvider, NodeFormContextProvider } from "./_context";
 import BizPurgeNodeConfigFieldsProvider from "./BizPurgeNodeConfigFieldsProvider";
@@ -34,10 +36,12 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
 
   const { i18n, t } = useTranslation();
 
+  const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
+
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
   const accessOptionFilter = (_: string, option: AccessModel) => {
     if (option.reserve) return false;
-    return purgeProvidersMap.get(fieldProvider)?.provider === option.provider;
+    return getPurgeProvider(fieldProvider)?.provider === option.provider;
   };
 
   const initialValues = useMemo(() => {
@@ -55,12 +59,43 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
   const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
   const fieldProviderAccessId = Form.useWatch("providerAccessId", { form: formInst, preserve: true });
 
+  const [providerSchemaUnavailable, setProviderSchemaUnavailable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!fieldProvider || getPurgeProvider(fieldProvider)?.source !== "plugin") {
+      setProviderSchemaUnavailable(false);
+      return;
+    }
+
+    setProviderSchemaUnavailable(true);
+    void getProviderSchema(resolvePurgeProvider(fieldProvider), "purge").then((envelope: ProviderSchemaEnvelope | null) => {
+      if (!cancelled) {
+        setProviderSchemaUnavailable(envelope == null);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [fieldProvider, pluginCatalogVersion]);
+
+  useEffect(() => {
+    if (!fieldProvider) {
+      return;
+    }
+
+    const normalized = normalizePurgeProviderType(fieldProvider);
+    if (normalized !== fieldProvider) {
+      formInst.setFieldValue("provider", normalized);
+    }
+  }, [fieldProvider, pluginCatalogVersion]);
+
   const renderNestedFieldProviderComponent = BizPurgeNodeConfigFieldsProvider.useComponent(fieldProvider, {});
 
   const showProviderAccess = useMemo(() => {
     // 内置的清除提供商无需显示授权信息字段
     if (fieldProvider) {
-      const provider = purgeProvidersMap.get(fieldProvider);
+      const provider = getPurgeProvider(fieldProvider);
       return !provider?.builtin;
     }
 
@@ -78,7 +113,7 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
     if (fieldProvider && !fieldProviderAccessId) {
       const availableAccesses = accesses
         .filter((access) => accessOptionFilter(access.provider, access))
-        .filter((access) => purgeProvidersMap.get(fieldProvider)?.provider === access.provider);
+        .filter((access) => getPurgeProvider(fieldProvider)?.provider === access.provider);
       if (availableAccesses.length === 1) {
         formInst.setFieldValue("providerAccessId", availableAccesses[0].id);
       }
@@ -129,7 +164,11 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
               </Typography.Text>
             </Divider>
 
-            <Form.Item name="provider" label={t("workflow_node.purge.form.provider.label")} rules={[formRule]}>
+            <Form.Item
+              name="provider"
+              label={t("workflow_node.purge.form.provider.label")}
+              rules={[formRule, purgeSchemaUnavailableRule(t)("workflow_node.purge.form.provider.unavailable")(providerSchemaUnavailable)]}
+            >
               <PurgeProviderSelect
                 allowClear
                 disabled={!!initialValues?.provider}
@@ -144,7 +183,7 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
             <Form.Item className="relative" hidden={!showProviderAccess} label={t("workflow_node.purge.form.provider_access.label")}>
               <div className="absolute -top-1.5 right-0 -translate-y-full">
                 <AccessEditDrawer
-                  data={{ provider: purgeProvidersMap.get(fieldProvider!)?.provider }}
+                  data={{ provider: getPurgeProvider(fieldProvider)?.provider }}
                   mode="create"
                   trigger={
                     <Button size="small" type="link">
@@ -155,7 +194,7 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
                   usage="hosting"
                   afterSubmit={(record) => {
                     if (!accessOptionFilter(record.provider, record)) return;
-                    if (purgeProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
+                    if (getPurgeProvider(fieldProvider)?.provider !== record.provider) return;
                     formInst.setFieldValue("providerAccessId", record.id);
                   }}
                 />
@@ -220,6 +259,13 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   };
 };
 
+export const purgeSchemaUnavailableRule =
+  (t: (key: string) => string) =>
+  (messageKey: string) =>
+  (unavailable: boolean): { validator: () => Promise<void> } => ({
+    validator: () => (unavailable ? Promise.reject(new Error(t(messageKey))) : Promise.resolve()),
+  });
+
 const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) => {
   const { t } = i18n;
 
@@ -232,8 +278,14 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     })
     .superRefine((values, ctx) => {
       if (values.provider) {
-        const provider = purgeProvidersMap.get(values.provider);
-        if (!provider?.builtin && !values.providerAccessId) {
+        const provider = getPurgeProvider(values.provider);
+        if (!provider) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("workflow_node.purge.form.provider.unavailable"),
+            path: ["provider"],
+          });
+        } else if (!provider.builtin && !values.providerAccessId) {
           ctx.addIssue({
             code: "custom",
             message: t("workflow_node.purge.form.provider_access.placeholder"),
@@ -247,6 +299,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
 const _default = Object.assign(BizPurgeNodeConfigForm, {
   getAnchorItems,
   getSchema,
+  purgeSchemaUnavailableRule,
 });
 
 export default _default;

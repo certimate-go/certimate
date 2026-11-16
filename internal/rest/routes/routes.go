@@ -12,6 +12,7 @@ import (
 	"github.com/certimate-go/certimate/internal/providerschema"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/handlers"
+	"github.com/certimate-go/certimate/internal/setup"
 	"github.com/certimate-go/certimate/internal/statistics"
 	"github.com/certimate-go/certimate/internal/workflow"
 )
@@ -24,7 +25,8 @@ var (
 	providerSchemaSvc *providerschema.ProviderSchemaService
 )
 
-func BindRouter(router *router.Router[*core.RequestEvent]) {
+func BindRouter(router *router.Router[*core.RequestEvent], setupService *setup.Service) {
+	handlers.NewSetupHandler(router.Group("/api"), setupService)
 	accessRepo := repository.NewAccessRepository()
 	workflowRepo := repository.NewWorkflowRepository()
 	workflowRunRepo := repository.NewWorkflowRunRepository()

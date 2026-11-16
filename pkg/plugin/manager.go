@@ -3,13 +3,17 @@ package plugin
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
 	"os/exec"
+	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	githubplugin "github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc/codes"
@@ -47,104 +51,114 @@ func (m *Manager) Config() PluginConfig { return m.cfg }
 func (m *Manager) Bootstrap(ctx context.Context, dp *DiscoveredPlugin) (*Metadata, *ConfigSchema, error) {
 	ctx, cancel := context.WithTimeout(ctx, m.cfg.StartTimeout)
 	defer cancel()
-	var meta *Metadata
-	var schema *ConfigSchema
-	err := m.withPlugin(ctx, dp, noopRedactor, func(d capabilityClient) error {
-		var err error
-		meta, err = d.GetMetadata(ctx)
-		if err != nil {
-			return err
-		}
-		schema, err = d.GetConfigSchema(ctx)
-		return err
-	})
+	session, err := m.StartSession(ctx, dp)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer session.Close()
+	meta, err := session.GetMetadata(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	schema, err := session.GetConfigSchema(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 	return meta, schema, nil
 }
 
-func (m *Manager) Deploy(ctx context.Context, dp *DiscoveredPlugin, req *DeployRequest, forward *slog.Logger) (*DeployResult, error) {
-	if m.cfg.DeployTimeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, m.cfg.DeployTimeout)
-		defer cancel()
+var sessionSequence atomic.Uint64
+
+func newExecutionID() string {
+	var buf [8]byte
+	if _, err := rand.Read(buf[:]); err != nil {
+		return fmt.Sprintf("exec-%d", sessionSequence.Add(1))
 	}
-	redact := redactorFor(req)
-	sink := newForwardLogger(forward, redact, m.cfg.MaxLogFrames)
-	var res *DeployResult
-	err := m.withPlugin(ctx, dp, redact, func(d capabilityClient) error {
-		deployer, ok := d.(Deployer)
-		if !ok {
-			return &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve deploy", dp.Manifest.Capability)}
-		}
-		var err error
-		res, err = deployer.Deploy(ctx, req, sink)
-		return err
-	})
-	return res, err
+	return fmt.Sprintf("%s-%d", hex.EncodeToString(buf[:]), sessionSequence.Add(1))
 }
 
-func (m *Manager) Notify(ctx context.Context, dp *DiscoveredPlugin, req *NotifyRequest) (*NotifyResult, error) {
-	if m.cfg.DeployTimeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, m.cfg.DeployTimeout)
-		defer cancel()
-	}
-	redact := redactorFor(&DeployRequest{
-		AccessConfigJSON:   req.AccessConfigJSON,
-		ExtendedConfigJSON: req.ExtendedConfigJSON,
-	})
-	var res *NotifyResult
-	err := m.withPlugin(ctx, dp, redact, func(d capabilityClient) error {
-		notifier, ok := d.(Notifier)
-		if !ok {
-			return &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve notify", dp.Manifest.Capability)}
-		}
-		var err error
-		res, err = notifier.Notify(ctx, req)
-		return err
-	})
-	return res, err
+type DnsKey struct {
+	Domain  string
+	Token   string
+	KeyAuth string
 }
 
-func (m *Manager) StartDnsProvider(ctx context.Context, dp *DiscoveredPlugin) (*HeldDnsProvider, error) {
-	ctx, cancel := context.WithTimeout(ctx, m.cfg.StartTimeout)
-	defer cancel()
+type ErrExecutionNotFound struct {
+	ExecutionID string
+}
+
+func (e *ErrExecutionNotFound) Error() string {
+	return fmt.Sprintf("plugin: execution %q is not registered in this session", e.ExecutionID)
+}
+
+func IsExecutionNotFound(err error) bool {
+	var e *ErrExecutionNotFound
+	return errors.As(err, &e)
+}
+
+type SessionExecution struct {
+	ID      string
+	Request *Request
+}
+
+type sessionExecutionState struct {
+	execution *SessionExecution
+	postDone  bool
+	postErr   error
+}
+
+type Session struct {
+	manager *Manager
+	dp      *DiscoveredPlugin
+	d       *dispensed
+
+	mu         sync.Mutex
+	redactions []string
+	executions map[string]*sessionExecutionState
+	dnsKeys    map[DnsKey]string
+	closeOnce  sync.Once
+	closed     bool
+}
+
+func (m *Manager) StartSession(ctx context.Context, dp *DiscoveredPlugin) (*Session, error) {
 	d, err := m.dispense(dp)
 	if err != nil {
 		return nil, err
 	}
-	provider, ok := d.impl.(DnsProvider)
-	if !ok {
-		d.client.Kill()
-		return nil, &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve dns", dp.Manifest.Capability)}
+	s := &Session{
+		manager:    m,
+		dp:         dp,
+		d:          d,
+		executions: make(map[string]*sessionExecutionState),
+		dnsKeys:    make(map[DnsKey]string),
 	}
-	return &HeldDnsProvider{manager: m, dp: dp, session: d, provider: provider}, nil
+	runtime.AddCleanup(s, func(dd *dispensed) { dd.client.Kill() }, d)
+	return s, nil
 }
 
-type HeldDnsProvider struct {
-	manager  *Manager
-	dp       *DiscoveredPlugin
-	session  *dispensed
-	provider DnsProvider
-	once     sync.Once
+func (s *Session) GetMetadata(ctx context.Context) (*Metadata, error) {
+	if err := s.checkOpen(); err != nil {
+		return nil, err
+	}
+	s.mu.Lock()
+	redact := s.redactorLocked()
+	s.mu.Unlock()
+	meta, err := s.d.impl.GetMetadata(ctx)
+	if err != nil {
+		return nil, s.manager.wrapError(s.dp, s.d, redact, err)
+	}
+	return meta, nil
 }
 
-func (h *HeldDnsProvider) Present(ctx context.Context, req *DnsRequest) error {
-	err := h.provider.Present(ctx, req)
-	return h.manager.wrapError(h.dp, h.session, noopRedactor, err)
-}
-
-func (h *HeldDnsProvider) CleanUp(ctx context.Context, req *DnsRequest) error {
-	err := h.provider.CleanUp(ctx, req)
-	return h.manager.wrapError(h.dp, h.session, noopRedactor, err)
-}
-
-func (h *HeldDnsProvider) Close() {
-	h.once.Do(func() {
-		h.session.client.Kill()
-	})
+func (s *Session) Pid() int {
+	if s.d == nil || s.d.client == nil {
+		return 0
+	}
+	config := s.d.client.ReattachConfig()
+	if config == nil {
+		return 0
+	}
+	return config.Pid
 }
 
 type syncBuffer struct {
@@ -179,20 +193,18 @@ type capabilityClient interface {
 	GetConfigSchema(ctx context.Context) (*ConfigSchema, error)
 }
 
+var _ capabilityClient = (*pluginServiceClient)(nil)
+
 type dispensed struct {
 	client *githubplugin.Client
-	impl   capabilityClient
+	impl   *pluginServiceClient
 	stderr *syncBuffer
 }
 
 func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *syncBuffer) (*githubplugin.ClientConfig, error) {
-	plugins, _, err := PluginSetForCapability(dp.Manifest.Capability)
-	if err != nil {
-		return nil, &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: err.Error()}
-	}
 	cfg := &githubplugin.ClientConfig{
 		HandshakeConfig:  HandshakeConfig,
-		Plugins:          plugins,
+		Plugins:          PluginSet{PluginName: &GRPCPlugin{}},
 		Cmd:              exec.Command(dp.BinaryPath),
 		AllowedProtocols: []githubplugin.Protocol{githubplugin.ProtocolGRPC},
 		Logger:           NewHclogLogger(m.logger),
@@ -208,10 +220,6 @@ func (m *Manager) clientConfig(dp *DiscoveredPlugin, stderr *syncBuffer) (*githu
 }
 
 func (m *Manager) dispense(dp *DiscoveredPlugin) (*dispensed, error) {
-	_, serviceName, err := PluginSetForCapability(dp.Manifest.Capability)
-	if err != nil {
-		return nil, &ErrPluginIncompatible{ProviderType: dp.Manifest.ProviderType, Reason: err.Error()}
-	}
 	stderr := &syncBuffer{}
 	cfg, err := m.clientConfig(dp, stderr)
 	if err != nil {
@@ -223,34 +231,149 @@ func (m *Manager) dispense(dp *DiscoveredPlugin) (*dispensed, error) {
 		client.Kill()
 		return nil, mapStartError(dp, err)
 	}
-	raw, err := rpcClient.Dispense(serviceName)
+	raw, err := rpcClient.Dispense(PluginName)
 	if err != nil {
 		client.Kill()
 		return nil, fmt.Errorf("plugin: dispense %q: %w", dp.Manifest.ProviderType, err)
 	}
-	impl, ok := raw.(capabilityClient)
+	impl, ok := raw.(*pluginServiceClient)
 	if !ok {
 		client.Kill()
-		return nil, fmt.Errorf("plugin: dispensed %q does not implement capability %q (%T)", dp.Manifest.ProviderType, dp.Manifest.Capability, raw)
+		return nil, fmt.Errorf("plugin: dispensed %q does not implement the unified plugin service (%T)", dp.Manifest.ProviderType, raw)
 	}
 	return &dispensed{client: client, impl: impl, stderr: stderr}, nil
 }
 
-func (m *Manager) withPlugin(ctx context.Context, dp *DiscoveredPlugin, redact secretRedactor, fn func(capabilityClient) error) error {
-	d, err := m.dispense(dp)
+func (s *Session) checkOpen() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.closed {
+		return fmt.Errorf("plugin: session for %q is already closed", s.dp.Manifest.ProviderType)
+	}
+	return nil
+}
+
+func (s *Session) GetConfigSchema(ctx context.Context) (*ConfigSchema, error) {
+	if err := s.checkOpen(); err != nil {
+		return nil, err
+	}
+	s.mu.Lock()
+	redact := s.redactorLocked()
+	s.mu.Unlock()
+	schema, err := s.d.impl.GetConfigSchema(ctx)
 	if err != nil {
+		return nil, s.manager.wrapError(s.dp, s.d, redact, err)
+	}
+	return schema, nil
+}
+
+func (s *Session) Process(ctx context.Context, req *Request, forward *slog.Logger) (*Result, error) {
+	if err := s.checkOpen(); err != nil {
+		return nil, err
+	}
+	if req == nil {
+		return nil, fmt.Errorf("the request is nil")
+	}
+	if req.Capability != s.dp.Manifest.Capability {
+		return nil, &ErrPluginIncompatible{ProviderType: s.dp.Manifest.ProviderType, Reason: fmt.Sprintf("capability %q does not serve %q", s.dp.Manifest.Capability, req.Capability)}
+	}
+	if err := req.Validate(); err != nil {
+		return nil, fmt.Errorf("plugin %q: %w", s.dp.Manifest.ProviderType, err)
+	}
+	if s.manager.cfg.ProcessTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, s.manager.cfg.ProcessTimeout)
+		defer cancel()
+	}
+
+	immutable := req.Clone()
+	if immutable.ExecutionID == "" {
+		immutable.ExecutionID = newExecutionID()
+	}
+
+	s.mu.Lock()
+	state := &sessionExecutionState{execution: &SessionExecution{ID: immutable.ExecutionID, Request: immutable}}
+	s.executions[immutable.ExecutionID] = state
+	if immutable.Dns != nil {
+		key := DnsKey{Domain: immutable.Dns.Domain, Token: immutable.Dns.Token, KeyAuth: immutable.Dns.KeyAuth}
+		if _, exists := s.dnsKeys[key]; !exists {
+			s.dnsKeys[key] = immutable.ExecutionID
+		}
+	}
+	s.collectSecretsLocked(immutable)
+	redact := s.redactorLocked()
+	s.mu.Unlock()
+
+	req.ExecutionID = immutable.ExecutionID
+	sink := newForwardLogger(forward, redact, s.manager.cfg.MaxLogFrames)
+	res, err := s.d.impl.Process(ctx, immutable, sink)
+	if err != nil {
+		return nil, s.manager.wrapError(s.dp, s.d, redact, err)
+	}
+	if verr := res.Validate(immutable.Capability); verr != nil {
+		return nil, s.manager.wrapError(s.dp, s.d, redact, &ErrPluginProtocol{ProviderType: s.dp.Manifest.ProviderType, Reason: verr.Error()})
+	}
+	return res, nil
+}
+
+func (s *Session) PostProcess(ctx context.Context, executionID string, forward *slog.Logger) error {
+	if err := s.checkOpen(); err != nil {
 		return err
 	}
-	defer d.client.Kill()
-
-	done := make(chan error, 1)
-	go func() { done <- fn(d.impl) }()
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	case err := <-done:
-		return m.wrapError(dp, d, redact, err)
+	s.mu.Lock()
+	state, ok := s.executions[executionID]
+	if !ok {
+		s.mu.Unlock()
+		return &ErrExecutionNotFound{ExecutionID: executionID}
 	}
+	if state.postDone {
+		err := state.postErr
+		s.mu.Unlock()
+		return err
+	}
+	redact := s.redactorLocked()
+	s.mu.Unlock()
+
+	ctx = context.WithoutCancel(ctx)
+	if s.manager.cfg.PostProcessTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, s.manager.cfg.PostProcessTimeout)
+		defer cancel()
+	}
+
+	sink := newForwardLogger(forward, redact, s.manager.cfg.MaxLogFrames)
+	err := s.d.impl.PostProcess(ctx, state.execution.Request, sink)
+	err = s.manager.wrapError(s.dp, s.d, redact, err)
+
+	s.mu.Lock()
+	if !state.postDone {
+		state.postDone = true
+		state.postErr = err
+	}
+	s.mu.Unlock()
+	return err
+}
+
+func (s *Session) PostProcessDnsKey(ctx context.Context, key DnsKey, forward *slog.Logger) error {
+	if err := s.checkOpen(); err != nil {
+		return err
+	}
+	s.mu.Lock()
+	executionID, ok := s.dnsKeys[key]
+	s.mu.Unlock()
+	if !ok {
+		return &ErrExecutionNotFound{ExecutionID: fmt.Sprintf("dns:%s", key.Domain)}
+	}
+	return s.PostProcess(ctx, executionID, forward)
+}
+
+func (s *Session) Close() {
+	s.mu.Lock()
+	s.closed = true
+	s.mu.Unlock()
+	s.closeOnce.Do(func() {
+		s.d.client.Kill()
+	})
 }
 
 func (m *Manager) wrapError(dp *DiscoveredPlugin, d *dispensed, redact secretRedactor, err error) error {
@@ -267,7 +390,11 @@ func (m *Manager) wrapError(dp *DiscoveredPlugin, d *dispensed, redact secretRed
 	}
 	if st, ok := status.FromError(err); ok {
 		switch st.Code() {
-		case codes.Unavailable, codes.Canceled:
+		case codes.Canceled:
+			return fmt.Errorf("plugin %q: %w", dp.Manifest.ProviderType, context.Canceled)
+		case codes.DeadlineExceeded:
+			return fmt.Errorf("plugin %q: %w", dp.Manifest.ProviderType, context.DeadlineExceeded)
+		case codes.Unavailable:
 			return &ErrPluginCrashed{ProviderType: dp.Manifest.ProviderType, StderrTail: tail, Inner: safeErr}
 		}
 		return fmt.Errorf("plugin %q: %s", dp.Manifest.ProviderType, redact(st.Message()))
@@ -302,30 +429,40 @@ func stderrTail(buf *syncBuffer, redact secretRedactor) string {
 
 func noopRedactor(s string) string { return s }
 
-func redactorFor(req *DeployRequest) secretRedactor {
-	var secrets []string
+func (s *Session) collectSecretsLocked(req *Request) {
 	collect := func(jsonStr string) {
 		var m map[string]any
 		if err := json.Unmarshal([]byte(jsonStr), &m); err != nil {
 			return
 		}
 		for _, v := range flattenValues(m) {
-			if s, ok := v.(string); ok && len(s) >= 4 {
-				secrets = append(secrets, s)
+			if str, ok := v.(string); ok && len(str) >= 4 {
+				s.redactions = append(s.redactions, str)
 			}
 		}
 	}
-	if req != nil {
-		collect(req.AccessConfigJSON)
-		collect(req.ExtendedConfigJSON)
-		collectPEM(&secrets, req.CertificatePEM)
-		collectPEM(&secrets, req.PrivateKeyPEM)
+	collect(req.AccessConfigJSON)
+	collect(req.ExtendedConfigJSON)
+	if req.Deploy != nil {
+		collectPEM(&s.redactions, req.Deploy.CertificatePEM)
+		collectPEM(&s.redactions, req.Deploy.PrivateKeyPEM)
 	}
-	return func(s string) string {
-		for _, sec := range secrets {
-			s = strings.ReplaceAll(s, sec, "[REDACTED]")
+	if req.Dns != nil {
+		for _, secret := range []string{req.Dns.Token, req.Dns.KeyAuth} {
+			if len(secret) >= 4 {
+				s.redactions = append(s.redactions, secret)
+			}
 		}
-		return s
+	}
+}
+
+func (s *Session) redactorLocked() secretRedactor {
+	secrets := s.redactions
+	return func(str string) string {
+		for _, sec := range secrets {
+			str = strings.ReplaceAll(str, sec, "[REDACTED]")
+		}
+		return str
 	}
 }
 

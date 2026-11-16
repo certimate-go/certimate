@@ -12,6 +12,7 @@ type accessRepository interface {
 }
 
 type acmeAccountRepository interface {
+	GetById(ctx context.Context, id string) (*domain.ACMEAccount, error)
 	GetByCAAndAcctUrl(ctx context.Context, ca string, acctUrl string) (*domain.ACMEAccount, error)
 }
 
