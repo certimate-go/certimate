@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
@@ -235,8 +236,8 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, cloudDomainId st
 			OpType:      0,
 			DomainId:    cloudDomainId,
 			CertName:    fmt.Sprintf("certimate_%d", time.Now().UnixMilli()),
-			CertFile:    lo.ToPtr(certPEM),
-			CertKeyFile: lo.ToPtr(privkeyPEM),
+			CertFile:    lo.ToPtr(strings.TrimRight(certPEM, "\r\n")),
+			CertKeyFile: lo.ToPtr(strings.TrimRight(privkeyPEM, "\r\n")),
 		},
 	}
 	setCertForDomainResp, err := d.sdkClients.AADv1.SetCertForDomain(setCertForDomainReq)
