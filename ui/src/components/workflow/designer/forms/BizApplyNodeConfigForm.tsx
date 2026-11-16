@@ -34,7 +34,7 @@ import ACMEHttp01ProviderSelect from "@/components/provider/ACMEHttp01ProviderSe
 import CAProviderSelect from "@/components/provider/CAProviderSelect";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { CA_PROVIDERS, acmeHttp01ProvidersMap, caProvidersMap, getACMEDns01Provider } from "@/domain/provider";
+import { CA_PROVIDERS, acmeHttp01ProvidersMap, caProvidersMap, getACMEDns01Provider, matchesACMEDns01Access } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizApply, defaultNodeConfigForBizApply } from "@/domain/workflow";
 import { useAntdForm, useZustandShallowSelector } from "@/hooks";
 import { useAccessesStore } from "@/stores/access";
@@ -78,7 +78,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   const accessOptionFilter = (_: string, option: AccessModel) => {
     if (option.reserve) return false;
     if (!fieldProvider) return false;
-    if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return getACMEDns01Provider(fieldProvider)?.provider === option.provider;
+    if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return matchesACMEDns01Access(fieldProvider, option.provider);
     if (fieldChallengeType === CHALLENGE_TYPE_HTTP01) return acmeHttp01ProvidersMap.get(fieldProvider)?.provider === option.provider;
     return false;
   };
@@ -172,13 +172,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
     // 如果已选择质询提供商只有一个授权信息，则自动选择该授权信息
     if (fieldProvider && !fieldProviderAccessId) {
-      const availableAccesses = accesses
-        .filter((access) => accessOptionFilter(access.provider, access))
-        .filter((access) => {
-          if (fieldChallengeType === CHALLENGE_TYPE_DNS01) return getACMEDns01Provider(fieldProvider)?.provider === access.provider;
-          if (fieldChallengeType === CHALLENGE_TYPE_HTTP01) return acmeHttp01ProvidersMap.get(fieldProvider)?.provider === access.provider;
-          return false;
-        });
+      const availableAccesses = accesses.filter((access) => accessOptionFilter(access.provider, access));
       if (availableAccesses.length === 1) {
         formInst.setFieldValue("providerAccessId", availableAccesses[0].id);
       }
@@ -259,6 +253,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
           formInst.setFieldValue("providerConfig", void 0);
           resetFieldIfInvalid("dnsPropagationWait");
           resetFieldIfInvalid("dnsPropagationTimeout");
+          resetFieldIfInvalid("dnsPropagationPollingInterval");
           resetFieldIfInvalid("dnsTTL");
           resetFieldIfInvalid("httpDelayWait");
         }
@@ -282,6 +277,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
 
           resetFieldIfInvalid("dnsPropagationWait");
           resetFieldIfInvalid("dnsPropagationTimeout");
+          resetFieldIfInvalid("dnsPropagationPollingInterval");
           resetFieldIfInvalid("dnsTTL");
         }
         break;
@@ -477,8 +473,6 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
                   usage={fieldChallengeType === CHALLENGE_TYPE_DNS01 ? "dns" : fieldChallengeType === CHALLENGE_TYPE_HTTP01 ? "hosting" : "dns-hosting"}
                   afterSubmit={(record) => {
                     if (!accessOptionFilter(record.provider, record)) return;
-                    if (fieldChallengeType === CHALLENGE_TYPE_DNS01 && getACMEDns01Provider(fieldProvider!)?.provider !== record.provider) return;
-                    if (fieldChallengeType === CHALLENGE_TYPE_HTTP01 && acmeHttp01ProvidersMap.get(fieldProvider!)?.provider !== record.provider) return;
                     formInst.setFieldValue("providerAccessId", record.id);
                   }}
                 />
@@ -751,6 +745,15 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
                 placeholder={t("workflow_node.apply.form.dns_propagation_timeout.placeholder")}
                 suffix={t("workflow_node.apply.form.dns_propagation_timeout.unit")}
               />
+            </Form.Item>
+
+            <Form.Item
+              name="dnsPropagationPollingInterval"
+              hidden={fieldChallengeType !== CHALLENGE_TYPE_DNS01}
+              label={t("workflow_node.apply.form.dns_propagation_polling_interval.label")}
+              rules={[formRule]}
+            >
+              <Input type="number" allowClear min={1} max={3600} suffix={t("workflow_node.apply.form.dns_propagation_polling_interval.unit")} />
             </Form.Item>
 
             <Form.Item
@@ -1132,6 +1135,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
         }, t("common.errmsg.host_invalid")),
       dnsPropagationWait: z.coerce.number().int().gte(0).or(z.literal("")).nullish(),
       dnsPropagationTimeout: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
+      dnsPropagationPollingInterval: z.coerce.number().int().min(1).max(3600).or(z.literal("")).nullish(),
       dnsTTL: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
       httpDelayWait: z.coerce.number().int().gt(0).or(z.literal("")).nullish(),
       disableCommonName: z.boolean().nullish(),

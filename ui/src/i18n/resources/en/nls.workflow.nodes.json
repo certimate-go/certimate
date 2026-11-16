@@ -243,6 +243,10 @@
         "unit": "seconds",
         "tooltip": "It determines the timeout for DNS propagation checks during ACME DNS-01 challenge. If you don't understand this option, just keep it by default."
       },
+      "dns_propagation_polling_interval": {
+        "label": "DNS propagation polling interval (optional)",
+        "unit": "seconds"
+      },
       "dns_ttl": {
         "label": "DNS TTL (Optional)",
         "placeholder": "Please enter DNS TTL",

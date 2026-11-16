@@ -20,6 +20,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -107,6 +108,8 @@ func TestB3DNSWorkflow(t *testing.T) {
 
 type dnsWorkflowPlugins struct {
 	dir              string
+	accessType       string
+	pollingInterval  int
 	accessByProvider map[string]string
 	configureDNS     func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
 	wildcardOrder    bool
@@ -291,7 +294,11 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 		return result.ID
 	}
 	accessConfig, provider := providerConfig.Access, providerConfig.Provider
-	accessID := create("access", map[string]any{"name": "B3 " + family, "provider": family, "config": accessConfig})
+	accessType := plugins.accessType
+	if accessType == "" {
+		accessType = family
+	}
+	accessID := create("access", map[string]any{"name": "B3 " + family, "provider": accessType, "config": accessConfig})
 	caID := create("access", map[string]any{"name": "B3 ACME", "provider": "acmeca", "config": map[string]any{"endpoint": ca.URL + "/directory"}})
 	steps := []string{"initial", "auth-failure", "recovery"}
 	if f.wildcard != nil {
@@ -313,6 +320,9 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 				return map[string]any{"id": id, "type": kind, "data": map[string]any{"name": id, "config": config}}
 			}
 			config := map[string]any{"domains": strings.Join(domains, ";"), "contactEmail": "dns@example.test", "challengeType": "dns-01", "provider": provider, "providerAccessId": accessID, "caProvider": "acmeca", "caProviderAccessId": caID, "keyAlgorithm": "EC256", "nameservers": udp.LocalAddr().String(), "dnsPropagationTimeout": 10, "dnsTTL": 60, "disableARI": true, "disableFollowCNAME": true}
+			if plugins.pollingInterval > 0 {
+				config["dnsPropagationPollingInterval"] = plugins.pollingInterval
+			}
 			for key, value := range providerConfig.Apply {
 				config[key] = value
 			}
@@ -418,6 +428,28 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 			}
 			if !found {
 				t.Fatal("issued chain and matching key not persisted")
+			}
+			if plugins.pollingInterval > 0 {
+				filter := url.QueryEscape(fmt.Sprintf("runRef = %q && message = %q", run.Data.RunID, "go-acme/lego: dns01: waiting for record propagation"))
+				var checks struct {
+					Items []struct {
+						Data struct {
+							Timeout  string `json:"timeout"`
+							Interval string `json:"interval"`
+						} `json:"data"`
+					} `json:"items"`
+				}
+				if err := call("GET", "/api/collections/workflow_logs/records?filter="+filter, nil, &checks); err != nil {
+					t.Fatal(err)
+				}
+				if len(checks.Items) == 0 {
+					t.Fatal("workflow did not log the DNS propagation timing")
+				}
+				for _, item := range checks.Items {
+					if item.Data.Timeout != "10s" || item.Data.Interval != fmt.Sprintf("%ds", plugins.pollingInterval) {
+						t.Errorf("DNS propagation did not use node timing: %+v", item.Data)
+					}
+				}
 			}
 			t.Logf("workflow %s issued and persisted certificate for %v; %d TXT values created and deleted, with %d DNS responses", run.Data.RunID, domains, len(domains), f.txtResponses)
 		})

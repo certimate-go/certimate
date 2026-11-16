@@ -44,10 +44,11 @@ type ObtainCertificateRequest struct {
 	Nameservers        []string
 
 	// DNS-01 质询相关
-	_                     struct{}
-	DnsPropagationWait    int
-	DnsPropagationTimeout int
-	DnsTTL                int
+	_                             struct{}
+	DnsPropagationWait            int
+	DnsPropagationTimeout         int
+	DnsPropagationPollingInterval int
+	DnsTTL                        int
 
 	// HTTP-01 质询相关
 	_             struct{}
@@ -104,6 +105,10 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 				providerType = domain.ACMEDns01ProviderTypeCMCCCloudDNS
 			case domain.ACMEDns01ProviderTypeGoogleCloud:
 				providerType = domain.ACMEDns01ProviderTypeGoogleCloudDNS
+			case domain.ACMEDns01ProviderTypePowerDNS:
+				providerType = domain.ACMEDns01ProviderTypePowerDNSDNS
+			case domain.ACMEDns01ProviderTypeRFC2136:
+				providerType = domain.ACMEDns01ProviderTypeRFC2136DNS
 			}
 			providerFactory, err := certifiers.ACMEDns01Registries.Get(providerType)
 			if err != nil {
@@ -112,6 +117,8 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 					return nil, fmt.Errorf("install the cmcccloud-dns plugin to use CMCC Cloud DNS: %w", err)
 				case domain.ACMEDns01ProviderTypeGoogleCloudDNS:
 					return nil, fmt.Errorf("install the googlecloud-dns plugin to use Google Cloud DNS: %w", err)
+				case domain.ACMEDns01ProviderTypePowerDNSDNS, domain.ACMEDns01ProviderTypeRFC2136DNS:
+					return nil, fmt.Errorf("install the %s plugin to use this DNS provider: %w", providerType, err)
 				}
 				return nil, err
 			}
@@ -135,7 +142,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 			opts.RecursiveNameservers = request.Nameservers
 			dns01.SetDefaultClient(dns01.NewClient(opts))
 			c.client.Challenge.SetDNS01Provider(
-				provider,
+				withDNSPropagationTiming(provider, request.DnsPropagationTimeout, request.DnsPropagationPollingInterval),
 				dns01.CondOptions(
 					request.DnsPropagationWait > 0,
 					dns01.PropagationWait(time.Duration(request.DnsPropagationWait)*time.Second, true),

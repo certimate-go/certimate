@@ -33,7 +33,7 @@ type Column struct {
 	ExtraHtml           bool             `json:"extraHtml,omitempty"`
 	ExtraWhen           []Condition      `json:"extraWhen,omitempty"`
 	DefaultOnMissing    bool             `json:"defaultOnMissing,omitempty"`
-	Default             any              `json:"default,omitempty"`
+	Default             any              `json:"default,omitzero"`
 	Secret              bool             `json:"secret,omitempty"`
 	Required            bool             `json:"required,omitempty"`
 	Options             []Option         `json:"options,omitempty"`

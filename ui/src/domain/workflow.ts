@@ -113,6 +113,7 @@ export type WorkflowNodeConfigForBizApply = {
   nameservers?: string;
   dnsPropagationWait?: number;
   dnsPropagationTimeout?: number;
+  dnsPropagationPollingInterval?: number;
   dnsTTL?: number;
   httpDelayWait?: number;
   disableFollowCNAME?: boolean;

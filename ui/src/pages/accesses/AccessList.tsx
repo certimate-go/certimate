@@ -13,7 +13,7 @@ import CopyableText from "@/components/CopyableText";
 import Empty from "@/components/Empty";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
-import { ACCESS_USAGES, accessProvidersMap, getAccessProvider } from "@/domain/provider";
+import { ACCESS_USAGES, getAccessProvider } from "@/domain/provider";
 import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { get as getAccess } from "@/repository/access";
 import { useAccessesStore } from "@/stores/access";
@@ -208,7 +208,7 @@ const AccessList = () => {
           return true;
         })
         .filter((e) => {
-          const provider = accessProvidersMap.get(e.provider);
+          const provider = getAccessProvider(e.provider);
           switch (filters["usage"] as AccessUsages) {
             case "dns":
               return !e.reserve && provider?.usages?.includes(ACCESS_USAGES.DNS);

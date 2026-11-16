@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"maps"
 	"runtime"
 	"slices"
 	"strings"
@@ -12,12 +13,10 @@ import (
 	"time"
 
 	"github.com/go-acme/lego/v5/challenge/dns01"
-	"github.com/go-acme/lego/v5/platform/env"
 
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
 	"github.com/certimate-go/certimate/internal/certmgmt/purgers"
-	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -177,11 +176,10 @@ func (p *pluginPurger) Purge(ctx context.Context, expiry time.Duration) (*core.P
 }
 
 type pluginDnsChallengerFactory struct {
-	manager      *plugin.Manager
-	dp           *plugin.DiscoveredPlugin
-	providerType string
-	logLevel     string
-	logger       *slog.Logger
+	manager  *plugin.Manager
+	dp       *plugin.DiscoveredPlugin
+	logLevel string
+	logger   *slog.Logger
 }
 
 func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOptions) (core.ACMEChallenger, error) {
@@ -189,39 +187,30 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 	if err != nil {
 		return nil, err
 	}
-	extended := options.ProviderExtendedConfig
-	if f.providerType == string(domain.ACMEDns01ProviderTypeGoogleCloudDNS) {
-		extended = map[string]any{
-			"nameservers":        slices.Clone(options.DnsNameservers),
-			"ttl":                options.DnsTTL,
-			"disableFollowCNAME": options.DisableFollowCNAME,
-		}
+	extended := make(map[string]any, len(options.ProviderExtendedConfig)+5)
+	maps.Copy(extended, options.ProviderExtendedConfig)
+	extended["nameservers"] = slices.Clone(options.DnsNameservers)
+	extended["disableFollowCNAME"] = options.DisableFollowCNAME
+	if _, specified := extended["ttl"]; !specified && options.DnsTTL > 0 {
+		extended["ttl"] = options.DnsTTL
 	}
 	challenger := &pluginDnsChallenger{
-		session:            session,
-		providerType:       f.providerType,
-		nameservers:        slices.Clone(options.DnsNameservers),
-		access:             options.ProviderAccessConfig,
-		extended:           extended,
-		logLevel:           f.logLevel,
-		propagationTimeout: options.DnsPropagationTimeout,
-		ttl:                options.DnsTTL,
-		logger:             f.logger,
+		session:  session,
+		access:   options.ProviderAccessConfig,
+		extended: extended,
+		logLevel: f.logLevel,
+		logger:   f.logger,
 	}
 	runtime.AddCleanup(challenger, func(s *plugin.Session) { s.Close() }, session)
 	return challenger, nil
 }
 
 type pluginDnsChallenger struct {
-	session            *plugin.Session
-	providerType       string
-	nameservers        []string
-	access             map[string]any
-	extended           map[string]any
-	logLevel           string
-	propagationTimeout int
-	ttl                int
-	logger             *slog.Logger
+	session  *plugin.Session
+	access   map[string]any
+	extended map[string]any
+	logLevel string
+	logger   *slog.Logger
 }
 
 func (c *pluginDnsChallenger) Present(ctx context.Context, name, token, keyAuth string) error {
@@ -229,16 +218,10 @@ func (c *pluginDnsChallenger) Present(ctx context.Context, name, token, keyAuth 
 	if c.logger != nil {
 		c.logger.Info("presenting dns-01 challenge via plugin", slog.String("domain", name))
 	}
-	extended := c.extended
-	if c.providerType == string(domain.ACMEDns01ProviderTypeCMCCCloudDNS) {
-		info := dns01.GetChallengeInfo(ctx, strings.TrimPrefix(name, "*."), keyAuth)
-		extended = map[string]any{
-			"recordName":  info.EffectiveFQDN,
-			"recordValue": info.Value,
-			"nameservers": c.nameservers,
-			"ttl":         c.ttl,
-		}
-	}
+	info := dns01.GetChallengeInfo(ctx, strings.TrimPrefix(name, "*."), keyAuth)
+	extended := maps.Clone(c.extended)
+	extended["recordName"] = info.EffectiveFQDN
+	extended["recordValue"] = info.Value
 	req := &plugin.Request{
 		Capability:         plugin.CapabilityDns,
 		LogLevel:           c.logLevel,
@@ -261,27 +244,6 @@ func (c *pluginDnsChallenger) CleanUp(ctx context.Context, domain, token, keyAut
 
 func (c *pluginDnsChallenger) Close() {
 	c.session.Close()
-}
-
-func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {
-	timeout := dns01.DefaultPropagationTimeout
-	interval := dns01.DefaultPollingInterval
-	switch domain.ACMEDns01ProviderType(c.providerType) {
-	case domain.ACMEDns01ProviderTypeCMCCCloudDNS:
-		timeout = env.GetOrDefaultSecond("CMCCCLOUD_PROPAGATION_TIMEOUT", 10*time.Minute)
-		interval = env.GetOrDefaultSecond("CMCCCLOUD_POLLING_INTERVAL", interval)
-	case domain.ACMEDns01ProviderTypeGoogleCloudDNS:
-		timeout = env.GetOrDefaultSecond("GCE_PROPAGATION_TIMEOUT", 180*time.Second)
-		interval = env.GetOrDefaultSecond("GCE_POLLING_INTERVAL", 5*time.Second)
-	default:
-		if c.ttl > 0 {
-			interval = time.Duration(c.ttl) * time.Second
-		}
-	}
-	if c.propagationTimeout > 0 {
-		timeout = time.Duration(c.propagationTimeout) * time.Second
-	}
-	return timeout, interval
 }
 
 type pluginNotifierFactory struct {
@@ -346,7 +308,6 @@ func (n *pluginNotifier) Notify(ctx context.Context, subject, message string) (*
 	}
 	return result, nil
 }
-
 
 func marshalJSON(m map[string]any) string {
 	if len(m) == 0 {

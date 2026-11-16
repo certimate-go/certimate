@@ -223,7 +223,7 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 	switch capability {
 	case plugin.CapabilityDns:
 		factory := &pluginDnsChallengerFactory{
-			manager: manager, dp: runtimeDP, providerType: providerType,
+			manager: manager, dp: runtimeDP,
 			logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", providerType)),
 		}
 		registered.factory = factory

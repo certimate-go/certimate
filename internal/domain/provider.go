@@ -220,11 +220,13 @@ const (
 	ACMEDns01ProviderTypeOVHcloud          = ACMEDns01ProviderType(AccessProviderTypeOVHcloud)
 	ACMEDns01ProviderTypePorkbun           = ACMEDns01ProviderType(AccessProviderTypePorkbun)
 	ACMEDns01ProviderTypePowerDNS          = ACMEDns01ProviderType(AccessProviderTypePowerDNS)
+	ACMEDns01ProviderTypePowerDNSDNS       = ACMEDns01ProviderType(AccessProviderTypePowerDNS + "-dns")
 	ACMEDns01ProviderTypeQingCloud         = ACMEDns01ProviderType(AccessProviderTypeQingCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeQingCloudDNS]
 	ACMEDns01ProviderTypeQingCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeQingCloud + "-dns")
 	ACMEDns01ProviderTypeRainYun           = ACMEDns01ProviderType(AccessProviderTypeRainYun)
 	ACMEDns01ProviderTypeRegru             = ACMEDns01ProviderType(AccessProviderTypeRegru)
 	ACMEDns01ProviderTypeRFC2136           = ACMEDns01ProviderType(AccessProviderTypeRFC2136)
+	ACMEDns01ProviderTypeRFC2136DNS        = ACMEDns01ProviderType(AccessProviderTypeRFC2136 + "-dns")
 	ACMEDns01ProviderTypeRuCenter          = ACMEDns01ProviderType(AccessProviderTypeRuCenter)
 	ACMEDns01ProviderTypeSimplyCom         = ACMEDns01ProviderType(AccessProviderTypeSimplyCom)
 	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)

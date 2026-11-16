@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -35,7 +36,10 @@ func TestExternalDNSPluginsWorkflow(t *testing.T) {
 		}
 		t.Fatalf("unknown DNS plugin fixture %q", name)
 	}
-	pluginRoot := filepath.Join("..", "..", "..", "plugins")
+	pluginRoot := os.Getenv("CERTIMATE_EXTERNAL_DNS_PLUGIN_ROOT")
+	if pluginRoot == "" {
+		pluginRoot = filepath.Join("..", "..", "..", "plugins")
+	}
 	if _, err := os.Stat(filepath.Join(pluginRoot, "go.mod")); os.IsNotExist(err) {
 		t.Skip("requires the sibling plugins checkout")
 	} else if err != nil {
@@ -50,7 +54,7 @@ func TestExternalDNSPluginsWorkflow(t *testing.T) {
 
 	for _, provider := range []struct {
 		name      string
-		configure func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
+		configure func(*testing.T, *b3DNSFixture, bool) b3DNSProviderConfig
 	}{
 		{name: "rfc2136-dns", configure: configureRFC2136Fixture},
 		{name: "powerdns-dns", configure: configurePowerDNSFixture},
@@ -78,12 +82,39 @@ func TestExternalDNSPluginsWorkflow(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(stage, "manifest.json"), data, 0o644); err != nil {
 				t.Fatal(err)
 			}
+			var manifest struct {
+				Icon string `json:"icon"`
+			}
+			if err := json.Unmarshal(data, &manifest); err != nil {
+				t.Fatal(err)
+			}
+			icon, err := os.ReadFile(filepath.Join(source, manifest.Icon))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(stage, manifest.Icon), icon, 0o644); err != nil {
+				t.Fatal(err)
+			}
 
 			runDNSWorkflow(t, core, provider.name, dnsWorkflowPlugins{
 				dir:              plugins,
 				accessByProvider: map[string]string{provider.name: provider.name},
-				configureDNS:     provider.configure,
-				wildcardOrder:    true,
+				configureDNS: func(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
+					return provider.configure(t, f, false)
+				},
+				wildcardOrder: true,
+			})
+			t.Run("former-builtin", func(t *testing.T) {
+				runDNSWorkflow(t, core, provider.name, dnsWorkflowPlugins{
+					dir:              plugins,
+					accessType:       strings.TrimSuffix(provider.name, "-dns"),
+					pollingInterval:  1,
+					wildcardOrder:    provider.name == "rfc2136-dns",
+					accessByProvider: map[string]string{provider.name: provider.name},
+					configureDNS: func(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
+						return provider.configure(t, f, true)
+					},
+				})
 			})
 		})
 	}
@@ -185,8 +216,15 @@ func runGoogleCloudDNSWorkflow(t *testing.T, binary, pluginDir string) {
 	}
 }
 
-func configureRFC2136Fixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
-	zone := f.domain
+func configureRFC2136Fixture(t *testing.T, f *b3DNSFixture, legacy bool) b3DNSProviderConfig {
+	zone := dns.Fqdn(f.domain)
+	algorithm := dns.HmacSHA256
+	if legacy {
+		algorithm = dns.HmacSHA1
+		if f.wildcard == nil {
+			zone = "example.test."
+		}
+	}
 	const key = "certimate.example.test."
 	const secret = "Zml4dHVyZS10c2lnLXNlY3JldA=="
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
@@ -203,8 +241,18 @@ func configureRFC2136Fixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig 
 			f.mu.Lock()
 			defer f.mu.Unlock()
 			reply := new(dns.Msg).SetReply(req)
+			if legacy && req.Opcode == dns.OpcodeQuery {
+				reply.Authoritative = true
+				if len(req.Question) == 1 && req.Question[0].Qtype == dns.TypeSOA && req.Question[0].Name == zone {
+					reply.Answer = []dns.RR{&dns.SOA{Hdr: dns.RR_Header{Name: zone, Rrtype: dns.TypeSOA, Class: dns.ClassINET, Ttl: 60}, Ns: "ns.example.test.", Mbox: "admin.example.test."}}
+				}
+				if err := w.WriteMsg(reply); err != nil {
+					t.Errorf("write DNS SOA response: %v", err)
+				}
+				return
+			}
 			signature := req.IsTsig()
-			if w.TsigStatus() != nil || signature == nil || signature.Hdr.Name != key || signature.Algorithm != dns.HmacSHA256 {
+			if w.TsigStatus() != nil || signature == nil || signature.Hdr.Name != key || signature.Algorithm != algorithm {
 				t.Error("DNS update has invalid TSIG authentication")
 				reply.Rcode = dns.RcodeNotAuth
 			} else {
@@ -244,6 +292,23 @@ func configureRFC2136Fixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig 
 	}
 	go server.ActivateAndServe()
 	t.Cleanup(func() { _ = server.Shutdown() })
+	if legacy {
+		packet, err := net.ListenPacket("udp", listener.Addr().String())
+		if err != nil {
+			t.Fatal(err)
+		}
+		resolver := &dns.Server{PacketConn: packet, Handler: server.Handler, MsgAcceptFunc: server.MsgAcceptFunc, TsigSecret: server.TsigSecret}
+		go resolver.ActivateAndServe()
+		t.Cleanup(func() { _ = resolver.Shutdown() })
+	}
+	if legacy {
+		addr := listener.Addr().(*net.TCPAddr)
+		return b3DNSProviderConfig{
+			Provider: "rfc2136",
+			Access:   map[string]any{"host": addr.IP.String(), "port": addr.Port, "tsigKey": key, "tsigSecret": secret},
+			Apply:    map[string]any{"dnsTTL": 45},
+		}
+	}
 	return b3DNSProviderConfig{
 		Provider: "rfc2136-dns",
 		Access:   map[string]any{"server": listener.Addr().String(), "zone": f.domain, "keyName": key, "keySecret": secret},
@@ -251,11 +316,33 @@ func configureRFC2136Fixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig 
 	}
 }
 
-func configurePowerDNSFixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func configurePowerDNSFixture(t *testing.T, f *b3DNSFixture, legacy bool) b3DNSProviderConfig {
+	zone := dns.Fqdn(f.domain)
+	if legacy {
+		zone = "example.test."
+	}
+	path := "/api/v1/servers/localhost/zones/" + zone
+	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		f.mu.Lock()
 		defer f.mu.Unlock()
-		if r.Method != http.MethodPatch || r.URL.Path != "/api/v1/servers/localhost/zones/"+dns.Fqdn(f.domain) || r.Header.Get("X-API-Key") != "fixture-api-key" {
+		if legacy && r.Method == http.MethodGet {
+			w.Header().Set("Content-Type", "application/json")
+			switch r.URL.Path {
+			case "/api":
+				_, _ = w.Write([]byte(`[{"version":1}]`))
+			case path:
+				rrsets := []any{}
+				if f.value != "" {
+					rrsets = append(rrsets, map[string]any{"name": f.challengeRecordName(), "type": "TXT", "records": []any{map[string]any{"content": strconv.Quote(f.value)}}})
+				}
+				_ = json.NewEncoder(w).Encode(map[string]any{"id": zone, "kind": "Native", "rrsets": rrsets})
+			default:
+				t.Errorf("unexpected PowerDNS read: %s", r.URL.Path)
+				w.WriteHeader(http.StatusNotFound)
+			}
+			return
+		}
+		if r.Method != http.MethodPatch || r.URL.Path != path || r.Header.Get("X-API-Key") != "fixture-api-key" {
 			t.Error("invalid PowerDNS request")
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -276,14 +363,24 @@ func configurePowerDNSFixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig
 				} `json:"records"`
 			} `json:"rrsets"`
 		}
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || len(body.RRSets) != 1 || body.RRSets[0].Type != "TXT" || len(body.RRSets[0].Records) != 1 {
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || len(body.RRSets) != 1 || body.RRSets[0].Type != "TXT" {
 			t.Errorf("invalid PowerDNS payload: %+v, %v", body, err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		set := body.RRSets[0]
+		if legacy && set.ChangeType == "DELETE" && len(set.Records) == 0 {
+			applyExternalDNSUpdate(t, f, set.Name, f.value, false)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if len(set.Records) != 1 {
+			t.Errorf("invalid PowerDNS record set: %+v", set)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 		value, err := strconv.Unquote(set.Records[0].Content)
-		if err != nil || (set.ChangeType != "EXTEND" && set.ChangeType != "PRUNE") {
+		if err != nil || (set.ChangeType != "EXTEND" && set.ChangeType != "PRUNE" && !(legacy && set.ChangeType == "REPLACE")) {
 			t.Errorf("invalid PowerDNS update: %+v, %v", set, err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
@@ -295,10 +392,22 @@ func configurePowerDNSFixture(t *testing.T, f *b3DNSFixture) b3DNSProviderConfig
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		applyExternalDNSUpdate(t, f, set.Name, value, set.ChangeType == "EXTEND")
+		applyExternalDNSUpdate(t, f, set.Name, value, set.ChangeType != "PRUNE")
 		w.WriteHeader(http.StatusNoContent)
 	}))
+	if legacy {
+		server.StartTLS()
+	} else {
+		server.Start()
+	}
 	t.Cleanup(server.Close)
+	if legacy {
+		return b3DNSProviderConfig{
+			Provider: "powerdns",
+			Access:   map[string]any{"serverUrl": server.URL, "apiKey": "fixture-api-key", "allowInsecureConnections": true},
+			Apply:    map[string]any{"dnsTTL": 45},
+		}
+	}
 	return b3DNSProviderConfig{
 		Provider: "powerdns-dns",
 		Access:   map[string]any{"serverUrl": server.URL, "zone": f.domain, "apiKey": "fixture-api-key"},
