@@ -100,7 +100,7 @@ const ConsoleLayout = () => {
                     onClick: handleLogoutClick,
                   },
                 ]}
-                mode="vertical"
+                mode="inline"
                 selectable={false}
               />
             </div>
@@ -232,7 +232,7 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
           style={{ background: "transparent", borderInlineEnd: "none" }}
           inlineCollapsed={collapsed}
           items={menuItems}
-          mode="vertical"
+          mode="inline"
           selectedKeys={menuSelectedKey ? [menuSelectedKey] : []}
         />
       </div>
