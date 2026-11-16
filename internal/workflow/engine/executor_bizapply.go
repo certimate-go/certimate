@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"maps"
 	"math"
+	"runtime"
 	"slices"
 	"strings"
 	"time"
@@ -19,9 +20,11 @@ import (
 
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/domain"
+	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
+	"github.com/certimate-go/certimate/pkg/plugin"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
 	xenv "github.com/certimate-go/certimate/pkg/utils/env"
@@ -463,7 +466,8 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 	// 如果启用多进程模式，发送指令
 	if envMultiProc {
 		type InData struct {
-			Request *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+			Request   *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+			DNSPlugin *plugin.DiscoveredPlugin           `json:"dnsPlugin,omitempty"`
 
 			LegoAccount         *certacme.ACMEAccount   `json:"legoAccount,omitempty"`
 			LegoCertifierConfig *lego.CertificateConfig `json:"legoCertifierConfig,omitempty"`
@@ -473,13 +477,16 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 			Response *certacme.ObtainCertificateResponse `json:"response"`
 		}
 
+		dnsPlugin := pluginhost.GlobalCatalog().DNSPlugin(obtainReq.DNS01Provider())
 		msender := mproc.NewSender[InData, OutData]("certapply", ne.logger)
 		moutput, err := msender.SendWithContext(execCtx.Context(), &InData{
-			Request: obtainReq,
+			Request:   obtainReq,
+			DNSPlugin: dnsPlugin,
 
 			LegoAccount:         acmeAcct,
 			LegoCertifierConfig: legoCertifierCfg,
 		})
+		runtime.KeepAlive(dnsPlugin)
 		if err != nil {
 			ne.logger.Warn("could not obtain certificate")
 			return nil, err

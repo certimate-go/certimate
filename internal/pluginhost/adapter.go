@@ -17,6 +17,7 @@ import (
 	"github.com/certimate-go/certimate/internal/certacme/certifiers"
 	"github.com/certimate-go/certimate/internal/certmgmt/deployers"
 	"github.com/certimate-go/certimate/internal/certmgmt/purgers"
+	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/internal/notify/notifiers"
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -180,6 +181,22 @@ type pluginDnsChallengerFactory struct {
 	dp       *plugin.DiscoveredPlugin
 	logLevel string
 	logger   *slog.Logger
+}
+
+func newPluginDnsChallengerFactory(manager *plugin.Manager, dp *plugin.DiscoveredPlugin, logger *slog.Logger) *pluginDnsChallengerFactory {
+	return &pluginDnsChallengerFactory{
+		manager: manager, dp: dp,
+		logLevel: manager.Config().LogLevel, logger: logger.With(slog.String("plugin", dp.Manifest.ProviderType)),
+	}
+}
+
+func RegisterDNSPlugin(dp *plugin.DiscoveredPlugin, logger *slog.Logger) error {
+	if dp.Manifest == nil || dp.Manifest.Capability != plugin.CapabilityDns {
+		return fmt.Errorf("invalid dns-01 plugin manifest")
+	}
+	manager := plugin.NewManager(plugin.PluginConfig{}, logger)
+	factory := newPluginDnsChallengerFactory(manager, dp, logger)
+	return certifiers.ACMEDns01Registries.Register(domain.ACMEDns01ProviderType(dp.Manifest.ProviderType), factory.new)
 }
 
 func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOptions) (core.ACMEChallenger, error) {

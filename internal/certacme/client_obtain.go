@@ -79,6 +79,25 @@ type ObtainCertificateResponse struct {
 	ARIReplaced          bool
 }
 
+func (r *ObtainCertificateRequest) DNS01Provider() domain.ACMEDns01ProviderType {
+	if !strings.EqualFold(r.ChallengeType, "dns-01") {
+		return ""
+	}
+	providerType := domain.ACMEDns01ProviderType(r.Provider)
+	switch providerType {
+	case domain.ACMEDns01ProviderTypeCMCCCloud:
+		return domain.ACMEDns01ProviderTypeCMCCCloudDNS
+	case domain.ACMEDns01ProviderTypeGoogleCloud:
+		return domain.ACMEDns01ProviderTypeGoogleCloudDNS
+	case domain.ACMEDns01ProviderTypePowerDNS:
+		return domain.ACMEDns01ProviderTypePowerDNSDNS
+	case domain.ACMEDns01ProviderTypeRFC2136:
+		return domain.ACMEDns01ProviderTypeRFC2136DNS
+	default:
+		return providerType
+	}
+}
+
 func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCertificateRequest) (*ObtainCertificateResponse, error) {
 	if request == nil {
 		return nil, fmt.Errorf("the request is nil")
@@ -99,17 +118,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 	case CHALLENGE_TYPE_DNS01:
 		{
 			os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
-			providerType := domain.ACMEDns01ProviderType(request.Provider)
-			switch providerType {
-			case domain.ACMEDns01ProviderTypeCMCCCloud:
-				providerType = domain.ACMEDns01ProviderTypeCMCCCloudDNS
-			case domain.ACMEDns01ProviderTypeGoogleCloud:
-				providerType = domain.ACMEDns01ProviderTypeGoogleCloudDNS
-			case domain.ACMEDns01ProviderTypePowerDNS:
-				providerType = domain.ACMEDns01ProviderTypePowerDNSDNS
-			case domain.ACMEDns01ProviderTypeRFC2136:
-				providerType = domain.ACMEDns01ProviderTypeRFC2136DNS
-			}
+			providerType := request.DNS01Provider()
 			providerFactory, err := certifiers.ACMEDns01Registries.Get(providerType)
 			if err != nil {
 				switch providerType {

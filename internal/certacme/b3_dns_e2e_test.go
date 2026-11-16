@@ -111,6 +111,7 @@ type dnsWorkflowPlugins struct {
 	accessType       string
 	pollingInterval  int
 	accessByProvider map[string]string
+	applyPlugin      string
 	configureDNS     func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
 	wildcardOrder    bool
 	cname            bool
@@ -183,6 +184,9 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 	}
 	env := append(os.Environ(), "HTTPS_PROXY="+proxyURL, "HTTP_PROXY="+proxyURL, "NO_PROXY=127.0.0.1,localhost", "SSL_CERT_FILE="+caPath, "LEGO_CA_CERTIFICATES="+caPath, "CERTIMATE_PLUGIN_DIR="+pluginDir)
 	env = append(env, providerConfig.Env...)
+	if plugins.applyPlugin != "" {
+		env = append(env, "CERTIMATE_WORKFLOW_MULTIPROC=true")
+	}
 	dataDir := t.TempDir()
 	log := new(bytes.Buffer)
 	for _, args := range [][]string{{"migrate", "up", "--dir", dataDir}, {"superuser", "upsert", "dns@example.test", "DNS-fixture-password123!", "--dir", dataDir}} {
@@ -352,6 +356,26 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 					t.Fatal("workflow timeout")
 				}
 				time.Sleep(30 * time.Millisecond)
+			}
+			if plugins.applyPlugin != "" {
+				filter := url.QueryEscape(fmt.Sprintf("runRef = %q && nodeId = 'apply' && message = 'plugin process exited'", run.Data.RunID))
+				var exits struct {
+					Items []struct {
+						Data struct {
+							Plugin string `json:"plugin"`
+						} `json:"data"`
+					} `json:"items"`
+				}
+				if err := call("GET", "/api/collections/workflow_logs/records?filter="+filter, nil, &exits); err != nil {
+					t.Fatal(err)
+				}
+				var names []string
+				for _, item := range exits.Items {
+					names = append(names, filepath.Base(item.Data.Plugin))
+				}
+				if !slices.Equal(names, []string{plugins.applyPlugin}) {
+					t.Fatalf("expected only one %s process in the apply node, got %v (status=%s error=%s)", plugins.applyPlugin, names, result.Status, result.Error)
+				}
 			}
 			if f.wildcard != nil && (result.Status == "succeeded" || step == "partial-present-failure") {
 				query := new(dns.Msg).SetQuestion(f.challengeRecordName(), dns.TypeTXT)

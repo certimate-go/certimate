@@ -158,6 +158,17 @@ func (c *Catalog) registered() map[string]*registeredPlugin {
 	return out
 }
 
+func (c *Catalog) DNSPlugin(providerType domain.ACMEDns01ProviderType) *plugin.DiscoveredPlugin {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	if p := c.plugins[string(providerType)]; p != nil {
+		if factory, ok := p.factory.(*pluginDnsChallengerFactory); ok {
+			return factory.dp
+		}
+	}
+	return nil
+}
+
 func (c *Catalog) resolveAccessOwnership(prepared []*registeredPlugin) ([]*registeredPlugin, []error) {
 	registeredOwners := c.accessOwners()
 
@@ -285,7 +296,7 @@ func (c *Catalog) addRuntimeCleanup(p *registeredPlugin) {
 	case *pluginDeployerFactory:
 		runtime.AddCleanup(f, removeRuntimeDirectory, dir)
 	case *pluginDnsChallengerFactory:
-		runtime.AddCleanup(f, removeRuntimeDirectory, dir)
+		runtime.AddCleanup(f.dp, removeRuntimeDirectory, dir)
 	case *pluginNotifierFactory:
 		runtime.AddCleanup(f, removeRuntimeDirectory, dir)
 	case *pluginPurgerFactory:

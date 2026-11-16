@@ -16,6 +16,7 @@ import (
 	"math/big"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -113,18 +114,13 @@ func runPersistWorkflow(t *testing.T, binary string, omitAccount, multiproc bool
 	if err != nil {
 		t.Fatal(err)
 	}
-	listener, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		t.Fatalf("start ACME fixture listener: %v", err)
-	}
-	f.base = "http://" + listener.Addr().String()
-	ca := &http.Server{Handler: http.HandlerFunc(f.acme)}
-	go func() {
-		if err := ca.Serve(listener); err != nil && err != http.ErrServerClosed {
-			t.Error(err)
-		}
-	}()
+	ca := httptest.NewTLSServer(http.HandlerFunc(f.acme))
 	defer ca.Close()
+	f.base = ca.URL
+	caPath := filepath.Join(t.TempDir(), "ca.pem")
+	if err := os.WriteFile(caPath, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: ca.Certificate().Raw}), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	udp, err := net.ListenPacket("udp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatalf("start DNS fixture listener: %v", err)
@@ -132,7 +128,7 @@ func runPersistWorkflow(t *testing.T, binary string, omitAccount, multiproc bool
 	dnsServer := &dns.Server{PacketConn: udp, Handler: dns.HandlerFunc(f.dns)}
 	go dnsServer.ActivateAndServe()
 	defer dnsServer.Shutdown()
-	api := startPersistCore(t, binary, multiproc)
+	api := startPersistCore(t, binary, caPath, multiproc)
 	caID := api.create(t, "access", map[string]any{"name": "Persistent fixture CA", "provider": "acmeca", "reserve": "ca", "config": map[string]string{"endpoint": f.base + "/directory"}})
 	domains := []string{"persist.example.test", "*.persist.example.test"}
 	nameservers := []string{udp.LocalAddr().String()}
@@ -316,10 +312,10 @@ type persistAPI struct {
 	client      *http.Client
 }
 
-func startPersistCore(t *testing.T, binary string, multiproc bool) *persistAPI {
+func startPersistCore(t *testing.T, binary, caPath string, multiproc bool) *persistAPI {
 	t.Helper()
 	dataDir := t.TempDir()
-	env := append(os.Environ(), "HTTP_PROXY=", "HTTPS_PROXY=", "ALL_PROXY=", "NO_PROXY=127.0.0.1,localhost", "CERTIMATE_PLUGIN_DIR="+t.TempDir(), "CERTIMATE_WORKFLOW_MULTIPROC="+strconv.FormatBool(multiproc))
+	env := append(os.Environ(), "HTTP_PROXY=", "HTTPS_PROXY=", "ALL_PROXY=", "NO_PROXY=127.0.0.1,localhost", "LEGO_CA_CERTIFICATES="+caPath, "CERTIMATE_PLUGIN_DIR="+t.TempDir(), "CERTIMATE_WORKFLOW_MULTIPROC="+strconv.FormatBool(multiproc))
 	for _, args := range [][]string{{"migrate", "up", "--dir", dataDir}, {"superuser", "upsert", "persist@example.test", "Persist-fixture-password123!", "--dir", dataDir}} {
 		cmd := exec.Command(binary, args...)
 		cmd.Env = env

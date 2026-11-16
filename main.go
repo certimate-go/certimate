@@ -58,19 +58,14 @@ func main() {
 	}
 	stopPlugins := func() {}
 
-	if isServeCmd || isInterCmd {
+	if isServeCmd {
 		pb.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
 			if err := e.Next(); err != nil {
 				return err
 			}
 
-			if isServeCmd {
-				settings.Setup()
-				stopPlugins = scanPlugins()
-			} else {
-				childLogger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(slog.String("component", "pluginhost"))
-				stopPlugins = registerPlugins(childLogger)
-			}
+			settings.Setup()
+			stopPlugins = scanPlugins()
 			return nil
 		})
 
@@ -122,11 +117,14 @@ func main() {
 	}
 }
 
-func registerPlugins(logger *slog.Logger) func() {
+func scanPlugins() func() {
 	pluginDir := resolvePluginDir()
 	if pluginDir == "" {
 		return func() {}
 	}
+	logger := slog.Default().With(slog.String("component", "pluginhost"))
+	pluginhost.SweepOrphans(pluginDir, logger)
+
 	cfg := plugin.PluginConfig{
 		PluginDir:   pluginDir,
 		CoreVersion: app.AppVersion,
@@ -137,25 +135,7 @@ func registerPlugins(logger *slog.Logger) func() {
 	for _, err := range errs {
 		logger.Warn("[CERTIMATE] plugin registration error", slog.Any("error", err))
 	}
-	return func() {}
-}
-
-func scanPlugins() func() {
-	pluginDir := resolvePluginDir()
-	if pluginDir == "" {
-		return func() {}
-	}
-	logger := slog.Default().With(slog.String("component", "pluginhost"))
-
-	pluginhost.SweepOrphans(pluginDir, logger)
-
-	stop := registerPlugins(logger)
-
-	cfg := plugin.PluginConfig{
-		PluginDir:   pluginDir,
-		CoreVersion: app.AppVersion,
-	}
-	reloader := pluginhost.NewReloader(cfg, pluginhost.GlobalCatalog(), logger)
+	reloader := pluginhost.NewReloader(cfg, catalog, logger)
 	pluginhost.SetGlobalReloader(reloader)
 
 	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
@@ -171,7 +151,7 @@ func scanPlugins() func() {
 	ctx, cancel := context.WithCancel(context.Background())
 	watcher.Start(ctx)
 	reloader.Start(ctx, watcher)
-	return func() { stop(); cancel(); reloader.Close() }
+	return func() { cancel(); reloader.Close() }
 }
 
 func resolvePluginDir() string {
