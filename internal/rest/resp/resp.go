@@ -38,3 +38,19 @@ func Err(e *core.RequestEvent, err error) error {
 	}
 	return e.JSON(http.StatusOK, rs)
 }
+
+func ErrWithData(e *core.RequestEvent, err error, data interface{}) error {
+	code := 500
+
+	xerr, ok := err.(*domain.Error)
+	if ok {
+		code = xerr.Code
+	}
+
+	rs := &Response{
+		Code: code,
+		Msg:  err.Error(),
+		Data: data,
+	}
+	return e.JSON(http.StatusOK, rs)
+}

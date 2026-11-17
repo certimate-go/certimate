@@ -86,6 +86,12 @@
       },
       "default_name": "未命名工作流",
       "default_description": ""
+    },
+    "custom_templates": {
+      "title": "自定义模板",
+      "subtitle": "由你自己保存的参数化工作流模板。",
+      "empty": "还没有自定义模板。在工作流编辑器中选择“保存为模板”，即可创建。",
+      "manage": "管理模板"
     }
   },
 
@@ -193,6 +199,12 @@
               "label": "内容"
             }
           }
+        },
+        "save_as_template": {
+          "button": "保存为模板"
+        },
+        "update_template": {
+          "button": "更新已有模板"
         }
       },
       "uncompleted_design": {
@@ -207,6 +219,134 @@
     },
     "runs": {
       "tab": "运行历史"
+    }
+  },
+
+  "template": {
+    "apply": {
+      "title": "使用模板创建工作流",
+      "title_loading": "使用模板创建工作流",
+      "button": {
+        "create": "创建工作流"
+      },
+      "text": {
+        "created": "工作流已创建",
+        "footer_notice": "创建后进入草稿，不会自动运行。",
+        "no_params": "该模板未定义创建参数，将直接复制模板内容。",
+        "config_unavailable": "该部署提供商的配置表单暂不可用，请确认对应的内置组件或插件已启用。"
+      },
+      "tag": {
+        "domains": "证书域名",
+        "deployment": "部署目标"
+      },
+      "form": {
+        "name": {
+          "label": "工作流名称",
+          "errmsg": {
+            "invalid": "请输入工作流名称"
+          }
+        },
+        "description": {
+          "label": "工作流描述"
+        },
+        "domains": {
+          "label": "证书域名",
+          "help": "每行一个域名，支持通配符域名。将写入模板绑定的证书申请节点。",
+          "placeholder": "请输入域名，多个域名用分号分隔",
+          "errmsg": {
+            "invalid": "域名格式不正确"
+          },
+          "modal": {
+            "title": "批量输入域名",
+            "placeholder": "每行一个域名"
+          }
+        },
+        "provider_access": {
+          "label": "提供商授权",
+          "help": "选择已有的授权记录，沿用其中的连接信息。",
+          "placeholder": "请选择授权",
+          "errmsg": {
+            "invalid": "请选择授权"
+          }
+        }
+      },
+      "errmsg": {
+        "required": "该项为必填项",
+        "invalid_domain": "域名格式不正确",
+        "access_required": "请选择提供商授权",
+        "access_not_found": "所选授权已被删除，请重新选择",
+        "access_provider_mismatch": "所选授权与部署提供商不匹配，请重新选择",
+        "provider_unavailable": "模板需要的部署提供商当前不可用，请确认插件已启用后重试",
+        "config_invalid": "部署配置无效：{{message}}"
+      },
+      "revision_conflict": {
+        "title": "模板内容已变化",
+        "description": "模板已被更新或删除。请关闭后重新打开模板并确认参数，已填写的内容暂时保留。"
+      }
+    },
+    "save": {
+      "title": "保存为模板",
+      "title_update": "更新已有模板",
+      "button": {
+        "save": "保存",
+        "update": "更新模板"
+      },
+      "text": {
+        "saved": "模板已保存",
+        "updated": "模板已更新",
+        "footer_notice": "模板仅保存流程与参数定义，不影响当前工作流。",
+        "no_apply_nodes": "流程中没有可参数化的证书申请节点。",
+        "no_deploy_nodes": "流程中没有可参数化的部署节点。",
+        "expose_domains": "创建时可填写域名"
+      },
+      "domains_title": {
+        "default": "证书域名"
+      },
+      "section": {
+        "apply_nodes": "证书申请节点",
+        "deploy_nodes": "部署节点"
+      },
+      "form": {
+        "name": {
+          "label": "模板名称",
+          "placeholder": "请输入模板名称",
+          "errmsg": {
+            "invalid": "请输入模板名称"
+          }
+        },
+        "description": {
+          "label": "模板描述",
+          "placeholder": "请输入模板描述"
+        },
+        "target": {
+          "label": "选择要更新的模板",
+          "placeholder": "请选择模板"
+        },
+        "domains_title": {
+          "label": "域名参数标题",
+          "placeholder": "请输入参数标题",
+          "errmsg": {
+            "invalid": "请输入参数标题"
+          }
+        },
+        "domains_description": {
+          "label": "域名参数说明",
+          "placeholder": "选填，展示给创建者"
+        },
+        "deploy_title": {
+          "placeholder": "请输入参数标题"
+        }
+      },
+      "preview": {
+        "title": "创建表单预览",
+        "apply_nodes": "将写入 {{count}} 个申请节点",
+        "deploy_provider": "部署类型由模板固定：{{provider}}",
+        "empty": "未选择任何参数。所有配置将沿用模板值。"
+      },
+      "revision_conflict": {
+        "title": "模板内容已变化",
+        "description": "该模板已被其他会话更新。已刷新到最新修订号，请确认后再提交。"
+      }
     }
   }
 }

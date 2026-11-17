@@ -16,6 +16,7 @@ import (
 	"github.com/certimate-go/certimate/internal/setup"
 	"github.com/certimate-go/certimate/internal/statistics"
 	"github.com/certimate-go/certimate/internal/workflow"
+	"github.com/certimate-go/certimate/internal/workflowtemplate"
 )
 
 var (
@@ -43,11 +44,14 @@ func BindRouter(router *router.Router[*core.RequestEvent], setupService *setup.S
 	providerSchemaSvc = providerschema.NewProviderSchemaService(providerSchemaRepo)
 	acmeAccountSvc := acmeaccount.NewService(acmeAccountRepo)
 	accessCheckSvc := accesscheck.NewService(accessRepo)
+	workflowTemplateRepo := repository.NewWorkflowTemplateRepository()
+	workflowTemplateSvc := workflowtemplate.NewWorkflowTemplateService(workflowTemplateRepo, workflowRepo, accessRepo, providerSchemaSvc)
 
 	group := router.Group("/api")
 	group.Bind(apis.RequireSuperuserAuth())
 	handlers.NewCertificatesHandler(group, certificateSvc)
 	handlers.NewWorkflowsHandler(group, workflowSvc)
+	handlers.NewWorkflowTemplatesHandler(group, workflowTemplateSvc)
 	handlers.NewStatisticsHandler(group, statisticsSvc)
 	handlers.NewNotificationsHandler(group, notifySvc)
 	handlers.NewProviderSchemaHandler(group, providerSchemaSvc)

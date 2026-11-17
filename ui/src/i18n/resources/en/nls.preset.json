@@ -36,6 +36,10 @@
       "script": {
         "": "Script template",
         "tips": "You can use these preset script commands in workflow deployment nodes (for <i>Local host</i>, <i>Remote host</i>, etc.)."
+      },
+      "workflow": {
+        "": "Workflow templates",
+        "tips": "Manage parameterized workflow templates here and create workflows from them on the \"New workflow\" page."
       }
     }
   },
@@ -72,6 +76,29 @@
     "option_group": {
       "builtin": "Built-in templates",
       "custom": "Customized templates"
+    }
+  },
+
+  "workflow": {
+    "search": {
+      "placeholder": "Search templates..."
+    },
+    "empty": "No workflow templates yet. Choose \"Save as template\" in the workflow editor to create one.",
+    "tag": {
+      "domains": "Domains ×{{count}}",
+      "deployments": "Deployments ×{{count}}"
+    },
+    "menu": {
+      "use": "Create from template",
+      "edit": "Edit template",
+      "preview": "Preview",
+      "delete": "Delete template"
+    },
+    "preview": {
+      "title": "Preview template \"{{name}}\"",
+      "params": "Creation parameters",
+      "no_params": "This template defines no creation parameters.",
+      "graph": "Graph structure"
     }
   }
 }

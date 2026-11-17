@@ -1,8 +1,9 @@
 package domain
 
 var (
-	ErrInvalidParams  = NewError(400, "invalid params")
-	ErrRecordNotFound = NewError(404, "record not found")
+	ErrInvalidParams    = NewError(400, "invalid params")
+	ErrRecordNotFound   = NewError(404, "record not found")
+	ErrRevisionConflict = NewError(409, "revision conflict")
 )
 
 type Error struct {

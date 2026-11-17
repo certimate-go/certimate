@@ -7,8 +7,9 @@ import Show from "@/components/Show";
 
 import PresetListNotifyTemplates from "./PresetListNotifyTemplates";
 import PresetListScriptTemplates from "./PresetListScriptTemplates";
+import PresetListWorkflowTemplates from "./PresetListWorkflowTemplates";
 
-type PresetUsages = "notification" | "script";
+type PresetUsages = "notification" | "script" | "workflow";
 
 const PresetList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,6 +48,10 @@ const PresetList = () => {
               key: "script",
               label: t("preset.props.usage.script"),
             },
+            {
+              key: "workflow",
+              label: t("preset.props.usage.workflow"),
+            },
           ]}
           size="large"
           onChange={(key) => handleTabChange(key)}
@@ -59,6 +64,9 @@ const PresetList = () => {
             </Show.Case>
             <Show.Case when={tabKey === "script"}>
               <PresetListScriptTemplates />
+            </Show.Case>
+            <Show.Case when={tabKey === "workflow"}>
+              <PresetListWorkflowTemplates />
             </Show.Case>
           </Show>
         </div>

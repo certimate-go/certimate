@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlowLayoutDefault } from "@flowgram.ai/fixed-layout-editor";
-import { IconArrowBackUp, IconDots, IconTransferIn, IconTransferOut } from "@tabler/icons-react";
+import { IconArrowBackUp, IconDeviceFloppy, IconDots, IconFileDatabase, IconTransferIn, IconTransferOut } from "@tabler/icons-react";
 import { useDeepCompareEffect } from "ahooks";
 import { Alert, App, Button, Card, Dropdown, Result, Space, theme } from "antd";
 import { debounce } from "radash";
@@ -10,6 +10,8 @@ import Show from "@/components/Show";
 import { WorkflowDesigner, type WorkflowDesignerInstance, WorkflowNodeDrawer, WorkflowToolbar } from "@/components/workflow/designer";
 import WorkflowGraphExportModal from "@/components/workflow/WorkflowGraphExportModal";
 import WorkflowGraphImportModal from "@/components/workflow/WorkflowGraphImportModal";
+import WorkflowTemplateSaveModal from "@/components/workflow/WorkflowTemplateSaveModal";
+import { type WorkflowGraph } from "@/domain/workflow";
 import { useAppSettings, useZustandShallowSelector } from "@/hooks";
 import { useWorkflowStore } from "@/stores/workflow";
 import { unwrapErrMsg } from "@/utils/error";
@@ -125,6 +127,29 @@ const WorkflowDetailDesign = () => {
     graphExportModal.open({ data: workflow.graphDraft! });
   };
 
+  const [templateSaveModalOpen, setTemplateSaveModalOpen] = useState(false);
+  const [templateSaveModalMode, setTemplateSaveModalMode] = useState<"create" | "update">("create");
+
+  const getDesignerGraphSnapshot = (): WorkflowGraph | undefined => {
+    if (designerRef.current == null || designerRef.current.document.disposed) return workflow.graphDraft;
+    try {
+      return designerRef.current.document.toJSON();
+    } catch (err) {
+      console.error(err);
+      return workflow.graphDraft;
+    }
+  };
+
+  const handleSaveAsTemplateClick = () => {
+    setTemplateSaveModalMode("create");
+    setTemplateSaveModalOpen(true);
+  };
+
+  const handleUpdateTemplateClick = () => {
+    setTemplateSaveModalMode("update");
+    setTemplateSaveModalOpen(true);
+  };
+
   return (
     <div className="size-full">
       <Card
@@ -181,6 +206,21 @@ const WorkflowDetailDesign = () => {
                             type: "divider",
                           },
                           {
+                            key: "saveAsTemplate",
+                            label: t("workflow.detail.design.action.save_as_template.button"),
+                            icon: <IconDeviceFloppy size="1.25em" />,
+                            onClick: handleSaveAsTemplateClick,
+                          },
+                          {
+                            key: "updateTemplate",
+                            label: t("workflow.detail.design.action.update_template.button"),
+                            icon: <IconFileDatabase size="1.25em" />,
+                            onClick: handleUpdateTemplateClick,
+                          },
+                          {
+                            type: "divider",
+                          },
+                          {
                             key: "import",
                             label: t("workflow.detail.design.action.import.button"),
                             icon: <IconTransferIn size="1.25em" />,
@@ -229,6 +269,13 @@ const WorkflowDetailDesign = () => {
         <WorkflowGraphImportModal {...graphImportModalProps} />
         <WorkflowGraphExportModal {...graphExportModalProps} />
       </Card>
+
+      <WorkflowTemplateSaveModal
+        getGraph={getDesignerGraphSnapshot}
+        mode={templateSaveModalMode}
+        open={templateSaveModalOpen}
+        onOpenChange={setTemplateSaveModalOpen}
+      />
     </div>
   );
 };

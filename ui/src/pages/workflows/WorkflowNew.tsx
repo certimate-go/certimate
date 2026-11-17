@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { IconArrowRight, IconSquarePlus2, IconUpload } from "@tabler/icons-react";
-import { App, Button, Card, Spin, Typography } from "antd";
+import { useMount } from "ahooks";
+import { App, Button, Card, Spin, Tag, Typography } from "antd";
+import { ClientResponseError } from "pocketbase";
 
+import { getWorkflowTemplate, listWorkflowTemplates } from "@/api/workflowtemplates";
 import Show from "@/components/Show";
 import WorkflowGraphImportModal from "@/components/workflow/WorkflowGraphImportModal";
+import WorkflowTemplateApplyDrawer from "@/components/workflow/WorkflowTemplateApplyDrawer";
 import {
   WORKFLOW_NODE_TYPES,
   type WorkflowModel,
@@ -14,6 +18,7 @@ import {
   type WorkflowNodeConfigForBranchBlock,
   newNode,
 } from "@/domain/workflow";
+import { WORKFLOW_TEMPLATE_PARAM_KINDS, type WorkflowTemplateModel, sortWorkflowTemplateParams } from "@/domain/workflowTemplate";
 import { save as saveWorkflow } from "@/repository/workflow";
 import { unwrapErrMsg } from "@/utils/error";
 import { withBasePath } from "@/utils/url";
@@ -25,6 +30,7 @@ type TemplateKeys = typeof TEMPLATE_KEY_BLANK | typeof TEMPLATE_KEY_CERTTEST | t
 
 const WorkflowNew = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { i18n, t } = useTranslation();
 
@@ -47,6 +53,33 @@ const WorkflowNew = () => {
   const [templateSelectKey, setTemplateSelectKey] = useState<TemplateKeys>();
   const [templatePending, setTemplatePending] = useState(false);
 
+  const [customTemplates, setCustomTemplates] = useState<WorkflowTemplateModel[]>();
+  const [applyDrawerTemplate, setApplyDrawerTemplate] = useState<WorkflowTemplateModel>();
+
+  useMount(() => {
+    listWorkflowTemplates()
+      .then((res) => {
+        setCustomTemplates(res);
+
+        const templateId = searchParams.get("template");
+        if (templateId) {
+          setSearchParams((prev) => {
+            prev.delete("template");
+            return prev;
+          });
+          getWorkflowTemplate(templateId).then(setApplyDrawerTemplate);
+        }
+      })
+      .catch((err) => {
+        if (err instanceof ClientResponseError && err.isAbort) {
+          return;
+        }
+
+        console.error(err);
+        setCustomTemplates([]);
+      });
+  });
+
   const renderTemplateCard = ({ key, name, description, image }: { key: TemplateKeys; name: string; description: string; image: string }) => {
     return (
       <Card
@@ -68,6 +101,41 @@ const WorkflowNew = () => {
               </div>
             }
             description={description}
+          />
+        </div>
+      </Card>
+    );
+  };
+
+  const renderCustomTemplateCard = (template: WorkflowTemplateModel) => {
+    const params = sortWorkflowTemplateParams(template.params ?? []);
+    const summary = params
+      .map((param) =>
+        param.kind === WORKFLOW_TEMPLATE_PARAM_KINDS.DOMAINS ? t("workflow.template.apply.tag.domains") : t("workflow.template.apply.tag.deployment")
+      )
+      .join(" · ");
+
+    return (
+      <Card key={template.id} className="group/card size-full" hoverable onClick={() => setApplyDrawerTemplate(template)}>
+        <div className="flex w-full items-center gap-4">
+          <Card.Meta
+            className="grow"
+            title={
+              <div className="flex w-full items-center justify-between gap-4 overflow-hidden transition-colors group-hover/card:text-primary">
+                <div className="flex-1 truncate">{template.name}</div>
+                <IconArrowRight className="opacity-0 transition-opacity group-hover/card:opacity-100" size="1.25em" />
+              </div>
+            }
+            description={
+              <div className="flex flex-col gap-1">
+                <div className="line-clamp-2 min-h-8">{template.description}</div>
+                {summary && (
+                  <Tag className="w-fit" color="default">
+                    {summary}
+                  </Tag>
+                )}
+              </div>
+            }
           />
         </div>
       </Card>
@@ -302,6 +370,35 @@ const WorkflowNew = () => {
         </div>
 
         <div className="mt-8">
+          <div className="flex items-baseline justify-between gap-4">
+            <h3>{t("workflow.new.custom_templates.title")}</h3>
+            <Typography.Text type="secondary" className="text-xs">
+              {t("workflow.new.custom_templates.subtitle")}
+            </Typography.Text>
+          </div>
+
+          <div className="mt-3 mb-4">
+            <Show
+              when={(customTemplates?.length ?? 0) > 0}
+              fallback={
+                <Card className="size-full" styles={{ body: { padding: "1rem" } }} variant="borderless">
+                  <Typography.Text type="secondary">
+                    {t("workflow.new.custom_templates.empty")}
+                    <Button className="ms-2 p-0" size="small" type="link" onClick={() => navigate("/presets?usage=workflow")}>
+                      {t("workflow.new.custom_templates.manage")}
+                    </Button>
+                  </Typography.Text>
+                </Card>
+              }
+            >
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                {customTemplates?.map((tpl) => renderCustomTemplateCard(tpl))}
+              </div>
+            </Show>
+          </div>
+        </div>
+
+        <div className="mt-8">
           <h3>{t("workflow.new.templates.title")}</h3>
           <Typography.Text type="secondary">
             <div className="mb-4">{t("workflow.new.templates.subtitle")}</div>
@@ -312,6 +409,15 @@ const WorkflowNew = () => {
           </div>
         </div>
       </div>
+
+      <WorkflowTemplateApplyDrawer
+        open={!!applyDrawerTemplate}
+        template={applyDrawerTemplate}
+        onInstantiated={(workflowId) => navigate(`/workflows/${workflowId}`, { replace: true })}
+        onOpenChange={(open) => {
+          if (!open) setApplyDrawerTemplate(void 0);
+        }}
+      />
     </div>
   );
 };

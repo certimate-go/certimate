@@ -86,6 +86,12 @@
       },
       "default_name": "Untitled workflow",
       "default_description": ""
+    },
+    "custom_templates": {
+      "title": "Custom templates",
+      "subtitle": "Parameterized workflow templates saved by yourself.",
+      "empty": "No custom templates yet. Choose \"Save as template\" in the workflow editor to create one.",
+      "manage": "Manage templates"
     }
   },
 
@@ -193,6 +199,12 @@
               "label": "Graph"
             }
           }
+        },
+        "save_as_template": {
+          "button": "Save as template"
+        },
+        "update_template": {
+          "button": "Update existing template"
         }
       },
       "uncompleted_design": {
@@ -207,6 +219,134 @@
     },
     "runs": {
       "tab": "History runs"
+    }
+  },
+
+  "template": {
+    "apply": {
+      "title": "Create workflow from template",
+      "title_loading": "Create workflow from template",
+      "button": {
+        "create": "Create workflow"
+      },
+      "text": {
+        "created": "Workflow created",
+        "footer_notice": "The workflow will be created as a draft and will not run automatically.",
+        "no_params": "This template defines no creation parameters. The template content will be copied as-is.",
+        "config_unavailable": "The config form of this deployment provider is unavailable. Make sure the built-in component or plugin is enabled."
+      },
+      "tag": {
+        "domains": "Domains",
+        "deployment": "Deployment"
+      },
+      "form": {
+        "name": {
+          "label": "Workflow name",
+          "errmsg": {
+            "invalid": "Workflow name is required"
+          }
+        },
+        "description": {
+          "label": "Workflow description"
+        },
+        "domains": {
+          "label": "Certificate domains",
+          "help": "One domain per line, wildcards supported. The value will be written into the apply nodes bound by the template.",
+          "placeholder": "Enter domains, separated by semicolons",
+          "errmsg": {
+            "invalid": "Invalid domain format"
+          },
+          "modal": {
+            "title": "Enter domains in batch",
+            "placeholder": "One domain per line"
+          }
+        },
+        "provider_access": {
+          "label": "Provider access",
+          "help": "Choose an existing access record and reuse its connection settings.",
+          "placeholder": "Select an access",
+          "errmsg": {
+            "invalid": "Provider access is required"
+          }
+        }
+      },
+      "errmsg": {
+        "required": "This field is required",
+        "invalid_domain": "Invalid domain format",
+        "access_required": "Provider access is required",
+        "access_not_found": "The selected access no longer exists. Please choose another one.",
+        "access_provider_mismatch": "The selected access does not match the deployment provider. Please choose another one.",
+        "provider_unavailable": "The deployment provider required by the template is unavailable. Enable the plugin and retry.",
+        "config_invalid": "Invalid deployment config: {{message}}"
+      },
+      "revision_conflict": {
+        "title": "Template has changed",
+        "description": "The template has been updated or deleted. Please close and reopen the template to confirm parameters. What you have typed is preserved for now."
+      }
+    },
+    "save": {
+      "title": "Save as template",
+      "title_update": "Update existing template",
+      "button": {
+        "save": "Save",
+        "update": "Update template"
+      },
+      "text": {
+        "saved": "Template saved",
+        "updated": "Template updated",
+        "footer_notice": "Saving a template does not affect the current workflow.",
+        "no_apply_nodes": "No certificate apply node can be parameterized in this workflow.",
+        "no_deploy_nodes": "No deploy node can be parameterized in this workflow.",
+        "expose_domains": "Domains are fillable on creation"
+      },
+      "domains_title": {
+        "default": "Certificate domains"
+      },
+      "section": {
+        "apply_nodes": "Certificate apply nodes",
+        "deploy_nodes": "Deploy nodes"
+      },
+      "form": {
+        "name": {
+          "label": "Template name",
+          "placeholder": "Enter template name",
+          "errmsg": {
+            "invalid": "Template name is required"
+          }
+        },
+        "description": {
+          "label": "Template description",
+          "placeholder": "Enter template description"
+        },
+        "target": {
+          "label": "Template to update",
+          "placeholder": "Select a template"
+        },
+        "domains_title": {
+          "label": "Domains parameter title",
+          "placeholder": "Enter parameter title",
+          "errmsg": {
+            "invalid": "Parameter title is required"
+          }
+        },
+        "domains_description": {
+          "label": "Domains parameter description",
+          "placeholder": "Optional, shown to creators"
+        },
+        "deploy_title": {
+          "placeholder": "Enter parameter title"
+        }
+      },
+      "preview": {
+        "title": "Creation form preview",
+        "apply_nodes": "Will be written into {{count}} apply node(s)",
+        "deploy_provider": "Deployment type is fixed by the template: {{provider}}",
+        "empty": "No parameters selected. All settings will use template values."
+      },
+      "revision_conflict": {
+        "title": "Template has changed",
+        "description": "This template was updated by another session. Refreshed to the latest revision, please review before submitting."
+      }
     }
   }
 }

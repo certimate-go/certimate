@@ -37,3 +37,37 @@ export async function post<T = any>({ url, headers, ...opts }: Options) {
 
   return resp;
 }
+
+export async function put<T = any>({ url, headers, ...opts }: Options) {
+  const resp = await pb.send<BaseResponse<T>>(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    ...opts,
+  });
+
+  if (resp.code != 0) {
+    throw new ClientResponseError({ status: resp.code, response: resp, data: {} });
+  }
+
+  return resp;
+}
+
+export async function del<T = any>({ url, headers, ...opts }: Options) {
+  const resp = await pb.send<BaseResponse<T>>(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    ...opts,
+  });
+
+  if (resp.code != 0) {
+    throw new ClientResponseError({ status: resp.code, response: resp, data: {} });
+  }
+
+  return resp;
+}
