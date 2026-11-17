@@ -296,6 +296,7 @@ type rogueServer struct {
 	proto.UnimplementedPluginServiceServer
 	process func(req *proto.ProcessRequest, stream proto.PluginService_ProcessServer) error
 	post    func(req *proto.PostProcessRequest, stream proto.PluginService_PostProcessServer) error
+	check   func(ctx context.Context, req *proto.CheckAccessRequest) (*proto.CheckAccessResponse, error)
 }
 
 func (r *rogueServer) Process(req *proto.ProcessRequest, stream proto.PluginService_ProcessServer) error {
@@ -304,6 +305,10 @@ func (r *rogueServer) Process(req *proto.ProcessRequest, stream proto.PluginServ
 
 func (r *rogueServer) PostProcess(req *proto.PostProcessRequest, stream proto.PluginService_PostProcessServer) error {
 	return r.post(req, stream)
+}
+
+func (r *rogueServer) CheckAccess(ctx context.Context, req *proto.CheckAccessRequest) (*proto.CheckAccessResponse, error) {
+	return r.check(ctx, req)
 }
 
 func newRogueRoundTrip(t *testing.T, rogue proto.PluginServiceServer) (*pluginServiceClient, func()) {

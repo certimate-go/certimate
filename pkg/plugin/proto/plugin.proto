@@ -9,6 +9,7 @@ service PluginService {
   rpc GetConfigSchema(GetConfigSchemaRequest) returns (GetConfigSchemaResponse);
   rpc Process(ProcessRequest) returns (stream ProcessFrame);
   rpc PostProcess(PostProcessRequest) returns (stream PostProcessFrame);
+  rpc CheckAccess(CheckAccessRequest) returns (CheckAccessResponse);
 }
 
 message GetMetadataRequest {}
@@ -21,6 +22,7 @@ message GetMetadataResponse {
   string category = 5;
   string display_name_key = 6;
   string access_display_name_key = 7;
+  bool supports_access_check = 8;
 }
 
 message GetConfigSchemaRequest {}
@@ -119,4 +121,20 @@ message PostProcessFrame {
     LogEntry log = 1;
     PostProcessResult result = 2;
   }
+}
+
+message CheckAccessRequest {
+  string access_config_json = 1;
+}
+
+message CheckAccessItem {
+  string id = 1;
+  string status = 2;
+}
+
+message CheckAccessResponse {
+  string status = 1;
+  string reason_code = 2;
+  repeated CheckAccessItem items = 3;
+  repeated string diagnostics = 4;
 }

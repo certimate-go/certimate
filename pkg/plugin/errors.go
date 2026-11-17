@@ -81,6 +81,19 @@ func IsPluginProtocol(err error) bool {
 	return errors.As(err, &e)
 }
 
+type ErrAccessCheckUnsupported struct {
+	ProviderType string
+}
+
+func (e *ErrAccessCheckUnsupported) Error() string {
+	return fmt.Sprintf("plugin: provider %q does not implement access connectivity checks", e.ProviderType)
+}
+
+func IsAccessCheckUnsupported(err error) bool {
+	var e *ErrAccessCheckUnsupported
+	return errors.As(err, &e)
+}
+
 func AsPluginError(err error) error {
 	if err == nil {
 		return nil

@@ -37,6 +37,10 @@ type fixtureConfig struct {
 	StartupLog             string          `json:"startupLog"`
 	AccessSchema           json.RawMessage `json:"accessSchema"`
 	DeploySchema           json.RawMessage `json:"deploySchema"`
+	AccessCheckStatus      string          `json:"accessCheckStatus"`
+	AccessCheckReasonCode  string          `json:"accessCheckReasonCode"`
+	AccessCheckError       string          `json:"accessCheckError"`
+	AccessCheckEchoDiag    bool            `json:"accessCheckEchoDiagnostic"`
 }
 
 type fixturePlugin struct {
@@ -246,6 +250,32 @@ func (d *fixturePlugin) processPurge(ctx context.Context, req *plugin.Request, l
 		logger.Info("purge fixture responded", slog.Int("count", count))
 	}
 	return &plugin.Result{Purge: &plugin.PurgeResult{Count: count, ExtendedDataJSON: `{"purged":true}`}}, nil
+}
+
+func (d *fixturePlugin) CheckAccess(ctx context.Context, req *plugin.AccessCheckRequest, logger *slog.Logger) (*plugin.AccessCheckResult, error) {
+	config := d.config
+	if config.AccessCheckError != "" {
+		return nil, fmt.Errorf("%s", config.AccessCheckError)
+	}
+	status := config.AccessCheckStatus
+	if status == "" {
+		status = plugin.AccessCheckStatusPassed
+	}
+	items := []plugin.AccessCheckItem{
+		{ID: "connect", Status: plugin.AccessCheckItemStatusPassed},
+		{ID: "auth", Status: plugin.AccessCheckItemStatusPassed},
+	}
+	if status != plugin.AccessCheckStatusPassed {
+		items[1].Status = plugin.AccessCheckItemStatusFailed
+	}
+	diagnostics := []string{}
+	if config.AccessCheckEchoDiag {
+		diagnostics = append(diagnostics, "probe saw access "+req.AccessConfigJSON)
+	}
+	if logger != nil {
+		logger.Info("fixture access check finished", slog.String("status", status))
+	}
+	return &plugin.AccessCheckResult{Status: status, ReasonCode: config.AccessCheckReasonCode, Items: items, Diagnostics: diagnostics}, nil
 }
 
 func (d *fixturePlugin) PostProcess(ctx context.Context, req *plugin.Request, logger *slog.Logger) error {

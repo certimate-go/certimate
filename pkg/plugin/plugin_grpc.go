@@ -10,6 +10,8 @@ import (
 
 	githubplugin "github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	protolib "google.golang.org/protobuf/proto"
 
 	"github.com/certimate-go/certimate/pkg/plugin/proto"
@@ -89,7 +91,13 @@ func decodeMetadata(resp *proto.GetMetadataResponse) *Metadata {
 		Category:             resp.Category,
 		DisplayNameKey:       resp.DisplayNameKey,
 		AccessDisplayNameKey: resp.AccessDisplayNameKey,
+		SupportsAccessCheck:  resp.SupportsAccessCheck,
 	}
+}
+
+func implementsAccessChecker(impl Plugin) bool {
+	_, ok := impl.(AccessChecker)
+	return ok
 }
 
 func encodeConfigSchema(cs *ConfigSchema, err error) (*proto.GetConfigSchemaResponse, error) {
@@ -211,6 +219,35 @@ func decodeResult(res *proto.ProcessResult, capability string) (*Result, error) 
 	return out, nil
 }
 
+func encodeAccessCheckResult(res *AccessCheckResult) *proto.CheckAccessResponse {
+	out := &proto.CheckAccessResponse{
+		Status:      res.Status,
+		ReasonCode:  res.ReasonCode,
+		Diagnostics: res.Diagnostics,
+		Items:       make([]*proto.CheckAccessItem, len(res.Items)),
+	}
+	for i, item := range res.Items {
+		out.Items[i] = &proto.CheckAccessItem{Id: item.ID, Status: item.Status}
+	}
+	return out
+}
+
+func decodeAccessCheckResult(resp *proto.CheckAccessResponse) (*AccessCheckResult, error) {
+	out := &AccessCheckResult{
+		Status:      resp.Status,
+		ReasonCode:  resp.ReasonCode,
+		Diagnostics: resp.Diagnostics,
+		Items:       make([]AccessCheckItem, len(resp.Items)),
+	}
+	for i, item := range resp.Items {
+		out.Items[i] = AccessCheckItem{ID: item.GetId(), Status: item.GetStatus()}
+	}
+	if err := out.Validate(); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 type pluginServiceServer struct {
 	proto.UnimplementedPluginServiceServer
 	impl       Plugin
@@ -218,7 +255,12 @@ type pluginServiceServer struct {
 }
 
 func (s *pluginServiceServer) GetMetadata(ctx context.Context, _ *proto.GetMetadataRequest) (*proto.GetMetadataResponse, error) {
-	return encodeMetadata(s.impl.GetMetadata(ctx))
+	resp, err := encodeMetadata(s.impl.GetMetadata(ctx))
+	if err != nil {
+		return nil, err
+	}
+	resp.SupportsAccessCheck = implementsAccessChecker(s.impl)
+	return resp, nil
 }
 
 func (s *pluginServiceServer) GetConfigSchema(ctx context.Context, _ *proto.GetConfigSchemaRequest) (*proto.GetConfigSchemaResponse, error) {
@@ -289,6 +331,22 @@ func (s *pluginServiceServer) PostProcess(req *proto.PostProcessRequest, stream 
 	return stream.Send(&proto.PostProcessFrame{
 		Frame: &proto.PostProcessFrame_Result{Result: &proto.PostProcessResult{}},
 	})
+}
+
+func (s *pluginServiceServer) CheckAccess(ctx context.Context, req *proto.CheckAccessRequest) (*proto.CheckAccessResponse, error) {
+	checker, ok := s.impl.(AccessChecker)
+	if !ok {
+		return nil, status.Error(codes.Unimplemented, "plugin does not implement access connectivity checks")
+	}
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	res, err := checker.CheckAccess(ctx, &AccessCheckRequest{AccessConfigJSON: req.GetAccessConfigJson()}, logger)
+	if err != nil {
+		return nil, err
+	}
+	if verr := res.Validate(); verr != nil {
+		return nil, fmt.Errorf("plugin: reject access check result: %w", verr)
+	}
+	return encodeAccessCheckResult(res), nil
 }
 
 type pluginServiceClient struct {
@@ -384,6 +442,14 @@ func (c *pluginServiceClient) PostProcess(ctx context.Context, req *Request, log
 			return &ErrPluginProtocol{Reason: "unknown finalization frame"}
 		}
 	}
+}
+
+func (c *pluginServiceClient) CheckAccess(ctx context.Context, req *AccessCheckRequest) (*AccessCheckResult, error) {
+	resp, err := c.raw.CheckAccess(ctx, &proto.CheckAccessRequest{AccessConfigJson: req.AccessConfigJSON})
+	if err != nil {
+		return nil, err
+	}
+	return decodeAccessCheckResult(resp)
 }
 
 func forwardLog(ctx context.Context, logger *slog.Logger, e *proto.LogEntry) {

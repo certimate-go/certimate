@@ -4,7 +4,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMount } from "ahooks";
 import { Alert, App, Button, Flex, Form } from "antd";
 
-import AccessForm, { type AccessFormUsages } from "@/components/access/AccessForm";
+import AccessForm, { type AccessFormProps, type AccessFormUsages } from "@/components/access/AccessForm";
+import AccessTestResultPanel from "@/components/access/AccessTestResultPanel";
+import useAccessConnectionTest from "@/components/access/useAccessConnectionTest";
 import AccessProviderPicker, { type AccessProviderPickerInstance } from "@/components/provider/AccessProviderPicker";
 import Show from "@/components/Show";
 import { type AccessModel } from "@/domain/access";
@@ -39,8 +41,22 @@ const AccessNew = () => {
 
   const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
 
+  const connTest = useAccessConnectionTest({
+    enabled: providerUsage !== "notification",
+    formInst,
+    mode: "create",
+    provider: fieldProvider,
+  });
+
   const handleProviderPick = (value: string) => {
     formInst.setFieldValue("provider", value);
+    connTest.notifyConnectionConfigChanged();
+  };
+
+  const handleFormChange: AccessFormProps["onFormValuesChange"] = (changedValues) => {
+    if (changedValues && ("config" in changedValues || "provider" in changedValues)) {
+      connTest.notifyConnectionConfigChanged();
+    }
   };
 
   const handleSubmitClick = async () => {
@@ -71,6 +87,7 @@ const AccessNew = () => {
 
   const handleCancelClick = () => {
     formInst.resetFields();
+    connTest.reset();
   };
 
   return (
@@ -109,14 +126,20 @@ const AccessNew = () => {
 
         <div style={{ display: fieldProvider ? "block" : "none" }}>
           <div className="md:max-w-160">
-            <AccessForm form={formInst} disabled={formPending} mode="create" usage={providerUsage} />
+            <AccessForm form={formInst} disabled={formPending} mode="create" usage={providerUsage} onFormValuesChange={handleFormChange} />
           </div>
           <Flex gap="small">
+            {connTest.supported ? (
+              <Button disabled={formPending} loading={connTest.testing} onClick={connTest.run}>
+                {t("access.action.test_conn.button")}
+              </Button>
+            ) : null}
             <Button type="primary" onClick={handleSubmitClick}>
               {t("common.button.submit")}
             </Button>
             <Button onClick={handleCancelClick}>{t("common.button.cancel")}</Button>
           </Flex>
+          {connTest.result ? <AccessTestResultPanel className="mt-4" result={connTest.result} /> : null}
         </div>
       </div>
     </div>

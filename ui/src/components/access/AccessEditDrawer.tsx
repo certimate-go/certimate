@@ -16,6 +16,8 @@ import { unwrapErrMsg } from "@/utils/error";
 import { applyTrimmedFormValues } from "@/utils/form";
 
 import AccessForm, { type AccessFormModes, type AccessFormProps, type AccessFormUsages } from "./AccessForm";
+import AccessTestResultPanel from "./AccessTestResultPanel";
+import useAccessConnectionTest from "./useAccessConnectionTest";
 
 export interface AccessEditDrawerProps {
   afterClose?: () => void;
@@ -41,13 +43,6 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
     defaultValuePropName: "defaultOpen",
     trigger: "onOpenChange",
   });
-
-  const afterClose = () => {
-    setFormPending(false);
-    setFormChanged(false);
-    setIsTesting(false);
-    props.afterClose?.();
-  };
 
   const triggerEl = useTriggerElement(trigger, { onClick: () => setOpen(true) });
 
@@ -115,12 +110,33 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
 
   const [isTesting, setIsTesting] = useState(false);
 
-  const handleProviderPick = (value: string) => {
-    formInst.setFieldValue("provider", value);
+  const connTest = useAccessConnectionTest({
+    enabled: usage !== "notification",
+    formInst,
+    mode,
+    provider: fieldProvider,
+    recordId: data?.id,
+  });
+
+  const afterClose = () => {
+    setFormPending(false);
+    setFormChanged(false);
+    setIsTesting(false);
+    connTest.reset();
+    props.afterClose?.();
   };
 
-  const handleFormChange = () => {
+  const handleProviderPick = (value: string) => {
+    formInst.setFieldValue("provider", value);
+    connTest.notifyConnectionConfigChanged();
+  };
+
+  const handleFormChange: AccessFormProps["onFormValuesChange"] = (changedValues) => {
     setFormChanged(true);
+
+    if (changedValues && ("config" in changedValues || "provider" in changedValues)) {
+      connTest.notifyConnectionConfigChanged();
+    }
   };
 
   const handleOkClick = async () => {
@@ -170,7 +186,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
         destroyOnHidden
         footer={
           fieldProvider ? (
-            <Flex className="px-2" justify="space-between">
+            <Flex className="px-2">
               {usage === "notification" ? (
                 <Button
                   className="max-sm:invisible"
@@ -180,10 +196,12 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
                 >
                   {t("access.action.test_notify.button")}
                 </Button>
-              ) : (
-                <span>{/* TODO: 测试连接 */}</span>
-              )}
-              <Flex justify="end" gap="small">
+              ) : connTest.supported ? (
+                <Button className="max-sm:invisible" disabled={loading} loading={connTest.testing} onClick={connTest.run}>
+                  {t("access.action.test_conn.button")}
+                </Button>
+              ) : null}
+              <Flex className="ml-auto" gap="small">
                 <Button disabled={isTesting} onClick={handleCancelClick}>
                   {t("common.button.cancel")}
                 </Button>
@@ -260,6 +278,8 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
             onFormValuesChange={handleFormChange}
           />
         </div>
+
+        {connTest.result ? <AccessTestResultPanel className="mt-4" result={connTest.result} /> : null}
       </Drawer>
     </>
   );

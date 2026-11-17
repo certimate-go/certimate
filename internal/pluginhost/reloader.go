@@ -78,6 +78,7 @@ func (r *Reloader) reloadLocked(ctx context.Context) *ReloadResult {
 	result := &ReloadResult{}
 	discovered, failures := plugin.Discover(ctx, r.cfg)
 	for _, failure := range failures {
+		registerStaleDiscoveryFailure(r.catalog, failure, r.logger)
 		result.Errors = append(result.Errors, fmt.Sprintf("discovery: %s: %v", failure.Dir, failure.Err))
 	}
 	if ctx.Err() != nil {
@@ -98,6 +99,7 @@ func (r *Reloader) reloadLocked(ctx context.Context) *ReloadResult {
 			continue
 		}
 		if err := registerOne(ctx, r.manager, dp, r.catalog, r.logger, fingerprint); err != nil {
+			registerIncompatibleAccessOwner(r.catalog, dp, err, r.logger)
 			result.Errors = append(result.Errors, fmt.Sprintf("load %q: %v", name, err))
 			continue
 		}

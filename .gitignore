@@ -22,3 +22,4 @@ dist
 /docker/data
 /pb_data
 /plugins
+/pb_data_bak

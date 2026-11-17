@@ -21,6 +21,7 @@ func ScanAndRegister(ctx context.Context, cfg plugin.PluginConfig, logger *slog.
 		logger = slog.Default()
 	}
 	catalog := NewCatalog()
+	wireAccessCheckKnownProviders(catalog)
 
 	if cfg.PluginDir == "" {
 		return catalog, nil
@@ -39,6 +40,7 @@ func ScanAndRegister(ctx context.Context, cfg plugin.PluginConfig, logger *slog.
 		logger.Warn("plugin discovery skipped entry",
 			slog.String("dir", f.Dir),
 			slog.Any("error", f.Err))
+		registerStaleDiscoveryFailure(catalog, f, logger)
 		errs = append(errs, f)
 	}
 
@@ -49,6 +51,7 @@ func ScanAndRegister(ctx context.Context, cfg plugin.PluginConfig, logger *slog.
 			logger.Error("plugin registration failed",
 				slog.String("provider", dp.Manifest.ProviderType),
 				slog.Any("error", err))
+			registerIncompatibleAccessOwner(catalog, dp, err, logger)
 			errs = append(errs, fmt.Errorf("plugin %q: %w", dp.Manifest.ProviderType, err))
 			continue
 		}
@@ -246,6 +249,16 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		}
 		registered.factory = factory
 		registered.newDeployer = factory.new
+	}
+	if ownsAccess || meta.SupportsAccessCheck {
+		registered.accessCheck = &accessCheckState{
+			supportsCheck:     meta.SupportsAccessCheck,
+			manager:           manager,
+			dp:                runtimeDP,
+			accessType:        accessType,
+			ownerProviderType: providerType,
+			logger:            logger.With(slog.String("plugin", providerType)),
+		}
 	}
 	accepted = true
 	return registered, nil

@@ -24,6 +24,7 @@ type registeredPlugin struct {
 	capability    string
 	accessType    string
 	ownsAccess    bool
+	accessCheck   *accessCheckState
 	factory       any
 	newDeployer   deployers.ProviderFactoryFunc
 	newChallenger certifiers.ProviderFactoryFunc

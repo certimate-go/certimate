@@ -316,6 +316,32 @@ func (s *Session) Process(ctx context.Context, req *Request, forward *slog.Logge
 	return res, nil
 }
 
+func (s *Session) CheckAccess(ctx context.Context, req *AccessCheckRequest) (*AccessCheckResult, error) {
+	if err := s.checkOpen(); err != nil {
+		return nil, err
+	}
+	if req == nil {
+		return nil, fmt.Errorf("the request is nil")
+	}
+	s.mu.Lock()
+	s.collectJSONSecretsLocked(req.AccessConfigJSON)
+	redact := s.redactorLocked()
+	s.mu.Unlock()
+
+	res, err := s.d.impl.CheckAccess(ctx, req)
+	if err != nil {
+		if status.Code(err) == codes.Unimplemented {
+			return nil, &ErrAccessCheckUnsupported{ProviderType: s.dp.Manifest.ProviderType}
+		}
+		return nil, s.manager.wrapError(s.dp, s.d, redact, err)
+	}
+	res.ReasonCode = redact(res.ReasonCode)
+	for i, diag := range res.Diagnostics {
+		res.Diagnostics[i] = redact(diag)
+	}
+	return res, nil
+}
+
 func (s *Session) PostProcess(ctx context.Context, executionID string, forward *slog.Logger) error {
 	if err := s.checkOpen(); err != nil {
 		return err
@@ -430,19 +456,8 @@ func stderrTail(buf *syncBuffer, redact secretRedactor) string {
 func noopRedactor(s string) string { return s }
 
 func (s *Session) collectSecretsLocked(req *Request) {
-	collect := func(jsonStr string) {
-		var m map[string]any
-		if err := json.Unmarshal([]byte(jsonStr), &m); err != nil {
-			return
-		}
-		for _, v := range flattenValues(m) {
-			if str, ok := v.(string); ok && len(str) >= 4 {
-				s.redactions = append(s.redactions, str)
-			}
-		}
-	}
-	collect(req.AccessConfigJSON)
-	collect(req.ExtendedConfigJSON)
+	s.collectJSONSecretsLocked(req.AccessConfigJSON)
+	s.collectJSONSecretsLocked(req.ExtendedConfigJSON)
 	if req.Deploy != nil {
 		collectPEM(&s.redactions, req.Deploy.CertificatePEM)
 		collectPEM(&s.redactions, req.Deploy.PrivateKeyPEM)
@@ -452,6 +467,18 @@ func (s *Session) collectSecretsLocked(req *Request) {
 			if len(secret) >= 4 {
 				s.redactions = append(s.redactions, secret)
 			}
+		}
+	}
+}
+
+func (s *Session) collectJSONSecretsLocked(jsonStr string) {
+	var m map[string]any
+	if err := json.Unmarshal([]byte(jsonStr), &m); err != nil {
+		return
+	}
+	for _, v := range flattenValues(m) {
+		if str, ok := v.(string); ok && len(str) >= 4 {
+			s.redactions = append(s.redactions, str)
 		}
 	}
 }

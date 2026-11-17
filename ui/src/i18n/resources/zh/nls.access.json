@@ -34,7 +34,53 @@
       "title": "删除授权",
       "content": "确定要删除这 {{count}} 个被选中的授权吗？<br>注意此操作不可撤销，请谨慎操作。"
     },
-    "test_notify.button": "测试通知"
+    "test_notify.button": "测试通知",
+    "test_conn.button": "测试连接"
+  },
+  "test": {
+    "status": {
+      "passed": "连接测试通过",
+      "failed": "连接测试未通过",
+      "inconclusive": "连接测试无法判定",
+      "unsupported": "暂不支持连接测试",
+      "unavailable": "连接测试不可用"
+    },
+    "item": {
+      "connect": "连接",
+      "auth": "认证",
+      "format": "{{label}}：{{status}}"
+    },
+    "item_status": {
+      "passed": "通过",
+      "failed": "失败",
+      "skipped": "未执行"
+    },
+    "reason": {
+      "auth_rejected": "目标拒绝了认证，请检查用户名、密码或密钥。",
+      "connect_failed": "无法连接到目标服务器，请检查地址与端口。",
+      "tls_failed": "TLS/SSL 校验失败，请检查证书相关设置。",
+      "timeout": "测试超时，未能得出结论。",
+      "canceled": "测试已取消。",
+      "probe_forbidden": "测试探针权限不足，无法完成检查。",
+      "remote_error": "远端服务返回错误，未能得出结论。",
+      "no_checker": "当前提供商暂不支持连接测试。",
+      "plugin_missing": "提供测试的插件未安装。",
+      "plugin_unavailable": "提供测试的插件当前不可用。",
+      "plugin_protocol_old": "提供测试的插件版本过旧，不支持连接测试。",
+      "config_invalid": "配置未通过校验，请检查连接配置。",
+      "internal_error": "服务器内部错误，请稍后重试。",
+      "concurrency_limited": "当前测试请求过多，请稍后重试。",
+      "access_not_found": "凭据不存在或已被删除。",
+      "unknown": "测试未能完成，原因未知。"
+    },
+    "diagnostics": {
+      "label": "诊断信息"
+    },
+    "scope": {
+      "passed": "认证通过，未验证部署权限。",
+      "failed": "测试结果仅针对上述检查项。",
+      "inconclusive": "本次测试未能判断凭据是否有效。"
+    }
   },
   "props": {
     "name": "名称",

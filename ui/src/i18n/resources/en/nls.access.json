@@ -34,7 +34,53 @@
       "title": "Delete credentials",
       "content": "Are you sure want to delete these {{count}} selected credentials? <br>This action cannot be undone."
     },
-    "test_notify.button": "Test notify"
+    "test_notify.button": "Test notify",
+    "test_conn.button": "Test connection"
+  },
+  "test": {
+    "status": {
+      "passed": "Connection test passed",
+      "failed": "Connection test failed",
+      "inconclusive": "Connection test inconclusive",
+      "unsupported": "Connection testing is not supported yet",
+      "unavailable": "Connection test unavailable"
+    },
+    "item": {
+      "connect": "Connectivity",
+      "auth": "Authentication",
+      "format": "{{label}}: {{status}}"
+    },
+    "item_status": {
+      "passed": "Passed",
+      "failed": "Failed",
+      "skipped": "Skipped"
+    },
+    "reason": {
+      "auth_rejected": "Authentication was rejected by the target. Check the username, password, or key.",
+      "connect_failed": "Could not connect to the target server. Check the host and port.",
+      "tls_failed": "TLS/SSL verification failed. Check the certificate settings.",
+      "timeout": "The test timed out before a conclusion was reached.",
+      "canceled": "The test was canceled.",
+      "probe_forbidden": "The test probe lacks permission to complete the check.",
+      "remote_error": "The remote service returned an error, so no conclusion was reached.",
+      "no_checker": "Connection testing is not supported for this provider yet.",
+      "plugin_missing": "The plugin providing this test is not installed.",
+      "plugin_unavailable": "The plugin providing this test is currently unavailable.",
+      "plugin_protocol_old": "The installed plugin is too old to support connection testing.",
+      "config_invalid": "The configuration failed validation. Check the connection settings.",
+      "internal_error": "Internal server error. Try again later.",
+      "concurrency_limited": "Too many test requests are in progress. Try again later.",
+      "access_not_found": "The credential does not exist or has been deleted.",
+      "unknown": "The test could not be completed for an unknown reason."
+    },
+    "diagnostics": {
+      "label": "Diagnostics"
+    },
+    "scope": {
+      "passed": "Authentication passed; deploy permissions were not verified.",
+      "failed": "The result applies only to the checks listed above.",
+      "inconclusive": "This run could not determine whether the credential is valid."
+    }
   },
   "props": {
     "name": "Name",

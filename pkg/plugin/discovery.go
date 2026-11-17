@@ -16,9 +16,10 @@ type DiscoveredPlugin struct {
 }
 
 type DiscoveryFailure struct {
-	ProviderType string
-	Dir          string
-	Err          error
+	ProviderType       string
+	AccessProviderType string
+	Dir                string
+	Err                error
 }
 
 func (f DiscoveryFailure) Error() string {
@@ -85,7 +86,7 @@ func discoverOne(dir, coreVersion string) (*DiscoveredPlugin, *DiscoveryFailure)
 	}
 
 	if err := versionGate(manifest, coreVersion); err != nil {
-		return nil, &DiscoveryFailure{ProviderType: manifest.ProviderType, Dir: dir, Err: err}
+		return nil, &DiscoveryFailure{ProviderType: manifest.ProviderType, AccessProviderType: manifest.AccessProviderType, Dir: dir, Err: err}
 	}
 
 	if manifest.OS != "" && manifest.Arch != "" {

@@ -287,6 +287,7 @@ func (c *Catalog) publish(p *registeredPlugin) error {
 	c.entries = append(c.entries, p.entry)
 	c.sortLocked()
 	c.buildDeployersLocked()
+	reconcileAccessCheckRegistration(p)
 	return nil
 }
 
@@ -342,6 +343,7 @@ func (c *Catalog) unregister(name string) {
 	delete(c.plugins, name)
 	c.removeEntryLocked(name)
 	c.buildDeployersLocked()
+	dropAccessCheckRegistration(p)
 }
 
 func (c *Catalog) Close() {

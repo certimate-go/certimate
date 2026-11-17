@@ -26,6 +26,7 @@ type PluginServiceClient interface {
 	GetConfigSchema(ctx context.Context, in *GetConfigSchemaRequest, opts ...grpc.CallOption) (*GetConfigSchemaResponse, error)
 	Process(ctx context.Context, in *ProcessRequest, opts ...grpc.CallOption) (PluginService_ProcessClient, error)
 	PostProcess(ctx context.Context, in *PostProcessRequest, opts ...grpc.CallOption) (PluginService_PostProcessClient, error)
+	CheckAccess(ctx context.Context, in *CheckAccessRequest, opts ...grpc.CallOption) (*CheckAccessResponse, error)
 }
 
 type pluginServiceClient struct {
@@ -118,6 +119,15 @@ func (x *pluginServicePostProcessClient) Recv() (*PostProcessFrame, error) {
 	return m, nil
 }
 
+func (c *pluginServiceClient) CheckAccess(ctx context.Context, in *CheckAccessRequest, opts ...grpc.CallOption) (*CheckAccessResponse, error) {
+	out := new(CheckAccessResponse)
+	err := c.cc.Invoke(ctx, "/certimate.plugin.v1.PluginService/CheckAccess", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PluginServiceServer is the server API for PluginService service.
 // All implementations must embed UnimplementedPluginServiceServer
 // for forward compatibility
@@ -126,6 +136,7 @@ type PluginServiceServer interface {
 	GetConfigSchema(context.Context, *GetConfigSchemaRequest) (*GetConfigSchemaResponse, error)
 	Process(*ProcessRequest, PluginService_ProcessServer) error
 	PostProcess(*PostProcessRequest, PluginService_PostProcessServer) error
+	CheckAccess(context.Context, *CheckAccessRequest) (*CheckAccessResponse, error)
 	mustEmbedUnimplementedPluginServiceServer()
 }
 
@@ -144,6 +155,9 @@ func (UnimplementedPluginServiceServer) Process(*ProcessRequest, PluginService_P
 }
 func (UnimplementedPluginServiceServer) PostProcess(*PostProcessRequest, PluginService_PostProcessServer) error {
 	return status.Errorf(codes.Unimplemented, "method PostProcess not implemented")
+}
+func (UnimplementedPluginServiceServer) CheckAccess(context.Context, *CheckAccessRequest) (*CheckAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAccess not implemented")
 }
 func (UnimplementedPluginServiceServer) mustEmbedUnimplementedPluginServiceServer() {}
 
@@ -236,6 +250,24 @@ func (x *pluginServicePostProcessServer) Send(m *PostProcessFrame) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _PluginService_CheckAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PluginServiceServer).CheckAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/certimate.plugin.v1.PluginService/CheckAccess",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PluginServiceServer).CheckAccess(ctx, req.(*CheckAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PluginService_ServiceDesc is the grpc.ServiceDesc for PluginService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +282,10 @@ var PluginService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetConfigSchema",
 			Handler:    _PluginService_GetConfigSchema_Handler,
+		},
+		{
+			MethodName: "CheckAccess",
+			Handler:    _PluginService_CheckAccess_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

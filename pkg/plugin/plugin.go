@@ -18,6 +18,7 @@ type Metadata struct {
 	Category             string
 	DisplayNameKey       string
 	AccessDisplayNameKey string
+	SupportsAccessCheck  bool
 }
 
 type ConfigSchema struct {
@@ -219,6 +220,68 @@ type Plugin interface {
 	GetConfigSchema(ctx context.Context) (*ConfigSchema, error)
 	Process(ctx context.Context, req *Request, logger *slog.Logger) (*Result, error)
 	PostProcess(ctx context.Context, req *Request, logger *slog.Logger) error
+}
+
+const (
+	AccessCheckStatusPassed       = "passed"
+	AccessCheckStatusFailed       = "failed"
+	AccessCheckStatusInconclusive = "inconclusive"
+)
+
+const (
+	AccessCheckItemStatusPassed  = "passed"
+	AccessCheckItemStatusFailed  = "failed"
+	AccessCheckItemStatusSkipped = "skipped"
+)
+
+var validAccessCheckStatuses = map[string]bool{
+	AccessCheckStatusPassed:       true,
+	AccessCheckStatusFailed:       true,
+	AccessCheckStatusInconclusive: true,
+}
+
+var validAccessCheckItemStatuses = map[string]bool{
+	AccessCheckItemStatusPassed:  true,
+	AccessCheckItemStatusFailed:  true,
+	AccessCheckItemStatusSkipped: true,
+}
+
+type AccessCheckRequest struct {
+	AccessConfigJSON string
+}
+
+type AccessCheckItem struct {
+	ID     string
+	Status string
+}
+
+type AccessCheckResult struct {
+	Status      string
+	ReasonCode  string
+	Items       []AccessCheckItem
+	Diagnostics []string
+}
+
+func (r *AccessCheckResult) Validate() error {
+	if r == nil {
+		return fmt.Errorf("access check result must not be nil")
+	}
+	if !validAccessCheckStatuses[r.Status] {
+		return fmt.Errorf("access check status must be one of passed, failed, inconclusive (got %q)", r.Status)
+	}
+	for _, item := range r.Items {
+		if item.ID == "" {
+			return fmt.Errorf("access check item must carry an id")
+		}
+		if !validAccessCheckItemStatuses[item.Status] {
+			return fmt.Errorf("access check item status must be one of passed, failed, skipped (got %q)", item.Status)
+		}
+	}
+	return nil
+}
+
+type AccessChecker interface {
+	CheckAccess(ctx context.Context, req *AccessCheckRequest, logger *slog.Logger) (*AccessCheckResult, error)
 }
 
 type NoopFinalizer struct{}

@@ -172,6 +172,43 @@ func (f *fakePlugin) processPurge(ctx context.Context, req *plugin.Request, logg
 	return &plugin.Result{Purge: &plugin.PurgeResult{Count: count, ExtendedDataJSON: `{"purged":true}`}}, nil
 }
 
+func (f *fakePlugin) CheckAccess(ctx context.Context, req *plugin.AccessCheckRequest, logger *slog.Logger) (*plugin.AccessCheckResult, error) {
+	fmt.Fprintf(os.Stderr, "fakeplugin check-access behavior=%s access=%s\n", f.behavior, req.AccessConfigJSON)
+	if logger != nil {
+		logger.Info("fakeplugin check-access starting", slog.String("behavior", f.behavior))
+	}
+	switch f.behavior {
+	case "check-error-echo":
+		return nil, fmt.Errorf("remote rejected access %s", req.AccessConfigJSON)
+	case "check-crash":
+		panic("check-access panicked with " + req.AccessConfigJSON)
+	case "check-failed":
+		return &plugin.AccessCheckResult{
+			Status:     plugin.AccessCheckStatusFailed,
+			ReasonCode: "auth_rejected",
+			Items: []plugin.AccessCheckItem{
+				{ID: "connect", Status: plugin.AccessCheckItemStatusPassed},
+				{ID: "auth", Status: plugin.AccessCheckItemStatusFailed},
+			},
+		}, nil
+	case "check-block":
+		<-ctx.Done()
+		return nil, ctx.Err()
+	}
+	result := &plugin.AccessCheckResult{
+		Status: plugin.AccessCheckStatusPassed,
+		Items: []plugin.AccessCheckItem{
+			{ID: "connect", Status: plugin.AccessCheckItemStatusPassed},
+			{ID: "auth", Status: plugin.AccessCheckItemStatusPassed},
+		},
+		Diagnostics: []string{},
+	}
+	if f.behavior == "check-diagnostic-echo" {
+		result.Diagnostics = append(result.Diagnostics, "probe saw access "+req.AccessConfigJSON)
+	}
+	return result, nil
+}
+
 func (f *fakePlugin) PostProcess(ctx context.Context, req *plugin.Request, logger *slog.Logger) error {
 	if req.Capability != plugin.CapabilityDns {
 		return plugin.NoopFinalizer{}.PostProcess(ctx, req, logger)
