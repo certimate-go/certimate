@@ -2,9 +2,6 @@ package deployers
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
@@ -26,7 +23,7 @@ func init() {
 			Endpoint:           xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			ZoneId:             xmaps.GetString(options.ProviderExtendedConfig, "zoneId"),
 			DomainMatchPattern: xmaps.GetString(options.ProviderExtendedConfig, "domainMatchPattern"),
-			Domains:            lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "domains"), ";"), func(s string, _ int) bool { return s != "" }),
+			Domains:            xmaps.GetStringsBySplit(options.ProviderExtendedConfig, "domains", ";"),
 			EnableMultipleSSL:  xmaps.GetBool(options.ProviderExtendedConfig, "enableMultipleSSL"),
 		})
 		return provider, err

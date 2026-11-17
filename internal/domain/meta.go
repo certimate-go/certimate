@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Meta struct {
 	Id        string    `db:"id"      json:"id"`

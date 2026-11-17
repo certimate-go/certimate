@@ -6,6 +6,7 @@ import { produce } from "immer";
 import { useAppLocaleMenuItems } from "@/components/AppLocale";
 import { useAppThemeMenuItems } from "@/components/AppTheme";
 import { useAppSettings, useBrowserTheme } from "@/hooks";
+import { withBasePath } from "@/utils/url";
 
 const SettingsAppearance = () => {
   const { t } = useTranslation();
@@ -58,7 +59,7 @@ const SettingsAppearanceTheme = ({ className, style }: { className?: string; sty
               {themeItems.map((item) => (
                 <div className="relative max-w-44 flex-1/3 max-md:flex-1/2 max-sm:flex-1" key={item.key}>
                   <div className="overflow-hidden rounded-lg border border-solid" style={{ borderColor: themeToken.colorBorder }}>
-                    <img className="mb-2 w-full" src={`/imgs/themes/${item.key}.png`} />
+                    <img className="mb-2 w-full" src={withBasePath(`/imgs/themes/${item.key}.png`)} />
                     <div className="mb-2 px-2">
                       <Radio value={item.key}>{item.label}</Radio>
                     </div>

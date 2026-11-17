@@ -3,7 +3,7 @@ import { FeedbackLevel, Field } from "@flowgram.ai/fixed-layout-editor";
 import { IconContract } from "@tabler/icons-react";
 import { Avatar } from "antd";
 
-import { acmeDns01ProvidersMap, acmeHttp01ProvidersMap } from "@/domain/provider";
+import { acmeHttp01ProvidersMap, getACMEDns01Provider } from "@/domain/provider";
 import { type WorkflowNodeConfigForBizApply, newNode } from "@/domain/workflow";
 
 import { BaseNode } from "./_shared";
@@ -42,12 +42,6 @@ export const BizApplyNodeRegistry: NodeRegistry = {
     render: () => {
       const { t } = getI18n();
 
-      type MapValueType<M> = M extends Map<string, infer V> ? V : never;
-      const acmeProvidersMap = new Map<string, MapValueType<typeof acmeDns01ProvidersMap | typeof acmeHttp01ProvidersMap>>([
-        ...acmeDns01ProvidersMap,
-        ...acmeHttp01ProvidersMap,
-      ]);
-
       return (
         <BaseNode
           description={
@@ -59,7 +53,9 @@ export const BizApplyNodeRegistry: NodeRegistry = {
                 }}
               </Field>
               <Field<string> name="config.provider">
-                {({ field: { value } }) => (value ? <Avatar shape="square" src={acmeProvidersMap.get(value)?.icon} size={20} /> : <></>)}
+                {({ field: { value } }) =>
+                  value ? <Avatar shape="square" src={(getACMEDns01Provider(value) ?? acmeHttp01ProvidersMap.get(value))?.icon} size={20} /> : <></>
+                }
               </Field>
             </div>
           }

@@ -15,6 +15,7 @@ import (
 
 	"github.com/certimate-go/certimate/pkg/core"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
 )
 
 type (
@@ -54,8 +55,8 @@ type Certmgr struct {
 var _ Provider = (*Certmgr)(nil)
 
 type wSDKClients struct {
-	SSL *tcssl.Client
 	TSE *tctse.Client
+	SSL *tcssl.Client
 }
 
 func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
@@ -63,7 +64,12 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 		return nil, fmt.Errorf("the configuration of the certmgr provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
+	clientTSE, err := createSDKClientTSE(config.SecretId, config.SecretKey, config.Endpoint, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientSSL, err := createSDKClientSSL(config.SecretId, config.SecretKey, lo.Ternary(xtencentcloud.IsIntlAPIEndpoint(config.Endpoint), "ssl.intl.tencentcloudapi.com", ""))
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -71,7 +77,7 @@ func NewCertmgr(config *CertmgrConfig) (*Certmgr, error) {
 	return &Certmgr{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{TSE: clientTSE, SSL: clientSSL},
 	}, nil
 }
 
@@ -104,6 +110,10 @@ func (c *Certmgr) Replace(ctx context.Context, certIdOrName string, certPEM, pri
 }
 
 func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM string) (*UploadResult, error) {
+	if c.config.GatewayId == "" {
+		return nil, fmt.Errorf("config `gatewayId` is required")
+	}
+
 	// 解析证书内容
 	certX509, err := xcert.ParseCertificateFromPEM(certPEM)
 	if err != nil {
@@ -172,7 +182,7 @@ func (c *Certmgr) uploadToCloudNative(ctx context.Context, certPEM, privkeyPEM s
 	createCloudNativeAPIGatewayCertificateReq.GatewayId = common.StringPtr(c.config.GatewayId)
 	createCloudNativeAPIGatewayCertificateReq.Name = common.StringPtr(certName)
 	createCloudNativeAPIGatewayCertificateReq.CertId = uploadCertificateResp.Response.CertificateId
-	createCloudNativeAPIGatewayCertificateReq.BindDomains = common.StringPtrs(lo.Ternary(len(c.config.Domains) != 0, c.config.Domains, certX509.DNSNames))
+	createCloudNativeAPIGatewayCertificateReq.BindDomains = common.StringPtrs(lo.CoalesceSliceOrEmpty(c.config.Domains, certX509.DNSNames))
 	createCloudNativeAPIGatewayCertificateResp, err := c.sdkClients.TSE.CreateCloudNativeAPIGatewayCertificateWithContext(ctx, createCloudNativeAPIGatewayCertificateReq)
 	c.logger.Debug("sdk request 'tse.CreateCloudNativeAPIGatewayCertificate'", slog.Any("request", createCloudNativeAPIGatewayCertificateReq), slog.Any("response", createCloudNativeAPIGatewayCertificateResp))
 	if err != nil {
@@ -203,37 +213,34 @@ func (c *Certmgr) replaceToCloudNative(ctx context.Context, certIdOrName string,
 	return &ReplaceResult{}, nil
 }
 
-func createSDKClients(secretId, secretKey, endpoint, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
+func createSDKClientTSE(secretId, secretKey, endpoint, region string) (*tctse.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-
-		client, err := tcssl.NewClient(credential, "", cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.SSL = client
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-		if endpoint != "" {
-			cpf.HttpProfile.Endpoint = endpoint
-		}
-
-		client, err := tctse.NewClient(credential, region, cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.TSE = client
+	client, err := tctse.NewClient(credential, region, cpf)
+	if err != nil {
+		return nil, err
 	}
 
-	return wsdk, nil
+	return client, nil
+}
+
+func createSDKClientSSL(secretId, secretKey, endpoint string) (*tcssl.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
+
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcssl.NewClient(credential, "", cpf)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

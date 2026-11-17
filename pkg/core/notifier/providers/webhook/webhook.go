@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"mime"
 	"net/http"
 	"net/url"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	"github.com/go-resty/resty/v2"
 
 	"github.com/certimate-go/certimate/pkg/core"
+	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
 type (
@@ -46,6 +48,26 @@ type Notifier struct {
 
 var _ Provider = (*Notifier)(nil)
 
+const (
+	contentTypeJson      = "application/json"
+	contentTypeForm      = "application/x-www-form-urlencoded"
+	contentTypeMultipart = "multipart/form-data"
+)
+
+var allowedContentTypes = map[string]bool{
+	contentTypeJson:      true,
+	contentTypeForm:      true,
+	contentTypeMultipart: true,
+}
+
+var allowedMethods = map[string]bool{
+	http.MethodGet:    true,
+	http.MethodPost:   true,
+	http.MethodPut:    true,
+	http.MethodPatch:  true,
+	http.MethodDelete: true,
+}
+
 func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	if config == nil {
 		return nil, fmt.Errorf("the configuration of the notifier provider is nil")
@@ -54,7 +76,10 @@ func NewNotifier(config *NotifierConfig) (*Notifier, error) {
 	client := resty.New().
 		SetTimeout(30 * time.Second).
 		SetRetryCount(3).
-		SetRetryWaitTime(5 * time.Second)
+		SetRetryWaitTime(5 * time.Second).
+		AddRetryCondition(func(resp *resty.Response, _ error) bool {
+			return resp == nil || resp.StatusCode() >= 500
+		})
 	if config.Timeout > 0 {
 		client.SetTimeout(time.Duration(config.Timeout) * time.Second)
 	}
@@ -90,11 +115,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	webhookMethod := strings.ToUpper(n.config.Method)
 	if webhookMethod == "" {
 		webhookMethod = http.MethodPost
-	} else if webhookMethod != http.MethodGet &&
-		webhookMethod != http.MethodPost &&
-		webhookMethod != http.MethodPut &&
-		webhookMethod != http.MethodPatch &&
-		webhookMethod != http.MethodDelete {
+	} else if !allowedMethods[webhookMethod] {
 		return nil, fmt.Errorf("unsupported webhook request method '%s'", webhookMethod)
 	}
 
@@ -105,21 +126,16 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	}
 
 	// 处理 Webhook 请求内容类型
-	const CONTENT_TYPE_JSON = "application/json"
-	const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded"
-	const CONTENT_TYPE_MULTIPART = "multipart/form-data"
 	webhookContentType := webhookHeaders.Get("Content-Type")
 	if webhookContentType == "" {
-		webhookContentType = CONTENT_TYPE_JSON
-		webhookHeaders.Set("Content-Type", CONTENT_TYPE_JSON)
-	} else if strings.HasPrefix(webhookContentType, CONTENT_TYPE_JSON) &&
-		strings.HasPrefix(webhookContentType, CONTENT_TYPE_FORM) &&
-		strings.HasPrefix(webhookContentType, CONTENT_TYPE_MULTIPART) {
+		webhookContentType = contentTypeJson
+		webhookHeaders.Set("Content-Type", contentTypeJson)
+	} else if mediaType, _, err := mime.ParseMediaType(webhookContentType); err != nil || !allowedContentTypes[mediaType] {
 		return nil, fmt.Errorf("unsupported webhook content type '%s'", webhookContentType)
 	}
 
 	// 处理 Webhook 请求数据
-	var webhookData interface{}
+	var webhookData any
 	if n.config.WebhookData == "" {
 		webhookData = map[string]string{
 			"subject": subject,
@@ -131,7 +147,7 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 			return nil, fmt.Errorf("failed to unmarshal webhook data: %w", err)
 		}
 
-		if webhookMethod == http.MethodGet || webhookContentType == CONTENT_TYPE_FORM || webhookContentType == CONTENT_TYPE_MULTIPART {
+		if webhookMethod == http.MethodGet || webhookContentType == contentTypeForm || webhookContentType == contentTypeMultipart {
 			temp := make(map[string]string)
 			jsonb, err := json.Marshal(webhookData)
 			if err != nil {
@@ -145,12 +161,13 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	}
 
 	// 替换变量值
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
-	replaceJsonValueRecursively(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_NOTIFIER_SUBJECT}", subject)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${CERTIMATE_NOTIFIER_MESSAGE}", message)
 
 	// 兼容旧版变量
-	replaceJsonValueRecursively(webhookData, "${SUBJECT}", subject)
-	replaceJsonValueRecursively(webhookData, "${MESSAGE}", message)
+	// TODO: remove in future version
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${SUBJECT}", subject)
+	xmaps.DeepReplaceValueUnsafe(webhookData, "${MESSAGE}", message)
 
 	// 生成请求
 	// 其中 GET 请求需转换为查询参数
@@ -161,11 +178,11 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 		req.SetQueryParams(webhookData.(map[string]string))
 	} else {
 		switch webhookContentType {
-		case CONTENT_TYPE_JSON:
+		case contentTypeJson:
 			req.SetBody(webhookData)
-		case CONTENT_TYPE_FORM:
+		case contentTypeForm:
 			req.SetFormData(webhookData.(map[string]string))
-		case CONTENT_TYPE_MULTIPART:
+		case contentTypeMultipart:
 			req.SetMultipartFormData(webhookData.(map[string]string))
 		}
 	}
@@ -181,26 +198,4 @@ func (n *Notifier) Notify(ctx context.Context, subject string, message string) (
 	n.logger.Debug("webhook responded", slog.String("response", resp.String()))
 
 	return &NotifyResult{}, nil
-}
-
-func replaceJsonValueRecursively(data interface{}, oldStr, newStr string) interface{} {
-	switch v := data.(type) {
-	case map[string]any:
-		for k, val := range v {
-			v[k] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []any:
-		for i, val := range v {
-			v[i] = replaceJsonValueRecursively(val, oldStr, newStr)
-		}
-	case []string:
-		for i, s := range v {
-			var val interface{} = s
-			var newVal interface{} = replaceJsonValueRecursively(val, oldStr, newStr)
-			v[i] = newVal.(string)
-		}
-	case string:
-		return strings.ReplaceAll(v, oldStr, newStr)
-	}
-	return data
 }

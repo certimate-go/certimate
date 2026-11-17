@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-acme/lego/v5/providers/dns/xinnet"
+	// TODO: 升级并使用 lego，见 https://github.com/certimate-go/certimate/issues/1452#issuecomment-5661982139
+	"github.com/certimate-go/certimate/pkg/sdk3rd-patched/github.com/go-acme/lego/v5/providers/dns/xinnet"
 
 	"github.com/certimate-go/certimate/pkg/core"
 )

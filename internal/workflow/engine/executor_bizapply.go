@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"maps"
 	"math"
+	"runtime"
 	"slices"
 	"strings"
 	"time"
@@ -19,8 +20,11 @@ import (
 
 	"github.com/certimate-go/certimate/internal/certacme"
 	"github.com/certimate-go/certimate/internal/domain"
+	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/repository"
+	"github.com/certimate-go/certimate/internal/settings"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
+	"github.com/certimate-go/certimate/pkg/plugin"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
 	xcertkey "github.com/certimate-go/certimate/pkg/utils/cert/key"
 	xenv "github.com/certimate-go/certimate/pkg/utils/env"
@@ -55,7 +59,6 @@ const (
 type bizApplyNodeExecutor struct {
 	nodeExecutor
 
-	settingsRepo    settingsRepository
 	accessRepo      accessRepository
 	acmeAccountRepo acmeAccountRepository
 	certificateRepo certificateRepository
@@ -120,12 +123,6 @@ func (ne *bizApplyNodeExecutor) Execute(execCtx *NodeExecutionContext) (*NodeExe
 		WorkflowNodeId:     execCtx.Node.Id,
 	}
 	certificate.PopulateFromPEM(obtainResp.FullChainCertificate, obtainResp.PrivateKey)
-	if obtainResp.ARIInfo != nil {
-		applyARIInfoToCertificate(certificate, obtainResp.ARIInfo)
-	} else if obtainResp.ARIError != "" {
-		ne.logger.Warn("could not get ARI info", slog.String("error", obtainResp.ARIError))
-		copyARIFields(certificate, lastCertificate)
-	}
 	if certificate, err := ne.certificateRepo.Save(execCtx.Context(), certificate); err != nil {
 		ne.logger.Warn("could not save certificate")
 		return execRes, err
@@ -171,6 +168,9 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 	if lastOutput != nil && lastOutput.Succeeded {
 		// 比较和上次申请时的关键配置（即影响证书签发的）参数是否一致
 		lastNodeCfg := lastOutput.NodeConfig.AsBizApply()
+		if thisNodeCfg.ChallengeType != lastNodeCfg.ChallengeType || thisNodeCfg.DNSPersistAccountId != lastNodeCfg.DNSPersistAccountId {
+			return false, "the challenge type or persistent DNS account changed"
+		}
 
 		if !slices.Equal(thisNodeCfg.Domains, lastNodeCfg.Domains) {
 			return false, "the configuration item 'Domains' changed"
@@ -226,19 +226,10 @@ func (ne *bizApplyNodeExecutor) checkCanSkip(execCtx *NodeExecutionContext, last
 
 		now := time.Now()
 		ariTriggered := false
-		if !thisNodeCfg.DisableARI && !lastCertificate.ARIWindowStart.IsZero() {
-			if lastCertificate.ARINextRefreshAt.IsZero() || !now.Before(lastCertificate.ARINextRefreshAt) {
-				if ariInfo, err := ne.getARIInfoForCertificate(execCtx, lastCertificate); err != nil {
-					ne.logger.Warn("could not refresh ARI info", slog.String("certificateId", lastCertificate.Id), slog.Any("error", err))
-				} else if ariInfo != nil {
-					applyARIInfoToCertificate(lastCertificate, ariInfo)
-					if _, err := ne.certificateRepo.Save(execCtx.Context(), lastCertificate); err != nil {
-						ne.logger.Warn("could not save refreshed ARI info", slog.String("certificateId", lastCertificate.Id), slog.Any("error", err))
-					}
-				}
-			}
-
-			ariTriggered = shouldRenewByARI(lastCertificate.ARIWindowStart, lastCertificate.ARIWindowEnd, now)
+		if !thisNodeCfg.DisableARI {
+			ariTriggered = ne.evaluateARI(now, lastCertificate, func() (*certacme.ARIInfo, error) {
+				return ne.getARIInfoForCertificate(execCtx, lastCertificate)
+			})
 		}
 
 		renewalInterval := time.Duration(thisNodeCfg.SkipBeforeExpiryDays) * time.Hour * 24
@@ -297,7 +288,7 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 读取质询提供商授权
 	providerAccessConfig := make(map[string]any)
-	if nodeCfg.ProviderAccessId != "" {
+	if nodeCfg.ChallengeType != domain.ACMEChallengeDNSPersist01 && nodeCfg.ProviderAccessId != "" {
 		if access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.ProviderAccessId); err != nil {
 			return nil, fmt.Errorf("failed to get access #%s record: %w", nodeCfg.ProviderAccessId, err)
 		} else {
@@ -307,11 +298,29 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 读取证书颁发机构授权
 	caAccessConfig := make(map[string]any)
+	var caAccess *domain.Access
 	if nodeCfg.CAProviderAccessId != "" {
-		if access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.CAProviderAccessId); err != nil {
+		access, err := ne.accessRepo.GetById(execCtx.Context(), nodeCfg.CAProviderAccessId)
+		if err != nil {
 			return nil, fmt.Errorf("failed to get access #%s record: %w", nodeCfg.CAProviderAccessId, err)
-		} else {
-			caAccessConfig = access.Config
+		}
+		caAccess = access
+		caAccessConfig = access.Config
+	}
+
+	caAccessHadEAB := false
+	if caAccess != nil {
+		if v, _ := caAccess.Config["eabKid"].(string); v != "" {
+			caAccessHadEAB = true
+		}
+	}
+	globalHadEAB := false
+	if nodeCfg.CAProvider == "" {
+		globalSettingsForSSLProvider := settings.GetGlobalSettingsForSSLProvider()
+		if providerConfig := globalSettingsForSSLProvider.Configs[globalSettingsForSSLProvider.Provider]; providerConfig != nil {
+			if v, _ := providerConfig["eabKid"].(string); v != "" {
+				globalHadEAB = true
+			}
 		}
 	}
 
@@ -332,12 +341,45 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 初始化 ACME 账户
 	// 注意此步骤仍需在主进程中进行，以保证并发安全
-	acmeAcct, err := certacme.CreateACMEAccountWithSingleFlight(execCtx.Context(), acmeCfg, nodeCfg.ContactEmail)
+	var acmeAcct *certacme.ACMEAccount
+	if nodeCfg.ChallengeType == domain.ACMEChallengeDNSPersist01 {
+		if nodeCfg.DNSPersistAccountId == "" {
+			return nil, fmt.Errorf("generate DNS-PERSIST-01 TXT records before running this workflow")
+		}
+		acmeAcct, err = ne.acmeAccountRepo.GetById(execCtx.Context(), nodeCfg.DNSPersistAccountId)
+		if err == nil && (acmeAcct.CA != acmeCfg.CAProvider.String() || acmeAcct.ACMEDirectoryUrl != acmeCfg.CADirUrl || acmeAcct.Email != nodeCfg.ContactEmail) {
+			return nil, fmt.Errorf("the DNS-PERSIST-01 account no longer matches the CA or contact email; generate TXT records again")
+		}
+	} else {
+		acmeAcct, err = certacme.CreateACMEAccountWithSingleFlight(execCtx.Context(), acmeCfg, nodeCfg.ContactEmail)
+	}
 	if err != nil {
 		ne.logger.Warn("could not initialize acme account")
 		return nil, err
 	} else {
 		ne.logger.Info("acme account initialized", slog.String("acmeAcctUrl", acmeAcct.ACMEAccountUrl))
+	}
+
+	if acmeCfg.EABKid != "" {
+		if caAccess != nil && !caAccessHadEAB {
+			caAccess.Config["eabKid"] = acmeCfg.EABKid
+			caAccess.Config["eabHmacKey"] = acmeCfg.EABHmacKey
+			if _, err := ne.accessRepo.Save(execCtx.Context(), caAccess); err != nil {
+				ne.logger.Warn("could not persist the acquired acme eab credentials to the access record")
+			}
+		} else if nodeCfg.CAProvider == "" && !globalHadEAB {
+			globalSettingsForSSLProvider := settings.GetGlobalSettingsForSSLProvider()
+			providerConfig := globalSettingsForSSLProvider.Configs[acmeCfg.CAProvider]
+			if providerConfig == nil {
+				providerConfig = map[string]any{}
+			}
+			providerConfig["eabKid"] = acmeCfg.EABKid
+			providerConfig["eabHmacKey"] = acmeCfg.EABHmacKey
+			globalSettingsForSSLProvider.Configs[acmeCfg.CAProvider] = providerConfig
+			if err := settings.SetGlobalSettingsForSSLProvider(&globalSettingsForSSLProvider); err != nil {
+				ne.logger.Warn("could not persist the acquired acme eab credentials to the global settings")
+			}
+		}
 	}
 
 	// 构造证书申请请求
@@ -366,20 +408,21 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 				}
 				return time.Now().Add(duration)
 			}),
-		NoCommonName:           nodeCfg.DisableCommonName,
-		ChallengeType:          nodeCfg.ChallengeType,
-		Provider:               domain.ACMEChallengeProviderType(nodeCfg.Provider),
-		ProviderAccessConfig:   providerAccessConfig,
-		ProviderExtendedConfig: nodeCfg.ProviderConfig,
-		DisableFollowCNAME:     nodeCfg.DisableFollowCNAME,
-		Nameservers:            nodeCfg.Nameservers,
-		DnsPropagationWait:     nodeCfg.DnsPropagationWait,
-		DnsPropagationTimeout:  nodeCfg.DnsPropagationTimeout,
-		DnsTTL:                 nodeCfg.DnsTTL,
-		HttpDelayWait:          nodeCfg.HttpDelayWait,
-		PreferredChain:         nodeCfg.PreferredChain,
-		ACMEProfile:            nodeCfg.ACMEProfile,
-		DisableARI:             nodeCfg.DisableARI,
+		NoCommonName:                  nodeCfg.DisableCommonName,
+		ChallengeType:                 nodeCfg.ChallengeType,
+		Provider:                      domain.ACMEChallengeProviderType(nodeCfg.Provider),
+		ProviderAccessConfig:          providerAccessConfig,
+		ProviderExtendedConfig:        nodeCfg.ProviderConfig,
+		DisableFollowCNAME:            nodeCfg.DisableFollowCNAME,
+		Nameservers:                   nodeCfg.Nameservers,
+		DnsPropagationWait:            nodeCfg.DnsPropagationWait,
+		DnsPropagationTimeout:         nodeCfg.DnsPropagationTimeout,
+		DnsPropagationPollingInterval: nodeCfg.DnsPropagationPollingInterval,
+		DnsTTL:                        nodeCfg.DnsTTL,
+		HttpDelayWait:                 nodeCfg.HttpDelayWait,
+		PreferredChain:                nodeCfg.PreferredChain,
+		ACMEProfile:                   nodeCfg.ACMEProfile,
+		DisableARI:                    nodeCfg.DisableARI,
 		ARIReplacesAccountUrl: lo.
 			If(nodeCfg.DisableARI || lastCertificate == nil, "").
 			ElseF(func() string {
@@ -415,18 +458,16 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 
 	// 构造证书申请时所需的 lego 配置项
 	legoCertifierCfg := &lego.NewConfig(nil).Certificate
-	settings, _ := ne.settingsRepo.GetByName(execCtx.Context(), domain.SettingsNameSSLProvider)
-	if settings != nil {
-		sslProviderSettings := settings.Content.AsSSLProvider()
-		if sslProviderSettings.Timeout > 0 {
-			legoCertifierCfg.Timeout = time.Duration(sslProviderSettings.Timeout) * time.Second
-		}
+	globalSettingsForPersistence := settings.GetGlobalSettingsForSSLProvider()
+	if globalSettingsForPersistence.Timeout > 0 {
+		legoCertifierCfg.Timeout = time.Duration(globalSettingsForPersistence.Timeout) * time.Second
 	}
 
 	// 如果启用多进程模式，发送指令
 	if envMultiProc {
 		type InData struct {
-			Request *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+			Request   *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+			DNSPlugin *plugin.DiscoveredPlugin           `json:"dnsPlugin,omitempty"`
 
 			LegoAccount         *certacme.ACMEAccount   `json:"legoAccount,omitempty"`
 			LegoCertifierConfig *lego.CertificateConfig `json:"legoCertifierConfig,omitempty"`
@@ -436,13 +477,16 @@ func (ne *bizApplyNodeExecutor) execObtainCertificate(execCtx *NodeExecutionCont
 			Response *certacme.ObtainCertificateResponse `json:"response"`
 		}
 
+		dnsPlugin := pluginhost.GlobalCatalog().DNSPlugin(obtainReq.DNS01Provider())
 		msender := mproc.NewSender[InData, OutData]("certapply", ne.logger)
 		moutput, err := msender.SendWithContext(execCtx.Context(), &InData{
-			Request: obtainReq,
+			Request:   obtainReq,
+			DNSPlugin: dnsPlugin,
 
 			LegoAccount:         acmeAcct,
 			LegoCertifierConfig: legoCertifierCfg,
 		})
+		runtime.KeepAlive(dnsPlugin)
 		if err != nil {
 			ne.logger.Warn("could not obtain certificate")
 			return nil, err
@@ -496,33 +540,18 @@ func (ne *bizApplyNodeExecutor) getARIInfoForCertificate(execCtx *NodeExecutionC
 	return acmeClient.GetARIInfo(execCtx.Context(), certificate.Certificate)
 }
 
-func applyARIInfoToCertificate(certificate *domain.Certificate, ariInfo *certacme.ARIInfo) {
-	if certificate == nil || ariInfo == nil {
-		return
+func (ne *bizApplyNodeExecutor) evaluateARI(now time.Time, certificate *domain.Certificate, fetch func() (*certacme.ARIInfo, error)) bool {
+	ariInfo, err := fetch()
+	if err != nil {
+		ne.logger.Warn("could not refresh ARI info", slog.String("certificateId", certificate.Id), slog.Any("error", err))
+		return false
 	}
 
-	certificate.ARISupported = ariInfo.Supported
-	if !ariInfo.Supported {
-		certificate.ARIWindowStart = time.Time{}
-		certificate.ARIWindowEnd = time.Time{}
-		certificate.ARINextRefreshAt = time.Time{}
-		return
+	if ariInfo == nil || !ariInfo.Supported {
+		return false
 	}
 
-	certificate.ARIWindowStart = ariInfo.WindowStart
-	certificate.ARIWindowEnd = ariInfo.WindowEnd
-	certificate.ARINextRefreshAt = ariInfo.NextRefreshAt
-}
-
-func copyARIFields(target *domain.Certificate, source *domain.Certificate) {
-	if target == nil || source == nil {
-		return
-	}
-
-	target.ARIWindowStart = source.ARIWindowStart
-	target.ARIWindowEnd = source.ARIWindowEnd
-	target.ARINextRefreshAt = source.ARINextRefreshAt
-	target.ARISupported = source.ARISupported
+	return shouldRenewByARI(ariInfo.WindowStart, ariInfo.WindowEnd, now)
 }
 
 func shouldRenewByARI(windowStart, windowEnd, now time.Time) bool {
@@ -599,7 +628,6 @@ func (ne *bizApplyNodeExecutor) setVariablesOfResult(execCtx *NodeExecutionConte
 func newBizApplyNodeExecutor() NodeExecutor {
 	return &bizApplyNodeExecutor{
 		nodeExecutor:    nodeExecutor{logger: slog.Default()},
-		settingsRepo:    repository.NewSettingsRepository(),
 		accessRepo:      repository.NewAccessRepository(),
 		acmeAccountRepo: repository.NewACMEAccountRepository(),
 		certificateRepo: repository.NewCertificateRepository(),

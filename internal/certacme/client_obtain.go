@@ -32,28 +32,35 @@ type ObtainCertificateRequest struct {
 	NoCommonName      bool
 
 	// 提供商相关
+	_                      struct{}
 	ChallengeType          string
 	Provider               domain.ACMEChallengeProviderType
 	ProviderAccessConfig   map[string]any
 	ProviderExtendedConfig map[string]any
 
 	// 解析相关
+	_                  struct{}
 	DisableFollowCNAME bool
 	Nameservers        []string
 
 	// DNS-01 质询相关
-	DnsPropagationWait    int
-	DnsPropagationTimeout int
-	DnsTTL                int
+	_                             struct{}
+	DnsPropagationWait            int
+	DnsPropagationTimeout         int
+	DnsPropagationPollingInterval int
+	DnsTTL                        int
 
 	// HTTP-01 质询相关
+	_             struct{}
 	HttpDelayWait int
 
 	// ACME 相关
+	_              struct{}
 	PreferredChain string
 	ACMEProfile    string
 
 	// ARI 相关
+	_                     struct{}
 	DisableARI            bool
 	ARIReplacesAccountUrl string
 	ARIReplacesCertId     string
@@ -72,20 +79,56 @@ type ObtainCertificateResponse struct {
 	ARIReplaced          bool
 }
 
+func (r *ObtainCertificateRequest) DNS01Provider() domain.ACMEDns01ProviderType {
+	if !strings.EqualFold(r.ChallengeType, "dns-01") {
+		return ""
+	}
+	providerType := domain.ACMEDns01ProviderType(r.Provider)
+	switch providerType {
+	case domain.ACMEDns01ProviderTypeCMCCCloud:
+		return domain.ACMEDns01ProviderTypeCMCCCloudDNS
+	case domain.ACMEDns01ProviderTypeGoogleCloud:
+		return domain.ACMEDns01ProviderTypeGoogleCloudDNS
+	case domain.ACMEDns01ProviderTypePowerDNS:
+		return domain.ACMEDns01ProviderTypePowerDNSDNS
+	case domain.ACMEDns01ProviderTypeRFC2136:
+		return domain.ACMEDns01ProviderTypeRFC2136DNS
+	default:
+		return providerType
+	}
+}
+
 func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCertificateRequest) (*ObtainCertificateResponse, error) {
 	if request == nil {
 		return nil, fmt.Errorf("the request is nil")
 	}
 
-	os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
+	challengeType := strings.ToLower(request.ChallengeType)
+	certifier := c.client.Certificate
 
 	const CHALLENGE_TYPE_DNS01 = "dns-01"
 	const CHALLENGE_TYPE_HTTP01 = "http-01"
-	switch strings.ToLower(request.ChallengeType) {
+	switch challengeType {
+	case domain.ACMEChallengeDNSPersist01:
+		var err error
+		certifier, err = c.newDNSPersistCertifier(ctx, request)
+		if err != nil {
+			return nil, err
+		}
 	case CHALLENGE_TYPE_DNS01:
 		{
-			providerFactory, err := certifiers.ACMEDns01Registries.Get(domain.ACMEDns01ProviderType(request.Provider))
+			os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
+			providerType := request.DNS01Provider()
+			providerFactory, err := certifiers.ACMEDns01Registries.Get(providerType)
 			if err != nil {
+				switch providerType {
+				case domain.ACMEDns01ProviderTypeCMCCCloudDNS:
+					return nil, fmt.Errorf("install the cmcccloud-dns plugin to use CMCC Cloud DNS: %w", err)
+				case domain.ACMEDns01ProviderTypeGoogleCloudDNS:
+					return nil, fmt.Errorf("install the googlecloud-dns plugin to use Google Cloud DNS: %w", err)
+				case domain.ACMEDns01ProviderTypePowerDNSDNS, domain.ACMEDns01ProviderTypeRFC2136DNS:
+					return nil, fmt.Errorf("install the %s plugin to use this DNS provider: %w", providerType, err)
+				}
 				return nil, err
 			}
 
@@ -94,15 +137,21 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 				ProviderExtendedConfig: request.ProviderExtendedConfig,
 				DnsPropagationTimeout:  request.DnsPropagationTimeout,
 				DnsTTL:                 request.DnsTTL,
+				DnsNameservers:         request.Nameservers,
+				DisableFollowCNAME:     request.DisableFollowCNAME,
 			})
 			if err != nil {
 				return nil, fmt.Errorf("failed to initialize dns-01 provider '%s': %w", request.Provider, err)
+			}
+			if closer, ok := provider.(interface{ Close() }); ok {
+				defer closer.Close()
 			}
 
 			opts := &dns01.Options{}
 			opts.RecursiveNameservers = request.Nameservers
 			dns01.SetDefaultClient(dns01.NewClient(opts))
-			c.client.Challenge.SetDNS01Provider(provider,
+			c.client.Challenge.SetDNS01Provider(
+				withDNSPropagationTiming(provider, request.DnsPropagationTimeout, request.DnsPropagationPollingInterval),
 				dns01.CondOptions(
 					request.DnsPropagationWait > 0,
 					dns01.PropagationWait(time.Duration(request.DnsPropagationWait)*time.Second, true),
@@ -129,7 +178,8 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 				return nil, fmt.Errorf("failed to initialize http-01 provider '%s': %w", request.Provider, err)
 			}
 
-			c.client.Challenge.SetHTTP01Provider(provider,
+			c.client.Challenge.SetHTTP01Provider(
+				provider,
 				http01.SetDelay(time.Duration(request.HttpDelayWait)*time.Second),
 			)
 		}
@@ -160,7 +210,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 		NotAfter:         request.ValidityNotAfter,
 		ReplacesCertID:   lo.If(request.ARIReplacesAccountUrl == c.account.ACMEAccountUrl, request.ARIReplacesCertId).Else(""),
 	}
-	resp, err := c.client.Certificate.Obtain(ctx, req)
+	resp, err := certifier.Obtain(ctx, req)
 	if err != nil {
 		ariErr := &acme.AlreadyReplacedError{}
 		if !errors.As(err, &ariErr) {
@@ -171,7 +221,7 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 
 		// reset ARI and retry if failure
 		req.ReplacesCertID = ""
-		resp, err = c.client.Certificate.Obtain(ctx, req)
+		resp, err = certifier.Obtain(ctx, req)
 		if err != nil {
 			return nil, err
 		}

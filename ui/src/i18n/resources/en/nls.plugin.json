@@ -1,0 +1,102 @@
+{
+  "$ns": "plugin",
+
+  "page": {
+    "heading": "Plugins"
+  },
+
+  "market": {
+    "sources": {
+      "manage": "Manage markets",
+      "filter": "Market source",
+      "all": "All markets",
+      "repository": "GitHub repository URL",
+      "convention": "Use a public repository with index.json at the root of the main branch. Adding a market does not install plugins.",
+      "add": "Add market",
+      "refresh_one": "Refresh {{repository}}",
+      "remove_one": "Remove {{repository}}",
+      "remove_confirm": "Remove this market? Its installed plugins will remain available.",
+      "official": "Official distribution",
+      "official_tooltip": "Distributed through the official Certimate plugin market",
+      "busy": "An installation or update is using this market. Try again when it finishes.",
+      "duplicate": "This GitHub repository is already registered.",
+      "stale": "Showing cached catalog",
+      "unavailable": "Catalog unavailable",
+      "removed": "Market removed",
+      "unlisted": "No longer listed",
+      "local": "Local or unknown source",
+      "installed_from": "Installed from {{repository}}"
+    },
+    "nudge": "Didn't find the provider you need? Browse the plugin marketplace for more.",
+    "browse": "Browse marketplace",
+    "heading": "Plugin marketplace",
+
+    "empty": "No plugins available",
+    "empty_filtered": "No plugins match your search",
+    "synced_at": "Last synced {{time}}",
+    "error": {
+      "refresh_failed": "Unable to refresh the plugin directory. Showing cached results.",
+      "status_failed": "Unable to refresh installation status. Retrying automatically; you can also retry now.",
+      "load_failed": "Failed to load plugin marketplace",
+      "install_failed": "Failed to install plugin",
+      "delete_failed": "Failed to delete plugin",
+      "delete_dependency_title": "Cannot remove plugin",
+      "delete_dependency": "Cannot remove {{name}} because {{dependents}} still uses its {{accessType}} credential type. Remove the dependent plugins first, then try again.",
+      "update_failed": "Failed to update plugin"
+    },
+    "msg": {
+      "installed": "Plugin installed",
+      "deleted": "Plugin removed",
+      "updated": "Plugin updated"
+    },
+    "action": {
+      "more": "Actions for {{name}}",
+      "install": "Install",
+      "delete": "Delete",
+      "update": "Update",
+      "retry": "Retry",
+      "refresh": "Refresh",
+      "search_placeholder": "Search plugins",
+      "delete_modal_title": "Remove plugin",
+      "delete_modal_content": "This removes the plugin {{name}} from this server. Any access or workflow using it will stop working until it is reinstalled."
+    },
+    "filter": {
+      "label": "Filters",
+      "status": "Installation status",
+      "capability": "Plugin type",
+      "clear": "Clear filter: {{filter}}",
+      "all": "All",
+      "installed": "Installed",
+      "not_installed": "Not installed"
+    },
+    "capability": {
+      "deploy": "Deploy",
+      "dns": "DNS",
+      "notify": "Notify",
+      "purge": "Purge"
+    },
+    "job": {
+      "installing": "Installing…",
+      "queued": "Queued…",
+      "downloading": "Downloading…",
+      "verifying": "Verifying…",
+      "extracting": "Extracting…",
+      "reloading": "Reloading…",
+      "status_unavailable": "Status unavailable",
+      "failed": "Install failed"
+    },
+    "label": {
+      "update_available": "Update available",
+      "manual": "Manual",
+      "unsupported_platform": "Unsupported platform"
+    },
+    "status": {
+      "ownership_conflict": "Provider already installed",
+      "not_installed": "Not installed",
+      "installed": "Installed",
+      "update_available": "Update available",
+      "installed_manual": "Manual",
+      "unsupported_platform": "Unsupported"
+    }
+  }
+}

@@ -15,6 +15,7 @@ type workflowRunRepository interface {
 	GetById(ctx context.Context, id string) (*domain.WorkflowRun, error)
 	Save(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
 	SaveWithCascading(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
+	ResetStatusIfHanging(ctx context.Context) error
 }
 
 type workflowLogRepository interface {

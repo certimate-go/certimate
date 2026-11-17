@@ -8,9 +8,11 @@ import (
 
 type accessRepository interface {
 	GetById(ctx context.Context, id string) (*domain.Access, error)
+	Save(ctx context.Context, access *domain.Access) (*domain.Access, error)
 }
 
 type acmeAccountRepository interface {
+	GetById(ctx context.Context, id string) (*domain.ACMEAccount, error)
 	GetByCAAndAcctUrl(ctx context.Context, ca string, acctUrl string) (*domain.ACMEAccount, error)
 }
 
@@ -23,8 +25,4 @@ type certificateRepository interface {
 type workflowOutputRepository interface {
 	GetByWorkflowIdAndNodeId(ctx context.Context, workflowId string, workflowNodeId string) (*domain.WorkflowOutput, error)
 	Save(ctx context.Context, workflowOutput *domain.WorkflowOutput) (*domain.WorkflowOutput, error)
-}
-
-type settingsRepository interface {
-	GetByName(ctx context.Context, name string) (*domain.Settings, error)
 }

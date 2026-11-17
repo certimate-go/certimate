@@ -67,6 +67,15 @@ const BizDeployNodeConfigFieldsProviderAWSNLB = () => {
       >
         <Switch />
       </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "autoPrune"]}
+        initialValue={initialValues.autoPrune}
+        label={t("workflow_node.deploy.form.aws_nlb_auto_prune.label")}
+        rules={[formRule]}
+      >
+        <Switch />
+      </Form.Item>
     </>
   );
 };
@@ -78,6 +87,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
     listenerArn: "",
     certificateSource: "ACM",
     isDefault: true,
+    autoPrune: true,
   };
 };
 
@@ -90,6 +100,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
     listenerArn: z.string().nonempty(),
     certificateSource: z.string().nonempty(),
     isDefault: z.boolean().nullish(),
+    autoPrune: z.boolean().nullish(),
   });
 };
 

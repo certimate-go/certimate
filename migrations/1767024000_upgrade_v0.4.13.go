@@ -3,8 +3,8 @@ package migrations
 import (
 	"errors"
 
-	"github.com/pocketbase/pocketbase/core"
-	m "github.com/pocketbase/pocketbase/migrations"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
+	m "ganigeorgiev.com/pocketbase/pocketbase/migrations"
 
 	snaps "github.com/certimate-go/certimate/migrations/snaps/v0.4"
 )

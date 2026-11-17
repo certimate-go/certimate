@@ -109,7 +109,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("dynv6: error when list zones: %w", err)
 	}
 
-	// REF: https://dynv6.github.io/api-spec/#tag/records/operation/addRecord
 	response, err := d.client.AddRecordWithContext(ctx, zoneInfo.ID, &dynv6sdk.AddRecordRequest{
 		Type: lo.ToPtr("TXT"),
 		Name: lo.ToPtr(subDomain),
@@ -172,7 +171,6 @@ func (d *DNSProvider) Timeout() (timeout, interval time.Duration) {
 }
 
 func (d *DNSProvider) findZone(ctx context.Context, zoneName string) (*dynv6sdk.ZoneRecord, error) {
-	// REF: https://dynv6.github.io/api-spec/#tag/zones/operation/findZones
 	zones, err := d.client.ListZonesWithContext(ctx)
 	if err != nil {
 		return nil, err

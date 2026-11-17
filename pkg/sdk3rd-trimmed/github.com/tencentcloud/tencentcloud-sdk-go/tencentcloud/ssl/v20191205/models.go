@@ -1,4 +1,4 @@
-﻿package v20191205
+package v20191205
 
 import (
 	ssl "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl/v20191205"
@@ -8,9 +8,17 @@ type (
 	ResourceTypeRegions = ssl.ResourceTypeRegions
 )
 
+type DeleteCertificateRequest = ssl.DeleteCertificateRequest
+
+type DeleteCertificateResponse = ssl.DeleteCertificateResponse
+
 type DescribeCertificateRequest = ssl.DescribeCertificateRequest
 
 type DescribeCertificateResponse = ssl.DescribeCertificateResponse
+
+type DescribeCertificatesRequest = ssl.DescribeCertificatesRequest
+
+type DescribeCertificatesResponse = ssl.DescribeCertificatesResponse
 
 type DescribeHostCosInstanceListRequest = ssl.DescribeHostCosInstanceListRequest
 

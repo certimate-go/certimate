@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { type FlowNodeEntity, useClientContext, useRefresh } from "@flowgram.ai/fixed-layout-editor";
-import { IconChevronDown, IconEye, IconEyeOff, IconX } from "@tabler/icons-react";
+import { IconChevronDown, IconPlug, IconPlugOff, IconX } from "@tabler/icons-react";
 import { useControllableValue } from "ahooks";
 import { Anchor, type AnchorProps, App, Button, Drawer, Dropdown, Flex, type FormInstance, Space, Tooltip, Typography } from "antd";
 import { isEqual } from "radash";
 
 import Show from "@/components/Show";
 import { unwrapErrMsg } from "@/utils/error";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 import { type NodeRegistry } from "../nodes/typings";
 
@@ -48,7 +49,8 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
 
     setFormPending(true);
     try {
-      formValues = await formInst.validateFields();
+      applyTrimmedFormValues(formInst);
+      formValues = { ...formInst.getFieldsValue(true), ...(await formInst.validateFields()) };
     } catch (err) {
       message.warning(t("common.errmsg.form_invalid"));
 
@@ -226,7 +228,7 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
                   className="ant-drawer-close"
                   style={{ marginInline: 0 }}
                   disabled={playground.config.readonlyOrDisabled}
-                  icon={isNodeDisabled ? <IconEyeOff size="1.25em" /> : <IconEye size="1.25em" />}
+                  icon={isNodeDisabled ? <IconPlugOff size="1.25em" /> : <IconPlug size="1.25em" />}
                   size="small"
                   type="text"
                   onClick={handleDisableNodeClick}

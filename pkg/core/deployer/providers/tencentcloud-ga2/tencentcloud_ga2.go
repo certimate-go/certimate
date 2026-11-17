@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
@@ -17,6 +16,7 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	xcert "github.com/certimate-go/certimate/pkg/utils/cert"
+	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
 )
 
 type (
@@ -41,6 +41,8 @@ type DeployerConfig struct {
 	// 监听器 ID。
 	// 部署目标为 [DEPLOY_TARGET_LISTENER] 时必填。
 	ListenerId string `json:"listenerId,omitempty"`
+	// 是否自动移除同域名的其他证书。
+	AutoPrune bool `json:"autoPrune,omitempty"`
 }
 
 type Deployer struct {
@@ -62,7 +64,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.SecretId, config.SecretKey, config.Endpoint)
+	clientGA2, err := createSDKClientGA2(config.SecretId, config.SecretKey, config.Endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientSSL, err := createSDKClientSSL(config.SecretId, config.SecretKey, lo.Ternary(xtencentcloud.IsIntlAPIEndpoint(config.Endpoint), "ssl.intl.tencentcloudapi.com", ""))
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -71,9 +78,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		ProjectId: config.ProjectId,
-		Endpoint: lo.
-			If(strings.HasSuffix(config.Endpoint, "intl.tencentcloudapi.com"), "ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
-			Else(""),
+		Endpoint:  lo.Ternary(xtencentcloud.IsIntlAPIEndpoint(config.Endpoint), "ssl.intl.tencentcloudapi.com", ""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -82,7 +87,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{GA2: clientGA2, SSL: clientSSL},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -160,10 +165,10 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'ga2.DescribeListeners': %w", err)
 	} else if len(describeListenersResp.Response.ListenerSet) == 0 {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find ga2 listener '%s'", cloudListenerId)
 	}
 
-	// 获取证书信息，避免重复绑定
+	// 获取证书信息，并找出需要解绑的同域名证书
 	// REF: https://cloud.tencent.com/document/api/400/41674
 	serverCertificateIds := make([]string, 0)
 	for _, serverCertificateId := range describeListenersResp.Response.ListenerSet[0].ServerCertificates {
@@ -171,24 +176,28 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 			return nil
 		}
 
-		describeCertificateReq := tcssl.NewDescribeCertificateRequest()
-		describeCertificateReq.CertificateId = serverCertificateId
-		describeCertificateResp, err := d.sdkClients.SSL.DescribeCertificateWithContext(ctx, describeCertificateReq)
-		d.logger.Debug("sdk request 'ssl.DescribeCertificate'", slog.Any("request", describeCertificateReq), slog.Any("response", describeCertificateResp))
-		if err != nil {
-			if sdkerr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
-				if sdkerr.Code == "FailedOperation.CertificateNotFound" {
+		if d.config.AutoPrune {
+			describeCertificateReq := tcssl.NewDescribeCertificateRequest()
+			describeCertificateReq.CertificateId = serverCertificateId
+			describeCertificateResp, err := d.sdkClients.SSL.DescribeCertificateWithContext(ctx, describeCertificateReq)
+			d.logger.Debug("sdk request 'ssl.DescribeCertificate'", slog.Any("request", describeCertificateReq), slog.Any("response", describeCertificateResp))
+			if err != nil {
+				if sdkErr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
+					if sdkErrCode := sdkErr.Code; sdkErrCode == "FailedOperation.CertificateNotFound" {
+						continue
+					}
+				}
+
+				return fmt.Errorf("failed to execute sdk request 'ssl.DescribeCertificate': %w", err)
+			} else {
+				certSANMatched := lo.ElementsMatch(cloudCertSANs, lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName))
+				if certSANMatched {
 					continue
 				}
-			}
 
-			return fmt.Errorf("failed to execute sdk request 'ssl.DescribeCertificate': %w", err)
+				serverCertificateIds = append(serverCertificateIds, lo.FromPtr(serverCertificateId))
+			}
 		} else {
-			certSANDiff, _ := lo.Difference(lo.FromSlicePtr(describeCertificateResp.Response.SubjectAltName), cloudCertSANs)
-			if len(certSANDiff) == 0 { // 同域名证书需要删除
-				continue
-			}
-
 			serverCertificateIds = append(serverCertificateIds, lo.FromPtr(serverCertificateId))
 		}
 	}
@@ -208,40 +217,34 @@ func (d *Deployer) updateListenerCertificate(ctx context.Context, cloudAccelerat
 	return nil
 }
 
-func createSDKClients(secretId, secretKey, endpoint string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
+func createSDKClientGA2(secretId, secretKey, endpoint string) (*tcga2.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-		if endpoint != "" {
-			cpf.HttpProfile.Endpoint = endpoint
-		}
-
-		client, err := tcga2.NewClient(credential, "", cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.GA2 = client
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
 	}
 
-	{
-		credential := common.NewCredential(secretId, secretKey)
-
-		cpf := profile.NewClientProfile()
-		if strings.HasSuffix(endpoint, "intl.tencentcloudapi.com") {
-			cpf.HttpProfile.Endpoint = "ssl.intl.tencentcloudapi.com"
-		}
-
-		client, err := tcssl.NewClient(credential, "", cpf)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.SSL = client
+	client, err := tcga2.NewClient(credential, "", cpf)
+	if err != nil {
+		return nil, err
 	}
 
-	return wsdk, nil
+	return client, nil
+}
+
+func createSDKClientSSL(secretId, secretKey, endpoint string) (*tcssl.Client, error) {
+	credential := common.NewCredential(secretId, secretKey)
+
+	cpf := profile.NewClientProfile()
+	if endpoint != "" {
+		cpf.HttpProfile.Endpoint = endpoint
+	}
+
+	client, err := tcssl.NewClient(credential, "", cpf)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -24,6 +24,7 @@ func init() {
 			DeployTarget:  xmaps.GetString(options.ProviderExtendedConfig, "deployTarget"),
 			AcceleratorId: xmaps.GetString(options.ProviderExtendedConfig, "acceleratorId"),
 			ListenerId:    xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
+			AutoPrune:     xmaps.GetBool(options.ProviderExtendedConfig, "autoPrune"),
 		})
 		return provider, err
 	})

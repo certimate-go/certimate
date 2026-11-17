@@ -9,8 +9,8 @@ type CertificateListItem struct {
 	Brand             string
 	ValidityPeriod    int
 	Type              string
-	NotBefore         int
-	NotAfter          int
+	NotBefore         int64
+	NotAfter          int64
 	AlarmState        int
 	State             string
 	StateCode         string
@@ -53,9 +53,4 @@ type CertificateInfo struct {
 	CSREncryptAlgo  string
 	IssuedDate      int
 	ExpiredDate     int
-}
-
-type CertificateDownloadInfo struct {
-	FileData string
-	FileName string
 }

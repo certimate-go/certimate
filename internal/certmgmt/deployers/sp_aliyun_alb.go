@@ -25,6 +25,7 @@ func init() {
 			LoadbalancerId:  xmaps.GetString(options.ProviderExtendedConfig, "loadbalancerId"),
 			ListenerId:      xmaps.GetString(options.ProviderExtendedConfig, "listenerId"),
 			Domain:          xmaps.GetString(options.ProviderExtendedConfig, "domain"),
+			AutoPrune:       xmaps.GetBool(options.ProviderExtendedConfig, "autoPrune"),
 		})
 		return provider, err
 	})

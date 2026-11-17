@@ -1,4 +1,4 @@
-﻿package pfx
+package pfx
 
 import (
 	"fmt"

@@ -26,12 +26,12 @@ Index:
 
 ### Prerequisites
 
-- Go 1.25+ (for backend code changes)
+- Go 1.27.4+ (for backend code changes)
 - Node.js 22.12+ (for frontend code changes)
 
 ### Backend Code
 
-The backend code of Certimate is developed using Golang. It is a monolithic application based on [Pocketbase](https://github.com/pocketbase/pocketbase).
+The backend code of Certimate is developed using Golang. It is a monolithic application based on [Pocketbase](https://ganigeorgiev.com/pocketbase/pocketbase).
 
 Once you have made changes to the backend code in Certimate, follow these steps to run the project:
 
@@ -106,6 +106,14 @@ Before opening a Pull Request, please open an issue to discuss the change and ge
 > It is recommended to create a new branch from `main` for each bug fix or feature. If you plan to submit multiple PRs, ensure the changes are in separate branches for easier review and eventual merge.
 >
 > Keep each PR focused on a single feature or fix.
+
+## Reporting issues
+
+When you open a bug report, feature request, or question, please fill in the issue template completely (version number, clear description, reproduction steps where applicable, and logs if you have them).
+
+If we ask for more information and the issue is labeled `help wanted` (waiting for you to supplement the report), we need your reply to move forward. **If the necessary details are not provided within 7 days, the issue may be closed automatically.** You can **reopen** the issue at any time after you add the missing information.
+
+For maintainers: when requesting details, leave a short checklist in a comment, then apply the existing `help wanted` label so the same 7-day reminder and auto-close behavior applies.
 
 ## Getting Help
 

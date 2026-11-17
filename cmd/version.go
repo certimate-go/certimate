@@ -1,10 +1,10 @@
-﻿package cmd
+package cmd
 
 import (
 	"fmt"
 	"runtime"
 
-	"github.com/pocketbase/pocketbase/core"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 	"github.com/spf13/cobra"
 
 	"github.com/certimate-go/certimate/internal/app"
@@ -13,7 +13,7 @@ import (
 func NewVersionCommand(_ core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "version",
-		Short: "Print the version information",
+		Short: "Prints version information",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("Certimate v%s\n", app.AppVersion)
 			fmt.Printf("Build with %s on %s_%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)

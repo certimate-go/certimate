@@ -8,6 +8,7 @@ import { z } from "zod";
 import CodeTextInput from "@/components/CodeTextInput";
 import { WORKFLOW_NODE_TYPES, type WorkflowGraph, type WorkflowNode, type WorkflowNodeType } from "@/domain/workflow";
 import { useAntdForm } from "@/hooks";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 export type WorkflowGraphImportInputBoxFormats = "json" | "yaml";
 
@@ -220,6 +221,7 @@ const WorkflowGraphImportInputBox = forwardRef<WorkflowGraphImportInputBoxInstan
   useImperativeHandle(ref, () => {
     return {
       validate: async () => {
+        applyTrimmedFormValues(formInst);
         const formValues = await formInst.validateFields();
         return deserialize(formValues.content, formValues.format);
       },

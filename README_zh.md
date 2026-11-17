@@ -19,6 +19,14 @@
 
 <div align="center">
 
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/daily" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/weekly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/monthly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+
+</div>
+
+<div align="center">
+
 [English](README.md) ｜ 简体中文
 
 </div>
@@ -32,7 +40,7 @@
 - **自托管**：私有化安装，所有数据本地化存储，掌控数据的隐私与安全。
 - **跨平台**：Windows/Linux/macOS，全平台多架构可运行。
 - **零依赖**：无需安装数据库、运行时或复杂框架，一键启动，开箱即用。
-- **低占用**：超轻量的资源开销，仅需 ~16 MB 内存。
+- **低占用**：超轻量的资源开销，仅需 ~20 MB 常驻内存。
 - **易操作**：图形化界面，通过简单配置即可完成证书的自动化管理。
 
 ## 💡 功能特性
@@ -42,7 +50,7 @@
 - 支持 DNS-01（即基于域名解析验证）、HTTP-01（即基于文件验证）两种质询方式。
 - 支持 PEM、PFX、JKS 等多种格式输出证书。
 - 支持 70+ 域名托管商（如阿里云、腾讯云、AWS、Cloudflare、GoDaddy 等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-dns-providers)）。
-- 支持 140+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-hosting-providers)）。
+- 支持 160+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等，[点此查看完整清单](https://docs.certimate.me/zh-CN/docs/reference/providers#supported-hosting-providers)）。
 - 支持邮件、钉钉、飞书、企业微信、Discord、Slack、Telegram 等多种通知渠道。
 - 支持 Let's Encrypt、Actalis、Google Trust Services、SSL.com、ZeroSSL 等多种 ACME 证书颁发机构。
 - 更多特性等待探索。
@@ -80,12 +88,21 @@ docker run -d \
 
 浏览器中访问 `http://127.0.0.1:8090`。
 
-初始的管理员账号及密码：
+首次启动不再提供默认管理员账号。Certimate 会在启动控制台输出一次性初始化口令（Docker 部署可通过 `docker logs certimate` 查看），有效期 30 分钟。打开站点后输入该口令以及自定义的邮箱和密码即可创建管理员账号，之后按常规方式登录。口令过期后重启 Certimate 即可获取新口令。
 
-- 账号：`admin@certimate.fun`
-- 密码：`1234567890`
+无人值守部署可以在首次启动前通过环境变量预设凭据——两个变量必须同时提供，否则启动失败：
 
-即刻使用 Certimate。或者阅读文档中的其他内容以了解更多。
+```bash
+CERTIMATE_ADMIN_USERNAME=admin@example.com \
+CERTIMATE_ADMIN_PASSWORD='your-password' \
+./certimate serve
+```
+
+说明：
+
+- `certimate migrate up` 仅执行迁移，不再创建管理员。如需显式的 CLI 预设或恢复（例如 Windows 服务模式下无法查看控制台输出），可对数据目录执行 `certimate superuser upsert EMAIL PASS`。
+- 从旧版本升级的实例保留原有管理员账号，包括仍在使用历史默认凭据的账号；初始化入口保持关闭，不会重置或覆盖任何账号。
+- 已存在管理员时环境变量预设会被忽略。
 
 ## 📄 使用手册
 
@@ -132,6 +149,12 @@ Certimate 遵循 [MIT License](https://opensource.org/licenses/MIT) 开源协议
 
 ## ⭐ 星标趋势
 
-在 GitHub 上为 Certimate 添加 Star 星标关注，即可第一时间获取新版本发布通知。
+在 GitHub 上为 Certimate 添加 Star 星标关注，即可第一时间获取新版本发布通知！
 
-[![Stargazers over time](https://starchart.cc/certimate-go/certimate.svg?variant=adaptive)](https://starchart.cc/certimate-go/certimate)
+<a href="https://www.star-history.com/?repos=certimate-go%2Fcertimate&type=date&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=certimate-go/certimate&type=date&theme=dark&legend=bottom-right&sealed_token=H4DPGE1XAt_F9BtU6OvSVvl5JuCYxptPOWaNf2PJ-jnenuG4X9BoFD21CJyriYWd-2kUWZabZ3yzUivF-6Q0gxFQythEiGTEvMQZuyz2lwn3ZEsMkdra35MkGHqr7dPjtgEJI6bD_-y_rZkm0r5POO6ChejyCg78P3sT_BmCt6HIbu_Jy8FqRB8IRl39" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=certimate-go/certimate&type=date&legend=bottom-right&sealed_token=H4DPGE1XAt_F9BtU6OvSVvl5JuCYxptPOWaNf2PJ-jnenuG4X9BoFD21CJyriYWd-2kUWZabZ3yzUivF-6Q0gxFQythEiGTEvMQZuyz2lwn3ZEsMkdra35MkGHqr7dPjtgEJI6bD_-y_rZkm0r5POO6ChejyCg78P3sT_BmCt6HIbu_Jy8FqRB8IRl39" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=certimate-go/certimate&type=date&legend=bottom-right&sealed_token=H4DPGE1XAt_F9BtU6OvSVvl5JuCYxptPOWaNf2PJ-jnenuG4X9BoFD21CJyriYWd-2kUWZabZ3yzUivF-6Q0gxFQythEiGTEvMQZuyz2lwn3ZEsMkdra35MkGHqr7dPjtgEJI6bD_-y_rZkm0r5POO6ChejyCg78P3sT_BmCt6HIbu_Jy8FqRB8IRl39" />
+ </picture>
+</a>

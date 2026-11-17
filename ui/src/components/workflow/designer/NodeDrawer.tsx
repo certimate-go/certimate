@@ -9,6 +9,7 @@ import BizApplyNodeConfigDrawer from "./forms/BizApplyNodeConfigDrawer";
 import BizDeployNodeConfigDrawer from "./forms/BizDeployNodeConfigDrawer";
 import BizMonitorNodeConfigDrawer from "./forms/BizMonitorNodeConfigDrawer";
 import BizNotifyNodeConfigDrawer from "./forms/BizNotifyNodeConfigDrawer";
+import BizPurgeNodeConfigDrawer from "./forms/BizPurgeNodeConfigDrawer";
 import BizUploadNodeConfigDrawer from "./forms/BizUploadNodeConfigDrawer";
 import BranchBlockNodeConfigDrawer from "./forms/BranchBlockNodeConfigDrawer";
 import DelayNodeConfigDrawer from "./forms/DelayNodeConfigDrawer";
@@ -71,6 +72,9 @@ const NodeDrawer = ({ node, trigger, ...props }: NodeDrawerProps) => {
         </Show.Case>
         <Show.Case when={node?.flowNodeType === NodeType.BizDeploy}>
           <BizDeployNodeConfigDrawer {...drawerProps} />
+        </Show.Case>
+        <Show.Case when={node?.flowNodeType === NodeType.BizPurge}>
+          <BizPurgeNodeConfigDrawer {...drawerProps} />
         </Show.Case>
         <Show.Case when={node?.flowNodeType === NodeType.BizNotify}>
           <BizNotifyNodeConfigDrawer {...drawerProps} />

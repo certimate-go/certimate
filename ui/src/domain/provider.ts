@@ -1,8 +1,13 @@
+import { withBasePath } from "@/utils/url";
+
+export type ProviderSource = "core" | "plugin";
+
 interface BaseProvider<P> {
   type: P;
   name: string;
   icon: string;
   builtin: boolean;
+  source?: ProviderSource;
 }
 
 interface BaseProviderWithAccess<P> extends BaseProvider<P> {
@@ -10,133 +15,112 @@ interface BaseProviderWithAccess<P> extends BaseProvider<P> {
 }
 
 // #region AccessProvider
-/*
-  注意：如果追加新的常量值，请保持以 ASCII 排序。
-  NOTICE: If you add new constant, please keep ASCII order.
- */
-export const ACCESS_PROVIDERS = Object.freeze({
-  ["1PANEL"]: "1panel",
-  ["35CN"]: "35cn",
-  ["51DNSCOM"]: "51dnscom",
-  ACMECA: "acmeca",
-  ACMEDNS: "acmedns",
-  ACMEHTTPREQ: "acmehttpreq",
-  ACTALISSSL: "actalisssl",
-  AKAMAI: "akamai",
-  ALIYUN: "aliyun",
-  APISIX: "apisix",
-  ARVANCLOUD: "arvancloud",
-  AWS: "aws",
-  AZURE: "azure",
-  BAIDUCLOUD: "baiducloud",
-  BAISHAN: "baishan",
-  BAOTAPANEL: "baotapanel",
-  BAOTAPANELGO: "baotapanelgo",
-  BAOTAWAF: "baotawaf",
-  BEGET: "beget",
-  BOOKMYNAME: "bookmyname",
-  BUNNY: "bunny",
-  BYTEPLUS: "byteplus",
-  CACHEFLY: "cachefly",
-  CDNFLY: "cdnfly",
-  CLOUDFLARE: "cloudflare",
-  CLOUDNS: "cloudns",
-  CMCCCLOUD: "cmcccloud",
-  CONOHAVPS: "conohavps",
-  CONSTELLIX: "constellix",
-  CPANEL: "cpanel",
-  CTCCCLOUD: "ctcccloud",
-  DESEC: "desec",
-  DIGICERT: "digicert",
-  DIGITALOCEAN: "digitalocean",
-  DINGTALKBOT: "dingtalkbot",
-  DISCORDBOT: "discordbot",
-  DNSEXIT: "dnsexit",
-  DNSLA: "dnsla",
-  DNSMADEEASY: "dnsmadeeasy",
-  DOGECLOUD: "dogecloud",
-  DOKPLOY: "dokploy",
-  DUCKDNS: "duckdns",
-  DYNADOT: "dynadot",
-  DYNU: "dynu",
-  DYNV6: "dynv6",
-  EMAIL: "email",
-  FLEXCDN: "flexcdn",
-  FLYIO: "flyio",
-  FTP: "ftp",
-  GANDINET: "gandinet",
-  GCORE: "gcore",
-  GLOBALSIGNATLAS: "globalsignatlas",
-  GNAME: "gname",
-  GODADDY: "godaddy",
-  GOEDGE: "goedge",
-  GOOGLECLOUD: "googlecloud",
-  GOOGLETRUSTSERVICES: "googletrustservices",
-  HETZNER: "hetzner",
-  HOSTINGDE: "hostingde",
-  HOSTINGER: "hostinger",
-  HUAWEICLOUD: "huaweicloud",
-  INFOMANIAK: "infomaniak",
-  IONOS: "ionos",
-  JDCLOUD: "jdcloud",
-  KONG: "kong",
-  KUBERNETES: "k8s",
-  KSYUN: "ksyun",
-  LARKBOT: "larkbot",
-  LECDN: "lecdn",
-  LETSENCRYPT: "letsencrypt",
-  LETSENCRYPTSTAGING: "letsencryptstaging",
-  LINODE: "linode",
-  LITESSL: "litessl",
-  LOCAL: "local",
-  MATRIX: "matrix",
-  MATTERMOST: "mattermost",
-  MOHUA: "mohua",
-  NAMECHEAP: "namecheap",
-  NAMEDOTCOM: "namedotcom",
-  NAMESILO: "namesilo",
-  NETCUP: "netcup",
-  NETLIFY: "netlify",
-  NGINXPROXYMANAGER: "nginxproxymanager",
-  NS1: "ns1",
-  OVHCLOUD: "ovhcloud",
-  PORKBUN: "porkbun",
-  POWERDNS: "powerdns",
-  PROXMOXVE: "proxmoxve",
-  QINGCLOUD: "qingcloud",
-  QINIU: "qiniu",
-  RAINYUN: "rainyun",
-  RATPANEL: "ratpanel",
-  REGRU: "regru",
-  RFC2136: "rfc2136",
-  RUCENTER: "rucenter",
-  S3: "s3",
-  SAFELINE: "safeline",
-  SAMWAF: "samwaf",
-  SECTIGO: "sectigo",
-  SLACKBOT: "slackbot",
-  SPACESHIP: "spaceship",
-  SSH: "ssh",
-  SSLCOM: "sslcom",
-  SYNOLOGYDSM: "synologydsm",
-  TECHNITIUMDNS: "technitiumdns",
-  TELEGRAMBOT: "telegrambot",
-  TENCENTCLOUD: "tencentcloud",
-  TODAYNIC: "todaynic",
-  UCLOUD: "ucloud",
-  UNICLOUD: "unicloud",
-  UPYUN: "upyun",
-  VERCEL: "vercel",
-  VOLCENGINE: "volcengine",
-  VULTR: "vultr",
-  WANGSU: "wangsu",
-  WEBHOOK: "webhook",
-  WECOMBOT: "wecombot",
-  WESTCN: "westcn",
-  XINNET: "xinnet",
-  ZENLAYER: "zenlayer",
-  ZEROSSL: "zerossl",
-} as const);
+export const ACCESS_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+   */
+  {
+    ["35CN"]: "35cn",
+    ["51DNSCOM"]: "51dnscom",
+    ACMECA: "acmeca",
+    ACMEDNS: "acmedns",
+    ACMEHTTPREQ: "acmehttpreq",
+    ACTALISSSL: "actalisssl",
+    AKAMAI: "akamai",
+    ALIYUN: "aliyun",
+    ARVANCLOUD: "arvancloud",
+    AWS: "aws",
+    AZURE: "azure",
+    BAIDUCLOUD: "baiducloud",
+    BEGET: "beget",
+    BOOKMYNAME: "bookmyname",
+    BUNNY: "bunny",
+    BYTEPLUS: "byteplus",
+    CLOUDFLARE: "cloudflare",
+    CLOUDNS: "cloudns",
+    CMCCCLOUD: "cmcccloud",
+    CONOHAVPS: "conohavps",
+    CONSTELLIX: "constellix",
+    CPANEL: "cpanel",
+    CTCCCLOUD: "ctcccloud",
+    DESEC: "desec",
+    DIGICERT: "digicert",
+    DIGITALOCEAN: "digitalocean",
+    DINGTALKBOT: "dingtalkbot",
+    DISCORDBOT: "discordbot",
+    DNSEXIT: "dnsexit",
+    DNSLA: "dnsla",
+    DNSMADEEASY: "dnsmadeeasy",
+    DUCKDNS: "duckdns",
+    DYNADOT: "dynadot",
+    DYNU: "dynu",
+    DYNV6: "dynv6",
+    EMAIL: "email",
+    FTP: "ftp",
+    GANDINET: "gandinet",
+    GCORE: "gcore",
+    GLOBALSIGNATLAS: "globalsignatlas",
+    GNAME: "gname",
+    GODADDY: "godaddy",
+    GOOGLECLOUD: "googlecloud",
+    GOOGLETRUSTSERVICES: "googletrustservices",
+    HETZNER: "hetzner",
+    HOSTINGDE: "hostingde",
+    HOSTINGER: "hostinger",
+    HUAWEICLOUD: "huaweicloud",
+    INFOMANIAK: "infomaniak",
+    IONOS: "ionos",
+    JDCLOUD: "jdcloud",
+    LARKBOT: "larkbot",
+    LETSENCRYPT: "letsencrypt",
+    LETSENCRYPTSTAGING: "letsencryptstaging",
+    LINODE: "linode",
+    LITESSL: "litessl",
+    LUADNS: "luadns",
+    LOCAL: "local",
+    MATRIX: "matrix",
+    MATTERMOST: "mattermost",
+    NAMECHEAP: "namecheap",
+    NAMEDOTCOM: "namedotcom",
+    NAMESILO: "namesilo",
+    NETCUP: "netcup",
+    NETLIFY: "netlify",
+    NS1: "ns1",
+    ORACLECLOUD: "oraclecloud",
+    OVHCLOUD: "ovhcloud",
+    PORKBUN: "porkbun",
+    POWERDNS: "powerdns",
+    POWERDNS_DNS: "powerdns-dns",
+    QINGCLOUD: "qingcloud",
+    RAINYUN: "rainyun",
+    REGRU: "regru",
+    RFC2136: "rfc2136",
+    RFC2136_DNS: "rfc2136-dns",
+    RUCENTER: "rucenter",
+    S3: "s3",
+    SECTIGO: "sectigo",
+    SIMPLYCOM: "simplycom",
+    SLACKBOT: "slackbot",
+    SPACESHIP: "spaceship",
+    SSH: "ssh",
+    SSLCOM: "sslcom",
+    TECHNITIUMDNS: "technitiumdns",
+    TELEGRAMBOT: "telegrambot",
+    TENCENTCLOUD: "tencentcloud",
+    TODAYNIC: "todaynic",
+    UCLOUD: "ucloud",
+    VERCEL: "vercel",
+    VOLCENGINE: "volcengine",
+    VULTR: "vultr",
+    WEBHOOK: "webhook",
+    WECOMBOT: "wecombot",
+    WESTCN: "westcn",
+    XINNET: "xinnet",
+    YANDEXCLOUD: "yandexcloud",
+    ZEROSSL: "zerossl",
+  } as const
+);
 
 export type AccessProviderType = (typeof ACCESS_PROVIDERS)[keyof typeof ACCESS_PROVIDERS];
 
@@ -151,6 +135,7 @@ export type AccessUsageType = (typeof ACCESS_USAGES)[keyof typeof ACCESS_USAGES]
 
 export interface AccessProvider extends BaseProvider<AccessProviderType> {
   usages: AccessUsageType[];
+  deployers?: string[];
 }
 
 export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProvider> = new Map(
@@ -164,7 +149,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.SSH, "provider.ssh", "/imgs/providers/ssh.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.FTP, "provider.ftp", "/imgs/providers/ftp.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.WEBHOOK, "provider.webhook", "/imgs/providers/webhook.svg", [ACCESS_USAGES.HOSTING, ACCESS_USAGES.NOTIFICATION]],
-      [ACCESS_PROVIDERS.KUBERNETES, "provider.kubernetes", "/imgs/providers/kubernetes.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.S3, "provider.s3", "/imgs/providers/s3.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.ALIYUN, "provider.aliyun", "/imgs/providers/aliyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -173,14 +157,17 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.VOLCENGINE, "provider.volcengine", "/imgs/providers/volcengine.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.AWS, "provider.aws", "/imgs/providers/aws.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.AZURE, "provider.azure", "/imgs/providers/azure.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.GOOGLECLOUD, "provider.googlecloud", "/imgs/providers/google.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.ORACLECLOUD, "provider.oraclecloud", "/imgs/providers/oraclecloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BUNNY, "provider.bunny", "/imgs/providers/bunny.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BYTEPLUS, "provider.byteplus", "/imgs/providers/byteplus.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CLOUDFLARE, "provider.cloudflare", "/imgs/providers/cloudflare.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.DIGITALOCEAN, "provider.digitalocean", "/imgs/providers/digitalocean.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.GCORE, "provider.gcore", "/imgs/providers/gcore.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.GOOGLECLOUD, "provider.googlecloud", "/imgs/providers/google.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.LINODE, "provider.linode", "/imgs/providers/linode.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.YANDEXCLOUD, "provider.yandexcloud", "/imgs/providers/yandexcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.BAIDUCLOUD, "provider.baiducloud", "/imgs/providers/baiducloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.CMCCCLOUD, "provider.cmcccloud", "/imgs/providers/cmcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CTCCCLOUD, "provider.ctcccloud", "/imgs/providers/ctcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.JDCLOUD, "provider.jdcloud", "/imgs/providers/jdcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.QINGCLOUD, "provider.qingcloud", "/imgs/providers/qingcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
@@ -189,35 +176,6 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.NETLIFY, "provider.netlify", "/imgs/providers/netlify.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.VERCEL, "provider.vercel", "/imgs/providers/vercel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CPANEL, "provider.cpanel", "/imgs/providers/cpanel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-
-      [ACCESS_PROVIDERS.BAISHAN, "provider.baishan", "/imgs/providers/baishan.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.DOGECLOUD, "provider.dogecloud", "/imgs/providers/dogecloud.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.KSYUN, "provider.ksyun", "/imgs/providers/ksyun.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.QINIU, "provider.qiniu", "/imgs/providers/qiniu.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.UPYUN, "provider.upyun", "/imgs/providers/upyun.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.WANGSU, "provider.wangsu", "/imgs/providers/wangsu.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.MOHUA, "provider.mohua", "/imgs/providers/mohua.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.UNICLOUD, "provider.unicloud", "/imgs/providers/unicloud.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.CACHEFLY, "provider.cachefly", "/imgs/providers/cachefly.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.FLEXCDN, "provider.flexcdn", "/imgs/providers/flexcdn.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.FLYIO, "provider.flyio", "/imgs/providers/flyio.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.ZENLAYER, "provider.zenlayer", "/imgs/providers/zenlayer.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS["1PANEL"], "provider.1panel", "/imgs/providers/1panel.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.APISIX, "provider.apisix", "/imgs/providers/apisix.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BAOTAPANEL, "provider.baotapanel", "/imgs/providers/baota.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BAOTAPANELGO, "provider.baotapanelgo", "/imgs/providers/baota.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BAOTAWAF, "provider.baotawaf", "/imgs/providers/baota.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.DOKPLOY, "provider.dokploy", "/imgs/providers/dokploy.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.CDNFLY, "provider.cdnfly", "/imgs/providers/cdnfly.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.GOEDGE, "provider.goedge", "/imgs/providers/goedge.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.KONG, "provider.kong", "/imgs/providers/kong.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.LECDN, "provider.lecdn", "/imgs/providers/lecdn.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.NGINXPROXYMANAGER, "provider.nginxproxymanager", "/imgs/providers/nginxproxymanager.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.PROXMOXVE, "provider.proxmoxve", "/imgs/providers/proxmoxve.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.RATPANEL, "provider.ratpanel", "/imgs/providers/ratpanel.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.SAFELINE, "provider.safeline", "/imgs/providers/safeline.svg", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.SAMWAF, "provider.samwaf", "/imgs/providers/samwaf.png", [ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", "/imgs/providers/synologydsm.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.AKAMAI, "provider.akamai", "/imgs/providers/akamai.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ARVANCLOUD, "provider.arvancloud", "/imgs/providers/arvancloud.svg", [ACCESS_USAGES.DNS]],
@@ -241,6 +199,7 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.HOSTINGER, "provider.hostinger", "/imgs/providers/hostinger.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.INFOMANIAK, "provider.infomaniak", "/imgs/providers/infomaniak.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.IONOS, "provider.ionos", "/imgs/providers/ionos.svg", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.LUADNS, "provider.luadns", "/imgs/providers/luadns.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.NAMECHEAP, "provider.namecheap", "/imgs/providers/namecheap.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.NAMEDOTCOM, "provider.namedotcom", "/imgs/providers/namedotcom.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.NAMESILO, "provider.namesilo", "/imgs/providers/namesilo.svg", [ACCESS_USAGES.DNS]],
@@ -250,18 +209,16 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.PORKBUN, "provider.porkbun", "/imgs/providers/porkbun.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.REGRU, "provider.regru", "/imgs/providers/regru.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.RUCENTER, "provider.rucenter", "/imgs/providers/rucenter.svg", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.SIMPLYCOM, "provider.simplycom", "/imgs/providers/simplycom.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.SPACESHIP, "provider.spaceship", "/imgs/providers/spaceship.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.VULTR, "provider.vultr", "/imgs/providers/vultr.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.CMCCCLOUD, "provider.cmcccloud", "/imgs/providers/cmcccloud.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS["35CN"], "provider.35cn", "/imgs/providers/35cn.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS["51DNSCOM"], "provider.51dnscom", "/imgs/providers/51dnscom.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.DNSLA, "provider.dnsla", "/imgs/providers/dnsla.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.TODAYNIC, "provider.todaynic", "/imgs/providers/todaynic.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.WESTCN, "provider.westcn", "/imgs/providers/westcn.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.XINNET, "provider.xinnet", "/imgs/providers/xinnet.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.POWERDNS, "provider.powerdns", "/imgs/providers/powerdns.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns", "/imgs/providers/technitiumdns.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.RFC2136, "provider.rfc2136", "/imgs/providers/rfc.svg", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ACMEDNS, "provider.acmedns", "/imgs/providers/acmedns.png", [ACCESS_USAGES.DNS]],
       [ACCESS_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq", "/imgs/providers/acmehttpreq.svg", [ACCESS_USAGES.DNS]],
 
@@ -278,6 +235,21 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.ACMECA, "provider.acmeca", "/imgs/providers/acmeca.svg", [ACCESS_USAGES.CA]],
 
       [ACCESS_PROVIDERS.EMAIL, "provider.email", "/imgs/providers/email.svg", [ACCESS_USAGES.NOTIFICATION]],
+    ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[], "builtin"] | [AccessProviderType, string, string, AccessUsageType[]]>
+  ).map(([type, name, icon, usages, builtin]) => [
+    type,
+    {
+      type: type,
+      name: name,
+      icon: withBasePath(icon),
+      usages: usages,
+      builtin: builtin === "builtin",
+    },
+  ])
+);
+const migratedNotificationAccessProviders = new Map<string, AccessProvider>(
+  (
+    [
       [ACCESS_PROVIDERS.DINGTALKBOT, "provider.dingtalkbot", "/imgs/providers/dingtalk.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.LARKBOT, "provider.larkbot", "/imgs/providers/lark.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.WECOMBOT, "provider.wecombot", "/imgs/providers/wecom.svg", [ACCESS_USAGES.NOTIFICATION]],
@@ -286,43 +258,50 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
       [ACCESS_PROVIDERS.TELEGRAMBOT, "provider.telegrambot", "/imgs/providers/telegram.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.MATRIX, "provider.matrix", "/imgs/providers/matrix.svg", [ACCESS_USAGES.NOTIFICATION]],
       [ACCESS_PROVIDERS.MATTERMOST, "provider.mattermost", "/imgs/providers/mattermost.svg", [ACCESS_USAGES.NOTIFICATION]],
-    ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[], "builtin"] | [AccessProviderType, string, string, AccessUsageType[]]>
-  ).map(([type, name, icon, usages, builtin]) => [
-    type,
-    {
-      type: type,
-      name: name,
-      icon: icon,
-      usages: usages,
-      builtin: builtin === "builtin",
-    },
-  ])
+    ] satisfies Array<[AccessProviderType, string, string, AccessUsageType[]]>
+  ).map(([type, name, icon, usages]) => [type, { type, name, icon: withBasePath(icon), usages, builtin: false, source: "plugin" }])
 );
+
+const migratedDNSAccessProviders = new Map<string, AccessProvider & { pluginType: string }>(
+  (
+    [
+      [ACCESS_PROVIDERS.POWERDNS, ACCESS_PROVIDERS.POWERDNS_DNS, "provider.powerdns", "/imgs/providers/powerdns.svg"],
+      [ACCESS_PROVIDERS.RFC2136, ACCESS_PROVIDERS.RFC2136_DNS, "provider.rfc2136", "/imgs/providers/rfc.svg"],
+    ] satisfies Array<[AccessProviderType, AccessProviderType, string, string]>
+  ).map(([type, pluginType, name, icon]) => [type, { type, pluginType, name, icon: withBasePath(icon), usages: [ACCESS_USAGES.DNS], builtin: false }])
+);
+
+export const getAccessProvider = (type: string): AccessProvider | undefined =>
+  accessProvidersMap.get(type) ?? migratedDNSAccessProviders.get(type) ?? migratedNotificationAccessProviders.get(type);
+
 // #endregion
 
 // #region CAProvider
-/*
-  注意：如果追加新的常量值，请保持以 ASCII 排序。
-  NOTICE: If you add new constant, please keep ASCII order.
- */
-export const CA_PROVIDERS = Object.freeze({
-  ACMECA: `${ACCESS_PROVIDERS.ACMECA}`,
-  ACTALISSSL: `${ACCESS_PROVIDERS.ACTALISSSL}`,
-  DIGICERT: `${ACCESS_PROVIDERS.DIGICERT}`,
-  GLOBALSIGNATLAS: `${ACCESS_PROVIDERS.GLOBALSIGNATLAS}`,
-  GOOGLETRUSTSERVICES: `${ACCESS_PROVIDERS.GOOGLETRUSTSERVICES}`,
-  LETSENCRYPT: `${ACCESS_PROVIDERS.LETSENCRYPT}`,
-  LETSENCRYPTSTAGING: `${ACCESS_PROVIDERS.LETSENCRYPTSTAGING}`,
-  LITESSL: `${ACCESS_PROVIDERS.LITESSL}`,
-  SECTIGO: `${ACCESS_PROVIDERS.SECTIGO}`,
-  SSLCOM: `${ACCESS_PROVIDERS.SSLCOM}`,
-  ZEROSSL: `${ACCESS_PROVIDERS.ZEROSSL}`,
-} as const);
+export const CA_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+   */
+  {
+    ACMECA: `${ACCESS_PROVIDERS.ACMECA}`,
+    ACTALISSSL: `${ACCESS_PROVIDERS.ACTALISSSL}`,
+    DIGICERT: `${ACCESS_PROVIDERS.DIGICERT}`,
+    GLOBALSIGNATLAS: `${ACCESS_PROVIDERS.GLOBALSIGNATLAS}`,
+    GOOGLETRUSTSERVICES: `${ACCESS_PROVIDERS.GOOGLETRUSTSERVICES}`,
+    LETSENCRYPT: `${ACCESS_PROVIDERS.LETSENCRYPT}`,
+    LETSENCRYPTSTAGING: `${ACCESS_PROVIDERS.LETSENCRYPTSTAGING}`,
+    LITESSL: `${ACCESS_PROVIDERS.LITESSL}`,
+    SECTIGO: `${ACCESS_PROVIDERS.SECTIGO}`,
+    SSLCOM: `${ACCESS_PROVIDERS.SSLCOM}`,
+    ZEROSSL: `${ACCESS_PROVIDERS.ZEROSSL}`,
+  } as const
+);
 
 export type CAProviderType = (typeof CA_PROVIDERS)[keyof typeof CA_PROVIDERS];
 
 export interface CAProvider extends BaseProviderWithAccess<CAProviderType> {
   description?: string;
+  accessOptional: boolean;
 }
 
 export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new Map(
@@ -340,11 +319,11 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
       [CA_PROVIDERS.GOOGLETRUSTSERVICES, "pki.goog"],
       [CA_PROVIDERS.SECTIGO, "sectigo.com"],
       [CA_PROVIDERS.SSLCOM, "ssl.com"],
-      [CA_PROVIDERS.ZEROSSL, "zerossl.com"],
+      [CA_PROVIDERS.ZEROSSL, "zerossl.com", undefined, "accessOptional"],
       [CA_PROVIDERS.LITESSL, "litessl.cn (freessl.cn)"],
       [CA_PROVIDERS.ACMECA, "ACME v2 (RFC 8555)"],
-    ] satisfies Array<[CAProviderType, string, "builtin"] | [CAProviderType, string]>
-  ).map(([type, description, builtin]) => [
+    ] satisfies Array<[CAProviderType, string, ("builtin" | undefined)?, ("accessOptional" | undefined)?]>
+  ).map(([type, description, builtin, accessOptional]) => [
     type,
     {
       type: type,
@@ -353,103 +332,114 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
       icon: accessProvidersMap.get(type.split("-")[0])!.icon,
       provider: type.split("-")[0] as AccessProviderType,
       builtin: builtin === "builtin",
+      accessOptional: accessOptional === "accessOptional",
     },
   ])
 );
 // #endregion
 
 // #region ACMEDNS01Provider
-/*
-  注意：如果追加新的常量值，请保持以 ASCII 排序。
-  NOTICE: If you add new constant, please keep ASCII order.
- */
-export const ACME_DNS01_PROVIDERS = Object.freeze({
-  ["35CN"]: `${ACCESS_PROVIDERS["35CN"]}`,
-  ["51DNSCOM"]: `${ACCESS_PROVIDERS["51DNSCOM"]}`,
-  ACMEDNS: `${ACCESS_PROVIDERS.ACMEDNS}`,
-  ACMEHTTPREQ: `${ACCESS_PROVIDERS.ACMEHTTPREQ}`,
-  AKAMAI: `${ACCESS_PROVIDERS.AKAMAI}`, // 兼容旧值，等同于 `AKAMAI_EDGEDNS`
-  AKAMAI_EDGEDNS: `${ACCESS_PROVIDERS.AKAMAI}-edgedns`,
-  ALIYUN: `${ACCESS_PROVIDERS.ALIYUN}`, // 兼容旧值，等同于 `ALIYUN_DNS`
-  ALIYUN_DNS: `${ACCESS_PROVIDERS.ALIYUN}-dns`,
-  ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
-  ARVANCLOUD: `${ACCESS_PROVIDERS.ARVANCLOUD}`,
-  AWS: `${ACCESS_PROVIDERS.AWS}`, // 兼容旧值，等同于 `AWS_ROUTE53`
-  AWS_LIGHTSAIL: `${ACCESS_PROVIDERS.AWS}-lightsail`,
-  AWS_ROUTE53: `${ACCESS_PROVIDERS.AWS}-route53`,
-  AZURE: `${ACCESS_PROVIDERS.AZURE}`, // 兼容旧值，等同于 `AZURE_DNS`
-  AZURE_DNS: `${ACCESS_PROVIDERS.AZURE}-dns`,
-  BAIDUCLOUD: `${ACCESS_PROVIDERS.BAIDUCLOUD}`, // 兼容旧值，等同于 `BAIDUCLOUD_DNS`
-  BAIDUCLOUD_DNS: `${ACCESS_PROVIDERS.BAIDUCLOUD}-dns`,
-  BEGET: `${ACCESS_PROVIDERS.BEGET}`,
-  BOOKMYNAME: `${ACCESS_PROVIDERS.BOOKMYNAME}`,
-  BUNNY: `${ACCESS_PROVIDERS.BUNNY}`,
-  BYTEPLUS: `${ACCESS_PROVIDERS.BYTEPLUS}`, // 兼容旧值，等同于 `BYTEPLUS_DNS`
-  BYTEPLUS_DNS: `${ACCESS_PROVIDERS.BYTEPLUS}-dns`,
-  CLOUDFLARE: `${ACCESS_PROVIDERS.CLOUDFLARE}`,
-  CLOUDNS: `${ACCESS_PROVIDERS.CLOUDNS}`,
-  CMCCCLOUD: `${ACCESS_PROVIDERS.CMCCCLOUD}`, // 兼容旧值，等同于 `CMCCCLOUD_DNS`
-  CMCCCLOUD_DNS: `${ACCESS_PROVIDERS.CMCCCLOUD}-dns`,
-  CONOHAVPS: `${ACCESS_PROVIDERS.CONOHAVPS}`,
-  CONSTELLIX: `${ACCESS_PROVIDERS.CONSTELLIX}`,
-  CPANEL: `${ACCESS_PROVIDERS.CPANEL}`,
-  CTCCCLOUD: `${ACCESS_PROVIDERS.CTCCCLOUD}`, // 兼容旧值，等同于 `CTCCCLOUD_SMARTDNS`
-  CTCCCLOUD_SMARTDNS: `${ACCESS_PROVIDERS.CTCCCLOUD}-smartdns`,
-  DESEC: `${ACCESS_PROVIDERS.DESEC}`,
-  DIGITALOCEAN: `${ACCESS_PROVIDERS.DIGITALOCEAN}`,
-  DNSEXIT: `${ACCESS_PROVIDERS.DNSEXIT}`,
-  DNSLA: `${ACCESS_PROVIDERS.DNSLA}`,
-  DNSMADEEASY: `${ACCESS_PROVIDERS.DNSMADEEASY}`,
-  DUCKDNS: `${ACCESS_PROVIDERS.DUCKDNS}`,
-  DYNADOT: `${ACCESS_PROVIDERS.DYNADOT}`,
-  DYNU: `${ACCESS_PROVIDERS.DYNU}`,
-  DYNV6: `${ACCESS_PROVIDERS.DYNV6}`,
-  GANDINET: `${ACCESS_PROVIDERS.GANDINET}`,
-  GCORE: `${ACCESS_PROVIDERS.GCORE}`,
-  GNAME: `${ACCESS_PROVIDERS.GNAME}`,
-  GODADDY: `${ACCESS_PROVIDERS.GODADDY}`,
-  GOOGLECLOUD: `${ACCESS_PROVIDERS.GOOGLECLOUD}`, // 兼容旧值，等同于 `GOOGLECLOUD_DNS`
-  GOOGLECLOUD_DNS: `${ACCESS_PROVIDERS.GOOGLECLOUD}-dns`,
-  HETZNER: `${ACCESS_PROVIDERS.HETZNER}`,
-  HOSTINGDE: `${ACCESS_PROVIDERS.HOSTINGDE}`,
-  HOSTINGER: `${ACCESS_PROVIDERS.HOSTINGER}`,
-  HUAWEICLOUD: `${ACCESS_PROVIDERS.HUAWEICLOUD}`, // 兼容旧值，等同于 `HUAWEICLOUD_DNS`
-  HUAWEICLOUD_DNS: `${ACCESS_PROVIDERS.HUAWEICLOUD}-dns`,
-  INFOMANIAK: `${ACCESS_PROVIDERS.INFOMANIAK}`,
-  IONOS: `${ACCESS_PROVIDERS.IONOS}`,
-  JDCLOUD: `${ACCESS_PROVIDERS.JDCLOUD}`, // 兼容旧值，等同于 `JDCLOUD_DNS`
-  JDCLOUD_DNS: `${ACCESS_PROVIDERS.JDCLOUD}-dns`,
-  LINODE: `${ACCESS_PROVIDERS.LINODE}`,
-  NAMECHEAP: `${ACCESS_PROVIDERS.NAMECHEAP}`,
-  NAMEDOTCOM: `${ACCESS_PROVIDERS.NAMEDOTCOM}`,
-  NAMESILO: `${ACCESS_PROVIDERS.NAMESILO}`,
-  NETCUP: `${ACCESS_PROVIDERS.NETCUP}`,
-  NETLIFY: `${ACCESS_PROVIDERS.NETLIFY}`,
-  NS1: `${ACCESS_PROVIDERS.NS1}`,
-  OVHCLOUD: `${ACCESS_PROVIDERS.OVHCLOUD}`,
-  PORKBUN: `${ACCESS_PROVIDERS.PORKBUN}`,
-  POWERDNS: `${ACCESS_PROVIDERS.POWERDNS}`,
-  QINGCLOUD: `${ACCESS_PROVIDERS.QINGCLOUD}`, // 兼容旧值，等同于 `QINGCLOUD_DNS`
-  QINGCLOUD_DNS: `${ACCESS_PROVIDERS.QINGCLOUD}-dns`,
-  RAINYUN: `${ACCESS_PROVIDERS.RAINYUN}`,
-  REGRU: `${ACCESS_PROVIDERS.REGRU}`,
-  RFC2136: `${ACCESS_PROVIDERS.RFC2136}`,
-  RUCENTER: `${ACCESS_PROVIDERS.RUCENTER}`,
-  SPACESHIP: `${ACCESS_PROVIDERS.SPACESHIP}`,
-  UCLOUD: `${ACCESS_PROVIDERS.UCLOUD}`, // 兼容旧值，等同于 `UCLOUD_UDNR`
-  UCLOUD_UDNR: `${ACCESS_PROVIDERS.UCLOUD}-udnr`,
-  TECHNITIUMDNS: `${ACCESS_PROVIDERS.TECHNITIUMDNS}`,
-  TENCENTCLOUD: `${ACCESS_PROVIDERS.TENCENTCLOUD}`, // 兼容旧值，等同于 `TENCENTCLOUD_DNS`
-  TENCENTCLOUD_DNS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-dns`,
-  TENCENTCLOUD_EO: `${ACCESS_PROVIDERS.TENCENTCLOUD}-eo`,
-  TODAYNIC: `${ACCESS_PROVIDERS.TODAYNIC}`,
-  VERCEL: `${ACCESS_PROVIDERS.VERCEL}`,
-  VOLCENGINE: `${ACCESS_PROVIDERS.VOLCENGINE}`, // 兼容旧值，等同于 `VOLCENGINE_DNS`
-  VOLCENGINE_DNS: `${ACCESS_PROVIDERS.VOLCENGINE}-dns`,
-  VULTR: `${ACCESS_PROVIDERS.VULTR}`,
-  WESTCN: `${ACCESS_PROVIDERS.WESTCN}`,
-  XINNET: `${ACCESS_PROVIDERS.XINNET}`,
-} as const);
+export const ACME_DNS01_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+   */
+  {
+    ["35CN"]: `${ACCESS_PROVIDERS["35CN"]}`,
+    ["51DNSCOM"]: `${ACCESS_PROVIDERS["51DNSCOM"]}`,
+    ACMEDNS: `${ACCESS_PROVIDERS.ACMEDNS}`,
+    ACMEHTTPREQ: `${ACCESS_PROVIDERS.ACMEHTTPREQ}`,
+    AKAMAI: `${ACCESS_PROVIDERS.AKAMAI}`, // 兼容旧值，等同于 `AKAMAI_EDGEDNS`
+    AKAMAI_EDGEDNS: `${ACCESS_PROVIDERS.AKAMAI}-edgedns`,
+    ALIYUN: `${ACCESS_PROVIDERS.ALIYUN}`, // 兼容旧值，等同于 `ALIYUN_DNS`
+    ALIYUN_DNS: `${ACCESS_PROVIDERS.ALIYUN}-dns`,
+    ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
+    ARVANCLOUD: `${ACCESS_PROVIDERS.ARVANCLOUD}`,
+    AWS: `${ACCESS_PROVIDERS.AWS}`, // 兼容旧值，等同于 `AWS_ROUTE53`
+    AWS_LIGHTSAIL: `${ACCESS_PROVIDERS.AWS}-lightsail`,
+    AWS_ROUTE53: `${ACCESS_PROVIDERS.AWS}-route53`,
+    AZURE: `${ACCESS_PROVIDERS.AZURE}`, // 兼容旧值，等同于 `AZURE_DNS`
+    AZURE_DNS: `${ACCESS_PROVIDERS.AZURE}-dns`,
+    BAIDUCLOUD: `${ACCESS_PROVIDERS.BAIDUCLOUD}`, // 兼容旧值，等同于 `BAIDUCLOUD_DNS`
+    BAIDUCLOUD_DNS: `${ACCESS_PROVIDERS.BAIDUCLOUD}-dns`,
+    BEGET: `${ACCESS_PROVIDERS.BEGET}`,
+    BOOKMYNAME: `${ACCESS_PROVIDERS.BOOKMYNAME}`,
+    BUNNY: `${ACCESS_PROVIDERS.BUNNY}`,
+    BYTEPLUS: `${ACCESS_PROVIDERS.BYTEPLUS}`, // 兼容旧值，等同于 `BYTEPLUS_DNS`
+    BYTEPLUS_DNS: `${ACCESS_PROVIDERS.BYTEPLUS}-dns`,
+    CLOUDFLARE: `${ACCESS_PROVIDERS.CLOUDFLARE}`,
+    CLOUDNS: `${ACCESS_PROVIDERS.CLOUDNS}`,
+    CMCCCLOUD: `${ACCESS_PROVIDERS.CMCCCLOUD}`, // 兼容旧值，等同于 `CMCCCLOUD_DNS`
+    CMCCCLOUD_DNS: `${ACCESS_PROVIDERS.CMCCCLOUD}-dns`,
+    CONOHAVPS: `${ACCESS_PROVIDERS.CONOHAVPS}`,
+    CONSTELLIX: `${ACCESS_PROVIDERS.CONSTELLIX}`,
+    CPANEL: `${ACCESS_PROVIDERS.CPANEL}`,
+    CTCCCLOUD: `${ACCESS_PROVIDERS.CTCCCLOUD}`, // 兼容旧值，等同于 `CTCCCLOUD_SMARTDNS`
+    CTCCCLOUD_SMARTDNS: `${ACCESS_PROVIDERS.CTCCCLOUD}-smartdns`,
+    DESEC: `${ACCESS_PROVIDERS.DESEC}`,
+    DIGITALOCEAN: `${ACCESS_PROVIDERS.DIGITALOCEAN}`,
+    DNSEXIT: `${ACCESS_PROVIDERS.DNSEXIT}`,
+    DNSLA: `${ACCESS_PROVIDERS.DNSLA}`,
+    DNSMADEEASY: `${ACCESS_PROVIDERS.DNSMADEEASY}`,
+    DUCKDNS: `${ACCESS_PROVIDERS.DUCKDNS}`,
+    DYNADOT: `${ACCESS_PROVIDERS.DYNADOT}`,
+    DYNU: `${ACCESS_PROVIDERS.DYNU}`,
+    DYNV6: `${ACCESS_PROVIDERS.DYNV6}`,
+    GANDINET: `${ACCESS_PROVIDERS.GANDINET}`,
+    GCORE: `${ACCESS_PROVIDERS.GCORE}`,
+    GNAME: `${ACCESS_PROVIDERS.GNAME}`,
+    GODADDY: `${ACCESS_PROVIDERS.GODADDY}`,
+    GOOGLECLOUD: `${ACCESS_PROVIDERS.GOOGLECLOUD}`, // 兼容旧值，等同于 `GOOGLECLOUD_DNS`
+    GOOGLECLOUD_DNS: `${ACCESS_PROVIDERS.GOOGLECLOUD}-dns`,
+    HETZNER: `${ACCESS_PROVIDERS.HETZNER}`,
+    HOSTINGDE: `${ACCESS_PROVIDERS.HOSTINGDE}`,
+    HOSTINGER: `${ACCESS_PROVIDERS.HOSTINGER}`,
+    HUAWEICLOUD: `${ACCESS_PROVIDERS.HUAWEICLOUD}`, // 兼容旧值，等同于 `HUAWEICLOUD_DNS`
+    HUAWEICLOUD_DNS: `${ACCESS_PROVIDERS.HUAWEICLOUD}-dns`,
+    INFOMANIAK: `${ACCESS_PROVIDERS.INFOMANIAK}`,
+    IONOS: `${ACCESS_PROVIDERS.IONOS}`,
+    JDCLOUD: `${ACCESS_PROVIDERS.JDCLOUD}`, // 兼容旧值，等同于 `JDCLOUD_DNS`
+    JDCLOUD_DNS: `${ACCESS_PROVIDERS.JDCLOUD}-dns`,
+    LINODE: `${ACCESS_PROVIDERS.LINODE}`,
+    LUADNS: `${ACCESS_PROVIDERS.LUADNS}`,
+    NAMECHEAP: `${ACCESS_PROVIDERS.NAMECHEAP}`,
+    NAMEDOTCOM: `${ACCESS_PROVIDERS.NAMEDOTCOM}`,
+    NAMESILO: `${ACCESS_PROVIDERS.NAMESILO}`,
+    NETCUP: `${ACCESS_PROVIDERS.NETCUP}`,
+    NETLIFY: `${ACCESS_PROVIDERS.NETLIFY}`,
+    NS1: `${ACCESS_PROVIDERS.NS1}`,
+    ORACLECLOUD: `${ACCESS_PROVIDERS.ORACLECLOUD}`, // 兼容旧值，等同于 `ORACLECLOUD_DNS`
+    ORACLECLOUD_DNS: `${ACCESS_PROVIDERS.ORACLECLOUD}-dns`,
+    OVHCLOUD: `${ACCESS_PROVIDERS.OVHCLOUD}`,
+    PORKBUN: `${ACCESS_PROVIDERS.PORKBUN}`,
+    POWERDNS: `${ACCESS_PROVIDERS.POWERDNS}`,
+    POWERDNS_DNS: `${ACCESS_PROVIDERS.POWERDNS_DNS}`,
+    QINGCLOUD: `${ACCESS_PROVIDERS.QINGCLOUD}`, // 兼容旧值，等同于 `QINGCLOUD_DNS`
+    QINGCLOUD_DNS: `${ACCESS_PROVIDERS.QINGCLOUD}-dns`,
+    RAINYUN: `${ACCESS_PROVIDERS.RAINYUN}`,
+    REGRU: `${ACCESS_PROVIDERS.REGRU}`,
+    RFC2136: `${ACCESS_PROVIDERS.RFC2136}`,
+    RFC2136_DNS: `${ACCESS_PROVIDERS.RFC2136_DNS}`,
+    RUCENTER: `${ACCESS_PROVIDERS.RUCENTER}`,
+    SIMPLYCOM: `${ACCESS_PROVIDERS.SIMPLYCOM}`,
+    SPACESHIP: `${ACCESS_PROVIDERS.SPACESHIP}`,
+    UCLOUD: `${ACCESS_PROVIDERS.UCLOUD}`, // 兼容旧值，等同于 `UCLOUD_UDNR`
+    UCLOUD_UDNR: `${ACCESS_PROVIDERS.UCLOUD}-udnr`,
+    TECHNITIUMDNS: `${ACCESS_PROVIDERS.TECHNITIUMDNS}`,
+    TENCENTCLOUD: `${ACCESS_PROVIDERS.TENCENTCLOUD}`, // 兼容旧值，等同于 `TENCENTCLOUD_DNS`
+    TENCENTCLOUD_DNS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-dns`,
+    TENCENTCLOUD_EO: `${ACCESS_PROVIDERS.TENCENTCLOUD}-eo`,
+    TODAYNIC: `${ACCESS_PROVIDERS.TODAYNIC}`,
+    VERCEL: `${ACCESS_PROVIDERS.VERCEL}`,
+    VOLCENGINE: `${ACCESS_PROVIDERS.VOLCENGINE}`, // 兼容旧值，等同于 `VOLCENGINE_DNS`
+    VOLCENGINE_DNS: `${ACCESS_PROVIDERS.VOLCENGINE}-dns`,
+    VULTR: `${ACCESS_PROVIDERS.VULTR}`,
+    WESTCN: `${ACCESS_PROVIDERS.WESTCN}`,
+    XINNET: `${ACCESS_PROVIDERS.XINNET}`,
+    YANDEXCLOUD: `${ACCESS_PROVIDERS.YANDEXCLOUD}`, // 兼容旧值，等同于 `YANDEXCLOUD_DNS`
+    YANDEXCLOUD_DNS: `${ACCESS_PROVIDERS.YANDEXCLOUD}-dns`,
+  } as const
+);
 
 export type ACMEDns01ProviderType = (typeof ACME_DNS01_PROVIDERS)[keyof typeof ACME_DNS01_PROVIDERS];
 
@@ -471,7 +461,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws_route53"],
       [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL, "provider.aws_lightsail"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure_dns"],
-      [ACME_DNS01_PROVIDERS.GOOGLECLOUD_DNS, "provider.googlecloud_dns"],
+      [ACME_DNS01_PROVIDERS.ORACLECLOUD_DNS, "provider.oraclecloud_dns"],
       [ACME_DNS01_PROVIDERS.AKAMAI_EDGEDNS, "provider.akamai_edgedns"],
       [ACME_DNS01_PROVIDERS.ARVANCLOUD, "provider.arvancloud"],
       [ACME_DNS01_PROVIDERS.BEGET, "provider.beget"],
@@ -499,6 +489,7 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.INFOMANIAK, "provider.infomaniak"],
       [ACME_DNS01_PROVIDERS.IONOS, "provider.ionos"],
       [ACME_DNS01_PROVIDERS.LINODE, "provider.linode"],
+      [ACME_DNS01_PROVIDERS.LUADNS, "provider.luadns"],
       [ACME_DNS01_PROVIDERS.NAMECHEAP, "provider.namecheap"],
       [ACME_DNS01_PROVIDERS.NAMEDOTCOM, "provider.namedotcom"],
       [ACME_DNS01_PROVIDERS.NAMESILO, "provider.namesilo"],
@@ -509,11 +500,12 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.PORKBUN, "provider.porkbun"],
       [ACME_DNS01_PROVIDERS.REGRU, "provider.regru"],
       [ACME_DNS01_PROVIDERS.RUCENTER, "provider.rucenter"],
+      [ACME_DNS01_PROVIDERS.SIMPLYCOM, "provider.simplycom"],
       [ACME_DNS01_PROVIDERS.SPACESHIP, "provider.spaceship"],
       [ACME_DNS01_PROVIDERS.VERCEL, "provider.vercel"],
       [ACME_DNS01_PROVIDERS.VULTR, "provider.vultr"],
+      [ACME_DNS01_PROVIDERS.YANDEXCLOUD_DNS, "provider.yandexcloud_dns"],
       [ACME_DNS01_PROVIDERS.BAIDUCLOUD_DNS, "provider.baiducloud_dns"],
-      [ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS, "provider.cmcccloud_dns"],
       [ACME_DNS01_PROVIDERS.CTCCCLOUD_SMARTDNS, "provider.ctcccloud_smartdns"],
       [ACME_DNS01_PROVIDERS.JDCLOUD_DNS, "provider.jdcloud_dns"],
       [ACME_DNS01_PROVIDERS.RAINYUN, "provider.rainyun"],
@@ -526,10 +518,8 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.WESTCN, "provider.westcn"],
       [ACME_DNS01_PROVIDERS.XINNET, "provider.xinnet"],
       [ACME_DNS01_PROVIDERS.CPANEL, "provider.cpanel"],
-      [ACME_DNS01_PROVIDERS.POWERDNS, "provider.powerdns"],
       [ACME_DNS01_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns"],
       [ACME_DNS01_PROVIDERS.ACMEDNS, "provider.acmedns"],
-      [ACME_DNS01_PROVIDERS.RFC2136, "provider.rfc2136"],
       [ACME_DNS01_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq"],
     ] satisfies Array<[ACMEDns01ProviderType, string]>
   ).map(([type, name]) => [
@@ -543,19 +533,66 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
     },
   ])
 );
+const migratedACMEDns01Providers: Array<ACMEDns01Provider & { legacyType: ACMEDns01ProviderType }> = [
+  {
+    type: ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS,
+    legacyType: ACME_DNS01_PROVIDERS.CMCCCLOUD,
+    provider: ACCESS_PROVIDERS.CMCCCLOUD,
+    name: "provider.cmcccloud_dns",
+    icon: "/imgs/providers/cmcccloud.svg",
+    builtin: false,
+  },
+  {
+    type: ACME_DNS01_PROVIDERS.GOOGLECLOUD_DNS,
+    legacyType: ACME_DNS01_PROVIDERS.GOOGLECLOUD,
+    provider: ACCESS_PROVIDERS.GOOGLECLOUD,
+    name: "provider.googlecloud_dns",
+    icon: "/imgs/providers/google.svg",
+    builtin: false,
+  },
+  {
+    type: ACME_DNS01_PROVIDERS.POWERDNS_DNS,
+    legacyType: ACME_DNS01_PROVIDERS.POWERDNS,
+    provider: ACME_DNS01_PROVIDERS.POWERDNS_DNS,
+    name: "provider.powerdns",
+    icon: withBasePath("/imgs/providers/powerdns.svg"),
+    builtin: false,
+  },
+  {
+    type: ACME_DNS01_PROVIDERS.RFC2136_DNS,
+    legacyType: ACME_DNS01_PROVIDERS.RFC2136,
+    provider: ACME_DNS01_PROVIDERS.RFC2136_DNS,
+    name: "provider.rfc2136",
+    icon: withBasePath("/imgs/providers/rfc.svg"),
+    builtin: false,
+  },
+];
+
+export const getACMEDns01Provider = (type: string): ACMEDns01Provider | undefined => {
+  const migratedProvider = migratedACMEDns01Providers.find((provider) => provider.type === type || provider.legacyType === type);
+  return acmeDns01ProvidersMap.get(migratedProvider?.type ?? type) ?? migratedProvider;
+};
+
+export const matchesACMEDns01Access = (type: string, accessType: string): boolean => {
+  const provider = getACMEDns01Provider(type);
+  return provider != null && provider.provider === (migratedDNSAccessProviders.get(accessType)?.pluginType ?? accessType);
+};
+
 // #endregion
 
 // #region ACMEHTTP01Provider
-/*
-  注意：如果追加新的常量值，请保持以 ASCII 排序。
-  NOTICE: If you add new constant, please keep ASCII order.
- */
-export const ACME_HTTP01_PROVIDERS = Object.freeze({
-  LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
-  FTP: `${ACCESS_PROVIDERS.FTP}`,
-  S3: `${ACCESS_PROVIDERS.S3}`,
-  SSH: `${ACCESS_PROVIDERS.SSH}`,
-} as const);
+export const ACME_HTTP01_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+   */
+  {
+    LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
+    FTP: `${ACCESS_PROVIDERS.FTP}`,
+    S3: `${ACCESS_PROVIDERS.S3}`,
+    SSH: `${ACCESS_PROVIDERS.SSH}`,
+  } as const
+);
 
 export type ACMEHttp01ProviderType = (typeof ACME_HTTP01_PROVIDERS)[keyof typeof ACME_HTTP01_PROVIDERS];
 
@@ -587,160 +624,63 @@ export const acmeHttp01ProvidersMap: Map<ACMEHttp01Provider["type"] | string, AC
 // #endregion
 
 // #region DeploymentProvider
-/*
-  注意：如果追加新的常量值，请保持以 ASCII 排序。
-  NOTICE: If you add new constant, please keep ASCII order.
- */
-export const DEPLOYMENT_PROVIDERS = Object.freeze({
-  ["1PANEL"]: `${ACCESS_PROVIDERS["1PANEL"]}`,
-  ["1PANEL_CONSOLE"]: `${ACCESS_PROVIDERS["1PANEL"]}-console`,
-  ALIYUN_ALB: `${ACCESS_PROVIDERS.ALIYUN}-alb`,
-  ALIYUN_APIGW: `${ACCESS_PROVIDERS.ALIYUN}-apigw`,
-  ALIYUN_CAS: `${ACCESS_PROVIDERS.ALIYUN}-cas`,
-  ALIYUN_CAS_DEPLOY: `${ACCESS_PROVIDERS.ALIYUN}-casdeploy`,
-  ALIYUN_CDN: `${ACCESS_PROVIDERS.ALIYUN}-cdn`,
-  ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
-  ALIYUN_DCDN: `${ACCESS_PROVIDERS.ALIYUN}-dcdn`,
-  ALIYUN_DDOSPRO: `${ACCESS_PROVIDERS.ALIYUN}-ddospro`,
-  ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
-  ALIYUN_ESA_SAAS: `${ACCESS_PROVIDERS.ALIYUN}-esasaas`,
-  ALIYUN_FC: `${ACCESS_PROVIDERS.ALIYUN}-fc`,
-  ALIYUN_GA: `${ACCESS_PROVIDERS.ALIYUN}-ga`,
-  ALIYUN_LIVE: `${ACCESS_PROVIDERS.ALIYUN}-live`,
-  ALIYUN_NLB: `${ACCESS_PROVIDERS.ALIYUN}-nlb`,
-  ALIYUN_OSS: `${ACCESS_PROVIDERS.ALIYUN}-oss`,
-  ALIYUN_VOD: `${ACCESS_PROVIDERS.ALIYUN}-vod`,
-  ALIYUN_WAF: `${ACCESS_PROVIDERS.ALIYUN}-waf`,
-  APISIX: `${ACCESS_PROVIDERS.APISIX}`,
-  AWS_ACM: `${ACCESS_PROVIDERS.AWS}-acm`,
-  AWS_ALB: `${ACCESS_PROVIDERS.AWS}-alb`,
-  AWS_AMPLIFY: `${ACCESS_PROVIDERS.AWS}-amplify`,
-  AWS_APIGATEWAY: `${ACCESS_PROVIDERS.AWS}-apigateway`,
-  AWS_CLB: `${ACCESS_PROVIDERS.AWS}-clb`,
-  AWS_CLOUDFRONT: `${ACCESS_PROVIDERS.AWS}-cloudfront`,
-  AWS_IAM: `${ACCESS_PROVIDERS.AWS}-iam`,
-  AWS_NLB: `${ACCESS_PROVIDERS.AWS}-nlb`,
-  AZURE_KEYVAULT: `${ACCESS_PROVIDERS.AZURE}-keyvault`,
-  BAIDUCLOUD_APPBLB: `${ACCESS_PROVIDERS.BAIDUCLOUD}-appblb`,
-  BAIDUCLOUD_BLB: `${ACCESS_PROVIDERS.BAIDUCLOUD}-blb`,
-  BAIDUCLOUD_CDN: `${ACCESS_PROVIDERS.BAIDUCLOUD}-cdn`,
-  BAIDUCLOUD_CERT: `${ACCESS_PROVIDERS.BAIDUCLOUD}-cert`,
-  BAISHAN_CDN: `${ACCESS_PROVIDERS.BAISHAN}-cdn`,
-  BAOTAPANEL: `${ACCESS_PROVIDERS.BAOTAPANEL}`,
-  BAOTAPANEL_CONSOLE: `${ACCESS_PROVIDERS.BAOTAPANEL}-console`,
-  BAOTAPANELGO: `${ACCESS_PROVIDERS.BAOTAPANELGO}`,
-  BAOTAPANELGO_CONSOLE: `${ACCESS_PROVIDERS.BAOTAPANELGO}-console`,
-  BAOTAWAF: `${ACCESS_PROVIDERS.BAOTAWAF}`,
-  BAOTAWAF_CONSOLE: `${ACCESS_PROVIDERS.BAOTAWAF}-console`,
-  BUNNY_CDN: `${ACCESS_PROVIDERS.BUNNY}-cdn`,
-  BYTEPLUS_ALB: `${ACCESS_PROVIDERS.BYTEPLUS}-alb`,
-  BYTEPLUS_APIG: `${ACCESS_PROVIDERS.BYTEPLUS}-apig`,
-  BYTEPLUS_CDN: `${ACCESS_PROVIDERS.BYTEPLUS}-cdn`,
-  BYTEPLUS_CERTCENTER: `${ACCESS_PROVIDERS.BYTEPLUS}-certcenter`,
-  BYTEPLUS_CLB: `${ACCESS_PROVIDERS.BYTEPLUS}-clb`,
-  BYTEPLUS_MEDIALIVE: `${ACCESS_PROVIDERS.BYTEPLUS}-medialive`,
-  BYTEPLUS_TOS: `${ACCESS_PROVIDERS.BYTEPLUS}-tos`,
-  CACHEFLY: `${ACCESS_PROVIDERS.CACHEFLY}`,
-  CDNFLY: `${ACCESS_PROVIDERS.CDNFLY}`,
-  CLOUDFLARE_SSL: `${ACCESS_PROVIDERS.CLOUDFLARE}-ssl`,
-  CPANEL: `${ACCESS_PROVIDERS.CPANEL}`,
-  CTCCCLOUD_AO: `${ACCESS_PROVIDERS.CTCCCLOUD}-ao`,
-  CTCCCLOUD_CDN: `${ACCESS_PROVIDERS.CTCCCLOUD}-cdn`,
-  CTCCCLOUD_CMS: `${ACCESS_PROVIDERS.CTCCCLOUD}-cms`,
-  CTCCCLOUD_ELB: `${ACCESS_PROVIDERS.CTCCCLOUD}-elb`,
-  CTCCCLOUD_FAAS: `${ACCESS_PROVIDERS.CTCCCLOUD}-faas`,
-  CTCCCLOUD_ICDN: `${ACCESS_PROVIDERS.CTCCCLOUD}-icdn`,
-  CTCCCLOUD_LVDN: `${ACCESS_PROVIDERS.CTCCCLOUD}-lvdn`,
-  DOGECLOUD_CDN: `${ACCESS_PROVIDERS.DOGECLOUD}-cdn`,
-  DIGITALOCEAN_CERTIFICATE: `${ACCESS_PROVIDERS.DIGITALOCEAN}-certificate`,
-  DOKPLOY: `${ACCESS_PROVIDERS.DOKPLOY}`,
-  FLEXCDN: `${ACCESS_PROVIDERS.FLEXCDN}`,
-  FLYIO: `${ACCESS_PROVIDERS.FLYIO}`,
-  FTP: `${ACCESS_PROVIDERS.FTP}`,
-  GCORE_CDN: `${ACCESS_PROVIDERS.GCORE}-cdn`,
-  GOEDGE: `${ACCESS_PROVIDERS.GOEDGE}`,
-  GOOGLECLOUD_CERTIFICATEMANAGER: `${ACCESS_PROVIDERS.GOOGLECLOUD}-certificatemanager`,
-  HUAWEICLOUD_APIG: `${ACCESS_PROVIDERS.HUAWEICLOUD}-apig`,
-  HUAWEICLOUD_AAD: `${ACCESS_PROVIDERS.HUAWEICLOUD}-aad`,
-  HUAWEICLOUD_CDN: `${ACCESS_PROVIDERS.HUAWEICLOUD}-cdn`,
-  HUAWEICLOUD_ELB: `${ACCESS_PROVIDERS.HUAWEICLOUD}-elb`,
-  HUAWEICLOUD_LIVE: `${ACCESS_PROVIDERS.HUAWEICLOUD}-live`,
-  HUAWEICLOUD_OBS: `${ACCESS_PROVIDERS.HUAWEICLOUD}-obs`,
-  HUAWEICLOUD_SCM: `${ACCESS_PROVIDERS.HUAWEICLOUD}-scm`,
-  HUAWEICLOUD_WAF: `${ACCESS_PROVIDERS.HUAWEICLOUD}-waf`,
-  JDCLOUD_ALB: `${ACCESS_PROVIDERS.JDCLOUD}-alb`,
-  JDCLOUD_CDN: `${ACCESS_PROVIDERS.JDCLOUD}-cdn`,
-  JDCLOUD_LIVE: `${ACCESS_PROVIDERS.JDCLOUD}-live`,
-  JDCLOUD_VOD: `${ACCESS_PROVIDERS.JDCLOUD}-vod`,
-  JDCLOUD_SSL: `${ACCESS_PROVIDERS.JDCLOUD}-ssl`,
-  JDCLOUD_WAF: `${ACCESS_PROVIDERS.JDCLOUD}-waf`,
-  KONG: `${ACCESS_PROVIDERS.KONG}`,
-  KUBERNETES_SECRET: `${ACCESS_PROVIDERS.KUBERNETES}-secret`,
-  KSYUN_CDN: `${ACCESS_PROVIDERS.KSYUN}-cdn`,
-  KSYUN_SLB: `${ACCESS_PROVIDERS.KSYUN}-slb`,
-  LECDN: `${ACCESS_PROVIDERS.LECDN}`,
-  LINODE_LOS: `${ACCESS_PROVIDERS.LINODE}-los`,
-  LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
-  MOHUA_MVH: `${ACCESS_PROVIDERS.MOHUA}-mvh`,
-  NETLIFY: `${ACCESS_PROVIDERS.NETLIFY}`,
-  NGINXPROXYMANAGER: `${ACCESS_PROVIDERS.NGINXPROXYMANAGER}`,
-  PROXMOXVE: `${ACCESS_PROVIDERS.PROXMOXVE}`,
-  QINGCLOUD_LB: `${ACCESS_PROVIDERS.QINGCLOUD}-lb`,
-  QINIU_CDN: `${ACCESS_PROVIDERS.QINIU}-cdn`,
-  QINIU_KODO: `${ACCESS_PROVIDERS.QINIU}-kodo`,
-  QINIU_PILI: `${ACCESS_PROVIDERS.QINIU}-pili`,
-  RAINYUN_RCDN: `${ACCESS_PROVIDERS.RAINYUN}-rcdn`,
-  RAINYUN_SSLCENTER: `${ACCESS_PROVIDERS.RAINYUN}-sslcenter`,
-  RATPANEL: `${ACCESS_PROVIDERS.RATPANEL}`,
-  RATPANEL_CONSOLE: `${ACCESS_PROVIDERS.RATPANEL}-console`,
-  S3: `${ACCESS_PROVIDERS.S3}`,
-  SAFELINE: `${ACCESS_PROVIDERS.SAFELINE}`,
-  SAMWAF: `${ACCESS_PROVIDERS.SAMWAF}`,
-  SSH: `${ACCESS_PROVIDERS.SSH}`,
-  SYNOLOGYDSM: `${ACCESS_PROVIDERS.SYNOLOGYDSM}`,
-  TENCENTCLOUD_CDN: `${ACCESS_PROVIDERS.TENCENTCLOUD}-cdn`,
-  TENCENTCLOUD_CLB: `${ACCESS_PROVIDERS.TENCENTCLOUD}-clb`,
-  TENCENTCLOUD_COS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-cos`,
-  TENCENTCLOUD_CSS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-css`,
-  TENCENTCLOUD_ECDN: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ecdn`,
-  TENCENTCLOUD_EO: `${ACCESS_PROVIDERS.TENCENTCLOUD}-eo`,
-  TENCENTCLOUD_GAAP: `${ACCESS_PROVIDERS.TENCENTCLOUD}-gaap`,
-  TENCENTCLOUD_GA2: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ga2`,
-  TENCENTCLOUD_SCF: `${ACCESS_PROVIDERS.TENCENTCLOUD}-scf`,
-  TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
-  TENCENTCLOUD_SSL_DEPLOY: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssldeploy`,
-  TENCENTCLOUD_SSL_UPDATE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-sslupdate`,
-  TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
-  TENCENTCLOUD_VOD: `${ACCESS_PROVIDERS.TENCENTCLOUD}-vod`,
-  TENCENTCLOUD_WAF: `${ACCESS_PROVIDERS.TENCENTCLOUD}-waf`,
-  UCLOUD_UALB: `${ACCESS_PROVIDERS.UCLOUD}-ualb`,
-  UCLOUD_UCDN: `${ACCESS_PROVIDERS.UCLOUD}-ucdn`,
-  UCLOUD_UCLB: `${ACCESS_PROVIDERS.UCLOUD}-uclb`,
-  UCLOUD_UEWAF: `${ACCESS_PROVIDERS.UCLOUD}-uewaf`,
-  UCLOUD_UPATHX: `${ACCESS_PROVIDERS.UCLOUD}-upathx`,
-  UCLOUD_US3: `${ACCESS_PROVIDERS.UCLOUD}-us3`,
-  UNICLOUD_WEBHOST: `${ACCESS_PROVIDERS.UNICLOUD}-webhost`,
-  UPYUN_CDN: `${ACCESS_PROVIDERS.UPYUN}-cdn`,
-  UPYUN_FILE: `${ACCESS_PROVIDERS.UPYUN}-file`,
-  VERCEL: `${ACCESS_PROVIDERS.VERCEL}`,
-  VOLCENGINE_ALB: `${ACCESS_PROVIDERS.VOLCENGINE}-alb`,
-  VOLCENGINE_APIG: `${ACCESS_PROVIDERS.VOLCENGINE}-apig`,
-  VOLCENGINE_CDN: `${ACCESS_PROVIDERS.VOLCENGINE}-cdn`,
-  VOLCENGINE_CERTCENTER: `${ACCESS_PROVIDERS.VOLCENGINE}-certcenter`,
-  VOLCENGINE_CLB: `${ACCESS_PROVIDERS.VOLCENGINE}-clb`,
-  VOLCENGINE_DCDN: `${ACCESS_PROVIDERS.VOLCENGINE}-dcdn`,
-  VOLCENGINE_IMAGEX: `${ACCESS_PROVIDERS.VOLCENGINE}-imagex`,
-  VOLCENGINE_LIVE: `${ACCESS_PROVIDERS.VOLCENGINE}-live`,
-  VOLCENGINE_TOS: `${ACCESS_PROVIDERS.VOLCENGINE}-tos`,
-  VOLCENGINE_VOD: `${ACCESS_PROVIDERS.VOLCENGINE}-vod`,
-  VOLCENGINE_WAF: `${ACCESS_PROVIDERS.VOLCENGINE}-waf`,
-  WANGSU_CDN: `${ACCESS_PROVIDERS.WANGSU}-cdn`,
-  WANGSU_CDNPRO: `${ACCESS_PROVIDERS.WANGSU}-cdnpro`,
-  WANGSU_CERTIFICATE: `${ACCESS_PROVIDERS.WANGSU}-certificate`,
-  WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
-  ZENLAYER_CDN: `${ACCESS_PROVIDERS.ZENLAYER}-cdn`,
-  ZENLAYER_GA: `${ACCESS_PROVIDERS.ZENLAYER}-ga`,
-} as const);
+export const DEPLOYMENT_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+  */
+  {
+    ALIYUN_ALB: `${ACCESS_PROVIDERS.ALIYUN}-alb`,
+    ALIYUN_APIGW: `${ACCESS_PROVIDERS.ALIYUN}-apigw`,
+    ALIYUN_CAS: `${ACCESS_PROVIDERS.ALIYUN}-cas`,
+    ALIYUN_CAS_DEPLOY: `${ACCESS_PROVIDERS.ALIYUN}-casdeploy`,
+    ALIYUN_CDN: `${ACCESS_PROVIDERS.ALIYUN}-cdn`,
+    ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
+    ALIYUN_DCDN: `${ACCESS_PROVIDERS.ALIYUN}-dcdn`,
+    ALIYUN_DDOSPRO: `${ACCESS_PROVIDERS.ALIYUN}-ddospro`,
+    ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
+    ALIYUN_ESA_SAAS: `${ACCESS_PROVIDERS.ALIYUN}-esasaas`,
+    ALIYUN_FC: `${ACCESS_PROVIDERS.ALIYUN}-fc`,
+    ALIYUN_GA: `${ACCESS_PROVIDERS.ALIYUN}-ga`,
+    ALIYUN_LIVE: `${ACCESS_PROVIDERS.ALIYUN}-live`,
+    ALIYUN_MSE: `${ACCESS_PROVIDERS.ALIYUN}-mse`,
+    ALIYUN_NLB: `${ACCESS_PROVIDERS.ALIYUN}-nlb`,
+    ALIYUN_OSS: `${ACCESS_PROVIDERS.ALIYUN}-oss`,
+    ALIYUN_VOD: `${ACCESS_PROVIDERS.ALIYUN}-vod`,
+    ALIYUN_WAF: `${ACCESS_PROVIDERS.ALIYUN}-waf`,
+    AWS_ACM: `${ACCESS_PROVIDERS.AWS}-acm`,
+    AWS_ALB: `${ACCESS_PROVIDERS.AWS}-alb`,
+    AWS_AMPLIFY: `${ACCESS_PROVIDERS.AWS}-amplify`,
+    AWS_APIGATEWAY: `${ACCESS_PROVIDERS.AWS}-apigateway`,
+    AWS_CLB: `${ACCESS_PROVIDERS.AWS}-clb`,
+    AWS_CLOUDFRONT: `${ACCESS_PROVIDERS.AWS}-cloudfront`,
+    AWS_IAM: `${ACCESS_PROVIDERS.AWS}-iam`,
+    AWS_NLB: `${ACCESS_PROVIDERS.AWS}-nlb`,
+    AZURE_KEYVAULT: `${ACCESS_PROVIDERS.AZURE}-keyvault`,
+    FTP: `${ACCESS_PROVIDERS.FTP}`,
+    LOCAL: `${ACCESS_PROVIDERS.LOCAL}`,
+    S3: `${ACCESS_PROVIDERS.S3}`,
+    SSH: `${ACCESS_PROVIDERS.SSH}`,
+    TENCENTCLOUD_CDN: `${ACCESS_PROVIDERS.TENCENTCLOUD}-cdn`,
+    TENCENTCLOUD_CLB: `${ACCESS_PROVIDERS.TENCENTCLOUD}-clb`,
+    TENCENTCLOUD_COS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-cos`,
+    TENCENTCLOUD_CSS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-css`,
+    TENCENTCLOUD_DDOSPRO: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ddospro`,
+    TENCENTCLOUD_ECDN: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ecdn`,
+    TENCENTCLOUD_EO: `${ACCESS_PROVIDERS.TENCENTCLOUD}-eo`,
+    TENCENTCLOUD_EOMAKERS: `${ACCESS_PROVIDERS.TENCENTCLOUD}-eomakers`,
+    TENCENTCLOUD_GAAP: `${ACCESS_PROVIDERS.TENCENTCLOUD}-gaap`,
+    TENCENTCLOUD_GA2: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ga2`,
+    TENCENTCLOUD_SCF: `${ACCESS_PROVIDERS.TENCENTCLOUD}-scf`,
+    TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
+    TENCENTCLOUD_SSL_DEPLOY: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssldeploy`,
+    TENCENTCLOUD_SSL_UPDATE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-sslupdate`,
+    TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
+    TENCENTCLOUD_VOD: `${ACCESS_PROVIDERS.TENCENTCLOUD}-vod`,
+    TENCENTCLOUD_WAF: `${ACCESS_PROVIDERS.TENCENTCLOUD}-waf`,
+    WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
+  } as const
+);
 
 export type DeploymentProviderType = (typeof DEPLOYMENT_PROVIDERS)[keyof typeof DEPLOYMENT_PROVIDERS];
 
@@ -776,7 +716,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.SSH, "provider.ssh", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.FTP, "provider.ftp", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.WEBHOOK, "provider.webhook", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.KUBERNETES_SECRET, "provider.kubernetes_secret", DEPLOYMENT_CATEGORIES.OTHER],
       [DEPLOYMENT_PROVIDERS.S3, "provider.s3_upload", DEPLOYMENT_CATEGORIES.STORAGE],
       [DEPLOYMENT_PROVIDERS.ALIYUN_OSS, "provider.aliyun_oss", DEPLOYMENT_CATEGORIES.STORAGE],
       [DEPLOYMENT_PROVIDERS.ALIYUN_CDN, "provider.aliyun_cdn", DEPLOYMENT_CATEGORIES.CDN],
@@ -792,6 +731,7 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.ALIYUN_VOD, "provider.aliyun_vod", DEPLOYMENT_CATEGORIES.AV],
       [DEPLOYMENT_PROVIDERS.ALIYUN_FC, "provider.aliyun_fc", DEPLOYMENT_CATEGORIES.SERVERLESS],
       [DEPLOYMENT_PROVIDERS.ALIYUN_APIGW, "provider.aliyun_apigw", DEPLOYMENT_CATEGORIES.APIGATEWAY],
+      [DEPLOYMENT_PROVIDERS.ALIYUN_MSE, "provider.aliyun_mse", DEPLOYMENT_CATEGORIES.APIGATEWAY],
       [DEPLOYMENT_PROVIDERS.ALIYUN_GA, "provider.aliyun_ga", DEPLOYMENT_CATEGORIES.ACCELERATOR],
       [DEPLOYMENT_PROVIDERS.ALIYUN_CAS, "provider.aliyun_cas_upload", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.ALIYUN_CAS_DEPLOY, "provider.aliyun_cas_deploy", DEPLOYMENT_CATEGORIES.SSL],
@@ -799,8 +739,10 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_CDN, "provider.tencentcloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_ECDN, "provider.tencentcloud_ecdn", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_EO, "provider.tencentcloud_eo", DEPLOYMENT_CATEGORIES.CDN],
+      [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_EOMAKERS, "provider.tencentcloud_eomakers", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_CLB, "provider.tencentcloud_clb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_WAF, "provider.tencentcloud_waf", DEPLOYMENT_CATEGORIES.FIREWALL],
+      [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_DDOSPRO, "provider.tencentcloud_ddospro", DEPLOYMENT_CATEGORIES.FIREWALL],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_CSS, "provider.tencentcloud_css", DEPLOYMENT_CATEGORIES.AV],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_VOD, "provider.tencentcloud_vod", DEPLOYMENT_CATEGORIES.AV],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_SCF, "provider.tencentcloud_scf", DEPLOYMENT_CATEGORIES.SERVERLESS],
@@ -810,25 +752,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_SSL, "provider.tencentcloud_ssl_upload", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_SSL_DEPLOY, "provider.tencentcloud_ssl_deploy", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.TENCENTCLOUD_SSL_UPDATE, "provider.tencentcloud_ssl_update", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_CDN, "provider.huaweicloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_OBS, "provider.huaweicloud_obs", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud_elb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_WAF, "provider.huaweicloud_waf", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_AAD, "provider.huaweicloud_aad", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_LIVE, "provider.huaweicloud_live", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_APIG, "provider.huaweicloud_apig", DEPLOYMENT_CATEGORIES.APIGATEWAY],
-      [DEPLOYMENT_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud_scm_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_TOS, "provider.volcengine_tos", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_CDN, "provider.volcengine_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_DCDN, "provider.volcengine_dcdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_CLB, "provider.volcengine_clb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_ALB, "provider.volcengine_alb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_WAF, "provider.volcengine_waf", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_IMAGEX, "provider.volcengine_imagex", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_LIVE, "provider.volcengine_live", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_VOD, "provider.volcengine_vod", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_APIG, "provider.volcengine_apig", DEPLOYMENT_CATEGORIES.APIGATEWAY],
-      [DEPLOYMENT_PROVIDERS.VOLCENGINE_CERTCENTER, "provider.volcengine_certcenter_upload", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.AWS_CLOUDFRONT, "provider.aws_cloudfront", DEPLOYMENT_CATEGORIES.CDN],
       [DEPLOYMENT_PROVIDERS.AWS_CLB, "provider.aws_clb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
       [DEPLOYMENT_PROVIDERS.AWS_ALB, "provider.aws_alb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
@@ -838,88 +761,6 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
       [DEPLOYMENT_PROVIDERS.AWS_ACM, "provider.aws_acm", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.AWS_IAM, "provider.aws_iam", DEPLOYMENT_CATEGORIES.SSL],
       [DEPLOYMENT_PROVIDERS.AZURE_KEYVAULT, "provider.azure_keyvault", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.GOOGLECLOUD_CERTIFICATEMANAGER, "provider.googlecloud_certificatemanager", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.BUNNY_CDN, "provider.bunny_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_TOS, "provider.byteplus_tos", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_CDN, "provider.byteplus_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_CLB, "provider.byteplus_clb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_ALB, "provider.byteplus_alb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_MEDIALIVE, "provider.byteplus_medialive", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_APIG, "provider.byteplus_apig", DEPLOYMENT_CATEGORIES.APIGATEWAY],
-      [DEPLOYMENT_PROVIDERS.BYTEPLUS_CERTCENTER, "provider.byteplus_certcenter_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.CACHEFLY, "provider.cachefly", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.CLOUDFLARE_SSL, "provider.cloudflare_ssl", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.DIGITALOCEAN_CERTIFICATE, "provider.digitalocean_certificate_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.GCORE_CDN, "provider.gcore_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.LINODE_LOS, "provider.linode_los", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.FLYIO, "provider.flyio", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.NETLIFY, "provider.netlify", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.VERCEL, "provider.vercel", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.ZENLAYER_CDN, "provider.zenlayer_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.ZENLAYER_GA, "provider.zenlayer_ga", DEPLOYMENT_CATEGORIES.ACCELERATOR],
-      [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_CDN, "provider.baiducloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_BLB, "provider.baiducloud_blb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_APPBLB, "provider.baiducloud_appblb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.BAIDUCLOUD_CERT, "provider.baiducloud_cert_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_CDN, "provider.ctcccloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_ICDN, "provider.ctcccloud_icdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_AO, "provider.ctcccloud_ao", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_ELB, "provider.ctcccloud_elb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_LVDN, "provider.ctcccloud_lvdn", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_FAAS, "provider.ctcccloud_faas", DEPLOYMENT_CATEGORIES.SERVERLESS],
-      [DEPLOYMENT_PROVIDERS.CTCCCLOUD_CMS, "provider.ctcccloud_cms_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.JDCLOUD_ALB, "provider.jdcloud_alb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.JDCLOUD_CDN, "provider.jdcloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.JDCLOUD_WAF, "provider.jdcloud_waf", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.JDCLOUD_LIVE, "provider.jdcloud_live", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.JDCLOUD_VOD, "provider.jdcloud_vod", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.JDCLOUD_SSL, "provider.jdcloud_ssl_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.KSYUN_CDN, "provider.ksyun_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.KSYUN_SLB, "provider.ksyun_slb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.QINGCLOUD_LB, "provider.qingcloud_lb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.UCLOUD_US3, "provider.ucloud_us3", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.UCLOUD_UCDN, "provider.ucloud_ucdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.UCLOUD_UCLB, "provider.ucloud_uclb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.UCLOUD_UALB, "provider.ucloud_ualb", DEPLOYMENT_CATEGORIES.LOADBALANCE],
-      [DEPLOYMENT_PROVIDERS.UCLOUD_UEWAF, "provider.ucloud_uewaf", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.UCLOUD_UPATHX, "provider.ucloud_upathx", DEPLOYMENT_CATEGORIES.ACCELERATOR],
-      [DEPLOYMENT_PROVIDERS.BAISHAN_CDN, "provider.baishan_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.DOGECLOUD_CDN, "provider.dogecloud_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.QINIU_KODO, "provider.qiniu_kodo", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.QINIU_CDN, "provider.qiniu_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.QINIU_PILI, "provider.qiniu_pili", DEPLOYMENT_CATEGORIES.AV],
-      [DEPLOYMENT_PROVIDERS.WANGSU_CDN, "provider.wangsu_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.WANGSU_CDNPRO, "provider.wangsu_cdnpro", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.WANGSU_CERTIFICATE, "provider.wangsu_certificate_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.UPYUN_FILE, "provider.upyun_file", DEPLOYMENT_CATEGORIES.STORAGE],
-      [DEPLOYMENT_PROVIDERS.UPYUN_CDN, "provider.upyun_cdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.RAINYUN_RCDN, "provider.rainyun_rcdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.RAINYUN_SSLCENTER, "provider.rainyun_sslcenter_upload", DEPLOYMENT_CATEGORIES.SSL],
-      [DEPLOYMENT_PROVIDERS.UNICLOUD_WEBHOST, "provider.unicloud_webhost", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.MOHUA_MVH, "provider.mohua_mvh", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.CDNFLY, "provider.cdnfly", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.FLEXCDN, "provider.flexcdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.GOEDGE, "provider.goedge", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS.LECDN, "provider.lecdn", DEPLOYMENT_CATEGORIES.CDN],
-      [DEPLOYMENT_PROVIDERS["1PANEL"], "provider.1panel", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS["1PANEL_CONSOLE"], "provider.1panel_console", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.BAOTAPANEL, "provider.baotapanel_common", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.BAOTAPANEL_CONSOLE, "provider.baotapanel_console", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.BAOTAPANELGO, "provider.baotapanelgo_common", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.BAOTAPANELGO_CONSOLE, "provider.baotapanelgo_console", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.RATPANEL, "provider.ratpanel_common", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.RATPANEL_CONSOLE, "provider.ratpanel_console", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.BAOTAWAF, "provider.baotawaf_common", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.BAOTAWAF_CONSOLE, "provider.baotawaf_console", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.SAFELINE, "provider.safeline", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.SAMWAF, "provider.samwaf", DEPLOYMENT_CATEGORIES.FIREWALL],
-      [DEPLOYMENT_PROVIDERS.APISIX, "provider.apisix", DEPLOYMENT_CATEGORIES.APIGATEWAY],
-      [DEPLOYMENT_PROVIDERS.KONG, "provider.kong", DEPLOYMENT_CATEGORIES.APIGATEWAY],
-      [DEPLOYMENT_PROVIDERS.CPANEL, "provider.cpanel", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.DOKPLOY, "provider.dokploy", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.NGINXPROXYMANAGER, "provider.nginxproxymanager", DEPLOYMENT_CATEGORIES.WEBSITE],
-      [DEPLOYMENT_PROVIDERS.PROXMOXVE, "provider.proxmoxve", DEPLOYMENT_CATEGORIES.OTHER],
-      [DEPLOYMENT_PROVIDERS.SYNOLOGYDSM, "provider.synologydsm", DEPLOYMENT_CATEGORIES.OTHER],
     ] satisfies Array<[DeploymentProviderType, string, DeploymentCategoryType, "builtin"] | [DeploymentProviderType, string, DeploymentCategoryType]>
   ).map(([type, name, category, builtin]) => [
     type,
@@ -935,55 +776,100 @@ export const deploymentProvidersMap: Map<DeploymentProvider["type"] | string, De
 );
 // #endregion
 
-// #region NotificationProvider
-/*
-  注意：如果追加新的常量值，请保持以 ASCII 排序。
-  NOTICE: If you add new constant, please keep ASCII order.
- */
-export const NOTIFICATION_PROVIDERS = Object.freeze({
-  DINGTALKBOT: `${ACCESS_PROVIDERS.DINGTALKBOT}`,
-  DISCORDBOT: `${ACCESS_PROVIDERS.DISCORDBOT}`,
-  EMAIL: `${ACCESS_PROVIDERS.EMAIL}`,
-  LARKBOT: `${ACCESS_PROVIDERS.LARKBOT}`,
-  MATRIX: `${ACCESS_PROVIDERS.MATRIX}`,
-  MATTERMOST: `${ACCESS_PROVIDERS.MATTERMOST}`,
-  SLACKBOT: `${ACCESS_PROVIDERS.SLACKBOT}`,
-  TELEGRAMBOT: `${ACCESS_PROVIDERS.TELEGRAMBOT}`,
-  WEBHOOK: `${ACCESS_PROVIDERS.WEBHOOK}`,
-  WECOMBOT: `${ACCESS_PROVIDERS.WECOMBOT}`,
-} as const);
+// #region PurgeProvider
+export const PURGE_PROVIDERS = Object.freeze(
+  /*
+    注意：如果追加新的常量值，请保持以 ASCII 排序。
+    NOTICE: If you add new constant, please keep ASCII order.
+   */
+  {
+    ALIYUN_CAS: `${ACCESS_PROVIDERS.ALIYUN}-cas`,
+    ALIYUN_CLB: `${ACCESS_PROVIDERS.ALIYUN}-clb`,
+    ALIYUN_ESA: `${ACCESS_PROVIDERS.ALIYUN}-esa`,
+    AWS_ACM: `${ACCESS_PROVIDERS.AWS}-acm`,
+    AWS_IAM: `${ACCESS_PROVIDERS.AWS}-iam`,
+    AZURE_KEYVAULT: `${ACCESS_PROVIDERS.AZURE}-keyvault`,
+    BAIDUCLOUD_CERT: `${ACCESS_PROVIDERS.BAIDUCLOUD}-cert`,
+    HUAWEICLOUD_ELB: `${ACCESS_PROVIDERS.HUAWEICLOUD}-elb`,
+    HUAWEICLOUD_SCM: `${ACCESS_PROVIDERS.HUAWEICLOUD}-scm`,
+    HUAWEICLOUD_WAF: `${ACCESS_PROVIDERS.HUAWEICLOUD}-waf`,
+    JDCLOUD_SSL: `${ACCESS_PROVIDERS.JDCLOUD}-ssl`,
+    TENCENTCLOUD_GAAP: `${ACCESS_PROVIDERS.TENCENTCLOUD}-gaap`,
+    TENCENTCLOUD_SSL: `${ACCESS_PROVIDERS.TENCENTCLOUD}-ssl`,
+    TENCENTCLOUD_TSE: `${ACCESS_PROVIDERS.TENCENTCLOUD}-tse`,
+    UCLOUD_USSL: `${ACCESS_PROVIDERS.UCLOUD}-ussl`,
+    VOLCENGINE_CERTCENTER: `${ACCESS_PROVIDERS.VOLCENGINE}-certcenter`,
+  } as const
+);
 
-export type NotificationProviderType = (typeof NOTIFICATION_PROVIDERS)[keyof typeof NOTIFICATION_PROVIDERS];
+export type PurgeProviderType = (typeof PURGE_PROVIDERS)[keyof typeof PURGE_PROVIDERS];
 
-export interface NotificationProvider extends BaseProviderWithAccess<NotificationProviderType> {}
+export interface PurgeProvider extends BaseProviderWithAccess<PurgeProviderType> {}
 
-export const notificationProvidersMap: Map<NotificationProvider["type"] | string, NotificationProvider> = new Map(
+export const purgeProvidersMap: Map<PurgeProvider["type"] | string, PurgeProvider> = new Map(
   /*
     注意：此处的顺序决定显示在前端的顺序。
     NOTICE: The following order determines the order displayed at the frontend.
    */
   (
     [
-      [NOTIFICATION_PROVIDERS.EMAIL],
-      [NOTIFICATION_PROVIDERS.WEBHOOK],
-      [NOTIFICATION_PROVIDERS.DINGTALKBOT],
-      [NOTIFICATION_PROVIDERS.LARKBOT],
-      [NOTIFICATION_PROVIDERS.WECOMBOT],
-      [NOTIFICATION_PROVIDERS.DISCORDBOT],
-      [NOTIFICATION_PROVIDERS.SLACKBOT],
-      [NOTIFICATION_PROVIDERS.TELEGRAMBOT],
-      [NOTIFICATION_PROVIDERS.MATRIX],
-      [NOTIFICATION_PROVIDERS.MATTERMOST],
-    ] satisfies Array<[NotificationProviderType]>
-  ).map(([type]) => [
+      [PURGE_PROVIDERS.ALIYUN_CAS, "provider.aliyun_cas"],
+      [PURGE_PROVIDERS.ALIYUN_ESA, "provider.aliyun_esa"],
+      [PURGE_PROVIDERS.ALIYUN_CLB, "provider.aliyun_clb"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_SSL, "provider.tencentcloud_ssl"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_GAAP, "provider.tencentcloud_gaap"],
+      [PURGE_PROVIDERS.TENCENTCLOUD_TSE, "provider.tencentcloud_tse"],
+      [PURGE_PROVIDERS.HUAWEICLOUD_SCM, "provider.huaweicloud_scm"],
+      [PURGE_PROVIDERS.HUAWEICLOUD_ELB, "provider.huaweicloud_elb"],
+      [PURGE_PROVIDERS.HUAWEICLOUD_WAF, "provider.huaweicloud_waf"],
+      [PURGE_PROVIDERS.VOLCENGINE_CERTCENTER, "provider.volcengine_certcenter"],
+      [PURGE_PROVIDERS.AWS_ACM, "provider.aws_acm"],
+      [PURGE_PROVIDERS.AWS_IAM, "provider.aws_iam"],
+      [PURGE_PROVIDERS.AZURE_KEYVAULT, "provider.azure_keyvault"],
+      [PURGE_PROVIDERS.JDCLOUD_SSL, "provider.jdcloud_ssl"],
+      [PURGE_PROVIDERS.UCLOUD_USSL, "provider.ucloud_ussl"],
+    ] satisfies Array<[PurgeProviderType, string, "builtin"] | [PurgeProviderType, string]>
+  ).map(([type, name]) => [
     type,
     {
       type: type,
-      name: accessProvidersMap.get(type.split("-")[0])!.name,
+      name: name,
       icon: accessProvidersMap.get(type.split("-")[0])!.icon,
       provider: type.split("-")[0] as AccessProviderType,
       builtin: false,
     },
   ])
 );
+// #endregion
+
+// #region NotificationProvider
+export const NOTIFICATION_PROVIDERS = Object.freeze({
+  EMAIL: ACCESS_PROVIDERS.EMAIL,
+  WEBHOOK: ACCESS_PROVIDERS.WEBHOOK,
+} as const);
+
+export interface NotificationProvider extends BaseProvider<string> {
+  provider: string;
+}
+
+export const notificationProvidersMap = new Map<string, NotificationProvider>(
+  [NOTIFICATION_PROVIDERS.EMAIL, NOTIFICATION_PROVIDERS.WEBHOOK].map((type) => [
+    type,
+    {
+      type,
+      name: `provider.${type}`,
+      icon: withBasePath(`/imgs/providers/${type}.svg`),
+      provider: type,
+      builtin: false,
+    },
+  ])
+);
+
+export const getNotificationProvider = (type: string): NotificationProvider | undefined => {
+  const provider = notificationProvidersMap.get(type);
+  if (provider) return provider;
+
+  const migrated = migratedNotificationAccessProviders.get(type);
+  if (migrated) return { ...migrated, provider: type };
+};
 // #endregion

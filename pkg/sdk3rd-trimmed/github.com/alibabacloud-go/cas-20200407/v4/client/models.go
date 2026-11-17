@@ -1,4 +1,4 @@
-﻿package client
+package client
 
 import (
 	"github.com/alibabacloud-go/cas-20200407/v4/client"
@@ -7,6 +7,10 @@ import (
 type CreateDeploymentJobRequest = client.CreateDeploymentJobRequest
 
 type CreateDeploymentJobResponse = client.CreateDeploymentJobResponse
+
+type DeleteUserCertificateRequest = client.DeleteUserCertificateRequest
+
+type DeleteUserCertificateResponse = client.DeleteUserCertificateResponse
 
 type DescribeDeploymentJobRequest = client.DescribeDeploymentJobRequest
 
@@ -19,6 +23,10 @@ type GetCertificateDetailResponse = client.GetCertificateDetailResponse
 type GetUserCertificateDetailRequest = client.GetUserCertificateDetailRequest
 
 type GetUserCertificateDetailResponse = client.GetUserCertificateDetailResponse
+
+type ListCertificatesRequest = client.ListCertificatesRequest
+
+type ListCertificatesResponse = client.ListCertificatesResponse
 
 type ListContactRequest = client.ListContactRequest
 

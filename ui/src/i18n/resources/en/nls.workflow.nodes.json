@@ -1,12 +1,10 @@
 {
   "$ns": "workflow_node",
-
   "kind": {
     "basis": "Basis",
     "business": "Business",
     "logic": "Logic"
   },
-
   "variables": {
     "type": {
       "certificate": {
@@ -25,7 +23,6 @@
       }
     }
   },
-
   "start": {
     "label": "Start",
     "default_name": "Start",
@@ -78,7 +75,6 @@
       "simple_schedule": "Every {{days}} day(s) at {{times}}"
     }
   },
-
   "apply": {
     "label": "Request certificate",
     "default_name": "Application",
@@ -110,7 +106,7 @@
         "option": {
           "domain": {
             "label": "Domains",
-            "description": "<ul style=\"margin: 0;\"><li>Supports single-domain, multi-domain and wildcard domains (Depends on CA).</li><li>Supports DNS-01 or HTTP-01 challenge.</li></ul>"
+            "description": "<ul style=\"margin: 0;\"><li>Supports single-domain, multi-domain and wildcard domains (Depends on CA).</li><li>Supports DNS-01, HTTP-01 or experimental DNS-PERSIST-01 challenge.</li></ul>"
           },
           "ip": {
             "label": "IP addresses",
@@ -152,7 +148,7 @@
           "no_wildcard_in_http01": "Could not use HTTP-01 challenge to request wildcard domain certificates.",
           "no_ip_in_dns01": "Could not use DNS-01 challenge to request IP address certificates."
         },
-        "tooltip": "It determines how the CAs verifies your control over the domain names. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Click here to learn more</a>."
+        "tooltip": "It determines how the CAs verifies your control over the domain names. <br><a href=\"https://letsencrypt.org/docs/challenge-types/\" target=\"_blank\">Click here to learn more</a>.<br><br>DNS-PERSIST-01 (Experimental): authorize an ACME account with persistent TXT records that you manage manually."
       },
       "provider": {
         "label": "Provider",
@@ -202,7 +198,7 @@
       },
       "key_content": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key",
           "not_matched": "Private key does not match the key algorithm (Expected: {{expected}}, Actual: {{actual}})"
@@ -248,7 +244,7 @@
       "nameservers": {
         "label": "DNS recursive nameservers (Optional)",
         "placeholder": "Please enter DNS recursive nameservers (separated by semicolons)",
-        "tooltip": "It determines whether to custom DNS recursive nameservers during ACME challenge. If you don't understand this option, just keep it by default. <br><a href=\"https://go-acme.github.io/lego/usage/cli/options/index.html#dns-resolvers-and-challenge-verification\" target=\"_blank\">Click here to learn more</a>.",
+        "tooltip": "It determines whether to custom DNS recursive nameservers during ACME challenge. If you don't understand this option, just keep it by default. <br><a href=\"https://go-acme.github.io/lego/advanced/tips/#dns-resolvers-and-challenge-verification\" target=\"_blank\">Click here to learn more</a>.",
         "multiple_input_modal": {
           "title": "Change DNS rcursive nameservers",
           "placeholder": "Please enter DNS recursive nameserver"
@@ -265,6 +261,10 @@
         "placeholder": "Please enter DNS propagation checks timeout",
         "unit": "seconds",
         "tooltip": "It determines the timeout for DNS propagation checks during ACME DNS-01 challenge. If you don't understand this option, just keep it by default."
+      },
+      "dns_propagation_polling_interval": {
+        "label": "DNS propagation polling interval (optional)",
+        "unit": "seconds"
       },
       "dns_ttl": {
         "label": "DNS TTL (Optional)",
@@ -296,7 +296,6 @@
         "help": "Notes: The actual renewal timing is also affected by the workflow CRON expression and the CA's ARI suggestion (if supported).",
         "ari_notice": "Certificate renewal is determined by two conditions: your configured threshold and the CA's ARI suggested window (if supported). Renewal triggers when either condition is met. To rely solely on your threshold, disable ARI in 'Advanced Settings'."
       },
-
       "aliyun_esa_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
@@ -321,7 +320,7 @@
       "huaweicloud_dns_region": {
         "label": "Huawei Cloud region",
         "placeholder": "Please enter Huawei Cloud DNS region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
+        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/dns?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint/dns</a>"
       },
       "jdcloud_dns_region_id": {
         "label": "JD Cloud region ID",
@@ -338,6 +337,16 @@
         "placeholder": "Please enter web root path",
         "tooltip": "It's the main directory where the website's files are stored on the local device."
       },
+      "oraclecloud_dns_region": {
+        "label": "OCI region",
+        "placeholder": "Please enter OCI DNS region (e.g. us-phoenix-1)",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm</a>"
+      },
+      "oraclecloud_dns_compartment_ocid": {
+        "label": "OCI compartment OCID",
+        "placeholder": "Please enter OCI compartment OCID",
+        "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/Identity/compartments/managingcompartments.htm</a>"
+      },
       "s3_region": {
         "label": "Object storage (S3-compatible) region",
         "placeholder": "Please enter region"
@@ -352,12 +361,38 @@
         "tooltip": "It's the main directory where the website's files are stored on the server."
       },
       "ssh_use_scp": {
-        "label": "Fallback to use SCP",
+        "label": "Use SCP to transfer file",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
+      },
+      "ucloud_udnr_endpoint": {
+        "label": "UCloud API endpoint (Optional)",
+        "placeholder": "Please enter UCloud UDNR API endpoint (e.g. api.ucloud-global.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>api.ucloud-global.com</strong> for UCloud Global</li><li><strong>api.ucloud.cn</strong> for UCloud in China (<em>Default</em>)</li></ul>"
+      },
+      "dns_persist": {
+        "label": "DNS-PERSIST-01 (Experimental)",
+        "description": "Initial target: Google Trust Services. Custom ACME CAs must offer a compatible challenge. This feature uses an evolving draft, so compatibility may change.",
+        "instructions": "Select the domains, CA and contact email, then generate the TXT records. Add them in your DNS console and keep them for renewal. DNS provider credentials are not needed. Issuance checks the records again.",
+        "saved_binding": "This node has a saved ACME account binding. Generate again to view its TXT records.",
+        "generate": "Generate TXT records",
+        "check": "Check TXT records",
+        "failed": "Unable to complete this step. Review the error and retry.",
+        "account": "ACME account URL",
+        "name": "Record name",
+        "value": "Record value",
+        "ready": "All TXT records are ready. Keep them in DNS for future renewals.",
+        "not_ready": "Some TXT records are not ready. Update them or wait for DNS propagation, then check again.",
+        "binding_required": "Generate TXT records to bind an ACME account before saving.",
+        "no_ip": "DNS-PERSIST-01 supports domain names only.",
+        "status": {
+          "ready": "Ready",
+          "missing": "Missing",
+          "mismatch": "Value mismatch",
+          "lookup_failed": "DNS lookup failed"
+        }
       }
     }
   },
-
   "upload": {
     "label": "Upload certificate",
     "default_name": "Uploading",
@@ -385,11 +420,11 @@
       },
       "name": {
         "label": "Domains / IP addresses",
-        "placholder": "Please select certificate file"
+        "placeholder": "Please select certificate file"
       },
       "certificate_pem": {
         "label": "Certificate (PEM format)",
-        "placeholder": "-----BEGIN CERTIFICATE-----...-----END CERTIFICATE-----",
+        "placeholder": "Please enter certificate\r\n\r\n-----BEGIN CERTIFICATE-----\r\n...\r\n-----END CERTIFICATE-----",
         "errmsg": {
           "invalid": "Invalid PEM certificate"
         }
@@ -404,7 +439,7 @@
       },
       "private_key_pem": {
         "label": "Private key (PEM format)",
-        "placeholder": "-----BEGIN (RSA|EC) PRIVATE KEY-----...-----END(RSA|EC) PRIVATE KEY-----",
+        "placeholder": "Please enter private key\r\n\r\n-----BEGIN (RSA|EC) PRIVATE KEY-----\r\n...\r\n-----END (RSA|EC) PRIVATE KEY-----",
         "errmsg": {
           "invalid": "Invalid PEM private key"
         }
@@ -419,7 +454,6 @@
       }
     }
   },
-
   "monitor": {
     "label": "Monitor certificate",
     "default_name": "Monitoring",
@@ -449,7 +483,6 @@
       }
     }
   },
-
   "deploy": {
     "label": "Deploy certificate",
     "default_name": "Deployment",
@@ -467,6 +500,17 @@
       }
     },
     "form": {
+      "webhook_data": {
+        "label": "Webhook data (Optional)",
+        "placeholder": "Please enter Webhook data",
+        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
+        "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>: <br>The primary domain or IP address of the certificate.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>: <br>The domains or IP addresses of the certificate, separated by semicolons.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>: <br>The PEM format content of the certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>: <br>The PEM format content of the server certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>: <br>The PEM format content of the intermediate CA certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>: <br>The PEM format content of the private key file.</li></ol>"
+      },
+      "webhook_timeout": {
+        "label": "Webhook timeout (Optional)",
+        "placeholder": "Please enter Webhook timeout",
+        "unit": "seconds"
+      },
       "certificate_output_node_id": {
         "label": "Certificate to deploy",
         "placeholder": "Please select certificate to deploy",
@@ -493,7 +537,6 @@
           "off": "don't skip"
         }
       },
-
       "shared_deploy_target": {
         "label": "Certificate deploy target",
         "placeholder": "Please select certificate deploy target"
@@ -589,49 +632,6 @@
         "placeholder": "Please enter JKS store password",
         "tooltip": "For more information, see <a href=\"https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html\" target=\"_blank\">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>"
       },
-
-      "1panel_node_name": {
-        "label": "1Panel node name (Optional)",
-        "placeholder": "Please enter 1Panel node name",
-        "help": "Notes: Only used for 1Panel v2+.",
-        "tooltip": "You can find it on 1Panel dashboard."
-      },
-      "1panel_deploy_target": {
-        "option": {
-          "website": {
-            "label": "Website"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "1panel_website_match_pattern": {
-        "label": "Website match pattern",
-        "placeholder": "Please select website match pattern",
-        "option": {
-          "specified": {
-            "label": "Specified ID"
-          },
-          "certsan": {
-            "label": "via Certificate",
-            "help": "Notes: The website name should be a domain name and include SSL configurations."
-          }
-        }
-      },
-      "1panel_website_id": {
-        "label": "1Panel website ID",
-        "placeholder": "Please enter 1Panel website ID",
-        "tooltip": "You can find it on 1Panel dashboard."
-      },
-      "1panel_certificate_id": {
-        "label": "1Panel certificate ID",
-        "placeholder": "Please enter 1Panel certificate ID",
-        "tooltip": "You can find it on 1Panel dashboard."
-      },
-      "1panel_console_auto_restart": {
-        "label": "Auto restart 1Panel after deployment"
-      },
       "aliyun_alb_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud ALB region (e.g. cn-hangzhou)",
@@ -661,6 +661,9 @@
         "label": "Alibaba Cloud ALB SNI domain (Optional)",
         "placeholder": "Please enter Alibaba Cloud ALB SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
+      },
+      "aliyun_alb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "aliyun_apigw_region": {
         "label": "Alibaba Cloud region",
@@ -799,6 +802,9 @@
         "placeholder": "Please enter Alibaba Cloud ESA site ID",
         "tooltip": "For more information, see <a href=\"https://esa.console.aliyun.com/siteManage/list\" target=\"_blank\">https://esa.console.aliyun.com/siteManage/list</a>"
       },
+      "aliyun_esa_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "aliyun_esa_saas_region": {
         "label": "Alibaba Cloud region",
         "placeholder": "Please enter Alibaba Cloud ESA region (e.g. cn-hangzhou)",
@@ -859,6 +865,29 @@
       "aliyun_live_domain": {
         "label": "Alibaba Cloud live streaming domain",
         "placeholder": "Please enter Alibaba Cloud live streaming domain name"
+      },
+      "aliyun_mse_region": {
+        "label": "Alibaba Cloud region",
+        "placeholder": "Please enter Alibaba Cloud MSE region (e.g. cn-hangzhou)",
+        "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/mse/product-overview/supported-regions\" target=\"_blank\">https://www.alibabacloud.com/help/en/mse/product-overview/supported-regions</a>"
+      },
+      "aliyun_mse_service_type": {
+        "label": "Alibaba Cloud MSE service type",
+        "placeholder": "Please select Alibaba Cloud MSE service type",
+        "option": {
+          "cloudnative": {
+            "label": "Cloud-native API gateway"
+          }
+        }
+      },
+      "aliyun_mse_gateway_id": {
+        "label": "Alibaba Cloud MSE Cloud-native API gateway ID",
+        "placeholder": "Please enter Alibaba Cloud MSE Cloud-native API gateway ID",
+        "tooltip": "For more information, see <a href=\"https://mse.console.aliyun.com/#/microgw\" target=\"_blank\">https://mse.console.aliyun.com</a>"
+      },
+      "aliyun_mse_domain": {
+        "label": "Alibaba Cloud MSE Cloud-native API gateway binding domain",
+        "placeholder": "Please enter Alibaba Cloud MSE Cloud-native API gateway binding domain name"
       },
       "aliyun_nlb_region": {
         "label": "Alibaba Cloud region",
@@ -950,21 +979,6 @@
         "placeholder": "Please enter Alibaba Cloud WAF SNI domain name",
         "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
       },
-      "apisix": {
-        "guide": "Requires APISIX v3.0 or higher."
-      },
-      "apisix_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "SSL certificate"
-          }
-        }
-      },
-      "apisix_certificate_id": {
-        "label": "APISIX certificate ID",
-        "placeholder": "Please enter APISIX certificate ID",
-        "tooltip": "You can find it on APISIX dashboard."
-      },
       "aws_acm_region": {
         "label": "AWS Region",
         "placeholder": "Please enter AWS ACM region (e.g. us-east-1)",
@@ -973,7 +987,7 @@
       "aws_acm_certificate_arn": {
         "label": "AWS ACM certificate ARN (Optional)",
         "placeholder": "Please enter AWS ACM certificate ARN",
-        "help": "Notes: Leave it blank to import a new certificate."
+        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
       },
       "aws_alb_region": {
         "label": "AWS Region",
@@ -996,6 +1010,9 @@
       },
       "aws_alb_is_default": {
         "label": "Set as default certificate"
+      },
+      "aws_alb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
       },
       "aws_amplify_region": {
         "label": "AWS Region",
@@ -1096,6 +1113,9 @@
       "aws_nlb_is_default": {
         "label": "Set as default certificate"
       },
+      "aws_nlb_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "azure_keyvault_name": {
         "label": "Azure KeyVault name",
         "placeholder": "Please enter Azure KeyVault name",
@@ -1108,760 +1128,6 @@
           "invalid": "Invalid certificate name: can only include letters, numbers, and hyphens (-), with a length limit of 1 to 127 characters"
         },
         "help": "Notes: Leave it blank to use a default name generated by Certimate."
-      },
-      "baiducloud_appblb_region": {
-        "label": "Baidu Cloud region",
-        "placeholder": "Please enter Baidu Cloud BLB region (e.g. bj)",
-        "tooltip": "For more information, see <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
-      },
-      "baiducloud_appblb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "BLB load balancer"
-          },
-          "listener": {
-            "label": "BLB listener"
-          }
-        }
-      },
-      "baiducloud_appblb_loadbalancer_id": {
-        "label": "Baidu Cloud BLB load balancer ID",
-        "placeholder": "Please enter Baidu Cloud BLB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.bce.baidu.com/blb/#/appblb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/appblb/list</a>"
-      },
-      "baiducloud_appblb_listener_port": {
-        "label": "Baidu Cloud BLB listener port",
-        "placeholder": "Please enter Baidu Cloud BLB listener port",
-        "tooltip": "For more information, see <a href=\"https://console.bce.baidu.com/blb/#/appblb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/appblb/list</a>"
-      },
-      "baiducloud_appblb_snidomain": {
-        "label": "Baidu Cloud BLB SNI domain (Optional)",
-        "placeholder": "Please enter Baidu Cloud BLB SNI domain name",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
-      },
-      "baiducloud_blb_region": {
-        "label": "Baidu Cloud region",
-        "placeholder": "Please enter Baidu Cloud BLB region (e.g. bj)",
-        "tooltip": "For more information, see <a href=\"https://cloud.baidu.com/doc/BLB/s/cjwvxnzix\" target=\"_blank\">https://cloud.baidu.com/doc/BLB/s/cjwvxnzix</a>"
-      },
-      "baiducloud_blb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "BLB load balancer"
-          },
-          "listener": {
-            "label": "BLB listener"
-          }
-        }
-      },
-      "baiducloud_blb_loadbalancer_id": {
-        "label": "Baidu Cloud BLB load balancer ID",
-        "placeholder": "Please enter Baidu Cloud BLB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.bce.baidu.com/blb/#/blb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/blb/list</a>"
-      },
-      "baiducloud_blb_listener_port": {
-        "label": "Baidu Cloud BLB listener port",
-        "placeholder": "Please enter Baidu Cloud BLB listener port",
-        "tooltip": "For more information, see <a href=\"https://console.bce.baidu.com/blb/#/blb/list\" target=\"_blank\">https://console.bce.baidu.com/blb/#/blb/list</a>"
-      },
-      "baiducloud_blb_snidomain": {
-        "label": "Baidu Cloud BLB SNI domain (Optional)",
-        "placeholder": "Please enter Baidu Cloud BLB SNI domain name",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
-      },
-      "baiducloud_cdn_domain": {
-        "label": "Baidu Cloud CDN domain",
-        "placeholder": "Please enter Baidu Cloud CDN domain name"
-      },
-      "baishan_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "Domain"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "baishan_cdn_domain": {
-        "label": "Baishan Cloud CDN domain",
-        "placeholder": "Please enter Baishan Cloud CDN domain name"
-      },
-      "baishan_cdn_certificate_id": {
-        "label": "Baishan Cloud CDN certificate ID",
-        "placeholder": "Please enter Baishan Cloud CDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://cdnx.console.baishan.com/#/cdn/cert\" target=\"_blank\">https://cdnx.console.baishan.com/#/cdn/cert</a>"
-      },
-      "baotapanel": {
-        "guide": "Requires aaPanel v7.0 or higher."
-      },
-      "baotapanel_site_type": {
-        "label": "aaPanel website type",
-        "placeholder": "Please select aaPanel website type",
-        "option": {
-          "php": {
-            "label": "PHP Project"
-          },
-          "java": {
-            "label": "Java Project"
-          },
-          "nodejs": {
-            "label": "Node.js Project"
-          },
-          "go": {
-            "label": "Golang Project"
-          },
-          "python": {
-            "label": "Python Project"
-          },
-          "proxy": {
-            "label": "Reverse Proxy"
-          },
-          "html": {
-            "label": "HTML Project"
-          },
-          "general": {
-            "label": "General Project"
-          },
-          "any": {
-            "label": "Any Project (aaPanel v7.26+)"
-          }
-        }
-      },
-      "baotapanel_site_names": {
-        "label": "aaPanel website names",
-        "placeholder": "Please enter aaPanel website names (separated by semicolons)",
-        "errmsg": {
-          "invalid": "Invalid website names"
-        },
-        "help": "Notes: Multiple values should be separated by semicolons.",
-        "tooltip": "You can find it on aaPanel dashboard.",
-        "multiple_input_modal": {
-          "title": "Change aaPanel website names",
-          "placeholder": "Please enter aaPanel website name"
-        }
-      },
-      "baotapanel_console": {
-        "guide": "Requires aaPanel v7.0 or higher."
-      },
-      "baotapanel_console_auto_restart": {
-        "label": "Auto restart aaPanel after deployment"
-      },
-      "baotapanelgo_site_type": {
-        "label": "aaPanel WinGo website type",
-        "placeholder": "Please select aaPanel WinGo website type",
-        "option": {
-          "php": {
-            "label": "PHP Project"
-          },
-          "java": {
-            "label": "Java Project"
-          },
-          "asp": {
-            "label": ".NET Project"
-          },
-          "go": {
-            "label": "Golang Project"
-          },
-          "python": {
-            "label": "Python Project"
-          },
-          "nodejs": {
-            "label": "Node.js Project"
-          },
-          "proxy": {
-            "label": "Reverse Proxy"
-          },
-          "general": {
-            "label": "General Project"
-          }
-        }
-      },
-      "baotapanelgo_site_names": {
-        "label": "aaPanel WinGo website names",
-        "placeholder": "Please enter aaPanel WinGo website names (separated by semicolons)",
-        "errmsg": {
-          "invalid": "Invalid website names"
-        },
-        "help": "Notes: Multiple values should be separated by semicolons.",
-        "tooltip": "You can find it on aaPanel WinGo dashboard.",
-        "multiple_input_modal": {
-          "title": "Change aaPanel WinGo website names",
-          "placeholder": "Please enter aaPanel WinGo website name"
-        }
-      },
-      "baotawaf": {
-        "guide": "Requires aaWAF v5.7 or higher."
-      },
-      "baotawaf_site_names": {
-        "label": "aaWAF website names",
-        "placeholder": "Please enter aaWAF website names (separated by semicolons)",
-        "errmsg": {
-          "invalid": "Invalid website names"
-        },
-        "help": "Notes: Multiple values should be separated by semicolons.",
-        "tooltip": "You can find it on aaWAF dashboard.",
-        "multiple_input_modal": {
-          "title": "Change aaWAF website names",
-          "placeholder": "Please enter aaWAF website name"
-        }
-      },
-      "baotawaf_site_port": {
-        "label": "aaWAF website SSL port",
-        "placeholder": "Please enter aaWAF SSL port"
-      },
-      "baotawaf_console": {
-        "guide": "Requires aaWAF v5.7 or higher."
-      },
-      "bunny_cdn_pull_zone_id": {
-        "label": "Bunny CDN pull zone ID",
-        "placeholder": "Please enter Bunny CDN pull zone ID",
-        "tooltip": "What is this? See <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>"
-      },
-      "bunny_cdn_hostname": {
-        "label": "Bunny CDN hostname",
-        "placeholder": "Please enter Bunny CDN hostname",
-        "tooltip": "What is this? See <a href=\"https://dash.bunny.net/cdn\" target=\"_blank\">https://dash.bunny.net/cdn</a>"
-      },
-      "byteplus_alb_region": {
-        "label": "BytePlus region",
-        "placeholder": "Please enter BytePlus ALB region (e.g. ap-southeast-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Regions-and-Availability-Zones</a>"
-      },
-      "byteplus_alb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "ALB load balancer"
-          },
-          "listener": {
-            "label": "ALB listener"
-          }
-        }
-      },
-      "byteplus_alb_loadbalancer_id": {
-        "label": "BytePlus ALB load balancer ID",
-        "placeholder": "Please enter BytePlus ALB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
-      },
-      "byteplus_alb_listener_id": {
-        "label": "BytePlus ALB listener ID",
-        "placeholder": "Please enter BytePlus ALB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/alb\" target=\"_blank\">https://console.byteplus.com/alb</a>"
-      },
-      "byteplus_alb_snidomain": {
-        "label": "BytePlus ALB SNI domain (Optional)",
-        "placeholder": "Please enter BytePlus ALB SNI domain name",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
-      },
-      "byteplus_apig_region": {
-        "label": "BytePlus region",
-        "placeholder": "Please enter BytePlus API gateway region (e.g. ap-southeast-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones\" target=\"_blank\">https://docs.byteplus.com/en/docs/apig/Regions_and_availability_zones</a>"
-      },
-      "byteplus_apig_domain": {
-        "label": "BytePlus API gateway custom domain",
-        "placeholder": "Please enter BytePlus API gateway custom domain name"
-      },
-      "byteplus_cdn_domain": {
-        "label": "BytePlus CDN domain",
-        "placeholder": "Please enter BytePlus CDN domain name"
-      },
-      "byteplus_certcenter_region": {
-        "label": "BytePlus region",
-        "placeholder": "Please enter BytePlus Certificate Center region (e.g. ap-singapore-1)"
-      },
-      "byteplus_clb_region": {
-        "label": "BytePlus region",
-        "placeholder": "Please enter BytePlus CLB region (e.g. ap-southeast-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/clb/Product-Overview-08\" target=\"_blank\">https://docs.byteplus.com/en/docs/clb/Product-Overview-08</a>"
-      },
-      "byteplus_clb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "CLB load balancer"
-          },
-          "listener": {
-            "label": "CLB listener"
-          }
-        }
-      },
-      "byteplus_clb_loadbalancer_id": {
-        "label": "BytePlus CLB load balancer ID",
-        "placeholder": "Please enter BytePlus CLB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
-      },
-      "byteplus_clb_listener_id": {
-        "label": "BytePlus CLB listener ID",
-        "placeholder": "Please enter BytePlus CLB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.byteplus.com/clb/LoadBalancer\" target=\"_blank\">https://console.byteplus.com/clb/LoadBalancer</a>"
-      },
-      "byteplus_medialive_domain": {
-        "label": "BytePlus MediaLive streaming domain",
-        "placeholder": "Please enter BytePlus MediaLive streaming domain name"
-      },
-      "byteplus_tos_region": {
-        "label": "BytePlus region",
-        "placeholder": "Please enter BytePlus TOS region (e.g. ap-southeast-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint\" target=\"_blank\">https://docs.byteplus.com/en/docs/tos/docs-region-and-endpoint</a>"
-      },
-      "byteplus_tos_bucket": {
-        "label": "BytePlus TOS bucket",
-        "placeholder": "Please enter BytePlus TOS bucket name"
-      },
-      "byteplus_tos_domain": {
-        "label": "BytePlus TOS custom domain",
-        "placeholder": "Please enter BytePlus TOS bucket custom domain name"
-      },
-      "cdnfly_deploy_target": {
-        "option": {
-          "website": {
-            "label": "Website"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "cdnfly_site_id": {
-        "label": "Cdnfly website ID",
-        "placeholder": "Please enter Cdnfly website ID",
-        "tooltip": "You can find it on Cdnfly dashboard."
-      },
-      "cdnfly_certificate_id": {
-        "label": "Cdnfly certificate ID",
-        "placeholder": "Please enter Cdnfly certificate ID",
-        "tooltip": "You can find it on Cdnfly dashboard."
-      },
-      "cloudflare_ssl_environment": {
-        "label": "Cloudflare environment",
-        "placeholder": "Please enter Cloudflare environment",
-        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/staging-environment/</a>"
-      },
-      "cloudflare_ssl_zone_id": {
-        "label": "Cloudflare DNS zone ID",
-        "placeholder": "Please enter Cloudflare DNS zone ID",
-        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/#copy-your-zone-id\" target=\"_blank\">https://developers.cloudflare.com/fundamentals/account/find-account-and-zone-ids/</a>"
-      },
-      "cloudflare_ssl_certificate_id": {
-        "label": "Cloudflare custom certificate ID (Optional)",
-        "placeholder": "Please enter Cloudflare custom certificate ID",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "For more information, see <a href=\"https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/\" target=\"_blank\">https://developers.cloudflare.com/ssl/edge-certificates/custom-certificates/uploading/</a>"
-      },
-      "cpanel_deploy_target": {
-        "option": {
-          "website": {
-            "label": "Website"
-          }
-        }
-      },
-      "cpanel_domain": {
-        "label": "cPanel website domain",
-        "placeholder": "Please enter cPanel website domain name"
-      },
-      "ctcccloud_ao_domain": {
-        "label": "CTCC StateCloud AccessOne domain",
-        "placeholder": "Please enter CTCC StateCloud AccessOne domain name"
-      },
-      "ctcccloud_cdn_domain": {
-        "label": "CTCC StateCloud CDN domain",
-        "placeholder": "Please enter CTCC StateCloud CDN domain name"
-      },
-      "ctcccloud_elb_region_id": {
-        "label": "CTCC StateCloud region ID",
-        "placeholder": "Please enter CTCC StateCloud ELB region ID",
-        "tooltip": "For more information, see <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>"
-      },
-      "ctcccloud_elb_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "ELB certificate"
-          },
-          "loadbalancer": {
-            "label": "ELB load balancer"
-          },
-          "listener": {
-            "label": "ELB listener"
-          }
-        }
-      },
-      "ctcccloud_elb_loadbalancer_id": {
-        "label": "CTCC StateCloud ELB load balancer ID",
-        "placeholder": "Please enter CTCC StateCloud ELB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.ctyun.cn/network/index/#/elb/elbList\" target=\"_blank\">https://console.ctyun.cn/network/index/#/elb/elbList</a>"
-      },
-      "ctcccloud_elb_listener_id": {
-        "label": "CTCC StateCloud ELB listener ID",
-        "placeholder": "Please enter CTCC StateCloud ELB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.ctyun.cn/network/index/#/elb/elbList\" target=\"_blank\">https://console.ctyun.cn/network/index/#/elb/elbList</a>"
-      },
-      "ctcccloud_faas_region_id": {
-        "label": "CTCC StateCloud region ID",
-        "placeholder": "Please enter CTCC StateCloud FaaS region ID",
-        "tooltip": "For more information, see <a href=\"https://www.ctyun.cn/document/10026755/10196575\" target=\"_blank\">https://www.ctyun.cn/document/10026755/10196575</a>"
-      },
-      "ctcccloud_faas_domain": {
-        "label": "CTCC StateCloud FaaS domain",
-        "placeholder": "Please enter CTCC StateCloud FaaS domain name"
-      },
-      "ctcccloud_icdn_domain": {
-        "label": "CTCC StateCloud ICDN domain",
-        "placeholder": "Please enter CTCC StateCloud ICDN domain name"
-      },
-      "ctcccloud_lvdn_domain": {
-        "label": "CTCC StateCloud LVDN domain",
-        "placeholder": "Please enter CTCC StateCloud LVDN domain name"
-      },
-      "dogecloud_cdn_domain": {
-        "label": "Doge Cloud CDN domain",
-        "placeholder": "Please enter Doge Cloud CDN domain name"
-      },
-      "flexcdn_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "flexcdn_certificate_id": {
-        "label": "FlexCDN certificate ID",
-        "placeholder": "Please enter FlexCDN certificate ID",
-        "tooltip": "You can find it on FlexCDN dashboard. <br><br>(Please open the browser devtools, and visit the \"网站列表 -> 证书管理 -> 证书\" page to capture network requests, then you can get the certificate ID.)"
-      },
-      "flyio_app_name": {
-        "label": "Fly.io App name",
-        "placeholder": "Please enter Fly.io App name"
-      },
-      "flyio_domain": {
-        "label": "Fly.io custom domain",
-        "placeholder": "Please enter Fly.io custom domain name",
-        "help": "Notes: After importing the custom certificate for the first time, you need to complete domain ownership verification on Fly.io dashboard."
-      },
-      "gcore_cdn_resource_id": {
-        "label": "G-Core CDN resource ID",
-        "placeholder": "Please enter G-Core CDN resource ID",
-        "tooltip": "For more information, see <a href=\"https://cdn.gcore.com/resources/list\" target=\"_blank\">https://cdn.gcore.com/resources/list</a>"
-      },
-      "gcore_cdn_certificate_id": {
-        "label": "G-Core CDN certificate ID (Optional)",
-        "placeholder": "Please enter G-Core CDN certificate ID",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "For more information, see <a href=\"https://cdn.gcore.com/ssl\" target=\"_blank\">https://cdn.gcore.com/ssl</a>"
-      },
-      "goedge_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "goedge_certificate_id": {
-        "label": "GoEdge certificate ID",
-        "placeholder": "Please enter GoEdge certificate ID",
-        "tooltip": "You can find it on GoEdge dashboard. <br><br>(Please open the browser devtools, and visit the \"网站列表 -> 证书管理 -> 证书\" page to capture network requests, then you can get the certificate ID.)"
-      },
-      "huaweicloud_aad_domain": {
-        "label": "Huawei Cloud AAD domain",
-        "placeholder": "Please enter Huawei Cloud AAD domain name"
-      },
-      "huaweicloud_aad_instance_id": {
-        "label": "Huawei Cloud AAD instance ID",
-        "placeholder": "Please enter Huawei Cloud AAD instance ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list\" target=\"_blank\">https://console-intl.huaweicloud.com/cnad/#/cnad/cad/list</a>"
-      },
-      "huaweicloud_apig_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud API gateway region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
-      },
-      "huaweicloud_apig_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "API gateway certificate"
-          }
-        }
-      },
-      "huaweicloud_apig_certificate_id": {
-        "label": "Huawei Cloud API gateway certificate ID",
-        "placeholder": "Please enter Huawei Cloud API gateway certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apig2/#/overview\" target=\"_blank\">https://console-intl.huaweicloud.com/apig2/#/overview</a>"
-      },
-      "huaweicloud_cdn_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud CDN region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
-      },
-      "huaweicloud_cdn_domain": {
-        "label": "Huawei Cloud CDN domain",
-        "placeholder": "Please enter Huawei Cloud CDN domain name"
-      },
-      "huaweicloud_obs_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud OBS region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
-      },
-      "huaweicloud_obs_bucket": {
-        "label": "Huawei Cloud OBS bucket name",
-        "placeholder": "Please enter Huawei Cloud OBS bucket name"
-      },
-      "huaweicloud_obs_domain": {
-        "label": "Huawei Cloud OBS custom domain",
-        "placeholder": "Please enter Huawei Cloud OBS custom domain name"
-      },
-      "huaweicloud_elb_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud ELB region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
-      },
-      "huaweicloud_elb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "ELB load balancer"
-          },
-          "listener": {
-            "label": "ELB listener"
-          },
-          "certificate": {
-            "label": "ELB certificate"
-          }
-        }
-      },
-      "huaweicloud_elb_loadbalancer_id": {
-        "label": "Huawei Cloud ELB load balancer ID",
-        "placeholder": "Please enter Huawei Cloud ELB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>"
-      },
-      "huaweicloud_elb_listener_id": {
-        "label": "Huawei Cloud ELB listener ID",
-        "placeholder": "Please enter Huawei Cloud ELB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/list/grid\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/list/grid</a>"
-      },
-      "huaweicloud_elb_certificate_id": {
-        "label": "Huawei Cloud ELB certificate ID",
-        "placeholder": "Please enter Huawei Cloud ELB certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/vpc/#/elb/elbCert\" target=\"_blank\">https://console-intl.huaweicloud.com/vpc/#/elb/elbCert</a>"
-      },
-      "huaweicloud_live_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud Live region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
-      },
-      "huaweicloud_live_domain": {
-        "label": "Huawei Cloud Live streaming domain",
-        "placeholder": "Please enter Huawei Cloud Live streaming domain name"
-      },
-      "huaweicloud_waf_region": {
-        "label": "Huawei Cloud region",
-        "placeholder": "Please enter Huawei Cloud WAF region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/apiexplorer/#/endpoint?locale=en-us\" target=\"_blank\">https://console-intl.huaweicloud.com/apiexplorer/#/endpoint</a>"
-      },
-      "huaweicloud_waf_deploy_target": {
-        "option": {
-          "cloudserver": {
-            "label": "WAF cloud server"
-          },
-          "premiumhost": {
-            "label": "WAF premium host"
-          },
-          "certificate": {
-            "label": "WAF certificate"
-          }
-        }
-      },
-      "huaweicloud_waf_domain": {
-        "label": "Huawei Cloud WAF domain",
-        "placeholder": "Please enter Huawei Cloud WAF domain name"
-      },
-      "huaweicloud_waf_certificate_id": {
-        "label": "Huawei Cloud WAF certificate ID",
-        "placeholder": "Please enter Huawei Cloud WAF certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console-intl.huaweicloud.com/console/#/waf/certificateManagement\" target=\"_blank\">https://console-intl.huaweicloud.com/console/#/waf/certificateManagement</a>"
-      },
-      "jdcloud_alb_region_id": {
-        "label": "JD Cloud region ID",
-        "placeholder": "Please enter JD Cloud ALB region ID (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.jdcloud.com/en/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/en/common-declaration/api/introduction</a>"
-      },
-      "jdcloud_alb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "ALB load balancer"
-          },
-          "listener": {
-            "label": "ALB listener"
-          }
-        }
-      },
-      "jdcloud_alb_loadbalancer_id": {
-        "label": "JD Cloud ALB load balancer ID",
-        "placeholder": "Please enter JD Cloud ALB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://cns-console.jdcloud.com/host/loadBalance/list\" target=\"_blank\">https://cns-console.jdcloud.com/host/loadBalance/list</a>"
-      },
-      "jdcloud_alb_listener_id": {
-        "label": "JD Cloud ALB listener ID",
-        "placeholder": "Please enter JD Cloud ALB listener ID",
-        "tooltip": "For more information, see <a href=\"https://cns-console.jdcloud.com/host/loadBalance/list\" target=\"_blank\">https://cns-console.jdcloud.com/host/loadBalance/list</a>"
-      },
-      "jdcloud_alb_snidomain": {
-        "label": "JD Cloud ALB SNI domain (Optional)",
-        "placeholder": "Please enter JD Cloud ALB SNI domain name",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
-      },
-      "jdcloud_cdn_domain": {
-        "label": "JD Cloud CDN domain",
-        "placeholder": "Please enter JD Cloud CDN domain name"
-      },
-      "jdcloud_live_domain": {
-        "label": "JD Cloud Live Video streaming domain",
-        "placeholder": "Please enter JD Cloud Live Video streaming domain name"
-      },
-      "jdcloud_vod_domain": {
-        "label": "JD Cloud VOD domain",
-        "placeholder": "Please enter JD Cloud VOD domain name"
-      },
-      "jdcloud_waf_region_id": {
-        "label": "JD Cloud region ID",
-        "placeholder": "Please enter JD Cloud WAF region ID (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://docs.jdcloud.com/en/common-declaration/api/introduction\" target=\"_blank\">https://docs.jdcloud.com/en/common-declaration/api/introduction</a>"
-      },
-      "jdcloud_waf_instance_id": {
-        "label": "JD Cloud WAF instance ID",
-        "placeholder": "Please enter JD Cloud WAF instance ID",
-        "tooltip": "For more information, see <a href=\"https://cloudwaf-console.jdcloud.com/instance\" target=\"_blank\">https://cloudwaf-console.jdcloud.com/instance</a>"
-      },
-      "jdcloud_waf_domain": {
-        "label": "JD Cloud WAF domain",
-        "placeholder": "Please enter JD Cloud WAF domain name"
-      },
-      "k8s_namespace": {
-        "label": "Kubernetes Namespace",
-        "placeholder": "Please enter Kubernetes Namespace",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/\" target=\"_blank\">https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</a>"
-      },
-      "k8s_secret_name": {
-        "label": "Kubernetes Secret name",
-        "placeholder": "Please enter Kubernetes Secret name",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_type": {
-        "label": "Kubernetes Secret type",
-        "placeholder": "Please enter Kubernetes Secret type",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_key": {
-        "label": "Kubernetes Secret data key for private key",
-        "placeholder": "Please enter Kubernetes Secret data key for private key",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_crt": {
-        "label": "Kubernetes Secret data key for certificate",
-        "placeholder": "Please enter Kubernetes Secret data key for certificate",
-        "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/secret/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/secret/</a>"
-      },
-      "k8s_secret_data_key_for_servercrt": {
-        "label": "Kubernetes Secret data key for certificate (includes the end-entity parts only) (Optional)",
-        "placeholder": "Please enter Kubernetes Secret data key for server certificate",
-        "help": ""
-      },
-      "k8s_secret_data_key_for_intermediacrt": {
-        "label": "Kubernetes Secret data key for certificate (includes the CA parts only) (Optional)",
-        "placeholder": "Please enter Kubernetes Secret data key for intermediate certificate",
-        "help": ""
-      },
-      "k8s_secret_annotations": {
-        "label": "Kubernetes Secret annotations (Optional)",
-        "placeholder": "Please enter Kubernetes Secret annotations",
-        "help": "Notes: One key value pair per line, separated by colon.",
-        "errmsg": {
-          "invalid": "Invalid annotations"
-        },
-        "tooltip": "Example: <br><i>environment: production<br>app: nginx</i>"
-      },
-      "k8s_secret_labels": {
-        "label": "Kubernetes Secret labels (Optional)",
-        "placeholder": "Please enter Kubernetes Secret labels",
-        "help": "Notes: One key value pair per line, separated by colon.",
-        "errmsg": {
-          "invalid": "Invalid labels"
-        },
-        "tooltip": "Example: <br><i>environment: production<br>app: nginx</i>"
-      },
-      "kong": {
-        "guide": "Requires Kong v2.0 or higher."
-      },
-      "kong_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "SSL certificate"
-          }
-        }
-      },
-      "kong_workspace": {
-        "label": "Kong workspace (Optional)",
-        "placeholder": "Please enter Kong workspace",
-        "tooltip": "You can find it on Kong dashboard."
-      },
-      "kong_certificate_id": {
-        "label": "Kong certificate ID",
-        "placeholder": "Please enter Kong certificate ID",
-        "tooltip": "You can find it on Kong dashboard."
-      },
-      "ksyun_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "Domain"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "ksyun_cdn_domain": {
-        "label": "Kingsoft Cloud CDN domain",
-        "placeholder": "Please enter Kingsoft Cloud CDN domain name"
-      },
-      "ksyun_cdn_certificate_id": {
-        "label": "Kingsoft Cloud CDN certificate ID",
-        "placeholder": "Please enter Kingsoft Cloud CDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://cdn.console.ksyun.com/\" target=\"_blank\">https://cdn.console.ksyun.com/</a>"
-      },
-      "ksyun_slb_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "ksyun_slb_certificate_id": {
-        "label": "Kingsoft Cloud SLB certificate ID",
-        "placeholder": "Please enter Kingsoft Cloud SLB certificate ID",
-        "tooltip": "For more information, see <a href=\"https://network.console.ksyun.com/index.html#!/slb/slbIndex\" target=\"_blank\">https://network.console.ksyun.com/index.html#!/slb/slbIndex</a>"
-      },
-      "lecdn_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "lecdn_certificate_id": {
-        "label": "LeCDN certificate ID",
-        "placeholder": "Please enter LeCDN certificate ID",
-        "tooltip": "You can find it on LeCDN dashboard."
-      },
-      "lecdn_client_id": {
-        "label": "LeCDN user ID (Optional)",
-        "placeholder": "Please enter LeCDN user ID",
-        "tooltip": "You can find it on LeCDN dashboard. <br>Required when using administrator's authorization. It Must be the same as the user to which the certificate belongs."
-      },
-      "linode_los_region_id": {
-        "label": "Linode region ID",
-        "placeholder": "Please enter Linode object storage region ID (e.g. us-east)",
-        "tooltip": "For more information, see <a href=\"https://techdocs.akamai.com/cloud-computing/docs/endpoint-types#supported-endpoint-types-by-region\" target=\"_blank\">https://techdocs.akamai.com/cloud-computing/docs/endpoint-types</a>"
-      },
-      "linode_los_bucket": {
-        "label": "Linode object storage bucket name",
-        "placeholder": "Please enter Linode object storage bucket name"
       },
       "local": {
         "guide": "If you are running Certimate in Docker, the \"Local\" refers to the container rather than the host."
@@ -1897,180 +1163,6 @@
         "ps_binding_netsh": "PowerShell - Binding netsh",
         "ps_binding_rdp": "PowerShell - Binding RDP"
       },
-      "mohua_mvh_host_id": {
-        "label": "Mohua Cloud virtual host ID",
-        "placeholder": "Please enter Mohua Cloud virtual host ID",
-        "tooltip": "For more information, see <a href=\"https://cloud.mhjz1.cn/service?groupid=328&language=english\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328&language=english</a>"
-      },
-      "mohua_mvh_domain_id": {
-        "label": "Mohua Cloud virtual host domain ID",
-        "placeholder": "Please enter Mohua Cloud virtual host domain ID",
-        "tooltip": "For more information, see <a href=\"https://cloud.mhjz1.cn/service?groupid=328&language=english\" target=\"_blank\">https://cloud.mhjz1.cn/service?groupid=328&language=english</a>"
-      },
-      "netlify_deploy_target": {
-        "option": {
-          "website": {
-            "label": "Website"
-          }
-        }
-      },
-      "netlify_site_id": {
-        "label": "Netlify website ID",
-        "placeholder": "Please enter Netlify website ID",
-        "tooltip": "For more information, see <a href=\"https://docs.netlify.com/api/get-started/#get-site\" target=\"_blank\">https://docs.netlify.com/api/get-started/#get-site</a>"
-      },
-      "nginxproxymanager_deploy_target": {
-        "option": {
-          "host": {
-            "label": "Host"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "nginxproxymanager_host_match_pattern": {
-        "label": "Host match pattern",
-        "placeholder": "Please select host match pattern",
-        "option": {
-          "specified": {
-            "label": "Specified ID"
-          },
-          "certsan": {
-            "label": "via Certificate"
-          }
-        }
-      },
-      "nginxproxymanager_host_type": {
-        "label": "NPM host type",
-        "placeholder": "Please select NPM host type",
-        "option": {
-          "proxy": {
-            "label": "Proxy host"
-          },
-          "redirection": {
-            "label": "Redirection host"
-          },
-          "stream": {
-            "label": "Stream"
-          },
-          "dead": {
-            "label": "404 host"
-          }
-        }
-      },
-      "nginxproxymanager_host_id": {
-        "label": "NPM host ID",
-        "placeholder": "Please enter NPM host ID",
-        "tooltip": "You can find it on NPM dashboard."
-      },
-      "nginxproxymanager_certificate_id": {
-        "label": "NPM certificate ID",
-        "placeholder": "Please enter NPM certificate ID",
-        "tooltip": "You can find it on NPM dashboard."
-      },
-      "proxmoxve": {
-        "guide": "Requires Proxmox VE v5.2 or higher."
-      },
-      "proxmoxve_node_name": {
-        "label": "Proxmox VE cluster node name",
-        "placeholder": "Please enter Proxmox VE cluster node name"
-      },
-      "proxmoxve_auto_restart": {
-        "label": "Auto restart Proxmox VE after deployment"
-      },
-      "qingcloud_lb_zone_id": {
-        "label": "QingCloud zone ID",
-        "placeholder": "Please enter QingCloud LBC zone ID (e.g. pek3a)",
-        "tooltip": "For more information, see <a href=\"https://docsv4.qingcloud.com/user_guide/helpcenter/area/\" target=\"_blank\">https://docsv4.qingcloud.com/user_guide/helpcenter/area/</a>"
-      },
-      "qingcloud_lb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "LBC load balancer"
-          },
-          "listener": {
-            "label": "LBC listener"
-          }
-        }
-      },
-      "qingcloud_lb_loadbalancer_id": {
-        "label": "QingCloud LBC load balancer ID",
-        "placeholder": "Please enter QingCloud LBC load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
-      },
-      "qingcloud_lb_listener_id": {
-        "label": "QingCloud LBC listener ID",
-        "placeholder": "Please enter QingCloud LBC listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/pek3a/loadbalancers/\" target=\"_blank\">https://console.qingcloud.com/pek3a/loadbalancers/</a>"
-      },
-      "qiniu_cdn_domain": {
-        "label": "Qiniu CDN domain",
-        "placeholder": "Please enter Qiniu CDN domain name"
-      },
-      "qiniu_kodo_bucket": {
-        "label": "Qiniu Kodo bucket",
-        "placeholder": "Please enter Qiniu Kodo bucket name"
-      },
-      "qiniu_kodo_domain": {
-        "label": "Qiniu Kodo custom domain",
-        "placeholder": "Please enter Qiniu Kodo bucket custom domain name"
-      },
-      "qiniu_pili_hub": {
-        "label": "Qiniu Pili hub",
-        "placeholder": "Please enter Qiniu Pili hub name",
-        "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/hub\" target=\"_blank\">https://portal.qiniu.com/hub</a>"
-      },
-      "qiniu_pili_domain": {
-        "label": "Qiniu Pili streaming domain",
-        "placeholder": "Please enter Qiniu Pili streaming domain name"
-      },
-      "rainyun_rcdn_instance_id": {
-        "label": "Rain Yun RCDN instance ID",
-        "placeholder": "Please enter Rain Yun RCDN instance ID",
-        "tooltip": "For more information, see <a href=\"https://app.rainyun.com/apps/rcdn/list\" target=\"_blank\">https://app.rainyun.com/apps/rcdn/list</a>"
-      },
-      "rainyun_rcdn_domain": {
-        "label": "Rain Yun RCDN domain",
-        "placeholder": "Please enter Rain Yun RCDN domain name"
-      },
-      "rainyun_sslcenter_certificate_id": {
-        "label": "Rain Yun RCDN certificate ID",
-        "placeholder": "Please enter Rain Yun RCDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://app.rainyun.com/apps/ssl/list\" target=\"_blank\">https://app.rainyun.com/apps/ssl/list</a>",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one."
-      },
-      "ratpanel": {
-        "guide": "Requires AcePanel v2.5 or higher."
-      },
-      "ratpanel_deploy_target": {
-        "option": {
-          "website": {
-            "label": "Website"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "ratpanel_site_names": {
-        "label": "AcePanel website names",
-        "placeholder": "Please enter AcePanel website names (separated by semicolons)",
-        "errmsg": {
-          "invalid": "Invalid website names"
-        },
-        "help": "Notes: Multiple values should be separated by semicolons.",
-        "tooltip": "You can find it on AcePanel dashboard.",
-        "multiple_input_modal": {
-          "title": "Change AcePanel website names",
-          "placeholder": "Please enter AcePanel website name"
-        }
-      },
-      "ratpanel_certificate_id": {
-        "label": "AcePanel certificate ID",
-        "placeholder": "Please enter AcePanel certificate ID",
-        "tooltip": "You can find it on AcePanel dashboard."
-      },
       "s3_region": {
         "label": "Object storage (S3-compatible) region",
         "placeholder": "Please enter region"
@@ -2097,36 +1189,6 @@
         "placeholder": "Please enter object key for intermediate certificate file",
         "help": ""
       },
-      "safeline": {
-        "guide": "Requires SafeLine v6.6 or higher."
-      },
-      "safeline_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "safeline_certificate_id": {
-        "label": "SafeLine certificate ID",
-        "placeholder": "Please enter SafeLine certificate ID",
-        "tooltip": "You can find it on SafeLine dashboard."
-      },
-      "samwaf": {
-        "guide": "Requires SamWAF v1.3.20 or higher."
-      },
-      "samwaf_deploy_target": {
-        "option": {
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "samwaf_certificate_id": {
-        "label": "SamWAF certificate ID",
-        "placeholder": "Please enter SamWAF certificate ID",
-        "tooltip": "You can find it on SamWAF dashboard."
-      },
       "ssh_pre_command": {
         "label": "Pre-command (Optional)",
         "placeholder": "Please enter command to be executed before uploading files"
@@ -2147,25 +1209,17 @@
         "ps_binding_rdp": "PowerShell - Binding RDP"
       },
       "ssh_use_scp": {
-        "label": "Fallback to use SCP",
+        "label": "Use SCP to transfer file",
         "tooltip": "If the remote server does not support SFTP, please check this option to fallback to SCP."
       },
-      "synologydsm": {
-        "guide": "Requires Synology DSM v6.0 or higher."
-      },
-      "synologydsm_certificate_id_or_desc": {
-        "label": "Synology DSM certificate ID or description (Optional)",
-        "placeholder": "Please enter Synology DSM certificate ID or description",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "You can find it on Synology DSM dashboard. <br><br>(Please open the browser devtools, and visit the \"Control Panel -> Security -> Certificate\" page to capture network requests, then you can get the certificate ID.)"
-      },
-      "synologydsm_is_default": {
-        "label": "Set as default certificate and applied to all DSM services"
+      "ssh_use_repl": {
+        "label": "Use REPL mode to execute commands (Optional)",
+        "tooltip": "If the remote server has no shell and does not support multi-line commands, please check this option to enable REPL mode for line-by-line command execution."
       },
       "tencentcloud_cdn_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CDN API endpoint (e.g. cdn.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_cdn_domain": {
         "label": "Tencent Cloud CDN domain",
@@ -2174,7 +1228,7 @@
       "tencentcloud_clb_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CLB API endpoint (e.g. clb.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_clb_region": {
         "label": "Tencent Cloud region",
@@ -2224,16 +1278,30 @@
       "tencentcloud_css_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud CSS API endpoint (e.g. live.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>live.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>live.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>live.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_css_domain": {
         "label": "Tencent Cloud CSS streaming domain",
         "placeholder": "Please enter Tencent Cloud CSS streaming domain name"
       },
+      "tencentcloud_ddospro_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud Anti-DDoS Pro API endpoint (e.g. clb.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>clb.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>clb.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_ddospro_instance_id": {
+        "label": "Tencent Cloud Anti-DDoS Pro instance ID",
+        "placeholder": "Please enter Tencent Cloud Anti-DDoS Pro instance ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/ddos\" target=\"_blank\">https://console.tencentcloud.com/ddos</a>"
+      },
+      "tencentcloud_ddospro_domain": {
+        "label": "Tencent Cloud Anti-DDoS Pro domain",
+        "placeholder": "Please enter Tencent Cloud Anti-DDoS Pro domain name"
+      },
       "tencentcloud_ecdn_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud ECDN API endpoint (e.g. cdn.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>cdn.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ecdn_domain": {
         "label": "Tencent Cloud ECDN domain",
@@ -2242,7 +1310,7 @@
       "tencentcloud_eo_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>cdn.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_eo_zone_id": {
         "label": "Tencent Cloud EdgeOne zone ID",
@@ -2267,10 +1335,43 @@
           "off": "Disallow"
         }
       },
+      "tencentcloud_eomakers_endpoint": {
+        "label": "Tencent Cloud API endpoint (Optional)",
+        "placeholder": "Please enter Tencent Cloud EdgeOne API endpoint (e.g. teo.intl.tencentcloudapi.com)",
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>teo.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>teo.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
+      },
+      "tencentcloud_eomakers_api_token": {
+        "label": "Tencent Cloud EdgeOne Makers API Token",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers API Token",
+        "tooltip": "For more information, see <a href=\"https://pages.edgeone.ai/document/api-token\" target=\"_blank\">https://pages.edgeone.ai/document/api-token</a>"
+      },
+      "tencentcloud_eomakers_project_id": {
+        "label": "Tencent Cloud EdgeOne Makers project ID",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers project ID",
+        "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/edgeone/makers\" target=\"_blank\">https://console.tencentcloud.com/edgeone/makers</a>"
+      },
+      "tencentcloud_eomakers_domains": {
+        "label": "Tencent Cloud EdgeOne Makers custom domains",
+        "placeholder": "Please enter Tencent Cloud EdgeOne Makers custom domain names (separated by semicolons)",
+        "help": "Notes: Multiple domains should be separated by semicolons.",
+        "multiple_input_modal": {
+          "title": "Change Tencent Cloud EdgeOne Makers custom domain",
+          "placeholder": "Please enter Tencent Cloud EdgeOne Makers custom domain name"
+        }
+      },
+      "tencentcloud_eomakers_enable_multiple_ssl": {
+        "label": "Multiple SSL certificates",
+        "help": "Notes: Each domain name supports one RSA certificate and one ECC certificate at most.",
+        "switch": {
+          "suffix": "to retain other certificates with different algorithms.",
+          "on": "Allow",
+          "off": "Disallow"
+        }
+      },
       "tencentcloud_ga2_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GA2 API endpoint (e.g. ga2.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ga2.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ga2.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ga2.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ga2.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ga2_deploy_target": {
         "option": {
@@ -2289,10 +1390,13 @@
         "placeholder": "Please enter Tencent Cloud GA2 listener ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/gaap\" target=\"_blank\">https://console.tencentcloud.com/gaap</a>"
       },
+      "tencentcloud_ga2_auto_prune": {
+        "label": "Auto prune old certificates with the same SANs after deployment"
+      },
       "tencentcloud_gaap_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud GAAP API endpoint (e.g. gaap.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>gaap.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>gaap.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_gaap_deploy_target": {
         "option": {
@@ -2314,7 +1418,7 @@
       "tencentcloud_scf_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SCF API endpoint (e.g. scf.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>scf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>scf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>scf.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_scf_region": {
         "label": "Tencent Cloud region",
@@ -2328,7 +1432,7 @@
       "tencentcloud_ssl_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ssldeploy": {
         "guide": "TIPS: This will invoke Tencent Cloud OpenAPI <em>DeployCertificateInstance</em> to create an asynchronously deployment task."
@@ -2336,7 +1440,7 @@
       "tencentcloud_ssldeploy_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_ssldeploy_resource_region": {
         "label": "Tencent Cloud resource region (Optional)",
@@ -2367,7 +1471,7 @@
       "tencentcloud_sslupdate_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud SSL API endpoint (e.g. ssl.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>ssl.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>ssl.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_sslupdate_certificate_id": {
         "label": "Tencent Cloud SSL certificate ID",
@@ -2407,7 +1511,7 @@
       "tencentcloud_tse_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud TSE API endpoint (e.g. tse.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>tse.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>tse.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_tse_region": {
         "label": "Tencent Cloud region",
@@ -2446,7 +1550,7 @@
       "tencentcloud_vod_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud VOD API endpoint (e.g. vod.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>vod.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>vod.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>vod.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_vod_sub_app_id": {
         "label": "Tencent Cloud VOD App ID",
@@ -2460,7 +1564,7 @@
       "tencentcloud_waf_endpoint": {
         "label": "Tencent Cloud API endpoint (Optional)",
         "placeholder": "Please enter Tencent Cloud WAF API endpoint (e.g. waf.intl.tencentcloudapi.com)",
-        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>waf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> for Tencent Cloud in China</li></ul>"
+        "tooltip": "<ul style=\"list-style: disc;\"><li><strong>waf.intl.tencentcloudapi.com</strong> for Tencent Cloud International</li><li><strong>waf.tencentcloudapi.com</strong> for Tencent Cloud in China (<em>Default</em>)</li></ul>"
       },
       "tencentcloud_waf_region": {
         "label": "Tencent Cloud region",
@@ -2481,379 +1585,52 @@
         "placeholder": "Please enter Tencent Cloud WAF domain ID",
         "tooltip": "For more information, see <a href=\"https://console.tencentcloud.com/waf\" target=\"_blank\">https://console.tencentcloud.com/waf</a>"
       },
-      "ucloud_ualb_region": {
-        "label": "UCloud region",
-        "placeholder": "Please enter UCloud ALB region (e.g. cn-bj2)",
-        "tooltip": "For more information, see <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>"
-      },
-      "ucloud_ualb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "UALB load balancer"
-          },
-          "listener": {
-            "label": "UALB listener"
-          }
-        }
-      },
-      "ucloud_ualb_loadbalancer_id": {
-        "label": "UCloud UALB load balancer ID",
-        "placeholder": "Please enter UCloud ALB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/alb\" target=\"_blank\">https://console.ucloud-global.com/ulb/alb</a>"
-      },
-      "ucloud_ualb_listener_id": {
-        "label": "UCloud UALB listener ID",
-        "placeholder": "Please enter UCloud ALB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/alb\" target=\"_blank\">https://console.ucloud-global.com/ulb/alb</a>"
-      },
-      "ucloud_ualb_snidomain": {
-        "label": "UCloud UALB SNI domain (Optional)",
-        "placeholder": "Please enter UCloud UALB SNI domain name",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
-      },
-      "ucloud_ucdn_domain_id": {
-        "label": "UCloud UCDN domain ID",
-        "placeholder": "Please enter UCloud UCDN domain ID",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ucdn\" target=\"_blank\">https://console.ucloud-global.com/ucdn</a>"
-      },
-      "ucloud_uclb_region": {
-        "label": "UCloud region",
-        "placeholder": "Please enter UCloud UCLB region (e.g. cn-bj2)",
-        "tooltip": "For more information, see <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>"
-      },
-      "ucloud_uclb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "UCLB load balancer"
-          },
-          "vserver": {
-            "label": "UCLB VServer"
-          }
-        }
-      },
-      "ucloud_uclb_loadbalancer_id": {
-        "label": "UCloud UCLB load balancer ID",
-        "placeholder": "Please enter UCloud UCLB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>"
-      },
-      "ucloud_uclb_vserver_id": {
-        "label": "UCloud UCLB VServer ID",
-        "placeholder": "Please enter UCloud UCLB VServer ID",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/ulb/ulb\" target=\"_blank\">https://console.ucloud-global.com/ulb/ulb</a>"
-      },
-      "ucloud_upathx_accelerator_id": {
-        "label": "UCloud UPathX accelerator ID",
-        "placeholder": "Please enter UCloud UPathX accelerator ID",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>"
-      },
-      "ucloud_upathx_listener_port": {
-        "label": "UCloud UPathX listener port",
-        "placeholder": "Please enter UCloud UPathX listener port",
-        "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/upathx/accelerate\" target=\"_blank\">https://console.ucloud-global.com/upathx/accelerate</a>"
-      },
-      "ucloud_us3_region": {
-        "label": "UCloud region",
-        "placeholder": "Please enter UCloud US3 region (e.g. cn-bj2)",
-        "tooltip": "For more information, see <a href=\"https://www.ucloud-global.com/en/docs/api/summary/regionlist\" target=\"_blank\">https://www.ucloud-global.com/en/docs/api/summary/regionlist</a>"
-      },
-      "ucloud_us3_bucket": {
-        "label": "UCloud US3 bucket",
-        "placeholder": "Please enter UCloud US3 bucket name"
-      },
-      "ucloud_us3_domain": {
-        "label": "UCloud US3 custom domain",
-        "placeholder": "Please enter UCloud US3 bucket custom domain name"
-      },
-      "ucloud_uewaf_domain": {
-        "label": "UCloud UEWAF domain",
-        "placeholder": "Please enter UCloud UEWAF domain name"
-      },
-      "unicloud_webhost": {
-        "guide": "This uses webpage simulator login and does not guarantee stability. If there are any changes to the uniCloud, please create a GitHub Issue."
-      },
-      "unicloud_webhost_space_provider": {
-        "label": "uniCloud space provider",
-        "placeholder": "Please select uniCloud space provider",
-        "option": {
-          "aliyun": {
-            "label": "Alibaba Cloud"
-          },
-          "alipay": {
-            "label": "Alipay Cloud"
-          },
-          "tencent": {
-            "label": "Tencent Cloud"
-          }
-        }
-      },
-      "unicloud_webhost_space_id": {
-        "label": "uniCloud space ID",
-        "placeholder": "uniCloud space ID",
-        "tooltip": "For more information, see <a href=\"https://doc.dcloud.net.cn/uniCloud/concepts/space.html\" target=\"_blank\">https://doc.dcloud.net.cn/uniCloud/concepts/space.html</a>"
-      },
-      "unicloud_webhost_domain": {
-        "label": "uniCloud Web host domain",
-        "placeholder": "uniCloud Web host domain"
-      },
-      "upyun_cdn": {
-        "guide": "This uses webpage simulator login and does not guarantee stability. If there are any changes to the UPYUN, please create a GitHub Issue."
-      },
-      "upyun_cdn_domain": {
-        "label": "UPYUN CDN domain",
-        "placeholder": "Please enter UPYUN CDN domain name"
-      },
-      "upyun_file": {
-        "guide": "This uses webpage simulator login and does not guarantee stability. If there are any changes to the UPYUN, please create a GitHub Issue."
-      },
-      "upyun_file_bucket": {
-        "label": "UPYUN USS bucket",
-        "placeholder": "Please enter UPYUN USS bucket name"
-      },
-      "upyun_file_domain": {
-        "label": "UPYUN USS custom domain",
-        "placeholder": "Please enter UPYUN USS bucket custom domain name"
-      },
-      "volcengine_alb_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine ALB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
-      },
-      "volcengine_alb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "ALB load balancer"
-          },
-          "listener": {
-            "label": "ALB listener"
-          }
-        }
-      },
-      "volcengine_alb_loadbalancer_id": {
-        "label": "VolcEngine ALB load balancer ID",
-        "placeholder": "Please enter VolcEngine ALB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/alb\" target=\"_blank\">https://console.volcengine.com/alb</a>"
-      },
-      "volcengine_alb_listener_id": {
-        "label": "VolcEngine ALB listener ID",
-        "placeholder": "Please enter VolcEngine ALB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/alb\" target=\"_blank\">https://console.volcengine.com/alb</a>"
-      },
-      "volcengine_alb_snidomain": {
-        "label": "VolcEngine ALB SNI domain (Optional)",
-        "placeholder": "Please enter VolcEngine ALB SNI domain name",
-        "help": "Notes: Leave it blank to set the default certificate; otherwise, to set the extension one for SNI."
-      },
-      "volcengine_apig_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine API gateway region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6767/127501\" target=\"_blank\">https://www.volcengine.com/docs/6767/127501</a>"
-      },
-      "volcengine_apig_domain": {
-        "label": "VolcEngine API gateway custom domain",
-        "placeholder": "Please enter VolcEngine API gateway custom domain name"
-      },
-      "volcengine_cdn_domain": {
-        "label": "VolcEngine CDN domain",
-        "placeholder": "Please enter VolcEngine CDN domain name"
-      },
-      "volcengine_certcenter_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine Certificate Center region (e.g. cn-beijing)"
-      },
-      "volcengine_clb_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine CLB region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6406/74892\" target=\"_blank\">https://www.volcengine.com/docs/6406/74892</a>"
-      },
-      "volcengine_clb_deploy_target": {
-        "option": {
-          "loadbalancer": {
-            "label": "CLB load balancer"
-          },
-          "listener": {
-            "label": "CLB listener"
-          }
-        }
-      },
-      "volcengine_clb_loadbalancer_id": {
-        "label": "VolcEngine CLB load balancer ID",
-        "placeholder": "Please enter VolcEngine CLB load balancer ID",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
-      },
-      "volcengine_clb_listener_id": {
-        "label": "VolcEngine CLB listener ID",
-        "placeholder": "Please enter VolcEngine CLB listener ID",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/clb/LoadBalancer\" target=\"_blank\">https://console.volcengine.com/clb/LoadBalancer</a>"
-      },
-      "volcengine_dcdn_domain": {
-        "label": "VolcEngine DCDN domain",
-        "placeholder": "Please enter VolcEngine DCDN domain name"
-      },
-      "volcengine_imagex_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine ImageX region (e.g. cn-north-1)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/508/23757\" target=\"_blank\">https://www.volcengine.com/docs/508/23757</a>"
-      },
-      "volcengine_imagex_service_id": {
-        "label": "VolcEngine ImageX service ID",
-        "placeholder": "Please enter VolcEngine ImageX service ID",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/imagex\" target=\"_blank\">https://console.volcengine.com/imagex</a>"
-      },
-      "volcengine_imagex_domain": {
-        "label": "VolcEngine ImageX custom domain",
-        "placeholder": "Please enter VolcEngine ImageX custom domain name"
-      },
-      "volcengine_live_domain": {
-        "label": "VolcEngine Live streaming domain",
-        "placeholder": "Please enter VolcEngine Live streaming domain name"
-      },
-      "volcengine_tos_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine TOS region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6349/107356\" target=\"_blank\">https://www.volcengine.com/docs/6349/107356</a>"
-      },
-      "volcengine_tos_bucket": {
-        "label": "VolcEngine TOS bucket",
-        "placeholder": "Please enter VolcEngine TOS bucket name"
-      },
-      "volcengine_tos_domain": {
-        "label": "VolcEngine TOS custom domain",
-        "placeholder": "Please enter VolcEngine TOS bucket custom domain name"
-      },
-      "volcengine_vod_space_name": {
-        "label": "VolcEngine VOD space name",
-        "placeholder": "Please enter VolcEngine VOD space name",
-        "tooltip": "For more information, see <a href=\"https://console.volcengine.com/vod/overview\" target=\"_blank\">https://console.volcengine.com/vod/overview</a>"
-      },
-      "volcengine_vod_domain_type": {
-        "label": "VolcEngine VOD domain type",
-        "placeholder": "Please select VolcEngine VOD domain type",
-        "option": {
-          "play": {
-            "label": "Play"
-          },
-          "image": {
-            "label": "Image"
-          }
-        }
-      },
-      "volcengine_vod_domain": {
-        "label": "VolcEngine VOD domain",
-        "placeholder": "Please enter VolcEngine VOD domain name"
-      },
-      "volcengine_waf_region": {
-        "label": "VolcEngine region",
-        "placeholder": "Please enter VolcEngine WAF region (e.g. cn-beijing)",
-        "tooltip": "For more information, see <a href=\"https://www.volcengine.com/docs/6511/1594024\" target=\"_blank\">https://www.volcengine.com/docs/6511/1594024</a>"
-      },
-      "volcengine_waf_access_mode": {
-        "label": "VolcEngine WAF access mode",
-        "placeholder": "Please select VolcEngine WAF access mode",
-        "option": {
-          "cname": {
-            "label": "CNAME access"
-          }
-        }
-      },
       "volcengine_waf_domain": {
         "label": "VolcEngine WAF domain",
         "placeholder": "Please enter VolcEngine WAF domain name"
-      },
-      "wangsu_cdn_domains": {
-        "label": "Wangsu Cloud CDN domains",
-        "placeholder": "Please enter Wangsu Cloud CDN domain names (separated by semicolons)",
-        "help": "Notes: Multiple domains should be separated by semicolons.",
-        "multiple_input_modal": {
-          "title": "Change Wangsu Cloud CDN domains",
-          "placeholder": "Please enter Wangsu Cloud CDN domain name"
-        }
-      },
-      "wangsu_cdnpro_environment": {
-        "label": "Wangsu Cloud environment",
-        "placeholder": "Please select Wangsu Cloud environment",
-        "option": {
-          "production": {
-            "label": "Production environment"
-          },
-          "staging": {
-            "label": "Staging environment"
-          }
-        }
-      },
-      "wangsu_cdnpro_domain": {
-        "label": "Wangsu Cloud CDN domain",
-        "placeholder": "Please enter Wangsu Cloud CDN domain name"
-      },
-      "wangsu_cdnpro_certificate_id": {
-        "label": "Wangsu Cloud CDN certificate ID (Optional)",
-        "placeholder": "Please enter Wangsu Cloud CDN certificate ID",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "For more information, see <a href=\"https://cdnpro.console.wangsu.com/v2/index/#/certificate\" target=\"_blank\">https://cdnpro.console.wangsu.com/v2/index/#/certificate</a>"
-      },
-      "wangsu_cdnpro_webhook_id": {
-        "label": "Wangsu Cloud CDN Webhook ID (Optional)",
-        "placeholder": "Please enter Wangsu Cloud CDN Webhook ID",
-        "tooltip": "For more information, see <a href=\"https://cdnpro.console.wangsu.com/v2/index/#/certificate\" target=\"_blank\">https://cdnpro.console.wangsu.com/v2/index/#/certificate</a>"
-      },
-      "wangsu_certificate_id": {
-        "label": "Wangsu Cloud certificate ID (Optional)",
-        "placeholder": "Please enter Wangsu Cloud certificate ID",
-        "help": "Notes: Leave it blank to import a new certificate; otherwise, to replace the existing one.",
-        "tooltip": "For more information, see <a href=\"https://cdn.console.wangsu.com/v2/index#/certificate/list?code=cert_mylist&parentCode=cert_ssl&productCode=certificatemanagement\" target=\"_blank\">https://cdn.console.wangsu.com/v2/index#/certificate/list</a>"
-      },
-      "webhook_data": {
-        "label": "Webhook data (Optional)",
-        "placeholder": "Please enter Webhook data",
-        "help": "Notes: Leave it blank to use the default Webhook data provided by the selected credential.",
-        "vartips": "Supported variables: <br><ol style=\"list-style: disc;\"><li><strong>${CERTIMATE_DEPLOYER_COMMONNAME}</strong>: <br>The primary domain or IP address of the certificate.</li><li><strong>${CERTIMATE_DEPLOYER_SUBJECTALTNAMES}</strong>: <br>The domains or IP addresses of the certificate, separated by semicolons.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE}</strong>: <br>The PEM format content of the certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_SERVER}</strong>: <br>The PEM format content of the server certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_CERTIFICATE_INTERMEDIA}</strong>: <br>The PEM format content of the intermediate CA certificate file.</li><li><strong>${CERTIMATE_DEPLOYER_PRIVATEKEY}</strong>: <br>The PEM format content of the private key file.</li></ol>"
-      },
-      "webhook_timeout": {
-        "label": "Webhook timeout (Optional)",
-        "placeholder": "Please enter Webhook timeout",
-        "unit": "seconds"
-      },
-      "zenlayer_cdn_deploy_target": {
-        "option": {
-          "domain": {
-            "label": "Domain"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "zenlayer_cdn_domain": {
-        "label": "Zenlayer CDN domain",
-        "placeholder": "Please enter Zenlayer CDN domain name"
-      },
-      "zenlayer_cdn_certificate_id": {
-        "label": "Zenlayer CDN certificate ID",
-        "placeholder": "Please enter Zenlayer CDN certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/cdn/\" target=\"_blank\">https://console.zenlayer.com/cdn/</a>"
-      },
-      "zenlayer_ga_deploy_target": {
-        "option": {
-          "accelerator": {
-            "label": "Accelerator"
-          },
-          "certificate": {
-            "label": "Certificate"
-          }
-        }
-      },
-      "zenlayer_ga_accelerator_id": {
-        "label": "Zenlayer ZGA accelerator ID",
-        "placeholder": "Please enter Zenlayer ZGA accelerator ID",
-        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
-      },
-      "zenlayer_ga_certificate_id": {
-        "label": "Zenlayer ZGA certificate ID",
-        "placeholder": "Please enter Zenlayer ZGA certificate ID",
-        "tooltip": "For more information, see <a href=\"https://console.zenlayer.com/gia/\" target=\"_blank\">https://console.zenlayer.com/gia/</a>"
       }
     }
   },
-
+  "purge": {
+    "label": "Purge certificates",
+    "default_name": "Purging",
+    "form_anchor": {
+      "parameters": {
+        "tab": "Parameters"
+      },
+      "purging": {
+        "tab": "Purging",
+        "title": "Purging settings"
+      },
+      "strategy": {
+        "tab": "Strategy",
+        "title": "Strategy settings"
+      }
+    },
+    "form": {
+      "guide": "For safety reason, most certificate management services do not allow to delete a certificate that is being associated with another resource. To purge a certificate that is in use, you must first remove the association.",
+      "provider": {
+        "label": "Hosting provider",
+        "placeholder": "Please select hosting provider",
+        "search": {
+          "placeholder": "Search hosting provider ..."
+        }
+      },
+      "unavailable": "Plugin is not installed or unavailable. Install it from the plugin market before saving",
+      "provider_access": {
+        "label": "Hosting provider credential",
+        "placeholder": "Please select an credential of the hosting provider",
+        "button": "Create"
+      },
+      "expired_days": {
+        "label": "Certificate expiry timespan",
+        "placeholder": "Please enter certificate expiry timespan",
+        "prefix": "Perform purge if the certificate has expired ≥",
+        "suffix": ".",
+        "unit": "days"
+      }
+    }
+  },
   "notify": {
     "label": "Send notification",
     "default_name": "Notification",
@@ -2906,12 +1683,6 @@
           "off": "not skip"
         }
       },
-
-      "discordbot_channel_id": {
-        "label": "Discord channel ID (Optional)",
-        "placeholder": "Please enter Discord channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
-      },
       "email_format": {
         "label": "Message format (Optional)",
         "placeholder": "Please select message format",
@@ -2929,26 +1700,6 @@
         "placeholder": "Please enter receiver email address",
         "help": "Notes: Leave it blank to use the default receiver email address provided by the selected credential."
       },
-      "matrix_room_id": {
-        "label": "Matrix room ID (Optional)",
-        "placeholder": "Please enter Matrix room ID",
-        "help": "Notes: Leave it blank to use the default room ID provided by the selected credential."
-      },
-      "mattermost_channel_id": {
-        "label": "Mattermost channel ID (Optional)",
-        "placeholder": "Please enter Mattermost channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
-      },
-      "slackbot_channel_id": {
-        "label": "Slack channel ID (Optional)",
-        "placeholder": "Please enter Slack channel ID",
-        "help": "Notes: Leave it blank to use the default channel ID provided by the selected credential."
-      },
-      "telegrambot_chat_id": {
-        "label": "Telegram chat ID (Optional)",
-        "placeholder": "Please enter Telegram chat ID",
-        "help": "Notes: Leave it blank to use the default chat ID provided by the selected credential."
-      },
       "webhook_data": {
         "label": "Webhook data (Optional)",
         "placeholder": "Please enter Webhook data",
@@ -2962,7 +1713,6 @@
       }
     }
   },
-
   "delay": {
     "label": "Delay",
     "default_name": "Delay",
@@ -2979,7 +1729,6 @@
       }
     }
   },
-
   "condition": {
     "label": "Parallel/Conditional branch",
     "default_name": {
@@ -2988,7 +1737,6 @@
       "template_certtest_on_expired": "If the certificate has expired ..."
     }
   },
-
   "branch_block": {
     "label": "Branch",
     "default_name": "Branch",
@@ -3067,17 +1815,14 @@
       }
     }
   },
-
   "try_catch": {
     "label": "Execution result branch",
     "default_name": "Try to ..."
   },
-
   "catch_block": {
     "label": "Execution failure branch",
     "default_name": "On failed ..."
   },
-
   "end": {
     "label": "End",
     "default_name": "End"

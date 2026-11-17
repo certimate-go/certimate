@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package certimate.plugin.v1;
+
+option go_package = "github.com/certimate-go/certimate/pkg/plugin/proto";
+
+service PluginService {
+  rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse);
+  rpc GetConfigSchema(GetConfigSchemaRequest) returns (GetConfigSchemaResponse);
+  rpc Process(ProcessRequest) returns (stream ProcessFrame);
+  rpc PostProcess(PostProcessRequest) returns (stream PostProcessFrame);
+  rpc CheckAccess(CheckAccessRequest) returns (CheckAccessResponse);
+}
+
+message GetMetadataRequest {}
+
+message GetMetadataResponse {
+  string provider_type = 1;
+  string access_provider_type = 2;
+  uint32 protocol_version = 3;
+  string capability = 4;
+  string category = 5;
+  string display_name_key = 6;
+  string access_display_name_key = 7;
+  bool supports_access_check = 8;
+}
+
+message GetConfigSchemaRequest {}
+
+message StringMap {
+  map<string, string> entries = 1;
+}
+
+message GetConfigSchemaResponse {
+  bytes access_schema_json = 1;
+  bytes provider_schema_json = 2;
+  map<string, StringMap> i18n_resources = 3;
+}
+
+message LogEntry {
+  int64 timestamp_milli = 1;
+  int32 level = 2;
+  string message = 3;
+  map<string, string> data = 4;
+}
+
+message DeployPayload {
+  string certificate_pem = 1;
+  string private_key_pem = 2;
+}
+
+message DnsPayload {
+  string domain = 1;
+  string token = 2;
+  string key_auth = 3;
+}
+
+message NotifyPayload {
+  string subject = 1;
+  string message = 2;
+}
+
+message PurgePayload {
+  int64 expiry_seconds = 1;
+}
+
+message ProcessRequest {
+  string execution_id = 1;
+  string capability = 2;
+  string log_level = 3;
+  string access_config_json = 4;
+  string extended_config_json = 5;
+  oneof payload {
+    DeployPayload deploy = 6;
+    DnsPayload dns = 7;
+    NotifyPayload notify = 8;
+    PurgePayload purge = 9;
+  }
+}
+
+message DeployResult {
+  string extended_data_json = 1;
+}
+
+message DnsResult {}
+
+message NotifyResult {
+  string extended_data_json = 1;
+}
+
+message PurgeResult {
+  int64 count = 1;
+  string extended_data_json = 2;
+}
+
+message ProcessResult {
+  oneof result {
+    DeployResult deploy = 1;
+    DnsResult dns = 2;
+    NotifyResult notify = 3;
+    PurgeResult purge = 4;
+  }
+}
+
+message ProcessFrame {
+  oneof frame {
+    LogEntry log = 1;
+    ProcessResult result = 2;
+  }
+}
+
+message PostProcessRequest {
+  string execution_id = 1;
+  ProcessRequest request = 2;
+}
+
+message PostProcessResult {}
+
+message PostProcessFrame {
+  oneof frame {
+    LogEntry log = 1;
+    PostProcessResult result = 2;
+  }
+}
+
+message CheckAccessRequest {
+  string access_config_json = 1;
+}
+
+message CheckAccessItem {
+  string id = 1;
+  string status = 2;
+}
+
+message CheckAccessResponse {
+  string status = 1;
+  string reason_code = 2;
+  repeated CheckAccessItem items = 3;
+  repeated string diagnostics = 4;
+}

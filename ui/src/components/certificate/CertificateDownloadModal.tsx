@@ -8,6 +8,7 @@ import { saveAs } from "file-saver";
 import { download as downloadCertificate } from "@/api/certificates";
 import { CERTIFICATE_FORMATS, type CertificateFormatType, type CertificateModel } from "@/domain/certificate";
 import { useAntdForm, useTriggerElement } from "@/hooks";
+import { applyTrimmedFormValues } from "@/utils/form";
 
 export interface CertificateDownloadModalProps {
   className?: string;
@@ -153,10 +154,11 @@ const CertificateDownloadModal = ({ afterClose, data, trigger, ...props }: Certi
   };
 
   const handleDownloadClick = async (format: CertificateFormatType) => {
-    await formInst.validateFields();
+    applyTrimmedFormValues(formInst);
+    const formValues = await formInst.validateFields();
 
     try {
-      const res = await downloadCertificate(data.id, format, formInst.getFieldsValue());
+      const res = await downloadCertificate(data.id, format, formValues);
       const bstr = atob(res.data.zipBytes);
       const u8arr = Uint8Array.from(bstr, (ch) => ch.charCodeAt(0));
       const blob = new Blob([u8arr], { type: "application/zip" });

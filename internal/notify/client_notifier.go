@@ -10,11 +10,13 @@ import (
 
 type SendNotificationRequest struct {
 	// 提供商相关
+	_                      struct{}
 	Provider               domain.NotificationProviderType
 	ProviderAccessConfig   map[string]any
 	ProviderExtendedConfig map[string]any
 
 	// 通知相关
+	_       struct{}
 	Subject string
 	Message string
 }

@@ -1,4 +1,4 @@
-﻿package v1
+package v1
 
 import (
 	httpclient "github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
@@ -25,6 +25,16 @@ func (c *WafClient) CreateCertificate(request *model.CreateCertificateRequest) (
 		return nil, err
 	} else {
 		return resp.(*model.CreateCertificateResponse), nil
+	}
+}
+
+func (c *WafClient) DeleteCertificate(request *model.DeleteCertificateRequest) (*model.DeleteCertificateResponse, error) {
+	requestDef := GenReqDefForDeleteCertificate()
+
+	if resp, err := c.HcClient.Sync(request, requestDef); err != nil {
+		return nil, err
+	} else {
+		return resp.(*model.DeleteCertificateResponse), nil
 	}
 }
 

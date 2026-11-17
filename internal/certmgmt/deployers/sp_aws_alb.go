@@ -17,6 +17,7 @@ func init() {
 		}
 
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
+			AuthMethod:        credentials.AuthMethod,
 			AccessKeyId:       credentials.AccessKeyId,
 			SecretAccessKey:   credentials.SecretAccessKey,
 			Region:            xmaps.GetString(options.ProviderExtendedConfig, "region"),
@@ -24,6 +25,7 @@ func init() {
 			ListenerArn:       xmaps.GetString(options.ProviderExtendedConfig, "listenerArn"),
 			CertificateSource: xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "certificateSource", dplyimpl.CERTIFICATE_SOURCE_ACM),
 			IsDefault:         xmaps.GetBool(options.ProviderExtendedConfig, "isDefault"),
+			AutoPrune:         xmaps.GetBool(options.ProviderExtendedConfig, "autoPrune"),
 		})
 		return provider, err
 	})

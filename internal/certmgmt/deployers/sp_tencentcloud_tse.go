@@ -2,9 +2,6 @@ package deployers
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
@@ -27,7 +24,7 @@ func init() {
 			Region:        xmaps.GetString(options.ProviderExtendedConfig, "region"),
 			ServiceType:   xmaps.GetString(options.ProviderExtendedConfig, "serviceType"),
 			GatewayId:     xmaps.GetString(options.ProviderExtendedConfig, "gatewayId"),
-			Domains:       lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "domains"), ";"), func(s string, _ int) bool { return s != "" }),
+			Domains:       xmaps.GetStringsBySplit(options.ProviderExtendedConfig, "domains", ";"),
 			CertificateId: xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
 		})
 		return provider, err

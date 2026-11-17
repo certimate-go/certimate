@@ -36,5 +36,9 @@
   "include": [
     "src",
     "types"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
   ]
 }

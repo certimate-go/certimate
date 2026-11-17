@@ -5,7 +5,7 @@ import (
 	"time"
 	_ "time/tzdata"
 
-	"github.com/pocketbase/pocketbase/tools/cron"
+	"ganigeorgiev.com/pocketbase/pocketbase/tools/cron"
 )
 
 var scheduler *cron.Cron

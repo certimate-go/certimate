@@ -11,8 +11,12 @@ on:
 jobs:
   add-comment:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - name: Translate issue to English
-        uses: usthe/issues-translate-action@v2.7
+        uses: usthe/issues-translate-action@v2.8
         with:
+          BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IS_MODIFY_TITLE: false

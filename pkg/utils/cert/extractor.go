@@ -3,6 +3,7 @@ package cert
 import (
 	"encoding/pem"
 	"fmt"
+	"strings"
 )
 
 // 从 PEM 编码的证书字符串解析并提取叶子证书和中间证书。
@@ -34,9 +35,13 @@ func ExtractCertificatesFromPEM(certPEM string) (_leafCertPEM string, _intermedi
 	}
 
 	if len(blocks) > 1 {
-		for i := 1; i < len(blocks); i++ {
-			_intermediateCertPEM += string(pem.EncodeToMemory(blocks[i]))
-		}
+		_intermediateCertPEM = strings.Join(func() []string {
+			temp := make([]string, len(blocks)-1)
+			for i := 1; i < len(blocks); i++ {
+				temp[i-1] = string(pem.EncodeToMemory(blocks[i]))
+			}
+			return temp
+		}(), "\n\n")
 	}
 
 	return _leafCertPEM, _intermediateCertPEM, nil

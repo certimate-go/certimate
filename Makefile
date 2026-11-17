@@ -1,6 +1,6 @@
 # 定义变量
 BINARY_NAME=certimate
-BUILD_DIR=build
+BUILD_DIR=dist
 
 # 支持的操作系统和架构列表
 OS_ARCH=\

@@ -1,17 +1,14 @@
 {
   "$ns": "access",
-
   "text": {
     "nodata": "暂无授权",
     "nodata_description": "当前未找到授权信息。请先创建。",
     "nodata_button": "新建授权"
   },
-
   "page": {
     "heading": "授权凭据",
     "subheading": "授权凭据中存储有用于访问特定第三方应用程序或服务的身份验证信息（如账号密码、接口密钥、API 令牌等）。"
   },
-
   "action": {
     "search.input": {
       "placeholder": "按授权名称搜索……"
@@ -37,9 +34,54 @@
       "title": "删除授权",
       "content": "确定要删除这 {{count}} 个被选中的授权吗？<br>注意此操作不可撤销，请谨慎操作。"
     },
-    "test_notify.button": "测试通知"
+    "test_notify.button": "测试通知",
+    "test_conn.button": "测试连接"
   },
-
+  "test": {
+    "status": {
+      "passed": "连接测试通过",
+      "failed": "连接测试未通过",
+      "inconclusive": "连接测试无法判定",
+      "unsupported": "暂不支持连接测试",
+      "unavailable": "连接测试不可用"
+    },
+    "item": {
+      "connect": "连接",
+      "auth": "认证",
+      "format": "{{label}}：{{status}}"
+    },
+    "item_status": {
+      "passed": "通过",
+      "failed": "失败",
+      "skipped": "未执行"
+    },
+    "reason": {
+      "auth_rejected": "目标拒绝了认证，请检查用户名、密码或密钥。",
+      "connect_failed": "无法连接到目标服务器，请检查地址与端口。",
+      "tls_failed": "TLS/SSL 校验失败，请检查证书相关设置。",
+      "timeout": "测试超时，未能得出结论。",
+      "canceled": "测试已取消。",
+      "probe_forbidden": "测试探针权限不足，无法完成检查。",
+      "remote_error": "远端服务返回错误，未能得出结论。",
+      "no_checker": "当前提供商暂不支持连接测试。",
+      "plugin_missing": "提供测试的插件未安装。",
+      "plugin_unavailable": "提供测试的插件当前不可用。",
+      "plugin_protocol_old": "提供测试的插件版本过旧，不支持连接测试。",
+      "config_invalid": "配置未通过校验，请检查连接配置。",
+      "internal_error": "服务器内部错误，请稍后重试。",
+      "concurrency_limited": "当前测试请求过多，请稍后重试。",
+      "access_not_found": "凭据不存在或已被删除。",
+      "unknown": "测试未能完成，原因未知。"
+    },
+    "diagnostics": {
+      "label": "诊断信息"
+    },
+    "scope": {
+      "passed": "认证通过，未验证部署权限。",
+      "failed": "测试结果仅针对上述检查项。",
+      "inconclusive": "本次测试未能判断凭据是否有效。"
+    }
+  },
   "props": {
     "name": "名称",
     "provider": {
@@ -59,12 +101,10 @@
     "created_at": "创建时间",
     "updated_at": "更新时间"
   },
-
   "new": {
     "heading": "新建授权",
     "subheading": "使用此授权访问特定的第三方应用程序或服务。"
   },
-
   "form": {
     "name": {
       "label": "名称",
@@ -78,7 +118,6 @@
         "placeholder": "搜索提供商……"
       }
     },
-
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "请输入 ACME EAB KID"
@@ -87,23 +126,14 @@
       "label": "ACME EAB HMAC Key",
       "placeholder": "请输入 ACME EAB HMAC Key"
     },
+    "shared_acme_eab_pair": {
+      "errmsg": "请同时填写 ACME EAB KID 与 ACME EAB HMAC Key，或同时留空以使用自动方式。"
+    },
     "shared_allow_insecure_conns": {
       "label": "忽略 SSL/TLS 证书验证"
     },
-
-    "1panel_server_url": {
-      "label": "1Panel 服务地址",
-      "placeholder": "请输入 1Panel 服务地址",
-      "help": "提示：请勿包含安全入口后缀。"
-    },
-    "1panel_api_version": {
-      "label": "1Panel 版本",
-      "placeholder": "请选择 1Panel 版本"
-    },
-    "1panel_api_key": {
-      "label": "1Panel 接口密钥",
-      "placeholder": "请输入 1Panel 接口密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://1panel.cn/docs/dev_manual/api_manual/\" target=\"_blank\">https://1panel.cn/docs/dev_manual/api_manual/</a>"
+    "shared_ca_access_optional": {
+      "help": "留空时，将使用上方填写的证书联系邮箱自动向 {{provider}} 获取 EAB 凭据（该邮箱会被发送给 {{provider}}）；也可以选择已有的授权，使用手动 EAB 凭据。"
     },
     "35cn_username": {
       "label": "三五互联代理商用户名",
@@ -145,7 +175,7 @@
     },
     "acmedns_credentials": {
       "label": "ACME-DNS 凭证文件",
-      "placeholder": "请输入 ACME-DNS 凭证文件",
+      "placeholder": "请输入 ACME-DNS 凭证文件\r\n\r\n{\r\n  \"allowfrom\": [\r\n    \"192.168.100.1/24\",\r\n    \"1.2.3.4/32\",\r\n    \"2002:c0a8:2a00::0/40\"\r\n  ],\r\n  \"fulldomain\": \"SUBDOMAIN.auth.acme-dns.io\",\r\n  \"subdomain\": \"SUBDOMAIN\",\r\n  \"username\": \"USERNAME\",\r\n  \"password\": \"PASSWORD\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://github.com/joohoi/acme-dns\" target=\"_blank\">https://github.com/joohoi/acme-dns</a>"
     },
     "acmehttpreq_endpoint": {
@@ -206,19 +236,23 @@
       "placeholder": "请输入阿里云资源组 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://help.aliyun.com/zh/resource-management/resource-group/product-overview\" target=\"_blank\">https://help.aliyun.com/zh/resource-management/resource-group/product-overview</a>"
     },
-    "apisix_server_url": {
-      "label": "APISIX 服务地址",
-      "placeholder": "请输入 APISIX 服务地址"
-    },
-    "apisix_api_key": {
-      "label": "APISIX Admin API Key",
-      "placeholder": "请输入 APISIX Admin API Key",
-      "tooltip": "这是什么？请参阅 <a href=\"https://apisix.apache.org/zh/docs/apisix/admin-api/\" target=\"_blank\">https://apisix.apache.org/zh/docs/apisix/admin-api/</a>"
-    },
     "arvancloud_api_key": {
       "label": "ArvanCloud API 密钥",
       "placeholder": "请输入 ArvanCloud API 密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
+    },
+    "aws_auth_method": {
+      "label": "AWS API 认证方式",
+      "placeholder": "请选择 AWS API 认证方式",
+      "option": {
+        "accesskey": {
+          "label": "访问密钥"
+        },
+        "imds": {
+          "label": "EC2 IMDS",
+          "guide": "如果你正在使用容器化运行 Certimate，请确保已为 EC2 实例配置了正确的 <em>http-put-response-hop-limit</em> 元数据。点击下方链接了解更多：<br><a href=\"https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
     },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
@@ -270,40 +304,6 @@
       "placeholder": "请输入百度智能云 SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://cloud.baidu.com/doc/Reference/s/jjwvz2e3p\" target=\"_blank\">https://cloud.baidu.com/doc/Reference/s/jjwvz2e3p</a>"
     },
-    "baishan_api_token": {
-      "label": "白山云 API Token",
-      "placeholder": "请输入白山云 API Token"
-    },
-    "baotapanel_server_url": {
-      "label": "宝塔面板服务地址",
-      "placeholder": "请输入宝塔面板服务地址",
-      "help": "提示：请勿包含安全入口后缀。"
-    },
-    "baotapanel_api_key": {
-      "label": "宝塔面板接口密钥",
-      "placeholder": "请输入宝塔面板接口密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.bt.cn/bbs/thread-113890-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-113890-1-1.html</a>"
-    },
-    "baotapanelgo_server_url": {
-      "label": "宝塔面板极速版服务地址",
-      "placeholder": "请输入宝塔面板极速版服务地址",
-      "help": "提示：请勿包含安全入口后缀。"
-    },
-    "baotapanelgo_api_key": {
-      "label": "宝塔面板极速版接口密钥",
-      "placeholder": "请输入宝塔面板极速版接口密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.bt.cn/bbs/thread-113890-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-113890-1-1.html</a>"
-    },
-    "baotawaf_server_url": {
-      "label": "堡塔云 WAF 服务地址",
-      "placeholder": "请输入堡塔云 WAF 服务地址",
-      "help": "提示：请勿包含安全入口后缀。"
-    },
-    "baotawaf_api_key": {
-      "label": "堡塔云 WAF 接口密钥",
-      "placeholder": "请输入堡塔云 WAF 接口密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://github.com/aaPanel/aaWAF/blob/main/API.md\" target=\"_blank\">https://github.com/aaPanel/aaWAF/blob/main/API.md</a>"
-    },
     "beget_username": {
       "label": "Beget 用户名",
       "placeholder": "请输入 Beget 用户名"
@@ -340,25 +340,6 @@
       "label": "BytePlus 项目名称（可选）",
       "placeholder": "请输入 BytePlus 项目名称",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.byteplus.com/zh-CN/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/zh-CN/docs/resourcemanagement/Project_Management</a>"
-    },
-    "cachefly_api_token": {
-      "label": "CacheFly API Token",
-      "placeholder": "请输入 CacheFly API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228\" target=\"_blank\">https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228</a>"
-    },
-    "cdnfly_server_url": {
-      "label": "Cdnfly 服务地址",
-      "placeholder": "请输入 Cdnfly 服务地址"
-    },
-    "cdnfly_api_key": {
-      "label": "Cdnfly 用户端 API Key",
-      "placeholder": "请输入 Cdnfly 用户端 API Key",
-      "tooltip": "这是什么？请参阅 <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
-    },
-    "cdnfly_api_secret": {
-      "label": "Cdnfly 用户端 API Secret",
-      "placeholder": "请输入 Cdnfly 用户端 API Secret",
-      "tooltip": "这是什么？请参阅 <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
     },
     "cloudflare_api_token": {
       "label": "Cloudflare API 令牌",
@@ -493,32 +474,6 @@
       "placeholder": "请输入 DigitalOcean Access Token",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>"
     },
-    "dingtalkbot_webhook_url": {
-      "label": "钉钉群机器人 Webhook 地址",
-      "placeholder": "请输入钉钉群机器人 Webhook 地址",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot</a>"
-    },
-    "dingtalkbot_secret": {
-      "label": "钉钉群机器人签名密钥（可选）",
-      "placeholder": "请输入钉钉群机器人签名密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.dingtalk.com/document/orgapp/customize-robot-security-settings\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/customize-robot-security-settings</a>"
-    },
-    "dingtalkbot_custom_payload": {
-      "label": "钉钉群机器人消息数据（可选）",
-      "placeholder": "请输入自定义的钉钉群机器人消息数据",
-      "checkbox": "使用自定义的消息数据格式"
-    },
-    "discordbot_token": {
-      "label": "Discord 机器人 API Token",
-      "placeholder": "请输入 Discord 机器人 API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token\" target=\"_blank\">https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token</a>"
-    },
-    "discordbot_channel_id": {
-      "label": "Discord 频道 ID（可选）",
-      "placeholder": "请输入默认的 Discord 频道 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "这是什么？请参阅 <a href=\"https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID\" target=\"_blank\">https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID</a>"
-    },
     "dnsmadeeasy_api_key": {
       "label": "DNS Made Easy API Key",
       "placeholder": "请输入 DNS Made Easy API Key",
@@ -553,15 +508,6 @@
       "label": "多吉云 SecretKey",
       "placeholder": "请输入多吉云 SecretKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>"
-    },
-    "dokploy_server_url": {
-      "label": "Dokploy 服务地址",
-      "placeholder": "请输入 Dokploy 服务地址"
-    },
-    "dokploy_api_key": {
-      "label": "Dokploy API Key",
-      "placeholder": "请输入 Dokploy API Key",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.dokploy.com/docs/api\" target=\"_blank\">https://docs.dokploy.com/docs/api</a>"
     },
     "duckdns_token": {
       "label": "DuckDNS Token",
@@ -629,37 +575,6 @@
       "placeholder": "请输入默认的收件人邮箱",
       "help": "提示：可在工作流中覆盖此设置。"
     },
-    "flexcdn_server_url": {
-      "label": "FlexCDN 服务地址",
-      "placeholder": "请输入 FlexCDN 服务地址"
-    },
-    "flexcdn_api_role": {
-      "label": "FlexCDN 用户角色",
-      "placeholder": "请选择 FlexCDN 用户角色",
-      "option": {
-        "user": {
-          "label": "平台用户"
-        },
-        "admin": {
-          "label": "系统管理员"
-        }
-      }
-    },
-    "flexcdn_access_key_id": {
-      "label": "FlexCDN AccessKeyID",
-      "placeholder": "请输入 FlexCDN AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
-    },
-    "flexcdn_access_key": {
-      "label": "FlexCDN AccessKey",
-      "placeholder": "请输入 FlexCDN AccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
-    },
-    "flyio_api_token": {
-      "label": "Fly.io API Token",
-      "placeholder": "请输入 Fly.io API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://fly.io/docs/security/tokens/\" target=\"_blank\">https://fly.io/docs/security/tokens/</a>"
-    },
     "ftp_host": {
       "label": "服务器地址",
       "placeholder": "请输入服务器地址"
@@ -709,40 +624,14 @@
       "placeholder": "请输入 GoDaddy API Secret",
       "tooltip": "这是什么？请参阅 <a href=\"https://developer.godaddy.com/\" target=\"_blank\">https://developer.godaddy.com/</a>"
     },
-    "goedge_server_url": {
-      "label": "GoEdge 服务地址",
-      "placeholder": "请输入 GoEdge 服务地址"
-    },
-    "goedge_api_role": {
-      "label": "GoEdge 用户角色",
-      "placeholder": "请选择 GoEdge 用户角色",
-      "option": {
-        "user": {
-          "label": "平台用户"
-        },
-        "admin": {
-          "label": "系统管理员"
-        }
-      }
-    },
-    "goedge_access_key_id": {
-      "label": "GoEdge AccessKeyID",
-      "placeholder": "请输入 GoEdge AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
-    },
-    "goedge_access_key": {
-      "label": "GoEdge AccessKey",
-      "placeholder": "请输入 GoEdge AccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
-    },
     "googlecloud_project_id": {
-      "label": "Google Cloud 项目 ID",
-      "placeholder": "请输入 Google Cloud 项目 ID",
+      "label": "GCP 项目 ID",
+      "placeholder": "请输入 GCP 项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
     },
     "googlecloud_service_account_key": {
-      "label": "Google Cloud 服务账号密钥",
-      "placeholder": "请输入 Google Cloud 服务账号密钥",
+      "label": "GCP 服务账号密钥",
+      "placeholder": "请输入 GCP 服务账号密钥\r\n\r\n{\r\n  \"name\": \"projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL/keys/KEY_ID\",\r\n  \"privateKeyType\": \"TYPE_GOOGLE_CREDENTIALS_FILE\",\r\n  \"privateKeyData\": \"ENCODED_PRIVATE_KEY\",\r\n  \"validAfterTime\": \"DATE\",\r\n  \"validBeforeTime\": \"DATE\",\r\n  \"keyAlgorithm\": \"KEY_ALG_RSA_2048\"\r\n}",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete?hl=zh-cn\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -809,122 +698,22 @@
       "help": "提示：不填写时，将使用 Pod 的 ServiceAccount 作为凭证。",
       "tooltip": "这是什么？请参阅 <a href=\"https://kubernetes.io/zh-cn/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/zh-cn/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a>"
     },
-    "kong_server_url": {
-      "label": "Kong Admin API 服务地址",
-      "placeholder": "请输入 Kong Admin API 服务地址"
-    },
-    "kong_api_token": {
-      "label": "Kong Admin API Token（可选）",
-      "placeholder": "请输入 Kong Admin API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>"
-    },
-    "ksyun_access_key_id": {
-      "label": "金山云 AccessKeyID",
-      "placeholder": "请输入金山云 AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.ksyun.com/documents/39976\" target=\"_blank\">https://docs.ksyun.com/documents/39976</a>"
-    },
-    "ksyun_secret_access_key": {
-      "label": "金山云 SecretAccessKey",
-      "placeholder": "请输入金山云 SecretAccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.ksyun.com/documents/39976\" target=\"_blank\">https://docs.ksyun.com/documents/39976</a>"
-    },
-    "larkbot_webhook_url": {
-      "label": "飞书群机器人 Webhook 地址",
-      "placeholder": "请输入飞书群机器人 Webhook 地址",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_secret": {
-      "label": "飞书群机器人签名密钥（可选）",
-      "placeholder": "请输入飞书群机器人签名密钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_custom_payload": {
-      "label": "飞书群机器人消息数据（可选）",
-      "placeholder": "请输入自定义的飞书群机器人消息数据",
-      "checkbox": "使用自定义的消息数据格式"
-    },
-    "lecdn_server_url": {
-      "label": "LeCDN 服务地址",
-      "placeholder": "请输入 LeCDN 服务地址"
-    },
-    "lecdn_api_version": {
-      "label": "LeCDN 版本",
-      "placeholder": "请选择 LeCDN 版本"
-    },
-    "lecdn_api_role": {
-      "label": "LeCDN 用户角色",
-      "placeholder": "请选择 LeCDN 用户角色",
-      "option": {
-        "client": {
-          "label": "客户用户"
-        },
-        "master": {
-          "label": "主控管理员"
-        }
-      }
-    },
-    "lecdn_username": {
-      "label": "LeCDN 用户名",
-      "placeholder": "请输入 LeCDN 用户名"
-    },
-    "lecdn_password": {
-      "label": "LeCDN 用户密码",
-      "placeholder": "请输入 LeCDN 用户密码"
-    },
     "linode_access_token": {
       "label": "Linode AccessToken",
       "placeholder": "请输入 Linode AccessToken",
       "tooltip": "这是什么？请参阅 <a href=\"https://techdocs.akamai.com/linode-api/reference/get-started\" target=\"_blank\">https://techdocs.akamai.com/linode-api/reference/get-started</a>"
     },
+    "luadns_username": {
+      "label": "LuaDNS 用户名",
+      "placeholder": "请输入 LuaDNS 用户名"
+    },
+    "luadns_api_key": {
+      "label": "LuaDNS API Key",
+      "placeholder": "请输入 LuaDNS API Key",
+      "tooltip": "这是什么？请参阅 <a href=\"https://app.luadns.com/api_keys\" target=\"_blank\">https://app.luadns.com/api_keys</a>"
+    },
     "litessl_eab": {
       "guide": "点击下方链接了解如何获取 LiteSSL EAB：<br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
-    },
-    "matrix_server_url": {
-      "label": "Matrix 服务地址",
-      "placeholder": "请输入 Matrix 服务地址"
-    },
-    "matrix_user_id": {
-      "label": "Matrix 用户 ID",
-      "placeholder": "请输入 Matrix 用户 ID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
-    },
-    "matrix_access_token": {
-      "label": "Matrix Access token",
-      "placeholder": "请输入 Matrix Access token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
-    },
-    "matrix_room_id": {
-      "label": "Matrix 房间 ID（可选）",
-      "placeholder": "请输入默认的 Matrix 房间 ID",
-      "help": "提示：可在工作流中覆盖此设置。请先将机器人邀请进房间。",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
-    },
-    "mattermost_server_url": {
-      "label": "Mattermost 服务地址",
-      "placeholder": "请输入 Mattermost 服务地址"
-    },
-    "mattermost_username": {
-      "label": "Mattermost 用户名",
-      "placeholder": "请输入 Mattermost 用户名"
-    },
-    "mattermost_password": {
-      "label": "Mattermost 密码",
-      "placeholder": "请输入 Mattermost 密码"
-    },
-    "mattermost_channel_id": {
-      "label": "Mattermost 频道 ID（可选）",
-      "placeholder": "请输入默认的 Mattermost 频道 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "如何获取此参数？从左侧边栏中选择目标频道，点击顶部的频道名称，选择“频道详情”，即可在弹出页面中直接看到频道 ID。"
-    },
-    "mohua_username": {
-      "label": "嘿华云用户名",
-      "placeholder": "请输入嘿华云用户名"
-    },
-    "mohua_api_password": {
-      "label": "嘿华云 API 密码",
-      "placeholder": "请输入嘿华云 API 密码",
-      "tooltip": "这是什么？请参阅 <a href=\"https://cloud.mhjz1.cn/apimanage\" target=\"_blank\">https://cloud.mhjz1.cn/apimanage</a>"
     },
     "namecheap_username": {
       "label": "Namecheap 用户名",
@@ -971,33 +760,45 @@
       "placeholder": "请输入 netcup API Key 密码",
       "tooltip": "这是什么？请参阅 <a href=\"https://helpcenter.netcup.com/en/wiki/general/our-api/\" target=\"_blank\">https://helpcenter.netcup.com/en/wiki/general/our-api/</a>"
     },
-    "nginxproxymanager_server_url": {
-      "label": "NPM 服务地址",
-      "placeholder": "请输入 NPM 服务地址"
-    },
-    "nginxproxymanager_auth_method": {
-      "label": "NPM API 认证方式",
-      "placeholder": "请选择 NPM API 认证方式",
+    "oraclecloud_auth_method": {
+      "label": "OCI API 认证方式",
+      "placeholder": "请选择 OCI API 认证方式",
       "option": {
-        "password": {
-          "label": "密码"
+        "apikey": {
+          "label": "API Key"
         },
-        "token": {
-          "label": "API Token"
+        "instanceprincipal": {
+          "label": "Instance Principal"
+        },
+        "resourceprincipal": {
+          "label": "Resource Principal"
         }
       }
     },
-    "nginxproxymanager_username": {
-      "label": "NPM 管理员用户名",
-      "placeholder": "请输入 NPM 管理员用户名"
+    "oraclecloud_private_key": {
+      "label": "OCI API 签名私钥",
+      "placeholder": "请输入 OCI API 签名私钥",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
     },
-    "nginxproxymanager_password": {
-      "label": "NPM 管理员密码",
-      "placeholder": "请输入 NPM 管理员密码"
+    "oraclecloud_private_key_passphrase": {
+      "label": "OCI API 签名私钥口令（可选）",
+      "placeholder": "请输入 OCI API 签名私钥口令",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
     },
-    "nginxproxymanager_api_token": {
-      "label": "NPM API Token",
-      "placeholder": "请输入 NPM API Token"
+    "oraclecloud_public_key_fingerprint": {
+      "label": "OCI API 签名公钥指纹",
+      "placeholder": "请输入 OCI API 签名公钥指纹",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_tenancy_ocid": {
+      "label": "OCI 租户 OCID",
+      "placeholder": "请输入 OCI 租户 OCID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_user_ocid": {
+      "label": "OCI 用户 OCID",
+      "placeholder": "请输入 OCI 用户 OCID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
     },
     "ns1_api_key": {
       "label": "NS1 API Key",
@@ -1064,20 +865,6 @@
       "placeholder": "请输入 PowerDNS API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>"
     },
-    "proxmoxve_server_url": {
-      "label": "Proxmox VE 服务地址",
-      "placeholder": "请输入 Proxmox VE 服务地址"
-    },
-    "proxmoxve_api_token": {
-      "label": "Proxmox VE API Token",
-      "placeholder": "请输入 Proxmox VE API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
-    "proxmoxve_api_token_secret": {
-      "label": "Proxmox VE API Token Secret（可选）",
-      "placeholder": "请输入 Proxmox VE API Token Secret",
-      "tooltip": "这是什么？请参阅 <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
     "qingcloud_access_key_id": {
       "label": "青云 AccessKeyID",
       "placeholder": "请输入青云 AccessKeyID",
@@ -1088,35 +875,10 @@
       "placeholder": "请输入青云 SecretAccessKey",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>"
     },
-    "qiniu_access_key": {
-      "label": "七牛云 AccessKey",
-      "placeholder": "请输入七牛云 AccessKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
-    "qiniu_secret_key": {
-      "label": "七牛云 SecretKey",
-      "placeholder": "请输入七牛云 SecretKey",
-      "tooltip": "这是什么？请参阅 <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
     "rainyun_api_key": {
       "label": "雨云 API 密钥",
       "placeholder": "请输入雨云 API 密钥",
       "tooltip": "这是什么？请参阅 <a href=\"https://app.rainyun.com/account/settings/api-key\" target=\"_blank\">https://app.rainyun.com/account/settings/api-key</a>"
-    },
-    "ratpanel_server_url": {
-      "label": "耗子面板服务地址",
-      "placeholder": "请输入耗子面板服务地址",
-      "help": "提示：请勿包含安全入口后缀。"
-    },
-    "ratpanel_access_token_id": {
-      "label": "耗子面板 AccessToken ID",
-      "placeholder": "请输入耗子面板 AccessToken ID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
-    },
-    "ratpanel_access_token": {
-      "label": "耗子面板 AccessToken",
-      "placeholder": "请输入耗子面板 AccessToken",
-      "tooltip": "这是什么？请参阅 <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
     },
     "regru_username": {
       "label": "Reg.ru 用户名",
@@ -1156,11 +918,31 @@
     },
     "rfc2136_tsig_key": {
       "label": "TSIG 认证密钥 Key（可选）",
-      "placeholder": "请输入 TSIG 认证密钥 Key"
+      "placeholder": "请输入 TSIG 认证密钥 Key",
+      "errmsg": {
+        "unpaired": "请同时填写 TSIG 密钥 Key 和 Secret，或两者都留空以发送未签名的更新。"
+      },
+      "tooltip": "在 DNS 服务器上配置的 TSIG 密钥名称，例如 BIND 中 <b>key</b> 语句定义的名称。Key 与 Secret 只填其一的配置无效：两者都留空将以未签名方式发送更新，而密钥名称或 Secret 填写错误都会导致服务器拒绝更新。"
     },
     "rfc2136_tsig_secret": {
       "label": "TSIG 认证密钥 Secret（可选）",
-      "placeholder": "请输入 TSIG 认证密钥 Secret"
+      "placeholder": "请输入 TSIG 认证密钥 Secret",
+      "errmsg": {
+        "unpaired": "请同时填写 TSIG 密钥 Key 和 Secret，或两者都留空以发送未签名的更新。"
+      },
+      "tooltip": "TSIG 密钥对应的 Base64 编码 Secret，必须与密钥名称成对填写。"
+    },
+    "rfc2136_tsig_gss_realm": {
+      "label": "GSS-TSIG Kerberos 领域（可选）",
+      "placeholder": "请输入 GSS-TSIG Kerberos 领域"
+    },
+    "rfc2136_tsig_gss_username": {
+      "label": "GSS-TSIG Kerberos 用户名（可选）",
+      "placeholder": "请输入 GSS-TSIG Kerberos 用户名"
+    },
+    "rfc2136_tsig_gss_password": {
+      "label": "GSS-TSIG Kerberos 密码（可选）",
+      "placeholder": "请输入 GSS-TSIG Kerberos 密码"
     },
     "rucenter_username": {
       "label": "Ru-Center 用户名",
@@ -1201,24 +983,6 @@
       "label": "使用路径风格地址",
       "tooltip": "<ol style=\"list-style: disc;\"><li>虚拟托管风格（默认）：<br><em>https://&lt;BUCKET&gt;.&lt;ENDPOINT&gt;/&lt;KEY&gt;</em> </li><li>路径风格：<br><em>https://&lt;ENDPOINT&gt;/&lt;BUCKET&gt;/&lt;KEY&gt;</em> </li></ol>"
     },
-    "samwaf_server_url": {
-      "label": "SamWAF 服务地址",
-      "placeholder": "请输入 SamWAF 服务地址"
-    },
-    "samwaf_api_key": {
-      "label": "SamWAF API Key",
-      "placeholder": "请输入 SamWAF API Key",
-      "tooltip": "这是什么？请参阅 <a href=\"https://doc.samwaf.com/api/\" target=\"_blank\">https://doc.samwaf.com/api/</a>"
-    },
-    "safeline_server_url": {
-      "label": "雷池服务地址",
-      "placeholder": "请输入雷池服务地址"
-    },
-    "safeline_api_token": {
-      "label": "雷池 API Token",
-      "placeholder": "请输入雷池 API Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.waf-ce.chaitin.cn/zh/%E6%9B%B4%E5%A4%9A%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/OPENAPI\" target=\"_blank\">https://docs.waf-ce.chaitin.cn/zh/更多技术文档/OPENAPI</a>"
-    },
     "sectigo_validation_type": {
       "label": "域名验证类型",
       "placeholder": "请选择域名验证类型",
@@ -1237,16 +1001,15 @@
     "sectigo_eab": {
       "guide": "点击下方链接了解如何获取 Sectigo EAB：<br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>"
     },
-    "slackbot_token": {
-      "label": "Slack 机器人 Token",
-      "placeholder": "请输入 Slack 机器人 Token",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.slack.dev/authentication/tokens#bot\" target=\"_blank\">https://docs.slack.dev/authentication/tokens#bot</a>"
+    "simplycom_account_number": {
+      "label": "Simply.com 账号",
+      "placeholder": "请输入 Simply.com 账号",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
     },
-    "slackbot_channel_id": {
-      "label": "Slack 频道 ID（可选）",
-      "placeholder": "请输入默认的 Slack 频道 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "如何获取此参数？请参阅 <a href=\"https://www.youtube.com/watch?v=Uz5Yi5C2pwQ\" target=\"_blank\">https://www.youtube.com/watch?v=Uz5Yi5C2pwQ</a>"
+    "simplycom_api_key": {
+      "label": "Simply.com API Key",
+      "placeholder": "请输入 Simply.com API Key",
+      "tooltip": "这是什么？请参阅 <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
     },
     "spaceship_api_key": {
       "label": "Spaceship API Key",
@@ -1291,11 +1054,18 @@
     },
     "ssh_key": {
       "label": "SSH 密钥",
-      "placeholder": "请输入 SSH 密钥文件内容"
+      "placeholder": "请输入 SSH 密钥文件内容\r\n\r\n-----BEGIN OPENSSH PRIVATE KEY-----\r\n...\r\n-----END OPENSSH PRIVATE KEY-----"
     },
     "ssh_key_passphrase": {
       "label": "SSH 密钥口令（可选）",
       "placeholder": "请输入 SSH 密钥口令"
+    },
+    "ssh_key_certificate": {
+      "label": "SSH 用户证书（可选）",
+      "placeholder": "请输入 SSH 用户证书\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "errmsg": {
+        "invalid": "无效的 SSH 用户证书"
+      }
     },
     "ssh_jump_servers": {
       "label": "跳板机（可选）",
@@ -1312,24 +1082,6 @@
     "sslcom_eab": {
       "guide": "点击下方链接了解如何获取 SSL.com EAB：<br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>"
     },
-    "synologydsm_server_url": {
-      "label": "群晖 DSM 服务地址",
-      "placeholder": "请输入群晖 DSM 服务地址"
-    },
-    "synologydsm_username": {
-      "label": "群晖 DSM 用户名",
-      "placeholder": "请输入群晖 DSM 用户名"
-    },
-    "synologydsm_password": {
-      "label": "群晖 DSM 用户密码",
-      "placeholder": "请输入群晖 DSM 用户密码"
-    },
-    "synologydsm_totp_secret": {
-      "label": "群晖 DSM 双重验证 TOTP 密钥（可选）",
-      "placeholder": "请输入群晖 DSM 双重验证 TOTP 密钥",
-      "help": "提示：仅当群晖开启双重验证登录时需要填写，用于生成动态登录验证码。",
-      "tooltip": "如何获取此参数？可在设置双重验证时点击「无法扫描？」查看，或将二维码识别为文本后、提取其中的 <em>secret</em> 部分。注意，这不是 6 位动态 OTP 码。"
-    },
     "technitiumdns_server_url": {
       "label": "Technitium DNS 服务地址",
       "placeholder": "请输入 Technitium DNS 服务地址"
@@ -1338,17 +1090,6 @@
       "label": "Technitium DNS API Token",
       "placeholder": "请输入 Technitium DNS API Token",
       "tooltip": "这是什么？请参阅 <a href=\"https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md\" target=\"_blank\">https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md</a>"
-    },
-    "telegrambot_token": {
-      "label": "Telegram 机器人 API Token",
-      "placeholder": "请输入 Telegram 机器人 API Token",
-      "tooltip": "如何获取此参数？请参阅 <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
-    },
-    "telegrambot_chat_id": {
-      "label": "Telegram 会话 ID（可选）",
-      "placeholder": "请输入默认的 Telegram 会话 ID",
-      "help": "提示：可在工作流中覆盖此设置。",
-      "tooltip": "如何获取此参数？请参阅 <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
     },
     "tencentcloud_secret_id": {
       "label": "腾讯云 SecretID",
@@ -1376,38 +1117,20 @@
     "todaynic_agent": {
       "guide": "时代互联 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384\" target=\"_blank\">https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384</a>"
     },
-    "ucloud_private_key": {
-      "label": "优刻得 API 私钥",
-      "placeholder": "请输入优刻得 API 私钥",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
-    },
     "ucloud_public_key": {
       "label": "优刻得 API 公钥",
-      "placeholder": "请输入优刻得 API 公钥",
+      "placeholder": "请输入优刻得 API 公钥（AccessKeyID）",
+      "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
+    },
+    "ucloud_private_key": {
+      "label": "优刻得 API 私钥",
+      "placeholder": "请输入优刻得 API 私钥（AccessKeySecret）",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/api_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/api_manage</a>"
     },
     "ucloud_project_id": {
       "label": "优刻得项目 ID（可选）",
       "placeholder": "请输入优刻得项目 ID",
       "tooltip": "这是什么？请参阅 <a href=\"https://console.ucloud.cn/uaccount/iam/project_manage\" target=\"_blank\">https://console.ucloud.cn/uaccount/iam/project_manage</a>"
-    },
-    "unicloud_username": {
-      "label": "uniCloud 控制台账号",
-      "placeholder": "请输入 uniCloud 控制台账号"
-    },
-    "unicloud_password": {
-      "label": "uniCloud 控制台密码",
-      "placeholder": "请输入 uniCloud 控制台密码"
-    },
-    "upyun_username": {
-      "label": "又拍云子账号用户名",
-      "placeholder": "请输入又拍云子账号用户名",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a><br>请关闭该账号的二次登录验证。"
-    },
-    "upyun_password": {
-      "label": "又拍云子账号密码",
-      "placeholder": "请输入又拍云子账号密码",
-      "tooltip": "这是什么？请参阅 <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a><br>请关闭该账号的二次登录验证。"
     },
     "vercel_api_access_token": {
       "label": "Vercel API Access Token",
@@ -1439,21 +1162,6 @@
       "placeholder": "请输入 Vultr API Key",
       "tooltip": "这是什么？请参阅 <a href=\"https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key\" target=\"_blank\">https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key</a>"
     },
-    "wangsu_access_key_id": {
-      "label": "网宿云 AccessKeyID",
-      "placeholder": "请输入网宿云 AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://www.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_access_key_secret": {
-      "label": "网宿云 AccessKeySecret",
-      "placeholder": "请输入网宿云 AccessKeySecret",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://www.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_api_key": {
-      "label": "网宿云 API 接口密码",
-      "placeholder": "请输入网宿云 API 接口密码",
-      "tooltip": "这是什么？请参阅 <a href=\"https://www.wangsu.com/document/account-manage/15776\" target=\"_blank\">https://www.wangsu.com/document/account-manage/15776</a>"
-    },
     "webhook_url": {
       "label": "Webhook 回调地址",
       "placeholder": "请输入 Webhook 回调地址"
@@ -1480,6 +1188,7 @@
     "webhook_preset_data": {
       "": "使用预设回调",
       "bark": "Bark",
+      "boop": "Boop",
       "gotify": "Gotify",
       "messagenest": "Message Nest",
       "ntfy": "ntfy",
@@ -1490,16 +1199,6 @@
       "serverchanturbo": "Server酱 <sup>Turbo</sup>",
       "wxpush": "WXPush",
       "common": "通用内容"
-    },
-    "wecombot_webhook_url": {
-      "label": "企业微信群机器人 Webhook 地址",
-      "placeholder": "请输入企业微信群机器人 Webhook 地址",
-      "tooltip": "这是什么？请参阅 <a href=\"https://open.work.weixin.qq.com/help2/pc/18401#%E5%85%AD%E3%80%81%E7%BE%A4%E6%9C%BA%E5%99%A8%E4%BA%BAWebhook%E5%9C%B0%E5%9D%80\" target=\"_blank\">https://open.work.weixin.qq.com/help2/pc/18401</a>"
-    },
-    "wecombot_custom_payload": {
-      "label": "企业微信群机器人消息格式（可选）",
-      "placeholder": "请输入自定义的企业微信群机器人消息格式",
-      "checkbox": "使用自定义的消息数据格式"
     },
     "westcn_username": {
       "label": "西部数码代理商用户名",
@@ -1523,23 +1222,24 @@
     "xinnet_agent": {
       "guide": "新网数码 API 仅支持代理商调用。点击下方链接了解更多：<br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>"
     },
-    "zenlayer_access_key_id": {
-      "label": "Zenlayer AccessKeyID",
-      "placeholder": "请输入 Zenlayer AccessKeyID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key</a>"
+    "yandexcloud_folder_id": {
+      "label": "Yandex Cloud 项目文件夹 ID",
+      "placeholder": "请输入 Yandex Cloud 项目文件夹 ID",
+      "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id\" target=\"_blank\">https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id</a>"
     },
-    "zenlayer_access_key_password": {
-      "label": "Zenlayer AccessKeyPassword",
-      "placeholder": "请输入 Zenlayer AccessKeyPassword",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/generate-an-api-access-key</a>"
-    },
-    "zenlayer_resource_group_id": {
-      "label": "Zenlayer 资源组 ID（可选）",
-      "placeholder": "请输入 Zenlayer 资源组 ID",
-      "tooltip": "这是什么？请参阅 <a href=\"https://docs.console.zenlayer.com/welcome/cn/platform/team-management/create-a-resource-group\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/cn/platform/team-management/create-a-resource-group</a>"
+    "yandexcloud_service_account_key": {
+      "label": "Yandex Cloud 服务账号授权密钥",
+      "placeholder": "请输入Yandex Cloud 服务账号授权密钥\r\n\r\n{\r\n  \"id\": \"AUTHORIZED_KEY_ID\",\r\n  \"service_account_id\": \"SERVICE_ACCOUNT_ID\",\r\n  \"created_at\": \"DATE\",\r\n  \"key_algorithm\": \"RSA_2048\",\r\n  \"public_key\": \"ENCODED_PUBLIC_KEY\",\r\n  \"private_key\": \"ENCODED_PRIVATE_KEY\"\r\n}",
+      "tooltip": "这是什么？请参阅 <a href=\"https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys\" target=\"_blank\">https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys</a>"
     },
     "zerossl_eab": {
       "guide": "点击下方链接了解如何获取 ZeroSSL EAB：<br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
+    },
+    "zerossl_eab_auto": {
+      "guide": "两项均留空时，使用全局设置的工作流将以其证书联系邮箱自动向 ZeroSSL 获取 EAB 凭据，该邮箱会被发送给 ZeroSSL。也可以两项都填写，使用你手动获取的 EAB 凭据。"
+    },
+    "zerossl_eab_auto_access": {
+      "guide": "两项均留空时，选用此授权的工作流将以其证书联系邮箱自动向 ZeroSSL 获取 EAB 凭据，该邮箱会被发送给 ZeroSSL。也可以两项都填写，使用你手动获取的 EAB 凭据。"
     }
   }
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/certimate-go/certimate/internal/domain"
-	"github.com/certimate-go/certimate/internal/repository"
+	"github.com/certimate-go/certimate/internal/settings"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
 
@@ -32,15 +32,9 @@ func CreateACMEConfig(ctx context.Context, options *ACMEConfigOptions) (*ACMECon
 	providerAccessCfg := options.CAProviderAccessConfig
 
 	if provider.String() == "" {
-		// follow global settings
-		// TODO: decoupling from the repository layer
-		settingsRepo := repository.NewSettingsRepository()
-		settings, _ := settingsRepo.GetByName(ctx, domain.SettingsNameSSLProvider)
-		if settings != nil {
-			sslProviderSettings := settings.Content.AsSSLProvider()
-			provider = sslProviderSettings.Provider
-			providerAccessCfg = sslProviderSettings.Configs[sslProviderSettings.Provider]
-		}
+		globalSettingsForSSLProvider := settings.GetGlobalSettingsForSSLProvider()
+		provider = globalSettingsForSSLProvider.Provider
+		providerAccessCfg = globalSettingsForSSLProvider.Configs[globalSettingsForSSLProvider.Provider]
 	}
 
 	if provider.String() == "" {

@@ -1,4 +1,4 @@
-﻿package smtp
+package smtp
 
 import (
 	"github.com/wneessen/go-mail"

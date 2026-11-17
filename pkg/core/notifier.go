@@ -11,12 +11,12 @@ type Notifier interface {
 	// 发送通知。
 	//
 	// 入参：
-	//   - ctx：上下文。
-	//   - subject：通知主题。
-	//   - message：通知内容。
+	//   - ctx: 上下文。
+	//   - subject: 通知主题。
+	//   - message: 通知内容。
 	//
 	// 出参：
-	//   - res：发送结果。
+	//   - res: 发送结果。
 	//   - err: 错误。
 	Notify(ctx context.Context, subject, message string) (_res *NotifierNotifyResult, _err error)
 }

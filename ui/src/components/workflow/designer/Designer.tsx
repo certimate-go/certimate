@@ -20,8 +20,8 @@ import { isTouchSupported } from "@/utils/browser";
 import { DegisnerContextProvider } from "./_context";
 import { getAllElements } from "./elements";
 import NodeRender from "./NodeRender";
-import { getAllNodeRegistries } from "./nodes";
-import { BranchNode } from "./nodes/_shared";
+import { getAllNodeRegistries, isNodeTypeRegistered } from "./nodes";
+import { BaseNode } from "./nodes/_shared";
 import "./flowgram.css";
 
 export interface DesignerProps {
@@ -110,7 +110,7 @@ const Designer = forwardRef<DesignerInstance, DesignerProps>(
               defaultExpanded: true,
             },
             formMeta: {
-              render: () => <BranchNode description={type} />,
+              render: () => <BaseNode description={type} />,
             },
           };
         },
@@ -194,6 +194,12 @@ const Designer = forwardRef<DesignerInstance, DesignerProps>(
         validateNode(node) {
           if (typeof node === "string") {
             node = flowgramEditorRef.current!.document.getNode(node)!;
+          }
+          if (!node) {
+            return Promise.reject(`Node '${node}' not found`);
+          }
+          if (!isNodeTypeRegistered(node.type)) {
+            return Promise.reject(`Node type '${node.type}' is not registered`);
           }
 
           const form = node.form;

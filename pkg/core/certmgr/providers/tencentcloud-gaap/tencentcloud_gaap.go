@@ -9,6 +9,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
+	tcerrors "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 
 	tcgaap "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/gaap/v20180529"
@@ -75,7 +76,7 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 	}
 
 	// 查询服务器证书列表，避免重复上传
-	// REF: https://cloud.tencent.com/document/api/1364/98588
+	// REF: https://cloud.tencent.com/document/api/608/36977
 	// REF: https://cloud.tencent.com/document/api/608/36978
 	describeCertificatesOffset := 0
 	describeCertificatesLimit := 100
@@ -103,8 +104,9 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			}
 
 			// 对比证书有效期
-			if certX509.NotBefore.Unix() != int64(lo.FromPtr(certItem.BeginTime)) ||
-				certX509.NotAfter.Unix() != int64(lo.FromPtr(certItem.EndTime)) {
+			if certX509.NotBefore.Unix() != int64(lo.FromPtr(certItem.BeginTime)) {
+				continue
+			} else if certX509.NotAfter.Unix() != int64(lo.FromPtr(certItem.EndTime)) {
 				continue
 			}
 
@@ -114,6 +116,12 @@ func (c *Certmgr) Upload(ctx context.Context, certPEM, privkeyPEM string) (*Uplo
 			describeCertificateDetailResp, err := c.sdkClient.DescribeCertificateDetailWithContext(ctx, describeCertificateDetailReq)
 			c.logger.Debug("sdk request 'gaap.DescribeCertificateDetail'", slog.Any("request", describeCertificateDetailReq), slog.Any("response", describeCertificateDetailResp))
 			if err != nil {
+				if sdkErr, ok := err.(*tcerrors.TencentCloudSDKError); ok {
+					if sdkErrCode := sdkErr.Code; sdkErrCode == "ResourceNotFound" {
+						continue
+					}
+				}
+
 				return nil, fmt.Errorf("failed to execute sdk request 'gaap.DescribeCertificateDetail': %w", err)
 			} else {
 				if !xcert.EqualCertificatesFromPEM(certPEM, lo.FromPtr(describeCertificateDetailResp.Response.CertificateDetail.CertificateContent)) {

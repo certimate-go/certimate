@@ -1,4 +1,4 @@
-﻿package client
+package client
 
 import (
 	"encoding/json"
@@ -33,6 +33,25 @@ func NewSslClient(credential *core.Credential) *SslClient {
 
 func (c *SslClient) DisableLogger() {
 	c.Logger = core.NewDummyLogger()
+}
+
+func (c *SslClient) DeleteCerts(request *ssl.DeleteCertsRequest) (*ssl.DeleteCertsResponse, error) {
+	if request == nil {
+		return nil, errors.New("Request object is nil.")
+	}
+	resp, err := c.Send(request, c.ServiceName)
+	if err != nil {
+		return nil, err
+	}
+
+	jdResp := &ssl.DeleteCertsResponse{}
+	err = json.Unmarshal(resp, jdResp)
+	if err != nil {
+		c.Logger.Log(core.LogError, "Unmarshal json failed, resp: %s", string(resp))
+		return nil, err
+	}
+
+	return jdResp, err
 }
 
 func (c *SslClient) DescribeCerts(request *ssl.DescribeCertsRequest) (*ssl.DescribeCertsResponse, error) {

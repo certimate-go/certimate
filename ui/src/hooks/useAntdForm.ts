@@ -1,6 +1,8 @@
-﻿import { useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useDeepCompareEffect } from "ahooks";
 import { Form, type FormInstance, type FormProps } from "antd";
+
+import { applyTrimmedFormValues, trimFormValues } from "@/utils/form";
 
 import useAntdFormName from "./useAntdFormName";
 
@@ -64,10 +66,23 @@ const useAntdForm = <T extends NonNullable<unknown> = any>({ form, initialValues
     };
   }, [formInst, initialValues]);
 
-  const onFinish = (values: T) => {
+  const wrappedFormInst = useMemo(() => {
+    const originalSubmit = formInst.submit;
+    return {
+      ...formInst,
+      submit: () => {
+        applyTrimmedFormValues(formInst);
+        return originalSubmit();
+      },
+    };
+  }, [formInst]);
+
+  const doFinish = () => {
     if (formPending) return Promise.reject(new Error("Form is pending"));
 
     setFormPending(true);
+
+    const values = trimFormValues(formInst.getFieldsValue(true));
 
     return new Promise((resolve, reject) => {
       formInst
@@ -93,18 +108,19 @@ const useAntdForm = <T extends NonNullable<unknown> = any>({ form, initialValues
   };
 
   const formProps: FormProps = {
-    form: formInst,
+    form: wrappedFormInst,
     initialValues: formInitialValues,
     name: formName,
-    onFinish,
+    onFinish: doFinish,
   };
 
   return {
-    form: formInst,
+    form: wrappedFormInst,
     formProps: formProps,
     formPending: formPending,
     submit: () => {
-      return onFinish(formInst.getFieldsValue(true));
+      applyTrimmedFormValues(formInst);
+      return doFinish();
     },
   };
 };

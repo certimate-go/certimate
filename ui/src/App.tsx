@@ -1,7 +1,20 @@
 ﻿import "reflect-metadata";
 import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
-import { App, ConfigProvider, type ThemeConfig, theme } from "antd";
+import {
+  IconCheck,
+  IconChevronDown,
+  IconChevronRight,
+  IconCircleCheckFilled,
+  IconCircleXFilled,
+  IconExclamationCircleFilled,
+  IconEye,
+  IconEyeOff,
+  IconInfoCircleFilled,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
+import { App, ConfigProvider, Empty, type ThemeConfig, theme } from "antd";
 
 import { useBrowserTheme } from "@/hooks";
 import { useAntdLocale, useDayjsLocale, useZodLocale } from "@/i18n";
@@ -82,6 +95,43 @@ const RootApp = () => {
             itemMarginBottom: 28,
           },
         },
+      }}
+      alert={{
+        closeIcon: <IconX size="1.25em" />,
+        errorIcon: <IconCircleXFilled size="1em" />,
+        infoIcon: <IconInfoCircleFilled size="1em" />,
+        successIcon: <IconCircleCheckFilled size="1em" />,
+        warningIcon: <IconExclamationCircleFilled size="1em" />,
+      }}
+      collapse={{
+        expandIcon: (panelProps) => {
+          if (panelProps.showArrow != void 0 && !panelProps.showArrow) return void 0;
+          return panelProps.isActive ? <IconChevronDown size="1.25em" /> : <IconChevronRight size="1.25em" />;
+        },
+      }}
+      drawer={{
+        closeIcon: <IconX size="1.25em" />,
+      }}
+      empty={{
+        image: Empty.PRESENTED_IMAGE_SIMPLE,
+      }}
+      inputPassword={{
+        iconRender: (visible) => {
+          return visible ? <IconEye size="1.25em" /> : <IconEyeOff size="1.25em" />;
+        },
+      }}
+      inputSearch={{
+        searchIcon: <IconSearch size="1.25em" />,
+      }}
+      modal={{
+        closeIcon: <IconX size="1.25em" />,
+      }}
+      notification={{
+        closeIcon: <IconX size="1.25em" />,
+      }}
+      select={{
+        menuItemSelectedIcon: <IconCheck size="1.25em" />,
+        removeIcon: <IconX size="1.25em" />,
       }}
     >
       <App>

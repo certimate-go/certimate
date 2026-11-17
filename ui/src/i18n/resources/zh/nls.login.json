@@ -13,5 +13,38 @@
     "submit": {
       "button": "登录"
     }
+  },
+
+  "setup": {
+    "heading": "初始化管理员",
+    "description": "首次部署需要先创建管理员账号。请输入 Certimate 启动控制台中输出的一次性初始化口令；口令有效期 30 分钟，过期后重启 Certimate 即可获取新口令。",
+    "form": {
+      "token": {
+        "label": "初始化口令",
+        "placeholder": "请输入控制台输出的初始化口令"
+      },
+      "username": {
+        "label": "邮箱",
+        "placeholder": "请输入管理员邮箱",
+        "invalid": "请输入有效的邮箱地址"
+      },
+      "password": {
+        "label": "密码",
+        "placeholder": "请输入密码（10-71 个字符）",
+        "invalid": "密码长度需为 10-71 个字符，且 UTF-8 编码不超过 72 字节"
+      },
+      "confirm_password": {
+        "label": "确认密码",
+        "placeholder": "请再次输入密码",
+        "invalid": "两次输入的密码不一致"
+      },
+      "submit": {
+        "button": "完成初始化"
+      }
+    },
+    "gate": {
+      "error": "无法获取初始化状态，请检查服务是否可用",
+      "retry": "重试"
+    }
   }
 }

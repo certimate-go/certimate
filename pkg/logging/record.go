@@ -3,7 +3,7 @@ package logging
 import (
 	"log/slog"
 
-	types "github.com/pocketbase/pocketbase/tools/types"
+	types "ganigeorgiev.com/pocketbase/pocketbase/tools/types"
 )
 
 type Record struct {

@@ -1,0 +1,16 @@
+# Build docker image on GitHub Actions runner is too slow,
+# and it doesn't support armv7 (see https://github.com/parcel-bundler/lightningcss/issues/988).
+# So we pre-build webui, and just use simple Dockerfile here.
+
+FROM golang:1.27-alpine AS server-builder
+WORKDIR /app
+COPY ../. /app/
+ENV CGO_ENABLED=0
+RUN go build -trimpath -ldflags="-s -w" -o certimate
+
+
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=server-builder /app/certimate .
+ENTRYPOINT ["./certimate", "serve", "--http", "0.0.0.0:8090"]

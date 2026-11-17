@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds"
+
 	"github.com/certimate-go/certimate/pkg/core"
 	"github.com/certimate-go/certimate/pkg/core/certifier/challengers/dns01/aws-lightsail/internal"
 )
 
 type ChallengerConfig struct {
+	AuthMethod            string `json:"authMethod"`
 	AccessKeyId           string `json:"accessKeyId"`
 	SecretAccessKey       string `json:"secretAccessKey"`
 	Region                string `json:"region"`
@@ -22,8 +27,18 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	}
 
 	providerConfig := internal.NewDefaultConfig()
-	providerConfig.AccessKeyID = config.AccessKeyId
-	providerConfig.SecretAccessKey = config.SecretAccessKey
+	switch config.AuthMethod {
+	case "":
+		if config.AccessKeyId != "" && config.SecretAccessKey != "" {
+			providerConfig.AWSCredentialsProvider = credentials.NewStaticCredentialsProvider(config.AccessKeyId, config.SecretAccessKey, "")
+		}
+	case AUTH_METHOD_ACCESSKEY:
+		providerConfig.AWSCredentialsProvider = credentials.NewStaticCredentialsProvider(config.AccessKeyId, config.SecretAccessKey, "")
+	case AUTH_METHOD_IMDS:
+		providerConfig.AWSCredentialsProvider = aws.NewCredentialsCache(ec2rolecreds.New())
+	default:
+		return nil, fmt.Errorf("unsupported auth method '%s'", config.AuthMethod)
+	}
 	providerConfig.Region = config.Region
 	if config.DnsPropagationTimeout != 0 {
 		providerConfig.PropagationTimeout = time.Duration(config.DnsPropagationTimeout) * time.Second

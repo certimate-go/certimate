@@ -1,6 +1,8 @@
 package engine
 
 import (
+	"errors"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -50,49 +52,47 @@ func TestShouldRenewByARI(t *testing.T) {
 	}
 }
 
-func TestApplyARIInfoToCertificate(t *testing.T) {
-	windowStart := time.Date(2026, 6, 9, 12, 0, 0, 0, time.UTC)
-	windowEnd := windowStart.Add(time.Hour)
-	nextRefreshAt := windowStart.Add(30 * time.Minute)
+func TestEvaluateARI(t *testing.T) {
+	now := time.Date(2026, 8, 7, 12, 0, 0, 0, time.UTC)
+	ne := &bizApplyNodeExecutor{nodeExecutor: nodeExecutor{logger: slog.Default()}}
 
-	certificate := &domain.Certificate{}
-	applyARIInfoToCertificate(certificate, &certacme.ARIInfo{
-		WindowStart:   windowStart,
-		WindowEnd:     windowEnd,
-		NextRefreshAt: nextRefreshAt,
-		Supported:     true,
+	t.Run("supported active window triggers renewal", func(t *testing.T) {
+		fetch := func() (*certacme.ARIInfo, error) {
+			return &certacme.ARIInfo{WindowStart: now.Add(-time.Hour), WindowEnd: now.Add(time.Hour), Supported: true}, nil
+		}
+		if !ne.evaluateARI(now, &domain.Certificate{}, fetch) {
+			t.Fatal("expected ARI renewal within the active window")
+		}
 	})
 
-	if !certificate.ARISupported {
-		t.Fatal("ARISupported = false, want true")
-	}
-	if !certificate.ARIWindowStart.Equal(windowStart) || !certificate.ARIWindowEnd.Equal(windowEnd) || !certificate.ARINextRefreshAt.Equal(nextRefreshAt) {
-		t.Fatal("ARI timestamps were not applied")
-	}
+	t.Run("unsupported CA does not trigger", func(t *testing.T) {
+		fetch := func() (*certacme.ARIInfo, error) {
+			return &certacme.ARIInfo{Supported: false}, nil
+		}
+		if ne.evaluateARI(now, &domain.Certificate{}, fetch) {
+			t.Fatal("expected no ARI renewal when CA is unsupported")
+		}
+	})
 
-	applyARIInfoToCertificate(certificate, &certacme.ARIInfo{Supported: false})
-	if certificate.ARISupported {
-		t.Fatal("ARISupported = true, want false")
-	}
-	if !certificate.ARIWindowStart.IsZero() || !certificate.ARIWindowEnd.IsZero() || !certificate.ARINextRefreshAt.IsZero() {
-		t.Fatal("ARI timestamps were not cleared for unsupported CA")
-	}
-}
+	t.Run("fetch error does not trigger and does not block", func(t *testing.T) {
+		fetch := func() (*certacme.ARIInfo, error) {
+			return nil, errors.New("503 service unavailable")
+		}
+		if ne.evaluateARI(now, &domain.Certificate{}, fetch) {
+			t.Fatal("expected no ARI renewal on fetch error")
+		}
+	})
 
-func TestCopyARIFields(t *testing.T) {
-	source := &domain.Certificate{
-		ARIWindowStart:   time.Date(2026, 6, 9, 12, 0, 0, 0, time.UTC),
-		ARIWindowEnd:     time.Date(2026, 6, 9, 13, 0, 0, 0, time.UTC),
-		ARINextRefreshAt: time.Date(2026, 6, 9, 12, 30, 0, 0, time.UTC),
-		ARISupported:     true,
-	}
-	target := &domain.Certificate{}
-
-	copyARIFields(target, source)
-	if !target.ARISupported {
-		t.Fatal("ARISupported = false, want true")
-	}
-	if !target.ARIWindowStart.Equal(source.ARIWindowStart) || !target.ARIWindowEnd.Equal(source.ARIWindowEnd) || !target.ARINextRefreshAt.Equal(source.ARINextRefreshAt) {
-		t.Fatal("ARI timestamps were not copied")
-	}
+	t.Run("queries every run regardless of past refresh", func(t *testing.T) {
+		calls := 0
+		fetch := func() (*certacme.ARIInfo, error) {
+			calls++
+			return &certacme.ARIInfo{WindowStart: now.Add(-time.Hour), WindowEnd: now.Add(time.Hour), Supported: true}, nil
+		}
+		_ = ne.evaluateARI(now, &domain.Certificate{}, fetch)
+		_ = ne.evaluateARI(now, &domain.Certificate{}, fetch)
+		if calls != 2 {
+			t.Fatalf("expected renewal-info fetched on every run (2 calls), got %d", calls)
+		}
+	})
 }

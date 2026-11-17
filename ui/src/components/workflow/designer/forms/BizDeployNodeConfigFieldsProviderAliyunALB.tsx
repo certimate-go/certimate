@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -85,6 +85,15 @@ const BizDeployNodeConfigFieldsProviderAliyunALB = () => {
         >
           <Input allowClear placeholder={t("workflow_node.deploy.form.aliyun_alb_snidomain.placeholder")} />
         </Form.Item>
+
+        <Form.Item
+          name={[parentNamePath, "autoPrune"]}
+          initialValue={initialValues.autoPrune}
+          label={t("workflow_node.deploy.form.aliyun_alb_auto_prune.label")}
+          rules={[formRule]}
+        >
+          <Switch />
+        </Form.Item>
       </Show>
     </>
   );
@@ -94,6 +103,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
     deployTarget: DEPLOY_TARGET_LISTENER,
+    autoPrune: true,
   };
 };
 
@@ -113,6 +123,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
           if (!v) return true;
           return isDomain(v, { allowWildcard: true });
         }, t("common.errmsg.domain_invalid")),
+      autoPrune: z.boolean().nullish(),
     })
     .superRefine((values, ctx) => {
       switch (values.deployTarget) {

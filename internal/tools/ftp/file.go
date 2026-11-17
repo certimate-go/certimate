@@ -1,4 +1,4 @@
-﻿package ftp
+package ftp
 
 import (
 	"github.com/jlaffaye/ftp"

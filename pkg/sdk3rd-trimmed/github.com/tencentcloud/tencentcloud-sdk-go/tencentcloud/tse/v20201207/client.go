@@ -48,6 +48,31 @@ func (c *Client) CreateCloudNativeAPIGatewayCertificateWithContext(ctx context.C
 	return
 }
 
+func NewDeleteCloudNativeAPIGatewayCertificateRequest() (request *DeleteCloudNativeAPIGatewayCertificateRequest) {
+	return tse.NewDeleteCloudNativeAPIGatewayCertificateRequest()
+}
+
+func NewDeleteCloudNativeAPIGatewayCertificateResponse() (response *DeleteCloudNativeAPIGatewayCertificateResponse) {
+	return tse.NewDeleteCloudNativeAPIGatewayCertificateResponse()
+}
+
+func (c *Client) DeleteCloudNativeAPIGatewayCertificateWithContext(ctx context.Context, request *DeleteCloudNativeAPIGatewayCertificateRequest) (response *DeleteCloudNativeAPIGatewayCertificateResponse, err error) {
+	if request == nil {
+		request = NewDeleteCloudNativeAPIGatewayCertificateRequest()
+	}
+	c.InitBaseRequest(&request.BaseRequest, "tse", APIVersion, "DeleteCloudNativeAPIGatewayCertificate")
+
+	if c.GetCredential() == nil {
+		return nil, errors.New("DeleteCloudNativeAPIGatewayCertificate require credential")
+	}
+
+	request.SetContext(ctx)
+
+	response = NewDeleteCloudNativeAPIGatewayCertificateResponse()
+	err = c.Send(request, response)
+	return
+}
+
 func NewDescribeCloudNativeAPIGatewayCertificatesRequest() (request *DescribeCloudNativeAPIGatewayCertificatesRequest) {
 	return tse.NewDescribeCloudNativeAPIGatewayCertificatesRequest()
 }

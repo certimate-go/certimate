@@ -93,7 +93,6 @@
   },
 
   "props": {
-    "name": "Name",
     "validity": {
       "": "Validity period",
       "left_days": "{{left}} / {{total}} days left",

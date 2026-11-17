@@ -2,7 +2,6 @@ package v3
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	qs "github.com/google/go-querystring/query"
@@ -27,11 +26,12 @@ func (c *Client) DnsGetDomainsList(req *DnsGetDomainsListRequest) (*DnsGetDomain
 }
 
 func (c *Client) DnsGetDomainsListWithContext(ctx context.Context, req *DnsGetDomainsListRequest) (*DnsGetDomainsListResponse, error) {
-	if err := c.ensureAccessTokenExists(); err != nil {
+	if err := c.ensureToken(ctx); err != nil {
 		return nil, err
 	}
 
-	httpreq, err := c.newRequest(http.MethodGet, fmt.Sprintf("%s/v1/domains", dnsBaseURL))
+	path := dnsBaseURL + "/v1/domains"
+	httpreq, err := c.newRequest(http.MethodGet, path)
 	if err != nil {
 		return nil, err
 	} else {

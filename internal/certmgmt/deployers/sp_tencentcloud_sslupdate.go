@@ -2,9 +2,6 @@ package deployers
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/domain"
 	"github.com/certimate-go/certimate/pkg/core"
@@ -25,8 +22,8 @@ func init() {
 			ProjectId:        credentials.ProjectId,
 			Endpoint:         xmaps.GetString(options.ProviderExtendedConfig, "endpoint"),
 			CertificateId:    xmaps.GetString(options.ProviderExtendedConfig, "certificateId"),
-			ResourceRegions:  lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceRegions"), ";"), func(s string, _ int) bool { return s != "" }),
-			ResourceProducts: lo.Filter(strings.Split(xmaps.GetString(options.ProviderExtendedConfig, "resourceProducts"), ";"), func(s string, _ int) bool { return s != "" }),
+			ResourceRegions:  xmaps.GetStringsBySplit(options.ProviderExtendedConfig, "resourceRegions", ";"),
+			ResourceProducts: xmaps.GetStringsBySplit(options.ProviderExtendedConfig, "resourceProducts", ";"),
 			IsReplaced:       xmaps.GetBool(options.ProviderExtendedConfig, "isReplaced"),
 		})
 		return provider, err

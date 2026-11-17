@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/pocketbase/pocketbase/core"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
@@ -55,5 +55,40 @@ func (r *AccessRepository) castRecordToModel(record *core.Record) (*domain.Acces
 		Config:   config,
 		Reserve:  record.GetString("reserve"),
 	}
+	return access, nil
+}
+
+func (r *AccessRepository) Save(ctx context.Context, access *domain.Access) (*domain.Access, error) {
+	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameAccess)
+	if err != nil {
+		return access, err
+	}
+
+	if access.Id == "" {
+		return access, domain.ErrRecordNotFound
+	}
+
+	record, err := app.GetApp().FindRecordById(collection, access.Id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return access, domain.ErrRecordNotFound
+		}
+		return access, err
+	}
+
+	record.Set("name", access.Name)
+	record.Set("provider", access.Provider)
+	record.Set("config", access.Config)
+	record.Set("reserve", access.Reserve)
+	if access.DeletedAt != nil {
+		record.Set("deleted", access.DeletedAt)
+	}
+	if err := app.GetApp().Save(record); err != nil {
+		return access, err
+	}
+
+	access.Id = record.Id
+	access.CreatedAt = record.GetDateTime("created").Time()
+	access.UpdatedAt = record.GetDateTime("updated").Time()
 	return access, nil
 }

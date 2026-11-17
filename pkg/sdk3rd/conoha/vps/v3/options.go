@@ -1,4 +1,4 @@
-﻿package v3
+package v3
 
 type Options struct {
 	UserId       string

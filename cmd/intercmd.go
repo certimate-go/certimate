@@ -7,20 +7,22 @@ import (
 	"os"
 	"time"
 
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 	"github.com/go-acme/lego/v5/lego"
 	"github.com/go-acme/lego/v5/log"
-	"github.com/pocketbase/pocketbase/core"
 	"github.com/spf13/cobra"
 
 	"github.com/certimate-go/certimate/internal/certacme"
+	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
 	"github.com/certimate-go/certimate/pkg/logging"
+	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 func NewInternalCommand(app core.App) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "intercmd",
-		Short: "[INTERNAL] Internal dedicated for Certimate",
+		Short: "[RESERVED] PLEASE DO NOT USE!",
 	}
 
 	command.AddCommand(internalCertApplyCommand(app))
@@ -67,7 +69,8 @@ func internalCertApplyCommand(_ core.App) *cobra.Command {
 		SilenceUsage: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			type InData struct {
-				Request *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+				Request   *certacme.ObtainCertificateRequest `json:"request,omitempty"`
+				DNSPlugin *plugin.DiscoveredPlugin           `json:"dnsPlugin,omitempty"`
 
 				LegoAccount         *certacme.ACMEAccount   `json:"legoAccount,omitempty"`
 				LegoCertifierConfig *lego.CertificateConfig `json:"legoCertifierConfig,omitempty"`
@@ -83,6 +86,12 @@ func internalCertApplyCommand(_ core.App) *cobra.Command {
 				}
 				if params.Request == nil {
 					return nil, fmt.Errorf("illegal params")
+				}
+				if params.DNSPlugin != nil {
+					logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(slog.String("component", "pluginhost"))
+					if err := pluginhost.RegisterDNSPlugin(params.DNSPlugin, logger); err != nil {
+						return nil, fmt.Errorf("failed to register dns-01 plugin: %w", err)
+					}
 				}
 
 				// set lego logger to a wrapped JSON handler,

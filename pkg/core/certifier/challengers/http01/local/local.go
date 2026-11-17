@@ -18,6 +18,10 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
+	if config.WebRootPath == "" {
+		return nil, fmt.Errorf("local: webroot path must be set")
+	}
+
 	provider, err := webroot.NewHTTPProvider(config.WebRootPath)
 	if err != nil {
 		return nil, err

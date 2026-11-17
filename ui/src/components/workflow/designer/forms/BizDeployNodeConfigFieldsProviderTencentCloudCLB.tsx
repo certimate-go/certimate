@@ -112,8 +112,8 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z
     .object({
       endpoint: z.string().nullish(),
-      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_RULEDOMAIN]),
       region: z.string().nonempty(),
+      deployTarget: z.enum([DEPLOY_TARGET_LOADBALANCER, DEPLOY_TARGET_LISTENER, DEPLOY_TARGET_RULEDOMAIN]),
       loadbalancerId: z.string().nonempty(),
       listenerId: z.string().nullish(),
       domain: z.string().nullish(),

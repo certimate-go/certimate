@@ -131,7 +131,7 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 		var pendingCount, runningCount, succeededCount, failedCount, totalCount int64
 		if describeHostDeployRecordDetailResp.Response.TotalCount == nil {
-			return false, fmt.Errorf("unexpected tencentcloud deployment job status")
+			return false, fmt.Errorf("unexpected deployment deployment job status")
 		} else {
 			pendingCount = lo.FromPtr(describeHostDeployRecordDetailResp.Response.PendingTotalCount)
 			runningCount = lo.FromPtr(describeHostDeployRecordDetailResp.Response.RunningTotalCount)
@@ -141,13 +141,13 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 
 			if succeededCount+failedCount == totalCount {
 				if failedCount > 0 {
-					return false, fmt.Errorf("tencentcloud deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+					return false, fmt.Errorf("unexpected deployment deployment job status (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
 				}
 				return true, nil
 			}
 		}
 
-		d.logger.Info(fmt.Sprintf("waiting for tencentcloud deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
+		d.logger.Info(fmt.Sprintf("waiting for deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return nil, err

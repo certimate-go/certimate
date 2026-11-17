@@ -134,7 +134,7 @@ func (d *Deployer) updateHttpsListenerCertificate(ctx context.Context, cloudList
 	if err != nil {
 		return fmt.Errorf("failed to execute sdk request 'gaap.DescribeHTTPSListeners': %w", err)
 	} else if len(describeHTTPSListenersResp.Response.ListenerSet) == 0 {
-		return fmt.Errorf("could not find listener '%s'", cloudListenerId)
+		return fmt.Errorf("could not find gaap listener '%s'", cloudListenerId)
 	}
 
 	// 修改 HTTPS 监听器配置

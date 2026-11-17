@@ -1,6 +1,5 @@
 {
   "$ns": "common",
-
   "button": {
     "add": "Add",
     "cancel": "Cancel",
@@ -20,11 +19,11 @@
     "submit": "Submit",
     "view": "View"
   },
-
   "text": {
     "copied": "Copied",
     "import_from_file": "Import from file ...",
     "happy_browser": "The browser version is too low to make Certimate WebUI working well. Recommend using modern browsers such as Google Chrome v119.0 or higher.",
+    "loading": "Loading ...",
     "nodata": "No data available",
     "nodata_failed": "Failed to load data",
     "operation_confirm": "Operation confirm",
@@ -36,7 +35,6 @@
     "saving": "Saving ...",
     "search": "Search ..."
   },
-
   "menu": {
     "document": "Document",
     "theme": "Change theme",
@@ -44,19 +42,20 @@
     "gethelp": "Get help",
     "logout": "Log-out"
   },
-
   "theme": {
     "light": "Light",
     "dark": "Dark",
     "system": "Auto"
   },
-
   "errmsg": {
+    "positiveInteger_invalid": "Must be a positive integer",
     "domain_invalid": "Invalid domain name",
-    "host_invalid": "Invalid domain name or IP address",
+    "host_invalid": "Invalid host: not a domain name or IP address",
     "port_invalid": "Invalid port",
     "ip_invalid": "Invalid IP address",
     "json_invalid": "Invalid JSON string",
-    "form_invalid": "Invalid form content"
+    "form_invalid": "Invalid form content",
+    "hostname_or_url_invalid": "Invalid host: not a domain name or IP address",
+    "multiple_values_invalid": "Enter nonempty values separated by the delimiter."
   }
 }

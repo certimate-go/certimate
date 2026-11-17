@@ -3,7 +3,7 @@ package akamaiedgedns
 import (
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 	"github.com/go-acme/lego/v5/providers/dns/edgedns"
 
 	"github.com/certimate-go/certimate/pkg/core"

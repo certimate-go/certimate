@@ -19,28 +19,31 @@ func init() {
 		jumpServers := make([]dplyimpl.ServerConfig, len(credentials.JumpServers))
 		for i, jumpServer := range credentials.JumpServers {
 			jumpServers[i] = dplyimpl.ServerConfig{
-				SshHost:          jumpServer.Host,
-				SshPort:          jumpServer.Port,
-				SshAuthMethod:    jumpServer.AuthMethod,
-				SshUsername:      jumpServer.Username,
-				SshPassword:      jumpServer.Password,
-				SshKey:           jumpServer.Key,
-				SshKeyPassphrase: jumpServer.KeyPassphrase,
+				SshHost:           jumpServer.Host,
+				SshPort:           jumpServer.Port,
+				SshAuthMethod:     jumpServer.AuthMethod,
+				SshUsername:       jumpServer.Username,
+				SshPassword:       jumpServer.Password,
+				SshKey:            jumpServer.Key,
+				SshKeyPassphrase:  jumpServer.KeyPassphrase,
+				SshKeyCertificate: jumpServer.KeyCertificate,
 			}
 		}
 
 		provider, err := dplyimpl.NewDeployer(&dplyimpl.DeployerConfig{
 			ServerConfig: dplyimpl.ServerConfig{
-				SshHost:          credentials.Host,
-				SshPort:          credentials.Port,
-				SshAuthMethod:    credentials.AuthMethod,
-				SshUsername:      credentials.Username,
-				SshPassword:      credentials.Password,
-				SshKey:           credentials.Key,
-				SshKeyPassphrase: credentials.KeyPassphrase,
+				SshHost:           credentials.Host,
+				SshPort:           credentials.Port,
+				SshAuthMethod:     credentials.AuthMethod,
+				SshUsername:       credentials.Username,
+				SshPassword:       credentials.Password,
+				SshKey:            credentials.Key,
+				SshKeyPassphrase:  credentials.KeyPassphrase,
+				SshKeyCertificate: credentials.KeyCertificate,
 			},
 			JumpServers:                  jumpServers,
 			UseSCP:                       xmaps.GetBool(options.ProviderExtendedConfig, "useSCP"),
+			UseREPL:                      xmaps.GetBool(options.ProviderExtendedConfig, "useREPL"),
 			PreCommand:                   xmaps.GetString(options.ProviderExtendedConfig, "preCommand"),
 			PostCommand:                  xmaps.GetString(options.ProviderExtendedConfig, "postCommand"),
 			FileFormat:                   xmaps.GetOrDefaultString(options.ProviderExtendedConfig, "fileFormat", dplyimpl.FILE_FORMAT_PEM),

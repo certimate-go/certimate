@@ -1,4 +1,4 @@
-﻿package linode
+package linode
 
 type Options struct {
 	AccessToken string

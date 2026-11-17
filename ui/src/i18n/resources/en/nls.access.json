@@ -1,17 +1,14 @@
 {
   "$ns": "access",
-
   "text": {
     "nodata": "No credentials",
     "nodata_description": "It looks like you don't have any credentials. Get started by adding one.",
     "nodata_button": "Create credential"
   },
-
   "page": {
     "heading": "Credentials",
     "subheading": "Credentials store authentication information (username and password, API key, tokens, etc.) to connect with specific third-party apps and services."
   },
-
   "action": {
     "search.input": {
       "placeholder": "Search by credential name ..."
@@ -37,9 +34,54 @@
       "title": "Delete credentials",
       "content": "Are you sure want to delete these {{count}} selected credentials? <br>This action cannot be undone."
     },
-    "test_notify.button": "Test notify"
+    "test_notify.button": "Test notify",
+    "test_conn.button": "Test connection"
   },
-
+  "test": {
+    "status": {
+      "passed": "Connection test passed",
+      "failed": "Connection test failed",
+      "inconclusive": "Connection test inconclusive",
+      "unsupported": "Connection testing is not supported yet",
+      "unavailable": "Connection test unavailable"
+    },
+    "item": {
+      "connect": "Connectivity",
+      "auth": "Authentication",
+      "format": "{{label}}: {{status}}"
+    },
+    "item_status": {
+      "passed": "Passed",
+      "failed": "Failed",
+      "skipped": "Skipped"
+    },
+    "reason": {
+      "auth_rejected": "Authentication was rejected by the target. Check the username, password, or key.",
+      "connect_failed": "Could not connect to the target server. Check the host and port.",
+      "tls_failed": "TLS/SSL verification failed. Check the certificate settings.",
+      "timeout": "The test timed out before a conclusion was reached.",
+      "canceled": "The test was canceled.",
+      "probe_forbidden": "The test probe lacks permission to complete the check.",
+      "remote_error": "The remote service returned an error, so no conclusion was reached.",
+      "no_checker": "Connection testing is not supported for this provider yet.",
+      "plugin_missing": "The plugin providing this test is not installed.",
+      "plugin_unavailable": "The plugin providing this test is currently unavailable.",
+      "plugin_protocol_old": "The installed plugin is too old to support connection testing.",
+      "config_invalid": "The configuration failed validation. Check the connection settings.",
+      "internal_error": "Internal server error. Try again later.",
+      "concurrency_limited": "Too many test requests are in progress. Try again later.",
+      "access_not_found": "The credential does not exist or has been deleted.",
+      "unknown": "The test could not be completed for an unknown reason."
+    },
+    "diagnostics": {
+      "label": "Diagnostics"
+    },
+    "scope": {
+      "passed": "Authentication passed; deploy permissions were not verified.",
+      "failed": "The result applies only to the checks listed above.",
+      "inconclusive": "This run could not determine whether the credential is valid."
+    }
+  },
   "props": {
     "name": "Name",
     "provider": {
@@ -59,12 +101,10 @@
     "created_at": "Created at",
     "updated_at": "Updated at"
   },
-
   "new": {
     "heading": "Create Credential",
     "subheading": "Use this credential to connect with specific third-party apps and services."
   },
-
   "form": {
     "name": {
       "label": "Name",
@@ -78,7 +118,6 @@
         "placeholder": "Search provider ..."
       }
     },
-
     "shared_acme_eab_kid": {
       "label": "ACME EAB KID",
       "placeholder": "Please enter ACME EAB KID"
@@ -87,23 +126,14 @@
       "label": "ACME EAB HMAC key",
       "placeholder": "Please enter ACME EAB HMAC key"
     },
+    "shared_acme_eab_pair": {
+      "errmsg": "Please fill in both the ACME EAB KID and the ACME EAB HMAC key, or leave both empty to use automatic issuance."
+    },
     "shared_allow_insecure_conns": {
       "label": "Allow insecure SSL/TLS connections"
     },
-
-    "1panel_server_url": {
-      "label": "1Panel server URL",
-      "placeholder": "Please enter 1Panel server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "1panel_api_version": {
-      "label": "1Panel version",
-      "placeholder": "Please select 1Panel version"
-    },
-    "1panel_api_key": {
-      "label": "1Panel API key",
-      "placeholder": "Please enter 1Panel API key",
-      "tooltip": "For more information, see <a href=\"https://docs.1panel.pro/dev_manual/api_manual/\" target=\"_blank\">https://docs.1panel.pro/dev_manual/api_manual/</a>"
+    "shared_ca_access_optional": {
+      "help": "Leave it empty to automatically obtain the EAB credentials from {{provider}} with the certificate contact email above. Note: the contact email will be sent to {{provider}}. You can still select an existing credential to use manual EAB credentials."
     },
     "35cn_username": {
       "label": "35.cn agent username",
@@ -145,7 +175,7 @@
     },
     "acmedns_credentials": {
       "label": "ACME-DNS credentials",
-      "placeholder": "Please enter ACME-DNS credentials",
+      "placeholder": "Please enter ACME-DNS credentials\r\n\r\n{\r\n  \"allowfrom\": [\r\n    \"192.168.100.1/24\",\r\n    \"1.2.3.4/32\",\r\n    \"2002:c0a8:2a00::0/40\"\r\n  ],\r\n  \"fulldomain\": \"SUBDOMAIN.auth.acme-dns.io\",\r\n  \"subdomain\": \"SUBDOMAIN\",\r\n  \"username\": \"USERNAME\",\r\n  \"password\": \"PASSWORD\"\r\n}",
       "tooltip": "For more information, see <a href=\"https://github.com/joohoi/acme-dns\" target=\"_blank\">https://github.com/joohoi/acme-dns</a>"
     },
     "acmehttpreq_endpoint": {
@@ -206,19 +236,23 @@
       "placeholder": "Please enter Aliyun resource group ID",
       "tooltip": "For more information, see <a href=\"https://www.alibabacloud.com/help/en/resource-management/product-overview\" target=\"_blank\">https://www.alibabacloud.com/help/en/resource-management/product-overview</a>"
     },
-    "apisix_server_url": {
-      "label": "APISIX server URL",
-      "placeholder": "Please enter APISIX server URL"
-    },
-    "apisix_api_key": {
-      "label": "APISIX Admin API key",
-      "placeholder": "Please enter APISIX Admin API key",
-      "tooltip": "For more information, see <a href=\"https://apisix.apache.org/docs/apisix/admin-api/\" target=\"_blank\">https://apisix.apache.org/docs/apisix/admin-api/</a>"
-    },
     "arvancloud_api_key": {
       "label": "ArvanCloud API key",
       "placeholder": "Please enter ArvanCloud API key",
       "tooltip": "For more information, see <a href=\"https://docs.arvancloud.ir/en/developer-tools/api/api-key\" target=\"_blank\">https://docs.arvancloud.ir/en/developer-tools/api/api-key</a>"
+    },
+    "aws_auth_method": {
+      "label": "AWS API authentication method",
+      "placeholder": "Please select AWS API authentication method",
+      "option": {
+        "accesskey": {
+          "label": "Access key"
+        },
+        "imds": {
+          "label": "IMDS",
+          "guide": "If you are running Certimate in Docker, please ensure that the metadata option <em>http-put-response-hop-limit</em> is configured correctly for the EC2 instance. Learn more about this: <br><a href=\"https://docs.aws.amazon.com/en_us/AWSEC2/latest/UserGuide/ec2-instance-metadata.html\" target=\"_blank\">https://docs.aws.amazon.com/en_us/AWSEC2/latest/UserGuide/ec2-instance-metadata.html</a>"
+        }
+      }
     },
     "aws_access_key_id": {
       "label": "AWS AccessKeyID",
@@ -270,40 +304,6 @@
       "placeholder": "Please enter Baidu Cloud SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en\" target=\"_blank\">https://intl.cloud.baidu.com/doc/Reference/s/jjwvz2e3p-en</a>"
     },
-    "baishan_api_token": {
-      "label": "Baishan Cloud API token",
-      "placeholder": "Please enter Baishan Cloud API token"
-    },
-    "baotapanel_server_url": {
-      "label": "aaPanel server URL",
-      "placeholder": "Please enter aaPanel server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "baotapanel_api_key": {
-      "label": "aaPanel API key",
-      "placeholder": "Please enter aaPanel API key",
-      "tooltip": "For more information, see <a href=\"https://www.bt.cn/bbs/thread-20376-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-20376-1-1.html</a>"
-    },
-    "baotapanelgo_server_url": {
-      "label": "aaPanel WinGo server URL",
-      "placeholder": "Please enter aaPanel WinGo server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "baotapanelgo_api_key": {
-      "label": "aaPanel WinGo API key",
-      "placeholder": "Please enter aaPanel WinGo API key",
-      "tooltip": "For more information, see <a href=\"https://www.bt.cn/bbs/thread-20376-1-1.html\" target=\"_blank\">https://www.bt.cn/bbs/thread-20376-1-1.html</a>"
-    },
-    "baotawaf_server_url": {
-      "label": "aaWAF server URL",
-      "placeholder": "Please enter aaWAF server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "baotawaf_api_key": {
-      "label": "aaWAF API key",
-      "placeholder": "Please enter aaWAF API key",
-      "tooltip": "For more information, see <a href=\"https://github.com/aaPanel/aaWAF/blob/main/API.md\" target=\"_blank\">https://github.com/aaPanel/aaWAF/blob/main/API.md</a>"
-    },
     "beget_username": {
       "label": "Beget username",
       "placeholder": "Please enter Beget username"
@@ -340,25 +340,6 @@
       "label": "BytePlus project ID",
       "placeholder": "Please enter BytePlus project ID",
       "tooltip": "For more information, see <a href=\"https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management\" target=\"_blank\">https://docs.byteplus.com/en/docs/resourcemanagement/Project_Management</a>"
-    },
-    "cachefly_api_token": {
-      "label": "CacheFly API token",
-      "placeholder": "Please enter CacheFly API token",
-      "tooltip": "For more information, see <a href=\"https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228\" target=\"_blank\">https://kb.cachefly.com/kb/guide/en/generating-tokens-and-keys-Oll9Irt5TI/Steps/2460228</a>"
-    },
-    "cdnfly_server_url": {
-      "label": "Cdnfly server URL",
-      "placeholder": "Please enter Cdnfly server URL"
-    },
-    "cdnfly_api_key": {
-      "label": "Cdnfly user API key",
-      "placeholder": "Please enter Cdnfly user API key",
-      "tooltip": "For more information, see <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
-    },
-    "cdnfly_api_secret": {
-      "label": "Cdnfly user API secret",
-      "placeholder": "Please enter Cdnfly user API secret",
-      "tooltip": "For more information, see <a href=\"https://doc.cdnfly.cn/shiyongjieshao.html\" target=\"_blank\">https://doc.cdnfly.cn/shiyongjieshao.html</a>"
     },
     "cloudflare_api_token": {
       "label": "Cloudflare API token",
@@ -493,32 +474,6 @@
       "placeholder": "Please enter DigitalOcean access token",
       "tooltip": "For more information, see <a href=\"https://docs.digitalocean.com/reference/api/create-personal-access-token/\" target=\"_blank\">https://docs.digitalocean.com/reference/api/create-personal-access-token/</a>"
     },
-    "dingtalkbot_webhook_url": {
-      "label": "DingTalk bot Webhook URL",
-      "placeholder": "Please enter DingTalk bot Webhook URL",
-      "tooltip": "For more information, see <a href=\"https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/obtain-the-webhook-address-of-a-custom-robot</a>"
-    },
-    "dingtalkbot_secret": {
-      "label": "DingTalk bot secret",
-      "placeholder": "Please enter DingTalk bot secret",
-      "tooltip": "For more information, see <a href=\"https://open.dingtalk.com/document/orgapp/customize-robot-security-settings\" target=\"_blank\">https://open.dingtalk.com/document/orgapp/customize-robot-security-settings</a>"
-    },
-    "dingtalkbot_custom_payload": {
-      "label": "DingTalk bot message payload (Optional)",
-      "placeholder": "Please enter custom DingTalk bot message payload",
-      "checkbox": "Customized message payload"
-    },
-    "discordbot_token": {
-      "label": "Discord bot token",
-      "placeholder": "Please enter Discord bot token",
-      "tooltip": "For more information, see <a href=\"https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token\" target=\"_blank\">https://docs.discordbotstudio.org/setting-up-dbs/finding-your-bot-token</a>"
-    },
-    "discordbot_channel_id": {
-      "label": "Discord channel ID (Optional)",
-      "placeholder": "Please enter the default Discord channel ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "For more information, see <a href=\"https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID\" target=\"_blank\">https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID</a>"
-    },
     "dnsexit_api_key": {
       "label": "DNSExit API key",
       "placeholder": "Please enter DNSExit API key",
@@ -553,15 +508,6 @@
       "label": "Doge Cloud SecretKey",
       "placeholder": "Please enter Doge Cloud SecretKey",
       "tooltip": "For more information, see <a href=\"https://console.dogecloud.com/\" target=\"_blank\">https://console.dogecloud.com/</a>"
-    },
-    "dokploy_server_url": {
-      "label": "Dokploy server URL",
-      "placeholder": "Please enter Dokploy server URL"
-    },
-    "dokploy_api_key": {
-      "label": "Dokploy API key",
-      "placeholder": "Please enter Dokploy API key",
-      "tooltip": "For more information, see <a href=\"https://docs.dokploy.com/docs/api\" target=\"_blank\">https://docs.dokploy.com/docs/api</a>"
     },
     "duckdns_token": {
       "label": "DuckDNS token",
@@ -629,37 +575,6 @@
       "placeholder": "Please enter the default receiver email address",
       "help": "Notes: It can be overrided in the workflows."
     },
-    "flexcdn_server_url": {
-      "label": "FlexCDN server URL",
-      "placeholder": "Please enter FlexCDN server URL"
-    },
-    "flexcdn_api_role": {
-      "label": "FlexCDN user role",
-      "placeholder": "Please select FlexCDN user role",
-      "option": {
-        "user": {
-          "label": "Platform user"
-        },
-        "admin": {
-          "label": "Administrator user"
-        }
-      }
-    },
-    "flexcdn_access_key_id": {
-      "label": "FlexCDN AccessKeyID",
-      "placeholder": "Please enter FlexCDN AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
-    },
-    "flexcdn_access_key": {
-      "label": "FlexCDN AccessKey",
-      "placeholder": "Please enter FlexCDN AccessKey",
-      "tooltip": "For more information, see <a href=\"https://flexcdn.cn/docs/api/auth\" target=\"_blank\">https://flexcdn.cn/docs/api/auth</a>"
-    },
-    "flyio_api_token": {
-      "label": "Fly.io API token",
-      "placeholder": "Please enter Fly.io API token",
-      "tooltip": "For more information, see <a href=\"https://fly.io/docs/security/tokens/\" target=\"_blank\">https://fly.io/docs/security/tokens/</a>"
-    },
     "ftp_host": {
       "label": "Server host",
       "placeholder": "Please enter server host"
@@ -709,40 +624,14 @@
       "placeholder": "Please enter GoDaddy API secret",
       "tooltip": "For more information, see <a href=\"https://developer.godaddy.com/\" target=\"_blank\">https://developer.godaddy.com/</a>"
     },
-    "goedge_server_url": {
-      "label": "GoEdge server URL",
-      "placeholder": "Please enter GoEdge server URL"
-    },
-    "goedge_api_role": {
-      "label": "GoEdge user role",
-      "placeholder": "Please select GoEdge user role",
-      "option": {
-        "user": {
-          "label": "Platform user"
-        },
-        "admin": {
-          "label": "Administrator user"
-        }
-      }
-    },
-    "goedge_access_key_id": {
-      "label": "GoEdge AccessKeyID",
-      "placeholder": "Please enter GoEdge AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
-    },
-    "goedge_access_key": {
-      "label": "GoEdge AccessKey",
-      "placeholder": "Please enter GoEdge AccessKey",
-      "tooltip": "For more information, see <a href=\"https://goedge.cloud/docs/API/Auth.md\" target=\"_blank\">https://goedge.cloud/docs/API/Auth.md</a>"
-    },
     "googlecloud_project_id": {
-      "label": "Google Cloud project ID",
-      "placeholder": "Please enter Google Cloud project ID",
+      "label": "GCP project ID",
+      "placeholder": "Please enter GCP project ID\r\n\r\n{\r\n  \"name\": \"projects/PROJECT_ID/serviceAccounts/SERVICE_ACCOUNT_EMAIL/keys/KEY_ID\",\r\n  \"privateKeyType\": \"TYPE_GOOGLE_CREDENTIALS_FILE\",\r\n  \"privateKeyData\": \"ENCODED_PRIVATE_KEY\",\r\n  \"validAfterTime\": \"DATE\",\r\n  \"validBeforeTime\": \"DATE\",\r\n  \"keyAlgorithm\": \"KEY_ALG_RSA_2048\"\r\n}",
       "tooltip": "For more information, see <a href=\"https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects\" target=\"_blank\">https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects</a>"
     },
     "googlecloud_service_account_key": {
-      "label": "Google Cloud service account key",
-      "placeholder": "Please enter Google Cloud service account key",
+      "label": "GCP service account key",
+      "placeholder": "Please enter GCP service account key",
       "tooltip": "For more information, see <a href=\"https://docs.cloud.google.com/iam/docs/keys-create-delete\" target=\"_blank\">https://docs.cloud.google.com/iam/docs/keys-create-delete</a>"
     },
     "googletrustservices_eab": {
@@ -809,68 +698,6 @@
       "help": "Notes: Leave it blank to use the Pod's ServiceAccount.",
       "tooltip": "For more information, see <a href=\"https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/\" target=\"_blank\">https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/</a>"
     },
-    "kong_server_url": {
-      "label": "Kong admin API server URL",
-      "placeholder": "Please enter Kong admin API server URL"
-    },
-    "kong_api_token": {
-      "label": "Kong admin API token (Optional)",
-      "placeholder": "Please enter Kong admin API token",
-      "tooltip": "For more information, see <a href=\"https://developer.konghq.com/admin-api/\" target=\"_blank\">https://developer.konghq.com/admin-api/</a>"
-    },
-    "ksyun_access_key_id": {
-      "label": "Kingsoft Cloud AccessKeyID",
-      "placeholder": "Please enter Kingsoft Cloud AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/documents/37659\" target=\"_blank\">https://endocs.ksyun.com/documents/37659</a>"
-    },
-    "ksyun_secret_access_key": {
-      "label": "Kingsoft Cloud SecretAccessKey",
-      "placeholder": "Please enter Kingsoft Cloud SecretAccessKey",
-      "tooltip": "For more information, see <a href=\"https://endocs.ksyun.com/documents/37659\" target=\"_blank\">https://endocs.ksyun.com/documents/37659</a>"
-    },
-    "larkbot_webhook_url": {
-      "label": "Lark bot Webhook URL",
-      "placeholder": "Please enter Lark bot Webhook URL",
-      "tooltip": "For more information, see <a href=\"https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_secret": {
-      "label": "Lark bot secret",
-      "placeholder": "Please enter Lark bot secret",
-      "tooltip": "For more information, see <a href=\"hhttps://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot\" target=\"_blank\">https://open.larksuite.com/document/client-docs/bot-v3/add-custom-bot</a>"
-    },
-    "larkbot_custom_payload": {
-      "label": "Lark bot message payload (Optional)",
-      "placeholder": "Please enter custom Lark bot message payload",
-      "checkbox": "Customized message payload"
-    },
-    "lecdn_server_url": {
-      "label": "LeCDN server URL",
-      "placeholder": "Please enter LeCDN server URL"
-    },
-    "lecdn_api_version": {
-      "label": "LeCDN version",
-      "placeholder": "Please select LeCDN version"
-    },
-    "lecdn_api_role": {
-      "label": "LeCDN user role",
-      "placeholder": "Please select LeCDN user role",
-      "option": {
-        "client": {
-          "label": "Client"
-        },
-        "master": {
-          "label": "Master"
-        }
-      }
-    },
-    "lecdn_username": {
-      "label": "LeCDN username",
-      "placeholder": "Please enter LeCDN username"
-    },
-    "lecdn_password": {
-      "label": "LeCDN password",
-      "placeholder": "Please enter LeCDN password"
-    },
     "linode_access_token": {
       "label": "Linode access token",
       "placeholder": "Please enter Linode access token",
@@ -879,52 +706,14 @@
     "litessl_eab": {
       "guide": "Learn more about using EAB key in LiteSSL: <br><a href=\"https://freessl.cn/automation/eab-manager\" target=\"_blank\">https://freessl.cn/automation/eab-manager</a>"
     },
-    "matrix_server_url": {
-      "label": "Matrix server URL",
-      "placeholder": "Please enter Matrix server URL"
+    "luadns_username": {
+      "label": "LuaDNS username",
+      "placeholder": "Please enter LuaDNS username"
     },
-    "matrix_user_id": {
-      "label": "Matrix user ID",
-      "placeholder": "Please enter Matrix user ID",
-      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-account-management/creating-a-matrix-account/</a>"
-    },
-    "matrix_access_token": {
-      "label": "Matrix access token",
-      "placeholder": "Please enter Matrix access token",
-      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/#your-access-token\" target=\"_blank\">https://docs.element.io/latest/element-support/element-webdesktop-client-settings/element-settings/</a>"
-    },
-    "matrix_room_id": {
-      "label": "Matrix room ID (Optional)",
-      "placeholder": "Please enter the default Matrix room ID",
-      "help": "Notes: It can be overrided in the workflows. Invite the bot to the room first.",
-      "tooltip": "For more information, see <a href=\"https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/#advanced\" target=\"_blank\">https://docs.element.io/latest/element-support/matrix-rooms/managing-a-room-room-settings/</a>"
-    },
-    "mattermost_server_url": {
-      "label": "Mattermost server URL",
-      "placeholder": "Please enter Mattermost server URL"
-    },
-    "mattermost_username": {
-      "label": "Mattermost username",
-      "placeholder": "Please enter Mattermost username"
-    },
-    "mattermost_password": {
-      "label": "Mattermost password",
-      "placeholder": "Please enter Mattermost password"
-    },
-    "mattermost_channel_id": {
-      "label": "Mattermost channel ID (Optional)",
-      "placeholder": "Please enter the default Mattermost channel ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Select the target channel from the left sidebar, click on the channel name at the top, and choose ”Channel Details”. You can directly see the channel ID on the pop-up page."
-    },
-    "mohua_username": {
-      "label": "Mohua Cloud username",
-      "placeholder": "Please enter MoHua Cloud username"
-    },
-    "mohua_api_password": {
-      "label": "Mohua Cloud API password",
-      "placeholder": "Please enter Mohua Cloud API password",
-      "tooltip": "For more information, see <a href=\"https://cloud.mhjz1.cn/apimanage\" target=\"_blank\">https://cloud.mhjz1.cn/apimanage</a>"
+    "luadns_api_key": {
+      "label": "LuaDNS API key",
+      "placeholder": "Please enter LuaDNS API key",
+      "tooltip": "For more information, see <a href=\"https://app.luadns.com/api_keys\" target=\"_blank\">https://app.luadns.com/api_keys</a>"
     },
     "namecheap_username": {
       "label": "Namecheap username",
@@ -971,38 +760,50 @@
       "placeholder": "Please enter netcup API password",
       "tooltip": "For more information, see <a href=\"https://helpcenter.netcup.com/en/wiki/general/our-api/\" target=\"_blank\">https://helpcenter.netcup.com/en/wiki/general/our-api/</a>"
     },
-    "nginxproxymanager_server_url": {
-      "label": "NPM server URL",
-      "placeholder": "Please enter NPM server URL"
-    },
-    "nginxproxymanager_auth_method": {
-      "label": "NPM API authentication method",
-      "placeholder": "Please select NPM API authentication method",
-      "option": {
-        "password": {
-          "label": "Username & Password"
-        },
-        "token": {
-          "label": "API token"
-        }
-      }
-    },
-    "nginxproxymanager_username": {
-      "label": "NPM administrator username",
-      "placeholder": "Please enter NPM administrator username"
-    },
-    "nginxproxymanager_password": {
-      "label": "NPM administrator password",
-      "placeholder": "Please enter NPM administrator password"
-    },
-    "nginxproxymanager_api_token": {
-      "label": "NPM API token",
-      "placeholder": "Please enter NPM API token"
-    },
     "ns1_api_key": {
       "label": "NS1 API key",
       "placeholder": "Please enter NS1 API key",
       "tooltip": "For more information, see <a href=\"https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api\" target=\"_blank\">https://www.ibm.com/docs/en/ns1-connect?topic=introduction-using-api</a>"
+    },
+    "oraclecloud_auth_method": {
+      "label": "OCI API authentication method",
+      "placeholder": "Please select OCI API authentication method",
+      "option": {
+        "apikey": {
+          "label": "API key"
+        },
+        "instanceprincipal": {
+          "label": "Instance principal"
+        },
+        "resourceprincipal": {
+          "label": "Resource principal"
+        }
+      }
+    },
+    "oraclecloud_private_key": {
+      "label": "OCI API signing private key",
+      "placeholder": "Please enter OCI API signing private key",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_private_key_passphrase": {
+      "label": "OCI API signing private key passphrase (Optional)",
+      "placeholder": "Please enter OCI API signing private key passphrase",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_public_key_fingerprint": {
+      "label": "OCI API signing public key fingerprint",
+      "placeholder": "Please enter OCI API signing public key fingerprint",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_tenancy_ocid": {
+      "label": "OCI tenancy OCID",
+      "placeholder": "Please enter OCI tenancy OCID",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
+    },
+    "oraclecloud_user_ocid": {
+      "label": "OCI user OCID",
+      "placeholder": "Please enter OCI user OCID",
+      "tooltip": "For more information, see <a href=\"https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm\" target=\"_blank\">https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm</a>"
     },
     "ovhcloud_endpoint": {
       "label": "OVHcloud API endpoint",
@@ -1064,20 +865,6 @@
       "placeholder": "Please enter PowerDNS API key",
       "tooltip": "For more information, see <a href=\"https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api\" target=\"_blank\">https://doc.powerdns.com/authoritative/http-api/index.html#enabling-the-api</a>"
     },
-    "proxmoxve_server_url": {
-      "label": "Proxmox VE server URL",
-      "placeholder": "Please enter Proxmox VE server URL"
-    },
-    "proxmoxve_api_token": {
-      "label": "Proxmox VE API token",
-      "placeholder": "Please enter Proxmox VE API token",
-      "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
-    "proxmoxve_api_token_secret": {
-      "label": "Proxmox VE API token secret (Optional)",
-      "placeholder": "Please enter Proxmox VE API token secret",
-      "tooltip": "For more information, see <a href=\"https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens\" target=\"_blank\">https://pve.proxmox.com/pve-docs/pve-admin-guide.html#pveum_tokens</a>"
-    },
     "qingcloud_access_key_id": {
       "label": "QingCloud AccessKeyID",
       "placeholder": "Please enter QingCloud AccessKeyID",
@@ -1088,35 +875,10 @@
       "placeholder": "Please enter QingCloud SecretAccessKey",
       "tooltip": "For more information, see <a href=\"https://console.qingcloud.com/access_keys/\" target=\"_blank\">https://console.qingcloud.com/access_keys/</a>"
     },
-    "qiniu_access_key": {
-      "label": "Qiniu AccessKey",
-      "placeholder": "Please enter Qiniu AccessKey",
-      "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
-    "qiniu_secret_key": {
-      "label": "Qiniu SecretKey",
-      "placeholder": "Please enter Qiniu SecretKey",
-      "tooltip": "For more information, see <a href=\"https://portal.qiniu.com/\" target=\"_blank\">https://portal.qiniu.com/</a>"
-    },
     "rainyun_api_key": {
       "label": "Rain Yun API key",
       "placeholder": "Please enter Rain Yun API key",
       "tooltip": "For more information, see <a href=\"https://app.rainyun.com/account/settings/api-key\" target=\"_blank\">https://app.rainyun.com/account/settings/api-key</a>"
-    },
-    "ratpanel_server_url": {
-      "label": "RatPanel server URL",
-      "placeholder": "Please enter RatPanel server URL",
-      "help": "Notes: DO NOT include the security entrance suffix."
-    },
-    "ratpanel_access_token_id": {
-      "label": "RatPanel access token ID",
-      "placeholder": "Please enter RatPanel access token ID",
-      "tooltip": "For more information, see <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
-    },
-    "ratpanel_access_token": {
-      "label": "RatPanel access token",
-      "placeholder": "Please enter RatPanel access token",
-      "tooltip": "For more information, see <a href=\"https://ratpanel.github.io/advanced/api.html\" target=\"_blank\">https://ratpanel.github.io/advanced/api.html</a>"
     },
     "regru_username": {
       "label": "Reg.ru username",
@@ -1156,11 +918,31 @@
     },
     "rfc2136_tsig_key": {
       "label": "TSIG authentication key (Optional)",
-      "placeholder": "Please enter TSIG authentication key"
+      "placeholder": "Please enter TSIG authentication key",
+      "errmsg": {
+        "unpaired": "Please fill in both the TSIG key and the TSIG secret, or leave both empty to send unsigned updates."
+      },
+      "tooltip": "The name of the TSIG key configured on your DNS server, e.g. the name of the <b>key</b> statement in BIND. If only one of the key and the secret is provided, the configuration is invalid: leaving both empty sends unsigned updates, while a wrong key name or secret causes the server to reject the update."
     },
     "rfc2136_tsig_secret": {
       "label": "TSIG authentication secret (Optional)",
-      "placeholder": "Please enter TSIG authentication secret"
+      "placeholder": "Please enter TSIG authentication secret",
+      "errmsg": {
+        "unpaired": "Please fill in both the TSIG key and the TSIG secret, or leave both empty to send unsigned updates."
+      },
+      "tooltip": "The Base64-encoded secret of the TSIG key. It and the key name must be provided together."
+    },
+    "rfc2136_tsig_gss_realm": {
+      "label": "GSS-TSIG Kerberos realm (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos realm"
+    },
+    "rfc2136_tsig_gss_username": {
+      "label": "GSS-TSIG Kerberos username (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos username"
+    },
+    "rfc2136_tsig_gss_password": {
+      "label": "GSS-TSIG Kerberos password (Optional)",
+      "placeholder": "Please enter GSS-TSIG Kerberos password"
     },
     "rucenter_username": {
       "label": "Ru-Center username",
@@ -1201,24 +983,6 @@
       "label": "Use path style addressing",
       "tooltip": "<ol style=\"list-style: disc;\"><li>Virtual-hosted style (default): https://&lt;BUCKET&gt;.&lt;ENDPOINT&gt;/&lt;KEY&gt; </li><li>Path style: https://&lt;ENDPOINT&gt;/&lt;BUCKET&gt;/&lt;KEY&gt; </li></ol>"
     },
-    "samwaf_server_url": {
-      "label": "SamWAF server URL",
-      "placeholder": "Please enter SamWAF server URL"
-    },
-    "samwaf_api_key": {
-      "label": "SamWAF API Key",
-      "placeholder": "Please enter SamWAF API Key",
-      "tooltip": "For more information, see <a href=\"https://doc.samwaf.com/api/\" target=\"_blank\">https://doc.samwaf.com/api/</a>"
-    },
-    "safeline_server_url": {
-      "label": "SafeLine server URL",
-      "placeholder": "Please enter SafeLine server URL"
-    },
-    "safeline_api_token": {
-      "label": "SafeLine API token",
-      "placeholder": "Please enter SafeLine API token",
-      "tooltip": "For more information, see <a href=\"https://docs.waf.chaitin.com/en/reference/articles/openapi\" target=\"_blank\">https://docs.waf.chaitin.com/en/reference/articles/openapi</a>"
-    },
     "sectigo_validation_type": {
       "label": "Domain validation type",
       "placeholder": "Please select domain validation type",
@@ -1237,16 +1001,15 @@
     "sectigo_eab": {
       "guide": "Learn more about using EAB key in Sectigo: <br><a href=\"https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme\" target=\"_blank\">https://www.sectigo.com/enterprise-solutions/certificate-manager/integrations-acme</a>"
     },
-    "slackbot_token": {
-      "label": "Slack bot token",
-      "placeholder": "Please enter Slack bot token",
-      "tooltip": "For more information, see <a href=\"https://docs.slack.dev/authentication/tokens#bot\" target=\"_blank\">https://docs.slack.dev/authentication/tokens#bot</a>"
+    "simplycom_account_number": {
+      "label": "Simply.com account number",
+      "placeholder": "Please enter Simply.com account number",
+      "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
     },
-    "slackbot_channel_id": {
-      "label": "Slack channel ID (Optional)",
-      "placeholder": "Please enter the default Slack channel ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Please refer to <a href=\"https://www.youtube.com/watch?v=Uz5Yi5C2pwQ\" target=\"_blank\">https://www.youtube.com/watch?v=Uz5Yi5C2pwQ</a>"
+    "simplycom_api_key": {
+      "label": "Simply.com API key",
+      "placeholder": "Please enter Simply.com API key",
+      "tooltip": "For more information, see <a href=\"https://www.simply.com/en/docs/api/\" target=\"_blank\">https://www.simply.com/en/docs/api/</a>"
     },
     "spaceship_api_key": {
       "label": "Spaceship API key",
@@ -1291,11 +1054,18 @@
     },
     "ssh_key": {
       "label": "SSH key",
-      "placeholder": "Please enter SSH key"
+      "placeholder": "Please enter SSH key\r\n\r\n-----BEGIN OPENSSH PRIVATE KEY-----\r\n...\r\n-----END OPENSSH PRIVATE KEY-----"
     },
     "ssh_key_passphrase": {
       "label": "SSH key passphrase (Optional)",
       "placeholder": "Please enter SSH key passphrase"
+    },
+    "ssh_key_certificate": {
+      "label": "SSH user certificate (Optional)",
+      "placeholder": "Please enter SSH user certificate\r\n\r\nssh-ed25519-cert-v01@openssh.com AAAA...",
+      "errmsg": {
+        "invalid": "Invalid SSH user certificate"
+      }
     },
     "ssh_jump_servers": {
       "label": "Jump servers (Optional)",
@@ -1312,30 +1082,6 @@
     "sslcom_eab": {
       "guide": "Learn more about using EAB key in SSL.com: <br><a href=\"https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/#ftoc-heading-6\" target=\"_blank\">https://www.ssl.com/how-to/generate-acme-credentials-for-reseller-customers/</a>"
     },
-    "synologydsm_server_url": {
-      "label": "Synology DSM server URL",
-      "placeholder": "http://192.168.1.100:5000",
-      "tooltip": "Format: http(s)://IP-or-hostname:port. Default port is 5000 for HTTP, 5001 for HTTPS. Example: http://192.168.1.100:5000 or https://nas.example.com:5001"
-    },
-    "synologydsm_username": {
-      "label": "Synology DSM username",
-      "placeholder": "Please enter Synology DSM username"
-    },
-    "synologydsm_password": {
-      "label": "Synology DSM password",
-      "placeholder": "Please enter Synology DSM password"
-    },
-    "synologydsm_totp_secret": {
-      "label": "Synology DSM 2FA TOTP secret key (Optional)",
-      "placeholder": "Please enter Synology DSM 2FA TOTP secret key",
-      "help": "Notes: Only required when you set up 2FA sign-in to Synology DSM.",
-      "tooltip": "How to get it? The secret key can be found by clicking \"Can't scan it\" when setting up 2FA, or by using a QRCode scanning tool."
-    },
-    "telegrambot_token": {
-      "label": "Telegram bot token",
-      "placeholder": "Please enter Telegram bot token",
-      "tooltip": "How to get it? Please refer to <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
-    },
     "technitiumdns_server_url": {
       "label": "Technitium DNS server URL",
       "placeholder": "Please enter Technitium DNS server URL"
@@ -1344,12 +1090,6 @@
       "label": "Technitium DNS API token",
       "placeholder": "Please enter Technitium DNS API token",
       "tooltip": "For more information, see <a href=\"https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md\" target=\"_blank\">https://github.com/TechnitiumSoftware/DnsServer/blob/master/APIDOCS.md</a>"
-    },
-    "telegrambot_chat_id": {
-      "label": "Telegram chat ID (Optional)",
-      "placeholder": "Please enter the default Telegram chat ID",
-      "help": "Notes: It can be overrided in the workflows.",
-      "tooltip": "How to get it? Please refer to <a href=\"https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a\" target=\"_blank\">https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a</a>"
     },
     "tencentcloud_secret_id": {
       "label": "Tencent Cloud SecretID",
@@ -1377,38 +1117,20 @@
     "todaynic_agent": {
       "guide": "TodayNIC.com API only supports calls from agents. Learn more about this: <br><a href=\"https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384\" target=\"_blank\">https://docs.apipost.net/docs/detail/49dcef10a876000?target_id=371b384</a>"
     },
-    "ucloud_private_key": {
-      "label": "UCloud API private key",
-      "placeholder": "Please enter UCloud API private key",
-      "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>"
-    },
     "ucloud_public_key": {
       "label": "UCloud API public key",
-      "placeholder": "Please enter UCloud API public key",
+      "placeholder": "Please enter UCloud API public key (AccessKeyID)",
+      "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>"
+    },
+    "ucloud_private_key": {
+      "label": "UCloud API private key",
+      "placeholder": "Please enter UCloud API private key (AccessKeySecret)",
       "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/api_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/api_manage</a>"
     },
     "ucloud_project_id": {
       "label": "UCloud project ID (Optional)",
       "placeholder": "Please enter UCloud project ID",
       "tooltip": "For more information, see <a href=\"https://console.ucloud-global.com/uaccount/iam/project_manage\" target=\"_blank\">https://console.ucloud-global.com/uaccount/iam/project_manage</a>"
-    },
-    "unicloud_username": {
-      "label": "uniCloud username",
-      "placeholder": "Please enter uniCloud username"
-    },
-    "unicloud_password": {
-      "label": "uniCloud password",
-      "placeholder": "Please enter uniCloud password"
-    },
-    "upyun_username": {
-      "label": "UPYUN subaccount username",
-      "placeholder": "Please enter UPYUN subaccount username",
-      "tooltip": "For more information, see <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a>"
-    },
-    "upyun_password": {
-      "label": "UPYUN subaccount password",
-      "placeholder": "Please enter UPYUN subaccount password",
-      "tooltip": "For more information, see <a href=\"https://console.upyun.com/account/subaccount/\" target=\"_blank\">https://console.upyun.com/account/subaccount/</a>"
     },
     "vercel_api_access_token": {
       "label": "Vercel API access token",
@@ -1440,21 +1162,6 @@
       "placeholder": "Please enter Vultr API key",
       "tooltip": "For more information, see <a href=\"https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key\" target=\"_blank\">https://docs.vultr.com/platform/other/users/manage-users/api-access/regenerate-user-api-key</a>"
     },
-    "wangsu_access_key_id": {
-      "label": "Wangsu Cloud AccessKeyID",
-      "placeholder": "Please enter Wangsu Cloud AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://en.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_access_key_secret": {
-      "label": "Wangsu Cloud AccessKeySecret",
-      "placeholder": "Please enter Wangsu Cloud AccessKeySecret",
-      "tooltip": "For more information, see <a href=\"https://en.wangsu.com/document/account-manage/15775\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15775</a>"
-    },
-    "wangsu_api_key": {
-      "label": "Wangsu Cloud API key",
-      "placeholder": "Please enter Wangsu Cloud API key",
-      "tooltip": "For more information, see <a href=\"https://en.wangsu.com/document/account-manage/15776\" target=\"_blank\">https://en.wangsu.com/document/account-manage/15776</a>"
-    },
     "webhook_url": {
       "label": "Webhook URL",
       "placeholder": "Please enter Webhook URL"
@@ -1481,6 +1188,7 @@
     "webhook_preset_data": {
       "": "Use preset Webhook",
       "bark": "Bark",
+      "boop": "Boop",
       "gotify": "Gotify",
       "messagenest": "Message Nest",
       "ntfy": "ntfy",
@@ -1491,16 +1199,6 @@
       "serverchanturbo": "ServerChan<sup>Turbo</sup>",
       "wxpush": "WXPush",
       "common": "General data"
-    },
-    "wecombot_webhook_url": {
-      "label": "WeCom bot Webhook URL",
-      "placeholder": "Please enter WeCom bot Webhook URL",
-      "tooltip": "For more information, see <a href=\"https://www.west.cn/CustomerCenter/doc/apiv2.html#12u3001u8eabu4efdu9a8cu8bc10a3ca20id3d12u3001u8eabu4efdu9a8cu8bc13e203ca3e\" target=\"_blank\">https://www.west.cn/CustomerCenter/doc/apiv2.html</a>"
-    },
-    "wecombot_custom_payload": {
-      "label": "WeCom bot message payload (Optional)",
-      "placeholder": "Please enter custom WeCom bot message payload",
-      "checkbox": "Customized message payload"
     },
     "westcn_username": {
       "label": "West.cn agent username",
@@ -1524,23 +1222,24 @@
     "xinnet_agent": {
       "guide": "Xinnet.com API only supports calls from agents. Learn more about this: <br><a href=\"https://apidoc.xin.cn/doc-7283837\" target=\"_blank\">https://apidoc.xin.cn/doc-7283837</a>"
     },
-    "zenlayer_access_key_id": {
-      "label": "Zenlayer AccessKeyID",
-      "placeholder": "Please enter Zenlayer AccessKeyID",
-      "tooltip": "For more information, see <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key</a>"
+    "yandexcloud_folder_id": {
+      "label": "Yandex Cloud folder ID",
+      "placeholder": "Please enter Yandex Cloud folder ID",
+      "tooltip": "For more information, see <a href=\"https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id\" target=\"_blank\">https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id</a>"
     },
-    "zenlayer_access_key_password": {
-      "label": "Zenlayer AccessKeyPassword",
-      "placeholder": "Please enter Zenlayer AccessKeyPassword",
-      "tooltip": "For more information, see <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/generate-an-api-access-key</a>"
-    },
-    "zenlayer_resource_group_id": {
-      "label": "Zenlayer resource group ID (Optional)",
-      "placeholder": "Please enter Zenlayer resource group ID",
-      "tooltip": "For more information, see <a href=\"https://docs.console.zenlayer.com/welcome/platform/team-management/create-a-resource-group\" target=\"_blank\">https://docs.console.zenlayer.com/welcome/platform/team-management/create-a-resource-group</a>"
+    "yandexcloud_service_account_key": {
+      "label": "Yandex Cloud service account authorized key",
+      "placeholder": "Please enter Yandex Cloud service account authorized key\r\n\r\n{\r\n  \"id\": \"AUTHORIZED_KEY_ID\",\r\n  \"service_account_id\": \"SERVICE_ACCOUNT_ID\",\r\n  \"created_at\": \"DATE\",\r\n  \"key_algorithm\": \"RSA_2048\",\r\n  \"public_key\": \"ENCODED_PUBLIC_KEY\",\r\n  \"private_key\": \"ENCODED_PRIVATE_KEY\"\r\n}",
+      "tooltip": "For more information, see <a href=\"https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys\" target=\"_blank\">https://yandex.cloud/en/docs/iam/operations/authentication/manage-authorized-keys</a>"
     },
     "zerossl_eab": {
       "guide": "Learn more about using EAB key in ZeroSSL: <br><a href=\"https://zerossl.com/documentation/acme/\" target=\"_blank\">https://zerossl.com/documentation/acme/</a>"
+    },
+    "zerossl_eab_auto": {
+      "guide": "Leave both fields empty and each workflow using the global settings will automatically obtain the EAB credentials from ZeroSSL with its certificate contact email. Note: the contact email will be sent to ZeroSSL. You can also fill in both fields to use your own EAB credentials."
+    },
+    "zerossl_eab_auto_access": {
+      "guide": "Leave both fields empty and each workflow using this authorization will automatically obtain the EAB credentials from ZeroSSL with its certificate contact email. Note: the contact email will be sent to ZeroSSL. You can also fill in both fields to use your own EAB credentials."
     }
   }
 }

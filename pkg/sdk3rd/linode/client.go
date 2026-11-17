@@ -1,3 +1,5 @@
+// A simple SDK client for Linode.
+// API documentation: https://techdocs.akamai.com/linode-api/reference/api
 package linode
 
 import (
@@ -24,14 +26,14 @@ func NewClient(optFns ...OptionsFunc) (*Client, error) {
 		return nil, fmt.Errorf("sdkerr: unset accessToken")
 	}
 
-	restyClient := resty.New().
+	httper := resty.New().
 		SetBaseURL("https://api.linode.com/v4").
 		SetHeader("Accept", "application/json").
 		SetHeader("Authorization", "Bearer "+opts.AccessToken).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("User-Agent", app.AppUserAgent)
 
-	return &Client{rc: restyClient}, nil
+	return &Client{rc: httper}, nil
 }
 
 func (c *Client) SetTimeout(timeout time.Duration) *Client {
@@ -50,6 +52,9 @@ func (c *Client) newRequest(method string, path string) (*resty.Request, error) 
 	req := c.rc.R()
 	req.Method = method
 	req.URL = path
+
+	// WARN:
+	//   DO NOT CALL `req.SetResult` or `req.SetError` AGAIN! USE `doRequestWithResult` INSTEAD.
 	return req, nil
 }
 
@@ -57,9 +62,6 @@ func (c *Client) doRequest(req *resty.Request) (*resty.Response, error) {
 	if req == nil {
 		return nil, fmt.Errorf("sdkerr: nil request")
 	}
-
-	// WARN:
-	//   PLEASE DO NOT USE `req.SetResult` or `req.SetError` HERE! USE `doRequestWithResult` INSTEAD.
 
 	resp, err := req.Send()
 	if err != nil {
@@ -89,7 +91,7 @@ func (c *Client) doRequestWithResult(req *resty.Request, res sdkResponse) (*rest
 			return resp, fmt.Errorf("sdkerr: failed to unmarshal response: %w (resp: %s)", err, resp.String())
 		} else {
 			if err := res.GetAPIError(); err != nil {
-				return resp, fmt.Errorf("sdkerr: errors='%s'", err.Error())
+				return resp, fmt.Errorf("sdkerr: api error: %s", err.Error())
 			}
 		}
 	}

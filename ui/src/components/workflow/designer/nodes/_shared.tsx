@@ -17,6 +17,7 @@ import { mergeCls } from "@/utils/css";
 import { type NodeJSON, type NodeRegistry } from "./typings";
 import { duplicateNodeJSON } from "../_util";
 import { useNodeRenderContext } from "../NodeRenderContext";
+import { isNodeTypeRegistered } from "./NodeRegistries";
 
 const useInternalRenamingInput = ({ nodeRender }: { nodeRender: NodeRenderReturnType }) => {
   const inputRef = useRef<InputRef>(null);
@@ -98,11 +99,11 @@ const InternalNodeCard = ({
 
   const isActivated = useMemo(() => nodeRenderData.activated || nodeRenderData.lineActivated, [nodeRenderData.activated, nodeRenderData.lineActivated]);
   const [isHovering, setIsHovering] = useState(false);
-  const [isNodeInvalid, setIsNodeInvalid] = useState(false);
+  const [isNodeInvalid, setIsNodeInvalid] = useState(!isNodeTypeRegistered(nodeRegistry.type));
   const isNodeDisabled = useWatchFormValueIn(nodeRender.node, "disabled");
 
   const formState = useWatchFormState(nodeRender.node);
-  useEffect(() => setIsNodeInvalid(!!formState?.invalid), [formState?.invalid]);
+  useEffect(() => setIsNodeInvalid(!isNodeTypeRegistered(nodeRegistry.type) || !!formState?.invalid), [formState?.invalid]);
 
   return (
     <Card

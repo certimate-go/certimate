@@ -19,6 +19,14 @@
 
 <div align="center">
 
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/daily" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/weekly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/23513?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-23513" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/23513/monthly?language=Go" alt="certimate-go%2Fcertimate | Trendshift" width="250" height="55"/></a>
+
+</div>
+
+<div align="center">
+
 English ｜ [简体中文](README_zh.md)
 
 </div>
@@ -32,7 +40,7 @@ An open-source and free self-hosted SSL certificates ACME tool, automates the fu
 - **Self-hosted**: Private deployment. All data is stored locally, to ensure data privacy and security.
 - **Cross Platforms**: Compatible with various operating systems, including Windows/Linux/macOS.
 - **Zero Dependencies**: No need to install databases, runtimes, or any frameworks. Ready to use out of the box.
-- **Low Resource Usage**: Extremely lightweight, requiring only ~16 MB of memory.
+- **Low Resource Usage**: Extremely lightweight, requiring only ~20 MB of memory.
 - **Easy to Use**: Automates certificate management with a visual workflow — all with just a few simple configurations.
 
 ## 💡 Features
@@ -42,7 +50,7 @@ An open-source and free self-hosted SSL certificates ACME tool, automates the fu
 - Supports DNS-01 challenge and HTTP-01 challenge both.
 - Supports various certificate formats such as PEM, PFX, JKS.
 - Supports more than 70+ domain registrars (e.g., AWS, Cloudflare, GoDaddy, Alibaba Cloud, Tencent Cloud, etc. [Check out full providers](https://docs.certimate.me/en-US/docs/reference/providers#supported-dns-providers)).
-- Supports more than 140+ deployment destinations (e.g., Kubernetes, CDN, WAF, load balancers, etc. [Check out full providers](https://docs.certimate.me/en-US/docs/reference/providers#supported-hosting-providers)).
+- Supports more than 160+ deployment destinations (e.g., Kubernetes, CDN, WAF, load balancers, etc. [Check out full providers](https://docs.certimate.me/en-US/docs/reference/providers#supported-hosting-providers)).
 - Supports multiple notification channels including email, Discord, Slack, Telegram, DingTalk, Feishu, WeCom, and more.
 - Supports multiple ACME CAs including Let's Encrypt, Actalis, Google Trust Services, SSL.com, ZeroSSL, and more.
 - More features waiting to be discovered.
@@ -80,12 +88,21 @@ docker run -d \
 
 Visit `http://127.0.0.1:8090` in your browser.
 
-Default administrator account:
+On the first launch there is no default administrator account. Certimate prints a one-time initialization token to the startup console (for Docker, check it with `docker logs certimate`), valid for 30 minutes. Open the site, enter the token together with your own email and password to create the administrator account, then log in as usual. If the token expires, restart Certimate to get a new one.
 
-- Username: `admin@certimate.fun`
-- Password: `1234567890`
+For unattended deployments, preset the credentials via environment variables before the first start — both variables must be provided together, otherwise the startup fails:
 
-Work with Certimate right now. Or read other content in the documentation to learn more.
+```bash
+CERTIMATE_ADMIN_USERNAME=admin@example.com \
+CERTIMATE_ADMIN_PASSWORD='your-password' \
+./certimate serve
+```
+
+Notes:
+
+- `certimate migrate up` only applies migrations; it never creates an administrator. Use `certimate superuser upsert EMAIL PASS` on the data directory if you need explicit CLI provisioning or recovery (for example when running as a Windows service whose console output is unavailable).
+- Instances upgraded from previous versions keep their existing administrator accounts, including accounts still using the historical default credentials; the setup entry stays closed and nothing is reset or overwritten.
+- Environment variables are ignored once an administrator exists.
 
 ## 📄 Documentation
 
@@ -130,6 +147,12 @@ This repository is available under the [MIT License](https://opensource.org/lice
 
 ## ⭐ Star History
 
-Star Certificate on GitHub and be instantly notified of new releases.
+Star Certimate on GitHub and be instantly notified of new releases!
 
-[![Stargazers over time](https://starchart.cc/certimate-go/certimate.svg?variant=adaptive)](https://starchart.cc/certimate-go/certimate)
+<a href="https://www.star-history.com/?repos=certimate-go%2Fcertimate&type=date&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=certimate-go/certimate&type=date&theme=dark&legend=bottom-right&sealed_token=H4DPGE1XAt_F9BtU6OvSVvl5JuCYxptPOWaNf2PJ-jnenuG4X9BoFD21CJyriYWd-2kUWZabZ3yzUivF-6Q0gxFQythEiGTEvMQZuyz2lwn3ZEsMkdra35MkGHqr7dPjtgEJI6bD_-y_rZkm0r5POO6ChejyCg78P3sT_BmCt6HIbu_Jy8FqRB8IRl39" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=certimate-go/certimate&type=date&legend=bottom-right&sealed_token=H4DPGE1XAt_F9BtU6OvSVvl5JuCYxptPOWaNf2PJ-jnenuG4X9BoFD21CJyriYWd-2kUWZabZ3yzUivF-6Q0gxFQythEiGTEvMQZuyz2lwn3ZEsMkdra35MkGHqr7dPjtgEJI6bD_-y_rZkm0r5POO6ChejyCg78P3sT_BmCt6HIbu_Jy8FqRB8IRl39" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=certimate-go/certimate&type=date&legend=bottom-right&sealed_token=H4DPGE1XAt_F9BtU6OvSVvl5JuCYxptPOWaNf2PJ-jnenuG4X9BoFD21CJyriYWd-2kUWZabZ3yzUivF-6Q0gxFQythEiGTEvMQZuyz2lwn3ZEsMkdra35MkGHqr7dPjtgEJI6bD_-y_rZkm0r5POO6ChejyCg78P3sT_BmCt6HIbu_Jy8FqRB8IRl39" />
+ </picture>
+</a>

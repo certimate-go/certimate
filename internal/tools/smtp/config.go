@@ -1,4 +1,4 @@
-﻿package smtp
+package smtp
 
 const (
 	defaultPort int = 25

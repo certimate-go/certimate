@@ -26,12 +26,12 @@
 
 ### 要求
 
-- Go 1.25+（用于修改后端代码）
+- Go 1.27.4+（用于修改后端代码）
 - Node.js 22.12+（用于修改前端代码）
 
 ### 后端代码
 
-Certimate 的后端代码是使用 Golang 开发的，是一个基于 [Pocketbase](https://github.com/pocketbase/pocketbase) 构建的单体应用。
+Certimate 的后端代码是使用 Golang 开发的，是一个基于 [Pocketbase](https://ganigeorgiev.com/pocketbase/pocketbase) 构建的单体应用。
 
 假设你已经对 Certimate 的后端代码做出了一些修改，现在你想要运行它，请遵循以下步骤：
 
@@ -106,6 +106,14 @@ npm run build
 > 建议为每个新功能或 Bug 修复创建一个从 `main` 分支派生的新分支。如果你计划提交多个 PR，请保持不同的改动在独立分支中，以便更容易进行代码审查并最终合并。
 >
 > 保持一个 PR 只实现一个功能或修复。
+
+## 报告 Issue
+
+提交 Bug、功能请求或求助时，请尽量完整填写 Issue 模板（版本号、清晰描述、可复现步骤、日志等）。
+
+若我们向你索取更多信息且 Issue 被标记为 `help wanted`（表示等待你补充报告内容），需要你回复后我们才能继续处理。**若 7 天内仍未补充必要信息，Issue 可能会被自动关闭。** 补充信息后你可以 **随时重新打开** 该 Issue。
+
+维护者：请在评论中列出缺失项清单，然后打上已有的 `help wanted` 标签，以便使用相同的 7 天提醒与自动关闭规则。
 
 ## 获取帮助
 

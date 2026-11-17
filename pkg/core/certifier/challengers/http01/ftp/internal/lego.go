@@ -3,12 +3,15 @@ package internal
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"path/filepath"
 
 	"github.com/go-acme/lego/v5/challenge"
 	"github.com/go-acme/lego/v5/challenge/http01"
+	"github.com/go-acme/lego/v5/log"
 
 	"github.com/certimate-go/certimate/internal/tools/ftp"
+	xfilepath "github.com/certimate-go/certimate/pkg/utils/filepath"
 )
 
 var _ challenge.Provider = (*HTTPProvider)(nil)
@@ -37,6 +40,10 @@ func NewHTTPProviderConfig(config *Config) (*HTTPProvider, error) {
 		return nil, fmt.Errorf("the configuration of the acme challenge provider is nil")
 	}
 
+	if config.WebRootPath == "" {
+		return nil, fmt.Errorf("ftp: webroot path must be set")
+	}
+
 	return &HTTPProvider{
 		config: config,
 	}, nil
@@ -48,10 +55,14 @@ func (p *HTTPProvider) Present(ctx context.Context, domain, token, keyAuth strin
 		return fmt.Errorf("ftp: failed to create FTP client: %w", err)
 	}
 
-	defer client.Quit()
+	log.Info("ftp: ftp connected")
+	defer func() {
+		client.Quit()
+		log.Info("ftp: ftp closed")
+	}()
 
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	challengeDir := filepath.Dir(challengePath)
+	challengePath := xfilepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
+	challengeDir := xfilepath.Dir(challengePath)
 	challengeFile := filepath.Base(challengePath)
 	if err := client.MkdirAll(ctx, challengeDir); err != nil {
 		return fmt.Errorf("ftp: failed to create the \".well-known\" directory: %w", err)
@@ -63,6 +74,8 @@ func (p *HTTPProvider) Present(ctx context.Context, domain, token, keyAuth strin
 		return fmt.Errorf("ftp: failed to write file for HTTP challenge: %w", err)
 	}
 
+	log.Info("ftp: authz file uploaded", slog.String("path", challengePath))
+
 	return nil
 }
 
@@ -72,10 +85,14 @@ func (p *HTTPProvider) CleanUp(ctx context.Context, domain, token, keyAuth strin
 		return fmt.Errorf("ftp: failed to create FTP client: %w", err)
 	}
 
-	defer client.Quit()
+	log.Info("ftp: ftp connected")
+	defer func() {
+		client.Quit()
+		log.Info("ftp: ftp closed")
+	}()
 
-	challengePath := filepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
-	challengeDir := filepath.Dir(challengePath)
+	challengePath := xfilepath.Join(p.config.WebRootPath, http01.ChallengePath(token))
+	challengeDir := xfilepath.Dir(challengePath)
 	challengeFile := filepath.Base(challengePath)
 	if err := client.ChangeDir(ctx, challengeDir); err != nil {
 		return fmt.Errorf("ftp: failed to change to the \".well-known\" directory: %w", err)
@@ -83,6 +100,8 @@ func (p *HTTPProvider) CleanUp(ctx context.Context, domain, token, keyAuth strin
 	if err := client.Delete(ctx, challengeFile); err != nil {
 		return fmt.Errorf("ftp: failed to remove file after HTTP challenge: %w", err)
 	}
+
+	log.Info("ftp: authz file removed", slog.String("path", challengePath))
 
 	return nil
 }

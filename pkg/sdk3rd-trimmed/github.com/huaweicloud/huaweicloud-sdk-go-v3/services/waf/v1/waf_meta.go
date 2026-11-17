@@ -1,4 +1,4 @@
-﻿package v1
+package v1
 
 import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/def"
@@ -7,6 +7,10 @@ import (
 
 func GenReqDefForCreateCertificate() *def.HttpRequestDef {
 	return waf.GenReqDefForCreateCertificate()
+}
+
+func GenReqDefForDeleteCertificate() *def.HttpRequestDef {
+	return waf.GenReqDefForDeleteCertificate()
 }
 
 func GenReqDefForListCertificates() *def.HttpRequestDef {

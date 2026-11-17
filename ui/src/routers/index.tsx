@@ -1,4 +1,4 @@
-﻿import { createHashRouter } from "react-router-dom";
+﻿import { Navigate, createHashRouter } from "react-router-dom";
 
 import AccessList from "@/pages/accesses/AccessList";
 import AccessNew from "@/pages/accesses/AccessNew";
@@ -8,14 +8,18 @@ import ConsoleLayout from "@/pages/ConsoleLayout";
 import Dashboard from "@/pages/dashboard/Dashboard";
 import ErrorLayout from "@/pages/ErrorLayout";
 import Login from "@/pages/login/Login";
+import PluginList from "@/pages/plugins/PluginList";
 import PresetList from "@/pages/presets/PresetList";
 import Settings from "@/pages/settings/Settings";
 import SettingsAbout from "@/pages/settings/SettingsAbout";
 import SettingsAccount from "@/pages/settings/SettingsAccount";
+import SettingsAcmeAccounts from "@/pages/settings/SettingsAcmeAccounts";
 import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
+import Setup from "@/pages/setup/Setup";
+import SetupGate from "@/pages/SetupGate";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
 import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
 import WorkflowDetailRuns from "@/pages/workflows/WorkflowDetailRuns";
@@ -25,7 +29,11 @@ import WorkflowNew from "@/pages/workflows/WorkflowNew";
 export const router = createHashRouter([
   {
     path: "/",
-    element: <ConsoleLayout />,
+    element: (
+      <SetupGate>
+        <ConsoleLayout />
+      </SetupGate>
+    ),
     children: [
       {
         path: "/",
@@ -70,6 +78,14 @@ export const router = createHashRouter([
         element: <PresetList />,
       },
       {
+        path: "/plugins",
+        element: <PluginList />,
+      },
+      {
+        path: "/settings/plugins",
+        element: <Navigate to="/plugins" replace />,
+      },
+      {
         path: "/settings",
         element: <Settings />,
         children: [
@@ -84,6 +100,10 @@ export const router = createHashRouter([
           {
             path: "/settings/ssl-provider",
             element: <SettingsSSLProvider />,
+          },
+          {
+            path: "/settings/acme-accounts",
+            element: <SettingsAcmeAccounts />,
           },
           {
             path: "/settings/persistence",
@@ -103,11 +123,29 @@ export const router = createHashRouter([
   },
   {
     path: "/login",
-    element: <AuthLayout />,
+    element: (
+      <SetupGate>
+        <AuthLayout />
+      </SetupGate>
+    ),
     children: [
       {
         path: "/login",
         element: <Login />,
+      },
+    ],
+  },
+  {
+    path: "/setup",
+    element: (
+      <SetupGate mode="setup">
+        <AuthLayout />
+      </SetupGate>
+    ),
+    children: [
+      {
+        path: "/setup",
+        element: <Setup />,
       },
     ],
   },

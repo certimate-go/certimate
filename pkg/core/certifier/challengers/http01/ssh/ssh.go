@@ -27,6 +27,8 @@ type ServerConfig struct {
 	SshKey string `json:"sshKey,omitempty"`
 	// SSH 登录私钥口令。
 	SshKeyPassphrase string `json:"sshKeyPassphrase,omitempty"`
+	// SSH 登录用户证书。
+	SshKeyCertificate string `json:"sshKeyCertificate,omitempty"`
 }
 
 type ChallengerConfig struct {
@@ -34,7 +36,7 @@ type ChallengerConfig struct {
 
 	// 跳板机配置数组。
 	JumpServers []ServerConfig `json:"jumpServers,omitempty"`
-	// 是否回退使用 SCP。
+	// 是否使用 SCP 传输文件。
 	UseSCP bool `json:"useSCP,omitempty"`
 	// 网站根目录路径。
 	WebRootPath string `json:"webRootPath"`
@@ -53,18 +55,21 @@ func NewChallenger(config *ChallengerConfig) (core.ACMEChallenger, error) {
 	providerConfig.Password = config.SshPassword
 	providerConfig.Key = config.SshKey
 	providerConfig.KeyPassphrase = config.SshKeyPassphrase
+	providerConfig.KeyCertificate = config.SshKeyCertificate
 	for _, jumpServer := range config.JumpServers {
 		jumpServerCfg := ssh.ServerConfig{
-			Host:          jumpServer.SshHost,
-			Port:          int(jumpServer.SshPort),
-			AuthMethod:    ssh.AuthMethodType(jumpServer.SshAuthMethod),
-			Username:      jumpServer.SshUsername,
-			Password:      jumpServer.SshPassword,
-			Key:           jumpServer.SshKey,
-			KeyPassphrase: jumpServer.SshKeyPassphrase,
+			Host:           jumpServer.SshHost,
+			Port:           int(jumpServer.SshPort),
+			AuthMethod:     ssh.AuthMethodType(jumpServer.SshAuthMethod),
+			Username:       jumpServer.SshUsername,
+			Password:       jumpServer.SshPassword,
+			Key:            jumpServer.SshKey,
+			KeyPassphrase:  jumpServer.SshKeyPassphrase,
+			KeyCertificate: jumpServer.SshKeyCertificate,
 		}
 		providerConfig.JumpServers = append(providerConfig.JumpServers, jumpServerCfg)
 	}
+	providerConfig.WebRootPath = config.WebRootPath
 
 	provider, err := internal.NewHTTPProviderConfig(providerConfig)
 	if err != nil {

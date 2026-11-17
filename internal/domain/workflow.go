@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/samber/lo"
-
 	"github.com/certimate-go/certimate/internal/domain/expr"
 	xmaps "github.com/certimate-go/certimate/pkg/utils/maps"
 )
@@ -109,6 +107,7 @@ const (
 	WorkflowNodeTypeBizUpload   = WorkflowNodeType("bizUpload")
 	WorkflowNodeTypeBizMonitor  = WorkflowNodeType("bizMonitor")
 	WorkflowNodeTypeBizDeploy   = WorkflowNodeType("bizDeploy")
+	WorkflowNodeTypeBizPurge    = WorkflowNodeType("bizPurge")
 	WorkflowNodeTypeBizNotify   = WorkflowNodeType("bizNotify")
 )
 
@@ -144,36 +143,38 @@ func (c WorkflowNodeConfig) AsBranchBlock() WorkflowNodeConfigForBranchBlock {
 }
 
 func (c WorkflowNodeConfig) AsBizApply() WorkflowNodeConfigForBizApply {
-	domains := lo.Filter(strings.Split(xmaps.GetString(c, "domains"), ";"), func(s string, _ int) bool { return s != "" })
-	ipaddrs := lo.Filter(strings.Split(xmaps.GetString(c, "ipaddrs"), ";"), func(s string, _ int) bool { return s != "" })
-	nameservers := lo.Filter(strings.Split(xmaps.GetString(c, "nameservers"), ";"), func(s string, _ int) bool { return s != "" })
-
+	challengeType := xmaps.GetString(c, "challengeType")
+	if strings.EqualFold(challengeType, ACMEChallengeDNSPersist01) {
+		challengeType = ACMEChallengeDNSPersist01
+	}
 	return WorkflowNodeConfigForBizApply{
-		Domains:               domains,
-		IPAddrs:               ipaddrs,
-		ContactEmail:          xmaps.GetString(c, "contactEmail"),
-		ChallengeType:         xmaps.GetString(c, "challengeType"),
-		Provider:              xmaps.GetString(c, "provider"),
-		ProviderAccessId:      xmaps.GetString(c, "providerAccessId"),
-		ProviderConfig:        xmaps.GetKVMapAny(c, "providerConfig"),
-		KeySource:             xmaps.GetOrDefaultString(c, "keySource", "auto"),
-		KeyAlgorithm:          xmaps.GetOrDefaultString(c, "keyAlgorithm", CertificateKeyAlgorithmTypeRSA2048.String()),
-		KeyContent:            xmaps.GetString(c, "keyContent"),
-		CAProvider:            xmaps.GetString(c, "caProvider"),
-		CAProviderAccessId:    xmaps.GetString(c, "caProviderAccessId"),
-		CAProviderConfig:      xmaps.GetKVMapAny(c, "caProviderConfig"),
-		ValidityLifetime:      xmaps.GetString(c, "validityLifetime"),
-		PreferredChain:        xmaps.GetString(c, "preferredChain"),
-		ACMEProfile:           xmaps.GetString(c, "acmeProfile"),
-		Nameservers:           nameservers,
-		DnsPropagationWait:    xmaps.GetInt(c, "dnsPropagationWait"),
-		DnsPropagationTimeout: xmaps.GetInt(c, "dnsPropagationTimeout"),
-		DnsTTL:                xmaps.GetInt(c, "dnsTTL"),
-		HttpDelayWait:         xmaps.GetInt(c, "httpDelayWait"),
-		DisableCommonName:     xmaps.GetBool(c, "disableCommonName"),
-		DisableFollowCNAME:    xmaps.GetBool(c, "disableFollowCNAME"),
-		DisableARI:            xmaps.GetBool(c, "disableARI"),
-		SkipBeforeExpiryDays:  xmaps.GetInt(c, "skipBeforeExpiryDays"),
+		Domains:                       xmaps.GetStringsBySplit(c, "domains", ";"),
+		IPAddrs:                       xmaps.GetStringsBySplit(c, "ipaddrs", ";"),
+		ContactEmail:                  xmaps.GetString(c, "contactEmail"),
+		ChallengeType:                 challengeType,
+		DNSPersistAccountId:           xmaps.GetString(c, "dnsPersistAccountId"),
+		Provider:                      xmaps.GetString(c, "provider"),
+		ProviderAccessId:              xmaps.GetString(c, "providerAccessId"),
+		ProviderConfig:                xmaps.GetKVMapAny(c, "providerConfig"),
+		KeySource:                     xmaps.GetOrDefaultString(c, "keySource", "auto"),
+		KeyAlgorithm:                  xmaps.GetOrDefaultString(c, "keyAlgorithm", CertificateKeyAlgorithmTypeRSA2048.String()),
+		KeyContent:                    xmaps.GetString(c, "keyContent"),
+		CAProvider:                    xmaps.GetString(c, "caProvider"),
+		CAProviderAccessId:            xmaps.GetString(c, "caProviderAccessId"),
+		CAProviderConfig:              xmaps.GetKVMapAny(c, "caProviderConfig"),
+		ValidityLifetime:              xmaps.GetString(c, "validityLifetime"),
+		PreferredChain:                xmaps.GetString(c, "preferredChain"),
+		ACMEProfile:                   xmaps.GetString(c, "acmeProfile"),
+		Nameservers:                   xmaps.GetStringsBySplit(c, "nameservers", ";"),
+		DnsPropagationWait:            xmaps.GetInt(c, "dnsPropagationWait"),
+		DnsPropagationTimeout:         xmaps.GetInt(c, "dnsPropagationTimeout"),
+		DnsPropagationPollingInterval: xmaps.GetInt(c, "dnsPropagationPollingInterval"),
+		DnsTTL:                        xmaps.GetInt(c, "dnsTTL"),
+		HttpDelayWait:                 xmaps.GetInt(c, "httpDelayWait"),
+		DisableCommonName:             xmaps.GetBool(c, "disableCommonName"),
+		DisableFollowCNAME:            xmaps.GetBool(c, "disableFollowCNAME"),
+		DisableARI:                    xmaps.GetBool(c, "disableARI"),
+		SkipBeforeExpiryDays:          xmaps.GetInt(c, "skipBeforeExpiryDays"),
 	}
 }
 
@@ -205,6 +206,15 @@ func (c WorkflowNodeConfig) AsBizDeploy() WorkflowNodeConfigForBizDeploy {
 	}
 }
 
+func (c WorkflowNodeConfig) AsBizPurge() WorkflowNodeConfigForBizPurge {
+	return WorkflowNodeConfigForBizPurge{
+		Provider:         xmaps.GetString(c, "provider"),
+		ProviderAccessId: xmaps.GetString(c, "providerAccessId"),
+		ProviderConfig:   xmaps.GetKVMapAny(c, "providerConfig"),
+		ExpiredDays:      xmaps.GetInt(c, "expiredDays"),
+	}
+}
+
 func (c WorkflowNodeConfig) AsBizNotify() WorkflowNodeConfigForBizNotify {
 	return WorkflowNodeConfigForBizNotify{
 		Provider:             xmaps.GetString(c, "provider"),
@@ -225,31 +235,33 @@ type WorkflowNodeConfigForBranchBlock struct {
 }
 
 type WorkflowNodeConfigForBizApply struct {
-	Domains               []string       `json:"domains"`                         // 域名列表，以半角分号分隔
-	IPAddrs               []string       `json:"ipaddrs"`                         // IP 地址列表，以半角分号分隔
-	ContactEmail          string         `json:"contactEmail"`                    // 联系邮箱
-	ChallengeType         string         `json:"challengeType"`                   // 质询方式
-	Provider              string         `json:"provider"`                        // 质询提供商
-	ProviderAccessId      string         `json:"providerAccessId"`                // 质询提供商授权记录 ID
-	ProviderConfig        map[string]any `json:"providerConfig,omitempty"`        // 质询提供商额外配置
-	CAProvider            string         `json:"caProvider,omitempty"`            // CA 提供商（零值时使用全局配置）
-	CAProviderAccessId    string         `json:"caProviderAccessId,omitempty"`    // CA 提供商授权记录 ID
-	CAProviderConfig      map[string]any `json:"caProviderConfig,omitempty"`      // CA 提供商额外配置
-	KeySource             string         `json:"keySource"`                       // 私钥来源，可取值 "auto"、"reuse"、"custom"（零值时默认值 "auto"）
-	KeyAlgorithm          string         `json:"keyAlgorithm,omitempty"`          // 私钥算法
-	KeyContent            string         `json:"keyContent,omitempty"`            // 私钥内容
-	ValidityLifetime      string         `json:"validityLifetime,omitempty"`      // 有效期，形如 "30d"、"6h"
-	PreferredChain        string         `json:"preferredChain,omitempty"`        // 首选证书链
-	ACMEProfile           string         `json:"acmeProfile,omitempty"`           // ACME Profiles Extension
-	Nameservers           []string       `json:"nameservers,omitempty"`           // DNS 服务器列表，以半角分号分隔。等同于 lego 的 `--dns.resolvers` 参数
-	DnsPropagationWait    int            `json:"dnsPropagationWait,omitempty"`    // DNS 传播等待时间。等同于 lego 的 `--dns.propagation.wait` 参数
-	DnsPropagationTimeout int            `json:"dnsPropagationTimeout,omitempty"` // DNS 传播检查超时时间。等同于 lego 的 `--dns.timeout` 参数
-	DnsTTL                int            `json:"dnsTTL,omitempty"`                // DNS 解析记录 TTL
-	HttpDelayWait         int            `json:"httpDelayWait,omitempty"`         // HTTP 等待时间。等同于 lego 的 `--http.delay` 参数
-	DisableCommonName     bool           `json:"disableCommonName,omitempty"`     // 是否不包含 CommonName
-	DisableFollowCNAME    bool           `json:"disableFollowCNAME,omitempty"`    // 是否关闭 CNAME 跟随
-	DisableARI            bool           `json:"disableARI,omitempty"`            // 是否关闭 ARI
-	SkipBeforeExpiryDays  int            `json:"skipBeforeExpiryDays,omitempty"`  // 证书到期前多少天前跳过续期
+	DNSPersistAccountId           string         `json:"dnsPersistAccountId,omitempty"`
+	Domains                       []string       `json:"domains"`                         // 域名列表，以半角分号分隔
+	IPAddrs                       []string       `json:"ipaddrs"`                         // IP 地址列表，以半角分号分隔
+	ContactEmail                  string         `json:"contactEmail"`                    // 联系邮箱
+	ChallengeType                 string         `json:"challengeType"`                   // 质询方式
+	Provider                      string         `json:"provider"`                        // 质询提供商
+	ProviderAccessId              string         `json:"providerAccessId"`                // 质询提供商授权记录 ID
+	ProviderConfig                map[string]any `json:"providerConfig,omitempty"`        // 质询提供商额外配置
+	CAProvider                    string         `json:"caProvider,omitempty"`            // CA 提供商（零值时使用全局配置）
+	CAProviderAccessId            string         `json:"caProviderAccessId,omitempty"`    // CA 提供商授权记录 ID
+	CAProviderConfig              map[string]any `json:"caProviderConfig,omitempty"`      // CA 提供商额外配置
+	KeySource                     string         `json:"keySource"`                       // 私钥来源，可取值 "auto"、"reuse"、"custom"（零值时默认值 "auto"）
+	KeyAlgorithm                  string         `json:"keyAlgorithm,omitempty"`          // 私钥算法
+	KeyContent                    string         `json:"keyContent,omitempty"`            // 私钥内容
+	ValidityLifetime              string         `json:"validityLifetime,omitempty"`      // 有效期，形如 "30d"、"6h"
+	PreferredChain                string         `json:"preferredChain,omitempty"`        // 首选证书链
+	ACMEProfile                   string         `json:"acmeProfile,omitempty"`           // ACME Profiles Extension
+	Nameservers                   []string       `json:"nameservers,omitempty"`           // DNS 服务器列表，以半角分号分隔。等同于 lego 的 `--dns.resolvers` 参数
+	DnsPropagationWait            int            `json:"dnsPropagationWait,omitempty"`    // DNS 传播等待时间。等同于 lego 的 `--dns.propagation.wait` 参数
+	DnsPropagationTimeout         int            `json:"dnsPropagationTimeout,omitempty"` // DNS 传播检查超时时间。等同于 lego 的 `--dns.timeout` 参数
+	DnsPropagationPollingInterval int            `json:"dnsPropagationPollingInterval,omitempty"`
+	DnsTTL                        int            `json:"dnsTTL,omitempty"`               // DNS 解析记录 TTL
+	HttpDelayWait                 int            `json:"httpDelayWait,omitempty"`        // HTTP 等待时间。等同于 lego 的 `--http.delay` 参数
+	DisableCommonName             bool           `json:"disableCommonName,omitempty"`    // 是否不包含 CommonName
+	DisableFollowCNAME            bool           `json:"disableFollowCNAME,omitempty"`   // 是否关闭 CNAME 跟随
+	DisableARI                    bool           `json:"disableARI,omitempty"`           // 是否关闭 ARI
+	SkipBeforeExpiryDays          int            `json:"skipBeforeExpiryDays,omitempty"` // 证书到期前多少天前跳过续期
 }
 
 type WorkflowNodeConfigForBizUpload struct {
@@ -271,6 +283,13 @@ type WorkflowNodeConfigForBizDeploy struct {
 	ProviderAccessId        string         `json:"providerAccessId,omitempty"` // 主机提供商授权记录 ID
 	ProviderConfig          map[string]any `json:"providerConfig,omitempty"`   // 主机提供商额外配置
 	SkipOnLastSucceeded     bool           `json:"skipOnLastSucceeded"`        // 上次部署成功时是否跳过
+}
+
+type WorkflowNodeConfigForBizPurge struct {
+	Provider         string         `json:"provider"`                   // 清除提供商
+	ProviderAccessId string         `json:"providerAccessId,omitempty"` // 清除提供商授权记录 ID
+	ProviderConfig   map[string]any `json:"providerConfig,omitempty"`   // 清除提供商额外配置
+	ExpiredDays      int            `json:"expiredDays"`                // 证书已过期天数
 }
 
 type WorkflowNodeConfigForBizNotify struct {

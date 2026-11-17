@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	"ganigeorgiev.com/pocketbase/dbx"
+	"ganigeorgiev.com/pocketbase/pocketbase/core"
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
 )
 
 type CertificateRepository struct{}
@@ -110,10 +110,6 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	record.Set("ca", certificate.CA)
 	record.Set("acmeAcctUrl", certificate.ACMEAccountUrl)
 	record.Set("acmeCertUrl", certificate.ACMECertificateUrl)
-	record.Set("ariWindowStart", certificate.ARIWindowStart)
-	record.Set("ariWindowEnd", certificate.ARIWindowEnd)
-	record.Set("ariNextRefreshAt", certificate.ARINextRefreshAt)
-	record.Set("ariSupported", certificate.ARISupported)
 	record.Set("isRenewed", certificate.IsRenewed)
 	record.Set("isRevoked", certificate.IsRevoked)
 	record.Set("workflowRef", certificate.WorkflowId)
@@ -180,10 +176,6 @@ func (r *CertificateRepository) castRecordToModel(record *core.Record) (*domain.
 		CA:                 record.GetString("ca"),
 		ACMEAccountUrl:     record.GetString("acmeAcctUrl"),
 		ACMECertificateUrl: record.GetString("acmeCertUrl"),
-		ARIWindowStart:     record.GetDateTime("ariWindowStart").Time(),
-		ARIWindowEnd:       record.GetDateTime("ariWindowEnd").Time(),
-		ARINextRefreshAt:   record.GetDateTime("ariNextRefreshAt").Time(),
-		ARISupported:       record.GetBool("ariSupported"),
 		IsRenewed:          record.GetBool("isRenewed"),
 		IsRevoked:          record.GetBool("isRevoked"),
 		WorkflowId:         record.GetString("workflowRef"),

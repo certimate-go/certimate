@@ -13,5 +13,38 @@
     "submit": {
       "button": "Log-in"
     }
+  },
+
+  "setup": {
+    "heading": "Initialize Administrator",
+    "description": "Create the administrator account before using Certimate for the first time. Enter the one-time initialization token printed to the Certimate startup console; the token is valid for 30 minutes, and restarting Certimate issues a new one after expiry.",
+    "form": {
+      "token": {
+        "label": "Initialization token",
+        "placeholder": "Enter the token from the startup console"
+      },
+      "username": {
+        "label": "Email",
+        "placeholder": "Administrator email",
+        "invalid": "Please enter a valid email address"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Password (10-71 characters)",
+        "invalid": "Password must be 10-71 characters and at most 72 UTF-8 bytes"
+      },
+      "confirm_password": {
+        "label": "Confirm password",
+        "placeholder": "Re-enter the password",
+        "invalid": "Passwords do not match"
+      },
+      "submit": {
+        "button": "Complete Setup"
+      }
+    },
+    "gate": {
+      "error": "Unable to retrieve the initialization status. Check whether the service is reachable.",
+      "retry": "Retry"
+    }
   }
 }

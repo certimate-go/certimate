@@ -1,5 +1,5 @@
 import { getI18n, useTranslation } from "react-i18next";
-import { Form, Input } from "antd";
+import { Form, Input, Switch } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -36,6 +36,15 @@ const BizDeployNodeConfigFieldsProviderAliyunESA = () => {
       >
         <Input type="number" placeholder={t("workflow_node.deploy.form.aliyun_esa_site_id.placeholder")} />
       </Form.Item>
+
+      <Form.Item
+        name={[parentNamePath, "autoPrune"]}
+        initialValue={initialValues.autoPrune}
+        label={t("workflow_node.deploy.form.aliyun_esa_auto_prune.label")}
+        rules={[formRule]}
+      >
+        <Switch />
+      </Form.Item>
     </>
   );
 };
@@ -44,6 +53,7 @@ const getInitialValues = (): Nullish<z.infer<ReturnType<typeof getSchema>>> => {
   return {
     region: "",
     siteId: "",
+    autoPrune: true,
   };
 };
 
@@ -53,6 +63,7 @@ const getSchema = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }) 
   return z.object({
     region: z.string().nonempty(),
     siteId: z.union([z.string().nonempty(), z.int().positive()]),
+    autoPrune: z.boolean().nullish(),
   });
 };
 

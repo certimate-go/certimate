@@ -2,7 +2,6 @@ package aliyunapigw
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -13,12 +12,14 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/samber/lo"
 
-	aliapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/apig-20240327/v7/client"
+	aliapig "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/apig-20240327/v11/client"
 	alicloudapi "github.com/certimate-go/certimate/pkg/sdk3rd-trimmed/github.com/alibabacloud-go/cloudapi-20160714/v5/client"
 
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/aliyun-cas"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
+	xalibabacloud "github.com/certimate-go/certimate/pkg/utils/third-party/alibabacloud"
 )
 
 type (
@@ -69,7 +70,12 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		return nil, fmt.Errorf("the configuration of the deployer provider is nil")
 	}
 
-	clients, err := createSDKClients(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	clientAPIG, err := createSDKClientAPIG(config.AccessKeyId, config.AccessKeySecret, config.Region)
+	if err != nil {
+		return nil, fmt.Errorf("could not create client: %w", err)
+	}
+
+	clientCAPI, err := createSDKClientCAPI(config.AccessKeyId, config.AccessKeySecret, config.Region)
 	if err != nil {
 		return nil, fmt.Errorf("could not create client: %w", err)
 	}
@@ -78,9 +84,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		AccessKeyId:     config.AccessKeyId,
 		AccessKeySecret: config.AccessKeySecret,
 		ResourceGroupId: config.ResourceGroupId,
-		Region: lo.
-			If(config.Region == "" || strings.HasPrefix(config.Region, "cn-"), "cn-hangzhou").
-			Else("ap-southeast-1"),
+		Region:          lo.Ternary(xalibabacloud.IsIntlRegion(config.Region), "ap-southeast-1", ""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -89,7 +93,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 	return &Deployer{
 		config:     config,
 		logger:     slog.Default(),
-		sdkClients: clients,
+		sdkClients: &wSDKClients{CloudNativeAPIGateway: clientAPIG, TraditionalAPIGateway: clientCAPI},
 		sdkCertmgr: pcertmgr,
 	}, nil
 }
@@ -100,6 +104,8 @@ func (d *Deployer) SetLogger(logger *slog.Logger) {
 	} else {
 		d.logger = logger
 	}
+
+	d.sdkCertmgr.SetLogger(logger)
 }
 
 func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*DeployResult, error) {
@@ -180,26 +186,16 @@ func (d *Deployer) deployToTraditional(ctx context.Context, certPEM, privkeyPEM 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no apigw domains to deploy")
 	} else {
 		d.logger.Info("found apigw domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				if err := d.updateTraditionalDomainCertificate(ctx, d.config.GroupId, domain, certPEM, privkeyPEM); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateTraditionalDomainCertificate(ctx, d.config.GroupId, domain, certPEM, privkeyPEM)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -273,27 +269,17 @@ func (d *Deployer) deployToCloudNative(ctx context.Context, certPEM, privkeyPEM 
 		return fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no apigw domains to deploy")
 	} else {
 		d.logger.Info("found apigw domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-				certId := upres.ExtendedData["CertIdentifier"].(string)
-				if err := d.updateCloudNativeDomainCertificate(ctx, d.config.GatewayId, domain, certId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			certId := upres.ExtendedData["CertIdWithRegion"].(string)
+			return d.updateCloudNativeDomainCertificate(ctx, d.config.GatewayId, domain, certId)
+		}); err != nil {
+			return err
 		}
 	}
 
@@ -470,56 +456,50 @@ func (d *Deployer) findCloudNativeDomainIdByDomain(ctx context.Context, cloudGat
 	return "", fmt.Errorf("could not find domain '%s'", domain)
 }
 
-func createSDKClients(accessKeyId, accessKeySecret, region string) (*wSDKClients, error) {
-	wsdk := &wSDKClients{}
-
-	{
-		// 接入点一览 https://api.aliyun.com/product/APIG
-		var endpoint string
-		switch region {
-		case "":
-			endpoint = "apig.cn-hangzhou.aliyuncs.com"
-		default:
-			endpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := aliapig.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.CloudNativeAPIGateway = client
+func createSDKClientCAPI(accessKeyId, accessKeySecret, region string) (*alicloudapi.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/CloudAPI
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "apigateway.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
 	}
 
-	{
-		// 接入点一览 https://api.aliyun.com/product/CloudAPI
-		var endpoint string
-		switch region {
-		case "":
-			endpoint = "apigateway.cn-hangzhou.aliyuncs.com"
-		default:
-			endpoint = fmt.Sprintf("apigateway.%s.aliyuncs.com", region)
-		}
-
-		config := &aliopen.Config{
-			AccessKeyId:     tea.String(accessKeyId),
-			AccessKeySecret: tea.String(accessKeySecret),
-			Endpoint:        tea.String(endpoint),
-		}
-
-		client, err := alicloudapi.NewClient(config)
-		if err != nil {
-			return nil, err
-		}
-
-		wsdk.TraditionalAPIGateway = client
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
 	}
 
-	return wsdk, nil
+	client, err := alicloudapi.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func createSDKClientAPIG(accessKeyId, accessKeySecret, region string) (*aliapig.Client, error) {
+	// 接入点一览 https://api.aliyun.com/product/APIG
+	var endpoint string
+	switch region {
+	case "":
+		endpoint = "apig.cn-hangzhou.aliyuncs.com"
+	default:
+		endpoint = fmt.Sprintf("apig.%s.aliyuncs.com", region)
+	}
+
+	config := &aliopen.Config{
+		AccessKeyId:     tea.String(accessKeyId),
+		AccessKeySecret: tea.String(accessKeySecret),
+		Endpoint:        tea.String(endpoint),
+	}
+
+	client, err := aliapig.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

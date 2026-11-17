@@ -10,11 +10,13 @@ import (
 
 type DeployCertificateRequest struct {
 	// 提供商相关
+	_                      struct{}
 	Provider               domain.DeploymentProviderType
 	ProviderAccessConfig   map[string]any
 	ProviderExtendedConfig map[string]any
 
 	// 证书相关
+	_              struct{}
 	CertificatePEM string
 	PrivateKeyPEM  string
 }

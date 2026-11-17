@@ -2,7 +2,6 @@ package tencentcloudecdn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -16,6 +15,8 @@ import (
 	"github.com/certimate-go/certimate/pkg/core"
 	cmgrimpl "github.com/certimate-go/certimate/pkg/core/certmgr/providers/tencentcloud-ssl"
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
+	xloop "github.com/certimate-go/certimate/pkg/utils/loop"
+	xtencentcloud "github.com/certimate-go/certimate/pkg/utils/third-party/tencentcloud"
 )
 
 type (
@@ -62,9 +63,7 @@ func NewDeployer(config *DeployerConfig) (*Deployer, error) {
 		SecretId:  config.SecretId,
 		SecretKey: config.SecretKey,
 		ProjectId: config.ProjectId,
-		Endpoint: lo.
-			If(strings.HasSuffix(config.Endpoint, "intl.tencentcloudapi.com"), "ssl.intl.tencentcloudapi.com"). // 国际站使用独立的接口端点
-			Else(""),
+		Endpoint:  lo.Ternary(xtencentcloud.IsIntlAPIEndpoint(config.Endpoint), "ssl.intl.tencentcloudapi.com", ""),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("could not create certmgr: %w", err)
@@ -141,26 +140,16 @@ func (d *Deployer) Deploy(ctx context.Context, certPEM, privkeyPEM string) (*Dep
 		return nil, fmt.Errorf("unsupported domain match pattern: '%s'", d.config.DomainMatchPattern)
 	}
 
-	// 遍历更新域名证书
+	// 批量更新域名证书
 	if len(domains) == 0 {
 		d.logger.Info("no ecdn domains to deploy")
 	} else {
 		d.logger.Info("found ecdn domains to deploy", slog.Any("domains", domains))
-		var errs []error
 
-		for _, domain := range domains {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			default:
-				if err := d.updateDomainCertificate(ctx, domain, upres.CertId); err != nil {
-					errs = append(errs, err)
-				}
-			}
-		}
-
-		if len(errs) > 0 {
-			return nil, errors.Join(errs...)
+		if err := xloop.ForRangeAllWithContext(ctx, domains, func(ctx context.Context, domain string, _ int) error {
+			return d.updateDomainCertificate(ctx, domain, upres.CertId)
+		}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -261,7 +250,7 @@ func (d *Deployer) updateDomainCertificate(ctx context.Context, domain string, c
 
 	domainConfig := describeDomainsConfigResp.Response.Domains[0]
 	if domainConfig.Https != nil && domainConfig.Https.CertInfo != nil && domainConfig.Https.CertInfo.CertId != nil && *domainConfig.Https.CertInfo.CertId == cloudCertId {
-		// 已部署过此域名，跳过
+		// 已部署过，直接返回
 		return nil
 	}
 

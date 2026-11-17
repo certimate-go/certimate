@@ -3,6 +3,8 @@ package hostname_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	xcerthostname "github.com/certimate-go/certimate/pkg/utils/cert/hostname"
 )
 
@@ -38,15 +40,12 @@ func TestUtil(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			result := xcerthostname.IsMatch(tc.pattern, tc.hostname)
-			status := "✓"
-			pf := t.Logf
-			if result != tc.expected {
-				status = "✗"
-				pf = t.Errorf
+			matched := xcerthostname.IsMatch(tc.pattern, tc.hostname)
+			if tc.expected {
+				assert.True(t, matched, "Pattern: %-20s Hostname: %-20s", tc.pattern, tc.hostname)
+			} else {
+				assert.False(t, matched, "Pattern: %-20s Hostname: %-20s", tc.pattern, tc.hostname)
 			}
-
-			pf("%s Pattern: %-20s Hostname: %-20s Expected: %-5v Got: %-5v\n", status, tc.pattern, tc.hostname, tc.expected, result)
 		}
 	})
 }

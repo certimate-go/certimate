@@ -102,7 +102,6 @@ func (d *DNSProvider) Present(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("ctyun: %w", err)
 	}
 
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&api=11259&data=181&isNormal=1&vid=259
 	request := &ctyundns.AddRecordRequest{
 		Domain:   lo.ToPtr(dns01.UnFqdn(authZone)),
 		Host:     lo.ToPtr(subDomain),
@@ -134,7 +133,6 @@ func (d *DNSProvider) CleanUp(ctx context.Context, domain, token, keyAuth string
 		return fmt.Errorf("tencentcloud-eo: unknown record ID for '%s'", info.EffectiveFQDN)
 	}
 
-	// REF: https://eop.ctyun.cn/ebp/ctapiDocument/search?sid=122&api=11262&data=181&isNormal=1&vid=259
 	request := &ctyundns.DeleteRecordRequest{
 		RecordId: lo.ToPtr(recordID),
 	}

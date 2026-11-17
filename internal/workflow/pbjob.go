@@ -1,11 +1,11 @@
-﻿package workflow
+package workflow
 
 import (
 	"context"
 	"fmt"
 	"log/slog"
 
-	"github.com/pocketbase/pocketbase/tools/cron"
+	"ganigeorgiev.com/pocketbase/pocketbase/tools/cron"
 	"github.com/samber/lo"
 
 	"github.com/certimate-go/certimate/internal/app"
@@ -16,13 +16,13 @@ import (
 func registerWorkflowJob(workflowSrv *WorkflowService, workflowId string, triggerCron string) error {
 	scheduler := app.GetScheduler()
 
-	jobId := fmt.Sprintf("workflow#%s", workflowId)
-	job, _ := lo.Find(scheduler.Jobs(), func(j *cron.Job) bool { return j.Id() == jobId })
+	jobKey := buildPbJobKey(workflowId)
+	job, _ := lo.Find(scheduler.Jobs(), func(j *cron.Job) bool { return j.Id() == jobKey })
 	if job != nil && job.Expression() == triggerCron {
 		return nil
 	}
 
-	err := scheduler.Add(jobId, triggerCron, func() {
+	err := scheduler.Add(jobKey, triggerCron, func() {
 		app.GetLogger().Info(fmt.Sprintf("workflow #%s is triggered ...", workflowId))
 
 		_, err := workflowSrv.StartRun(context.Background(), &dtos.WorkflowStartRunReq{
@@ -40,4 +40,8 @@ func registerWorkflowJob(workflowSrv *WorkflowService, workflowId string, trigge
 
 	app.GetLogger().Info(fmt.Sprintf("registered cron job for workflow #%s", workflowId), slog.String("cron", triggerCron))
 	return nil
+}
+
+func buildPbJobKey(workflowId string) string {
+	return fmt.Sprintf("workflow#%s", workflowId)
 }

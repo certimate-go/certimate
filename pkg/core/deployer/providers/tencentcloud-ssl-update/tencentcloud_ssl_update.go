@@ -161,7 +161,7 @@ func (d *Deployer) executeUpdateCertificateInstance(ctx context.Context, certPEM
 
 		var pendingCount, runningCount, succeededCount, failedCount, totalCount int64
 		if describeHostUpdateRecordDetailResp.Response.TotalCount == nil {
-			return false, fmt.Errorf("unexpected tencentcloud deployment job status")
+			return false, fmt.Errorf("unexpected deployment job status")
 		} else {
 			pendingCount = lo.FromPtr(describeHostUpdateRecordDetailResp.Response.PendingTotalCount)
 			runningCount = lo.FromPtr(describeHostUpdateRecordDetailResp.Response.RunningTotalCount)
@@ -171,13 +171,13 @@ func (d *Deployer) executeUpdateCertificateInstance(ctx context.Context, certPEM
 
 			if succeededCount+failedCount == totalCount {
 				if failedCount > 0 {
-					return false, fmt.Errorf("tencentcloud deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+					return false, fmt.Errorf("unexpected deployment deployment job status (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
 				}
 				return true, nil
 			}
 		}
 
-		d.logger.Info(fmt.Sprintf("waiting for tencentcloud deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
+		d.logger.Info(fmt.Sprintf("waiting for deployment job completion (pending: %d, running: %d, succeeded: %d, failed: %d, total: %d) ...", pendingCount, runningCount, succeededCount, failedCount, totalCount))
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err
@@ -240,13 +240,13 @@ func (d *Deployer) executeUploadUpdateCertificateInstance(ctx context.Context, c
 
 			if succeededCount+failedCount == totalCount {
 				if failedCount > 0 {
-					return false, fmt.Errorf("tencentcloud deployment job failed (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
+					return false, fmt.Errorf("unexpected deployment deployment job status (succeeded: %d, failed: %d, total: %d)", succeededCount, failedCount, totalCount)
 				}
 				return true, nil
 			}
 		}
 
-		d.logger.Info(fmt.Sprintf("waiting for tencentcloud deployment job completion (running: %d, succeeded: %d, failed: %d, total: %d) ...", runningCount, succeededCount, failedCount, totalCount))
+		d.logger.Info(fmt.Sprintf("waiting for deployment job completion (running: %d, succeeded: %d, failed: %d, total: %d) ...", runningCount, succeededCount, failedCount, totalCount))
 		return false, nil
 	}, 10*time.Second); err != nil {
 		return err

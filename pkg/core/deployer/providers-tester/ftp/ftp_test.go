@@ -1,0 +1,67 @@
+//go:build tester
+
+package ftp_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	tester "github.com/certimate-go/certimate/pkg/core/deployer/providers-tester"
+	impl "github.com/certimate-go/certimate/pkg/core/deployer/providers/ftp"
+)
+
+var (
+	fp              = tester.InitArgs("FTP_")
+	fTestCertPath   string
+	fTestKeyPath    string
+	fFtpHost        string
+	fFtpPort        int64
+	fFtpUsername    string
+	fFtpPassword    string
+	fFilePathForCrt string
+	fFilePathForKey string
+)
+
+func init() {
+	fp.DefineString(&fTestCertPath, "TESTCERTPATH")
+	fp.DefineString(&fTestKeyPath, "TESTKEYPATH")
+	fp.DefineString(&fFtpHost, "FTPHOST")
+	fp.DefineInt64(&fFtpPort, "FTPPORT")
+	fp.DefineString(&fFtpUsername, "FTPUSERNAME")
+	fp.DefineString(&fFtpPassword, "FTPPASSWORD")
+	fp.DefineString(&fFilePathForCrt, "FILEPATHFORCRT")
+	fp.DefineString(&fFilePathForKey, "FILEPATHFORKEY")
+}
+
+/*
+Shell command to run this test:
+
+	go test -tags=tester -v ./ftp_test.go -args \
+	--FTP_TESTCERTPATH="/path/to/your-test-cert.pem" \
+	--FTP_TESTKEYPATH="/path/to/your-test-key.pem" \
+	--FTP_FTPHOST="localhost" \
+	--FTP_FTPPORT=21 \
+	--FTP_FTPUSERNAME="USER" \
+	--FTP_FTPPASSWORD="PASS" \
+	--FTP_FILEPATHFORCRT="/path/to/your-output-cert.pem" \
+	--FTP_FILEPATHFORKEY="/path/to/your-output-key.pem"
+*/
+func TestProvider(t *testing.T) {
+	fp.Parse()
+
+	t.Run("Deploy_PEM", func(t *testing.T) {
+		provider, err := impl.NewDeployer(&impl.DeployerConfig{
+			FtpHost:        fFtpHost,
+			FtpPort:        int32(fFtpPort),
+			FtpUsername:    fFtpUsername,
+			FtpPassword:    fFtpPassword,
+			FileFormat:     impl.FILE_FORMAT_PEM,
+			FilePathForCrt: fFilePathForCrt + ".pem",
+			FilePathForKey: fFilePathForKey + ".pem",
+		})
+		require.NoError(t, err)
+
+		tester.Deploy(t, provider, tester.DeployInput{CertPath: fTestCertPath, KeyPath: fTestKeyPath})
+	})
+}

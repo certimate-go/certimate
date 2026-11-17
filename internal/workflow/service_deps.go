@@ -3,7 +3,7 @@ package workflow
 import (
 	"context"
 
-	"github.com/pocketbase/dbx"
+	"ganigeorgiev.com/pocketbase/dbx"
 
 	"github.com/certimate-go/certimate/internal/domain"
 )
@@ -19,8 +19,4 @@ type workflowRunRepository interface {
 	Save(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
 	SaveWithCascading(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error)
 	DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error)
-}
-
-type settingsRepository interface {
-	GetByName(ctx context.Context, name string) (*domain.Settings, error)
 }

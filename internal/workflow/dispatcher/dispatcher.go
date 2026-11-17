@@ -89,10 +89,7 @@ func (wd *workflowDispatcher) Bootup(ctx context.Context) error {
 	wd.taskMtx.Lock()
 	defer wd.taskMtx.Unlock()
 
-	if _, err := app.GetDB().NewQuery(fmt.Sprintf("UPDATE %s SET lastRunStatus = 'canceled' WHERE lastRunStatus = 'pending' OR lastRunStatus = 'processing'", domain.CollectionNameWorkflow)).Execute(); err != nil {
-		return err
-	}
-	if _, err := app.GetDB().NewQuery(fmt.Sprintf("UPDATE %s SET status = 'canceled' WHERE status = 'pending' OR status = 'processing'", domain.CollectionNameWorkflowRun)).Execute(); err != nil {
+	if err := wd.workflowRunRepo.ResetStatusIfHanging(ctx); err != nil {
 		return err
 	}
 

@@ -18,7 +18,7 @@ type HookHandler struct {
 	mutex   *sync.Mutex
 	base    slog.Handler
 	parent  *HookHandler
-	options *HookHandlerOptions
+	options HookHandlerOptions
 	group   string
 	attrs   []slog.Attr
 }
@@ -31,7 +31,7 @@ func NewHookHandler(handler slog.Handler, opts *HookHandlerOptions) *HookHandler
 	h := &HookHandler{
 		mutex:   &sync.Mutex{},
 		base:    handler,
-		options: opts,
+		options: *opts,
 	}
 
 	if h.options.WriteFunc == nil {
