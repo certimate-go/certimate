@@ -1,16 +1,13 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { IconArrowRight, IconLock, IconMail } from "@tabler/icons-react";
-import { App, Button, Card, Divider, Form, Input, Space } from "antd";
+import { App, Button, Card, Form, Input, Space } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
-import AppDocument from "@/components/AppDocument";
-import AppLocale from "@/components/AppLocale";
-import AppTheme from "@/components/AppTheme";
-import AppVersion from "@/components/AppVersion";
-import { useAntdForm, useBrowserTheme } from "@/hooks";
+import AuthBackdrop from "@/components/AuthBackdrop";
+import AuthFooter from "@/components/AuthFooter";
+import { useAntdForm } from "@/hooks";
 import { authWithPassword } from "@/repository/admin";
 import { unwrapErrMsg } from "@/utils/error";
 import { withBasePath } from "@/utils/url";
@@ -21,24 +18,6 @@ const Login = () => {
   const { t } = useTranslation();
 
   const { notification } = App.useApp();
-  const { theme: browserTheme } = useBrowserTheme();
-
-  const bgStyle = useMemo<React.CSSProperties>(() => {
-    let svg = "";
-    let mask = "";
-    if (browserTheme === "dark") {
-      svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="rgb(202 78 13 / 0.12)"><path d="M0 .5H31.5V32"/></svg>`;
-      mask = "white";
-    } else {
-      svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="rgb(249 115 22 / 0.08)"><path d="M0 .5H31.5V32"/></svg>`;
-      mask = "black";
-    }
-
-    return {
-      backgroundImage: `url('data:image/svg+xml;base64,${btoa(svg)}')`,
-      maskImage: `linear-gradient(to bottom right, transparent, ${mask}, transparent)`,
-    };
-  }, [browserTheme]);
 
   const formSchema = z.object({
     username: z.email(),
@@ -68,7 +47,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="pointer-events-none fixed min-h-screen w-full" style={bgStyle}></div>
+      <AuthBackdrop />
 
       <div className="flex h-screen w-full flex-col items-center justify-center">
         <Card className="w-120 max-w-full rounded-md shadow-md max-sm:size-full max-sm:rounded-none">
@@ -104,30 +83,7 @@ const Login = () => {
             </Form>
 
             <div className="mt-12">
-              <div className="block max-sm:hidden">
-                <div className="flex items-center justify-center">
-                  <Space align="center" separator={<Divider orientation="vertical" />} size={4}>
-                    <AppLocale.LinkButton />
-                    <AppTheme.LinkButton />
-                    <AppDocument.LinkButton />
-                    <AppVersion.LinkButton />
-                  </Space>
-                </div>
-              </div>
-              <div className="hidden max-sm:block">
-                <div className="flex items-center justify-center">
-                  <Space align="center" separator={<Divider orientation="vertical" />} size={4}>
-                    <AppLocale.LinkButton />
-                    <AppTheme.LinkButton />
-                    <AppDocument.LinkButton />
-                  </Space>
-                </div>
-                <div className="mt-6 flex items-center justify-center">
-                  <Space align="center" separator={<Divider orientation="vertical" />} size={4}>
-                    <AppVersion.LinkButton />
-                  </Space>
-                </div>
-              </div>
+              <AuthFooter />
             </div>
           </div>
         </Card>

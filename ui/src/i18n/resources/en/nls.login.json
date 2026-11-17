@@ -43,6 +43,7 @@
       }
     },
     "gate": {
+      "title": "Service connection failed",
       "error": "Unable to retrieve the initialization status. Check whether the service is reachable.",
       "retry": "Retry"
     }
