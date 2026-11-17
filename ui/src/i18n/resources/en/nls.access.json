@@ -56,8 +56,8 @@
       "skipped": "Skipped"
     },
     "reason": {
-      "auth_rejected": "Authentication was rejected by the target. Check the username, password, or key.",
-      "connect_failed": "Could not connect to the target server. Check the host and port.",
+      "auth_rejected": "Authentication was rejected. Check the credentials.",
+      "connect_failed": "Could not reach the service. Check the endpoint and network settings.",
       "tls_failed": "TLS/SSL verification failed. Check the certificate settings.",
       "timeout": "The test timed out before a conclusion was reached.",
       "canceled": "The test was canceled.",
@@ -77,7 +77,7 @@
       "label": "Diagnostics"
     },
     "scope": {
-      "passed": "Authentication passed; deploy permissions were not verified.",
+      "passed": "Authentication passed. Resource permissions were not verified.",
       "failed": "The result applies only to the checks listed above.",
       "inconclusive": "This run could not determine whether the credential is valid."
     }
