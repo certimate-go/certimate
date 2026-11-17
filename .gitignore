@@ -15,6 +15,7 @@ __debug_bin*
 
 vendor
 dist
+/build
 
 /certimate
 /certimate.exe

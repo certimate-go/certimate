@@ -24,7 +24,7 @@ import (
 )
 
 func processWithFinalization(ctx context.Context, manager *plugin.Manager, dp *plugin.DiscoveredPlugin, req *plugin.Request, logger *slog.Logger) (*plugin.Result, error) {
-	session, err := manager.StartSession(ctx, dp)
+	session, err := manager.StartSession(ctx, dp, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func RegisterDNSPlugin(dp *plugin.DiscoveredPlugin, logger *slog.Logger) error {
 }
 
 func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOptions) (core.ACMEChallenger, error) {
-	session, err := f.manager.StartSession(context.Background(), f.dp)
+	session, err := f.manager.StartSession(context.Background(), f.dp, nil)
 	if err != nil {
 		return nil, err
 	}

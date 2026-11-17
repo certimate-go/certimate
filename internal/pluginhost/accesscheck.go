@@ -47,7 +47,7 @@ func (c *pluginAccessChecker) Check(ctx context.Context, config map[string]any) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", core.ErrAccessCheckConfigInvalid, err)
 	}
-	session, err := c.manager.StartSession(ctx, c.dp)
+	session, err := c.manager.StartSession(ctx, c.dp, nil)
 	if err != nil {
 		return accessCheckPluginFailure(err), nil
 	}

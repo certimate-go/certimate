@@ -51,7 +51,7 @@ func (m *Manager) Config() PluginConfig { return m.cfg }
 func (m *Manager) Bootstrap(ctx context.Context, dp *DiscoveredPlugin) (*Metadata, *ConfigSchema, error) {
 	ctx, cancel := context.WithTimeout(ctx, m.cfg.StartTimeout)
 	defer cancel()
-	session, err := m.StartSession(ctx, dp)
+	session, err := m.StartSession(ctx, dp, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -112,26 +112,38 @@ type Session struct {
 	dp      *DiscoveredPlugin
 	d       *dispensed
 
+	run runLog
+	pid int
+
 	mu         sync.Mutex
 	redactions []string
 	executions map[string]*sessionExecutionState
 	dnsKeys    map[DnsKey]string
 	closeOnce  sync.Once
 	closed     bool
+	exitCause  exitCause
 }
 
-func (m *Manager) StartSession(ctx context.Context, dp *DiscoveredPlugin) (*Session, error) {
+// StartSession starts the plugin subprocess. lifecycle, when non-nil, receives
+// Info/Warn process start and exit lines for a workflow run log. Pass nil for
+// Bootstrap, access checks, and other host-only paths.
+func (m *Manager) StartSession(ctx context.Context, dp *DiscoveredPlugin, lifecycle *slog.Logger) (*Session, error) {
 	d, err := m.dispense(dp)
 	if err != nil {
 		return nil, err
 	}
+	run := runLog{node: lifecycle}
+	pid := clientPID(d.client)
 	s := &Session{
 		manager:    m,
 		dp:         dp,
 		d:          d,
+		run:        run,
+		pid:        pid,
 		executions: make(map[string]*sessionExecutionState),
 		dnsKeys:    make(map[DnsKey]string),
 	}
+	run.started(dp.Manifest.ProviderType, pid)
 	runtime.AddCleanup(s, func(dd *dispensed) { dd.client.Kill() }, d)
 	return s, nil
 }
@@ -151,14 +163,13 @@ func (s *Session) GetMetadata(ctx context.Context) (*Metadata, error) {
 }
 
 func (s *Session) Pid() int {
+	if s.pid > 0 {
+		return s.pid
+	}
 	if s.d == nil || s.d.client == nil {
 		return 0
 	}
-	config := s.d.client.ReattachConfig()
-	if config == nil {
-		return 0
-	}
-	return config.Pid
+	return clientPID(s.d.client)
 }
 
 type syncBuffer struct {
@@ -308,6 +319,9 @@ func (s *Session) Process(ctx context.Context, req *Request, forward *slog.Logge
 	sink := newForwardLogger(forward, redact, s.manager.cfg.MaxLogFrames)
 	res, err := s.d.impl.Process(ctx, immutable, sink)
 	if err != nil {
+		if transportLost(err) {
+			waitClientExited(s.d.client)
+		}
 		return nil, s.manager.wrapError(s.dp, s.d, redact, err)
 	}
 	if verr := res.Validate(immutable.Capability); verr != nil {
@@ -369,6 +383,9 @@ func (s *Session) PostProcess(ctx context.Context, executionID string, forward *
 
 	sink := newForwardLogger(forward, redact, s.manager.cfg.MaxLogFrames)
 	err := s.d.impl.PostProcess(ctx, state.execution.Request, sink)
+	if transportLost(err) {
+		waitClientExited(s.d.client)
+	}
 	err = s.manager.wrapError(s.dp, s.d, redact, err)
 
 	s.mu.Lock()
@@ -398,7 +415,20 @@ func (s *Session) Close() {
 	s.closed = true
 	s.mu.Unlock()
 	s.closeOnce.Do(func() {
-		s.d.client.Kill()
+		// After Kill returns, Exited is true for a live process the host stopped, so read it first.
+		cause := exitStopped
+		if s.d != nil && s.d.client != nil && s.d.client.Exited() {
+			cause = exitDied
+		}
+		s.exitCause = cause
+		if s.d != nil && s.d.client != nil {
+			s.d.client.Kill()
+		}
+		provider := ""
+		if s.dp != nil && s.dp.Manifest != nil {
+			provider = s.dp.Manifest.ProviderType
+		}
+		s.run.exited(provider, s.Pid(), cause)
 	})
 }
 
