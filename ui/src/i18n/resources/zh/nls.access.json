@@ -56,8 +56,8 @@
       "skipped": "未执行"
     },
     "reason": {
-      "auth_rejected": "目标拒绝了认证，请检查用户名、密码或密钥。",
-      "connect_failed": "无法连接到目标服务器，请检查地址与端口。",
+      "auth_rejected": "认证被拒绝，请检查凭据。",
+      "connect_failed": "无法连通服务，请检查接入点与网络设置。",
       "tls_failed": "TLS/SSL 校验失败，请检查证书相关设置。",
       "timeout": "测试超时，未能得出结论。",
       "canceled": "测试已取消。",
@@ -77,7 +77,7 @@
       "label": "诊断信息"
     },
     "scope": {
-      "passed": "认证通过，未验证部署权限。",
+      "passed": "认证通过，未验证资源权限。",
       "failed": "测试结果仅针对上述检查项。",
       "inconclusive": "本次测试未能判断凭据是否有效。"
     }
