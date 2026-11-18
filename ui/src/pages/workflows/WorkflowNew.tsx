@@ -370,14 +370,12 @@ const WorkflowNew = () => {
         </div>
 
         <div className="mt-8">
-          <div className="flex items-baseline justify-between gap-4">
-            <h3>{t("workflow.new.custom_templates.title")}</h3>
-            <Typography.Text type="secondary" className="text-xs">
-              {t("workflow.new.custom_templates.subtitle")}
-            </Typography.Text>
-          </div>
+          <h3>{t("workflow.new.custom_templates.title")}</h3>
+          <Typography.Text type="secondary">
+            <div className="mb-4">{t("workflow.new.custom_templates.subtitle")}</div>
+          </Typography.Text>
 
-          <div className="mt-3 mb-4">
+          <div>
             <Show
               when={(customTemplates?.length ?? 0) > 0}
               fallback={
