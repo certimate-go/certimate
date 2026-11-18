@@ -25,6 +25,7 @@
     "accelerator": "加速器",
     "apigw": "API 网关",
     "serverless": "Serverless",
+    "waf": "Web 应用防火墙",
     "website": "网站托管",
     "ssl": "证书托管",
     "other": "其他"

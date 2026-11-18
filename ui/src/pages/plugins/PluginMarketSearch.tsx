@@ -59,7 +59,9 @@ const PluginMarketSearch = ({ draft, filters: { status, capability, source, loca
   }, [suggestionKeyword, status, capability, source, locale, suggestionQuery]);
 
   const options = entries.map((entry) => {
-    const name = entry.display_name_key && i18n.exists(entry.display_name_key) ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+    const name =
+      entry.display_name ||
+      (entry.display_name_key && i18n.exists(entry.display_name_key) ? t(entry.display_name_key, entry.provider_type) : entry.provider_type);
     return {
       value: `${entry.source.id}/${entry.provider_type}`,
       entry,

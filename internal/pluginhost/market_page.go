@@ -41,7 +41,8 @@ type MarketCard struct {
 
 	ProviderType   string     `json:"provider_type"`
 	DisplayNameKey string     `json:"display_name_key"`
-	Category        string     `json:"category"`
+	DisplayName    string     `json:"display_name,omitempty"`
+	Category       string     `json:"category"`
 	Capability     string     `json:"capability,omitempty"`
 	Version        string     `json:"version"`
 	Description    string     `json:"description"`
@@ -142,7 +143,9 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 		if owns {
 			runtimePlugin = registered[card.ProviderType]
 		}
-		if keyword != "" && !marketMatches(mm, runtimePlugin, query.Locale, keyword) {
+		translation := marketTranslation(mm, runtimePlugin, query.Locale)
+		card.DisplayName, card.Description = translation.Name, translation.Description
+		if keyword != "" && !marketMatches(card, mm, runtimePlugin, keyword) {
 			return
 		}
 		if job, ok := s.JobStatus(card.ProviderType); ok && job.Source == card.Source && job.State != JobInstalled {
@@ -241,16 +244,40 @@ func newMarketCard(mm *plugin.MarketManifest, source plugin.MarketSource) Market
 	}
 }
 
-func marketMatches(mm *plugin.MarketManifest, p *registeredPlugin, locale, keyword string) bool {
-	if strings.Contains(strings.ToLower(mm.ProviderType), keyword) || strings.Contains(strings.ToLower(mm.Description), keyword) {
-		return true
-	}
-	if p == nil || p.entry == nil {
-		return false
-	}
+func marketTranslation(mm *plugin.MarketManifest, p *registeredPlugin, locale string) plugin.MarketTranslation {
 	lang, _, _ := strings.Cut(locale, "-")
-	for _, name := range []string{p.entry.I18n[locale][mm.DisplayNameKey], p.entry.I18n[lang][mm.DisplayNameKey], p.entry.I18n["en"][mm.DisplayNameKey]} {
-		if strings.Contains(strings.ToLower(name), keyword) {
+	var result plugin.MarketTranslation
+	for _, language := range []string{locale, lang, "en"} {
+		translation := mm.I18n[language]
+		if p != nil && p.entry != nil {
+			bundle := p.entry.I18n[language]
+			if translation.Name == "" {
+				translation.Name = bundle[p.entry.DisplayNameKey]
+			}
+			if translation.Description == "" {
+				translation.Description = bundle["plugin."+mm.ProviderType+".description"]
+			}
+		}
+		if result.Name == "" {
+			result.Name = translation.Name
+		}
+		if result.Description == "" {
+			result.Description = translation.Description
+		}
+	}
+	if result.Name == "" {
+		result.Name = mm.ProviderType
+	}
+	if result.Description == "" {
+		result.Description = mm.Description
+	}
+	return result
+}
+
+func marketMatches(card MarketCard, mm *plugin.MarketManifest, p *registeredPlugin, keyword string) bool {
+	english := marketTranslation(mm, p, "en")
+	for _, value := range []string{card.ProviderType, card.DisplayName, card.Description, english.Name, english.Description, mm.Description} {
+		if strings.Contains(strings.ToLower(value), keyword) {
 			return true
 		}
 	}

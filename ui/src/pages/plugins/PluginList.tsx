@@ -163,7 +163,7 @@ const MarketCardActions = ({ entry, job, pollingError, speed, busy, onRetry, onI
   if (entry.canUpdate) items.push({ key: "update", label: t("plugin.market.action.update"), icon: <IconRefresh size={14} />, onClick: onUpdate });
   if (entry.canDelete) items.push({ key: "delete", label: t("plugin.market.action.delete"), icon: <IconTrash size={14} />, danger: true, onClick: onDelete });
   if (!items.length) return null;
-  const name = entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+  const name = entry.display_name || (entry.display_name_key ? t(entry.display_name_key, entry.provider_type) : entry.provider_type);
   return (
     <Dropdown autoFocus placement="bottomRight" trigger={["click"]} menu={{ items }} disabled={busy}>
       <Button
@@ -437,7 +437,7 @@ const PluginMarket = () => {
 
   const confirmDelete = (entry: MarketEntry) => {
     const pt = entry.provider_type;
-    const name = entry.display_name_key ? t(entry.display_name_key, pt) : pt;
+    const name = entry.display_name || (entry.display_name_key ? t(entry.display_name_key, pt) : pt);
     modal.confirm({
       title: <span className="text-error">{t("plugin.market.action.delete_modal_title")}</span>,
       content: t("plugin.market.action.delete_modal_content", { name }),
@@ -711,7 +711,9 @@ const PluginMarket = () => {
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
           {listing.items.map((entry) => {
-            const name = entry.display_name_key && i18n.exists(entry.display_name_key) ? t(entry.display_name_key, entry.provider_type) : entry.provider_type;
+            const name =
+              entry.display_name ||
+              (entry.display_name_key && i18n.exists(entry.display_name_key) ? t(entry.display_name_key, entry.provider_type) : entry.provider_type);
             const key = cardKey(pluginTarget(entry));
             const job = jobs[key] ?? entry.job;
             return (
@@ -755,8 +757,13 @@ const PluginMarket = () => {
                     </div>
                     <div className="mt-0.5 text-xs/4 wrap-anywhere" style={{ color: token.colorTextSecondary }}>
                       {entry.capability
-                        ? [t(`plugin.market.capability.${entry.capability}`, entry.capability), entry.category].filter(Boolean).join(" · ")
-                        : entry.category}
+                        ? [
+                            t(`plugin.market.capability.${entry.capability}`, entry.capability),
+                            entry.category ? t(`provider.category.${entry.category}`, entry.category) : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")
+                        : entry.category && t(`provider.category.${entry.category}`, entry.category)}
                     </div>
                   </div>
                 </div>

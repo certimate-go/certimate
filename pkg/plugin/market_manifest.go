@@ -26,9 +26,15 @@ type MarketDetailRef struct {
 
 type MarketManifest struct {
 	Manifest
-	Release  *Release         `json:"release,omitempty"`
-	Detail   *MarketDetailRef `json:"detail,omitempty"`
-	IconPath string           `json:"icon_path,omitempty"`
+	Release  *Release                     `json:"release,omitempty"`
+	Detail   *MarketDetailRef             `json:"detail,omitempty"`
+	IconPath string                       `json:"icon_path,omitempty"`
+	I18n     map[string]MarketTranslation `json:"i18n,omitempty"`
+}
+
+type MarketTranslation struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 func ParseMarketManifest(data []byte) (*MarketManifest, error) {

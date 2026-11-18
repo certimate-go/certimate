@@ -25,6 +25,7 @@
     "accelerator": "Accelerator",
     "apigw": "API Gateway",
     "serverless": "Serverless",
+    "waf": "Web application firewall",
     "website": "Website",
     "ssl": "SSL",
     "other": "Other"

@@ -111,3 +111,33 @@ func TestListMarketPage_CapabilityFilter(t *testing.T) {
 		t.Fatalf("want 0 items when capability and keyword filters compose, got %d", len(combined.Items))
 	}
 }
+
+func TestMarketTranslationInstalledFallback(t *testing.T) {
+	manifest := &plugin.MarketManifest{Manifest: plugin.Manifest{
+		ProviderType: "legacy-provider", DisplayNameKey: "plugin.legacy-provider.name", Description: "Legacy description",
+	}}
+	installed := &registeredPlugin{entry: &CatalogEntry{
+		DisplayNameKey: "plugin.legacy-provider.name",
+		I18n: map[string]map[string]string{
+			"zh": {"plugin.legacy-provider.name": "已安装的插件", "plugin.legacy-provider.description": "已安装的描述"},
+			"en": {"plugin.legacy-provider.name": "Installed plugin"},
+		},
+	}}
+	for _, check := range []struct {
+		locale    string
+		installed *registeredPlugin
+		want      plugin.MarketTranslation
+	}{
+		{"zh-CN", installed, plugin.MarketTranslation{Name: "已安装的插件", Description: "已安装的描述"}},
+		{"fr", installed, plugin.MarketTranslation{Name: "Installed plugin", Description: "Legacy description"}},
+		{"zh", nil, plugin.MarketTranslation{Name: "legacy-provider", Description: "Legacy description"}},
+	} {
+		if got := marketTranslation(manifest, check.installed, check.locale); got != check.want {
+			t.Errorf("locale %q: got %+v, want %+v", check.locale, got, check.want)
+		}
+	}
+	manifest.I18n = map[string]plugin.MarketTranslation{"zh": {Name: "市场名称", Description: "市场描述"}}
+	if got := marketTranslation(manifest, installed, "zh-CN"); got != manifest.I18n["zh"] {
+		t.Errorf("catalog translations must take precedence: %+v", got)
+	}
+}

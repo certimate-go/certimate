@@ -511,3 +511,75 @@ func TestE2E_IndependentPluginMarket(t *testing.T) {
 		t.Fatal("market-installed independent plugin did not deliver")
 	}
 }
+
+func TestE2E_MarketTranslationsHTTP(t *testing.T) {
+	state := t.TempDir()
+	anonymous, stop := startMarketFixture(t, state)
+	api := anonymous.login(fixtureEmail)
+	var sourceA, sourceB pluginhost.MarketSourceStatus
+	api.market("POST", "/sources", map[string]string{"repository": "https://github.com/" + fixtureRepoA}, 0, "", &sourceA)
+	api.market("POST", "/sources", map[string]string{"repository": "https://github.com/" + fixtureRepoB}, 0, "", &sourceB)
+	type translatedCard struct {
+		Provider    string `json:"provider_type"`
+		Name        string `json:"display_name"`
+		Description string `json:"description"`
+	}
+	lookup := func(source, locale, keyword string) []translatedCard {
+		t.Helper()
+		var page struct {
+			Items []translatedCard `json:"items"`
+		}
+		query := url.Values{"source": {source}, "locale": {locale}, "keyword": {keyword}, "perPage": {"60"}}
+		api.market("GET", "?"+query.Encode(), nil, 0, "", &page)
+		return page.Items
+	}
+	for _, check := range []struct{ locale, name, description string }{
+		{"zh", "甲市场通知插件", "发送通知到目标服务"},
+		{"zh-CN", "甲市场通知插件简体", "发送通知到目标服务"},
+		{"zh-HK", "甲市场通知插件", "发送通知到目标服务"},
+		{"en", "Market notification plugin", "Send notifications to the target service"},
+		{"fr-FR", "Market notification plugin", "Send notifications to the target service"},
+	} {
+		items := lookup(sourceA.ID, check.locale, fixtureProvider)
+		if len(items) != 1 || items[0].Name != check.name || items[0].Description != check.description {
+			t.Fatalf("locale %s: got %+v, want name=%q description=%q", check.locale, items, check.name, check.description)
+		}
+	}
+	for _, check := range []struct{ source, keyword, name string }{
+		{sourceA.ID, "甲市场", "甲市场通知插件"},
+		{sourceA.ID, "发送通知", "甲市场通知插件"},
+		{sourceA.ID, "Market notification", "甲市场通知插件"},
+		{sourceA.ID, "Legacy notification", "甲市场通知插件"},
+		{sourceB.ID, "乙市场", "乙市场通知插件"},
+	} {
+		items := lookup(check.source, "zh", check.keyword)
+		if len(items) != 1 || items[0].Name != check.name {
+			t.Fatalf("localized search %q: %+v", check.keyword, items)
+		}
+	}
+	if items := lookup(sourceB.ID, "zh", "甲市场"); len(items) != 0 {
+		t.Fatalf("translations leaked between markets: %+v", items)
+	}
+	if items := lookup(sourceB.ID, "zh", fixtureConsumer); len(items) != 1 || items[0].Name != fixtureConsumer {
+		t.Fatalf("legacy catalog fallback: %+v", items)
+	}
+	stop()
+	anonymous, _ = startMarketFixture(t, state)
+	api = anonymous.login(fixtureEmail)
+	if items := lookup(sourceA.ID, "zh", "甲市场"); len(items) != 1 || items[0].Name != "甲市场通知插件" {
+		t.Fatalf("persisted catalog lost translations: %+v", items)
+	}
+	for _, condition := range []string{"invalid", "valid"} {
+		if status := api.request("POST", "/fixture/catalog/"+condition, nil, nil); status != 204 {
+			t.Fatalf("set %s catalog: HTTP %d", condition, status)
+		}
+		var refreshed pluginhost.MarketSourceStatus
+		api.market("POST", "/sources/"+sourceA.ID+"/refresh", nil, 0, "", &refreshed)
+		if (refreshed.Error != "") != (condition == "invalid") {
+			t.Fatalf("refresh %s: %+v", condition, refreshed)
+		}
+		if items := lookup(sourceA.ID, "zh", "甲市场"); len(items) != 1 || items[0].Name != "甲市场通知插件" {
+			t.Fatalf("refresh %s lost translations: %+v", condition, items)
+		}
+	}
+}

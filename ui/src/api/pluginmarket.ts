@@ -30,6 +30,7 @@ export const marketConflictSchema = z.object({
 const marketEntrySchema = z.object({
   provider_type: z.string(),
   display_name_key: z.string(),
+  display_name: z.string().optional(),
   category: z.string(),
   capability: z.string().optional(),
   version: z.string(),

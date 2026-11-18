@@ -57,9 +57,24 @@ func makeFixtureRelease(repo string, releases ...marketReleaseFixture) fixtureRe
 		releases[i].manifest.Release = &copyOfRelease
 	}
 	index := markettest.WithReleaseDetails(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		entries := make([]plugin.MarketManifest, 0, len(releases))
+		entries := make([]map[string]any, 0, len(releases))
 		for _, release := range releases {
-			entries = append(entries, release.manifest)
+			body, _ := json.Marshal(release.manifest)
+			var entry map[string]any
+			_ = json.Unmarshal(body, &entry)
+			if release.manifest.ProviderType == fixtureProvider {
+				name := "甲市场通知插件"
+				if repo == "fixture-b/releases" {
+					name = "乙市场通知插件"
+				}
+				entry["description"] = "Legacy notification description"
+				entry["i18n"] = map[string]map[string]string{
+					"zh":    {"name": name, "description": "发送通知到目标服务"},
+					"zh-CN": {"name": name + "简体"},
+					"en":    {"name": "Market notification plugin", "description": "Send notifications to the target service"},
+				}
+			}
+			entries = append(entries, entry)
 		}
 		_ = json.NewEncoder(w).Encode(map[string]any{"plugins": entries})
 	}))
