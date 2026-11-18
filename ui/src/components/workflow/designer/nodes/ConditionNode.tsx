@@ -3,7 +3,7 @@ import { FeedbackLevel, Field, FlowNodeBaseType, FlowNodeSplitType } from "@flow
 import { IconFilter, IconFilterFilled, IconSitemap } from "@tabler/icons-react";
 import { Typography } from "antd";
 
-import { type Expr, ExprType, newNode } from "@/domain/workflow";
+import { type Expr, ExprType, defaultNodeConfigForBranchBlock, newNode } from "@/domain/workflow";
 
 import { getAllPreviousNodes } from "../_util";
 import { BaseNode, BranchNode } from "./_shared";
@@ -64,7 +64,7 @@ export const BranchBlockNodeRegistry: NodeRegistry = {
   formMeta: {
     validate: {
       ["config"]: ({ value }) => {
-        const res = BranchBlockNodeConfigForm.getSchema({}).safeParse(value);
+        const res = BranchBlockNodeConfigForm.getSchema({}).safeParse(value ?? defaultNodeConfigForBranchBlock());
         if (!res.success) {
           return {
             message: res.error.message,

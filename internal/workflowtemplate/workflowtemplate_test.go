@@ -27,6 +27,26 @@ func buildTestGraph() *domain.WorkflowGraph {
 	}
 }
 
+func TestCloneGraphPreservesEmptyBranchConfig(t *testing.T) {
+	graph := buildTestGraph()
+	graph.Nodes[1] = &domain.WorkflowNode{
+		Id:   "condition1",
+		Type: domain.WorkflowNodeTypeCondition,
+		Blocks: []*domain.WorkflowNode{
+			{Id: "branch1", Type: domain.WorkflowNodeTypeBranchBlock, Data: domain.WorkflowNodeData{Config: domain.WorkflowNodeConfig{}}},
+		},
+	}
+
+	cloned, err := cloneGraph(graph)
+	if err != nil {
+		t.Fatal(err)
+	}
+	branch, ok := cloned.GetNodeById("branch1")
+	if !ok || branch.Data.Config == nil || len(branch.Data.Config) != 0 {
+		t.Fatal("expected cloned branch to retain its empty config")
+	}
+}
+
 func TestWorkflowTemplateParams_Verify(t *testing.T) {
 	graph := buildTestGraph()
 

@@ -114,7 +114,7 @@ const (
 type WorkflowNodeData struct {
 	Name     string             `json:"name"`
 	Disabled bool               `json:"disabled,omitempty,omitzero"`
-	Config   WorkflowNodeConfig `json:"config,omitempty,omitzero"`
+	Config   WorkflowNodeConfig `json:"config,omitzero"`
 }
 
 type WorkflowNodeConfig map[string]any
