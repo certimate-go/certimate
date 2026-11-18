@@ -7,6 +7,7 @@ on:
       - "v[0-9]*-beta*"
       - "v[0-9]*-preview*"
       - "v[0-9]*-rc*"
+      - "!v0.5.0-alpha.[0-9]+"
   workflow_dispatch:
     inputs:
       tag:

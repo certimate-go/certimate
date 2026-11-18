@@ -1,0 +1,183 @@
+name: Release Alpha
+
+on:
+  push:
+    tags:
+      - "v0.5.0-alpha.[0-9]+"
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-ui:
+    if: ${{ !github.event.deleted }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag commit is on next
+        run: |
+          if ! git merge-base --is-ancestor HEAD refs/remotes/origin/next; then
+            echo "::error::${GITHUB_REF_NAME} must point to a commit in the history of next."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Build UI
+        run: |
+          npm --prefix=./ui ci
+          npm --prefix=./ui run build
+
+      - name: Upload UI build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-build
+          path: ./ui/dist
+          if-no-files-found: error
+          retention-days: 1
+
+  build-binaries:
+    needs: prepare-ui
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { goos: linux, goarch: amd64 }
+          - { goos: linux, goarch: arm64 }
+          - { goos: linux, goarch: arm, goarm: "7" }
+          - { goos: darwin, goarch: amd64 }
+          - { goos: darwin, goarch: arm64 }
+          - { goos: windows, goarch: amd64 }
+          - { goos: windows, goarch: arm64 }
+          - { goos: windows, goarch: "386" }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Download UI build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ui-build
+          path: ./ui/dist
+
+      - name: Build and package binary
+        env:
+          CGO_ENABLED: 0
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
+          GOEXPERIMENT: ${{ matrix.goos == 'windows' && 'nodwarf5' || '' }}
+        run: |
+          entrypoint=certimate
+          if [[ "$GOOS" == windows ]]; then
+            entrypoint=certimate.exe
+          fi
+
+          mkdir -p dist/package
+          go build -trimpath -ldflags="-s -w" -o "dist/package/${entrypoint}"
+          cp LICENSE README.md CHANGELOG.md dist/package/
+          archive="certimate_${GITHUB_REF_NAME}_${GOOS}_${GOARCH}${GOARM:+v${GOARM}}.zip"
+          zip -j -X "dist/${archive}" dist/package/*
+
+      - name: Upload release archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 1
+
+  push-docker-image:
+    needs: prepare-ui
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Free disk space
+        uses: BRAINSia/free-disk-space@v2
+        with:
+          tool-cache: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Log in to Aliyun ACR
+        uses: docker/login-action@v4
+        with:
+          registry: registry.cn-shanghai.aliyuncs.com
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Download UI build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ui-build
+          path: ./ui/dist
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile_gh
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            certimate/certimate:${{ github.ref_name }}
+            registry.cn-shanghai.aliyuncs.com/certimate/certimate:${{ github.ref_name }}
+          provenance: false
+          sbom: false
+
+  create-release:
+    needs: [build-binaries, push-docker-image]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release archives
+        uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+
+      - name: Generate checksums
+        working-directory: dist
+        run: sha256sum -- *.zip > checksums.txt
+
+      - name: Publish GitHub prerelease
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: false
+          prerelease: true
+          make_latest: "false"
+          fail_on_unmatched_files: true
+          files: |
+            dist/*.zip
+            dist/checksums.txt
