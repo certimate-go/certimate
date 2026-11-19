@@ -15,7 +15,7 @@ type MarketSource struct {
 
 const (
 	OfficialMarketDefaultBase = "https://cdn.jsdelivr.net"
-	OfficialMarketIndexPath   = "/gh/certimate-go/plugins@market/registry/index.json"
+	OfficialMarketIndexPath   = "/gh/certimate-go/plugins@main/registry/index.json"
 )
 
 var githubRepoPattern = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9-]*/[a-zA-Z0-9_.-]+$`)
