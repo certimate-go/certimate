@@ -64,7 +64,7 @@ func (s *MarketService) OfficialMirror(ctx context.Context) MarketMirrorSettings
 func (s *MarketService) SetOfficialMirror(ctx context.Context, mirror MarketMirror) (MarketMirrorSettings, error) {
 	s.sourcesMu.Lock()
 	defer s.sourcesMu.Unlock()
-	normalized, base, err := s.normalizeMirror(mirror)
+	normalized, indexURL, err := s.normalizeMirror(mirror)
 	if err != nil {
 		return MarketMirrorSettings{}, domain.NewError(http.StatusBadRequest, err.Error())
 	}
@@ -82,7 +82,7 @@ func (s *MarketService) SetOfficialMirror(ctx context.Context, mirror MarketMirr
 		return MarketMirrorSettings{}, err
 	}
 	s.mirror = &normalized
-	s.replaceOfficialLocked(base, nil)
+	s.replaceOfficialLocked(indexURL, nil)
 	current := s.official
 	go func() { _, _ = current.marketSnapshot(context.Background(), false, true) }()
 	return s.mirrorSettingsLocked(), nil
@@ -120,9 +120,9 @@ func (s *MarketService) loadMirrorLocked(ctx context.Context) {
 			}
 		}
 	}
-	base := ""
+	indexURL := ""
 	if err == nil {
-		mirror, base, err = s.normalizeMirror(mirror)
+		mirror, indexURL, err = s.normalizeMirror(mirror)
 	}
 	if err != nil {
 		if previous := s.official.configErr; previous == nil || previous.Error() != err.Error() {
@@ -131,7 +131,7 @@ func (s *MarketService) loadMirrorLocked(ctx context.Context) {
 		return
 	}
 	s.mirror = &mirror
-	s.replaceOfficialLocked(base, nil)
+	s.replaceOfficialLocked(indexURL, nil)
 }
 
 func (s *MarketService) mirrorSettingsLocked() MarketMirrorSettings {
@@ -149,10 +149,10 @@ func (s *MarketService) mirrorSettingsLocked() MarketMirrorSettings {
 	return settings
 }
 
-func (s *MarketService) replaceOfficialLocked(base string, configErr error) {
+func (s *MarketService) replaceOfficialLocked(indexURL string, configErr error) {
 	cfg := s.config
-	if base != "" {
-		cfg.IndexURL = base + plugin.OfficialMarketIndexPath
+	if indexURL != "" {
+		cfg.IndexURL = indexURL
 	}
 	if cfg.IndexURL == "" {
 		cfg.IndexURL = s.source.IndexURL()
@@ -177,19 +177,21 @@ func (s *MarketService) normalizeMirror(mirror MarketMirror) (MarketMirror, stri
 	switch {
 	case mirror.Mode == "default" && mirror.Preset == "" && mirror.BaseURL == "":
 		return mirror, "", nil
+	case mirror.Mode == "github" && mirror.Preset == "" && mirror.BaseURL == "":
+		return mirror, plugin.OfficialMarketGitHubIndexURL, nil
 	case mirror.Mode == "preset" && mirror.BaseURL == "":
 		for _, preset := range s.config.MirrorPresets {
 			if preset.ID == mirror.Preset {
 				base, err := normalizeMirrorBase(preset.BaseURL)
-				return mirror, base, err
+				return mirror, base + plugin.OfficialMarketIndexPath, err
 			}
 		}
 	case mirror.Mode == "custom" && mirror.Preset == "":
 		base, err := normalizeMirrorBase(mirror.BaseURL)
 		mirror.BaseURL = base
-		return mirror, base, err
+		return mirror, base + plugin.OfficialMarketIndexPath, err
 	}
-	return MarketMirror{}, "", fmt.Errorf("market: expected default, an available mirror preset, or a custom HTTPS base")
+	return MarketMirror{}, "", fmt.Errorf("market: expected default, GitHub origin, an available mirror preset, or a custom HTTPS base")
 }
 
 func normalizeMirrorBase(input string) (string, error) {

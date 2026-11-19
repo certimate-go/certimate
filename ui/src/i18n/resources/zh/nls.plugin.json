@@ -11,7 +11,7 @@
       "help": "此设置仅影响官方市场。自定义镜像必须使用公网 HTTPS，支持 /gh/ 路径，并提供带签名的官方目录。",
       "mode": "镜像来源",
       "default": "默认（jsDelivr）",
-      "preset": "预设镜像",
+      "github": "GitHub 原址",
       "custom": "自定义 HTTPS 镜像",
       "base": "镜像基础地址",
       "save": "保存镜像",

@@ -9,6 +9,7 @@ const pb = getPocketBase();
 const officialMirrorEndpoint = "/api/plugin/market/official/mirror";
 const mirrorSchema = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("default") }),
+  z.object({ mode: z.literal("github") }),
   z.object({ mode: z.literal("preset"), preset: z.string() }),
   z.object({ mode: z.literal("custom"), baseUrl: z.string() }),
 ]);

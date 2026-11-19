@@ -11,7 +11,7 @@
       "help": "This changes only the official market. Custom mirrors must use public HTTPS, support /gh/ paths, and serve the signed official catalog.",
       "mode": "Mirror source",
       "default": "Default (jsDelivr)",
-      "preset": "Preset mirror",
+      "github": "GitHub (origin)",
       "custom": "Custom HTTPS mirror",
       "base": "Mirror base URL",
       "save": "Save mirror",

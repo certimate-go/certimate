@@ -311,6 +311,7 @@ func TestE2E_OfficialMirrorSettingsAndIcons(t *testing.T) {
 		{Mode: "custom", BaseURL: "https://127.0.0.1"},
 		{Mode: "custom", BaseURL: "https://custom.fixture.example/?query=x"},
 		{Mode: "preset", Preset: "not-admitted"},
+		{Mode: "github", BaseURL: "https://custom.fixture.example"},
 	} {
 		api.market("PUT", path, rejected, 400, "", nil)
 	}
@@ -363,6 +364,15 @@ func TestE2E_OfficialMirrorSettingsAndIcons(t *testing.T) {
 	api.assertMarketIcon(card(false).IconURL, 200)
 	switchTo(pluginhost.MarketMirror{Mode: "default"})
 	api.assertMarketIcon(card(false).IconURL, 200)
+
+	switchTo(pluginhost.MarketMirror{Mode: "github"})
+	githubCard := card(false)
+	if githubCard.IconURL == defaultCard.IconURL {
+		t.Fatal("GitHub origin did not change the same-origin icon revision")
+	}
+	api.assertMarketIcon(githubCard.IconURL, 200)
+	api.market("POST", "/update/fixture-legacy", map[string]string{"source": "official"}, 0, "", nil)
+	waitMarketInstall(t, api, "fixture-legacy", "official", pluginhost.JobInstalled)
 }
 
 func TestE2E_CustomMarketsHTTP(t *testing.T) {

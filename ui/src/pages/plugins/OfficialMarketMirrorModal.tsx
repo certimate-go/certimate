@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Form, Input, Modal, Radio, Select, Skeleton } from "antd";
+import { Alert, Form, Input, Modal, Radio, Skeleton } from "antd";
 
 import { type MarketMirror, type MarketMirrorSettings, fetchOfficialMirror, saveOfficialMirror } from "@/api/pluginmarket";
 import { unwrapErrMsg } from "@/utils/error";
@@ -13,8 +13,7 @@ interface OfficialMarketMirrorModalProps {
 const OfficialMarketMirrorModal = ({ onClose, onSaved }: OfficialMarketMirrorModalProps) => {
   const { t } = useTranslation();
   const [settings, setSettings] = useState<MarketMirrorSettings>();
-  const [mode, setMode] = useState<MarketMirror["mode"]>("default");
-  const [preset, setPreset] = useState("");
+  const [mode, setMode] = useState<Exclude<MarketMirror["mode"], "preset">>("default");
   const [baseUrl, setBaseUrl] = useState("");
   const [error, setError] = useState<string>();
   const [saving, setSaving] = useState(false);
@@ -25,9 +24,15 @@ const OfficialMarketMirrorModal = ({ onClose, onSaved }: OfficialMarketMirrorMod
       .then((result) => {
         if (!pending) return;
         setSettings(result);
-        setMode(result.mirror.mode);
-        if (result.mirror.mode === "custom") setBaseUrl(result.mirror.baseUrl);
-        if (result.mirror.mode === "preset") setPreset(result.mirror.preset);
+        const { mirror } = result;
+        if (mirror.mode === "preset") {
+          const address = result.presets.find(({ id }) => id === mirror.preset)?.baseUrl ?? "";
+          setMode(address ? "custom" : "default");
+          setBaseUrl(address);
+          return;
+        }
+        setMode(mirror.mode);
+        if (mirror.mode === "custom") setBaseUrl(mirror.baseUrl);
       })
       .catch((reason: unknown) => {
         if (pending) setError(reason instanceof Error ? unwrapErrMsg(reason) : t("plugin.market.mirror.load_failed"));
@@ -40,7 +45,7 @@ const OfficialMarketMirrorModal = ({ onClose, onSaved }: OfficialMarketMirrorMod
   const submit = async () => {
     setSaving(true);
     setError(undefined);
-    const mirror: MarketMirror = mode === "custom" ? { mode, baseUrl: baseUrl.trim() } : mode === "preset" ? { mode, preset } : { mode: "default" };
+    const mirror: MarketMirror = mode === "custom" ? { mode, baseUrl: baseUrl.trim() } : { mode };
     try {
       await saveOfficialMirror(mirror);
       onSaved();
@@ -62,7 +67,7 @@ const OfficialMarketMirrorModal = ({ onClose, onSaved }: OfficialMarketMirrorMod
       mask={{ closable: !saving }}
       keyboard={!saving}
       cancelButtonProps={{ disabled: saving }}
-      okButtonProps={{ disabled: !settings || (mode === "preset" && !preset) || (mode === "custom" && !baseUrl.trim()) }}
+      okButtonProps={{ disabled: !settings || (mode === "custom" && !baseUrl.trim()) }}
       okText={t("plugin.market.mirror.save")}
     >
       <p>{t("plugin.market.mirror.help")}</p>
@@ -74,26 +79,19 @@ const OfficialMarketMirrorModal = ({ onClose, onSaved }: OfficialMarketMirrorMod
           <Form.Item label={t("plugin.market.mirror.mode")}>
             <Radio.Group
               value={mode}
+              style={{ display: "flex", flexWrap: "wrap", rowGap: 8 }}
               onChange={({ target }) => {
-                if (target.value === "default" || target.value === "preset" || target.value === "custom") setMode(target.value);
+                if (target.value === "default" || target.value === "github" || target.value === "custom") setMode(target.value);
               }}
               options={[
                 { label: t("plugin.market.mirror.default"), value: "default" },
-                { label: t("plugin.market.mirror.preset"), value: "preset", disabled: !settings.presets.length },
+                { label: t("plugin.market.mirror.github"), value: "github" },
                 { label: t("plugin.market.mirror.custom"), value: "custom" },
               ]}
             />
           </Form.Item>
-          {mode === "default" && <p className="text-xs text-gray-500">{settings.defaultBase}</p>}
-          {mode === "preset" && (
-            <Form.Item label={t("plugin.market.mirror.preset")} htmlFor="official-mirror-preset">
-              <Select
-                id="official-mirror-preset"
-                value={preset || undefined}
-                onChange={setPreset}
-                options={settings.presets.map(({ id, name, baseUrl }) => ({ value: id, label: `${name} · ${baseUrl}` }))}
-              />
-            </Form.Item>
+          {(mode === "default" || mode === "github") && (
+            <p className="text-xs text-gray-500">{mode === "github" ? "https://raw.githubusercontent.com/" : settings.defaultBase}</p>
           )}
           {mode === "custom" && (
             <Form.Item label={t("plugin.market.mirror.base")} htmlFor="official-mirror-url">

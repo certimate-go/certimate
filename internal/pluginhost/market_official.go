@@ -82,6 +82,9 @@ func (s *marketCatalog) stillApproves(manifest *plugin.MarketManifest) bool {
 }
 
 func (s *marketCatalog) officialArtifactURL(release *plugin.OfficialMarketRelease, artifact plugin.OfficialMarketArtifact) (string, error) {
+	if s.indexURL == plugin.OfficialMarketGitHubIndexURL {
+		return plugin.GitHubRawBase + "/" + release.Repository + "/" + release.ReleaseCommit + "/" + artifact.Path, nil
+	}
 	base, ok := strings.CutSuffix(s.indexURL, plugin.OfficialMarketIndexPath)
 	if !ok || !strings.HasPrefix(base, "https://") {
 		return "", fmt.Errorf("market: invalid official CDN index URL")

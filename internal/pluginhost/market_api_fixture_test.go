@@ -175,6 +175,15 @@ func TestMarketBrowserFixture(t *testing.T) {
 	legacy.marketIcon = icon.Bytes()
 	official := makeOfficialCDNFixture(t, 1, uint64(now.UnixMicro()), now, now.Add(24*time.Hour),
 		legacy, buildMarketRelease(t, "fixture-manual", "1.0.0", ""))
+	officialRawFiles := make(map[string][]byte, len(official.files))
+	for path, body := range official.files {
+		repo, refPath, _ := strings.Cut(strings.TrimPrefix(path, "/gh/"), "@")
+		ref, relative, _ := strings.Cut(refPath, "/")
+		if ref == "main" {
+			ref = "refs/heads/main"
+		}
+		officialRawFiles["/"+repo+"/"+ref+"/"+relative] = body
+	}
 	var signedArchive http.Handler
 	if directory := os.Getenv("CERTIMATE_TEST_OFFICIAL_ARCHIVE"); directory != "" {
 		root, err := os.OpenRoot(directory)
@@ -213,6 +222,11 @@ func TestMarketBrowserFixture(t *testing.T) {
 			return
 		}
 		switch r.URL.Host {
+		case "raw.githubusercontent.com":
+			if body, ok := officialRawFiles[r.URL.Path]; ok {
+				_, _ = w.Write(body)
+				return
+			}
 		case "cdn.jsdelivr.net", "preset.fixture.example", "custom.fixture.example", "tampered.fixture.example":
 			prefix := ""
 			if r.URL.Host != "cdn.jsdelivr.net" {
