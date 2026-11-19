@@ -219,7 +219,7 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 		session.Close()
 		return nil, err
 	}
-	timeout, interval, err := dnsRuntimeTiming(metadata.RuntimeConfigJSON)
+	timing, err := parseDNSRuntimeTiming(metadata.RuntimeConfigJSON)
 	if err != nil {
 		session.Close()
 		return nil, err
@@ -237,10 +237,13 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 		extended:        extended,
 		logLevel:        f.logLevel,
 		logger:          f.logger,
-		timeout:         timeout,
-		pollingInterval: interval,
+		timeout:         timing.timeout,
+		pollingInterval: timing.pollingInterval,
 	}
 	runtime.AddCleanup(challenger, func(s *plugin.Session) { s.Close() }, session)
+	if timing.sequential {
+		return sequentialPluginDnsChallenger{challenger, timing.sequenceInterval}, nil
+	}
 	return challenger, nil
 }
 
@@ -258,28 +261,53 @@ func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {
 	return c.timeout, c.pollingInterval
 }
 
-func dnsRuntimeTiming(raw []byte) (timeout, interval time.Duration, err error) {
+type sequentialPluginDnsChallenger struct {
+	*pluginDnsChallenger
+	sequenceInterval time.Duration
+}
+
+func (c sequentialPluginDnsChallenger) Sequential() time.Duration {
+	return c.sequenceInterval
+}
+
+type dnsRuntimeTiming struct {
+	timeout          time.Duration
+	pollingInterval  time.Duration
+	sequential       bool
+	sequenceInterval time.Duration
+}
+
+func parseDNSRuntimeTiming(raw []byte) (dnsRuntimeTiming, error) {
 	var config struct {
 		TimeoutSeconds  int64 `json:"propagation_timeout_seconds"`
 		IntervalSeconds int64 `json:"propagation_polling_interval_seconds"`
+		Sequential      bool  `json:"sequential"`
+		SequenceSeconds int64 `json:"sequence_interval_seconds"`
 	}
 	if len(raw) > 0 {
 		if err := json.Unmarshal(raw, &config); err != nil {
-			return 0, 0, fmt.Errorf("decode DNS plugin runtime config: %w", err)
+			return dnsRuntimeTiming{}, fmt.Errorf("decode DNS plugin runtime config: %w", err)
 		}
 	}
 	const maxSeconds = int64((1<<63 - 1) / time.Second)
-	if config.TimeoutSeconds < 0 || config.TimeoutSeconds > maxSeconds || config.IntervalSeconds < 0 || config.IntervalSeconds > maxSeconds {
-		return 0, 0, fmt.Errorf("DNS plugin propagation timing must be valid nonnegative seconds")
+	for _, seconds := range []int64{config.TimeoutSeconds, config.IntervalSeconds, config.SequenceSeconds} {
+		if seconds < 0 || seconds > maxSeconds {
+			return dnsRuntimeTiming{}, fmt.Errorf("DNS plugin propagation timing must be valid nonnegative seconds")
+		}
 	}
-	timeout, interval = dns01.DefaultPropagationTimeout, dns01.DefaultPollingInterval
+	timing := dnsRuntimeTiming{
+		timeout:          dns01.DefaultPropagationTimeout,
+		pollingInterval:  dns01.DefaultPollingInterval,
+		sequential:       config.Sequential,
+		sequenceInterval: time.Duration(config.SequenceSeconds) * time.Second,
+	}
 	if config.TimeoutSeconds > 0 {
-		timeout = time.Duration(config.TimeoutSeconds) * time.Second
+		timing.timeout = time.Duration(config.TimeoutSeconds) * time.Second
 	}
 	if config.IntervalSeconds > 0 {
-		interval = time.Duration(config.IntervalSeconds) * time.Second
+		timing.pollingInterval = time.Duration(config.IntervalSeconds) * time.Second
 	}
-	return timeout, interval, nil
+	return timing, nil
 }
 
 func (c *pluginDnsChallenger) Present(ctx context.Context, name, token, keyAuth string) error {

@@ -15,24 +15,19 @@ func TestCoreCheckersRegistered(t *testing.T) {
 		domain.AccessProviderTypeS3,
 		domain.AccessProviderTypeWebhook,
 		domain.AccessProviderTypeCPanel,
-		domain.AccessProviderTypeArvanCloud,
+
 		domain.AccessProviderTypeBunny,
-		domain.AccessProviderTypeDeSEC,
+
 		domain.AccessProviderTypeDigitalOcean,
-		domain.AccessProviderTypeDynu,
-		domain.AccessProviderTypeDynv6,
-		domain.AccessProviderTypeGandinet,
+
 		domain.AccessProviderTypeGcore,
-		domain.AccessProviderTypeHetzner,
-		domain.AccessProviderTypeHostingde,
-		domain.AccessProviderTypeHostinger,
-		domain.AccessProviderTypeInfomaniak,
+
 		domain.AccessProviderTypeLinode,
-		domain.AccessProviderTypeNameSilo,
+
 		domain.AccessProviderTypeNetlify,
-		domain.AccessProviderTypeNS1,
+
 		domain.AccessProviderTypeRainYun,
-		domain.AccessProviderTypeVultr,
+
 		domain.AccessProviderTypeAliyun,
 		domain.AccessProviderTypeTencentCloud,
 		domain.AccessProviderTypeHuaweiCloud,
@@ -42,30 +37,8 @@ func TestCoreCheckersRegistered(t *testing.T) {
 		domain.AccessProviderTypeVolcEngine,
 		domain.AccessProviderTypeBytePlus,
 		domain.AccessProviderTypeBaiduCloud,
-		domain.AccessProviderType35cn,
-		domain.AccessProviderType51DNScom,
-		domain.AccessProviderTypeBeget,
-		domain.AccessProviderTypeClouDNS,
-		domain.AccessProviderTypeConstellix,
-		domain.AccessProviderTypeDNSLA,
-		domain.AccessProviderTypeDNSMadeEasy,
-		domain.AccessProviderTypeDynadot,
-		domain.AccessProviderTypeGname,
-		domain.AccessProviderTypeGoDaddy,
-		domain.AccessProviderTypeIONOS,
-		domain.AccessProviderTypeLuaDNS,
-		domain.AccessProviderTypeNamecheap,
-		domain.AccessProviderTypeNameDotCom,
-		domain.AccessProviderTypeNetcup,
-		domain.AccessProviderTypePorkbun,
-		domain.AccessProviderTypeRegru,
-		domain.AccessProviderTypeRuCenter,
-		domain.AccessProviderTypeSimplyCom,
-		domain.AccessProviderTypeSpaceship,
-		domain.AccessProviderTypeTodayNIC,
+
 		domain.AccessProviderTypeVercel,
-		domain.AccessProviderTypeWestcn,
-		domain.AccessProviderTypeXinnet,
 	}
 
 	for _, providerType := range providerTypes {
@@ -100,9 +73,6 @@ var permanentAccessCheckExemptions = map[domain.AccessProviderType]string{
 	domain.AccessProviderTypeCUCCCloud:          "reserved, no config yet",
 	domain.AccessProviderTypeFastly:             "reserved, no config yet",
 	domain.AccessProviderTypeEmail:              "notification path uses Test notify, not connectivity API",
-	domain.AccessProviderTypeDuckDNS:            "API only mutates DNS records; no read-only credential probe",
-	domain.AccessProviderTypeDNSExit:            "API only mutates DNS or DDNS state; no read-only credential probe",
-	domain.AccessProviderTypeBookMyName:         "DynDNS API only adds or removes records; no read-only credential probe",
 }
 
 var temporaryAccessCheckExemptions = map[domain.AccessProviderType]string{}

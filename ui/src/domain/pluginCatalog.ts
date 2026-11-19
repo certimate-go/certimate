@@ -31,6 +31,8 @@ const defaultUsages: Record<string, string[]> = {
   notify: ["notification"],
 };
 
+const builtinDNSAccessTypes = new Set<string>(Array.from(acmeDns01ProvidersMap.values(), (provider) => provider.provider));
+
 export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
   for (const [key, val] of deploymentProvidersMap) {
     if (val.source === "plugin") deploymentProvidersMap.delete(key);
@@ -45,7 +47,11 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
     if (val.source === "plugin") purgeProvidersMap.delete(key);
   }
   for (const [key, val] of accessProvidersMap) {
-    if (val.source === "plugin") accessProvidersMap.delete(key);
+    if (val.source === "plugin") {
+      accessProvidersMap.delete(key);
+    } else if (!builtinDNSAccessTypes.has(key) && val.usages.includes(ACCESS_USAGES.DNS)) {
+      val.usages = val.usages.filter((usage) => usage !== ACCESS_USAGES.DNS);
+    }
   }
 
   for (const entry of entries) {
@@ -120,6 +126,13 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
       for (const [locale, bundle] of Object.entries(entry.i18n)) {
         i18n.addResourceBundle(locale, "translation", bundle, true, true);
       }
+    }
+  }
+
+  for (const { provider } of acmeDns01ProvidersMap.values()) {
+    const access = accessProvidersMap.get(provider);
+    if (access && !access.usages.includes(ACCESS_USAGES.DNS)) {
+      access.usages = [...access.usages, ACCESS_USAGES.DNS];
     }
   }
 };

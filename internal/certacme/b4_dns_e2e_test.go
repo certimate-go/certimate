@@ -51,16 +51,12 @@ func TestB4DNSWorkflow(t *testing.T) {
 		}
 		return
 	}
-	plugins := dnsWorkflowPlugins{dir: pluginDir}
-	if pluginDir != "" {
-		plugins.accessByProvider = map[string]string{
-			"rainyun-rcdn": "rainyun", "rainyun-sslcenter": "rainyun",
-			"baiducloud-appblb": "baiducloud", "baiducloud-blb": "baiducloud",
-			"baiducloud-cdn": "baiducloud", "baiducloud-cert": "baiducloud",
-		}
-	}
+	providers := map[string]string{"rainyun": "rainyun-dns", "baiducloud": "baiducloud-dns"}
 	for _, family := range []string{"rainyun", "baiducloud"} {
-		t.Run(family, func(t *testing.T) { runDNSWorkflow(t, binary, family, plugins) })
+		t.Run(family, func(t *testing.T) {
+			plugins := stageMigratedDNSWorkflowPlugin(t, pluginDir, providers[family], family)
+			runDNSWorkflow(t, binary, family, plugins)
+		})
 	}
 }
 

@@ -23,13 +23,17 @@ func TestPluginDNSPropagationTiming(t *testing.T) {
 		{`{"propagation_timeout_seconds":240,"propagation_polling_interval_seconds":10,"custom":{"mode":"auto"}}`, 4 * time.Minute, 10 * time.Second},
 		{`{"propagation_timeout_seconds":300}`, 5 * time.Minute, dns01.DefaultPollingInterval},
 	} {
-		timeout, interval, err := dnsRuntimeTiming([]byte(test.config))
-		if err != nil || timeout != test.timeout || interval != test.interval {
-			t.Errorf("timing for %s = %s, %s (%v); want %s, %s", test.config, timeout, interval, err, test.timeout, test.interval)
+		timing, err := parseDNSRuntimeTiming([]byte(test.config))
+		if err != nil || timing.timeout != test.timeout || timing.pollingInterval != test.interval || timing.sequential {
+			t.Errorf("timing for %s = %+v (%v); want %s, %s", test.config, timing, err, test.timeout, test.interval)
 		}
 	}
-	for _, config := range []string{`{"propagation_timeout_seconds":-1}`, `{"propagation_timeout_seconds":9223372037}`} {
-		if _, _, err := dnsRuntimeTiming([]byte(config)); err == nil {
+	timing, err := parseDNSRuntimeTiming([]byte(`{"sequential":true,"sequence_interval_seconds":5}`))
+	if err != nil || !timing.sequential || timing.sequenceInterval != 5*time.Second {
+		t.Errorf("expected sequential challenges 5 seconds apart, got %+v (%v)", timing, err)
+	}
+	for _, config := range []string{`{"propagation_timeout_seconds":-1}`, `{"propagation_timeout_seconds":9223372037}`, `{"sequence_interval_seconds":-1}`} {
+		if _, err := parseDNSRuntimeTiming([]byte(config)); err == nil {
 			t.Errorf("invalid timing accepted: %s", config)
 		}
 	}

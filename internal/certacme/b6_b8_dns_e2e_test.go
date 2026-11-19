@@ -66,20 +66,10 @@ func TestB6B8DNSWorkflow(t *testing.T) {
 		}
 		return
 	}
+	providers := map[string]string{"ctcccloud": "ctcccloud-smartdns", "huaweicloud": "huaweicloud-dns", "byteplus": "byteplus-dns", "volcengine": "volcengine-dns"}
 	for _, family := range []string{"ctcccloud", "huaweicloud", "byteplus", "volcengine"} {
 		t.Run(family, func(t *testing.T) {
-			var plugins dnsWorkflowPlugins
-			if pluginDir != "" {
-				selected := map[string]string{
-					"ctcccloud": "ctcccloud-cms", "huaweicloud": "huaweicloud-scm", "byteplus": "byteplus-apig", "volcengine": "volcengine-apig",
-				}
-				provider := selected[family]
-				plugins.dir = t.TempDir()
-				if err := os.CopyFS(filepath.Join(plugins.dir, provider), os.DirFS(filepath.Join(pluginDir, provider))); err != nil {
-					t.Fatal(err)
-				}
-				plugins.accessByProvider = map[string]string{provider: family}
-			}
+			plugins := stageMigratedDNSWorkflowPlugin(t, pluginDir, providers[family], family)
 			runDNSWorkflow(t, binary, family, plugins)
 		})
 	}

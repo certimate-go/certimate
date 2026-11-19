@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import AccessProviderSelect from "@/components/provider/AccessProviderSelect";
 import { type AccessModel } from "@/domain/access";
-import { ACCESS_PROVIDERS, ACCESS_USAGES, accessProvidersMap } from "@/domain/provider";
+import { ACCESS_PROVIDERS, ACCESS_USAGES, accessProvidersMap, getAccessProvider } from "@/domain/provider";
 import { useAntdForm } from "@/hooks";
 
 import { FormNestedFieldsContextProvider } from "./forms/_context";
@@ -46,7 +46,8 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
 
   const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
   const provider = fieldProvider ? accessProvidersMap.get(fieldProvider) : undefined;
-  const needsSchema = usage === "notification" && provider?.source === "plugin";
+  const needsSchema = provider?.source === "plugin";
+  const pluginMissing = fieldProvider && !provider && getAccessProvider(fieldProvider)?.source === "plugin";
   const savedConfig = initialValues?.config;
   const useSavedDNSFields =
     mode === "modify" &&
@@ -98,7 +99,7 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
           formRule,
           {
             validator: async () => {
-              if (usage === "notification" && fieldProvider && !provider) {
+              if (pluginMissing || (usage === "notification" && fieldProvider && !provider)) {
                 throw new Error(t("plugin.market.status.not_installed"));
               }
               if (needsSchema && schemaStatus !== "ready") {

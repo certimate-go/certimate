@@ -151,74 +151,29 @@ export const accessProvidersMap: Map<AccessProvider["type"] | string, AccessProv
 
       [ACCESS_PROVIDERS.ALIYUN, "provider.aliyun", "/imgs/providers/aliyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.TENCENTCLOUD, "provider.tencentcloud", "/imgs/providers/tencentcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.HUAWEICLOUD, "provider.huaweicloud", "/imgs/providers/huaweicloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.VOLCENGINE, "provider.volcengine", "/imgs/providers/volcengine.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.HUAWEICLOUD, "provider.huaweicloud", "/imgs/providers/huaweicloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.VOLCENGINE, "provider.volcengine", "/imgs/providers/volcengine.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.AWS, "provider.aws", "/imgs/providers/aws.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.AZURE, "provider.azure", "/imgs/providers/azure.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.GOOGLECLOUD, "provider.googlecloud", "/imgs/providers/google.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.ORACLECLOUD, "provider.oraclecloud", "/imgs/providers/oraclecloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BUNNY, "provider.bunny", "/imgs/providers/bunny.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BYTEPLUS, "provider.byteplus", "/imgs/providers/byteplus.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.GOOGLECLOUD, "provider.googlecloud", "/imgs/providers/google.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.ORACLECLOUD, "provider.oraclecloud", "/imgs/providers/oraclecloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.BUNNY, "provider.bunny", "/imgs/providers/bunny.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.BYTEPLUS, "provider.byteplus", "/imgs/providers/byteplus.svg", [ACCESS_USAGES.HOSTING]],
       [ACCESS_PROVIDERS.CLOUDFLARE, "provider.cloudflare", "/imgs/providers/cloudflare.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.DIGITALOCEAN, "provider.digitalocean", "/imgs/providers/digitalocean.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.GCORE, "provider.gcore", "/imgs/providers/gcore.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.LINODE, "provider.linode", "/imgs/providers/linode.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.YANDEXCLOUD, "provider.yandexcloud", "/imgs/providers/yandexcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.BAIDUCLOUD, "provider.baiducloud", "/imgs/providers/baiducloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.CMCCCLOUD, "provider.cmcccloud", "/imgs/providers/cmcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.CTCCCLOUD, "provider.ctcccloud", "/imgs/providers/ctcccloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.JDCLOUD, "provider.jdcloud", "/imgs/providers/jdcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.QINGCLOUD, "provider.qingcloud", "/imgs/providers/qingcloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.UCLOUD, "provider.ucloud", "/imgs/providers/ucloud.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.RAINYUN, "provider.rainyun", "/imgs/providers/rainyun.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.NETLIFY, "provider.netlify", "/imgs/providers/netlify.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.VERCEL, "provider.vercel", "/imgs/providers/vercel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-      [ACCESS_PROVIDERS.CPANEL, "provider.cpanel", "/imgs/providers/cpanel.svg", [ACCESS_USAGES.DNS, ACCESS_USAGES.HOSTING]],
-
-      [ACCESS_PROVIDERS.AKAMAI, "provider.akamai", "/imgs/providers/akamai.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.ARVANCLOUD, "provider.arvancloud", "/imgs/providers/arvancloud.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.BEGET, "provider.beget", "/imgs/providers/beget.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.BOOKMYNAME, "provider.bookmyname", "/imgs/providers/bookmyname.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.CLOUDNS, "provider.cloudns", "/imgs/providers/cloudns.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.CONOHAVPS, "provider.conohavps", "/imgs/providers/conohavps.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.CONSTELLIX, "provider.constellix", "/imgs/providers/constellix.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DESEC, "provider.desec", "/imgs/providers/desec.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DNSEXIT, "provider.dnsexit", "/imgs/providers/dnsexit.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DNSMADEEASY, "provider.dnsmadeeasy", "/imgs/providers/dnsmadeeasy.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DUCKDNS, "provider.duckdns", "/imgs/providers/duckdns.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DYNADOT, "provider.dynadot", "/imgs/providers/dynadot.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DYNU, "provider.dynu", "/imgs/providers/dynu.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DYNV6, "provider.dynv6", "/imgs/providers/dynv6.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.GANDINET, "provider.gandinet", "/imgs/providers/gandinet.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.GNAME, "provider.gname", "/imgs/providers/gname.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.GODADDY, "provider.godaddy", "/imgs/providers/godaddy.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.HETZNER, "provider.hetzner", "/imgs/providers/hetzner.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.HOSTINGDE, "provider.hostingde", "/imgs/providers/hostingde.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.HOSTINGER, "provider.hostinger", "/imgs/providers/hostinger.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.INFOMANIAK, "provider.infomaniak", "/imgs/providers/infomaniak.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.IONOS, "provider.ionos", "/imgs/providers/ionos.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.LUADNS, "provider.luadns", "/imgs/providers/luadns.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.NAMECHEAP, "provider.namecheap", "/imgs/providers/namecheap.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.NAMEDOTCOM, "provider.namedotcom", "/imgs/providers/namedotcom.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.NAMESILO, "provider.namesilo", "/imgs/providers/namesilo.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.NETCUP, "provider.netcup", "/imgs/providers/netcup.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.NS1, "provider.ns1", "/imgs/providers/ns1.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.OVHCLOUD, "provider.ovhcloud", "/imgs/providers/ovhcloud.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.PORKBUN, "provider.porkbun", "/imgs/providers/porkbun.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.REGRU, "provider.regru", "/imgs/providers/regru.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.RUCENTER, "provider.rucenter", "/imgs/providers/rucenter.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.SIMPLYCOM, "provider.simplycom", "/imgs/providers/simplycom.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.SPACESHIP, "provider.spaceship", "/imgs/providers/spaceship.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.VULTR, "provider.vultr", "/imgs/providers/vultr.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS["35CN"], "provider.35cn", "/imgs/providers/35cn.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS["51DNSCOM"], "provider.51dnscom", "/imgs/providers/51dnscom.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.DNSLA, "provider.dnsla", "/imgs/providers/dnsla.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.TODAYNIC, "provider.todaynic", "/imgs/providers/todaynic.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.WESTCN, "provider.westcn", "/imgs/providers/westcn.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.XINNET, "provider.xinnet", "/imgs/providers/xinnet.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns", "/imgs/providers/technitiumdns.svg", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.ACMEDNS, "provider.acmedns", "/imgs/providers/acmedns.png", [ACCESS_USAGES.DNS]],
-      [ACCESS_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq", "/imgs/providers/acmehttpreq.svg", [ACCESS_USAGES.DNS]],
+      [ACCESS_PROVIDERS.DIGITALOCEAN, "provider.digitalocean", "/imgs/providers/digitalocean.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.GCORE, "provider.gcore", "/imgs/providers/gcore.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.LINODE, "provider.linode", "/imgs/providers/linode.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.YANDEXCLOUD, "provider.yandexcloud", "/imgs/providers/yandexcloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.BAIDUCLOUD, "provider.baiducloud", "/imgs/providers/baiducloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.CMCCCLOUD, "provider.cmcccloud", "/imgs/providers/cmcccloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.CTCCCLOUD, "provider.ctcccloud", "/imgs/providers/ctcccloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.JDCLOUD, "provider.jdcloud", "/imgs/providers/jdcloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.QINGCLOUD, "provider.qingcloud", "/imgs/providers/qingcloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.UCLOUD, "provider.ucloud", "/imgs/providers/ucloud.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.RAINYUN, "provider.rainyun", "/imgs/providers/rainyun.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.NETLIFY, "provider.netlify", "/imgs/providers/netlify.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.VERCEL, "provider.vercel", "/imgs/providers/vercel.svg", [ACCESS_USAGES.HOSTING]],
+      [ACCESS_PROVIDERS.CPANEL, "provider.cpanel", "/imgs/providers/cpanel.svg", [ACCESS_USAGES.HOSTING]],
 
       [ACCESS_PROVIDERS.LETSENCRYPT, "provider.letsencrypt", "/imgs/providers/letsencrypt.svg", [ACCESS_USAGES.CA], "builtin"],
       [ACCESS_PROVIDERS.LETSENCRYPTSTAGING, "provider.letsencryptstaging", "/imgs/providers/letsencrypt.svg", [ACCESS_USAGES.CA], "builtin"],
@@ -263,10 +218,64 @@ const migratedNotificationAccessProviders = new Map<string, AccessProvider>(
 const migratedDNSAccessProviders = new Map<string, AccessProvider>(
   (
     [
+      [ACCESS_PROVIDERS.AKAMAI, "provider.akamai", "/imgs/providers/akamai.svg"],
+      [ACCESS_PROVIDERS.ARVANCLOUD, "provider.arvancloud", "/imgs/providers/arvancloud.svg"],
+      [ACCESS_PROVIDERS.BEGET, "provider.beget", "/imgs/providers/beget.svg"],
+      [ACCESS_PROVIDERS.BOOKMYNAME, "provider.bookmyname", "/imgs/providers/bookmyname.png"],
+      [ACCESS_PROVIDERS.CLOUDNS, "provider.cloudns", "/imgs/providers/cloudns.png"],
+      [ACCESS_PROVIDERS.CONOHAVPS, "provider.conohavps", "/imgs/providers/conohavps.svg"],
+      [ACCESS_PROVIDERS.CONSTELLIX, "provider.constellix", "/imgs/providers/constellix.png"],
+      [ACCESS_PROVIDERS.DESEC, "provider.desec", "/imgs/providers/desec.svg"],
+      [ACCESS_PROVIDERS.DNSEXIT, "provider.dnsexit", "/imgs/providers/dnsexit.png"],
+      [ACCESS_PROVIDERS.DNSMADEEASY, "provider.dnsmadeeasy", "/imgs/providers/dnsmadeeasy.png"],
+      [ACCESS_PROVIDERS.DUCKDNS, "provider.duckdns", "/imgs/providers/duckdns.png"],
+      [ACCESS_PROVIDERS.DYNADOT, "provider.dynadot", "/imgs/providers/dynadot.svg"],
+      [ACCESS_PROVIDERS.DYNU, "provider.dynu", "/imgs/providers/dynu.png"],
+      [ACCESS_PROVIDERS.DYNV6, "provider.dynv6", "/imgs/providers/dynv6.svg"],
+      [ACCESS_PROVIDERS.GANDINET, "provider.gandinet", "/imgs/providers/gandinet.svg"],
+      [ACCESS_PROVIDERS.GNAME, "provider.gname", "/imgs/providers/gname.png"],
+      [ACCESS_PROVIDERS.GODADDY, "provider.godaddy", "/imgs/providers/godaddy.svg"],
+      [ACCESS_PROVIDERS.HETZNER, "provider.hetzner", "/imgs/providers/hetzner.svg"],
+      [ACCESS_PROVIDERS.HOSTINGDE, "provider.hostingde", "/imgs/providers/hostingde.svg"],
+      [ACCESS_PROVIDERS.HOSTINGER, "provider.hostinger", "/imgs/providers/hostinger.svg"],
+      [ACCESS_PROVIDERS.INFOMANIAK, "provider.infomaniak", "/imgs/providers/infomaniak.svg"],
+      [ACCESS_PROVIDERS.IONOS, "provider.ionos", "/imgs/providers/ionos.svg"],
+      [ACCESS_PROVIDERS.LUADNS, "provider.luadns", "/imgs/providers/luadns.png"],
+      [ACCESS_PROVIDERS.NAMECHEAP, "provider.namecheap", "/imgs/providers/namecheap.svg"],
+      [ACCESS_PROVIDERS.NAMEDOTCOM, "provider.namedotcom", "/imgs/providers/namedotcom.svg"],
+      [ACCESS_PROVIDERS.NAMESILO, "provider.namesilo", "/imgs/providers/namesilo.svg"],
+      [ACCESS_PROVIDERS.NETCUP, "provider.netcup", "/imgs/providers/netcup.svg"],
+      [ACCESS_PROVIDERS.NS1, "provider.ns1", "/imgs/providers/ns1.svg"],
+      [ACCESS_PROVIDERS.OVHCLOUD, "provider.ovhcloud", "/imgs/providers/ovhcloud.svg"],
+      [ACCESS_PROVIDERS.PORKBUN, "provider.porkbun", "/imgs/providers/porkbun.svg"],
+      [ACCESS_PROVIDERS.REGRU, "provider.regru", "/imgs/providers/regru.svg"],
+      [ACCESS_PROVIDERS.RUCENTER, "provider.rucenter", "/imgs/providers/rucenter.svg"],
+      [ACCESS_PROVIDERS.SIMPLYCOM, "provider.simplycom", "/imgs/providers/simplycom.png"],
+      [ACCESS_PROVIDERS.SPACESHIP, "provider.spaceship", "/imgs/providers/spaceship.png"],
+      [ACCESS_PROVIDERS.VULTR, "provider.vultr", "/imgs/providers/vultr.svg"],
+      [ACCESS_PROVIDERS["35CN"], "provider.35cn", "/imgs/providers/35cn.png"],
+      [ACCESS_PROVIDERS["51DNSCOM"], "provider.51dnscom", "/imgs/providers/51dnscom.png"],
+      [ACCESS_PROVIDERS.DNSLA, "provider.dnsla", "/imgs/providers/dnsla.svg"],
+      [ACCESS_PROVIDERS.TODAYNIC, "provider.todaynic", "/imgs/providers/todaynic.png"],
+      [ACCESS_PROVIDERS.WESTCN, "provider.westcn", "/imgs/providers/westcn.svg"],
+      [ACCESS_PROVIDERS.XINNET, "provider.xinnet", "/imgs/providers/xinnet.png"],
+      [ACCESS_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns", "/imgs/providers/technitiumdns.svg"],
+      [ACCESS_PROVIDERS.ACMEDNS, "provider.acmedns", "/imgs/providers/acmedns.png"],
+      [ACCESS_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq", "/imgs/providers/acmehttpreq.svg"],
       [ACCESS_PROVIDERS.POWERDNS, "provider.powerdns", "/imgs/providers/powerdns.svg"],
       [ACCESS_PROVIDERS.RFC2136, "provider.rfc2136", "/imgs/providers/rfc.svg"],
     ] satisfies Array<[AccessProviderType, string, string]>
-  ).map(([type, name, icon]) => [type, { type, name, icon: withBasePath(icon), usages: [ACCESS_USAGES.DNS], builtin: false }])
+  ).map(([type, name, icon]) => [
+    type,
+    {
+      type,
+      name,
+      icon: withBasePath(icon),
+      usages: [ACCESS_USAGES.DNS],
+      builtin: false,
+      source: type === ACCESS_PROVIDERS.POWERDNS || type === ACCESS_PROVIDERS.RFC2136 ? undefined : "plugin",
+    },
+  ])
 );
 
 export const getAccessProvider = (type: string): AccessProvider | undefined =>
@@ -336,7 +345,7 @@ export const caProvidersMap: Map<CAProvider["type"] | string, CAProvider> = new 
 );
 // #endregion
 
-// #region ACMEDNS01Provider
+// #region ACMEDns01Provider
 export const ACME_DNS01_PROVIDERS = Object.freeze(
   /*
     注意：如果追加新的常量值，请保持以 ASCII 排序。
@@ -446,17 +455,34 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.ALIYUN_ESA, "provider.aliyun_esa"],
       [ACME_DNS01_PROVIDERS.TENCENTCLOUD_DNS, "provider.tencentcloud_dns"],
       [ACME_DNS01_PROVIDERS.TENCENTCLOUD_EO, "provider.tencentcloud_eo"],
-      [ACME_DNS01_PROVIDERS.HUAWEICLOUD_DNS, "provider.huaweicloud_dns"],
+
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws_route53"],
       [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL, "provider.aws_lightsail"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure_dns"],
+
+      [ACME_DNS01_PROVIDERS.CLOUDFLARE, "provider.cloudflare"],
+    ] satisfies Array<[ACMEDns01ProviderType, string]>
+  ).map(([type, name]) => [
+    type,
+    {
+      type: type,
+      name: name,
+      icon: accessProvidersMap.get(type.split("-")[0])!.icon,
+      provider: type.split("-")[0] as AccessProviderType,
+      builtin: false,
+    },
+  ])
+);
+const migratedDns01Providers = new Map<string, ACMEDns01Provider>(
+  (
+    [
+      [ACME_DNS01_PROVIDERS.HUAWEICLOUD_DNS, "provider.huaweicloud_dns"],
       [ACME_DNS01_PROVIDERS.ORACLECLOUD_DNS, "provider.oraclecloud_dns"],
       [ACME_DNS01_PROVIDERS.AKAMAI_EDGEDNS, "provider.akamai_edgedns"],
       [ACME_DNS01_PROVIDERS.ARVANCLOUD, "provider.arvancloud"],
       [ACME_DNS01_PROVIDERS.BEGET, "provider.beget"],
       [ACME_DNS01_PROVIDERS.BOOKMYNAME, "provider.bookmyname"],
       [ACME_DNS01_PROVIDERS.BUNNY, "provider.bunny"],
-      [ACME_DNS01_PROVIDERS.CLOUDFLARE, "provider.cloudflare"],
       [ACME_DNS01_PROVIDERS.CLOUDNS, "provider.cloudns"],
       [ACME_DNS01_PROVIDERS.CONOHAVPS, "provider.conohavps"],
       [ACME_DNS01_PROVIDERS.CONSTELLIX, "provider.constellix"],
@@ -510,28 +536,26 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.TECHNITIUMDNS, "provider.technitiumdns"],
       [ACME_DNS01_PROVIDERS.ACMEDNS, "provider.acmedns"],
       [ACME_DNS01_PROVIDERS.ACMEHTTPREQ, "provider.acmehttpreq"],
+      [ACME_DNS01_PROVIDERS.BYTEPLUS_DNS, "provider.byteplus_dns"],
     ] satisfies Array<[ACMEDns01ProviderType, string]>
-  ).map(([type, name]) => [
-    type,
-    {
-      type: type,
-      name: name,
-      icon: accessProvidersMap.get(type.split("-")[0])!.icon,
-      provider: type.split("-")[0] as AccessProviderType,
-      builtin: false,
-    },
-  ])
+  ).map(([type, name]) => {
+    const access = getAccessProvider(type.split("-")[0]);
+    return [type, { type, name, icon: access!.icon, provider: access!.type, builtin: false }];
+  })
 );
+
 export const getACMEDns01Provider = (type: string): ACMEDns01Provider | undefined => {
   return (
     acmeDns01ProvidersMap.get(type) ??
-    Array.from(acmeDns01ProvidersMap.values()).find((provider) => provider.aliases?.includes(type))
+    Array.from(acmeDns01ProvidersMap.values()).find((provider) => provider.aliases?.includes(type)) ??
+    migratedDns01Providers.get(type) ??
+    Array.from(migratedDns01Providers.values()).find((provider) => provider.provider === type)
   );
 };
 
 export const matchesACMEDns01Access = (type: string, accessType: string): boolean => {
   const provider = getACMEDns01Provider(type);
-  return provider != null && provider.provider === accessType;
+  return provider != null && acmeDns01ProvidersMap.has(provider.type) && provider.provider === accessType;
 };
 
 // #endregion

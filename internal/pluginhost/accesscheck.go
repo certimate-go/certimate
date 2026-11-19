@@ -59,6 +59,9 @@ func (c *pluginAccessChecker) Check(ctx context.Context, config map[string]any) 
 		}
 		return accessCheckCallFailure(err), nil
 	}
+	if res.ReasonCode == core.ErrAccessCheckConfigInvalid.Error() {
+		return nil, core.ErrAccessCheckConfigInvalid
+	}
 	return accessCheckResultToResp(res), nil
 }
 

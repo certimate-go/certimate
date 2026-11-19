@@ -15,16 +15,6 @@ type Access struct {
 	DeletedAt *time.Time     `db:"deleted" json:"deleted"`
 }
 
-type AccessConfigFor35cn struct {
-	Username    string `json:"username"`
-	ApiPassword string `json:"apiPassword"`
-}
-
-type AccessConfigFor51DNScom struct {
-	ApiKey    string `json:"apiKey"`
-	ApiSecret string `json:"apiSecret"`
-}
-
 type AccessConfigForACMEExternalAccountBinding struct {
 	EabKid     string `json:"eabKid,omitempty"`
 	EabHmacKey string `json:"eabHmacKey,omitempty"`
@@ -35,37 +25,14 @@ type AccessConfigForACMECA struct {
 	Endpoint string `json:"endpoint"`
 }
 
-type AccessConfigForACMEDNS struct {
-	ServerUrl   string `json:"serverUrl"`
-	Credentials string `json:"credentials"`
-}
-
-type AccessConfigForACMEHttpReq struct {
-	Endpoint string `json:"endpoint"`
-	Mode     string `json:"mode,omitempty"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-}
-
 type AccessConfigForActalisSSL struct {
 	AccessConfigForACMEExternalAccountBinding
-}
-
-type AccessConfigForAkamai struct {
-	Host         string `json:"host"`
-	ClientToken  string `json:"clientToken"`
-	ClientSecret string `json:"clientSecret"`
-	AccessToken  string `json:"accessToken"`
 }
 
 type AccessConfigForAliyun struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	AccessKeySecret string `json:"accessKeySecret"`
 	ResourceGroupId string `json:"resourceGroupId,omitempty"`
-}
-
-type AccessConfigForArvanCloud struct {
-	ApiKey string `json:"apiKey"`
 }
 
 type AccessConfigForAWS struct {
@@ -88,16 +55,6 @@ type AccessConfigForBaiduCloud struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
-type AccessConfigForBeget struct {
-	Username    string `json:"username"`
-	ApiPassword string `json:"apiPassword"`
-}
-
-type AccessConfigForBookMyName struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type AccessConfigForBunny struct {
 	ApiKey string `json:"apiKey"`
 }
@@ -113,28 +70,9 @@ type AccessConfigForCloudflare struct {
 	ApiTokenForZone string `json:"apiTokenForZone,omitempty"`
 }
 
-type AccessConfigForClouDNS struct {
-	AuthId       string `json:"authId"`
-	AuthPassword string `json:"authPassword"`
-}
-
 type AccessConfigForCMCCCloud struct {
 	AccessKeyId     string `json:"accessKeyId"`
 	AccessKeySecret string `json:"accessKeySecret"`
-}
-
-type AccessConfigForConoHaVPS struct {
-	ApiVersion  string `json:"apiVersion"`
-	ApiUserId   string `json:"apiUserId,omitempty"`
-	ApiUserName string `json:"apiUserName"`
-	ApiPassword string `json:"apiPassword"`
-	TenantId    string `json:"tenantId"`
-	TenantName  string `json:"tenantName,omitempty"`
-}
-
-type AccessConfigForConstellix struct {
-	ApiKey    string `json:"apiKey"`
-	SecretKey string `json:"secretKey"`
 }
 
 type AccessConfigForCPanel struct {
@@ -149,43 +87,8 @@ type AccessConfigForCTCCCloud struct {
 	SecretAccessKey string `json:"secretAccessKey"`
 }
 
-type AccessConfigForDeSEC struct {
-	Token string `json:"token"`
-}
-
 type AccessConfigForDigitalOcean struct {
 	AccessToken string `json:"accessToken"`
-}
-
-type AccessConfigForDNSExit struct {
-	ApiKey string `json:"apiKey"`
-}
-
-type AccessConfigForDNSLA struct {
-	ApiId     string `json:"apiId"`
-	ApiSecret string `json:"apiSecret"`
-}
-
-type AccessConfigForDNSMadeEasy struct {
-	ApiKey    string `json:"apiKey"`
-	ApiSecret string `json:"apiSecret"`
-}
-
-type AccessConfigForDuckDNS struct {
-	Token string `json:"token"`
-}
-
-type AccessConfigForDynadot struct {
-	ApiKey    string `json:"apiKey"`
-	ApiSecret string `json:"apiSecret"`
-}
-
-type AccessConfigForDynu struct {
-	ApiKey string `json:"apiKey"`
-}
-
-type AccessConfigForDynv6 struct {
-	HttpToken string `json:"httpToken"`
 }
 
 type AccessConfigForEmail struct {
@@ -207,10 +110,6 @@ type AccessConfigForFTP struct {
 	Password string `json:"password,omitempty"`
 }
 
-type AccessConfigForGandinet struct {
-	PersonalAccessToken string `json:"personalAccessToken"`
-}
-
 type AccessConfigForGcore struct {
 	ApiToken string `json:"apiToken"`
 }
@@ -224,16 +123,6 @@ type AccessConfigForGlobalSignAtlas struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
-type AccessConfigForGname struct {
-	AppId  string `json:"appId"`
-	AppKey string `json:"appKey"`
-}
-
-type AccessConfigForGoDaddy struct {
-	ApiKey    string `json:"apiKey"`
-	ApiSecret string `json:"apiSecret"`
-}
-
 type AccessConfigForGoogleCloud struct {
 	ProjectId         string `json:"projectId"`
 	ServiceAccountKey string `json:"serviceAccountKey"`
@@ -243,31 +132,10 @@ type AccessConfigForGoogleTrustServices struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
-type AccessConfigForHetzner struct {
-	ApiToken string `json:"apiToken"`
-}
-
-type AccessConfigForHostingde struct {
-	ApiKey string `json:"apiKey"`
-}
-
-type AccessConfigForHostinger struct {
-	ApiToken string `json:"apiToken"`
-}
-
 type AccessConfigForHuaweiCloud struct {
 	AccessKeyId         string `json:"accessKeyId"`
 	SecretAccessKey     string `json:"secretAccessKey"`
 	EnterpriseProjectId string `json:"enterpriseProjectId,omitempty"`
-}
-
-type AccessConfigForInfomaniak struct {
-	AccessToken string `json:"accessToken"`
-}
-
-type AccessConfigForIONOS struct {
-	ApiKeyPublicPrefix string `json:"apiKeyPublicPrefix"`
-	ApiKeySecret       string `json:"apiKeySecret"`
 }
 
 type AccessConfigForJDCloud struct {
@@ -283,37 +151,8 @@ type AccessConfigForLiteSSL struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
-type AccessConfigForLuaDNS struct {
-	Username string `json:"username"`
-	ApiKey   string `json:"apiKey"`
-}
-
-type AccessConfigForNamecheap struct {
-	Username string `json:"username"`
-	ApiKey   string `json:"apiKey"`
-}
-
-type AccessConfigForNameDotCom struct {
-	Username string `json:"username"`
-	ApiToken string `json:"apiToken"`
-}
-
-type AccessConfigForNameSilo struct {
-	ApiKey string `json:"apiKey"`
-}
-
-type AccessConfigForNetcup struct {
-	CustomerNumber string `json:"customerNumber"`
-	ApiKey         string `json:"apiKey"`
-	ApiPassword    string `json:"apiPassword"`
-}
-
 type AccessConfigForNetlify struct {
 	ApiToken string `json:"apiToken"`
-}
-
-type AccessConfigForNS1 struct {
-	ApiKey string `json:"apiKey"`
 }
 
 type AccessConfigForOracleCloud struct {
@@ -323,21 +162,6 @@ type AccessConfigForOracleCloud struct {
 	PublicKeyFingerprint string `json:"publicKeyFingerprint,omitempty"`
 	TenancyOcid          string `json:"tenancyOcid,omitempty"`
 	UserOcid             string `json:"userOcid,omitempty"`
-}
-
-type AccessConfigForOVHcloud struct {
-	Endpoint          string `json:"endpoint"`
-	AuthMethod        string `json:"authMethod"`
-	ApplicationKey    string `json:"applicationKey,omitempty"`
-	ApplicationSecret string `json:"applicationSecret,omitempty"`
-	ConsumerKey       string `json:"consumerKey,omitempty"`
-	ClientId          string `json:"clientId,omitempty"`
-	ClientSecret      string `json:"clientSecret,omitempty"`
-}
-
-type AccessConfigForPorkbun struct {
-	ApiKey       string `json:"apiKey"`
-	SecretApiKey string `json:"secretApiKey"`
 }
 
 type AccessConfigForPowerDNS struct {
@@ -355,13 +179,6 @@ type AccessConfigForRainYun struct {
 	ApiKey string `json:"apiKey"`
 }
 
-type AccessConfigForRegru struct {
-	Username        string `json:"username"`
-	Password        string `json:"password"`
-	MtlsCertificate string `json:"mtlsCertificate,omitempty"`
-	MtlsPrivateKey  string `json:"mtlsPrivateKey,omitempty"`
-}
-
 type AccessConfigForRFC2136 struct {
 	Host            string `json:"host"`
 	Port            int32  `json:"port"`
@@ -373,13 +190,6 @@ type AccessConfigForRFC2136 struct {
 	TsigGssPassword string `json:"tsigGssPassword,omitempty"`
 }
 
-type AccessConfigForRuCenter struct {
-	Username         string `json:"username"`
-	Password         string `json:"password"`
-	ApplicationId    string `json:"applicationId"`
-	ApplicationToken string `json:"applicationToken"`
-}
-
 type AccessConfigForS3 struct {
 	Endpoint                 string `json:"endpoint"`
 	AccessKey                string `json:"accessKey"`
@@ -387,16 +197,6 @@ type AccessConfigForS3 struct {
 	SignatureVersion         string `json:"signatureVersion,omitempty"`
 	UsePathStyle             bool   `json:"usePathStyle,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForSimplyCom struct {
-	AccountNumber string `json:"accountNumber"`
-	ApiKey        string `json:"apiKey"`
-}
-
-type AccessConfigForSpaceship struct {
-	ApiKey    string `json:"apiKey"`
-	ApiSecret string `json:"apiSecret"`
 }
 
 type AccessConfigForSSH struct {
@@ -424,17 +224,6 @@ type AccessConfigForSSLCom struct {
 	AccessConfigForACMEExternalAccountBinding
 }
 
-type AccessConfigForTechnitiumDNS struct {
-	ServerUrl                string `json:"serverUrl"`
-	ApiToken                 string `json:"apiToken"`
-	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForTodayNIC struct {
-	UserId string `json:"userId"`
-	ApiKey string `json:"apiKey"`
-}
-
 type AccessConfigForTencentCloud struct {
 	SecretId  string `json:"secretId"`
 	SecretKey string `json:"secretKey"`
@@ -458,26 +247,12 @@ type AccessConfigForVolcEngine struct {
 	ProjectName     string `json:"projectName,omitempty"`
 }
 
-type AccessConfigForVultr struct {
-	ApiKey string `json:"apiKey"`
-}
-
 type AccessConfigForWebhook struct {
 	Url                      string `json:"url"`
 	Method                   string `json:"method,omitempty"`
 	HeadersString            string `json:"headers,omitempty"`
 	DataString               string `json:"data,omitempty"`
 	AllowInsecureConnections bool   `json:"allowInsecureConnections,omitempty"`
-}
-
-type AccessConfigForWestcn struct {
-	Username    string `json:"username"`
-	ApiPassword string `json:"apiPassword"`
-}
-
-type AccessConfigForXinnet struct {
-	AgentId     string `json:"agentId"`
-	ApiPassword string `json:"apiPassword"`
 }
 
 type AccessConfigForYandexCloud struct {

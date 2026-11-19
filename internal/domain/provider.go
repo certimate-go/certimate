@@ -13,96 +13,74 @@ func (t AccessProviderType) String() string {
 NOTICE: If you add new constant, please keep ASCII order.
 */
 const (
-	AccessProviderType35cn                = AccessProviderType("35cn")
-	AccessProviderType51DNScom            = AccessProviderType("51dnscom")
-	AccessProviderTypeACMECA              = AccessProviderType("acmeca")
-	AccessProviderTypeACMEDNS             = AccessProviderType("acmedns")
-	AccessProviderTypeACMEHttpReq         = AccessProviderType("acmehttpreq")
-	AccessProviderTypeActalisSSL          = AccessProviderType("actalisssl")
-	AccessProviderTypeAkamai              = AccessProviderType("akamai")
-	AccessProviderTypeAliyun              = AccessProviderType("aliyun")
-	AccessProviderTypeArvanCloud          = AccessProviderType("arvancloud")
-	AccessProviderTypeAWS                 = AccessProviderType("aws")
-	AccessProviderTypeAzure               = AccessProviderType("azure")
-	AccessProviderTypeBaiduCloud          = AccessProviderType("baiducloud")
-	AccessProviderTypeBeget               = AccessProviderType("beget")
-	AccessProviderTypeBookMyName          = AccessProviderType("bookmyname")
-	AccessProviderTypeBunny               = AccessProviderType("bunny")
-	AccessProviderTypeBytePlus            = AccessProviderType("byteplus")
-	AccessProviderTypeCloudflare          = AccessProviderType("cloudflare")
-	AccessProviderTypeClouDNS             = AccessProviderType("cloudns")
-	AccessProviderTypeCMCCCloud           = AccessProviderType("cmcccloud")
-	AccessProviderTypeConoHaVPS           = AccessProviderType("conohavps")
-	AccessProviderTypeConstellix          = AccessProviderType("constellix")
-	AccessProviderTypeCPanel              = AccessProviderType("cpanel")
-	AccessProviderTypeCTCCCloud           = AccessProviderType("ctcccloud")
-	AccessProviderTypeCUCCCloud           = AccessProviderType("cucccloud") // 联通云（预留）
-	AccessProviderTypeDeSEC               = AccessProviderType("desec")
-	AccessProviderTypeDigiCert            = AccessProviderType("digicert")
-	AccessProviderTypeDigitalOcean        = AccessProviderType("digitalocean")
-	AccessProviderTypeDNSExit             = AccessProviderType("dnsexit")
-	AccessProviderTypeDNSLA               = AccessProviderType("dnsla")
-	AccessProviderTypeDNSMadeEasy         = AccessProviderType("dnsmadeeasy")
-	AccessProviderTypeDuckDNS             = AccessProviderType("duckdns")
-	AccessProviderTypeDynadot             = AccessProviderType("dynadot")
-	AccessProviderTypeDynu                = AccessProviderType("dynu")
-	AccessProviderTypeDynv6               = AccessProviderType("dynv6")
-	AccessProviderTypeEmail               = AccessProviderType("email")
-	AccessProviderTypeFastly              = AccessProviderType("fastly") // Fastly（预留）
-	AccessProviderTypeFTP                 = AccessProviderType("ftp")
-	AccessProviderTypeGandinet            = AccessProviderType("gandinet")
-	AccessProviderTypeGcore               = AccessProviderType("gcore")
-	AccessProviderTypeGlobalSignAtlas     = AccessProviderType("globalsignatlas")
-	AccessProviderTypeGname               = AccessProviderType("gname")
-	AccessProviderTypeGoDaddy             = AccessProviderType("godaddy")
+	AccessProviderTypeACMECA = AccessProviderType("acmeca")
+
+	AccessProviderTypeActalisSSL = AccessProviderType("actalisssl")
+
+	AccessProviderTypeAliyun = AccessProviderType("aliyun")
+
+	AccessProviderTypeAWS        = AccessProviderType("aws")
+	AccessProviderTypeAzure      = AccessProviderType("azure")
+	AccessProviderTypeBaiduCloud = AccessProviderType("baiducloud")
+
+	AccessProviderTypeBunny      = AccessProviderType("bunny")
+	AccessProviderTypeBytePlus   = AccessProviderType("byteplus")
+	AccessProviderTypeCloudflare = AccessProviderType("cloudflare")
+
+	AccessProviderTypeCMCCCloud = AccessProviderType("cmcccloud")
+
+	AccessProviderTypeCPanel    = AccessProviderType("cpanel")
+	AccessProviderTypeCTCCCloud = AccessProviderType("ctcccloud")
+	AccessProviderTypeCUCCCloud = AccessProviderType("cucccloud") // 联通云（预留）
+
+	AccessProviderTypeDigiCert     = AccessProviderType("digicert")
+	AccessProviderTypeDigitalOcean = AccessProviderType("digitalocean")
+
+	AccessProviderTypeEmail  = AccessProviderType("email")
+	AccessProviderTypeFastly = AccessProviderType("fastly") // Fastly（预留）
+	AccessProviderTypeFTP    = AccessProviderType("ftp")
+
+	AccessProviderTypeGcore           = AccessProviderType("gcore")
+	AccessProviderTypeGlobalSignAtlas = AccessProviderType("globalsignatlas")
+
 	AccessProviderTypeGoogleCloud         = AccessProviderType("googlecloud")
 	AccessProviderTypeGoogleTrustServices = AccessProviderType("googletrustservices")
-	AccessProviderTypeHetzner             = AccessProviderType("hetzner")
-	AccessProviderTypeHostingde           = AccessProviderType("hostingde")
-	AccessProviderTypeHostinger           = AccessProviderType("hostinger")
-	AccessProviderTypeHuaweiCloud         = AccessProviderType("huaweicloud")
-	AccessProviderTypeInfomaniak          = AccessProviderType("infomaniak")
-	AccessProviderTypeIONOS               = AccessProviderType("ionos")
-	AccessProviderTypeJDCloud             = AccessProviderType("jdcloud")
-	AccessProviderTypeLetsEncrypt         = AccessProviderType("letsencrypt")
-	AccessProviderTypeLetsEncryptStaging  = AccessProviderType("letsencryptstaging")
-	AccessProviderTypeLinode              = AccessProviderType("linode")
-	AccessProviderTypeLiteSSL             = AccessProviderType("litessl")
-	AccessProviderTypeLocal               = AccessProviderType("local")
-	AccessProviderTypeLuaDNS              = AccessProviderType("luadns")
-	AccessProviderTypeNamecheap           = AccessProviderType("namecheap")
-	AccessProviderTypeNameDotCom          = AccessProviderType("namedotcom")
-	AccessProviderTypeNameSilo            = AccessProviderType("namesilo")
-	AccessProviderTypeNetcup              = AccessProviderType("netcup")
-	AccessProviderTypeNetlify             = AccessProviderType("netlify")
-	AccessProviderTypeNS1                 = AccessProviderType("ns1")
-	AccessProviderTypeOracleCloud         = AccessProviderType("oraclecloud")
-	AccessProviderTypeOVHcloud            = AccessProviderType("ovhcloud")
-	AccessProviderTypePorkbun             = AccessProviderType("porkbun")
-	AccessProviderTypePowerDNS            = AccessProviderType("powerdns")
-	AccessProviderTypeQingCloud           = AccessProviderType("qingcloud")
-	AccessProviderTypeRainYun             = AccessProviderType("rainyun")
-	AccessProviderTypeRegru               = AccessProviderType("regru")
-	AccessProviderTypeRFC2136             = AccessProviderType("rfc2136")
-	AccessProviderTypeRuCenter            = AccessProviderType("rucenter")
-	AccessProviderTypeS3                  = AccessProviderType("s3")
-	AccessProviderTypeSectigo             = AccessProviderType("sectigo")
-	AccessProviderTypeSimplyCom           = AccessProviderType("simplycom")
-	AccessProviderTypeSpaceship           = AccessProviderType("spaceship")
-	AccessProviderTypeSSH                 = AccessProviderType("ssh")
-	AccessProviderTypeSSLCOM              = AccessProviderType("sslcom")
-	AccessProviderTypeTechnitiumDNS       = AccessProviderType("technitiumdns")
-	AccessProviderTypeTencentCloud        = AccessProviderType("tencentcloud")
-	AccessProviderTypeTodayNIC            = AccessProviderType("todaynic")
-	AccessProviderTypeUCloud              = AccessProviderType("ucloud")
-	AccessProviderTypeVercel              = AccessProviderType("vercel")
-	AccessProviderTypeVolcEngine          = AccessProviderType("volcengine")
-	AccessProviderTypeVultr               = AccessProviderType("vultr")
-	AccessProviderTypeWebhook             = AccessProviderType("webhook")
-	AccessProviderTypeWestcn              = AccessProviderType("westcn")
-	AccessProviderTypeXinnet              = AccessProviderType("xinnet")
-	AccessProviderTypeYandexCloud         = AccessProviderType("yandexcloud")
-	AccessProviderTypeZeroSSL             = AccessProviderType("zerossl")
+
+	AccessProviderTypeHuaweiCloud = AccessProviderType("huaweicloud")
+
+	AccessProviderTypeJDCloud            = AccessProviderType("jdcloud")
+	AccessProviderTypeLetsEncrypt        = AccessProviderType("letsencrypt")
+	AccessProviderTypeLetsEncryptStaging = AccessProviderType("letsencryptstaging")
+	AccessProviderTypeLinode             = AccessProviderType("linode")
+	AccessProviderTypeLiteSSL            = AccessProviderType("litessl")
+	AccessProviderTypeLocal              = AccessProviderType("local")
+
+	AccessProviderTypeNetlify = AccessProviderType("netlify")
+
+	AccessProviderTypeOracleCloud = AccessProviderType("oraclecloud")
+
+	AccessProviderTypePowerDNS  = AccessProviderType("powerdns")
+	AccessProviderTypeQingCloud = AccessProviderType("qingcloud")
+	AccessProviderTypeRainYun   = AccessProviderType("rainyun")
+
+	AccessProviderTypeRFC2136 = AccessProviderType("rfc2136")
+
+	AccessProviderTypeS3      = AccessProviderType("s3")
+	AccessProviderTypeSectigo = AccessProviderType("sectigo")
+
+	AccessProviderTypeSSH    = AccessProviderType("ssh")
+	AccessProviderTypeSSLCOM = AccessProviderType("sslcom")
+
+	AccessProviderTypeTencentCloud = AccessProviderType("tencentcloud")
+
+	AccessProviderTypeUCloud     = AccessProviderType("ucloud")
+	AccessProviderTypeVercel     = AccessProviderType("vercel")
+	AccessProviderTypeVolcEngine = AccessProviderType("volcengine")
+
+	AccessProviderTypeWebhook = AccessProviderType("webhook")
+
+	AccessProviderTypeYandexCloud = AccessProviderType("yandexcloud")
+	AccessProviderTypeZeroSSL     = AccessProviderType("zerossl")
 )
 
 type CAProviderType string
@@ -152,89 +130,18 @@ ACME DNS-01 提供商常量值。
 NOTICE: If you add new constant, please keep ASCII order.
 */
 const (
-	ACMEDns01ProviderType35cn              = ACMEDns01ProviderType(AccessProviderType35cn)
-	ACMEDns01ProviderType51DNScom          = ACMEDns01ProviderType(AccessProviderType51DNScom)
-	ACMEDns01ProviderTypeACMEDNS           = ACMEDns01ProviderType(AccessProviderTypeACMEDNS)
-	ACMEDns01ProviderTypeACMEHttpReq       = ACMEDns01ProviderType(AccessProviderTypeACMEHttpReq)
-	ACMEDns01ProviderTypeAkamai            = ACMEDns01ProviderType(AccessProviderTypeAkamai) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAkamaiEdgeDNS]
-	ACMEDns01ProviderTypeAkamaiEdgeDNS     = ACMEDns01ProviderType(AccessProviderTypeAkamai + "-edgedns")
-	ACMEDns01ProviderTypeAliyun            = ACMEDns01ProviderType(AccessProviderTypeAliyun) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAliyunDNS]
-	ACMEDns01ProviderTypeAliyunDNS         = ACMEDns01ProviderType(AccessProviderTypeAliyun + "-dns")
-	ACMEDns01ProviderTypeAliyunESA         = ACMEDns01ProviderType(AccessProviderTypeAliyun + "-esa")
-	ACMEDns01ProviderTypeArvanCloud        = ACMEDns01ProviderType(AccessProviderTypeArvanCloud)
-	ACMEDns01ProviderTypeAWS               = ACMEDns01ProviderType(AccessProviderTypeAWS) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAWSRoute53]
-	ACMEDns01ProviderTypeAWSLightsail      = ACMEDns01ProviderType(AccessProviderTypeAWS + "-lightsail")
-	ACMEDns01ProviderTypeAWSRoute53        = ACMEDns01ProviderType(AccessProviderTypeAWS + "-route53")
-	ACMEDns01ProviderTypeAzure             = ACMEDns01ProviderType(AccessProviderTypeAzure) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAzureDNS]
-	ACMEDns01ProviderTypeAzureDNS          = ACMEDns01ProviderType(AccessProviderTypeAzure + "-dns")
-	ACMEDns01ProviderTypeBaiduCloud        = ACMEDns01ProviderType(AccessProviderTypeBaiduCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeBaiduCloudDNS]
-	ACMEDns01ProviderTypeBaiduCloudDNS     = ACMEDns01ProviderType(AccessProviderTypeBaiduCloud + "-dns")
-	ACMEDns01ProviderTypeBeget             = ACMEDns01ProviderType(AccessProviderTypeBeget)
-	ACMEDns01ProviderTypeBookMyName        = ACMEDns01ProviderType(AccessProviderTypeBookMyName)
-	ACMEDns01ProviderTypeBunny             = ACMEDns01ProviderType(AccessProviderTypeBunny)
-	ACMEDns01ProviderTypeBytePlus          = ACMEDns01ProviderType(AccessProviderTypeBytePlus) // 兼容旧值，等同于 [ACMEDns01ProviderTypeBytePlusDNS]
-	ACMEDns01ProviderTypeBytePlusDNS       = ACMEDns01ProviderType(AccessProviderTypeBytePlus + "-dns")
-	ACMEDns01ProviderTypeCloudflare        = ACMEDns01ProviderType(AccessProviderTypeCloudflare)
-	ACMEDns01ProviderTypeClouDNS           = ACMEDns01ProviderType(AccessProviderTypeClouDNS)
-	ACMEDns01ProviderTypeConoHaVPS         = ACMEDns01ProviderType(AccessProviderTypeConoHaVPS)
-	ACMEDns01ProviderTypeConstellix        = ACMEDns01ProviderType(AccessProviderTypeConstellix)
-	ACMEDns01ProviderTypeCPanel            = ACMEDns01ProviderType(AccessProviderTypeCPanel)
-	ACMEDns01ProviderTypeCTCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCTCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCTCCCloudSmartDNS]
-	ACMEDns01ProviderTypeCTCCCloudSmartDNS = ACMEDns01ProviderType(AccessProviderTypeCTCCCloud + "-smartdns")
-	ACMEDns01ProviderTypeDeSEC             = ACMEDns01ProviderType(AccessProviderTypeDeSEC)
-	ACMEDns01ProviderTypeDigitalOcean      = ACMEDns01ProviderType(AccessProviderTypeDigitalOcean)
-	ACMEDns01ProviderTypeDNSExit           = ACMEDns01ProviderType(AccessProviderTypeDNSExit)
-	ACMEDns01ProviderTypeDNSLA             = ACMEDns01ProviderType(AccessProviderTypeDNSLA)
-	ACMEDns01ProviderTypeDNSMadeEasy       = ACMEDns01ProviderType(AccessProviderTypeDNSMadeEasy)
-	ACMEDns01ProviderTypeDuckDNS           = ACMEDns01ProviderType(AccessProviderTypeDuckDNS)
-	ACMEDns01ProviderTypeDynadot           = ACMEDns01ProviderType(AccessProviderTypeDynadot)
-	ACMEDns01ProviderTypeDynu              = ACMEDns01ProviderType(AccessProviderTypeDynu)
-	ACMEDns01ProviderTypeDynv6             = ACMEDns01ProviderType(AccessProviderTypeDynv6)
-	ACMEDns01ProviderTypeGandinet          = ACMEDns01ProviderType(AccessProviderTypeGandinet)
-	ACMEDns01ProviderTypeGcore             = ACMEDns01ProviderType(AccessProviderTypeGcore)
-	ACMEDns01ProviderTypeGname             = ACMEDns01ProviderType(AccessProviderTypeGname)
-	ACMEDns01ProviderTypeGoDaddy           = ACMEDns01ProviderType(AccessProviderTypeGoDaddy)
-	ACMEDns01ProviderTypeHetzner           = ACMEDns01ProviderType(AccessProviderTypeHetzner)
-	ACMEDns01ProviderTypeHostingde         = ACMEDns01ProviderType(AccessProviderTypeHostingde)
-	ACMEDns01ProviderTypeHostinger         = ACMEDns01ProviderType(AccessProviderTypeHostinger)
-	ACMEDns01ProviderTypeHuaweiCloud       = ACMEDns01ProviderType(AccessProviderTypeHuaweiCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeHuaweiCloudDNS]
-	ACMEDns01ProviderTypeHuaweiCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeHuaweiCloud + "-dns")
-	ACMEDns01ProviderTypeInfomaniak        = ACMEDns01ProviderType(AccessProviderTypeInfomaniak)
-	ACMEDns01ProviderTypeIONOS             = ACMEDns01ProviderType(AccessProviderTypeIONOS)
-	ACMEDns01ProviderTypeJDCloud           = ACMEDns01ProviderType(AccessProviderTypeJDCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeJDCloudDNS]
-	ACMEDns01ProviderTypeJDCloudDNS        = ACMEDns01ProviderType(AccessProviderTypeJDCloud + "-dns")
-	ACMEDns01ProviderTypeLinode            = ACMEDns01ProviderType(AccessProviderTypeLinode)
-	ACMEDns01ProviderTypeLuaDNS            = ACMEDns01ProviderType(AccessProviderTypeLuaDNS)
-	ACMEDns01ProviderTypeNamecheap         = ACMEDns01ProviderType(AccessProviderTypeNamecheap)
-	ACMEDns01ProviderTypeNameDotCom        = ACMEDns01ProviderType(AccessProviderTypeNameDotCom)
-	ACMEDns01ProviderTypeNameSilo          = ACMEDns01ProviderType(AccessProviderTypeNameSilo)
-	ACMEDns01ProviderTypeNetcup            = ACMEDns01ProviderType(AccessProviderTypeNetcup)
-	ACMEDns01ProviderTypeNetlify           = ACMEDns01ProviderType(AccessProviderTypeNetlify)
-	ACMEDns01ProviderTypeNS1               = ACMEDns01ProviderType(AccessProviderTypeNS1)
-	ACMEDns01ProviderTypeOracleCloud       = ACMEDns01ProviderType(AccessProviderTypeOracleCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeOracleCloudDNS]
-	ACMEDns01ProviderTypeOracleCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeOracleCloud + "-dns")
-	ACMEDns01ProviderTypeOVHcloud          = ACMEDns01ProviderType(AccessProviderTypeOVHcloud)
-	ACMEDns01ProviderTypePorkbun           = ACMEDns01ProviderType(AccessProviderTypePorkbun)
-	ACMEDns01ProviderTypeQingCloud         = ACMEDns01ProviderType(AccessProviderTypeQingCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeQingCloudDNS]
-	ACMEDns01ProviderTypeQingCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeQingCloud + "-dns")
-	ACMEDns01ProviderTypeRainYun           = ACMEDns01ProviderType(AccessProviderTypeRainYun)
-	ACMEDns01ProviderTypeRegru             = ACMEDns01ProviderType(AccessProviderTypeRegru)
-	ACMEDns01ProviderTypeRuCenter          = ACMEDns01ProviderType(AccessProviderTypeRuCenter)
-	ACMEDns01ProviderTypeSimplyCom         = ACMEDns01ProviderType(AccessProviderTypeSimplyCom)
-	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)
-	ACMEDns01ProviderTypeTechnitiumDNS     = ACMEDns01ProviderType(AccessProviderTypeTechnitiumDNS)
-	ACMEDns01ProviderTypeTencentCloud      = ACMEDns01ProviderType(AccessProviderTypeTencentCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeTencentCloudDNS]
-	ACMEDns01ProviderTypeTencentCloudDNS   = ACMEDns01ProviderType(AccessProviderTypeTencentCloud + "-dns")
-	ACMEDns01ProviderTypeTencentCloudEO    = ACMEDns01ProviderType(AccessProviderTypeTencentCloud + "-eo")
-	ACMEDns01ProviderTypeTodayNIC          = ACMEDns01ProviderType(AccessProviderTypeTodayNIC)
-	ACMEDns01ProviderTypeUCloud            = ACMEDns01ProviderType(AccessProviderTypeUCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeUCloudUDNR]
-	ACMEDns01ProviderTypeUCloudUDNR        = ACMEDns01ProviderType(AccessProviderTypeUCloud + "-udnr")
-	ACMEDns01ProviderTypeVercel            = ACMEDns01ProviderType(AccessProviderTypeVercel)
-	ACMEDns01ProviderTypeVultr             = ACMEDns01ProviderType(AccessProviderTypeVultr)
-	ACMEDns01ProviderTypeWestcn            = ACMEDns01ProviderType(AccessProviderTypeWestcn)
-	ACMEDns01ProviderTypeXinnet            = ACMEDns01ProviderType(AccessProviderTypeXinnet)
-	ACMEDns01ProviderTypeYandexCloud       = ACMEDns01ProviderType(AccessProviderTypeYandexCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeYandexCloudDNS]
-	ACMEDns01ProviderTypeYandexCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeYandexCloud + "-dns")
+	ACMEDns01ProviderTypeAliyun          = ACMEDns01ProviderType(AccessProviderTypeAliyun) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAliyunDNS]
+	ACMEDns01ProviderTypeAliyunDNS       = ACMEDns01ProviderType(AccessProviderTypeAliyun + "-dns")
+	ACMEDns01ProviderTypeAliyunESA       = ACMEDns01ProviderType(AccessProviderTypeAliyun + "-esa")
+	ACMEDns01ProviderTypeAWS             = ACMEDns01ProviderType(AccessProviderTypeAWS) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAWSRoute53]
+	ACMEDns01ProviderTypeAWSLightsail    = ACMEDns01ProviderType(AccessProviderTypeAWS + "-lightsail")
+	ACMEDns01ProviderTypeAWSRoute53      = ACMEDns01ProviderType(AccessProviderTypeAWS + "-route53")
+	ACMEDns01ProviderTypeAzure           = ACMEDns01ProviderType(AccessProviderTypeAzure) // 兼容旧值，等同于 [ACMEDns01ProviderTypeAzureDNS]
+	ACMEDns01ProviderTypeAzureDNS        = ACMEDns01ProviderType(AccessProviderTypeAzure + "-dns")
+	ACMEDns01ProviderTypeCloudflare      = ACMEDns01ProviderType(AccessProviderTypeCloudflare)
+	ACMEDns01ProviderTypeTencentCloud    = ACMEDns01ProviderType(AccessProviderTypeTencentCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeTencentCloudDNS]
+	ACMEDns01ProviderTypeTencentCloudDNS = ACMEDns01ProviderType(AccessProviderTypeTencentCloud + "-dns")
+	ACMEDns01ProviderTypeTencentCloudEO  = ACMEDns01ProviderType(AccessProviderTypeTencentCloud + "-eo")
 )
 
 type ACMEHttp01ProviderType ACMEChallengeProviderType

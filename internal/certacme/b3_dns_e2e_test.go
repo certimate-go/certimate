@@ -76,6 +76,7 @@ func TestB3DNSWorkflow(t *testing.T) {
 	if binary == "" {
 		t.Skip("set CERTIMATE_B3_DNS_CORE to the core executable")
 	}
+	pluginDir := os.Getenv("CERTIMATE_B3_DNS_PLUGINS")
 	if runtime.GOOS != "linux" {
 		dir := t.TempDir()
 		cmd := exec.Command("go", "test", "-c", "-o", filepath.Join(dir, "dns.test"), ".")
@@ -90,7 +91,11 @@ func TestB3DNSWorkflow(t *testing.T) {
 		if err = os.WriteFile(filepath.Join(dir, "core"), data, 0o755); err != nil {
 			t.Fatal(err)
 		}
-		cmd = exec.Command("docker", "run", "--rm", "-v", dir+":/fixture:ro", "-e", "CERTIMATE_B3_DNS_CORE=/fixture/core", "-e", "CERTIMATE_B3_DNS_FAMILIES="+os.Getenv("CERTIMATE_B3_DNS_FAMILIES"), "alpine:latest", "/fixture/dns.test", "-test.run=^TestB3DNSWorkflow$", "-test.v", "-test.timeout=15m")
+		args := []string{"run", "--rm", "--network=none", "-v", dir + ":/fixture:ro", "-e", "CERTIMATE_B3_DNS_CORE=/fixture/core", "-e", "CERTIMATE_B3_DNS_FAMILIES=" + os.Getenv("CERTIMATE_B3_DNS_FAMILIES")}
+		if pluginDir != "" {
+			args = append(args, "-v", pluginDir+":/plugins:ro", "-e", "CERTIMATE_B3_DNS_PLUGINS=/plugins")
+		}
+		cmd = exec.Command("docker", append(args, "alpine:latest", "/fixture/dns.test", "-test.run=^TestB3DNSWorkflow$", "-test.v", "-test.timeout=15m")...)
 		out, err := cmd.CombinedOutput()
 		t.Log(string(out))
 		if err != nil {
@@ -103,7 +108,13 @@ func TestB3DNSWorkflow(t *testing.T) {
 		families = strings.Split(filter, ",")
 	}
 	for _, family := range families {
-		t.Run(family, func(t *testing.T) { runDNSWorkflow(t, binary, family, dnsWorkflowPlugins{}) })
+		t.Run(family, func(t *testing.T) {
+			plugins := dnsWorkflowPlugins{}
+			if family != "cloudflare" {
+				plugins = stageMigratedDNSWorkflowPlugin(t, pluginDir, family+"-dns", family)
+			}
+			runDNSWorkflow(t, binary, family, plugins)
+		})
 	}
 }
 
@@ -116,6 +127,28 @@ type dnsWorkflowPlugins struct {
 	configureDNS     func(*testing.T, *b3DNSFixture) b3DNSProviderConfig
 	wildcardOrder    bool
 	cname            bool
+}
+
+func stageMigratedDNSWorkflowPlugin(t *testing.T, source, provider, access string) dnsWorkflowPlugins {
+	t.Helper()
+	if source == "" {
+		t.Fatal("set the DNS fixture plugin directory to the staged provider binaries")
+	}
+	dir := t.TempDir()
+	copyDNSWorkflowPlugin(t, dir, source, provider)
+	return dnsWorkflowPlugins{
+		dir:              dir,
+		accessByProvider: map[string]string{provider: access},
+		applyPlugin:      provider + ".exe",
+		pollingInterval:  1,
+	}
+}
+
+func copyDNSWorkflowPlugin(t *testing.T, dir, source, provider string) {
+	t.Helper()
+	if err := os.CopyFS(filepath.Join(dir, provider), os.DirFS(filepath.Join(source, provider))); err != nil {
+		t.Fatalf("stage %s: %v", provider, err)
+	}
 }
 
 func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlugins) {

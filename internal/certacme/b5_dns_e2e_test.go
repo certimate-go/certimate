@@ -47,15 +47,12 @@ func TestB5DNSWorkflow(t *testing.T) {
 		}
 		return
 	}
-	plugins := dnsWorkflowPlugins{dir: pluginDir}
-	if pluginDir != "" {
-		plugins.accessByProvider = map[string]string{
-			"jdcloud-alb": "jdcloud", "jdcloud-cdn": "jdcloud", "jdcloud-live": "jdcloud", "jdcloud-ssl": "jdcloud", "jdcloud-vod": "jdcloud", "jdcloud-waf": "jdcloud",
-			"ucloud-ualb": "ucloud", "ucloud-ucdn": "ucloud", "ucloud-uclb": "ucloud", "ucloud-uewaf": "ucloud", "ucloud-pathx": "ucloud", "ucloud-us3": "ucloud",
-		}
-	}
+	providers := map[string]string{"jdcloud": "jdcloud-dns", "ucloud": "ucloud-udnr"}
 	for _, family := range []string{"jdcloud", "ucloud"} {
-		t.Run(family, func(t *testing.T) { runDNSWorkflow(t, binary, family, plugins) })
+		t.Run(family, func(t *testing.T) {
+			plugins := stageMigratedDNSWorkflowPlugin(t, pluginDir, providers[family], family)
+			runDNSWorkflow(t, binary, family, plugins)
+		})
 	}
 }
 

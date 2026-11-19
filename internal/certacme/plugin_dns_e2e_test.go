@@ -28,6 +28,8 @@ import (
 	"time"
 
 	"github.com/miekg/dns"
+
+	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 func urlQueryEscape(s string) string {
@@ -116,68 +118,37 @@ func (a *pluginAPIFixture) handle(w http.ResponseWriter, r *http.Request) {
 
 func TestPluginDNSWorkflow(t *testing.T) {
 	binary := os.Getenv("CERTIMATE_PLUGIN_E2E_CORE")
-	pluginDir := ""
+	pluginDir := os.Getenv("CERTIMATE_PLUGIN_E2E_PLUGINS")
 	if binary == "" {
 		if runtime.GOOS == "windows" {
 			t.Skip("plugin fixture workflow relies on unix process signals")
 		}
-		_, thisFile, _, _ := runtime.Caller(0)
-		coreRoot, err := filepath.Abs(filepath.Join(filepath.Dir(thisFile), "..", ".."))
+		coreRoot, err := filepath.Abs(filepath.Join("..", ".."))
 		if err != nil {
 			t.Fatal(err)
 		}
-		workspace := filepath.Dir(coreRoot)
 		buildDir := t.TempDir()
-		cross := append(os.Environ(), "CGO_ENABLED=0")
-		if runtime.GOOS != "linux" {
-			cross = append(cross, "GOOS=linux", "GOARCH=arm64")
-		}
-		build := func(name, sourceDir string) string {
-			out := filepath.Join(buildDir, name)
-			cmd := exec.Command("go", "build", "-o", out, ".")
-			cmd.Dir = sourceDir
-			cmd.Env = cross
+		env := append(os.Environ(), "CGO_ENABLED=0", "GOOS=linux", "GOARCH="+runtime.GOARCH)
+		runGo := func(dir string, args ...string) {
+			t.Helper()
+			cmd := exec.Command("go", args...)
+			cmd.Dir = dir
+			cmd.Env = env
 			if output, err := cmd.CombinedOutput(); err != nil {
-				t.Fatalf("build %s: %v %s", name, err, output)
+				t.Fatalf("go %v: %v %s", args, err, output)
 			}
-			return out
 		}
-		build("core", coreRoot)
-		for _, name := range []string{"mockdns", "mockdns-deploy", "mocknotify"} {
-			build(name, filepath.Join(workspace, "plugins", name))
-		}
+		binary = filepath.Join(buildDir, "core")
+		fixture := filepath.Join(buildDir, "workflowplugin")
+		runGo(coreRoot, "build", "-ldflags=-s -w", "-o", binary, ".")
+		runGo(coreRoot, "build", "-o", fixture, "./internal/certacme/testdata/workflowplugin")
+		pluginDir = filepath.Join(buildDir, "plugins")
+		stageWorkflowPluginFixtures(t, fixture, pluginDir)
 		if runtime.GOOS != "linux" {
-			dir := t.TempDir()
-			cmd := exec.Command("go", "test", "-c", "-o", filepath.Join(dir, "plugin.test"), ".")
-			cmd.Env = cross
-			cmd.Dir = filepath.Join(coreRoot, "internal", "certacme")
-			if out, err := cmd.CombinedOutput(); err != nil {
-				t.Fatalf("build plugin e2e test: %v %s", err, out)
-			}
-			for _, name := range []string{"core", "mockdns", "mockdns-deploy", "mocknotify"} {
-				data, err := os.ReadFile(filepath.Join(buildDir, name))
-				if err != nil {
-					t.Fatal(err)
-				}
-				if err := os.WriteFile(filepath.Join(dir, name), data, 0o755); err != nil {
-					t.Fatal(err)
-				}
-			}
-			for _, name := range []string{"mockdns", "mockdns-deploy", "mocknotify"} {
-				source, err := os.ReadFile(filepath.Join(workspace, "plugins", name, "manifest.json"))
-				if err != nil {
-					t.Fatal(err)
-				}
-				if err := os.WriteFile(filepath.Join(dir, name+".manifest.json"), source, 0o644); err != nil {
-					t.Fatal(err)
-				}
-			}
-			wrap := filepath.Join(dir, "wrap")
-			script := "#!/bin/sh\nmkdir -p /work/plugins\nfor n in mockdns mockdns-deploy mocknotify; do\n  mkdir -p /work/plugins/$n\n  cp /fixture/$n /work/plugins/$n/$n\n  cp /fixture/$n.manifest.json /work/plugins/$n/manifest.json\ndone\nexec /fixture/plugin.test -test.run='^TestPluginDNSWorkflow$' -test.v -test.timeout=15m\n"
-			if err := os.WriteFile(wrap, []byte(script), 0o755); err != nil {
-				t.Fatal(err)
-			}
-			cmd = exec.Command("docker", "run", "--rm", "-v", dir+":/fixture:ro", "-e", "CERTIMATE_PLUGIN_E2E_CORE=/fixture/core", "-e", "CERTIMATE_PLUGIN_E2E_PLUGINS=/work/plugins", "alpine:latest", "/bin/sh", "/fixture/wrap")
+			runGo(".", "test", "-c", "-ldflags=-s -w", "-o", filepath.Join(buildDir, "plugin.test"), ".")
+			cmd := exec.Command("docker", "run", "--rm", "--network=none", "-v", buildDir+":/fixture:ro",
+				"-e", "CERTIMATE_PLUGIN_E2E_CORE=/fixture/core", "-e", "CERTIMATE_PLUGIN_E2E_PLUGINS=/fixture/plugins",
+				"alpine:latest", "/fixture/plugin.test", "-test.run=^TestPluginDNSWorkflow$", "-test.v", "-test.timeout=15m")
 			out, err := cmd.CombinedOutput()
 			t.Log(string(out))
 			if err != nil {
@@ -185,33 +156,6 @@ func TestPluginDNSWorkflow(t *testing.T) {
 			}
 			return
 		}
-		binary = filepath.Join(buildDir, "core")
-		pluginStage := filepath.Join(buildDir, "plugins")
-		for _, name := range []string{"mockdns", "mockdns-deploy", "mocknotify"} {
-			dir := filepath.Join(pluginStage, name)
-			if err := os.MkdirAll(dir, 0o755); err != nil {
-				t.Fatal(err)
-			}
-			data, err := os.ReadFile(filepath.Join(buildDir, name))
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(filepath.Join(dir, name), data, 0o755); err != nil {
-				t.Fatal(err)
-			}
-			manifest, err := os.ReadFile(filepath.Join(workspace, "plugins", name, "manifest.json"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(filepath.Join(dir, "manifest.json"), manifest, 0o644); err != nil {
-				t.Fatal(err)
-			}
-		}
-		pluginDir = pluginStage
-	}
-
-	if pluginDir == "" {
-		pluginDir = os.Getenv("CERTIMATE_PLUGIN_E2E_PLUGINS")
 	}
 
 	f := &b3DNSFixture{t: t, family: "mockdns", proxyTargets: map[string]string{}, domain: "mockdns.example.test", token: "plugin-fixture-challenge-token"}
@@ -530,4 +474,32 @@ func TestPluginDNSWorkflow(t *testing.T) {
 			t.Fatalf("notify payload subject=%q message=%q", subject, message)
 		}
 	})
+}
+
+func stageWorkflowPluginFixtures(t *testing.T, fixture, pluginDir string) {
+	t.Helper()
+	for _, item := range []struct{ name, access, capability string }{
+		{"mockdns", "mockdns", plugin.CapabilityDns},
+		{"mockdns-deploy", "mockdns", plugin.CapabilityDeploy},
+		{"mocknotify", "webhook", plugin.CapabilityNotify},
+	} {
+		dir := filepath.Join(pluginDir, item.name)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		binary := item.name + ".exe"
+		if err := os.Link(fixture, filepath.Join(dir, binary)); err != nil {
+			t.Fatal(err)
+		}
+		manifest, err := json.Marshal(plugin.Manifest{
+			Version: "0.1.0", Binary: binary, ProviderType: item.name, AccessProviderType: item.access,
+			Capability: item.capability, ProtocolVersion: plugin.ProtocolVersion,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "manifest.json"), manifest, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
 }

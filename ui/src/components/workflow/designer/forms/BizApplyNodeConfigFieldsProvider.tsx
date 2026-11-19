@@ -8,13 +8,9 @@ import BizApplyNodeConfigFieldsProviderAliyunESA from "./BizApplyNodeConfigField
 import BizApplyNodeConfigFieldsProviderAWSLightsail from "./BizApplyNodeConfigFieldsProviderAWSLightsail";
 import BizApplyNodeConfigFieldsProviderAWSRoute53 from "./BizApplyNodeConfigFieldsProviderAWSRoute53";
 import BizApplyNodeConfigFieldsProviderFTP from "./BizApplyNodeConfigFieldsProviderFTP";
-import BizApplyNodeConfigFieldsProviderHuaweiCloudDNS from "./BizApplyNodeConfigFieldsProviderHuaweiCloudDNS";
-import BizApplyNodeConfigFieldsProviderJDCloudDNS from "./BizApplyNodeConfigFieldsProviderJDCloudDNS";
 import BizApplyNodeConfigFieldsProviderLocal from "./BizApplyNodeConfigFieldsProviderLocal";
-import BizApplyNodeConfigFieldsProviderOracleCloudDNS from "./BizApplyNodeConfigFieldsProviderOracleCloudDNS";
 import BizApplyNodeConfigFieldsProviderS3 from "./BizApplyNodeConfigFieldsProviderS3";
 import BizApplyNodeConfigFieldsProviderSSH from "./BizApplyNodeConfigFieldsProviderSSH";
-import BizApplyNodeConfigFieldsProviderUCloudUDNR from "./BizApplyNodeConfigFieldsProviderUCloudUDNR";
 import SchemaConfigFields from "./SchemaConfigFields";
 
 const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React.ComponentType<any>>> = {
@@ -26,14 +22,6 @@ const acmeDns01ProviderComponentMap: Partial<Record<ACMEDns01ProviderType, React
   [ACME_DNS01_PROVIDERS.AWS]: BizApplyNodeConfigFieldsProviderAWSRoute53,
   [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL]: BizApplyNodeConfigFieldsProviderAWSLightsail,
   [ACME_DNS01_PROVIDERS.AWS_ROUTE53]: BizApplyNodeConfigFieldsProviderAWSRoute53,
-  [ACME_DNS01_PROVIDERS.HUAWEICLOUD]: BizApplyNodeConfigFieldsProviderHuaweiCloudDNS,
-  [ACME_DNS01_PROVIDERS.HUAWEICLOUD_DNS]: BizApplyNodeConfigFieldsProviderHuaweiCloudDNS,
-  [ACME_DNS01_PROVIDERS.JDCLOUD]: BizApplyNodeConfigFieldsProviderJDCloudDNS,
-  [ACME_DNS01_PROVIDERS.JDCLOUD_DNS]: BizApplyNodeConfigFieldsProviderJDCloudDNS,
-  [ACME_DNS01_PROVIDERS.ORACLECLOUD]: BizApplyNodeConfigFieldsProviderOracleCloudDNS,
-  [ACME_DNS01_PROVIDERS.ORACLECLOUD_DNS]: BizApplyNodeConfigFieldsProviderOracleCloudDNS,
-  [ACME_DNS01_PROVIDERS.UCLOUD]: BizApplyNodeConfigFieldsProviderUCloudUDNR,
-  [ACME_DNS01_PROVIDERS.UCLOUD_UDNR]: BizApplyNodeConfigFieldsProviderUCloudUDNR,
 };
 
 const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, React.ComponentType<any>>> = {
