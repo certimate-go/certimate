@@ -372,7 +372,10 @@ func TestE2E_OfficialMirrorSettingsAndIcons(t *testing.T) {
 	}
 	api.assertMarketIcon(githubCard.IconURL, 200)
 	api.market("POST", "/update/fixture-legacy", map[string]string{"source": "official"}, 0, "", nil)
-	waitMarketInstall(t, api, "fixture-legacy", "official", pluginhost.JobInstalled)
+	meta, err := plugin.ReadMarketMeta(filepath.Join(state, "plugins"), "fixture-legacy")
+	if err != nil || meta == nil || meta.Origin() != plugin.OfficialMarketSource() || meta.InstalledVersion != githubCard.Version {
+		t.Fatalf("unexpected installation after GitHub origin update: %+v, %v", meta, err)
+	}
 }
 
 func TestE2E_CustomMarketsHTTP(t *testing.T) {
