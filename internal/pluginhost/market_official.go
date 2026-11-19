@@ -2,6 +2,7 @@ package pluginhost
 
 import (
 	"context"
+	"crypto/ed25519"
 	"errors"
 	"fmt"
 	"maps"
@@ -14,7 +15,17 @@ import (
 )
 
 func builtInOfficialMarketTrust() plugin.OfficialMarketTrust {
-	return plugin.OfficialMarketTrust{Epoch: 1}
+	return plugin.OfficialMarketTrust{
+		Epoch: 1,
+		Keys: map[string]ed25519.PublicKey{
+			"certimate-market-2026-11": {
+				0x81, 0xec, 0xae, 0x9b, 0xdb, 0xe9, 0x14, 0x48,
+				0x49, 0x0e, 0xd8, 0x9d, 0xef, 0x6b, 0x69, 0xd1,
+				0x47, 0x42, 0x04, 0x99, 0x6d, 0xe9, 0x59, 0xc6,
+				0xe0, 0x68, 0x3c, 0x9f, 0xd9, 0x28, 0x01, 0x9a,
+			},
+		},
+	}
 }
 
 func (s *marketCatalog) isOfficial() bool {
