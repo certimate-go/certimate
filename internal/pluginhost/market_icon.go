@@ -9,6 +9,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -25,7 +26,23 @@ func (s *marketCatalog) officialIconURL(manifest *plugin.MarketManifest) string 
 	return fmt.Sprintf("/api/plugin/market/official/icon/%s/%s?mirror=%x", manifest.ProviderType, manifest.Official.Icon.SHA256, revision[:8])
 }
 
-func (s *MarketService) OfficialIcon(ctx context.Context, provider, digest string) ([]byte, string, error) {
+func (s *MarketService) OfficialIcon(ctx context.Context, provider, digest string) (_ []byte, _ string, err error) {
+	var mirrorURL string
+	var upstreamStatus int
+	defer func() {
+		if err == nil {
+			return
+		}
+		attrs := []slog.Attr{slog.String("provider", provider), slog.Any("error", err)}
+		if mirrorURL != "" {
+			attrs = append(attrs, slog.String("mirror_url", mirrorURL))
+		}
+		if upstreamStatus != 0 {
+			attrs = append(attrs, slog.Int("upstream_status", upstreamStatus))
+		}
+		s.logger.LogAttrs(ctx, slog.LevelWarn, "market: official icon load failed", attrs...)
+	}()
+
 	if plugin.ValidateProviderType(provider) != nil || !validDetailSHA(digest) {
 		return nil, "", fmt.Errorf("market: invalid icon reference")
 	}
@@ -36,7 +53,8 @@ func (s *MarketService) OfficialIcon(ctx context.Context, provider, digest strin
 	defer release()
 	catalog.mu.RLock()
 	var selected *plugin.MarketManifest
-	if catalog.canInstallFromCatalogLocked() {
+	verified := catalog.canInstallFromCatalogLocked()
+	if verified {
 		for _, row := range catalog.cache {
 			if row.ProviderType == provider && row.Official != nil && row.Official.Icon != nil && row.Official.Icon.SHA256 == digest {
 				selected = row
@@ -45,6 +63,9 @@ func (s *MarketService) OfficialIcon(ctx context.Context, provider, digest strin
 		}
 	}
 	catalog.mu.RUnlock()
+	if !verified {
+		return nil, "", fmt.Errorf("market: official icon requires a current verified catalog")
+	}
 	if selected == nil {
 		return nil, "", fmt.Errorf("market: icon is not in the verified catalog for this mirror")
 	}
@@ -58,25 +79,44 @@ func (s *MarketService) OfficialIcon(ctx context.Context, provider, digest strin
 		return nil, "", err
 	}
 	req.Header.Set("Accept-Encoding", "identity")
+	mirrorURL = req.URL.Redacted()
 	resp, err := catalog.httpClient.Do(req)
+	if resp != nil {
+		upstreamStatus = resp.StatusCode
+	}
 	if err != nil {
 		return nil, "", err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK || resp.ContentLength > officialIconMaxBytes {
+	if resp.StatusCode != http.StatusOK {
 		return nil, "", fmt.Errorf("market: icon unavailable")
 	}
+	if resp.ContentLength > officialIconMaxBytes {
+		return nil, "", fmt.Errorf("market: official icon exceeds size limit")
+	}
 	body, err := io.ReadAll(io.LimitReader(resp.Body, officialIconMaxBytes+1))
-	if err != nil || len(body) > officialIconMaxBytes || fmt.Sprintf("%x", sha256.Sum256(body)) != digest {
-		return nil, "", fmt.Errorf("market: invalid official icon size or checksum")
+	if err != nil {
+		return nil, "", fmt.Errorf("market: read official icon: %w", err)
+	}
+	if len(body) > officialIconMaxBytes {
+		return nil, "", fmt.Errorf("market: official icon exceeds size limit")
+	}
+	if fmt.Sprintf("%x", sha256.Sum256(body)) != digest {
+		return nil, "", fmt.Errorf("market: official icon checksum mismatch")
 	}
 	dimensions, format, err := image.DecodeConfig(bytes.NewReader(body))
-	if err != nil || format != icon.Format || dimensions.Width < 1 || dimensions.Height < 1 ||
+	if err != nil {
+		return nil, "", fmt.Errorf("market: read official icon format: %w", err)
+	}
+	if format != icon.Format || dimensions.Width < 1 || dimensions.Height < 1 ||
 		dimensions.Width > 1024 || dimensions.Height > 1024 {
 		return nil, "", fmt.Errorf("market: invalid official icon format or dimensions")
 	}
-	if _, _, err := image.Decode(bytes.NewReader(body)); err != nil || !catalog.stillApproves(selected) {
-		return nil, "", fmt.Errorf("market: invalid or withdrawn official icon")
+	if _, _, err := image.Decode(bytes.NewReader(body)); err != nil {
+		return nil, "", fmt.Errorf("market: decode official icon: %w", err)
+	}
+	if !catalog.stillApproves(selected) {
+		return nil, "", fmt.Errorf("market: official icon is no longer in the verified catalog")
 	}
 	return body, format, nil
 }

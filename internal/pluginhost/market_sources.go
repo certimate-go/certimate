@@ -252,7 +252,7 @@ func (s *marketCatalog) sourceStatus() (MarketSourceStatus, bool) {
 func catalogRedirect(req *http.Request, via []*http.Request) error {
 	first := via[0].URL
 	if len(via) >= 10 || req.URL.User != nil || req.URL.Scheme != first.Scheme || !strings.EqualFold(req.URL.Host, first.Host) {
-		return fmt.Errorf("market: unexpected catalog redirect")
+		return fmt.Errorf("market: unexpected catalog redirect from %q to %q", first.Redacted(), req.URL.Redacted())
 	}
 	return nil
 }

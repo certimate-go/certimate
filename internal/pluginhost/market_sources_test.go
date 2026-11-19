@@ -99,6 +99,30 @@ func TestMarketRejectsCatalogRedirectOutsideSourceOrigin(t *testing.T) {
 	}
 }
 
+func TestOfficialPluginDownloadReportsOriginalURLAndRedirectTarget(t *testing.T) {
+	const original = "https://mirror.example/gh/certimate-go/plugin-provider-example@commit/build/darwin_arm64.zip"
+	const mirrorRedirect = "https://mirror.example/cache/plugin.zip"
+	const target = "https://raw.githubusercontent.com/certimate-go/plugin-provider-example/commit/build/darwin_arm64.zip"
+
+	service := NewMarketService(MarketConfig{DownloadTransport: sourceRoundTripper(func(req *http.Request) (*http.Response, error) {
+		var location string
+		switch req.URL.String() {
+		case original:
+			location = mirrorRedirect
+		case mirrorRedirect:
+			location = target
+		default:
+			t.Fatalf("unexpected download request to %s", req.URL)
+		}
+		return &http.Response{StatusCode: http.StatusMovedPermanently, Header: http.Header{"Location": {location}}, Body: http.NoBody}, nil
+	})})
+
+	err := service.downloadAttemptBound(t.Context(), original, t.TempDir()+"/asset.zip", 1, nil)
+	if err == nil || !strings.Contains(err.Error(), "from \""+original+"\" to \""+target+"\"") {
+		t.Fatalf("download error does not identify the original URL and rejected target: %v", err)
+	}
+}
+
 func TestMarketReleaseRedirectUsesGitHubAssetOrigin(t *testing.T) {
 	for _, target := range []struct {
 		host string
