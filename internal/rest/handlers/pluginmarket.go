@@ -26,6 +26,9 @@ type marketService interface {
 	AddSource(context.Context, string) (pluginhost.MarketSourceStatus, error)
 	RemoveSource(context.Context, string) error
 	RefreshSource(context.Context, string) (pluginhost.MarketSourceStatus, error)
+	OfficialMirror(context.Context) pluginhost.MarketMirrorSettings
+	SetOfficialMirror(context.Context, pluginhost.MarketMirror) (pluginhost.MarketMirrorSettings, error)
+	OfficialIcon(context.Context, string, string) ([]byte, string, error)
 	JobStatus(providerType string) (pluginhost.JobStatus, bool)
 }
 
@@ -37,6 +40,9 @@ func NewPluginMarketHandler(rg *router.RouterGroup[*core.RequestEvent], service 
 	h := &PluginMarketHandler{service: service}
 	rg.GET("/plugin/market", h.listMarket)
 	rg.GET("/plugin/market/sources", h.listSources)
+	rg.GET("/plugin/market/official/mirror", h.getOfficialMirror)
+	rg.PUT("/plugin/market/official/mirror", h.putOfficialMirror)
+	rg.GET("/plugin/market/official/icon/{providerType}/{digest}", h.getOfficialIcon)
 	rg.POST("/plugin/market/sources", h.addSource)
 	rg.POST("/plugin/market/sources/{source}/refresh", h.refreshSource)
 	rg.DELETE("/plugin/market/sources/{source}", h.removeSource)
@@ -44,6 +50,34 @@ func NewPluginMarketHandler(rg *router.RouterGroup[*core.RequestEvent], service 
 	rg.GET("/plugin/market/install/status/{providerType}", h.installStatus)
 	rg.DELETE("/plugin/market/{providerType}", h.delete)
 	rg.POST("/plugin/market/update/{providerType}", h.updatePlugin)
+}
+
+func (h *PluginMarketHandler) getOfficialMirror(e *core.RequestEvent) error {
+	return resp.Ok(e, h.service.OfficialMirror(e.Request.Context()))
+}
+
+func (h *PluginMarketHandler) putOfficialMirror(e *core.RequestEvent) error {
+	var mirror pluginhost.MarketMirror
+	decoder := json.NewDecoder(http.MaxBytesReader(e.Response, e.Request.Body, 4096))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&mirror); err != nil || decoder.Decode(new(any)) != io.EOF {
+		return resp.Err(e, domain.ErrInvalidParams)
+	}
+	settings, err := h.service.SetOfficialMirror(e.Request.Context(), mirror)
+	if err != nil {
+		return resp.Err(e, err)
+	}
+	return resp.Ok(e, settings)
+}
+
+func (h *PluginMarketHandler) getOfficialIcon(e *core.RequestEvent) error {
+	icon, format, err := h.service.OfficialIcon(e.Request.Context(), e.Request.PathValue("providerType"), e.Request.PathValue("digest"))
+	if err != nil {
+		return e.NoContent(http.StatusNotFound)
+	}
+	e.Response.Header().Set("Cache-Control", "private, no-store")
+	e.Response.Header().Set("X-Content-Type-Options", "nosniff")
+	return e.Blob(http.StatusOK, "image/"+format, icon)
 }
 
 func (h *PluginMarketHandler) listMarket(e *core.RequestEvent) error {
@@ -169,6 +203,9 @@ func optionalSource(source *string) []string {
 }
 
 func marketError(e *core.RequestEvent, err error) error {
+	if errors.Is(err, pluginhost.ErrOfficialChecksumMismatch) {
+		return resp.ErrWithData(e, domain.NewError(http.StatusUnprocessableEntity, err.Error()), map[string]string{"reason": "official_checksum_mismatch"})
+	}
 	var reason string
 	switch err {
 	case pluginhost.ErrInstallInProgress:

@@ -1,9 +1,13 @@
 package pluginhost_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"log/slog"
 	"net"
 	"net/http"
@@ -160,12 +164,39 @@ func TestMarketBrowserFixture(t *testing.T) {
 	a2 := makeFixtureRelease("fixture-a/releases", notifyRelease(fixtureProvider, fixtureAccess, "2.0.0", "", false))
 	broken := makeFixtureRelease("fixture-a/releases", notifyRelease(fixtureProvider, fixtureAccess, "2.0.0", "broken fixture", false))
 	b := makeFixtureRelease("fixture-b/releases", notifyRelease(fixtureProvider, fixtureAccess, "9.0.0", "", false), notifyRelease(fixtureConsumer, fixtureAccess, "1.0.0", "", true), notifyRelease(fixtureDuplicateOwner, fixtureAccess, "1.0.0", "", false), buildMarketReleaseCapability(t, fixturePurger, fixtureAccess, "1.0.0", "", true, plugin.CapabilityPurge))
-	official := makeFixtureRelease("certimate-go/plugins", buildMarketRelease(t, "fixture-legacy", "1.0.0", ""), buildMarketRelease(t, "fixture-manual", "1.0.0", ""))
+	now := time.Now().UTC()
+	legacy := buildMarketRelease(t, "fixture-legacy", "1.0.0", "")
+	picture := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	picture.Set(0, 0, color.RGBA{B: 240, A: 255})
+	var icon bytes.Buffer
+	if err := png.Encode(&icon, picture); err != nil {
+		t.Fatal(err)
+	}
+	legacy.marketIcon = icon.Bytes()
+	official := makeOfficialCDNFixture(t, 1, uint64(now.UnixMicro()), now, now.Add(24*time.Hour),
+		legacy, buildMarketRelease(t, "fixture-manual", "1.0.0", ""))
+	var signedArchive http.Handler
+	if directory := os.Getenv("CERTIMATE_TEST_OFFICIAL_ARCHIVE"); directory != "" {
+		root, err := os.OpenRoot(directory)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer root.Close()
+		trust, err := root.ReadFile("trust.json")
+		if err != nil {
+			t.Fatal(err)
+		}
+		official.trust = plugin.OfficialMarketTrust{}
+		if err := json.Unmarshal(trust, &official.trust); err != nil {
+			t.Fatal(err)
+		}
+		signedArchive = http.StripPrefix("/mirror", http.FileServerFS(root.FS()))
+	}
 	var mu sync.RWMutex
 	currentA := a1
 	invalidA := false
 	delay := 2 * time.Second
-	markets := map[string]fixtureRelease{fixtureRepoB: b, "certimate-go/plugins": official}
+	markets := map[string]fixtureRelease{fixtureRepoB: b}
 	independent := os.Getenv("CERTIMATE_TEST_INDEPENDENT_CATALOG")
 	var independentCatalog, independentReleases http.Handler
 	if independent != "" {
@@ -173,6 +204,34 @@ func TestMarketBrowserFixture(t *testing.T) {
 		independentReleases = http.FileServer(http.Dir(filepath.Join(independent, "assets")))
 	}
 	fixtureContent := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if signedArchive != nil {
+			if r.URL.Host == "custom.fixture.example" && strings.HasPrefix(r.URL.Path, "/mirror/gh/") {
+				signedArchive.ServeHTTP(w, r)
+			} else {
+				http.Error(w, "archive fixture only serves the selected mirror", http.StatusBadGateway)
+			}
+			return
+		}
+		switch r.URL.Host {
+		case "cdn.jsdelivr.net", "preset.fixture.example", "custom.fixture.example", "tampered.fixture.example":
+			prefix := ""
+			if r.URL.Host != "cdn.jsdelivr.net" {
+				prefix = "/mirror"
+			}
+			path, _ := strings.CutPrefix(r.URL.Path, prefix)
+			if body, ok := official.files[path]; ok && strings.HasPrefix(r.URL.Path, prefix+"/gh/") {
+				if r.URL.Host == "tampered.fixture.example" && strings.Contains(path, "/market/icons/") {
+					body = append(bytes.Clone(body), 0)
+				}
+				_, _ = w.Write(body)
+			} else {
+				http.NotFound(w, r)
+			}
+			return
+		case "offline.fixture.example":
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
 		parts := strings.SplitN(strings.TrimPrefix(r.URL.Path, "/"), "/", 3)
 		if len(parts) != 3 {
 			http.NotFound(w, r)
@@ -216,8 +275,6 @@ func TestMarketBrowserFixture(t *testing.T) {
 		switch repo {
 		case "fixture-b/releases":
 			selected = b
-		case "certimate-go/plugins":
-			selected = official
 		case "fixture-a/releases":
 			select {
 			case <-time.After(delay):
@@ -243,7 +300,11 @@ func TestMarketBrowserFixture(t *testing.T) {
 	})
 	svc := pluginhost.NewMarketService(pluginhost.MarketConfig{
 		Sources: repository.NewPluginMarketSources(pb), Cache: repository.NewPluginMarketCache(pb),
-		PluginDir: root, CatalogTransport: transport, DownloadTransport: transport, CacheTTL: time.Hour,
+		Settings: repository.NewSettingsRepository(),
+		MirrorPresets: []pluginhost.MarketMirrorPreset{
+			{ID: "fixture", Name: "Fixture CDN", BaseURL: "https://preset.fixture.example/mirror"},
+		},
+		PluginDir: root, CatalogTransport: transport, DownloadTransport: transport, CacheTTL: time.Hour, OfficialTrust: official.trust,
 	})
 	pluginhost.SetGlobalMarketService(svc)
 	router, err := apis.NewRouter(pb)

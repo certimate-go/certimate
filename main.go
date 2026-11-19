@@ -141,6 +141,7 @@ func scanPlugins() func() {
 	marketSvc := pluginhost.NewMarketService(pluginhost.MarketConfig{
 		Cache:          repository.NewPluginMarketCache(app.GetApp()),
 		Sources:        repository.NewPluginMarketSources(app.GetApp()),
+		Settings:       repository.NewSettingsRepository(),
 		PluginDir:      pluginDir,
 		DownloadMirror: os.Getenv("CERTIMATE_PLUGIN_DOWNLOAD_MIRROR"),
 		Logger:         logger,

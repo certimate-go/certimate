@@ -13,6 +13,11 @@ type MarketSource struct {
 	Repository string `json:"repository"`
 }
 
+const (
+	OfficialMarketDefaultBase = "https://cdn.jsdelivr.net"
+	OfficialMarketIndexPath   = "/gh/certimate-go/plugins@market/registry/index.json"
+)
+
 var githubRepoPattern = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9-]*/[a-zA-Z0-9_.-]+$`)
 
 func ValidateGitHubRepo(repo string) error {
@@ -46,5 +51,8 @@ func ParseMarketSource(raw string) (MarketSource, error) {
 }
 
 func (s MarketSource) IndexURL() string {
+	if s == OfficialMarketSource() {
+		return OfficialMarketDefaultBase + OfficialMarketIndexPath
+	}
 	return "https://raw.githubusercontent.com/" + s.Repository + "/refs/heads/main/index.json"
 }

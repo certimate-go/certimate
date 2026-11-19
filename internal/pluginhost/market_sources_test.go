@@ -87,7 +87,7 @@ func TestMarketRejectsCatalogRedirectOutsideSourceOrigin(t *testing.T) {
 	var reachedOtherHost bool
 	svc := NewMarketService(MarketConfig{
 		CatalogTransport: sourceRoundTripper(func(req *http.Request) (*http.Response, error) {
-			if req.URL.Host != "raw.githubusercontent.com" {
+			if req.URL.Host != "cdn.jsdelivr.net" {
 				reachedOtherHost = true
 			}
 			return &http.Response{StatusCode: 302, Header: http.Header{"Location": {"https://example.test/elsewhere"}}, Body: http.NoBody}, nil

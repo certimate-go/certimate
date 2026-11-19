@@ -37,6 +37,7 @@ var (
 )
 
 func (s *MarketService) loadSources(ctx context.Context) error {
+	s.loadMirrorLocked(ctx)
 	if s.sources != nil {
 		return nil
 	}
@@ -48,7 +49,7 @@ func (s *MarketService) loadSources(ctx context.Context) error {
 			return err
 		}
 	}
-	s.sources = map[string]*marketCatalog{s.source.ID: s.marketCatalog}
+	s.sources = map[string]*marketCatalog{s.source.ID: s.official}
 	for _, source := range sources {
 		canonical, err := plugin.ParseMarketSource("https://github.com/" + source.Repository)
 		if err != nil || canonical != source || source.ID == s.source.ID {
@@ -61,13 +62,9 @@ func (s *MarketService) loadSources(ctx context.Context) error {
 }
 
 func (s *MarketService) customCatalog(source plugin.MarketSource) *marketCatalog {
-	return &marketCatalog{
-		source: source, indexURL: source.IndexURL(),
-		details: make(map[string]*plugin.MarketManifest),
-		store:   s.store, pluginDir: s.pluginDir, cacheTTL: s.cacheTTL,
-		downloadMirror: s.downloadMirror, stallTimeout: s.stallTimeout,
-		httpClient: s.httpClient, downloadClient: s.downloadClient, logger: s.logger,
-	}
+	config := s.config
+	config.IndexURL = ""
+	return newMarketCatalog(config, source)
 }
 
 func (s *MarketService) sourceCatalogs(ctx context.Context) ([]*marketCatalog, error) {
@@ -242,6 +239,12 @@ func (s *marketCatalog) sourceStatus() (MarketSourceStatus, bool) {
 	if s.refreshErr != nil {
 		status.Error = s.refreshErr.Error()
 		status.Stale = s.cache != nil
+	}
+	if s.isOfficial() && !s.canInstallFromCatalogLocked() {
+		status.Stale = s.cache != nil
+		if status.Error == "" && !s.syncInfo.OfficialExpiresAt.IsZero() && !time.Now().Before(s.syncInfo.OfficialExpiresAt) {
+			status.Error = plugin.ErrOfficialIndexExpired.Error()
+		}
 	}
 	return status, !s.retired
 }

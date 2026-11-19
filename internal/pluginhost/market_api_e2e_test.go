@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"image/png"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +17,7 @@ import (
 	"time"
 
 	"github.com/certimate-go/certimate/internal/pluginhost"
+	"github.com/certimate-go/certimate/pkg/plugin"
 )
 
 type marketAPI struct {
@@ -89,6 +91,31 @@ func (a marketAPI) login(email string) marketAPI {
 	return a
 }
 
+func (a marketAPI) assertMarketIcon(iconURL string, expected int) {
+	a.t.Helper()
+	req, err := http.NewRequest("GET", a.base+iconURL, nil)
+	if err != nil {
+		a.t.Fatal(err)
+	}
+	req.Header.Set("Authorization", a.token)
+	resp, err := (&http.Client{Timeout: 5 * time.Second}).Do(req)
+	if err != nil {
+		a.t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != expected {
+		a.t.Fatalf("icon returned %d; want %d", resp.StatusCode, expected)
+	}
+	if expected == http.StatusOK {
+		if resp.Header.Get("Content-Type") != "image/png" || resp.Header.Get("Cache-Control") != "private, no-store" {
+			a.t.Fatalf("unexpected verified icon response headers: %v", resp.Header)
+		}
+		if _, err := png.Decode(resp.Body); err != nil {
+			a.t.Fatal(err)
+		}
+	}
+}
+
 func startMarketFixture(t *testing.T, state string) (marketAPI, func()) {
 	t.Helper()
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
@@ -158,6 +185,184 @@ func waitMarketInstall(t *testing.T, api marketAPI, provider, source string, wan
 		time.Sleep(50 * time.Millisecond)
 	}
 	t.Fatal("installation did not finish")
+}
+
+func TestE2E_OfficialVolcengineArchives(t *testing.T) {
+	if os.Getenv("CERTIMATE_TEST_OFFICIAL_ARCHIVE") == "" {
+		t.Skip("set CERTIMATE_TEST_OFFICIAL_ARCHIVE to a signed Volcengine archive fixture")
+	}
+	const dnsProvider = "volcengine-dns"
+	want := map[string]string{
+		"volcengine-alb":               "deploy",
+		"volcengine-apig":              "deploy",
+		"volcengine-cdn":               "deploy",
+		"volcengine-certcenter":        "deploy",
+		"volcengine-certcenter-purger": "purge",
+		"volcengine-clb":               "deploy",
+		"volcengine-dcdn":              "deploy",
+		dnsProvider:                    "dns",
+		"volcengine-imagex":            "deploy",
+		"volcengine-live":              "deploy",
+		"volcengine-tos":               "deploy",
+		"volcengine-vod":               "deploy",
+		"volcengine-waf":               "deploy",
+	}
+	state := t.TempDir()
+	anonymous, stop := startMarketFixture(t, state)
+	api := anonymous.login(fixtureEmail)
+	const mirrorPath = "/official/mirror"
+	mirror := pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://custom.fixture.example/mirror"}
+	api.market("PUT", mirrorPath, mirror, 0, "", nil)
+	var page pluginhost.MarketPage
+	api.market("GET", "?source=official&refresh=true&perPage=60", nil, 0, "", &page)
+	if page.RefreshFailed {
+		t.Fatalf("signed archive catalog was not reachable: %+v", page.Sources)
+	}
+	installed := make(map[string]string, len(want))
+	for _, item := range page.Items {
+		capability, expected := want[item.ProviderType]
+		if !expected {
+			continue
+		}
+		if !item.CanInstall || !item.Official || !item.Listed || item.IconURL == "" || item.Capability != capability {
+			t.Fatalf("unusable official release %+v", item)
+		}
+		if item.ProviderType == dnsProvider {
+			api.assertMarketIcon(item.IconURL, http.StatusOK)
+		}
+		t.Logf("Installing %s %s", item.ProviderType, item.Version)
+		api.market("POST", "/install", map[string]string{"providerType": item.ProviderType, "source": "official"}, 0, "", nil)
+		waitMarketInstall(t, api, item.ProviderType, "official", pluginhost.JobInstalled)
+		meta, err := plugin.ReadMarketMeta(filepath.Join(state, "plugins"), item.ProviderType)
+		if err != nil || meta == nil || meta.Origin() != plugin.OfficialMarketSource() || meta.InstalledVersion != item.Version {
+			t.Fatalf("wrong install provenance for %s: %+v, %v", item.ProviderType, meta, err)
+		}
+		installed[item.ProviderType] = item.Version
+	}
+	if len(installed) != len(want) {
+		t.Fatalf("installed %d of %d expected providers: %v", len(installed), len(want), installed)
+	}
+	checkCatalog := func(api marketAPI, wantDNS bool) {
+		t.Helper()
+		var response marketResponse
+		status := api.request("GET", "/api/plugin-catalog", nil, &response)
+		if status != 200 || response.Code != 0 {
+			t.Fatalf("catalog HTTP %d, code %d", status, response.Code)
+		}
+		var entries []pluginhost.CatalogEntry
+		if err := json.Unmarshal(response.Data, &entries); err != nil {
+			t.Fatal(err)
+		}
+		running := make(map[string]bool, len(want))
+		for _, entry := range entries {
+			capability, expected := want[entry.ProviderType]
+			if !expected {
+				continue
+			}
+			if capability != entry.Capability || entry.AccessProviderType != "volcengine" ||
+				entry.I18n["zh"][entry.DisplayNameKey] == "" || entry.I18n["en"][entry.DisplayNameKey] == "" {
+				t.Fatalf("wrong live capability or schema for %s", entry.ProviderType)
+			}
+			running[entry.ProviderType] = true
+		}
+		expectedCount := len(want)
+		if !wantDNS {
+			expectedCount--
+		}
+		if len(running) != expectedCount || running[dnsProvider] != wantDNS {
+			t.Fatalf("expected %d subprocess plugins (DNS present: %t), got %v", expectedCount, wantDNS, running)
+		}
+	}
+	checkCatalog(api, true)
+	stop()
+	anonymous, _ = startMarketFixture(t, state)
+	api = anonymous.login(fixtureEmail)
+	var settings pluginhost.MarketMirrorSettings
+	api.market("GET", mirrorPath, nil, 0, "", &settings)
+	if settings.Mirror != mirror {
+		t.Fatalf("mirror after restart: %+v", settings.Mirror)
+	}
+	checkCatalog(api, true)
+	api.market("DELETE", "/"+dnsProvider+"?source=official", nil, 0, "", nil)
+	checkCatalog(api, false)
+	api.market("POST", "/install", map[string]string{"providerType": dnsProvider, "source": "official"}, 0, "", nil)
+	waitMarketInstall(t, api, dnsProvider, "official", pluginhost.JobInstalled)
+	checkCatalog(api, true)
+}
+
+func TestE2E_OfficialMirrorSettingsAndIcons(t *testing.T) {
+	state := t.TempDir()
+	anonymous, stop := startMarketFixture(t, state)
+	api := anonymous.login(fixtureEmail)
+	regular := anonymous.login("regular@example.test")
+	const path = "/official/mirror"
+	for _, denied := range []marketAPI{anonymous, regular} {
+		if status := denied.request("PUT", "/api/plugin/market"+path, pluginhost.MarketMirror{Mode: "default"}, nil); status != 401 && status != 403 {
+			t.Fatalf("unauthorized mirror write returned %d", status)
+		}
+	}
+	var settings pluginhost.MarketMirrorSettings
+	api.market("GET", path, nil, 0, "", &settings)
+	if settings.Mirror.Mode != "default" || settings.DefaultBase != plugin.OfficialMarketDefaultBase || len(settings.Presets) != 1 {
+		t.Fatalf("default settings: %+v", settings)
+	}
+	for _, rejected := range []pluginhost.MarketMirror{
+		{Mode: "custom", BaseURL: "http://custom.fixture.example"},
+		{Mode: "custom", BaseURL: "https://127.0.0.1"},
+		{Mode: "custom", BaseURL: "https://custom.fixture.example/?query=x"},
+		{Mode: "preset", Preset: "not-admitted"},
+	} {
+		api.market("PUT", path, rejected, 400, "", nil)
+	}
+	switchTo := func(mirror pluginhost.MarketMirror) {
+		t.Helper()
+		settings = pluginhost.MarketMirrorSettings{}
+		api.market("PUT", path, mirror, 0, "", &settings)
+		if settings.Mirror != mirror {
+			t.Fatalf("stored mirror: %+v, expected %+v", settings.Mirror, mirror)
+		}
+	}
+	card := func(wantStale bool) pluginhost.MarketCard {
+		t.Helper()
+		var page pluginhost.MarketPage
+		api.market("GET", "?source=official&providerType=fixture-legacy&refresh=true", nil, 0, "", &page)
+		if len(page.Items) != 1 {
+			t.Fatalf("expected fixture in the official listing: %+v", page)
+		}
+		item := page.Items[0]
+		if item.CanUpdate == wantStale || !item.CanDelete || wantStale != (item.IconURL == "") {
+			t.Fatalf("unexpected eligibility or icon: %+v", item)
+		}
+		return item
+	}
+	defaultCard := card(false)
+	api.assertMarketIcon(defaultCard.IconURL, 200)
+	regular.assertMarketIcon(defaultCard.IconURL, 403)
+	switchTo(pluginhost.MarketMirror{Mode: "preset", Preset: "fixture"})
+	presetCard := card(false)
+	if presetCard.IconURL == defaultCard.IconURL {
+		t.Fatal("mirror change did not change the same-origin icon revision")
+	}
+	api.assertMarketIcon(presetCard.IconURL, 200)
+	switchTo(pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://tampered.fixture.example/mirror"})
+	api.assertMarketIcon(card(false).IconURL, 404)
+	switchTo(pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://offline.fixture.example"})
+	card(true)
+
+	custom := pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://custom.fixture.example/mirror"}
+	switchTo(custom)
+	api.assertMarketIcon(card(false).IconURL, 200)
+	stop()
+	restarted, _ := startMarketFixture(t, state)
+	api = restarted.login(fixtureEmail)
+	settings = pluginhost.MarketMirrorSettings{}
+	api.market("GET", path, nil, 0, "", &settings)
+	if settings.Mirror != custom {
+		t.Fatalf("settings lost after process restart: %+v", settings)
+	}
+	api.assertMarketIcon(card(false).IconURL, 200)
+	switchTo(pluginhost.MarketMirror{Mode: "default"})
+	api.assertMarketIcon(card(false).IconURL, 200)
 }
 
 func TestE2E_CustomMarketsHTTP(t *testing.T) {

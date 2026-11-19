@@ -2,9 +2,42 @@ import { ClientResponseError } from "pocketbase";
 import { z } from "zod";
 
 import { getPocketBase } from "@/repository/_pocketbase";
-import { get as httpGet, post as httpPost } from "./_api";
+import { get as httpGet, post as httpPost, put as httpPut } from "./_api";
 
 const pb = getPocketBase();
+
+const officialMirrorEndpoint = "/api/plugin/market/official/mirror";
+const mirrorSchema = z.discriminatedUnion("mode", [
+  z.object({ mode: z.literal("default") }),
+  z.object({ mode: z.literal("preset"), preset: z.string() }),
+  z.object({ mode: z.literal("custom"), baseUrl: z.string() }),
+]);
+const mirrorSettingsSchema = z.object({
+  mirror: mirrorSchema,
+  defaultBase: z.string(),
+  presets: z.array(z.object({ id: z.string(), name: z.string(), baseUrl: z.string() })),
+  error: z.string().optional(),
+});
+export type MarketMirror = z.infer<typeof mirrorSchema>;
+export type MarketMirrorSettings = z.infer<typeof mirrorSettingsSchema>;
+
+export const fetchOfficialMirror = async () => mirrorSettingsSchema.parse((await httpGet<unknown>({ url: officialMirrorEndpoint })).data);
+
+export const saveOfficialMirror = async (mirror: MarketMirror) =>
+  mirrorSettingsSchema.parse((await httpPut<unknown>({ url: officialMirrorEndpoint, body: mirror })).data);
+
+export const fetchOfficialMarketIcon = async (path: string, signal: AbortSignal): Promise<Blob> => {
+  if (!/^\/api\/plugin\/market\/official\/icon\/[a-z0-9][a-z0-9_.-]*\/[0-9a-f]{64}\?mirror=[0-9a-f]{16}$/.test(path)) {
+    throw new Error("Invalid official icon URL");
+  }
+  const url = new URL(pb.buildURL(path), document.baseURI);
+  if (url.origin !== window.location.origin) throw new Error("Invalid official icon origin");
+  const response = await fetch(url, { headers: { Authorization: pb.authStore.token }, redirect: "error", signal });
+  if (!response.ok || !["image/png", "image/jpeg"].includes(response.headers.get("content-type") ?? "")) throw new Error("Official icon unavailable");
+  const blob = await response.blob();
+  if (!blob.size || blob.size > 256 * 1024) throw new Error("Invalid official icon size");
+  return blob;
+};
 
 export const accessDependencyErrorSchema = z.object({
   reason: z.literal("access_owner_in_use"),
@@ -22,6 +55,8 @@ const marketSourceStatusSchema = marketSourceSchema.extend({
   refreshing: z.boolean(),
 });
 export type MarketSourceStatus = z.infer<typeof marketSourceStatusSchema>;
+
+export const officialChecksumErrorSchema = z.object({ reason: z.literal("official_checksum_mismatch") });
 
 export const marketConflictSchema = z.object({
   reason: z.enum(["install_in_progress", "ownership_conflict", "source_busy", "duplicate_source", "operation_in_progress"]),

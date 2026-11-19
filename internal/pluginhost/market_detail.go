@@ -23,6 +23,13 @@ func (s *marketCatalog) resolveMarketDetail(ctx context.Context, summary *plugin
 	if ref == nil {
 		return nil, fmt.Errorf("market: plugin %q has no release", summary.ProviderType)
 	}
+	if s.isOfficial() {
+		data, err := s.fetchMarketDetailBytes(ctx, ref.SHA256)
+		if err != nil {
+			return nil, fmt.Errorf("market: resolve detail for %q: %w", summary.ProviderType, err)
+		}
+		return plugin.ParseOfficialMarketDetail(data, summary)
+	}
 	if !validDetailSHA(ref.SHA256) || s.validateReleaseRepo(ref.Repo) != nil {
 		return nil, fmt.Errorf("market: invalid detail source for %q", summary.ProviderType)
 	}
@@ -57,6 +64,17 @@ func (s *marketCatalog) resolveMarketDetail(ctx context.Context, summary *plugin
 }
 
 func (s *marketCatalog) fetchMarketDetail(ctx context.Context, digest string) (*plugin.MarketManifest, error) {
+	body, err := s.fetchMarketDetailBytes(ctx, digest)
+	if err != nil {
+		return nil, err
+	}
+	return plugin.ParseMarketManifest(body)
+}
+
+func (s *marketCatalog) fetchMarketDetailBytes(ctx context.Context, digest string) ([]byte, error) {
+	if !validDetailSHA(digest) {
+		return nil, fmt.Errorf("invalid detail digest")
+	}
 	base, err := url.Parse(s.indexURL)
 	if err != nil {
 		return nil, err
@@ -84,9 +102,12 @@ func (s *marketCatalog) fetchMarketDetail(ctx context.Context, digest string) (*
 	}
 	sum := sha256.Sum256(body)
 	if hex.EncodeToString(sum[:]) != digest {
+		if s.isOfficial() {
+			return nil, fmt.Errorf("%w: detail checksum mismatch", ErrOfficialChecksumMismatch)
+		}
 		return nil, fmt.Errorf("detail checksum mismatch")
 	}
-	return plugin.ParseMarketManifest(body)
+	return body, nil
 }
 
 func (s *marketCatalog) validateReleaseRepo(repo string) error {

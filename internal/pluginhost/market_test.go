@@ -32,11 +32,16 @@ func newTestService(t *testing.T, handler http.HandlerFunc) *MarketService {
 	t.Helper()
 	srv := httptest.NewServer(markettest.WithReleaseDetails(handler))
 	t.Cleanup(srv.Close)
-	return NewMarketService(MarketConfig{
+	return NewThirdPartyFixtureMarket(MarketConfig{
 		IndexURL:  srv.URL,
 		PluginDir: t.TempDir(),
 		CacheTTL:  time.Hour,
 	})
+}
+
+func NewThirdPartyFixtureMarket(config MarketConfig) *MarketService {
+	source, _ := plugin.ParseMarketSource("https://github.com/fixture/markets")
+	return newMarketService(config, source)
 }
 
 func indexJSON(t *testing.T, plugins ...map[string]any) string {
@@ -295,7 +300,7 @@ func newZipTestService(t *testing.T, indexBody string, zipBytes []byte) *MarketS
 		}
 	})))
 	t.Cleanup(srv.Close)
-	return NewMarketService(MarketConfig{
+	return NewThirdPartyFixtureMarket(MarketConfig{
 		IndexURL:       srv.URL + "/index.json",
 		DownloadMirror: srv.URL,
 		PluginDir:      t.TempDir(),
@@ -529,7 +534,9 @@ func TestUpdate_UpgradesToNewerVersion(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(installed, "manifest.json"), []byte(alphaManifestJSON("alpha", "1.0.0")), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	oldMeta, _ := json.Marshal(plugin.NewMarketMeta("official", "1.0.0", "1.0.0", "alpha/v1.0.0"))
+	metaFixture := plugin.NewMarketMeta(svc.source.ID, "1.0.0", "1.0.0", "alpha/v1.0.0")
+	metaFixture.Market = &svc.source
+	oldMeta, _ := json.Marshal(metaFixture)
 	if err := os.WriteFile(filepath.Join(installed, ".market.json"), oldMeta, 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -792,7 +799,9 @@ func TestListMarket_StatusRecomputedFromCache(t *testing.T) {
 	if err := os.MkdirAll(installed, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	metaBytes, _ := json.Marshal(plugin.NewMarketMeta("official", "1.0.0", "1.0.0", "alpha/v1.0.0"))
+	metaFixture := plugin.NewMarketMeta(svc.source.ID, "1.0.0", "1.0.0", "alpha/v1.0.0")
+	metaFixture.Market = &svc.source
+	metaBytes, _ := json.Marshal(metaFixture)
 	if err := os.WriteFile(filepath.Join(installed, ".market.json"), metaBytes, 0o644); err != nil {
 		t.Fatal(err)
 	}

@@ -30,6 +30,7 @@ type MarketManifest struct {
 	Detail   *MarketDetailRef             `json:"detail,omitempty"`
 	IconPath string                       `json:"icon_path,omitempty"`
 	I18n     map[string]MarketTranslation `json:"i18n,omitempty"`
+	Official *OfficialMarketRelease       `json:"-"`
 }
 
 type MarketTranslation struct {

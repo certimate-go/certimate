@@ -172,10 +172,17 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 		}
 		catalog.mu.RLock()
 		manifests := catalog.cache
+		usable := catalog.canInstallFromCatalogLocked()
 		catalog.mu.RUnlock()
 		for _, mm := range manifests {
 			card := newMarketCard(mm, catalog.source)
-			card.IconURL = catalog.marketIconURL(mm.IconPath)
+			if catalog.isOfficial() {
+				if usable {
+					card.IconURL = catalog.officialIconURL(mm)
+				}
+			} else {
+				card.IconURL = catalog.marketIconURL(mm.IconPath)
+			}
 			local, exists := installed[mm.ProviderType]
 			owns := exists && local.origin == catalog.source
 			supported := mm.Detail != nil && slices.Contains(mm.Detail.Platforms, plugin.AssetKey(runtime.GOOS, runtime.GOARCH))
@@ -184,7 +191,7 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 				ownerRows[mm.ProviderType] = true
 				card.Status = "installed"
 				card.CanDelete = true
-				card.CanUpdate = supported && plugin.CompareVersions(local.version, mm.Version) < 0
+				card.CanUpdate = usable && supported && plugin.CompareVersions(local.version, mm.Version) < 0
 				if card.CanUpdate {
 					card.Status = "update_available"
 				}
@@ -192,7 +199,7 @@ func (s *MarketService) ListMarketPage(ctx context.Context, query MarketQuery) (
 				card.Status = "ownership_conflict"
 			case supported:
 				card.Status = "not_installed"
-				card.CanInstall = true
+				card.CanInstall = usable
 			default:
 				card.Status = "unsupported_platform"
 			}

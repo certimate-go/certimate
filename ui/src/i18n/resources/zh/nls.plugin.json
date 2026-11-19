@@ -6,6 +6,18 @@
   },
 
   "market": {
+    "mirror": {
+      "title": "官方市场镜像",
+      "help": "此设置仅影响官方市场。自定义镜像必须使用公网 HTTPS，支持 /gh/ 路径，并提供带签名的官方目录。",
+      "mode": "镜像来源",
+      "default": "默认（jsDelivr）",
+      "preset": "预设镜像",
+      "custom": "自定义 HTTPS 镜像",
+      "base": "镜像基础地址",
+      "save": "保存镜像",
+      "load_failed": "无法加载镜像设置",
+      "save_failed": "无法保存镜像设置"
+    },
     "sources": {
       "manage": "管理插件市场",
       "filter": "市场来源",
@@ -42,7 +54,8 @@
       "delete_failed": "删除插件失败",
       "delete_dependency_title": "无法删除插件",
       "delete_dependency": "无法删除 {{name}}，因为 {{dependents}} 仍在使用它提供的 {{accessType}} 授权类型。请先删除这些依赖插件，再重试。",
-      "update_failed": "更新插件失败"
+      "update_failed": "更新插件失败",
+      "official_checksum_mismatch": "官方镜像返回的内容未通过校验。当前版本仍可使用，请切换镜像后重试。"
     },
     "msg": {
       "installed": "插件安装成功",
@@ -50,6 +63,7 @@
       "updated": "插件已更新"
     },
     "action": {
+      "market_actions": "市场操作",
       "more": "{{name}} 的操作",
       "install": "安装",
       "delete": "删除",

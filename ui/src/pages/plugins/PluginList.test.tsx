@@ -11,7 +11,9 @@ import PluginMarketSearch from "./PluginMarketSearch";
 vi.mock("@/api/pluginmarket", async (importOriginal) => ({
   ...(await importOriginal<typeof MarketAPI>()),
   fetchMarketListing: vi.fn(),
+  fetchOfficialMirror: vi.fn(),
   installPlugin: vi.fn(),
+  updatePlugin: vi.fn(),
   getInstallStatus: vi.fn(),
 }));
 vi.mock("@/stores/pluginCatalog", () => ({ usePluginCatalogStore: () => vi.fn() }));
@@ -76,6 +78,35 @@ afterEach(() => {
 });
 afterAll(() => vi.unstubAllGlobals());
 
+it.each([
+  {
+    action: "plugin.market.action.refresh",
+    verify: () => waitFor(() => expect(MarketAPI.fetchMarketListing).toHaveBeenLastCalledWith(expect.objectContaining({ refresh: true }))),
+  },
+  { action: "plugin.market.sources.manage", verify: () => screen.findByLabelText("plugin.market.sources.repository") },
+  { action: "plugin.market.mirror.title", verify: () => screen.findByText("https://cdn.jsdelivr.net") },
+])("opens $action from the toolbar menu", async ({ action, verify }) => {
+  vi.mocked(MarketAPI.fetchMarketListing).mockResolvedValue(listing);
+  vi.mocked(MarketAPI.fetchOfficialMirror).mockResolvedValue({
+    mirror: { mode: "default" },
+    defaultBase: "https://cdn.jsdelivr.net",
+    presets: [],
+  });
+  render(
+    <App>
+      <PluginList />
+    </App>
+  );
+  await screen.findByText(custom.repository);
+  expect(screen.queryByRole("button", { name: "plugin.market.action.refresh" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "plugin.market.sources.manage" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "plugin.market.mirror.title" })).toBeNull();
+
+  fireEvent.click(screen.getByRole("button", { name: "plugin.market.action.market_actions" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name: action }));
+  await verify();
+});
+
 it("badges the official listing and sends the selected custom source without polling on an ownership conflict", async () => {
   vi.mocked(MarketAPI.fetchMarketListing).mockResolvedValue(listing);
   vi.mocked(MarketAPI.installPlugin).mockRejectedValue(
@@ -98,6 +129,24 @@ it("badges the official listing and sends the selected custom source without pol
   await waitFor(() => expect(MarketAPI.installPlugin).toHaveBeenCalledWith({ providerType: "sample", source: custom.id }));
   await screen.findByText("Owned by another source");
   expect(MarketAPI.getInstallStatus).not.toHaveBeenCalled();
+});
+
+it("explains when official update content fails verification", async () => {
+  vi.mocked(MarketAPI.fetchMarketListing).mockResolvedValue({
+    ...listing,
+    items: [{ ...base, status: "update_available", canInstall: false, canUpdate: true, installedOrigin: official }],
+    totalItems: 1,
+  });
+  vi.mocked(MarketAPI.updatePlugin).mockRejectedValue(new ClientResponseError({ status: 422, response: { data: { reason: "official_checksum_mismatch" } } }));
+  render(
+    <App>
+      <PluginList />
+    </App>
+  );
+
+  fireEvent.click(await screen.findByRole("button", { name: "plugin.market.action.more" }));
+  fireEvent.click(await screen.findByRole("menuitem", { name: "plugin.market.action.update" }));
+  expect(await screen.findByText("plugin.market.error.official_checksum_mismatch")).toBeInTheDocument();
 });
 
 it("renders local removal only on the owning listing", async () => {

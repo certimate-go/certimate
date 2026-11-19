@@ -12,9 +12,13 @@ import (
 )
 
 type PluginMarketSync struct {
-	SyncedAt     time.Time
-	ETag         string
-	LastModified string
+	SyncedAt          time.Time
+	ETag              string
+	LastModified      string
+	OfficialIndex     []byte                     `json:",omitempty"`
+	OfficialMirror    string                     `json:",omitempty"`
+	OfficialState     *plugin.OfficialIndexState `json:",omitempty"`
+	OfficialExpiresAt time.Time                  `json:",omitzero"`
 }
 
 type PluginMarketCache struct {

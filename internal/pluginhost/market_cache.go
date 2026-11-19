@@ -32,9 +32,17 @@ func (s *marketCatalog) marketSnapshot(ctx context.Context, background, force bo
 	}
 	if !s.loaded {
 		if s.store != nil {
-			entries, info, err := s.store.Load(ctx, s.indexURL)
+			entries, info, err := s.store.Load(ctx, s.cacheKey())
 			if err != nil {
 				s.logger.Warn("market: load cache", slog.Any("error", err))
+				if s.isOfficial() {
+					readErr := fmt.Errorf("market: cannot load trusted index state: %w", err)
+					s.refreshErr = readErr
+					s.mu.Unlock()
+					return nil, readErr
+				}
+			} else if s.isOfficial() {
+				s.loadVerifiedOfficial(info)
 			} else if !slices.ContainsFunc(entries, func(entry *plugin.MarketManifest) bool {
 				return entry.Release != nil
 			}) {
@@ -43,8 +51,17 @@ func (s *marketCatalog) marketSnapshot(ctx context.Context, background, force bo
 		}
 		s.loaded = true
 	}
+	if s.configErr != nil {
+		s.refreshErr = s.configErr
+		entries, err := s.cache, s.configErr
+		s.mu.Unlock()
+		if entries != nil {
+			return entries, nil
+		}
+		return nil, err
+	}
 	entries, lastErr := s.cache, s.refreshErr
-	if !force && (entries != nil && time.Since(s.cachedAt) < s.cacheTTL || time.Now().Before(s.retryAt)) {
+	if !force && (entries != nil && s.canInstallFromCatalogLocked() && time.Since(s.cachedAt) < s.cacheTTL || time.Now().Before(s.retryAt)) {
 		s.mu.Unlock()
 		if entries != nil {
 			return entries, nil
@@ -93,7 +110,11 @@ func (s *marketCatalog) refreshMarket(ctx context.Context, info repository.Plugi
 	if err == nil {
 		info.SyncedAt = time.Now()
 		if s.store != nil {
-			err = s.store.Save(ctx, s.indexURL, entries, info)
+			storedEntries := entries
+			if s.isOfficial() {
+				storedEntries = nil
+			}
+			err = s.store.Save(ctx, s.cacheKey(), storedEntries, info)
 		}
 	}
 
@@ -121,10 +142,11 @@ func (s *marketCatalog) fetchMarketIndex(ctx context.Context, info *repository.P
 	if err != nil {
 		return nil, fmt.Errorf("market: create request: %w", err)
 	}
-	if info.ETag != "" {
+	allowConditional := !s.isOfficial() || (info.OfficialMirror == s.indexURL && len(info.OfficialIndex) != 0 && time.Now().Before(info.OfficialExpiresAt))
+	if allowConditional && info.ETag != "" {
 		req.Header.Set("If-None-Match", info.ETag)
 	}
-	if info.LastModified != "" {
+	if allowConditional && info.LastModified != "" {
 		req.Header.Set("If-Modified-Since", info.LastModified)
 	}
 	resp, err := s.httpClient.Do(req)
@@ -135,6 +157,12 @@ func (s *marketCatalog) fetchMarketIndex(ctx context.Context, info *repository.P
 
 	switch resp.StatusCode {
 	case http.StatusNotModified:
+		if s.isOfficial() {
+			if !allowConditional || (info.ETag == "" && info.LastModified == "") {
+				return nil, errors.New("market: 304 without a current verified index from this mirror")
+			}
+			return s.officialIndexFor(ctx, info, info.OfficialIndex)
+		}
 		if !info.SyncedAt.IsZero() {
 			return nil, nil
 		}
@@ -148,13 +176,25 @@ func (s *marketCatalog) fetchMarketIndex(ctx context.Context, info *repository.P
 		return nil, fmt.Errorf("market: index fetch returned status %d", resp.StatusCode)
 	}
 
-	const maxIndexBytes = 16 << 20
+	maxIndexBytes := int64(16 << 20)
+	if s.isOfficial() {
+		maxIndexBytes = plugin.OfficialIndexMaxBytes
+	}
 	body, err := io.ReadAll(io.LimitReader(resp.Body, maxIndexBytes+1))
 	if err != nil {
 		return nil, err
 	}
-	if len(body) > maxIndexBytes {
+	if int64(len(body)) > maxIndexBytes {
 		return nil, errors.New("market: index exceeds size limit")
+	}
+	if s.isOfficial() {
+		entries, err := s.officialIndexFor(ctx, info, body)
+		if err != nil {
+			return nil, err
+		}
+		info.ETag = resp.Header.Get("ETag")
+		info.LastModified = resp.Header.Get("Last-Modified")
+		return entries, nil
 	}
 	var index struct {
 		Plugins []*plugin.MarketManifest `json:"plugins"`

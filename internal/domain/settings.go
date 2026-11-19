@@ -18,6 +18,7 @@ const (
 	SettingsNameScriptTemplate       = "scriptTemplate"
 	SettingsNameSSLProvider          = "sslProvider"
 	SettingsNamePersistence          = "persistence"
+	SettingsNamePluginMarket         = "plugin_market"
 )
 
 type SettingsContent map[string]any

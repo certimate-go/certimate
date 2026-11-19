@@ -1,6 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconCheck, IconChevronDown, IconDots, IconDownload, IconFilter, IconPuzzle, IconRefresh, IconTrash, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconChevronDown,
+  IconDots,
+  IconDownload,
+  IconFilter,
+  IconPuzzle,
+  IconRefresh,
+  IconServer,
+  IconSettings,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
 import { Alert, App, Button, Card, Dropdown, Empty, type MenuProps, Pagination, Progress, Select, Skeleton, Tag, Tooltip, theme } from "antd";
 import { ClientResponseError } from "pocketbase";
 
@@ -18,11 +30,14 @@ import {
   installPlugin,
   isTerminalState,
   marketConflictSchema,
+  officialChecksumErrorSchema,
   updatePlugin,
 } from "@/api/pluginmarket";
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import MarketSourcesModal from "./MarketSourcesModal";
 import OfficialBadge from "./OfficialBadge";
+import OfficialMarketIcon from "./OfficialMarketIcon";
+import OfficialMarketMirrorModal from "./OfficialMarketMirrorModal";
 import PluginMarketSearch from "./PluginMarketSearch";
 
 const POLL_MS = 1000;
@@ -199,6 +214,7 @@ const PluginMarket = () => {
   const [capabilityFilter, setCapabilityFilter] = useState<MarketCapabilityFilter>("all");
   const [sourceFilter, setSourceFilter] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [mirrorOpen, setMirrorOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [jobs, setJobs] = useState<Record<string, InstallJobStatus>>({});
   const [speeds, setSpeeds] = useState<Record<string, number>>({});
@@ -463,8 +479,12 @@ const PluginMarket = () => {
       if (result.errors?.length) throw new Error(result.errors.join("\n"));
       message.success(t("plugin.market.msg.updated"));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : t("plugin.market.error.update_failed");
-      message.error(msg);
+      const checksum = officialChecksumErrorSchema.safeParse(err instanceof ClientResponseError ? err.response.data : undefined);
+      if (checksum.success) {
+        message.error(t("plugin.market.error.official_checksum_mismatch"));
+      } else {
+        message.error(err instanceof Error ? err.message : t("plugin.market.error.update_failed"));
+      }
     } finally {
       setOp(pt, false);
     }
@@ -621,19 +641,45 @@ const PluginMarket = () => {
             setPage(1);
           }}
         />
-        <Button
-          className="text-sm"
-          icon={<IconRefresh size="1.25em" />}
-          size="large"
-          onClick={() => void loadListing(true)}
-          loading={loading || listing?.refreshing}
+        <Dropdown
+          placement="bottomRight"
+          trigger={["click"]}
+          menu={{
+            items: [
+              {
+                key: "refresh",
+                label: t("plugin.market.action.refresh"),
+                icon: <IconRefresh size={16} className={listing?.refreshing ? "animate-spin" : undefined} />,
+                disabled: loading || listing?.refreshing,
+                onClick: () => void loadListing(true),
+              },
+              { type: "divider" },
+              { key: "markets", label: t("plugin.market.sources.manage"), icon: <IconSettings size={16} />, onClick: () => setSourcesOpen(true) },
+              { key: "mirror", label: t("plugin.market.mirror.title"), icon: <IconServer size={16} />, onClick: () => setMirrorOpen(true) },
+            ],
+          }}
         >
-          {t("plugin.market.action.refresh")}
-        </Button>
-        <Button className="text-sm" size="large" onClick={() => setSourcesOpen(true)}>
-          {t("plugin.market.sources.manage")}
-        </Button>
+          <Button className="text-sm" size="large" icon={<IconDots size="1.25em" />} aria-haspopup="menu">
+            {t("plugin.market.action.market_actions")}
+          </Button>
+        </Dropdown>
       </div>
+      {mirrorOpen && (
+        <OfficialMarketMirrorModal
+          onClose={() => setMirrorOpen(false)}
+          onSaved={() => {
+            setMirrorOpen(false);
+            setListing(
+              (current) =>
+                current && {
+                  ...current,
+                  items: current.items.map((item) => (item.official ? { ...item, canInstall: false, canUpdate: false, icon_url: undefined } : item)),
+                }
+            );
+            void loadListing(true, true);
+          }}
+        />
+      )}
       {sourcesOpen && (
         <MarketSourcesModal
           sources={listing?.sources ?? []}
@@ -727,7 +773,11 @@ const PluginMarket = () => {
                 <div className="flex items-start gap-3 sm:min-h-15">
                   <div className="flex size-11 shrink-0 items-center justify-center rounded-lg p-2" style={{ background: token.colorFillQuaternary }}>
                     {entry.icon_url ? (
-                      <img src={entry.icon_url} alt="" loading="lazy" className="size-full object-contain" />
+                      entry.official ? (
+                        <OfficialMarketIcon path={entry.icon_url} fallbackColor={token.colorTextTertiary} />
+                      ) : (
+                        <img src={entry.icon_url} alt="" loading="lazy" className="size-full object-contain" />
+                      )
                     ) : (
                       <IconPuzzle size={20} color={token.colorTextTertiary} />
                     )}

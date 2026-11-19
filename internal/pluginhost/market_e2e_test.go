@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -30,8 +31,9 @@ import (
 )
 
 type marketReleaseFixture struct {
-	manifest plugin.MarketManifest
-	archive  []byte
+	manifest   plugin.MarketManifest
+	archive    []byte
+	marketIcon []byte
 }
 
 func buildMarketRelease(t *testing.T, providerType, version, bootstrapError string) marketReleaseFixture {
@@ -44,7 +46,7 @@ func buildMarketReleaseShared(t *testing.T, providerType, accessType, version, b
 	return buildMarketReleaseCapability(t, providerType, accessType, version, bootstrapError, omitAccessSchema, plugin.CapabilityDeploy)
 }
 
-func buildMarketReleaseCapability(t *testing.T, providerType, accessType, version, bootstrapError string, omitAccessSchema bool, capability string) marketReleaseFixture {
+func buildMarketReleaseCapability(t *testing.T, providerType, accessType, version, bootstrapError string, omitAccessSchema bool, capability string, aliases ...string) marketReleaseFixture {
 	t.Helper()
 	binary, err := os.ReadFile(buildPilot(t))
 	if err != nil {
@@ -52,10 +54,13 @@ func buildMarketReleaseCapability(t *testing.T, providerType, accessType, versio
 	}
 	manifest := plugin.Manifest{
 		ProviderType: providerType, AccessProviderType: accessType, Version: version,
-		Capability: capability,
-		Binary:     "webhook-deployer", ProtocolVersion: plugin.ProtocolVersion,
+		Capability: capability, ProviderAliases: aliases,
+		Binary: "webhook-deployer", ProtocolVersion: plugin.ProtocolVersion,
 	}
-	manifestJSON, err := json.Marshal(manifest)
+	packed := manifest
+	packed.OS, packed.Arch = runtime.GOOS, runtime.GOARCH
+	packed.SHA256 = fmt.Sprintf("%x", sha256.Sum256(binary))
+	manifestJSON, err := json.Marshal(packed)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +84,7 @@ func buildMarketReleaseCapability(t *testing.T, providerType, accessType, versio
 	}{
 		{manifest.Binary, binary}, {"manifest.json", manifestJSON}, {"fixture.json", configJSON},
 	} {
-		header := &zip.FileHeader{Name: entry.name, Method: zip.Store}
+		header := &zip.FileHeader{Name: entry.name, Method: zip.Deflate}
 		header.SetMode(0o644)
 		output, err := writer.CreateHeader(header)
 		if err != nil {
@@ -160,7 +165,7 @@ func TestE2E_MarketInstallUpgradeRollbackAndDelete(t *testing.T) {
 	previousReloader := pluginhost.GlobalReloader()
 	pluginhost.SetGlobalReloader(pluginhost.NewReloader(plugin.PluginConfig{PluginDir: root, CoreVersion: "0.4.28"}, catalog, slog.Default()))
 	t.Cleanup(func() { pluginhost.SetGlobalReloader(previousReloader) })
-	market := pluginhost.NewMarketService(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
+	market := pluginhost.NewThirdPartyFixtureMarket(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
 	job, err := market.Install(context.Background(), providerType)
 	if err != nil {
 		t.Fatal(err)
@@ -210,7 +215,8 @@ func TestE2E_MarketInstallUpgradeRollbackAndDelete(t *testing.T) {
 		t.Fatalf("failed update changed access schema: %+v %v", preservedSchema, err)
 	}
 	metadata, err := plugin.ReadMarketMeta(root, providerType)
-	if err != nil || metadata == nil || metadata.InstalledVersion != "1.0.0" || metadata.Origin() != plugin.OfficialMarketSource() {
+	fixtureSource, _ := plugin.ParseMarketSource("https://github.com/fixture/markets")
+	if err != nil || metadata == nil || metadata.InstalledVersion != "1.0.0" || metadata.Origin() != fixtureSource {
 		t.Fatalf("failed update changed installed version: %+v %v", metadata, err)
 	}
 	retained, err := deployers.Registries.Get(domain.DeploymentProviderType(providerType))
@@ -289,7 +295,7 @@ func TestE2E_MarketDeleteRefusedWhileAccessReuserInstalled(t *testing.T) {
 	previous := pluginhost.GlobalReloader()
 	pluginhost.SetGlobalReloader(pluginhost.NewReloader(plugin.PluginConfig{PluginDir: root, CoreVersion: "0.4.28"}, catalog, slog.Default()))
 	t.Cleanup(func() { pluginhost.SetGlobalReloader(previous) })
-	market := pluginhost.NewMarketService(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
+	market := pluginhost.NewThirdPartyFixtureMarket(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
 
 	if job, err := market.Install(context.Background(), reuserType); err != nil {
 		t.Fatal(err)
@@ -369,7 +375,7 @@ func TestE2E_MarketMissingReleaseFailsWithoutStoppingService(t *testing.T) {
 	previous := pluginhost.GlobalReloader()
 	pluginhost.SetGlobalReloader(pluginhost.NewReloader(plugin.PluginConfig{PluginDir: root}, catalog, slog.Default()))
 	t.Cleanup(func() { pluginhost.SetGlobalReloader(previous) })
-	market := pluginhost.NewMarketService(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
+	market := pluginhost.NewThirdPartyFixtureMarket(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL, CacheTTL: time.Nanosecond})
 	job, err := market.Install(context.Background(), providerType)
 	if err != nil {
 		t.Fatal(err)
@@ -430,7 +436,7 @@ func TestE2E_MarketCannotReplaceManualPluginInAnotherDirectory(t *testing.T) {
 		}
 	})))
 	defer server.Close()
-	market := pluginhost.NewMarketService(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL})
+	market := pluginhost.NewThirdPartyFixtureMarket(pluginhost.MarketConfig{PluginDir: root, IndexURL: server.URL + "/index.json", DownloadMirror: server.URL})
 	job, err := market.Install(context.Background(), providerType)
 	if err != nil {
 		t.Fatal(err)
