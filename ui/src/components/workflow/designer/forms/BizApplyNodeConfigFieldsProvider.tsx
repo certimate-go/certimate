@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { type ProviderSchemaEnvelope, getProviderSchema } from "@/api/providerschema";
-import { type ACMEDns01ProviderType, type ACMEHttp01ProviderType, ACME_DNS01_PROVIDERS, ACME_HTTP01_PROVIDERS } from "@/domain/provider";
+import { type ACMEDns01ProviderType, type ACMEHttp01ProviderType, ACME_DNS01_PROVIDERS, ACME_HTTP01_PROVIDERS, getACMEDns01Provider } from "@/domain/provider";
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 
 import BizApplyNodeConfigFieldsProviderAliyunESA from "./BizApplyNodeConfigFieldsProviderAliyunESA";
@@ -49,11 +49,12 @@ const acmeHttp01ProviderComponentMap: Partial<Record<ACMEHttp01ProviderType, Rea
 
 const useComponent = (
   challenge: "dns-01" | "http-01" | "dns-persist-01",
-  provider: string | null | undefined,
+  selectedProvider: string | null | undefined,
   { initProps, deps = [] }: { initProps?: (provider: string) => any; deps?: unknown[] }
 ) => {
   const [envelope, setEnvelope] = useState<ProviderSchemaEnvelope | null>(null);
   const catalogVersion = usePluginCatalogStore((s) => s.version);
+  const provider = challenge === "dns-01" && selectedProvider ? (getACMEDns01Provider(selectedProvider)?.type ?? selectedProvider) : selectedProvider;
 
   useEffect(() => {
     let cancelled = false;

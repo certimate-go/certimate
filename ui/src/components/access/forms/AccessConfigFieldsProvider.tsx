@@ -181,7 +181,10 @@ const providerComponentMap: Partial<Record<AccessProviderType, React.ComponentTy
   [ACCESS_PROVIDERS.ZEROSSL]: AccessConfigFieldsProviderZeroSSL,
 };
 
-const useComponent = (provider: string | undefined, { initProps }: { initProps?: (provider: string) => object }) => {
+const useComponent = (
+  provider: string | undefined,
+  { initProps, preferStaticFields }: { initProps?: (provider: string) => object; preferStaticFields?: boolean }
+) => {
   const [result, setResult] = useState<{
     provider: string;
     catalogVersion: number;
@@ -209,7 +212,7 @@ const useComponent = (provider: string | undefined, { initProps }: { initProps?:
   }, [provider, catalogVersion]);
 
   const matched = result?.provider === provider ? result : undefined;
-  const envelope = matched?.envelope;
+  const envelope = preferStaticFields ? undefined : matched?.envelope;
   const schemaStatus = matched?.catalogVersion === catalogVersion ? matched.status : "loading";
 
   if (envelope) return { schemaStatus, fields: <SchemaConfigFields key={provider} envelope={envelope} /> };

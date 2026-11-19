@@ -56,6 +56,7 @@ type b3DNSFixture struct {
 	token           string
 	cname           string
 	value           string
+	unrelatedTXT    string
 	expected        string
 	authorized      bool
 	wildcard        *b3WildcardChallenge
@@ -384,8 +385,18 @@ func runDNSWorkflow(t *testing.T, binary, family string, plugins dnsWorkflowPlug
 				if err != nil {
 					t.Fatalf("query TXT after issuance: %v", err)
 				}
-				if reply.Rcode != dns.RcodeSuccess || len(reply.Answer) != 0 {
-					t.Errorf("DNS still returns challenge TXT after the workflow: %v", reply)
+				var remainingTXT []string
+				for _, answer := range reply.Answer {
+					if txt, ok := answer.(*dns.TXT); ok {
+						remainingTXT = append(remainingTXT, txt.Txt...)
+					}
+				}
+				var expectedTXT []string
+				if f.unrelatedTXT != "" {
+					expectedTXT = []string{f.unrelatedTXT}
+				}
+				if reply.Rcode != dns.RcodeSuccess || len(reply.Answer) != len(expectedTXT) || !slices.Equal(remainingTXT, expectedTXT) {
+					t.Errorf("DNS returned %q after cleanup, expected %q: %v", remainingTXT, expectedTXT, reply)
 				}
 			}
 			f.mu.Lock()
@@ -505,6 +516,9 @@ func (f *b3DNSFixture) dns(w dns.ResponseWriter, r *dns.Msg) {
 				m.Answer = append(m.Answer, &dns.CNAME{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeCNAME, Class: dns.ClassINET, Ttl: 60}, Target: f.cname})
 			}
 		case dns.TypeTXT:
+			if q.Name == f.challengeRecordName() && f.unrelatedTXT != "" {
+				m.Answer = append(m.Answer, &dns.TXT{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeTXT, Class: dns.ClassINET, Ttl: 60}, Txt: []string{f.unrelatedTXT}})
+			}
 			if f.wildcard != nil && q.Name == f.challengeRecordName() && f.wildcard.value != "" {
 				m.Answer = append(m.Answer, &dns.TXT{Hdr: dns.RR_Header{Name: q.Name, Rrtype: dns.TypeTXT, Class: dns.ClassINET, Ttl: 60}, Txt: []string{f.wildcard.value}})
 				matchedTXT = f.wildcard.value == f.wildcard.expected

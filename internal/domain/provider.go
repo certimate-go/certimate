@@ -176,8 +176,6 @@ const (
 	ACMEDns01ProviderTypeBytePlusDNS       = ACMEDns01ProviderType(AccessProviderTypeBytePlus + "-dns")
 	ACMEDns01ProviderTypeCloudflare        = ACMEDns01ProviderType(AccessProviderTypeCloudflare)
 	ACMEDns01ProviderTypeClouDNS           = ACMEDns01ProviderType(AccessProviderTypeClouDNS)
-	ACMEDns01ProviderTypeCMCCCloud         = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeCMCCCloudDNS]
-	ACMEDns01ProviderTypeCMCCCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeCMCCCloud + "-dns")
 	ACMEDns01ProviderTypeConoHaVPS         = ACMEDns01ProviderType(AccessProviderTypeConoHaVPS)
 	ACMEDns01ProviderTypeConstellix        = ACMEDns01ProviderType(AccessProviderTypeConstellix)
 	ACMEDns01ProviderTypeCPanel            = ACMEDns01ProviderType(AccessProviderTypeCPanel)
@@ -196,8 +194,6 @@ const (
 	ACMEDns01ProviderTypeGcore             = ACMEDns01ProviderType(AccessProviderTypeGcore)
 	ACMEDns01ProviderTypeGname             = ACMEDns01ProviderType(AccessProviderTypeGname)
 	ACMEDns01ProviderTypeGoDaddy           = ACMEDns01ProviderType(AccessProviderTypeGoDaddy)
-	ACMEDns01ProviderTypeGoogleCloud       = ACMEDns01ProviderType(AccessProviderTypeGoogleCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeGoogleCloudDNS]
-	ACMEDns01ProviderTypeGoogleCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeGoogleCloud + "-dns")
 	ACMEDns01ProviderTypeHetzner           = ACMEDns01ProviderType(AccessProviderTypeHetzner)
 	ACMEDns01ProviderTypeHostingde         = ACMEDns01ProviderType(AccessProviderTypeHostingde)
 	ACMEDns01ProviderTypeHostinger         = ACMEDns01ProviderType(AccessProviderTypeHostinger)
@@ -219,14 +215,10 @@ const (
 	ACMEDns01ProviderTypeOracleCloudDNS    = ACMEDns01ProviderType(AccessProviderTypeOracleCloud + "-dns")
 	ACMEDns01ProviderTypeOVHcloud          = ACMEDns01ProviderType(AccessProviderTypeOVHcloud)
 	ACMEDns01ProviderTypePorkbun           = ACMEDns01ProviderType(AccessProviderTypePorkbun)
-	ACMEDns01ProviderTypePowerDNS          = ACMEDns01ProviderType(AccessProviderTypePowerDNS)
-	ACMEDns01ProviderTypePowerDNSDNS       = ACMEDns01ProviderType(AccessProviderTypePowerDNS + "-dns")
 	ACMEDns01ProviderTypeQingCloud         = ACMEDns01ProviderType(AccessProviderTypeQingCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeQingCloudDNS]
 	ACMEDns01ProviderTypeQingCloudDNS      = ACMEDns01ProviderType(AccessProviderTypeQingCloud + "-dns")
 	ACMEDns01ProviderTypeRainYun           = ACMEDns01ProviderType(AccessProviderTypeRainYun)
 	ACMEDns01ProviderTypeRegru             = ACMEDns01ProviderType(AccessProviderTypeRegru)
-	ACMEDns01ProviderTypeRFC2136           = ACMEDns01ProviderType(AccessProviderTypeRFC2136)
-	ACMEDns01ProviderTypeRFC2136DNS        = ACMEDns01ProviderType(AccessProviderTypeRFC2136 + "-dns")
 	ACMEDns01ProviderTypeRuCenter          = ACMEDns01ProviderType(AccessProviderTypeRuCenter)
 	ACMEDns01ProviderTypeSimplyCom         = ACMEDns01ProviderType(AccessProviderTypeSimplyCom)
 	ACMEDns01ProviderTypeSpaceship         = ACMEDns01ProviderType(AccessProviderTypeSpaceship)
@@ -238,8 +230,6 @@ const (
 	ACMEDns01ProviderTypeUCloud            = ACMEDns01ProviderType(AccessProviderTypeUCloud) // 兼容旧值，等同于 [ACMEDns01ProviderTypeUCloudUDNR]
 	ACMEDns01ProviderTypeUCloudUDNR        = ACMEDns01ProviderType(AccessProviderTypeUCloud + "-udnr")
 	ACMEDns01ProviderTypeVercel            = ACMEDns01ProviderType(AccessProviderTypeVercel)
-	ACMEDns01ProviderTypeVolcEngine        = ACMEDns01ProviderType(AccessProviderTypeVolcEngine) // 兼容旧值，等同于 [ACMEDns01ProviderTypeVolcEngineDNS]
-	ACMEDns01ProviderTypeVolcEngineDNS     = ACMEDns01ProviderType(AccessProviderTypeVolcEngine + "-dns")
 	ACMEDns01ProviderTypeVultr             = ACMEDns01ProviderType(AccessProviderTypeVultr)
 	ACMEDns01ProviderTypeWestcn            = ACMEDns01ProviderType(AccessProviderTypeWestcn)
 	ACMEDns01ProviderTypeXinnet            = ACMEDns01ProviderType(AccessProviderTypeXinnet)

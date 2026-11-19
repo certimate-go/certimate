@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -144,6 +145,9 @@ func TestPluginGRPC_MetadataSchemaRoundTrip(t *testing.T) {
 	if meta.ProviderType != "fake" || meta.Capability != CapabilityDeploy || meta.Category != "other" || meta.DisplayNameKey != "plugin.fake.name" {
 		t.Fatalf("metadata round trip mismatch: %+v", meta)
 	}
+	if len(meta.RuntimeConfigJSON) != 0 {
+		t.Fatalf("plugin without runtime configuration returned %q", meta.RuntimeConfigJSON)
+	}
 	schema, err := client.GetConfigSchema(context.Background())
 	if err != nil {
 		t.Fatalf("GetConfigSchema: %v", err)
@@ -153,12 +157,34 @@ func TestPluginGRPC_MetadataSchemaRoundTrip(t *testing.T) {
 	}
 }
 
+type runtimeConfigFixture struct {
+	*recordingPlugin
+	config json.RawMessage
+}
+
+func (p runtimeConfigFixture) RuntimeConfig(context.Context) (json.RawMessage, error) {
+	return p.config, nil
+}
+
+func TestPluginGRPC_RuntimeConfigRoundTrip(t *testing.T) {
+	impl := runtimeConfigFixture{
+		recordingPlugin: &recordingPlugin{metadata: testMetadata(CapabilityDns)},
+		config:          json.RawMessage(`{"custom":{"enabled":true},"propagation_timeout_seconds":240}`),
+	}
+	client, cleanup := newRoundTrip(t, impl)
+	defer cleanup()
+	meta, err := client.GetMetadata(t.Context())
+	if err != nil || string(meta.RuntimeConfigJSON) != string(impl.config) {
+		t.Fatalf("runtime configuration mismatch: %+v, %v", meta, err)
+	}
+}
+
 func TestPluginGRPC_ProcessAllCapabilities(t *testing.T) {
 	cases := []struct {
-		name      string
+		name       string
 		capability string
-		req       *Request
-		verify    func(t *testing.T, res *Result)
+		req        *Request
+		verify     func(t *testing.T, res *Result)
 	}{
 		{
 			name:       "deploy",

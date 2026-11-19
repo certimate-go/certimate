@@ -47,8 +47,14 @@ const AccessForm = ({ className, style, disabled, initialValues, mode, usage, on
   const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
   const provider = fieldProvider ? accessProvidersMap.get(fieldProvider) : undefined;
   const needsSchema = usage === "notification" && provider?.source === "plugin";
+  const savedConfig = initialValues?.config;
+  const useSavedDNSFields =
+    mode === "modify" &&
+    ((fieldProvider === ACCESS_PROVIDERS.RFC2136 && typeof savedConfig?.host === "string" && savedConfig.host !== "") ||
+      (fieldProvider === ACCESS_PROVIDERS.POWERDNS && !savedConfig?.zone));
 
   const { fields, schemaStatus } = AccessConfigFieldsProvider.useComponent(fieldProvider, {
+    preferStaticFields: useSavedDNSFields,
     initProps: (provider) => {
       let props: object = { disabled: disabled };
 

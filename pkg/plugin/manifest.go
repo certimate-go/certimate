@@ -35,6 +35,7 @@ func IsValidCapability(capability string) bool {
 type Manifest struct {
 	Version            string   `json:"version"`
 	ProviderType       string   `json:"provider_type"`
+	ProviderAliases    []string `json:"provider_aliases,omitempty"`
 	AccessProviderType string   `json:"access_provider_type"`
 	Capability         string   `json:"capability"`
 	DisplayNameKey     string   `json:"display_name_key"`
@@ -102,6 +103,19 @@ func (m *Manifest) Validate() error {
 	}
 	if !validCapabilities[m.Capability] {
 		problems = append(problems, fmt.Sprintf("capability must be one of deploy, dns, notify, purge (got %q)", m.Capability))
+	}
+	if len(m.ProviderAliases) > 0 && m.Capability != CapabilityDns {
+		problems = append(problems, "provider_aliases requires the dns capability")
+	}
+	seenAliases := map[string]bool{m.ProviderType: true}
+	for _, alias := range m.ProviderAliases {
+		if err := ValidateProviderType(alias); err != nil {
+			problems = append(problems, fmt.Sprintf("provider_aliases contains invalid ID %q", alias))
+		}
+		if seenAliases[alias] {
+			problems = append(problems, fmt.Sprintf("provider_aliases repeats ID %q", alias))
+		}
+		seenAliases[alias] = true
 	}
 	if m.Binary == "" {
 		problems = append(problems, "binary must not be empty")

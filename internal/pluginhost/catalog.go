@@ -45,6 +45,7 @@ type CatalogEntry struct {
 	Source               string                       `json:"source"`
 	Capability           string                       `json:"capability"`
 	ProviderType         string                       `json:"providerType"`
+	ProviderAliases      []string                     `json:"providerAliases,omitempty"`
 	AccessProviderType   string                       `json:"accessProviderType"`
 	OwnsAccess           bool                         `json:"ownsAccess"`
 	Category             string                       `json:"category"`
@@ -161,7 +162,11 @@ func (c *Catalog) registered() map[string]*registeredPlugin {
 func (c *Catalog) DNSPlugin(providerType domain.ACMEDns01ProviderType) *plugin.DiscoveredPlugin {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	if p := c.plugins[string(providerType)]; p != nil {
+	canonical, _, err := certifiers.ACMEDns01Registries.Lookup(providerType)
+	if err != nil {
+		return nil
+	}
+	if p := c.plugins[string(canonical)]; p != nil {
 		if factory, ok := p.factory.(*pluginDnsChallengerFactory); ok {
 			return factory.dp
 		}
@@ -308,7 +313,7 @@ func (c *Catalog) addRuntimeCleanup(p *registeredPlugin) {
 func (c *Catalog) registerFactoryLocked(name string, p *registeredPlugin) error {
 	switch p.capability {
 	case plugin.CapabilityDns:
-		return certifiers.ACMEDns01Registries.SetOwned(domain.ACMEDns01ProviderType(name), c.owner, p.newChallenger)
+		return certifiers.ACMEDns01Registries.SetOwned(domain.ACMEDns01ProviderType(name), c.owner, p.newChallenger, dnsProviderAliases(p.source.Manifest)...)
 	case plugin.CapabilityNotify:
 		return notifiers.Registries.SetOwned(domain.NotificationProviderType(name), c.owner, p.newNotifier)
 	case plugin.CapabilityPurge:

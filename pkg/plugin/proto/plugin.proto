@@ -23,6 +23,7 @@ message GetMetadataResponse {
   string display_name_key = 6;
   string access_display_name_key = 7;
   bool supports_access_check = 8;
+  bytes runtime_config_json = 9;
 }
 
 message GetConfigSchemaRequest {}

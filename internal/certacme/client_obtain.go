@@ -83,19 +83,7 @@ func (r *ObtainCertificateRequest) DNS01Provider() domain.ACMEDns01ProviderType 
 	if !strings.EqualFold(r.ChallengeType, "dns-01") {
 		return ""
 	}
-	providerType := domain.ACMEDns01ProviderType(r.Provider)
-	switch providerType {
-	case domain.ACMEDns01ProviderTypeCMCCCloud:
-		return domain.ACMEDns01ProviderTypeCMCCCloudDNS
-	case domain.ACMEDns01ProviderTypeGoogleCloud:
-		return domain.ACMEDns01ProviderTypeGoogleCloudDNS
-	case domain.ACMEDns01ProviderTypePowerDNS:
-		return domain.ACMEDns01ProviderTypePowerDNSDNS
-	case domain.ACMEDns01ProviderTypeRFC2136:
-		return domain.ACMEDns01ProviderTypeRFC2136DNS
-	default:
-		return providerType
-	}
+	return domain.ACMEDns01ProviderType(r.Provider)
 }
 
 func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCertificateRequest) (*ObtainCertificateResponse, error) {
@@ -118,18 +106,9 @@ func (c *ACMEClient) ObtainCertificate(ctx context.Context, request *ObtainCerti
 	case CHALLENGE_TYPE_DNS01:
 		{
 			os.Setenv("LEGO_DISABLE_CNAME_SUPPORT", strconv.FormatBool(request.DisableFollowCNAME))
-			providerType := request.DNS01Provider()
-			providerFactory, err := certifiers.ACMEDns01Registries.Get(providerType)
+			providerFactory, err := certifiers.ACMEDns01Registries.Get(request.DNS01Provider())
 			if err != nil {
-				switch providerType {
-				case domain.ACMEDns01ProviderTypeCMCCCloudDNS:
-					return nil, fmt.Errorf("install the cmcccloud-dns plugin to use CMCC Cloud DNS: %w", err)
-				case domain.ACMEDns01ProviderTypeGoogleCloudDNS:
-					return nil, fmt.Errorf("install the googlecloud-dns plugin to use Google Cloud DNS: %w", err)
-				case domain.ACMEDns01ProviderTypePowerDNSDNS, domain.ACMEDns01ProviderTypeRFC2136DNS:
-					return nil, fmt.Errorf("install the %s plugin to use this DNS provider: %w", providerType, err)
-				}
-				return nil, err
+				return nil, fmt.Errorf("DNS-01 provider unavailable; install its plugin if it is an external provider: %w", err)
 			}
 
 			provider, err := providerFactory(&certifiers.ProviderFactoryOptions{

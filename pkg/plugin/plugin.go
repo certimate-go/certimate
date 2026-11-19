@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 
@@ -19,6 +20,7 @@ type Metadata struct {
 	DisplayNameKey       string
 	AccessDisplayNameKey string
 	SupportsAccessCheck  bool
+	RuntimeConfigJSON    json.RawMessage
 }
 
 type ConfigSchema struct {
@@ -220,6 +222,10 @@ type Plugin interface {
 	GetConfigSchema(ctx context.Context) (*ConfigSchema, error)
 	Process(ctx context.Context, req *Request, logger *slog.Logger) (*Result, error)
 	PostProcess(ctx context.Context, req *Request, logger *slog.Logger) error
+}
+
+type RuntimeConfigProvider interface {
+	RuntimeConfig(ctx context.Context) (json.RawMessage, error)
 }
 
 const (

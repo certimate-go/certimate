@@ -196,12 +196,32 @@ func RegisterDNSPlugin(dp *plugin.DiscoveredPlugin, logger *slog.Logger) error {
 	}
 	manager := plugin.NewManager(plugin.PluginConfig{}, logger)
 	factory := newPluginDnsChallengerFactory(manager, dp, logger)
-	return certifiers.ACMEDns01Registries.Register(domain.ACMEDns01ProviderType(dp.Manifest.ProviderType), factory.new)
+	return certifiers.ACMEDns01Registries.Register(domain.ACMEDns01ProviderType(dp.Manifest.ProviderType), factory.new, dnsProviderAliases(dp.Manifest)...)
+}
+
+func dnsProviderAliases(manifest *plugin.Manifest) []domain.ACMEDns01ProviderType {
+	aliases := make([]domain.ACMEDns01ProviderType, len(manifest.ProviderAliases))
+	for i, alias := range manifest.ProviderAliases {
+		aliases[i] = domain.ACMEDns01ProviderType(alias)
+	}
+	return aliases
 }
 
 func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOptions) (core.ACMEChallenger, error) {
-	session, err := f.manager.StartSession(context.Background(), f.dp, nil)
+	ctx, cancel := context.WithTimeout(context.Background(), f.manager.Config().StartTimeout)
+	defer cancel()
+	session, err := f.manager.StartSession(ctx, f.dp, nil)
 	if err != nil {
+		return nil, err
+	}
+	metadata, err := session.GetMetadata(ctx)
+	if err != nil {
+		session.Close()
+		return nil, err
+	}
+	timeout, interval, err := dnsRuntimeTiming(metadata.RuntimeConfigJSON)
+	if err != nil {
+		session.Close()
 		return nil, err
 	}
 	extended := make(map[string]any, len(options.ProviderExtendedConfig)+5)
@@ -212,22 +232,54 @@ func (f *pluginDnsChallengerFactory) new(options *certifiers.ProviderFactoryOpti
 		extended["ttl"] = options.DnsTTL
 	}
 	challenger := &pluginDnsChallenger{
-		session:  session,
-		access:   options.ProviderAccessConfig,
-		extended: extended,
-		logLevel: f.logLevel,
-		logger:   f.logger,
+		session:         session,
+		access:          options.ProviderAccessConfig,
+		extended:        extended,
+		logLevel:        f.logLevel,
+		logger:          f.logger,
+		timeout:         timeout,
+		pollingInterval: interval,
 	}
 	runtime.AddCleanup(challenger, func(s *plugin.Session) { s.Close() }, session)
 	return challenger, nil
 }
 
 type pluginDnsChallenger struct {
-	session  *plugin.Session
-	access   map[string]any
-	extended map[string]any
-	logLevel string
-	logger   *slog.Logger
+	session         *plugin.Session
+	access          map[string]any
+	extended        map[string]any
+	logLevel        string
+	logger          *slog.Logger
+	timeout         time.Duration
+	pollingInterval time.Duration
+}
+
+func (c *pluginDnsChallenger) Timeout() (time.Duration, time.Duration) {
+	return c.timeout, c.pollingInterval
+}
+
+func dnsRuntimeTiming(raw []byte) (timeout, interval time.Duration, err error) {
+	var config struct {
+		TimeoutSeconds  int64 `json:"propagation_timeout_seconds"`
+		IntervalSeconds int64 `json:"propagation_polling_interval_seconds"`
+	}
+	if len(raw) > 0 {
+		if err := json.Unmarshal(raw, &config); err != nil {
+			return 0, 0, fmt.Errorf("decode DNS plugin runtime config: %w", err)
+		}
+	}
+	const maxSeconds = int64((1<<63 - 1) / time.Second)
+	if config.TimeoutSeconds < 0 || config.TimeoutSeconds > maxSeconds || config.IntervalSeconds < 0 || config.IntervalSeconds > maxSeconds {
+		return 0, 0, fmt.Errorf("DNS plugin propagation timing must be valid nonnegative seconds")
+	}
+	timeout, interval = dns01.DefaultPropagationTimeout, dns01.DefaultPollingInterval
+	if config.TimeoutSeconds > 0 {
+		timeout = time.Duration(config.TimeoutSeconds) * time.Second
+	}
+	if config.IntervalSeconds > 0 {
+		interval = time.Duration(config.IntervalSeconds) * time.Second
+	}
+	return timeout, interval, nil
 }
 
 func (c *pluginDnsChallenger) Present(ctx context.Context, name, token, keyAuth string) error {

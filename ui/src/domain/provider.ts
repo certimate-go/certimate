@@ -91,12 +91,10 @@ export const ACCESS_PROVIDERS = Object.freeze(
     OVHCLOUD: "ovhcloud",
     PORKBUN: "porkbun",
     POWERDNS: "powerdns",
-    POWERDNS_DNS: "powerdns-dns",
     QINGCLOUD: "qingcloud",
     RAINYUN: "rainyun",
     REGRU: "regru",
     RFC2136: "rfc2136",
-    RFC2136_DNS: "rfc2136-dns",
     RUCENTER: "rucenter",
     S3: "s3",
     SECTIGO: "sectigo",
@@ -262,13 +260,13 @@ const migratedNotificationAccessProviders = new Map<string, AccessProvider>(
   ).map(([type, name, icon, usages]) => [type, { type, name, icon: withBasePath(icon), usages, builtin: false, source: "plugin" }])
 );
 
-const migratedDNSAccessProviders = new Map<string, AccessProvider & { pluginType: string }>(
+const migratedDNSAccessProviders = new Map<string, AccessProvider>(
   (
     [
-      [ACCESS_PROVIDERS.POWERDNS, ACCESS_PROVIDERS.POWERDNS_DNS, "provider.powerdns", "/imgs/providers/powerdns.svg"],
-      [ACCESS_PROVIDERS.RFC2136, ACCESS_PROVIDERS.RFC2136_DNS, "provider.rfc2136", "/imgs/providers/rfc.svg"],
-    ] satisfies Array<[AccessProviderType, AccessProviderType, string, string]>
-  ).map(([type, pluginType, name, icon]) => [type, { type, pluginType, name, icon: withBasePath(icon), usages: [ACCESS_USAGES.DNS], builtin: false }])
+      [ACCESS_PROVIDERS.POWERDNS, "provider.powerdns", "/imgs/providers/powerdns.svg"],
+      [ACCESS_PROVIDERS.RFC2136, "provider.rfc2136", "/imgs/providers/rfc.svg"],
+    ] satisfies Array<[AccessProviderType, string, string]>
+  ).map(([type, name, icon]) => [type, { type, name, icon: withBasePath(icon), usages: [ACCESS_USAGES.DNS], builtin: false }])
 );
 
 export const getAccessProvider = (type: string): AccessProvider | undefined =>
@@ -369,8 +367,6 @@ export const ACME_DNS01_PROVIDERS = Object.freeze(
     BYTEPLUS_DNS: `${ACCESS_PROVIDERS.BYTEPLUS}-dns`,
     CLOUDFLARE: `${ACCESS_PROVIDERS.CLOUDFLARE}`,
     CLOUDNS: `${ACCESS_PROVIDERS.CLOUDNS}`,
-    CMCCCLOUD: `${ACCESS_PROVIDERS.CMCCCLOUD}`, // 兼容旧值，等同于 `CMCCCLOUD_DNS`
-    CMCCCLOUD_DNS: `${ACCESS_PROVIDERS.CMCCCLOUD}-dns`,
     CONOHAVPS: `${ACCESS_PROVIDERS.CONOHAVPS}`,
     CONSTELLIX: `${ACCESS_PROVIDERS.CONSTELLIX}`,
     CPANEL: `${ACCESS_PROVIDERS.CPANEL}`,
@@ -389,8 +385,6 @@ export const ACME_DNS01_PROVIDERS = Object.freeze(
     GCORE: `${ACCESS_PROVIDERS.GCORE}`,
     GNAME: `${ACCESS_PROVIDERS.GNAME}`,
     GODADDY: `${ACCESS_PROVIDERS.GODADDY}`,
-    GOOGLECLOUD: `${ACCESS_PROVIDERS.GOOGLECLOUD}`, // 兼容旧值，等同于 `GOOGLECLOUD_DNS`
-    GOOGLECLOUD_DNS: `${ACCESS_PROVIDERS.GOOGLECLOUD}-dns`,
     HETZNER: `${ACCESS_PROVIDERS.HETZNER}`,
     HOSTINGDE: `${ACCESS_PROVIDERS.HOSTINGDE}`,
     HOSTINGER: `${ACCESS_PROVIDERS.HOSTINGER}`,
@@ -412,14 +406,10 @@ export const ACME_DNS01_PROVIDERS = Object.freeze(
     ORACLECLOUD_DNS: `${ACCESS_PROVIDERS.ORACLECLOUD}-dns`,
     OVHCLOUD: `${ACCESS_PROVIDERS.OVHCLOUD}`,
     PORKBUN: `${ACCESS_PROVIDERS.PORKBUN}`,
-    POWERDNS: `${ACCESS_PROVIDERS.POWERDNS}`,
-    POWERDNS_DNS: `${ACCESS_PROVIDERS.POWERDNS_DNS}`,
     QINGCLOUD: `${ACCESS_PROVIDERS.QINGCLOUD}`, // 兼容旧值，等同于 `QINGCLOUD_DNS`
     QINGCLOUD_DNS: `${ACCESS_PROVIDERS.QINGCLOUD}-dns`,
     RAINYUN: `${ACCESS_PROVIDERS.RAINYUN}`,
     REGRU: `${ACCESS_PROVIDERS.REGRU}`,
-    RFC2136: `${ACCESS_PROVIDERS.RFC2136}`,
-    RFC2136_DNS: `${ACCESS_PROVIDERS.RFC2136_DNS}`,
     RUCENTER: `${ACCESS_PROVIDERS.RUCENTER}`,
     SIMPLYCOM: `${ACCESS_PROVIDERS.SIMPLYCOM}`,
     SPACESHIP: `${ACCESS_PROVIDERS.SPACESHIP}`,
@@ -431,8 +421,6 @@ export const ACME_DNS01_PROVIDERS = Object.freeze(
     TENCENTCLOUD_EO: `${ACCESS_PROVIDERS.TENCENTCLOUD}-eo`,
     TODAYNIC: `${ACCESS_PROVIDERS.TODAYNIC}`,
     VERCEL: `${ACCESS_PROVIDERS.VERCEL}`,
-    VOLCENGINE: `${ACCESS_PROVIDERS.VOLCENGINE}`, // 兼容旧值，等同于 `VOLCENGINE_DNS`
-    VOLCENGINE_DNS: `${ACCESS_PROVIDERS.VOLCENGINE}-dns`,
     VULTR: `${ACCESS_PROVIDERS.VULTR}`,
     WESTCN: `${ACCESS_PROVIDERS.WESTCN}`,
     XINNET: `${ACCESS_PROVIDERS.XINNET}`,
@@ -443,7 +431,9 @@ export const ACME_DNS01_PROVIDERS = Object.freeze(
 
 export type ACMEDns01ProviderType = (typeof ACME_DNS01_PROVIDERS)[keyof typeof ACME_DNS01_PROVIDERS];
 
-export interface ACMEDns01Provider extends BaseProviderWithAccess<ACMEDns01ProviderType> {}
+export interface ACMEDns01Provider extends BaseProviderWithAccess<ACMEDns01ProviderType> {
+  aliases?: string[];
+}
 
 export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACMEDns01Provider> = new Map(
   /*
@@ -457,7 +447,6 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
       [ACME_DNS01_PROVIDERS.TENCENTCLOUD_DNS, "provider.tencentcloud_dns"],
       [ACME_DNS01_PROVIDERS.TENCENTCLOUD_EO, "provider.tencentcloud_eo"],
       [ACME_DNS01_PROVIDERS.HUAWEICLOUD_DNS, "provider.huaweicloud_dns"],
-      [ACME_DNS01_PROVIDERS.VOLCENGINE_DNS, "provider.volcengine_dns"],
       [ACME_DNS01_PROVIDERS.AWS_ROUTE53, "provider.aws_route53"],
       [ACME_DNS01_PROVIDERS.AWS_LIGHTSAIL, "provider.aws_lightsail"],
       [ACME_DNS01_PROVIDERS.AZURE_DNS, "provider.azure_dns"],
@@ -533,49 +522,16 @@ export const acmeDns01ProvidersMap: Map<ACMEDns01Provider["type"] | string, ACME
     },
   ])
 );
-const migratedACMEDns01Providers: Array<ACMEDns01Provider & { legacyType: ACMEDns01ProviderType }> = [
-  {
-    type: ACME_DNS01_PROVIDERS.CMCCCLOUD_DNS,
-    legacyType: ACME_DNS01_PROVIDERS.CMCCCLOUD,
-    provider: ACCESS_PROVIDERS.CMCCCLOUD,
-    name: "provider.cmcccloud_dns",
-    icon: "/imgs/providers/cmcccloud.svg",
-    builtin: false,
-  },
-  {
-    type: ACME_DNS01_PROVIDERS.GOOGLECLOUD_DNS,
-    legacyType: ACME_DNS01_PROVIDERS.GOOGLECLOUD,
-    provider: ACCESS_PROVIDERS.GOOGLECLOUD,
-    name: "provider.googlecloud_dns",
-    icon: "/imgs/providers/google.svg",
-    builtin: false,
-  },
-  {
-    type: ACME_DNS01_PROVIDERS.POWERDNS_DNS,
-    legacyType: ACME_DNS01_PROVIDERS.POWERDNS,
-    provider: ACME_DNS01_PROVIDERS.POWERDNS_DNS,
-    name: "provider.powerdns",
-    icon: withBasePath("/imgs/providers/powerdns.svg"),
-    builtin: false,
-  },
-  {
-    type: ACME_DNS01_PROVIDERS.RFC2136_DNS,
-    legacyType: ACME_DNS01_PROVIDERS.RFC2136,
-    provider: ACME_DNS01_PROVIDERS.RFC2136_DNS,
-    name: "provider.rfc2136",
-    icon: withBasePath("/imgs/providers/rfc.svg"),
-    builtin: false,
-  },
-];
-
 export const getACMEDns01Provider = (type: string): ACMEDns01Provider | undefined => {
-  const migratedProvider = migratedACMEDns01Providers.find((provider) => provider.type === type || provider.legacyType === type);
-  return acmeDns01ProvidersMap.get(migratedProvider?.type ?? type) ?? migratedProvider;
+  return (
+    acmeDns01ProvidersMap.get(type) ??
+    Array.from(acmeDns01ProvidersMap.values()).find((provider) => provider.aliases?.includes(type))
+  );
 };
 
 export const matchesACMEDns01Access = (type: string, accessType: string): boolean => {
   const provider = getACMEDns01Provider(type);
-  return provider != null && provider.provider === (migratedDNSAccessProviders.get(accessType)?.pluginType ?? accessType);
+  return provider != null && provider.provider === accessType;
 };
 
 // #endregion

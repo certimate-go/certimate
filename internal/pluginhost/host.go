@@ -218,7 +218,8 @@ func preparePlugin(ctx context.Context, manager *plugin.Manager, dp *plugin.Disc
 		envelopes: envelopes,
 		entry: &CatalogEntry{
 			Source: SourcePlugin, Capability: capability, ProviderType: providerType, AccessProviderType: accessType,
-			OwnsAccess: ownsAccess, Category: meta.Category, DisplayNameKey: meta.DisplayNameKey,
+			ProviderAliases: dp.Manifest.ProviderAliases,
+			OwnsAccess:      ownsAccess, Category: meta.Category, DisplayNameKey: meta.DisplayNameKey,
 			AccessDisplayNameKey: meta.AccessDisplayNameKey, Icon: readIcon(dp, logger), I18n: schema.I18n,
 			AccessUsages: usages, Priority: dp.Manifest.Priority, Description: dp.Manifest.Description,
 		},

@@ -100,8 +100,6 @@ var permanentAccessCheckExemptions = map[domain.AccessProviderType]string{
 	domain.AccessProviderTypeCUCCCloud:          "reserved, no config yet",
 	domain.AccessProviderTypeFastly:             "reserved, no config yet",
 	domain.AccessProviderTypeEmail:              "notification path uses Test notify, not connectivity API",
-	domain.AccessProviderTypePowerDNS:           "DNS UI migrated to plugin",
-	domain.AccessProviderTypeRFC2136:            "DNS UI migrated to plugin",
 	domain.AccessProviderTypeDuckDNS:            "API only mutates DNS records; no read-only credential probe",
 	domain.AccessProviderTypeDNSExit:            "API only mutates DNS or DDNS state; no read-only credential probe",
 	domain.AccessProviderTypeBookMyName:         "DynDNS API only adds or removes records; no read-only credential probe",

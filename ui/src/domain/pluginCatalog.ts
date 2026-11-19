@@ -57,6 +57,7 @@ export const applyPluginCatalog = (entries: PluginCatalogEntry[]): void => {
       if (entry.providerType && !acmeDns01ProvidersMap.has(entry.providerType)) {
         acmeDns01ProvidersMap.set(entry.providerType, {
           type: entry.providerType as never,
+          aliases: entry.providerAliases,
           provider: accessType as never,
           name: entry.displayNameKey || `${pluginNamespace(entry.providerType)}.name`,
           icon: entry.icon || PLUGIN_PLACEHOLDER_ICON,

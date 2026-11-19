@@ -4,6 +4,7 @@ export interface PluginCatalogEntry {
   source: string;
   capability: string;
   providerType: string;
+  providerAliases?: string[];
   accessProviderType: string;
   ownsAccess: boolean;
   category: string;

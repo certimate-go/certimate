@@ -1,7 +1,9 @@
 package plugin
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -92,7 +94,19 @@ func decodeMetadata(resp *proto.GetMetadataResponse) *Metadata {
 		DisplayNameKey:       resp.DisplayNameKey,
 		AccessDisplayNameKey: resp.AccessDisplayNameKey,
 		SupportsAccessCheck:  resp.SupportsAccessCheck,
+		RuntimeConfigJSON:    resp.RuntimeConfigJson,
 	}
+}
+
+func validateRuntimeConfig(raw []byte) error {
+	if len(raw) == 0 {
+		return nil
+	}
+	trimmed := bytes.TrimSpace(raw)
+	if len(trimmed) == 0 || trimmed[0] != '{' || !json.Valid(trimmed) {
+		return errors.New("plugin: runtime config must be a JSON object")
+	}
+	return nil
 }
 
 func implementsAccessChecker(impl Plugin) bool {
@@ -260,6 +274,16 @@ func (s *pluginServiceServer) GetMetadata(ctx context.Context, _ *proto.GetMetad
 		return nil, err
 	}
 	resp.SupportsAccessCheck = implementsAccessChecker(s.impl)
+	if provider, ok := s.impl.(RuntimeConfigProvider); ok {
+		config, err := provider.RuntimeConfig(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if err := validateRuntimeConfig(config); err != nil {
+			return nil, err
+		}
+		resp.RuntimeConfigJson = config
+	}
 	return resp, nil
 }
 
@@ -356,6 +380,9 @@ type pluginServiceClient struct {
 func (c *pluginServiceClient) GetMetadata(ctx context.Context) (*Metadata, error) {
 	resp, err := c.raw.GetMetadata(ctx, &proto.GetMetadataRequest{})
 	if err != nil {
+		return nil, err
+	}
+	if err := validateRuntimeConfig(resp.GetRuntimeConfigJson()); err != nil {
 		return nil, err
 	}
 	return decodeMetadata(resp), nil

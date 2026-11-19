@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -38,6 +39,32 @@ func TestValidate_MissingFields(t *testing.T) {
 	m := &Manifest{ProviderType: "x"}
 	if err := m.Validate(); err == nil {
 		t.Fatal("expected validation error for missing fields")
+	}
+}
+
+func TestValidateProviderAliases(t *testing.T) {
+	for _, test := range []struct {
+		capability string
+		aliases    []string
+		problem    string
+	}{
+		{CapabilityDns, []string{"legacy"}, ""},
+		{CapabilityDns, []string{"provider"}, "repeats ID"},
+		{CapabilityDns, []string{"legacy", "legacy"}, "repeats ID"},
+		{CapabilityDns, []string{"../../other"}, "invalid ID"},
+		{CapabilityDeploy, []string{"legacy"}, "requires the dns capability"},
+	} {
+		manifest := Manifest{
+			ProviderType: "provider", AccessProviderType: "access", Capability: test.capability,
+			ProviderAliases: test.aliases, Binary: "provider.exe", ProtocolVersion: ProtocolVersion,
+		}
+		err := manifest.Validate()
+		if test.problem == "" && err != nil {
+			t.Errorf("valid aliases rejected: %v", err)
+		}
+		if test.problem != "" && (err == nil || !strings.Contains(err.Error(), test.problem)) {
+			t.Errorf("Validate(%v) returned %v, want %q", test.aliases, err, test.problem)
+		}
 	}
 }
 
