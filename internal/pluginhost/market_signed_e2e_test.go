@@ -110,6 +110,17 @@ func TestE2E_SignedOfficialMarketInstallAndRejectTampering(t *testing.T) {
 	next := buildMarketReleaseCapability(t, provider, provider+"-access", "2.0.0", "", false, plugin.CapabilityDns)
 	signed := makeOfficialCDNFixture(t, 1, 11, now, now.Add(time.Hour), first)
 	update := makeOfficialCDNFixture(t, 1, 12, now, now.Add(time.Hour), next)
+	var archivePath string
+	for path := range signed.files {
+		if strings.HasSuffix(path, ".zip") {
+			archivePath = path
+			break
+		}
+	}
+	if archivePath == "" {
+		t.Fatal("fixture is missing the official archive")
+	}
+	rawArchive := plugin.GitHubRawBase + "/" + strings.Replace(strings.TrimPrefix(archivePath, "/gh/"), "@", "/", 1)
 	var mu sync.Mutex
 	files := signed.files
 	mode := "unsigned"
@@ -118,8 +129,18 @@ func TestE2E_SignedOfficialMarketInstallAndRejectTampering(t *testing.T) {
 		defer mu.Unlock()
 		writer := httptest.NewRecorder()
 		path := request.URL.Path
-		if request.URL.Host != "cdn.jsdelivr.net" {
+		if request.URL.String() == rawArchive && mode == "redirect" {
+			path = archivePath
+		} else if request.URL.Host != "cdn.jsdelivr.net" {
 			t.Errorf("official market asked another host: %s", request.URL)
+		} else if strings.HasSuffix(path, ".zip") && (mode == "redirect" || mode == "bad-redirect") {
+			destination := plugin.GitHubRawBase + "/" + strings.Replace(strings.TrimPrefix(path, "/gh/"), "@", "/", 1)
+			if mode == "bad-redirect" {
+				destination = strings.Replace(rawArchive, "/build/", "/other/", 1)
+			}
+			writer.Header().Set("Location", destination)
+			writer.WriteHeader(http.StatusMovedPermanently)
+			return writer.Result(), nil
 		}
 		if path == plugin.OfficialMarketIndexPath && mode == "unsigned" {
 			fmt.Fprintln(writer, `{"plugins":[]}`)
@@ -169,7 +190,7 @@ func TestE2E_SignedOfficialMarketInstallAndRejectTampering(t *testing.T) {
 	install(pluginhost.JobFailed, "detail checksum mismatch")
 	setMode("bad-zip")
 	install(pluginhost.JobFailed, "checksum mismatch")
-	setMode("")
+	setMode("redirect")
 	install(pluginhost.JobInstalled, "")
 	assertVersion := func(want string) {
 		t.Helper()
@@ -183,11 +204,15 @@ func TestE2E_SignedOfficialMarketInstallAndRejectTampering(t *testing.T) {
 		t.Fatal("installed signed archive did not register its DNS alias")
 	}
 	mu.Lock()
-	files, mode = update.files, "bad-zip"
+	files, mode = update.files, "bad-redirect"
 	mu.Unlock()
 	if status, err := market.RefreshSource(t.Context(), "official"); err != nil || status.Error != "" {
 		t.Fatalf("refresh update: %+v, %v", status, err)
 	}
+	if _, err := market.Update(t.Context(), provider, "official"); err == nil || !strings.Contains(err.Error(), "unexpected catalog redirect") {
+		t.Fatalf("unexpected update redirect result: %v", err)
+	}
+	setMode("bad-zip")
 	if _, err := market.Update(t.Context(), provider, "official"); !errors.Is(err, pluginhost.ErrOfficialChecksumMismatch) {
 		t.Fatalf("tampered update: %v", err)
 	}

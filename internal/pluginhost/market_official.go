@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 	"slices"
 	"strings"
 	"time"
@@ -90,6 +91,19 @@ func (s *marketCatalog) officialArtifactURL(release *plugin.OfficialMarketReleas
 		return "", fmt.Errorf("market: invalid official CDN index URL")
 	}
 	return base + "/gh/" + release.Repository + "@" + release.ReleaseCommit + "/" + artifact.Path, nil
+}
+
+func officialArchiveRedirect(req *http.Request, via []*http.Request) error {
+	first := via[0].URL
+	if len(via) == 1 && first.Scheme+"://"+first.Host == plugin.OfficialMarketDefaultBase {
+		if archive, ok := strings.CutPrefix(first.EscapedPath(), "/gh/"); ok {
+			repository, path, ok := strings.Cut(archive, "@")
+			if ok && req.URL.String() == plugin.GitHubRawBase+"/"+repository+"/"+path {
+				return nil
+			}
+		}
+	}
+	return catalogRedirect(req, via)
 }
 
 func (s *marketCatalog) officialIndexFor(ctx context.Context, info *repository.PluginMarketSync, body []byte) ([]*plugin.MarketManifest, error) {

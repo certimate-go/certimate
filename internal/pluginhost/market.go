@@ -166,7 +166,7 @@ func newMarketCatalog(cfg MarketConfig, source plugin.MarketSource) *marketCatal
 		httpClient:       &http.Client{Transport: catalogTransport, Timeout: 30 * time.Second, CheckRedirect: catalogRedirect},
 		downloadClient:   &http.Client{Transport: downloadTransport, CheckRedirect: releaseRedirect(cfg.DownloadMirror)},
 		officialTrust:    copyOfficialTrust(cfg.OfficialTrust),
-		officialDownload: &http.Client{Transport: officialTransport, CheckRedirect: catalogRedirect},
+		officialDownload: &http.Client{Transport: officialTransport, CheckRedirect: officialArchiveRedirect},
 		stallTimeout:     cfg.StallTimeout,
 		logger:           cfg.Logger.With(slog.String("component", "market")),
 	}
