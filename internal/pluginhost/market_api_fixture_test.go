@@ -27,7 +27,6 @@ import (
 	"github.com/certimate-go/certimate/internal/pluginhost/internal/markettest"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/routes"
-	"github.com/certimate-go/certimate/internal/setup"
 	_ "github.com/certimate-go/certimate/migrations"
 	"github.com/certimate-go/certimate/pkg/plugin"
 	"github.com/certimate-go/certimate/ui"
@@ -325,7 +324,7 @@ func TestMarketBrowserFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	routes.BindRouter(router, setup.NewService(pb))
+	routes.BindRouter(router)
 	router.GET("/{path...}", apis.Static(ui.DistDirFS, false))
 	mux, err := router.BuildMux()
 	if err != nil {
