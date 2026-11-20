@@ -8,18 +8,21 @@ import (
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type WorkflowRepository struct{}
+type WorkflowRepository struct {
+	pb core.App
+}
 
 func NewWorkflowRepository() *WorkflowRepository {
-	return &WorkflowRepository{}
+	return &WorkflowRepository{pb: app.GetApp()}
 }
 
 func (r *WorkflowRepository) ListEnabledScheduled(ctx context.Context) ([]*domain.Workflow, error) {
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameWorkflow,
 		"enabled={:enabled} && trigger={:trigger}",
 		"-created",
@@ -44,7 +47,7 @@ func (r *WorkflowRepository) ListEnabledScheduled(ctx context.Context) ([]*domai
 }
 
 func (r *WorkflowRepository) GetById(ctx context.Context, id string) (*domain.Workflow, error) {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameWorkflow, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameWorkflow, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
@@ -56,7 +59,7 @@ func (r *WorkflowRepository) GetById(ctx context.Context, id string) (*domain.Wo
 }
 
 func (r *WorkflowRepository) Save(ctx context.Context, workflow *domain.Workflow) (*domain.Workflow, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameWorkflow)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameWorkflow)
 	if err != nil {
 		return workflow, err
 	}
@@ -65,7 +68,7 @@ func (r *WorkflowRepository) Save(ctx context.Context, workflow *domain.Workflow
 	if workflow.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, workflow.Id)
+		record, err = r.pb.FindRecordById(collection, workflow.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return workflow, domain.ErrRecordNotFound
@@ -86,7 +89,7 @@ func (r *WorkflowRepository) Save(ctx context.Context, workflow *domain.Workflow
 	record.Set("lastRunRef", workflow.LastRunId)
 	record.Set("lastRunStatus", workflow.LastRunStatus.String())
 	record.Set("lastRunTime", workflow.LastRunTime)
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.SaveWithContext(ctx, record); err != nil {
 		return workflow, err
 	}
 

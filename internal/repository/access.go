@@ -12,14 +12,16 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type AccessRepository struct{}
+type AccessRepository struct {
+	pb core.App
+}
 
 func NewAccessRepository() *AccessRepository {
-	return &AccessRepository{}
+	return &AccessRepository{pb: app.GetApp()}
 }
 
 func (r *AccessRepository) GetById(ctx context.Context, id string) (*domain.Access, error) {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameAccess, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameAccess, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
@@ -59,7 +61,7 @@ func (r *AccessRepository) castRecordToModel(record *core.Record) (*domain.Acces
 }
 
 func (r *AccessRepository) Save(ctx context.Context, access *domain.Access) (*domain.Access, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameAccess)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameAccess)
 	if err != nil {
 		return access, err
 	}
@@ -68,7 +70,7 @@ func (r *AccessRepository) Save(ctx context.Context, access *domain.Access) (*do
 		return access, domain.ErrRecordNotFound
 	}
 
-	record, err := app.GetApp().FindRecordById(collection, access.Id)
+	record, err := r.pb.FindRecordById(collection, access.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return access, domain.ErrRecordNotFound
@@ -83,7 +85,7 @@ func (r *AccessRepository) Save(ctx context.Context, access *domain.Access) (*do
 	if access.DeletedAt != nil {
 		record.Set("deleted", access.DeletedAt)
 	}
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.SaveWithContext(ctx, record); err != nil {
 		return access, err
 	}
 

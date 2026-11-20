@@ -13,14 +13,16 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type WorkflowTemplateRepository struct{}
+type WorkflowTemplateRepository struct {
+	pb core.App
+}
 
 func NewWorkflowTemplateRepository() *WorkflowTemplateRepository {
-	return &WorkflowTemplateRepository{}
+	return &WorkflowTemplateRepository{pb: app.GetApp()}
 }
 
 func (r *WorkflowTemplateRepository) GetById(ctx context.Context, id string) (*domain.WorkflowTemplate, error) {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameWorkflowTemplate, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameWorkflowTemplate, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
@@ -39,7 +41,7 @@ func (r *WorkflowTemplateRepository) List(ctx context.Context, keyword string) (
 		params["keyword"] = keyword
 	}
 
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameWorkflowTemplate,
 		filter,
 		"-created",
@@ -64,7 +66,7 @@ func (r *WorkflowTemplateRepository) List(ctx context.Context, keyword string) (
 }
 
 func (r *WorkflowTemplateRepository) Save(ctx context.Context, template *domain.WorkflowTemplate) (*domain.WorkflowTemplate, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameWorkflowTemplate)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameWorkflowTemplate)
 	if err != nil {
 		return template, err
 	}
@@ -73,7 +75,7 @@ func (r *WorkflowTemplateRepository) Save(ctx context.Context, template *domain.
 	if template.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, template.Id)
+		record, err = r.pb.FindRecordById(collection, template.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return template, domain.ErrRecordNotFound
@@ -88,7 +90,7 @@ func (r *WorkflowTemplateRepository) Save(ctx context.Context, template *domain.
 	record.Set("revision", template.Revision)
 	record.Set("graph", template.Graph)
 	record.Set("params", template.Params)
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.SaveWithContext(ctx, record); err != nil {
 		return template, err
 	}
 
@@ -99,7 +101,7 @@ func (r *WorkflowTemplateRepository) Save(ctx context.Context, template *domain.
 }
 
 func (r *WorkflowTemplateRepository) Delete(ctx context.Context, id string) error {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameWorkflowTemplate, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameWorkflowTemplate, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.ErrRecordNotFound
@@ -107,7 +109,7 @@ func (r *WorkflowTemplateRepository) Delete(ctx context.Context, id string) erro
 		return err
 	}
 
-	return app.GetApp().Delete(record)
+	return r.pb.Delete(record)
 }
 
 func (r *WorkflowTemplateRepository) castRecordToModel(record *core.Record) (*domain.WorkflowTemplate, error) {

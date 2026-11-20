@@ -1,0 +1,37 @@
+{
+  "$ns": "installer",
+
+  "page": {
+    "heading": "欢迎使用 Certimate！",
+    "subheading": "请在终端或容器日志中查看程序启动时输出的一次性初始化口令。口令 30 分钟内有效，过期后请重启 Certimate 即可获取新口令。"
+  },
+
+  "form": {
+    "token": {
+      "label": "初始化口令",
+      "placeholder": "请输入初始化口令"
+    },
+    "username": {
+      "label": "邮箱",
+      "placeholder": "请输入管理员邮箱"
+    },
+    "password": {
+      "label": "密码",
+      "placeholder": "请输入管理员密码"
+    },
+    "confirm_password": {
+      "label": "确认密码",
+      "placeholder": "请再次输入管理员密码",
+      "errmsg": {
+        "not_matched": "两次密码不一致"
+      }
+    },
+    "submit": {
+      "button": "创建管理员账号"
+    }
+  },
+
+  "guard": {
+    "title": "无法连接到 Certimate"
+  }
+}

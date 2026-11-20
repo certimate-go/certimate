@@ -16,7 +16,6 @@
   "shortcut": {
     "": "Shortcuts",
     "create_workflow": "Create new workflow",
-    "change_account": "Change username or password",
     "configure_ca": "Configure certificate authorities",
     "upgrade": "New version available!"
   },

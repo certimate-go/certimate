@@ -21,7 +21,7 @@ const Login = () => {
 
   const formSchema = z.object({
     username: z.email(),
-    password: z.string().min(10).max(256),
+    password: z.string().min(10).max(72),
   });
   const formRule = createSchemaFieldRule(formSchema);
   const {

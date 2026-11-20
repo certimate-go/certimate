@@ -8,18 +8,21 @@ import (
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type CertificateRepository struct{}
+type CertificateRepository struct {
+	pb core.App
+}
 
 func NewCertificateRepository() *CertificateRepository {
-	return &CertificateRepository{}
+	return &CertificateRepository{pb: app.GetApp()}
 }
 
 func (r *CertificateRepository) GetById(ctx context.Context, id string) (*domain.Certificate, error) {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameCertificate, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameCertificate, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
@@ -35,7 +38,7 @@ func (r *CertificateRepository) GetById(ctx context.Context, id string) (*domain
 }
 
 func (r *CertificateRepository) GetByWorkflowIdAndNodeId(ctx context.Context, workflowId string, workflowNodeId string) (*domain.Certificate, error) {
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameCertificate,
 		"workflowRef={:workflowId} && workflowNodeId={:workflowNodeId} && deleted=null",
 		"-created",
@@ -55,7 +58,7 @@ func (r *CertificateRepository) GetByWorkflowIdAndNodeId(ctx context.Context, wo
 }
 
 func (r *CertificateRepository) GetByWorkflowRunIdAndNodeId(ctx context.Context, workflowRunId string, workflowNodeId string) (*domain.Certificate, error) {
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameCertificate,
 		"workflowRunRef={:workflowRunId} && workflowNodeId={:workflowNodeId} && deleted=null",
 		"-created",
@@ -75,7 +78,7 @@ func (r *CertificateRepository) GetByWorkflowRunIdAndNodeId(ctx context.Context,
 }
 
 func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Certificate) (*domain.Certificate, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameCertificate)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameCertificate)
 	if err != nil {
 		return certificate, err
 	}
@@ -84,7 +87,7 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	if certificate.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, certificate.Id)
+		record, err = r.pb.FindRecordById(collection, certificate.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return certificate, domain.ErrRecordNotFound
@@ -115,7 +118,7 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 	record.Set("workflowRef", certificate.WorkflowId)
 	record.Set("workflowRunRef", certificate.WorkflowRunId)
 	record.Set("workflowNodeId", certificate.WorkflowNodeId)
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.SaveWithContext(ctx, record); err != nil {
 		return certificate, err
 	}
 
@@ -126,7 +129,7 @@ func (r *CertificateRepository) Save(ctx context.Context, certificate *domain.Ce
 }
 
 func (r *CertificateRepository) DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error) {
-	records, err := app.GetApp().FindAllRecords(domain.CollectionNameCertificate, exprs...)
+	records, err := r.pb.FindAllRecords(domain.CollectionNameCertificate, exprs...)
 	if err != nil {
 		return 0, nil
 	}
@@ -134,7 +137,7 @@ func (r *CertificateRepository) DeleteWithExprs(ctx context.Context, exprs ...db
 	var ret int
 	var errs []error
 	for _, record := range records {
-		if err := app.GetApp().Delete(record); err != nil {
+		if err := r.pb.Delete(record); err != nil {
 			errs = append(errs, err)
 		} else {
 			ret++

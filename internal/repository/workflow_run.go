@@ -8,18 +8,21 @@ import (
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type WorkflowRunRepository struct{}
+type WorkflowRunRepository struct {
+	pb core.App
+}
 
 func NewWorkflowRunRepository() *WorkflowRunRepository {
-	return &WorkflowRunRepository{}
+	return &WorkflowRunRepository{pb: app.GetApp()}
 }
 
 func (r *WorkflowRunRepository) GetById(ctx context.Context, id string) (*domain.WorkflowRun, error) {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameWorkflowRun, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameWorkflowRun, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
@@ -31,7 +34,7 @@ func (r *WorkflowRunRepository) GetById(ctx context.Context, id string) (*domain
 }
 
 func (r *WorkflowRunRepository) Save(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameWorkflowRun)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameWorkflowRun)
 	if err != nil {
 		return workflowRun, err
 	}
@@ -40,7 +43,7 @@ func (r *WorkflowRunRepository) Save(ctx context.Context, workflowRun *domain.Wo
 	if workflowRun.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, workflowRun.Id)
+		record, err = r.pb.FindRecordById(collection, workflowRun.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return workflowRun, err
@@ -56,7 +59,7 @@ func (r *WorkflowRunRepository) Save(ctx context.Context, workflowRun *domain.Wo
 	record.Set("endedAt", workflowRun.EndedAt)
 	record.Set("graph", workflowRun.Graph)
 	record.Set("error", workflowRun.Error)
-	err = app.GetApp().Save(record)
+	err = r.pb.SaveWithContext(ctx, record)
 	if err != nil {
 		return workflowRun, err
 	}
@@ -68,7 +71,7 @@ func (r *WorkflowRunRepository) Save(ctx context.Context, workflowRun *domain.Wo
 }
 
 func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowRun *domain.WorkflowRun) (*domain.WorkflowRun, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameWorkflowRun)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameWorkflowRun)
 	if err != nil {
 		return workflowRun, err
 	}
@@ -77,7 +80,7 @@ func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowR
 	if workflowRun.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, workflowRun.Id)
+		record, err = r.pb.FindRecordById(collection, workflowRun.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return workflowRun, err
@@ -86,7 +89,7 @@ func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowR
 		}
 	}
 
-	err = app.GetApp().RunInTransaction(func(txApp core.App) error {
+	err = r.pb.RunInTransaction(func(txApp core.App) error {
 		record.Set("workflowRef", workflowRun.WorkflowId)
 		record.Set("trigger", workflowRun.Trigger.String())
 		record.Set("status", workflowRun.Status.String())
@@ -94,7 +97,7 @@ func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowR
 		record.Set("endedAt", workflowRun.EndedAt)
 		record.Set("graph", workflowRun.Graph)
 		record.Set("error", workflowRun.Error)
-		err = txApp.Save(record)
+		err = txApp.SaveWithContext(ctx, record)
 		if err != nil {
 			return err
 		}
@@ -135,7 +138,7 @@ func (r *WorkflowRunRepository) SaveWithCascading(ctx context.Context, workflowR
 }
 
 func (r *WorkflowRunRepository) DeleteWithExprs(ctx context.Context, exprs ...dbx.Expression) (int, error) {
-	records, err := app.GetApp().FindAllRecords(domain.CollectionNameWorkflowRun, exprs...)
+	records, err := r.pb.FindAllRecords(domain.CollectionNameWorkflowRun, exprs...)
 	if err != nil {
 		return 0, nil
 	}
@@ -143,7 +146,7 @@ func (r *WorkflowRunRepository) DeleteWithExprs(ctx context.Context, exprs ...db
 	var ret int
 	var errs []error
 	for _, record := range records {
-		if err := app.GetApp().Delete(record); err != nil {
+		if err := r.pb.Delete(record); err != nil {
 			errs = append(errs, err)
 		} else {
 			ret++
@@ -158,11 +161,12 @@ func (r *WorkflowRunRepository) DeleteWithExprs(ctx context.Context, exprs ...db
 }
 
 func (r *WorkflowRunRepository) ResetStatusIfHanging(ctx context.Context) error {
-	return app.GetApp().RunInTransaction(func(txApp core.App) error {
+	return r.pb.RunInTransaction(func(txApp core.App) error {
 		var err error
 
 		_, err = txApp.DB().
-			NewQuery(fmt.Sprintf("UPDATE %s SET lastRunStatus = '%s' WHERE lastRunStatus = '%s' OR lastRunStatus = '%s'",
+			NewQuery(fmt.Sprintf(
+				"UPDATE %s SET lastRunStatus = '%s' WHERE lastRunStatus = '%s' OR lastRunStatus = '%s'",
 				domain.CollectionNameWorkflow,
 				domain.WorkflowRunStatusTypeCanceled.String(),
 				domain.WorkflowRunStatusTypePending.String(),
@@ -174,7 +178,8 @@ func (r *WorkflowRunRepository) ResetStatusIfHanging(ctx context.Context) error 
 		}
 
 		_, err = txApp.DB().
-			NewQuery(fmt.Sprintf("UPDATE %s SET lastRunStatus = '%s' WHERE lastRunStatus = '%s' OR lastRunStatus = '%s'",
+			NewQuery(fmt.Sprintf(
+				"UPDATE %s SET lastRunStatus = '%s' WHERE lastRunStatus = '%s' OR lastRunStatus = '%s'",
 				domain.CollectionNameWorkflow,
 				domain.WorkflowRunStatusTypeCanceled.String(),
 				domain.WorkflowRunStatusTypePending.String(),

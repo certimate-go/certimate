@@ -8,18 +8,21 @@ import (
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type WorkflowLogRepository struct{}
+type WorkflowLogRepository struct {
+	pb core.App
+}
 
 func NewWorkflowLogRepository() *WorkflowLogRepository {
-	return &WorkflowLogRepository{}
+	return &WorkflowLogRepository{pb: app.GetApp()}
 }
 
 func (r *WorkflowLogRepository) ListByWorkflowRunId(ctx context.Context, workflowRunId string) ([]*domain.WorkflowLog, error) {
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameWorkflowLog,
 		"runRef={:runId}",
 		"timestamp",
@@ -44,7 +47,7 @@ func (r *WorkflowLogRepository) ListByWorkflowRunId(ctx context.Context, workflo
 }
 
 func (r *WorkflowLogRepository) Save(ctx context.Context, workflowLog *domain.WorkflowLog) (*domain.WorkflowLog, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameWorkflowLog)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameWorkflowLog)
 	if err != nil {
 		return workflowLog, err
 	}
@@ -53,7 +56,7 @@ func (r *WorkflowLogRepository) Save(ctx context.Context, workflowLog *domain.Wo
 	if workflowLog.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, workflowLog.Id)
+		record, err = r.pb.FindRecordById(collection, workflowLog.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return workflowLog, err
@@ -71,7 +74,7 @@ func (r *WorkflowLogRepository) Save(ctx context.Context, workflowLog *domain.Wo
 	record.Set("message", workflowLog.Message)
 	record.Set("data", workflowLog.Data)
 	record.Set("created", workflowLog.CreatedAt)
-	err = app.GetApp().Save(record)
+	err = r.pb.SaveWithContext(ctx, record)
 	if err != nil {
 		return workflowLog, err
 	}

@@ -24,27 +24,17 @@ func Ok(e *core.RequestEvent, data interface{}) error {
 }
 
 func Err(e *core.RequestEvent, err error) error {
-	code := 500
-
-	xerr, ok := err.(*domain.Error)
-	if ok {
-		code = xerr.Code
-	}
-
-	rs := &Response{
-		Code: code,
-		Msg:  err.Error(),
-		Data: nil,
-	}
-	return e.JSON(http.StatusOK, rs)
+	return ErrWithData(e, err, nil)
 }
 
 func ErrWithData(e *core.RequestEvent, err error, data interface{}) error {
-	code := 500
+	code := http.StatusInternalServerError
+	if cerr, ok := err.(*domain.Error); ok {
+		code = cerr.Code
+	}
 
-	xerr, ok := err.(*domain.Error)
-	if ok {
-		code = xerr.Code
+	if code == 0 {
+		panic("unreachable")
 	}
 
 	rs := &Response{

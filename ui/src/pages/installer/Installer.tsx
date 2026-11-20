@@ -5,10 +5,10 @@ import { App, Button, Card, Form, Input, Space, Typography } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
+import { getStatus as getInstallerStatus, initSuperuser } from "@/api/installer";
 import AuthBackdrop from "@/components/AuthBackdrop";
 import AuthFooter from "@/components/AuthFooter";
 import { useAntdForm } from "@/hooks";
-import { getSetupStatus, submitSetup } from "@/repository/setup";
 import { unwrapErrMsg } from "@/utils/error";
 import { withBasePath } from "@/utils/url";
 
@@ -19,22 +19,20 @@ const Setup = () => {
 
   const { notification } = App.useApp();
 
-  const isValidPassword = (value: string) => {
-    const codePoints = Array.from(value).length;
-    const bytes = new TextEncoder().encode(value).length;
-    return codePoints >= 10 && codePoints <= 71 && bytes <= 72;
-  };
-
   const formSchema = z
     .object({
-      token: z.string().min(1),
-      username: z.email(t("login.setup.form.username.invalid")),
-      password: z.string().refine(isValidPassword, t("login.setup.form.password.invalid")),
-      confirmPassword: z.string(),
+      token: z.string().length(32),
+      username: z.email(),
+      password: z.string().min(10).max(72),
+      confirmPassword: z.string().min(10).max(72),
     })
     .superRefine((values, ctx) => {
       if (values.confirmPassword !== values.password) {
-        ctx.addIssue({ code: "custom", path: ["confirmPassword"], message: t("login.setup.form.confirm_password.invalid") });
+        ctx.addIssue({
+          code: "custom",
+          message: t("installer.form.confirm_password.invalid.not_matched"),
+          path: ["confirmPassword"],
+        });
       }
     });
   const formRule = createSchemaFieldRule(formSchema);
@@ -50,34 +48,19 @@ const Setup = () => {
       confirmPassword: "",
     },
     onSubmit: async (values) => {
-      const cleanup = () => {
-        formInst.setFieldsValue({ token: "", password: "", confirmPassword: "" });
-      };
       try {
-        await submitSetup({
+        await initSuperuser({
           token: values.token,
           email: values.username,
           password: values.password,
-          passwordConfirm: values.confirmPassword,
         });
+        await getInstallerStatus();
+        await navigate("/login");
       } catch (err) {
-        try {
-          const status = await getSetupStatus();
-          if (status.initialized) {
-            cleanup();
-            await navigate("/login");
-            return;
-          }
-        } catch {
-          // fall through to the error notification
-        }
-
         notification.error({ title: t("common.text.request_error"), description: unwrapErrMsg(err) });
 
         throw err;
       }
-      cleanup();
-      await navigate("/login");
     },
   });
 
@@ -94,53 +77,53 @@ const Setup = () => {
 
             <div className="mb-10 text-center">
               <Typography.Title className="mb-2" level={4}>
-                {t("login.setup.heading")}
+                {t("installer.page.heading")}
               </Typography.Title>
               <Typography.Text className="text-sm" type="secondary">
-                {t("login.setup.description")}
+                {t("installer.page.subheading")}
               </Typography.Text>
             </div>
 
             <Form {...formProps} form={formInst} disabled={formPending} layout="vertical" validateTrigger="onBlur">
-              <Form.Item name="token" label={t("login.setup.form.token.label")} rules={[formRule]}>
+              <Form.Item name="token" label={t("installer.form.token.label")} rules={[formRule]}>
                 <Space.Compact block>
                   <Space.Addon>
                     <IconKey size="1.25em" />
                   </Space.Addon>
-                  <Input autoComplete="off" autoFocus placeholder={t("login.setup.form.token.placeholder")} size="large" />
+                  <Input autoComplete="off" autoFocus placeholder={t("installer.form.token.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
-              <Form.Item name="username" label={t("login.setup.form.username.label")} rules={[formRule]}>
+              <Form.Item name="username" label={t("installer.form.username.label")} rules={[formRule]}>
                 <Space.Compact block>
                   <Space.Addon>
                     <IconMail size="1.25em" />
                   </Space.Addon>
-                  <Input autoComplete="off" placeholder={t("login.setup.form.username.placeholder")} size="large" />
+                  <Input autoComplete="off" placeholder={t("installer.form.username.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
-              <Form.Item name="password" label={t("login.setup.form.password.label")} rules={[formRule]}>
+              <Form.Item name="password" label={t("installer.form.password.label")} rules={[formRule]}>
                 <Space.Compact block>
                   <Space.Addon>
                     <IconLock size="1.25em" />
                   </Space.Addon>
-                  <Input.Password autoComplete="new-password" placeholder={t("login.setup.form.password.placeholder")} size="large" />
+                  <Input.Password autoComplete="new-password" placeholder={t("installer.form.password.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
-              <Form.Item name="confirmPassword" label={t("login.setup.form.confirm_password.label")} rules={[formRule]}>
+              <Form.Item name="confirmPassword" label={t("installer.form.confirm_password.label")} rules={[formRule]}>
                 <Space.Compact block>
                   <Space.Addon>
                     <IconLock size="1.25em" />
                   </Space.Addon>
-                  <Input.Password autoComplete="new-password" placeholder={t("login.setup.form.confirm_password.placeholder")} size="large" />
+                  <Input.Password autoComplete="new-password" placeholder={t("installer.form.confirm_password.placeholder")} size="large" />
                 </Space.Compact>
               </Form.Item>
 
               <Form.Item className="mt-8 mb-0">
                 <Button block type="primary" htmlType="submit" icon={<IconArrowRight size="1.25em" />} iconPlacement="end" loading={formPending} size="large">
-                  {t("login.setup.form.submit.button")}
+                  {t("installer.form.submit.button")}
                 </Button>
               </Form.Item>
             </Form>

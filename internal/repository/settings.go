@@ -8,18 +8,21 @@ import (
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type SettingsRepository struct{}
+type SettingsRepository struct {
+	pb core.App
+}
 
 func NewSettingsRepository() *SettingsRepository {
-	return &SettingsRepository{}
+	return &SettingsRepository{pb: app.GetApp()}
 }
 
 func (r *SettingsRepository) GetByName(ctx context.Context, name string) (*domain.Settings, error) {
-	record, err := app.GetApp().FindFirstRecordByFilter(
+	record, err := r.pb.FindFirstRecordByFilter(
 		domain.CollectionNameSettings,
 		"name={:name}",
 		dbx.Params{"name": name},
@@ -49,7 +52,7 @@ func (r *SettingsRepository) GetByName(ctx context.Context, name string) (*domai
 }
 
 func (r *SettingsRepository) Save(ctx context.Context, settings *domain.Settings) (*domain.Settings, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameSettings)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameSettings)
 	if err != nil {
 		return settings, err
 	}
@@ -60,7 +63,7 @@ func (r *SettingsRepository) Save(ctx context.Context, settings *domain.Settings
 			return settings, err
 		}
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, existing.Id)
+		record, err = r.pb.FindRecordById(collection, existing.Id)
 		if err != nil {
 			return settings, err
 		}
@@ -71,7 +74,7 @@ func (r *SettingsRepository) Save(ctx context.Context, settings *domain.Settings
 
 	record.Set("name", settings.Name)
 	record.Set("content", settings.Content)
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.SaveWithContext(ctx, record); err != nil {
 		return settings, err
 	}
 

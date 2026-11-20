@@ -129,9 +129,9 @@ const SettingsAccountPassword = ({ className, style }: { className?: string; sty
 
   const formSchema = z
     .object({
-      oldPassword: z.string().min(10).max(256),
-      newPassword: z.string().min(10).max(256),
-      confirmPassword: z.string().min(10).max(256),
+      oldPassword: z.string().min(10).max(72),
+      newPassword: z.string().min(10).max(72),
+      confirmPassword: z.string().min(10).max(72),
     })
     .refine((values) => values.newPassword === values.confirmPassword, {
       error: t("settings.account.password.form.email.password.errmsg.not_matched"),

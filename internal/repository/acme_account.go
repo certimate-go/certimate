@@ -14,14 +14,16 @@ import (
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type ACMEAccountRepository struct{}
+type ACMEAccountRepository struct {
+	pb core.App
+}
 
 func NewACMEAccountRepository() *ACMEAccountRepository {
-	return &ACMEAccountRepository{}
+	return &ACMEAccountRepository{pb: app.GetApp()}
 }
 
 func (r *ACMEAccountRepository) GetByCAAndEmail(ctx context.Context, ca, caDirUrl, email string) (*domain.ACMEAccount, error) {
-	record, err := app.GetApp().FindFirstRecordByFilter(
+	record, err := r.pb.FindFirstRecordByFilter(
 		domain.CollectionNameACMEAccount,
 		"ca={:ca} && acmeDirUrl={:acmeDirUrl} && email={:email}",
 		dbx.Params{"ca": ca, "acmeDirUrl": caDirUrl, "email": email},
@@ -37,7 +39,7 @@ func (r *ACMEAccountRepository) GetByCAAndEmail(ctx context.Context, ca, caDirUr
 }
 
 func (r *ACMEAccountRepository) GetByCAAndAcctUrl(ctx context.Context, ca string, acctUrl string) (*domain.ACMEAccount, error) {
-	record, err := app.GetApp().FindFirstRecordByFilter(
+	record, err := r.pb.FindFirstRecordByFilter(
 		domain.CollectionNameACMEAccount,
 		"ca={:ca} && acmeAcctUrl={:acmeAcctUrl}",
 		dbx.Params{"ca": ca, "acmeAcctUrl": acctUrl},
@@ -53,7 +55,7 @@ func (r *ACMEAccountRepository) GetByCAAndAcctUrl(ctx context.Context, ca string
 }
 
 func (r *ACMEAccountRepository) GetById(ctx context.Context, id string) (*domain.ACMEAccount, error) {
-	record, err := app.GetApp().FindRecordById(domain.CollectionNameACMEAccount, id)
+	record, err := r.pb.FindRecordById(domain.CollectionNameACMEAccount, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
@@ -84,13 +86,13 @@ func (r *ACMEAccountRepository) List(ctx context.Context, page, perPage int, ca 
 		countExprs = append(countExprs, dbx.HashExp{"ca": ca})
 	}
 
-	total, err := app.GetApp().CountRecords(domain.CollectionNameACMEAccount, countExprs...)
+	total, err := r.pb.CountRecords(domain.CollectionNameACMEAccount, countExprs...)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	offset := (page - 1) * perPage
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameACMEAccount,
 		filter,
 		"ca,created",
@@ -114,7 +116,7 @@ func (r *ACMEAccountRepository) List(ctx context.Context, page, perPage int, ca 
 }
 
 func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.ACMEAccount) (*domain.ACMEAccount, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameACMEAccount)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameACMEAccount)
 	if err != nil {
 		return acmeAccount, err
 	}
@@ -123,7 +125,7 @@ func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.AC
 	if acmeAccount.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, acmeAccount.Id)
+		record, err = r.pb.FindRecordById(collection, acmeAccount.Id)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return acmeAccount, domain.ErrRecordNotFound
@@ -138,7 +140,7 @@ func (r *ACMEAccountRepository) Save(ctx context.Context, acmeAccount *domain.AC
 	record.Set("acmeDirUrl", acmeAccount.ACMEDirectoryUrl)
 	record.Set("acmeAcctUrl", acmeAccount.ACMEAccountUrl)
 	record.Set("resourceObj", acmeAccount.ResourceObject)
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.SaveWithContext(ctx, record); err != nil {
 		return acmeAccount, err
 	}
 

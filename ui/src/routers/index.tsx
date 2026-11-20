@@ -7,6 +7,8 @@ import CertificateList from "@/pages/certificates/CertificateList";
 import ConsoleLayout from "@/pages/ConsoleLayout";
 import Dashboard from "@/pages/dashboard/Dashboard";
 import ErrorLayout from "@/pages/ErrorLayout";
+import Installer from "@/pages/installer/Installer";
+import InstallerGuard from "@/pages/installer/InstallerGuard";
 import Login from "@/pages/login/Login";
 import PluginList from "@/pages/plugins/PluginList";
 import PresetList from "@/pages/presets/PresetList";
@@ -18,8 +20,6 @@ import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
-import Setup from "@/pages/setup/Setup";
-import SetupGate from "@/pages/SetupGate";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
 import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
 import WorkflowDetailRuns from "@/pages/workflows/WorkflowDetailRuns";
@@ -29,11 +29,7 @@ import WorkflowNew from "@/pages/workflows/WorkflowNew";
 export const router = createHashRouter([
   {
     path: "/",
-    element: (
-      <SetupGate>
-        <ConsoleLayout />
-      </SetupGate>
-    ),
+    element: <ConsoleLayout />,
     children: [
       {
         path: "/",
@@ -124,9 +120,9 @@ export const router = createHashRouter([
   {
     path: "/login",
     element: (
-      <SetupGate>
+      <InstallerGuard>
         <AuthLayout />
-      </SetupGate>
+      </InstallerGuard>
     ),
     children: [
       {
@@ -136,16 +132,16 @@ export const router = createHashRouter([
     ],
   },
   {
-    path: "/setup",
+    path: "/installer",
     element: (
-      <SetupGate mode="setup">
+      <InstallerGuard>
         <AuthLayout />
-      </SetupGate>
+      </InstallerGuard>
     ),
     children: [
       {
-        path: "/setup",
-        element: <Setup />,
+        path: "/installer",
+        element: <Installer />,
       },
     ],
   },

@@ -1,0 +1,37 @@
+{
+  "$ns": "installer",
+
+  "page": {
+    "heading": "Welcome to Certimate!",
+    "subheading": "Please check the one-time installer token printed to the terminal or the container logs. The token is valid for 30 minutes. After expiry, restart Certimate to obtain a new one."
+  },
+
+  "form": {
+    "token": {
+      "label": "Installer token",
+      "placeholder": "Please enter the installer token"
+    },
+    "username": {
+      "label": "Email",
+      "placeholder": "Please enter the administrator email"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Please enter the administrator password"
+    },
+    "confirm_password": {
+      "label": "Confirm password",
+      "placeholder": "Please enter the administrator password again",
+      "errmsg": {
+        "not_matched": "Passwords do not match"
+      }
+    },
+    "submit": {
+      "button": "Initialize administrator"
+    }
+  },
+
+  "guard": {
+    "title": "Unable to connect to Certimate"
+  }
+}

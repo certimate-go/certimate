@@ -8,18 +8,21 @@ import (
 
 	"ganigeorgiev.com/pocketbase/dbx"
 	"ganigeorgiev.com/pocketbase/pocketbase/core"
+
 	"github.com/certimate-go/certimate/internal/app"
 	"github.com/certimate-go/certimate/internal/domain"
 )
 
-type WorkflowOutputRepository struct{}
+type WorkflowOutputRepository struct {
+	pb core.App
+}
 
 func NewWorkflowOutputRepository() *WorkflowOutputRepository {
-	return &WorkflowOutputRepository{}
+	return &WorkflowOutputRepository{pb: app.GetApp()}
 }
 
 func (r *WorkflowOutputRepository) GetByWorkflowIdAndNodeId(ctx context.Context, workflowId string, workflowNodeId string) (*domain.WorkflowOutput, error) {
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameWorkflowOutput,
 		"workflowRef={:workflowId} && nodeId={:nodeId}",
 		"-created",
@@ -41,7 +44,7 @@ func (r *WorkflowOutputRepository) GetByWorkflowIdAndNodeId(ctx context.Context,
 }
 
 func (r *WorkflowOutputRepository) GetByWorkflowRunIdAndNodeId(ctx context.Context, workflowRunId string, workflowNodeId string) (*domain.WorkflowOutput, error) {
-	records, err := app.GetApp().FindRecordsByFilter(
+	records, err := r.pb.FindRecordsByFilter(
 		domain.CollectionNameWorkflowOutput,
 		"runRef={:workflowRunId} && nodeId={:nodeId}",
 		"-created",
@@ -106,7 +109,7 @@ func (r *WorkflowOutputRepository) castRecordToModel(record *core.Record) (*doma
 }
 
 func (r *WorkflowOutputRepository) saveRecord(workflowOutput *domain.WorkflowOutput) (*core.Record, error) {
-	collection, err := app.GetApp().FindCollectionByNameOrId(domain.CollectionNameWorkflowOutput)
+	collection, err := r.pb.FindCollectionByNameOrId(domain.CollectionNameWorkflowOutput)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +118,7 @@ func (r *WorkflowOutputRepository) saveRecord(workflowOutput *domain.WorkflowOut
 	if workflowOutput.Id == "" {
 		record = core.NewRecord(collection)
 	} else {
-		record, err = app.GetApp().FindRecordById(collection, workflowOutput.Id)
+		record, err = r.pb.FindRecordById(collection, workflowOutput.Id)
 		if err != nil {
 			return record, err
 		}
@@ -126,7 +129,7 @@ func (r *WorkflowOutputRepository) saveRecord(workflowOutput *domain.WorkflowOut
 	record.Set("nodeConfig", workflowOutput.NodeConfig)
 	record.Set("outputs", workflowOutput.Outputs)
 	record.Set("succeeded", workflowOutput.Succeeded)
-	if err := app.GetApp().Save(record); err != nil {
+	if err := r.pb.Save(record); err != nil {
 		return record, err
 	}
 

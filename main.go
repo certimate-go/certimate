@@ -6,7 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
+	"time"
 	_ "time/tzdata"
 
 	"ganigeorgiev.com/pocketbase/pocketbase"
@@ -17,12 +19,12 @@ import (
 
 	"github.com/certimate-go/certimate/cmd"
 	"github.com/certimate-go/certimate/internal/app"
+	"github.com/certimate-go/certimate/internal/installer"
 	"github.com/certimate-go/certimate/internal/pluginhost"
 	"github.com/certimate-go/certimate/internal/repository"
 	"github.com/certimate-go/certimate/internal/rest/routes"
 	"github.com/certimate-go/certimate/internal/scheduler"
 	"github.com/certimate-go/certimate/internal/settings"
-	"github.com/certimate-go/certimate/internal/setup"
 	"github.com/certimate-go/certimate/internal/tools/mproc"
 	"github.com/certimate-go/certimate/internal/workflow"
 	"github.com/certimate-go/certimate/pkg/plugin"
@@ -80,20 +82,32 @@ func main() {
 		})
 
 		pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
-			e.InstallerFunc = nil
-			setupService := setup.NewService(e.App)
-			if err := setupService.Prepare(os.Getenv("CERTIMATE_ADMIN_USERNAME"), os.Getenv("CERTIMATE_ADMIN_PASSWORD"), os.Stdout); err != nil {
-				return err
-			}
+			// Setup core services
 			scheduler.Setup()
 			workflow.Setup()
-			routes.BindRouter(e.Router, setupService)
+
+			// Bind WebAPI routes
+			routes.BindRouter(e.Router)
+
+			// Setup installer service
+			e.InstallerFunc = nil
+			installerSvc := installer.SingletonInstallerService()
+			installerCtx := context.Background()
+			installerPrepare, err := installerSvc.Prepare(installerCtx)
+			if err != nil {
+				return err
+			}
 
 			if err := e.Next(); err != nil {
 				return err
 			}
 
 			slog.Info("[CERTIMATE] Serving on " + e.Server.Addr)
+			if !installerPrepare.Installed {
+				expiresIn := (installerPrepare.TokenExpiredAt - time.Now().Unix()) / 60
+				slog.Info("[CERTIMATE] Installer token (one-time; expires in " + strconv.FormatInt(expiresIn, 10) + " minutes): " + installerPrepare.Token)
+			}
+
 			return nil
 		})
 

@@ -16,7 +16,6 @@
   "shortcut": {
     "": "快捷操作",
     "create_workflow": "创建新的工作流",
-    "change_account": "修改登录账号密码",
     "configure_ca": "配置证书颁发机构",
     "upgrade": "新版本可升级！"
   },

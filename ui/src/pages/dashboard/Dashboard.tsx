@@ -11,7 +11,6 @@ import {
   IconExternalLink,
   IconHexagonLetterX,
   IconHistory,
-  IconLock,
   IconPlugConnected,
   IconReload,
   IconRoute,
@@ -27,7 +26,6 @@ import Empty from "@/components/Empty";
 import WorkflowRunDetailDrawer from "@/components/workflow/WorkflowRunDetailDrawer";
 import WorkflowStatus from "@/components/workflow/WorkflowStatus";
 import { APP_DOWNLOAD_URL } from "@/domain/app";
-import { type Statistics } from "@/domain/statistics";
 import { type WorkflowRunModel } from "@/domain/workflowRun";
 import { useBrowserTheme, useVersionChecker } from "@/hooks";
 import { get as getWorkflowRun, list as listWorkflowRuns } from "@/repository/workflowRun";
@@ -135,16 +133,12 @@ const StatisticCards = ({ className, style }: { className?: string; style?: Reac
         : `linear-gradient(135deg, color-mix(in srgb, ${color} 80%, black 30%) 0%, color-mix(in srgb, ${color} 80%, white 30%) 100%)`,
   });
 
-  const [statistics, setStatistics] = useState<Statistics>();
-
-  const { loading } = useRequest(
-    () => {
-      return getStatistics();
+  const { data: statistics, loading } = useRequest(
+    async () => {
+      const res = await getStatistics();
+      return res.data;
     },
     {
-      onSuccess: (res) => {
-        setStatistics(res.data);
-      },
       onError: (err) => {
         if (err instanceof ClientResponseError && err.isAbort) {
           return;
@@ -234,15 +228,6 @@ const Shortcuts = ({ className, style }: { className?: string; style?: React.CSS
           onClick={() => navigate("/workflows/new")}
         >
           <span className="text-sm">{t("dashboard.shortcut.create_workflow")}</span>
-        </Button>
-        <Button
-          className="shadow-sm"
-          icon={<IconLock color="var(--color-warning)" size="1.25em" />}
-          shape="round"
-          size="large"
-          onClick={() => navigate("/settings/account")}
-        >
-          <span className="text-sm">{t("dashboard.shortcut.change_account")}</span>
         </Button>
         <Button
           className="shadow-sm"
