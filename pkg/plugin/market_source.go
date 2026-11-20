@@ -16,7 +16,7 @@ type MarketSource struct {
 const (
 	GitHubRawBase                = "https://raw.githubusercontent.com"
 	OfficialMarketDefaultBase    = "https://cdn.jsdelivr.net"
-	OfficialMarketIndexPath      = "/gh/certimate-go/plugins@main/registry/index.json"
+	OfficialMarketIndexPath      = "/gh/certimate-go/plugins@latest/registry/index.json"
 	OfficialMarketGitHubIndexURL = GitHubRawBase + "/certimate-go/plugins/refs/heads/main/registry/index.json"
 )
 

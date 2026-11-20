@@ -179,7 +179,7 @@ func TestMarketBrowserFixture(t *testing.T) {
 	for path, body := range official.files {
 		repo, refPath, _ := strings.Cut(strings.TrimPrefix(path, "/gh/"), "@")
 		ref, relative, _ := strings.Cut(refPath, "/")
-		if ref == "main" {
+		if ref == "main" || ref == "latest" {
 			ref = "refs/heads/main"
 		}
 		officialRawFiles["/"+repo+"/"+ref+"/"+relative] = body
