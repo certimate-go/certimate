@@ -17,7 +17,7 @@ const Settings = () => {
     ["persistence", "settings.persistence.tab", <IconDatabaseCog size="1em" />],
     ["diagnostics", "settings.diagnostics.tab", <IconHeartRateMonitor size="1em" />],
     ["about", "settings.about.tab", <IconInfoCircle size="1em" />],
-  ] satisfies [string, string, React.ReactElement][];
+  ] satisfies [string, string, React.ReactElement<any>][];
   const menuKey = location.pathname.split("/")[2];
 
   const handleMenuClick = ({ key }: { key: string }) => {

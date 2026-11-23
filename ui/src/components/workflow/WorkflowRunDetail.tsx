@@ -39,7 +39,7 @@ const WorkflowRunDetail = ({ className, style, ...props }: WorkflowRunDetailProp
   const [innerData, setInnerData] = useState(props.data);
   const mergedData = useMemo(() => ({ ...props.data, ...innerData }), [innerData, props.data]);
 
-  const unsubscriberRef = useRef<() => void>();
+  const unsubscriberRef = useRef<() => void>(undefined);
   useEffect(() => {
     if (props.data.status === WORKFLOW_RUN_STATUSES.PENDING || props.data.status === WORKFLOW_RUN_STATUSES.PROCESSING) {
       subscribeWorkflowRun(props.data.id, (cb) => {

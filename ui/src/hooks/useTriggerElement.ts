@@ -1,29 +1,32 @@
-﻿import { Fragment, cloneElement, createElement, isValidElement, useMemo } from "react";
+import { type MouseEventHandler, type ReactNode, cloneElement, isValidElement, useMemo } from "react";
 
 export type UseTriggerElementOptions = {
-  onClick?: (e: React.MouseEvent) => void;
+  onClick?: MouseEventHandler;
 };
 
 /**
  * 获取一个触发器元素。
  * 通常为配合 Drawer、Modal 等组件使用。
- * @param {React.ReactNode} trigger
+ * @param {ReactNode} trigger
  * @param {UseTriggerElementOptions} [options]
- * @returns {React.ReactElement}
+ * @returns {ReactNode}
  */
-const useTriggerElement = (trigger: React.ReactNode, options?: UseTriggerElementOptions) => {
+const useTriggerElement = (trigger: ReactNode, options?: UseTriggerElementOptions) => {
   const onClick = options?.onClick;
-  const triggerDom = useMemo(() => {
+  const triggerDom = useMemo<ReactNode>(() => {
     if (!trigger) {
       return null;
     }
 
-    const el = isValidElement(trigger) ? trigger : createElement(Fragment, null, trigger);
-    return cloneElement(el, {
-      ...el.props,
-      onClick: (e: React.MouseEvent) => {
+    type ElementProps = Pick<UseTriggerElementOptions, "onClick">;
+    if (!isValidElement<ElementProps>(trigger)) {
+      return trigger;
+    }
+
+    return cloneElement(trigger, {
+      onClick: (e) => {
         onClick?.(e);
-        el.props?.onClick?.(e);
+        trigger.props.onClick?.(e);
       },
     });
   }, [trigger, onClick]);

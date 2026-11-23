@@ -6,7 +6,7 @@ import reactPlugin from "@vitejs/plugin-react";
 import fs from "fs-extra";
 import { defineConfig } from "vite";
 
-import preserveFilesPlugin from "./scripts/vite/plugins/preserve-files-plugin";
+import preserveFilesPlugin from "./scripts/vite/plugins/preserve-files-plugin.ts";
 
 export default defineConfig(({ command }) => {
   let appVersion = undefined;

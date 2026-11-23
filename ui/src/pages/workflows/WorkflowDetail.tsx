@@ -40,7 +40,7 @@ const WorkflowDetail = () => {
   const tabs = [
     ["design", "workflow.detail.design.tab", <IconRobot size="1em" />],
     ["runs", "workflow.detail.runs.tab", <IconHistory size="1em" />],
-  ] satisfies [string, string, React.ReactElement][];
+  ] satisfies [string, string, React.ReactElement<any>][];
   const [tabValue, setTabValue] = useState<string>(() => location.pathname.split("/")[3]);
   useEffect(() => {
     const subpath = location.pathname.split("/")[3];

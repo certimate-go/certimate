@@ -135,7 +135,9 @@ const MultipleInput = ({
           <MultipleInputItem
             {...props}
             key={index}
-            ref={(ref) => (itemRefs.current[index] = ref!)}
+            ref={(ref) => {
+              itemRefs.current[index] = ref!;
+            }}
             allowAdd={allowAdd}
             allowClear={allowClear}
             allowDown={allowDown}

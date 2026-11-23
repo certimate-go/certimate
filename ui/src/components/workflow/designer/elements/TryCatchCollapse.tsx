@@ -12,6 +12,7 @@ export interface TryCatchCollapseProps extends CustomLabelProps {}
 const TryCatchCollapse = ({ node, ...props }: TryCatchCollapseProps) => {
   const { baseColor, baseActivatedColor } = useBaseColor();
 
+  const nodeRendererService = node.getService(FlowRendererRegistry);
   const nodeRenderData = node.getData(FlowNodeRenderData)!;
   const nodeTransformData = node.getData(FlowNodeTransformData)!;
 
@@ -53,7 +54,7 @@ const TryCatchCollapse = ({ node, ...props }: TryCatchCollapseProps) => {
           backgroundColor: "var(--g-editor-background)",
         }}
       >
-        {node.getService(FlowRendererRegistry).getText(FlowTextKey.CATCH_TEXT)}
+        {nodeRendererService.getText(FlowTextKey.CATCH_TEXT)}
       </div>
     </div>
   );

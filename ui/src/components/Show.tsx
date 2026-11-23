@@ -20,8 +20,9 @@ const Show = ({ children, ...props }: ShowProps) => {
 
   const cases = ReactChildren.toArray(children);
   for (let i = 0; i < cases.length; i++) {
+    type ElementProps = { when: boolean; children: React.ReactNode };
     const child = cases[i];
-    if (isValidElement(child)) {
+    if (isValidElement<ElementProps>(child)) {
       if (child.type === Case && child.props.when) {
         return child.props.children;
       } else if (child.type === Default) {

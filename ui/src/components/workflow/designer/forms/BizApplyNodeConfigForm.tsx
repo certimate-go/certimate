@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { getI18n, useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { IconArrowRight, IconChevronRight, IconCircleMinus, IconMapPin, IconPlus, IconWorldWww } from "@tabler/icons-react";
 import { useControllableValue, useMount } from "ahooks";
