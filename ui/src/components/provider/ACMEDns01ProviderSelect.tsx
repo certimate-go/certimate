@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
@@ -18,11 +17,13 @@ const ACMEDns01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACMED
   const { token: themeToken } = theme.useToken();
 
   usePluginCatalogStore((state) => state.version);
-  const dataSources = useSelectDataSource({
+
+  const dataSource = useSelectDataSource({
     dataSource: Array.from(acmeDns01ProvidersMap.values()),
     filters: [onFilter!],
   });
-  const options = useMemo(() => {
+
+  const options = (() => {
     const convert = (providers: ACMEDns01Provider[]): Array<{ key: string; value: string; label: string; data: ACMEDns01Provider }> => {
       return providers.map((provider) => ({
         key: provider.type,
@@ -36,15 +37,15 @@ const ACMEDns01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACMED
       ? [
           {
             label: t("provider.text.available_group"),
-            options: convert(dataSources.available),
+            options: convert(dataSource.available),
           },
           {
             label: t("provider.text.unavailable_group"),
-            options: convert(dataSources.unavailable),
+            options: convert(dataSource.unavailable),
           },
         ].filter((group) => group.options.length > 0)
-      : convert(dataSources.filtered);
-  }, [showAvailability, dataSources, t]);
+      : convert(dataSource.filtered);
+  })();
 
   const renderOption = (key: string) => {
     const provider = getACMEDns01Provider(key);

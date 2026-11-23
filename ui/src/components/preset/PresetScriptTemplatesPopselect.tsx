@@ -1,5 +1,4 @@
-﻿import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+﻿import { useTranslation } from "react-i18next";
 import { IconMoodEmpty } from "@tabler/icons-react";
 import { useMount } from "ahooks";
 import { Dropdown, type DropdownProps } from "antd";
@@ -24,7 +23,7 @@ const PresetScriptTemplatesPopselect = ({ className, options, onSelect, ...props
     fetchTemplates(false);
   });
 
-  const menuItems = useMemo(() => {
+  const menuItems = (() => {
     type MenuItem = NonNullable<NonNullable<DropdownProps["menu"]>["items"]>[number];
     const temp: MenuItem[] = [];
 
@@ -74,7 +73,7 @@ const PresetScriptTemplatesPopselect = ({ className, options, onSelect, ...props
     }
 
     return temp;
-  }, [options, templates, onSelect]);
+  })();
 
   return <Dropdown className={className} menu={{ items: menuItems }} {...props} />;
 };

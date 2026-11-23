@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { type AnchorProps, Form, type FormInstance, Input, Radio } from "antd";
@@ -31,9 +30,7 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
 
   const { i18n, t } = useTranslation();
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForBizUpload | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForBizUpload | undefined;
 
   const formSchema = getSchema({ i18n });
   const formRule = createSchemaFieldRule(formSchema);
@@ -45,12 +42,12 @@ const BizUploadNodeConfigForm = ({ node, ...props }: BizUploadNodeConfigFormProp
 
   const fieldSource = Form.useWatch("source", { form: formInst, preserve: true });
   const fieldCertificate = Form.useWatch("certificate", { form: formInst, preserve: true });
-  const fieldName = useMemo(() => {
+  const fieldName = (() => {
     if (!fieldSource || fieldSource === UPLOAD_SOURCE_FORM) {
       return fieldCertificate ? getX509SubjectAltNames(fieldCertificate).join(";") : void 0;
     }
     return void 0;
-  }, [fieldSource, fieldCertificate]);
+  })();
 
   const handleSourceChange = (value: string) => {
     if (value === initialValues?.source) {

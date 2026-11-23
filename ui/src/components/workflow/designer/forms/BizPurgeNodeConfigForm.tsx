@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { IconPlus } from "@tabler/icons-react";
@@ -41,12 +41,10 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
   const accessOptionFilter = (_: string, option: AccessModel) => {
     if (option.reserve) return false;
-    return getPurgeProvider(fieldProvider)?.provider === option.provider;
+    return option.provider === getPurgeProvider(fieldProvider)?.provider;
   };
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForBizPurge | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForBizPurge | undefined;
 
   const formSchema = getSchema({ i18n });
   const formRule = createSchemaFieldRule(formSchema);
@@ -92,7 +90,7 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
 
   const renderNestedFieldProviderComponent = BizPurgeNodeConfigFieldsProvider.useComponent(fieldProvider, {});
 
-  const showProviderAccess = useMemo(() => {
+  const showProviderAccess = (() => {
     // 内置的清除提供商无需显示授权信息字段
     if (fieldProvider) {
       const provider = getPurgeProvider(fieldProvider);
@@ -100,7 +98,7 @@ const BizPurgeNodeConfigForm = ({ node, ...props }: BizPurgeNodeConfigFormProps)
     }
 
     return false;
-  }, [fieldProvider]);
+  })();
 
   useEffect(() => {
     // 如果未选择提供商，则清空授权信息

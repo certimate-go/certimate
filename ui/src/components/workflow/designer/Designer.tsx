@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import {
   ConstantKeys,
   EditorRenderer,
@@ -49,104 +49,101 @@ const Designer = forwardRef<DesignerInstance, DesignerProps>(
     const rendered = useRef(false);
 
     const flowgramEditorRef = useRef<FixedLayoutPluginContext>(null);
-    const flowgramEditorProps = useMemo<FixedLayoutProps>(
-      () => ({
-        defaultLayout: defaultLayout,
+    const flowgramEditorProps = {
+      defaultLayout: defaultLayout,
 
-        initialData: initialData,
+      initialData: initialData,
 
-        constants: {
-          [ConstantKeys.BASE_COLOR]: themeToken.colorBorder,
-          [ConstantKeys.BASE_ACTIVATED_COLOR]: themeToken.colorPrimary,
-          [ConstantKeys.NODE_SPACING]: 48,
-          [ConstantKeys.BRANCH_SPACING]: 48,
+      constants: {
+        [ConstantKeys.BASE_COLOR]: themeToken.colorBorder,
+        [ConstantKeys.BASE_ACTIVATED_COLOR]: themeToken.colorPrimary,
+        [ConstantKeys.NODE_SPACING]: 48,
+        [ConstantKeys.BRANCH_SPACING]: 48,
+      },
+
+      background: {
+        backgroundColor: themeToken.colorBgContainer,
+        dotSize: 0,
+      },
+
+      playground: {
+        autoFocus: true,
+        autoResize: true,
+        preventGlobalGesture: true,
+      },
+
+      selectBox: {
+        enable: false,
+      },
+
+      scroll: {
+        enableScrollLimit: true,
+      },
+
+      readonly: readonly,
+
+      nodeEngine: {
+        enable: true,
+      },
+
+      variableEngine: {
+        enable: true,
+      },
+
+      materials: {
+        components: getAllElements(),
+        renderTexts: {
+          [FlowTextKey.TRY_START_TEXT]: "Try",
+          [FlowTextKey.TRY_END_TEXT]: "Then",
+          [FlowTextKey.CATCH_TEXT]: "Catch",
         },
+        renderDefaultNode: NodeRender,
+      },
 
-        background: {
-          backgroundColor: themeToken.colorBgContainer,
-          dotSize: 0,
-        },
+      nodeRegistries: getAllNodeRegistries(),
 
-        playground: {
-          autoFocus: true,
-          autoResize: true,
-          preventGlobalGesture: true,
-        },
-
-        selectBox: {
-          enable: false,
-        },
-
-        scroll: {
-          enableScrollLimit: true,
-        },
-
-        readonly: readonly,
-
-        nodeEngine: {
-          enable: true,
-        },
-
-        variableEngine: {
-          enable: true,
-        },
-
-        materials: {
-          components: getAllElements(),
-          renderTexts: {
-            [FlowTextKey.TRY_START_TEXT]: "Try",
-            [FlowTextKey.TRY_END_TEXT]: "Then",
-            [FlowTextKey.CATCH_TEXT]: "Catch",
+      getNodeDefaultRegistry(type) {
+        return {
+          type,
+          meta: {
+            defaultExpanded: true,
           },
-          renderDefaultNode: NodeRender,
-        },
+          formMeta: {
+            render: () => <BaseNode description={type} />,
+          },
+        };
+      },
 
-        nodeRegistries: getAllNodeRegistries(),
+      plugins: () => [
+        createMinimapPlugin({
+          disableLayer: true,
+          enableDisplayAllNodes: true,
+          canvasStyle: {
+            canvasWidth: 160,
+            canvasHeight: 160,
+          },
+        }),
+      ],
 
-        getNodeDefaultRegistry(type) {
-          return {
-            type,
-            meta: {
-              defaultExpanded: true,
-            },
-            formMeta: {
-              render: () => <BaseNode description={type} />,
-            },
-          };
-        },
+      onInit: (ctx) => {
+        if (defaultEditorState != null) {
+          ctx.playground.editorState.changeState(defaultEditorState);
+        } else if (isTouchSupported()) {
+          ctx.playground.editorState.changeState(EditorState.STATE_MOUSE_FRIENDLY_SELECT.id);
+        }
+      },
 
-        plugins: () => [
-          createMinimapPlugin({
-            disableLayer: true,
-            enableDisplayAllNodes: true,
-            canvasStyle: {
-              canvasWidth: 160,
-              canvasHeight: 160,
-            },
-          }),
-        ],
+      onAllLayersRendered: (ctx) => {
+        rendered.current = true;
 
-        onInit: (ctx) => {
-          if (defaultEditorState != null) {
-            ctx.playground.editorState.changeState(defaultEditorState);
-          } else if (isTouchSupported()) {
-            ctx.playground.editorState.changeState(EditorState.STATE_MOUSE_FRIENDLY_SELECT.id);
-          }
-        },
-
-        onAllLayersRendered: (ctx) => {
-          rendered.current = true;
-
-          // 画布初始化后向下滚动一点，露出可能被 Alert 遮挡的部分
-          if (defaultLayout === FlowLayoutDefault.VERTICAL_FIXED_LAYOUT) {
-            setTimeout(() => {
-              ctx.playground.config.scroll({ scrollY: -80 });
-            }, 1);
-          }
-        },
-      }),
-      [defaultEditorState, defaultLayout, initialData, readonly, onDocumentChange, themeToken]
-    );
+        // 画布初始化后向下滚动一点，露出可能被 Alert 遮挡的部分
+        if (defaultLayout === FlowLayoutDefault.VERTICAL_FIXED_LAYOUT) {
+          setTimeout(() => {
+            ctx.playground.config.scroll({ scrollY: -80 });
+          }, 1);
+        }
+      },
+    } satisfies FixedLayoutProps;
 
     useEffect(() => {
       const d = flowgramEditorRef.current!.document.originTree.onTreeChange(() => {

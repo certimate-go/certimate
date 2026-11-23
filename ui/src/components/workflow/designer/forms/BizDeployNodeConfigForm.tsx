@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { IconPlus } from "@tabler/icons-react";
@@ -39,12 +39,10 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
   const { accesses } = useAccessesStore(useZustandShallowSelector("accesses"));
   const accessOptionFilter = (_: string, option: AccessModel) => {
     if (option.reserve) return false;
-    return deploymentProvidersMap.get(fieldProvider)?.provider === option.provider;
+    return option.provider === deploymentProvidersMap.get(fieldProvider)?.provider;
   };
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForBizDeploy | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForBizDeploy | undefined;
 
   const formSchema = getSchema({ i18n }).superRefine((values, ctx) => {
     if (values.certificateOutputNodeId) {
@@ -67,20 +65,18 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
   const fieldProvider = Form.useWatch("provider", { form: formInst, preserve: true });
   const fieldProviderAccessId = Form.useWatch("providerAccessId", { form: formInst, preserve: true });
 
-  const certificateOutputNodeIdOptions = useMemo(() => {
-    return getAllPreviousNodes(node)
-      .filter((node) => node.flowNodeType === NodeType.BizApply || node.flowNodeType === NodeType.BizUpload)
-      .map((node) => {
-        return {
-          label: node.form?.getValueIn("name"),
-          value: node.id,
-        };
-      });
-  }, [node]);
+  const certificateOutputNodeIdOptions = getAllPreviousNodes(node)
+    .filter((node) => node.flowNodeType === NodeType.BizApply || node.flowNodeType === NodeType.BizUpload)
+    .map((node) => {
+      return {
+        label: node.form?.getValueIn("name"),
+        value: node.id,
+      };
+    });
 
   const renderNestedFieldProviderComponent = BizDeployNodeConfigFieldsProvider.useComponent(fieldProvider, {});
 
-  const showProviderAccess = useMemo(() => {
+  const showProviderAccess = (() => {
     // 内置的部署提供商（如本地部署）无需显示授权信息字段
     if (fieldProvider) {
       const provider = deploymentProvidersMap.get(fieldProvider);
@@ -88,7 +84,7 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
     }
 
     return false;
-  }, [fieldProvider]);
+  })();
 
   useEffect(() => {
     // 如果未选择提供商，则清空授权信息
@@ -106,7 +102,7 @@ const BizDeployNodeConfigForm = ({ node, ...props }: BizDeployNodeConfigFormProp
         formInst.setFieldValue("providerAccessId", availableAccesses[0].id);
       }
     }
-  }, [fieldProvider, fieldProviderAccessId]);
+  }, [accesses, fieldProvider, fieldProviderAccessId]);
 
   const handleProviderPick = (value: string) => {
     // 首次选择提供商时重置表单，避免来自导入的配置字段残留

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import QuestionCircleOutlined from "@ant-design/icons/QuestionCircleOutlined";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
@@ -30,10 +30,8 @@ const StartNodeConfigForm = ({ node, ...props }: StartNodeConfigFormProps) => {
 
   const { i18n, t } = useTranslation();
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForStart | undefined;
-  }, [node]);
-  const initialSchedule = useMemo(() => cronToSimpleSchedule(initialValues?.triggerCron || "0 0 * * *"), [initialValues?.triggerCron]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForStart | undefined;
+  const initialSchedule = cronToSimpleSchedule(initialValues?.triggerCron || "0 0 * * *");
 
   const formSchema = getSchema({ i18n });
   const formRule = createSchemaFieldRule(formSchema);
@@ -51,7 +49,8 @@ const StartNodeConfigForm = ({ node, ...props }: StartNodeConfigFormProps) => {
   const [simpleSchedule, setSimpleSchedule] = useState<WorkflowSimpleSchedule>(() => {
     return initialSchedule ?? defaultNodeConfigForStart().triggerSchedule!;
   });
-  const fieldTriggerCronExpectedExecutions = useMemo(() => getNextCronExecutions(fieldTriggerCron!, 5), [fieldTriggerCron]);
+  const fieldTriggerCronExpectedExecutions = getNextCronExecutions(fieldTriggerCron!, 5);
+
   useEffect(() => {
     if (fieldTrigger !== WORKFLOW_TRIGGERS.SCHEDULED || !useSimpleEditor || fieldTriggerCron) return;
 

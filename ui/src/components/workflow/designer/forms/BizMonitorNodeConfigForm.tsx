@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { type AnchorProps, Form, type FormInstance, Input, InputNumber } from "antd";
@@ -25,9 +24,7 @@ const BizMonitorNodeConfigForm = ({ node, ...props }: BizMonitorNodeConfigFormPr
 
   const { i18n, t } = useTranslation();
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForBizMonitor | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForBizMonitor | undefined;
 
   const formSchema = getSchema({ i18n });
   const formRule = createSchemaFieldRule(formSchema);

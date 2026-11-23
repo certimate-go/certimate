@@ -1,4 +1,4 @@
-﻿import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+﻿import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Card, Divider, Empty, Input, type InputRef, Tooltip, Typography } from "antd";
 
@@ -22,17 +22,15 @@ const PurgeProviderPicker = forwardRef<PurgeProviderPickerInstance, PurgeProvide
   ({ className, style, gap = "medium", placeholder, showAvailability = false, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
-    const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
-
     const { wrapperElRef, cols } = usePickerWrapperCols(320);
 
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
-    const allProviders = useMemo(() => listPurgeProviders(), [pluginCatalogVersion]);
+    usePluginCatalogStore((s) => s.version);
 
-    const dataSources = usePickerDataSource({
-      dataSource: allProviders,
+    const dataSource = usePickerDataSource({
+      dataSource: listPurgeProviders(),
       filters: [onFilter!],
       keyword: keyword,
     });
@@ -85,7 +83,7 @@ const PurgeProviderPicker = forwardRef<PurgeProviderPickerInstance, PurgeProvide
           </div>
         </Show>
 
-        <Show when={dataSources.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
+        <Show when={dataSource.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
           <div
             className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
               "gap-4": gap === "large",
@@ -94,10 +92,10 @@ const PurgeProviderPicker = forwardRef<PurgeProviderPickerInstance, PurgeProvide
               [`gap-${+gap || "2"}`]: typeof gap === "number",
             })}
           >
-            {(showAvailability ? dataSources.available : dataSources.filtered).map((provider) => renderOption(provider))}
+            {(showAvailability ? dataSource.available : dataSource.filtered).map((provider) => renderOption(provider))}
           </div>
 
-          <Show when={showAvailability && dataSources.unavailable.length > 0}>
+          <Show when={showAvailability && dataSource.unavailable.length > 0}>
             <Divider size="small">
               <Typography.Text className="text-xs font-normal" type="secondary">
                 {t("provider.text.unavailable_divider")}
@@ -112,7 +110,7 @@ const PurgeProviderPicker = forwardRef<PurgeProviderPickerInstance, PurgeProvide
                 [`gap-${+gap || "2"}`]: typeof gap === "number",
               })}
             >
-              {dataSources.unavailable.map((provider) => renderOption(provider, true))}
+              {dataSource.unavailable.map((provider) => renderOption(provider, true))}
             </div>
           </Show>
         </Show>

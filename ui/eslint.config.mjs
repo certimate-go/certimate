@@ -127,6 +127,7 @@ export default defineConfig(
     name: "react",
     extends: [reactHooksPlugin.configs.flat["recommended-latest"], reactRefreshPlugin.configs["vite"]],
     rules: {
+      "react-compiler/react-compiler": ["error"],
       "react-hooks/exhaustive-deps": ["warn"],
       "react-hooks/immutability": ["warn"],
       "react-hooks/refs": ["warn"],

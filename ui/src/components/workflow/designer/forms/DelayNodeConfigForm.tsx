@@ -1,5 +1,4 @@
-﻿import { useMemo } from "react";
-import { getI18n, useTranslation } from "react-i18next";
+﻿import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { type AnchorProps, Form, type FormInstance, InputNumber } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
@@ -23,9 +22,7 @@ const DelayNodeConfigForm = ({ node, ...props }: DelayNodeConfigFormProps) => {
 
   const { i18n, t } = useTranslation();
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForDelay | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForDelay | undefined;
 
   const formSchema = getSchema({ i18n });
   const formRule = createSchemaFieldRule(formSchema);

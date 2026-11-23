@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
@@ -16,11 +15,12 @@ const ACMEHttp01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACME
 
   const { token: themeToken } = theme.useToken();
 
-  const dataSources = useSelectDataSource({
+  const dataSource = useSelectDataSource({
     dataSource: Array.from(acmeHttp01ProvidersMap.values()),
     filters: [onFilter!],
   });
-  const options = useMemo(() => {
+
+  const options = (() => {
     const convert = (providers: ACMEHttp01Provider[]): Array<{ key: string; value: string; label: string; data: ACMEHttp01Provider }> => {
       return providers.map((provider) => ({
         key: provider.type,
@@ -34,15 +34,15 @@ const ACMEHttp01ProviderSelect = ({ showAvailability, onFilter, ...props }: ACME
       ? [
           {
             label: t("provider.text.available_group"),
-            options: convert(dataSources.available),
+            options: convert(dataSource.available),
           },
           {
             label: t("provider.text.unavailable_group"),
-            options: convert(dataSources.unavailable),
+            options: convert(dataSource.unavailable),
           },
         ].filter((group) => group.options.length > 0)
-      : convert(dataSources.filtered);
-  }, [showAvailability, dataSources]);
+      : convert(dataSource.filtered);
+  })();
 
   const renderOption = (key: string) => {
     const provider = acmeHttp01ProvidersMap.get(key);

@@ -93,6 +93,7 @@
     "eslint-plugin-react-refresh": "^0.5.7",
     "fs-extra": "^11.4.1",
     "jsdom": "^29.1.1",
+    "oxc-transform-react": "^0.152.0",
     "prettier": "^3.9.10",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",

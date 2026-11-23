@@ -27,7 +27,8 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
     const keywordInputRef = useRef<InputRef>(null);
 
     usePluginCatalogStore((state) => state.version);
-    const dataSources = usePickerDataSource({
+
+    const dataSource = usePickerDataSource({
       dataSource: Array.from(notificationProvidersMap.values()),
       filters: [onFilter!],
       keyword: keyword,
@@ -81,7 +82,7 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
           </div>
         </Show>
 
-        <Show when={dataSources.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
+        <Show when={dataSource.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
           <div
             className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
               "gap-4": gap === "large",
@@ -90,10 +91,10 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
               [`gap-${+gap || "2"}`]: typeof gap === "number",
             })}
           >
-            {(showAvailability ? dataSources.available : dataSources.filtered).map((provider) => renderOption(provider))}
+            {(showAvailability ? dataSource.available : dataSource.filtered).map((provider) => renderOption(provider))}
           </div>
 
-          <Show when={showAvailability && dataSources.unavailable.length > 0}>
+          <Show when={showAvailability && dataSource.unavailable.length > 0}>
             <Divider size="small">
               <Typography.Text className="text-xs font-normal" type="secondary">
                 {t("provider.text.unavailable_divider")}
@@ -108,7 +109,7 @@ const NotificationProviderPicker = forwardRef<NotificationProviderPickerInstance
                 [`gap-${+gap || "2"}`]: typeof gap === "number",
               })}
             >
-              {dataSources.unavailable.map((provider) => renderOption(provider, true))}
+              {dataSource.unavailable.map((provider) => renderOption(provider, true))}
             </div>
           </Show>
         </Show>

@@ -1,5 +1,4 @@
-﻿import { useCallback } from "react";
-import { useLocalStorageState } from "ahooks";
+﻿import { useLocalStorageState } from "ahooks";
 
 const LOCAL_STORAGE_KEY = "certimate-ui-appsettings";
 if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
@@ -34,10 +33,10 @@ const useAppSettings = (): UseAppSettingsReturns => {
   state.defaultPerPage ??= 15;
   state.defaultWorkflowLayout ??= "vertical";
 
-  const resetState = useCallback(() => {
+  const resetState = () => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     setState({});
-  }, [setState]);
+  };
 
   return {
     appSettings: state,

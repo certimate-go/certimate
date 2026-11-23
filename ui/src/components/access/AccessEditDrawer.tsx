@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useState } from "react";
+import { startTransition, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconChevronDown, IconX } from "@tabler/icons-react";
 import { useControllableValue, useGetState } from "ahooks";
@@ -106,6 +106,7 @@ const AccessEditDrawer = ({ afterSubmit, mode, data, loading, trigger, usage, ..
   const fieldProvider = Form.useWatch<string>("provider", { form: formInst, preserve: true });
 
   usePluginCatalogStore((state) => state.version);
+
   const providerUnavailable = usage === "notification" && !!fieldProvider && !accessProvidersMap.has(fieldProvider);
 
   const [isTesting, setIsTesting] = useState(false);
@@ -291,9 +292,9 @@ const useDrawer = () => {
   const [loading, setLoading] = useState<boolean>();
   const [open, setOpen] = useState(false);
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const onOpenChange = (open: boolean) => {
     setOpen(open);
-  }, []);
+  };
 
   return {
     drawerProps: {

@@ -1,11 +1,9 @@
-import { useMemo } from "react";
-
 import { useBrowserTheme } from "@/hooks";
 
 const AuthBackdrop = () => {
   const { theme: browserTheme } = useBrowserTheme();
 
-  const bgStyle = useMemo<React.CSSProperties>(() => {
+  const bgStyle = (() => {
     let svg = "";
     let mask = "";
     if (browserTheme === "dark") {
@@ -19,8 +17,8 @@ const AuthBackdrop = () => {
     return {
       backgroundImage: `url('data:image/svg+xml;base64,${btoa(svg)}')`,
       maskImage: `linear-gradient(to bottom right, transparent, ${mask}, transparent)`,
-    };
-  }, [browserTheme]);
+    } satisfies React.CSSProperties;
+  })();
 
   return <div aria-hidden className="pointer-events-none fixed min-h-screen w-full" style={bgStyle}></div>;
 };

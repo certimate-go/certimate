@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMount } from "ahooks";
 import { App, Button, Card, Divider, Form, Input, Select, Skeleton } from "antd";
@@ -79,33 +79,6 @@ const SettingsSSLProviderCA = ({ className, style }: { className?: string; style
     });
   const [providerValue, setProviderValue] = useState(settings.provider);
 
-  const renderSiblingFieldProviderComponent = useMemo(() => {
-    switch (providerValue) {
-      case CA_PROVIDERS.LETSENCRYPT:
-        return <InternalCASettingsFormProviderLetsEncrypt />;
-      case CA_PROVIDERS.LETSENCRYPTSTAGING:
-        return <InternalCASettingsFormProviderLetsEncryptStaging />;
-      case CA_PROVIDERS.ACTALISSSL:
-        return <InternalCASettingsFormProviderActalisSSL />;
-      case CA_PROVIDERS.DIGICERT:
-        return <InternalCASettingsFormProviderDigiCert />;
-      case CA_PROVIDERS.GLOBALSIGNATLAS:
-        return <InternalCASettingsFormProviderGlobalSignAtlas />;
-      case CA_PROVIDERS.GOOGLETRUSTSERVICES:
-        return <InternalCASettingsFormProviderGoogleTrustServices />;
-      case CA_PROVIDERS.LITESSL:
-        return <InternalCASettingsFormProviderLiteSSL />;
-      case CA_PROVIDERS.SECTIGO:
-        return <InternalCASettingsFormProviderSectigo />;
-      case CA_PROVIDERS.SSLCOM:
-        return <InternalCASettingsFormProviderSSLCom />;
-      case CA_PROVIDERS.ZEROSSL:
-        return <InternalCASettingsFormProviderZeroSSL />;
-      case CA_PROVIDERS.ACMECA:
-        return <InternalCASettingsFormProviderACMECA />;
-    }
-  }, [providerValue]);
-
   useEffect(() => {
     setProviderValue(settings.provider);
   }, [settings.provider]);
@@ -154,7 +127,36 @@ const SettingsSSLProviderCA = ({ className, style }: { className?: string; style
           </Form.Item>
         </Form>
 
-        <div className="md:max-w-160">{renderSiblingFieldProviderComponent}</div>
+        <div className="md:max-w-160">
+          {(() => {
+            switch (providerValue) {
+              case CA_PROVIDERS.LETSENCRYPT:
+                return <InternalCASettingsFormProviderLetsEncrypt />;
+              case CA_PROVIDERS.LETSENCRYPTSTAGING:
+                return <InternalCASettingsFormProviderLetsEncryptStaging />;
+              case CA_PROVIDERS.ACTALISSSL:
+                return <InternalCASettingsFormProviderActalisSSL />;
+              case CA_PROVIDERS.DIGICERT:
+                return <InternalCASettingsFormProviderDigiCert />;
+              case CA_PROVIDERS.GLOBALSIGNATLAS:
+                return <InternalCASettingsFormProviderGlobalSignAtlas />;
+              case CA_PROVIDERS.GOOGLETRUSTSERVICES:
+                return <InternalCASettingsFormProviderGoogleTrustServices />;
+              case CA_PROVIDERS.LITESSL:
+                return <InternalCASettingsFormProviderLiteSSL />;
+              case CA_PROVIDERS.SECTIGO:
+                return <InternalCASettingsFormProviderSectigo />;
+              case CA_PROVIDERS.SSLCOM:
+                return <InternalCASettingsFormProviderSSLCom />;
+              case CA_PROVIDERS.ZEROSSL:
+                return <InternalCASettingsFormProviderZeroSSL />;
+              case CA_PROVIDERS.ACMECA:
+                return <InternalCASettingsFormProviderACMECA />;
+              default:
+                return null;
+            }
+          })()}
+        </div>
       </Show>
     </div>
   );

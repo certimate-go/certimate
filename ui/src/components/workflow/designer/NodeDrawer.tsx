@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useMemo, useState } from "react";
+import { startTransition, useState } from "react";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { useControllableValue } from "ahooks";
 
@@ -35,17 +35,14 @@ const NodeDrawer = ({ node, trigger, ...props }: NodeDrawerProps) => {
 
   const triggerEl = useTriggerElement(trigger, { onClick: () => setOpen(true) });
 
-  const drawerProps = useMemo(
-    () => ({
-      ...props,
-      node: node!,
-      open: open,
-      onOpenChange: (open: boolean) => {
-        setOpen(open);
-      },
-    }),
-    [props, node, open]
-  );
+  const drawerProps = {
+    ...props,
+    node: node!,
+    open: open,
+    onOpenChange: (open: boolean) => {
+      setOpen(open);
+    },
+  };
 
   return (
     <>
@@ -92,9 +89,9 @@ const useDrawer = () => {
   const [node, setNode] = useState<NodeDataType>();
   const [open, setOpen] = useState(false);
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const onOpenChange = (open: boolean) => {
     setOpen(open);
-  }, []);
+  };
 
   return {
     drawerProps: {

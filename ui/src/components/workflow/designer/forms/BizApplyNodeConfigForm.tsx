@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
@@ -87,9 +87,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     return caProvidersMap.get(fieldCAProvider!)?.provider === option.provider;
   };
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForBizApply | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForBizApply | undefined;
 
   const formSchema = getSchema({ i18n });
   type FormSchema = z.infer<typeof formSchema>;
@@ -119,7 +117,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     }
   };
 
-  const showProviderAccess = useMemo(() => {
+  const showProviderAccess = (() => {
     // 内置的质询提供商（如本地主机）无需显示授权信息字段
     switch (fieldChallengeType) {
       case CHALLENGE_TYPE_DNS01:
@@ -142,9 +140,9 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     }
 
     return false;
-  }, [fieldChallengeType, fieldProvider]);
+  })();
 
-  const showCAProviderAccess = useMemo(() => {
+  const showCAProviderAccess = (() => {
     // 内置的 CA 提供商（如 Let's Encrypt）无需显示授权信息字段
     if (fieldCAProvider) {
       const provider = caProvidersMap.get(fieldCAProvider);
@@ -152,16 +150,16 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
     }
 
     return false;
-  }, [fieldCAProvider]);
+  })();
 
-  const fieldCAProviderAccessOptional = useMemo(() => {
+  const fieldCAProviderAccessOptional = (() => {
     if (fieldCAProvider) {
       const provider = caProvidersMap.get(fieldCAProvider);
       return provider?.accessOptional ?? false;
     }
 
     return false;
-  }, [fieldCAProvider]);
+  })();
 
   useEffect(() => {
     // 如果未选择质询提供商，则清空授权信息
@@ -177,7 +175,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
         formInst.setFieldValue("providerAccessId", availableAccesses[0].id);
       }
     }
-  }, [fieldChallengeType, fieldProvider, fieldProviderAccessId]);
+  }, [accesses, fieldChallengeType, fieldProvider, fieldProviderAccessId]);
 
   useEffect(() => {
     // 如果未选择 CA 提供商，则清空授权信息
@@ -850,7 +848,7 @@ const BizApplyNodeConfigForm = ({ node, ...props }: BizApplyNodeConfigFormProps)
   );
 };
 
-const InternalIdentifierPicker = memo(({ disabled, onSelect }: { disabled?: boolean; onSelect?: (value: string) => void }) => {
+const InternalIdentifierPicker = ({ disabled, onSelect }: { disabled?: boolean; onSelect?: (value: string) => void }) => {
   const { t } = useTranslation();
 
   const [value, setValue] = useState<string>();
@@ -920,9 +918,9 @@ const InternalIdentifierPicker = memo(({ disabled, onSelect }: { disabled?: bool
       </Form.Item>
     </>
   );
-});
+};
 
-const InternalEmailInput = memo(({ disabled, ...props }: { disabled?: boolean; value?: string; onChange?: (value: string) => void }) => {
+const InternalEmailInput = ({ disabled, ...props }: { disabled?: boolean; value?: string; onChange?: (value: string) => void }) => {
   const { t } = useTranslation();
 
   const { emails, fetchEmails, removeEmail } = useContactEmailsStore();
@@ -957,7 +955,7 @@ const InternalEmailInput = memo(({ disabled, ...props }: { disabled?: boolean; v
     </div>
   );
 
-  const options = useMemo(() => {
+  const options = (() => {
     const temp = emails.map((email) => ({
       label: renderOptionLabel(email, true),
       value: email,
@@ -971,7 +969,7 @@ const InternalEmailInput = memo(({ disabled, ...props }: { disabled?: boolean; v
     }
 
     return temp;
-  }, [emails, inputValue]);
+  })();
 
   const handleChange = (value: string) => {
     setValue(value);
@@ -996,9 +994,9 @@ const InternalEmailInput = memo(({ disabled, ...props }: { disabled?: boolean; v
       onChange={handleChange}
     />
   );
-});
+};
 
-const InternalValidityLifetimeInput = memo(({ disabled, ...props }: { disabled?: boolean; value?: string; onChange?: (value: string) => void }) => {
+const InternalValidityLifetimeInput = ({ disabled, ...props }: { disabled?: boolean; value?: string; onChange?: (value: string) => void }) => {
   const { t } = useTranslation();
 
   const [value, setValue] = useControllableValue<string>(props, {
@@ -1069,7 +1067,7 @@ const InternalValidityLifetimeInput = memo(({ disabled, ...props }: { disabled?:
       </div>
     </Space.Compact>
   );
-});
+};
 
 const getAnchorItems = ({ i18n = getI18n() }: { i18n?: ReturnType<typeof getI18n> }): Required<AnchorProps>["items"] => {
   const { t } = i18n;

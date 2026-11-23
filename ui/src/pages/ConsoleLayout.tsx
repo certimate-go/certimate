@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -170,7 +170,7 @@ const ConsoleLayout = () => {
   );
 };
 
-const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect?: (key: string) => void }) => {
+const SiderMenu = ({ collapsed, onSelect }: { collapsed?: boolean; onSelect?: (key: string) => void }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -238,18 +238,18 @@ const SiderMenu = memo(({ collapsed, onSelect }: { collapsed?: boolean; onSelect
       </div>
     </>
   );
-});
+};
 
-const SiderMenuDrawer = memo(({ trigger }: { trigger: React.ReactNode }) => {
+const SiderMenuDrawer = ({ trigger }: { trigger: React.ReactNode }) => {
   const { token: themeToken } = theme.useToken();
 
   const [siderOpen, setSiderOpen] = useState(false);
 
   const triggerEl = useTriggerElement(trigger, { onClick: () => setSiderOpen(true) });
 
-  const handleMenuSelect = useCallback(() => {
+  const handleMenuSelect = () => {
     setSiderOpen(false);
-  }, []);
+  };
 
   return (
     <>
@@ -270,6 +270,6 @@ const SiderMenuDrawer = memo(({ trigger }: { trigger: React.ReactNode }) => {
       </Drawer>
     </>
   );
-});
+};
 
 export default ConsoleLayout;

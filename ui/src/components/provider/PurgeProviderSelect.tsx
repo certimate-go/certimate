@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
@@ -18,15 +17,14 @@ const PurgeProviderSelect = ({ showAvailability = false, onFilter, ...props }: P
 
   const { token: themeToken } = theme.useToken();
 
-  const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
+  usePluginCatalogStore((s) => s.version);
 
-  const allProviders = useMemo(() => listPurgeProviders(), [pluginCatalogVersion]);
-
-  const dataSources = useSelectDataSource({
-    dataSource: allProviders,
+  const dataSource = useSelectDataSource({
+    dataSource: listPurgeProviders(),
     filters: [onFilter!],
   });
-  const options = useMemo(() => {
+
+  const options = (() => {
     const convert = (providers: PurgeProvider[]): Array<{ key: string; value: string; label: string; data: PurgeProvider }> => {
       return providers.map((provider) => ({
         key: provider.type,
@@ -40,15 +38,15 @@ const PurgeProviderSelect = ({ showAvailability = false, onFilter, ...props }: P
       ? [
           {
             label: t("provider.text.available_group"),
-            options: convert(dataSources.available),
+            options: convert(dataSource.available),
           },
           {
             label: t("provider.text.unavailable_group"),
-            options: convert(dataSources.unavailable),
+            options: convert(dataSource.unavailable),
           },
         ].filter((group) => group.options.length > 0)
-      : convert(dataSources.filtered);
-  }, [showAvailability, dataSources]);
+      : convert(dataSource.filtered);
+  })();
 
   const renderOption = (key: string) => {
     const provider = getPurgeProvider(key);

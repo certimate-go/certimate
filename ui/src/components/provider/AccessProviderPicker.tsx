@@ -1,4 +1,4 @@
-﻿import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+﻿import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Card, Empty, Input, type InputRef, Tag, Tooltip, Typography } from "antd";
 
@@ -26,36 +26,22 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
   ({ className, style, gap = "medium", placeholder, showOptionTags, showSearch = false, onFilter, onSelect }, ref) => {
     const { t } = useTranslation();
 
-    const showOptionTagForDNS = useMemo(() => {
-      return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.DNS] : !!showOptionTags;
-    }, [showOptionTags]);
-    const showOptionTagForHosting = useMemo(() => {
-      return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.HOSTING] : !!showOptionTags;
-    }, [showOptionTags]);
-    const showOptionTagForCA = useMemo(() => {
-      return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.CA] : !!showOptionTags;
-    }, [showOptionTags]);
-    const showOptionTagForNotification = useMemo(() => {
-      return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.NOTIFICATION] : !!showOptionTags;
-    }, [showOptionTags]);
-    const showOptionTagForBuiltin = useMemo(() => {
-      return typeof showOptionTags === "object" ? !!showOptionTags?.["builtin"] : !!showOptionTags;
-    }, [showOptionTags]);
-    const showOptionTagAnyhow = useMemo(() => {
-      return showOptionTagForDNS || showOptionTagForHosting || showOptionTagForCA || showOptionTagForNotification || showOptionTagForBuiltin;
-    }, [showOptionTagForDNS, showOptionTagForHosting, showOptionTagForCA, showOptionTagForNotification, showOptionTagForBuiltin]);
+    const showOptionTagForDNS = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.DNS] : !!showOptionTags;
+    const showOptionTagForHosting = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.HOSTING] : !!showOptionTags;
+    const showOptionTagForCA = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.CA] : !!showOptionTags;
+    const showOptionTagForNotification = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.NOTIFICATION] : !!showOptionTags;
+    const showOptionTagForBuiltin = typeof showOptionTags === "object" ? !!showOptionTags?.["builtin"] : !!showOptionTags;
+    const showOptionTagAnyhow = showOptionTagForDNS || showOptionTagForHosting || showOptionTagForCA || showOptionTagForNotification || showOptionTagForBuiltin;
 
     const { wrapperElRef, cols } = usePickerWrapperCols(showOptionTagAnyhow ? 240 : 200);
 
-    const pluginCatalogVersion = usePluginCatalogStore((s) => s.version);
+    usePluginCatalogStore((s) => s.version);
 
     const [keyword, setKeyword] = useState<string>();
     const keywordInputRef = useRef<InputRef>(null);
 
-    const allProviders = useMemo(() => Array.from(accessProvidersMap.values()), [pluginCatalogVersion]);
-
-    const dataSources = usePickerDataSource({
-      dataSource: allProviders,
+    const dataSource = usePickerDataSource({
+      dataSource: Array.from(accessProvidersMap.values()),
       filters: [onFilter!],
       keyword: keyword,
     });
@@ -153,7 +139,7 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
           </div>
         </Show>
 
-        <Show when={dataSources.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
+        <Show when={dataSource.filtered.length > 0} fallback={<Empty description={t("provider.text.nodata")} />}>
           <div
             className={mergeCls("grid w-full gap-2", `grid-cols-${cols}`, {
               "gap-4": gap === "large",
@@ -162,7 +148,7 @@ const AccessProviderPicker = forwardRef<AccessProviderPickerInstance, AccessProv
               [`gap-${+gap || "2"}`]: typeof gap === "number",
             })}
           >
-            {dataSources.filtered.map((provider) => renderOption(provider))}
+            {dataSource.filtered.map((provider) => renderOption(provider))}
           </div>
         </Show>
       </div>

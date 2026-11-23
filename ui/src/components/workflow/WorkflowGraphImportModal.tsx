@@ -1,4 +1,4 @@
-﻿import { startTransition, useCallback, useRef, useState } from "react";
+﻿import { startTransition, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useControllableValue } from "ahooks";
 import { Button, Flex, Modal } from "antd";
@@ -79,9 +79,9 @@ const useModal = () => {
   const [open, setOpen] = useState(false);
   const [onOkHandler, setOnOkHandler] = useState<{ handler: WorkflowGraphImportModalProps["onOk"] }>();
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const onOpenChange = (open: boolean) => {
     setOpen(open);
-  }, []);
+  };
 
   return {
     modalProps: {

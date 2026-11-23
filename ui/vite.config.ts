@@ -43,7 +43,9 @@ export default defineConfig(({ command }) => {
       },
     },
     plugins: [
-      reactPlugin({}),
+      reactPlugin({
+        compiler: true,
+      }),
       legacyPlugin({
         targets: ["defaults", "not IE 11"],
         modernTargets: "chrome>=111, firefox>=113, safari>=15.4",

@@ -1,4 +1,4 @@
-﻿import { useContext, useMemo, useRef } from "react";
+﻿import { useContext, useRef } from "react";
 import { json } from "@codemirror/lang-json";
 import { yaml } from "@codemirror/lang-yaml";
 import { StreamLanguage } from "@codemirror/language";
@@ -34,14 +34,8 @@ const CodeTextInput = ({ className, style, disabled, language, lineNumbers = tru
   const isFocusing = useFocusWithin(cmRef.current?.editor);
   const isHovering = useHover(cmRef.current?.editor);
 
-  const cmTheme = useMemo(() => {
-    if (browserTheme === "dark") {
-      return vscodeDark;
-    }
-    return vscodeLight;
-  }, [browserTheme]);
-
-  const cmExtensions = useMemo(() => {
+  const cmTheme = browserTheme === "dark" ? vscodeDark : vscodeLight;
+  const cmExtensions = (() => {
     const temp: NonNullable<ReactCodeMirrorProps["extensions"]> = [
       basicSetup({
         foldGutter: false,
@@ -74,7 +68,7 @@ const CodeTextInput = ({ className, style, disabled, language, lineNumbers = tru
     });
 
     return temp;
-  }, [language, lineWrapping]);
+  })();
 
   return (
     <div

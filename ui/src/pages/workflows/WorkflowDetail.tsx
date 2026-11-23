@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { IconEdit, IconHistory, IconPlayerPlay, IconRobot } from "@tabler/icons-react";
@@ -23,6 +23,7 @@ const WorkflowDetail = () => {
 
   const { id: workflowId } = useParams();
   const { workflow, initialized, ...workflowState } = useWorkflowStore(useZustandShallowSelector(["workflow", "initialized", "init", "destroy", "setEnabled"]));
+
   useEffect(() => {
     Promise.try(() => workflowState.init(workflowId!)).catch((err) => {
       console.error(err);
@@ -42,6 +43,7 @@ const WorkflowDetail = () => {
     ["runs", "workflow.detail.runs.tab", <IconHistory size="1em" />],
   ] satisfies [string, string, React.ReactElement<any>][];
   const [tabValue, setTabValue] = useState<string>(() => location.pathname.split("/")[3]);
+
   useEffect(() => {
     const subpath = location.pathname.split("/")[3];
     if (!subpath) {
@@ -57,8 +59,9 @@ const WorkflowDetail = () => {
     navigate(`/workflows/${workflowId}/${value}`);
   };
 
-  const runButtonDisabled = useMemo(() => !workflow.hasContent, [workflow]);
+  const runButtonDisabled = !workflow.hasContent;
   const [runButtonLoading, setRunButtonLoading] = useState(false);
+
   useEffect(() => {
     const running = workflow.lastRunStatus === WORKFLOW_RUN_STATUSES.PENDING || workflow.lastRunStatus === WORKFLOW_RUN_STATUSES.PROCESSING;
     setRunButtonLoading(running);

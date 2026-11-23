@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlowLayoutDefault } from "@flowgram.ai/fixed-layout-editor";
 import { IconArrowBackUp, IconDeviceFloppy, IconDots, IconFileDatabase, IconTransferIn, IconTransferOut } from "@tabler/icons-react";
@@ -26,8 +26,8 @@ const WorkflowDetailDesign = () => {
 
   const { workflow, ...workflowStore } = useWorkflowStore(useZustandShallowSelector(["workflow", "orchestrate", "publish", "rollback"]));
 
-  const workflowRollbackDisabled = useMemo(() => !workflow.hasDraft || !workflow.hasContent, [workflow.hasDraft, workflow.hasContent]);
-  const workflowPublishDisabled = useMemo(() => !workflow.hasDraft, [workflow.hasDraft]);
+  const workflowRollbackDisabled = !workflow.hasDraft || !workflow.hasContent;
+  const workflowPublishDisabled = !workflow.hasDraft;
 
   const designerRef = useRef<WorkflowDesignerInstance>(null);
   const designerPending = useRef(false); // 保存中时阻止刷新画布

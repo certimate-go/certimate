@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useState } from "react";
+import { startTransition, useState } from "react";
 import { IconX } from "@tabler/icons-react";
 import { useControllableValue, useGetState } from "ahooks";
 import { Button, Drawer, Flex } from "antd";
@@ -68,9 +68,9 @@ const useDrawer = () => {
   const [loading, setLoading] = useState<boolean>();
   const [open, setOpen] = useState(false);
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const onOpenChange = (open: boolean) => {
     setOpen(open);
-  }, []);
+  };
 
   return {
     drawerProps: {

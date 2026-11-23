@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Tag, Typography, theme } from "antd";
 
@@ -18,23 +17,14 @@ const AccessProviderSelect = ({ showOptionTags, onFilter, ...props }: AccessProv
 
   const { token: themeToken } = theme.useToken();
 
-  const showOptionTagForDNS = useMemo(() => {
-    return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.DNS] : !!showOptionTags;
-  }, [showOptionTags]);
-  const showOptionTagForHosting = useMemo(() => {
-    return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.HOSTING] : !!showOptionTags;
-  }, [showOptionTags]);
-  const showOptionTagForCA = useMemo(() => {
-    return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.CA] : !!showOptionTags;
-  }, [showOptionTags]);
-  const showOptionTagForNotification = useMemo(() => {
-    return typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.NOTIFICATION] : !!showOptionTags;
-  }, [showOptionTags]);
-  const showOptionTagForBuiltin = useMemo(() => {
-    return typeof showOptionTags === "object" ? !!showOptionTags?.["builtin"] : !!showOptionTags;
-  }, [showOptionTags]);
+  const showOptionTagForDNS = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.DNS] : !!showOptionTags;
+  const showOptionTagForHosting = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.HOSTING] : !!showOptionTags;
+  const showOptionTagForCA = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.CA] : !!showOptionTags;
+  const showOptionTagForNotification = typeof showOptionTags === "object" ? !!showOptionTags?.[ACCESS_USAGES.NOTIFICATION] : !!showOptionTags;
+  const showOptionTagForBuiltin = typeof showOptionTags === "object" ? !!showOptionTags?.["builtin"] : !!showOptionTags;
 
   usePluginCatalogStore((state) => state.version);
+
   const options = Array.from(accessProvidersMap.values())
     .filter((provider) => {
       if (onFilter) {

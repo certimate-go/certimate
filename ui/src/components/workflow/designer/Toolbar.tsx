@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditorState, FlowLayoutDefault, useClientContext, usePlaygroundTools, useRefresh } from "@flowgram.ai/fixed-layout-editor";
 import { IconHandStop, IconLayoutCards, IconMatrix, IconMaximize, IconMinus, IconPlus } from "@tabler/icons-react";
@@ -47,29 +47,25 @@ const Toolbar = ({
     return () => d.dispose();
   }, [playground]);
 
-  const buttonIconSize = useMemo(() => {
-    if (size === "large") return "1.5em";
-    if (size === "small") return "1em";
-    return "1.25em";
-  }, [size]);
+  const buttonIconSize = size === "large" ? "1.5em" : size === "small" ? "1em" : "1.25em";
 
   const [isMinimapVisible, setIsMinimapVisible] = useState(() => window.screen.availWidth >= 1024);
 
   const [isMouseFriendly, setIsMouseFriendly] = useState(() => playground.editorState.is(EditorState.STATE_MOUSE_FRIENDLY_SELECT.id));
 
-  const handleToggleLayout = useCallback(() => {
+  const handleToggleLayout = () => {
     if (tools.isVertical) {
       tools.changeLayout(FlowLayoutDefault.HORIZONTAL_FIXED_LAYOUT);
     } else {
       tools.changeLayout(FlowLayoutDefault.VERTICAL_FIXED_LAYOUT);
     }
-  }, [tools.isVertical]);
+  };
 
-  const handleToggleMinimap = useCallback(() => {
+  const handleToggleMinimap = () => {
     setIsMinimapVisible((prev) => !prev);
-  }, [isMinimapVisible]);
+  };
 
-  const handleToggleMouseFriendly = useCallback(() => {
+  const handleToggleMouseFriendly = () => {
     if (isMouseFriendly) {
       playground.editorState.changeState(EditorState.STATE_SELECT.id);
       setIsMouseFriendly(false);
@@ -77,7 +73,7 @@ const Toolbar = ({
       playground.editorState.changeState(EditorState.STATE_MOUSE_FRIENDLY_SELECT.id);
       setIsMouseFriendly(true);
     }
-  }, [isMouseFriendly]);
+  };
 
   return (
     <div className={className} style={style}>

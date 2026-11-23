@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, Select, Typography, theme } from "antd";
 
@@ -18,11 +17,13 @@ const NotificationProviderSelect = ({ showAvailability = false, onFilter, ...pro
   const { token: themeToken } = theme.useToken();
 
   usePluginCatalogStore((state) => state.version);
-  const dataSources = useSelectDataSource({
+
+  const dataSource = useSelectDataSource({
     dataSource: Array.from(notificationProvidersMap.values()),
     filters: [onFilter!],
   });
-  const options = useMemo(() => {
+
+  const options = (() => {
     const convert = (providers: NotificationProvider[]): Array<{ key: string; value: string; label: string; data: NotificationProvider }> => {
       return providers.map((provider) => ({
         key: provider.type,
@@ -36,15 +37,15 @@ const NotificationProviderSelect = ({ showAvailability = false, onFilter, ...pro
       ? [
           {
             label: t("provider.text.available_group"),
-            options: convert(dataSources.available),
+            options: convert(dataSource.available),
           },
           {
             label: t("provider.text.unavailable_group"),
-            options: convert(dataSources.unavailable),
+            options: convert(dataSource.unavailable),
           },
         ].filter((group) => group.options.length > 0)
-      : convert(dataSources.filtered);
-  }, [showAvailability, dataSources, t]);
+      : convert(dataSource.filtered);
+  })();
 
   const renderOption = (key: string) => {
     const provider = getNotificationProvider(key);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditorState, FlowLayoutDefault } from "@flowgram.ai/fixed-layout-editor";
 import { IconBrowserShare, IconBug, IconCheck, IconDots, IconDownload, IconSettings2, IconTransferOut } from "@tabler/icons-react";
@@ -37,9 +37,10 @@ const WorkflowRunDetail = ({ className, style, ...props }: WorkflowRunDetailProp
   const { t } = useTranslation();
 
   const [innerData, setInnerData] = useState(props.data);
-  const mergedData = useMemo(() => ({ ...props.data, ...innerData }), [innerData, props.data]);
+  const mergedData = { ...props.data, ...innerData };
 
   const unsubscriberRef = useRef<() => void>(undefined);
+
   useEffect(() => {
     if (props.data.status === WORKFLOW_RUN_STATUSES.PENDING || props.data.status === WORKFLOW_RUN_STATUSES.PROCESSING) {
       subscribeWorkflowRun(props.data.id, (cb) => {

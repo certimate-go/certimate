@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { getI18n, useTranslation } from "react-i18next";
 import { type FlowNodeEntity } from "@flowgram.ai/fixed-layout-editor";
 import { type AnchorProps, Form, type FormInstance } from "antd";
@@ -34,9 +34,7 @@ const BranchBlockNodeConfigForm = ({ node, ...props }: BranchBlockNodeConfigForm
 
   const { i18n, t } = useTranslation();
 
-  const initialValues = useMemo(() => {
-    return node.form?.getValueIn("config") as WorkflowNodeConfigForBranchBlock | undefined;
-  }, [node]);
+  const initialValues = node.form?.getValueIn("config") as WorkflowNodeConfigForBranchBlock | undefined;
 
   const formSchema = getSchema({ i18n }).superRefine(async (values, ctx) => {
     if (values.expression != null) {

@@ -91,6 +91,7 @@ export const NodeConfigDrawer = ({ children, afterClose, anchor, footer = true, 
     }
     return false;
   });
+
   useEffect(() => {
     const d1 = playground.config.onDataChange(() => refresh());
     const d2 = node?.onDataChange(() => setIsNodeDisabled(node.form?.getValueIn<boolean>("disabled")));

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useMount } from "ahooks";
 import { Avatar, Select, type SelectProps, Typography, theme } from "antd";
 
@@ -20,18 +19,17 @@ const AccessSelect = ({ onFilter, ...props }: AccessTypeSelectProps) => {
     fetchAccesses(false);
   });
 
-  const [options, setOptions] = useState<Array<{ key: string; value: string; label: string; data: AccessModel }>>([]);
-  useEffect(() => {
-    const filteredItems = onFilter != null ? accesses.filter((item) => onFilter(item.id, item)) : accesses;
-    setOptions(
-      filteredItems.map((item) => ({
-        key: item.id,
-        value: item.id,
-        label: item.name,
-        data: item,
-      }))
-    );
-  }, [accesses, onFilter]);
+  const options = accesses
+    .filter((item) => {
+      if (!onFilter) return true;
+      return onFilter(item.id, item);
+    })
+    .map((item) => ({
+      key: item.id,
+      value: item.id,
+      label: item.name,
+      data: item,
+    }));
 
   const renderOption = (key: string) => {
     const access = accesses.find((e) => e.id === key);

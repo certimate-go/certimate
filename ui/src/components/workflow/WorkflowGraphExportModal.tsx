@@ -1,4 +1,4 @@
-﻿import { startTransition, useCallback, useState } from "react";
+﻿import { startTransition, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useControllableValue } from "ahooks";
 import { Modal } from "antd";
@@ -60,9 +60,9 @@ const useModal = () => {
   const [data, setData] = useState<DataType>();
   const [open, setOpen] = useState(false);
 
-  const onOpenChange = useCallback((open: boolean) => {
+  const onOpenChange = (open: boolean) => {
     setOpen(open);
-  }, []);
+  };
 
   return {
     modalProps: {

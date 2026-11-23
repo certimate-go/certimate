@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconCircleMinus, IconCirclePlus } from "@tabler/icons-react";
 import { useControllableValue } from "ahooks";
@@ -167,44 +167,42 @@ const BranchBlockNodeConfigExprInputBox = forwardRef<BranchBlockNodeConfigExprIn
       }
     }, [value]);
 
-    const ciSelectorOptions = useMemo(() => {
-      return getAllPreviousNodes(node)
-        .filter((node) => node.flowNodeType === NodeType.BizApply || node.flowNodeType === NodeType.BizUpload || node.flowNodeType === NodeType.BizMonitor)
-        .map((node) => {
-          const form = node.form;
-          const group = {
-            data: {
-              name: form?.getValueIn("name"),
-              ...form?.values,
-            },
-            label: (
-              <div className="flex items-center justify-between gap-4 overflow-hidden">
-                <div className="flex-1 truncate">{form?.getValueIn("name")}</div>
-                <div className="origin-right scale-90 font-mono text-xs" style={{ color: themeToken.colorTextSecondary }}>
-                  (NodeID: {node.id})
-                </div>
+    const ciSelectorOptions = getAllPreviousNodes(node)
+      .filter((node) => node.flowNodeType === NodeType.BizApply || node.flowNodeType === NodeType.BizUpload || node.flowNodeType === NodeType.BizMonitor)
+      .map((node) => {
+        const form = node.form;
+        const group = {
+          data: {
+            name: form?.getValueIn("name"),
+            ...form?.values,
+          },
+          label: (
+            <div className="flex items-center justify-between gap-4 overflow-hidden">
+              <div className="flex-1 truncate">{form?.getValueIn("name")}</div>
+              <div className="origin-right scale-90 font-mono text-xs" style={{ color: themeToken.colorTextSecondary }}>
+                (NodeID: {node.id})
               </div>
-            ),
-            options: Array<{ label: string; value: string }>(),
-          };
+            </div>
+          ),
+          options: Array<{ label: string; value: string }>(),
+        };
 
-          group.options.push({
-            label: `${t("workflow_node.variables.type.certificate.label")} - ${t("workflow_node.variables.selector.hours_left.label")}`,
-            value: `${node.id}#certificate.hoursLeft#number`,
-          });
-          group.options.push({
-            label: `${t("workflow_node.variables.type.certificate.label")} - ${t("workflow_node.variables.selector.days_left.label")}`,
-            value: `${node.id}#certificate.daysLeft#number`,
-          });
-          group.options.push({
-            label: `${t("workflow_node.variables.type.certificate.label")} - ${t("workflow_node.variables.selector.validity.label")}`,
-            value: `${node.id}#certificate.validity#boolean`,
-          });
+        group.options.push({
+          label: `${t("workflow_node.variables.type.certificate.label")} - ${t("workflow_node.variables.selector.hours_left.label")}`,
+          value: `${node.id}#certificate.hoursLeft#number`,
+        });
+        group.options.push({
+          label: `${t("workflow_node.variables.type.certificate.label")} - ${t("workflow_node.variables.selector.days_left.label")}`,
+          value: `${node.id}#certificate.daysLeft#number`,
+        });
+        group.options.push({
+          label: `${t("workflow_node.variables.type.certificate.label")} - ${t("workflow_node.variables.selector.validity.label")}`,
+          value: `${node.id}#certificate.validity#boolean`,
+        });
 
-          return group;
-        })
-        .filter((item) => item.options.length > 0);
-    }, [node]);
+        return group;
+      })
+      .filter((item) => item.options.length > 0);
 
     const getValueTypeBySelector = (selector: string): ExprValueType | undefined => {
       if (!selector) return;

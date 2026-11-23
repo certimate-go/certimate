@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Field,
@@ -97,7 +97,7 @@ const InternalNodeCard = ({
   const nodeRenderData = nodeRender.node.getData(FlowNodeRenderData)!;
   const nodeRegistry = nodeRender.node.getNodeRegistry<NodeRegistry>();
 
-  const isActivated = useMemo(() => nodeRenderData.activated || nodeRenderData.lineActivated, [nodeRenderData.activated, nodeRenderData.lineActivated]);
+  const isActivated = nodeRenderData.activated || nodeRenderData.lineActivated;
   const [isHovering, setIsHovering] = useState(false);
   const [isNodeInvalid, setIsNodeInvalid] = useState(!isNodeTypeRegistered(nodeRegistry.type));
   const isNodeDisabled = useWatchFormValueIn(nodeRender.node, "disabled");
@@ -166,6 +166,7 @@ const InternalNodeMenuButton = ({
     }
     return false;
   };
+
   const getLatestRemoveDisabledState = () => {
     if (nodeRegistry.meta?.deleteDisable != null && nodeRegistry.meta.deleteDisable) {
       return true;
@@ -175,6 +176,7 @@ const InternalNodeMenuButton = ({
     }
     return false;
   };
+
   const [menuDuplicateDisabled, setMenuDuplicateDisabled] = useState(() => getLatestDuplicateDisabledState());
   const [menuRemoveDisabled, setMenuRemoveDisabled] = useState(() => getLatestRemoveDisabledState());
   useEffect(() => {

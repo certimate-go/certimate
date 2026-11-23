@@ -1,4 +1,4 @@
-﻿import { useMemo, useRef } from "react";
+﻿import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useMount, useSize } from "ahooks";
 
@@ -28,7 +28,6 @@ export interface SharedSelectProps<T extends Provider> extends Omit<SelectProps,
 export const useSelectDataSource = <T extends Provider>({
   dataSource,
   filters,
-  deps = [],
 }: {
   dataSource: T[];
   filters?: Array<(value: string, option: T) => boolean>;
@@ -39,32 +38,24 @@ export const useSelectDataSource = <T extends Provider>({
     fetchAccesses(false);
   });
 
-  const filteredDataSource = useMemo(() => {
-    return dataSource.filter((provider) => {
-      if (filters) {
-        for (const filter of filters) {
-          if (!filter) continue;
-          if (!filter(provider.type, provider)) return false;
-        }
+  const dataSourceFiltered = dataSource.filter((provider) => {
+    if (filters) {
+      for (const filter of filters) {
+        if (!filter) continue;
+        if (!filter(provider.type, provider)) return false;
       }
+    }
 
-      return true;
-    });
-  }, [dataSource, filters, deps]);
-
-  const availableDataSource = useMemo(() => {
-    return filteredDataSource.filter((provider) => isProviderAccessSatisfied(provider, accesses));
-  }, [accesses, filteredDataSource, deps]);
-
-  const unavailableDataSource = useMemo(() => {
-    return filteredDataSource.filter((item) => !availableDataSource.includes(item));
-  }, [filteredDataSource, availableDataSource, deps]);
+    return true;
+  });
+  const dataSourceAvailable = dataSourceFiltered.filter((provider) => isProviderAccessSatisfied(provider, accesses));
+  const dataSourceUnavailable = dataSourceFiltered.filter((item) => !dataSourceAvailable.includes(item));
 
   return {
     raw: dataSource,
-    filtered: filteredDataSource,
-    available: availableDataSource,
-    unavailable: unavailableDataSource,
+    filtered: dataSourceFiltered,
+    available: dataSourceAvailable,
+    unavailable: dataSourceUnavailable,
   };
 };
 
@@ -82,11 +73,11 @@ export const usePickerWrapperCols = (width: number) => {
   const wrapperElRef = useRef<HTMLDivElement>(null);
   const wrapperSize = useSize(wrapperElRef);
 
-  const columns = useMemo(() => {
+  const columns = (() => {
     const wWidth = wrapperSize?.width ?? document.body.clientWidth - 256;
     const wCols = Math.floor(wWidth / width);
     return Math.min(9, Math.max(1, wCols));
-  }, [wrapperSize?.width, width]);
+  })();
 
   return {
     wrapperElRef,
@@ -98,12 +89,10 @@ export const usePickerDataSource = <T extends Provider>({
   dataSource,
   filters,
   keyword,
-  deps = [],
 }: {
   dataSource: T[];
   filters?: Array<(value: string, option: T) => boolean>;
   keyword?: string;
-  deps?: React.DependencyList;
 }) => {
   const { t } = useTranslation();
 
@@ -112,39 +101,31 @@ export const usePickerDataSource = <T extends Provider>({
     fetchAccesses(false);
   });
 
-  const filteredDataSource = useMemo(() => {
-    return dataSource
-      .filter((provider) => {
-        if (filters) {
-          for (const filter of filters) {
-            if (!filter) continue;
-            if (!filter(provider.type, provider)) return false;
-          }
+  const dataSourceFiltered = dataSource
+    .filter((provider) => {
+      if (filters) {
+        for (const filter of filters) {
+          if (!filter) continue;
+          if (!filter(provider.type, provider)) return false;
         }
+      }
 
-        return true;
-      })
-      .filter((provider) => {
-        if (keyword) {
-          return matchSearchString(keyword, provider.type) || matchSearchString(keyword, t(provider.name));
-        }
+      return true;
+    })
+    .filter((provider) => {
+      if (keyword) {
+        return matchSearchString(keyword, provider.type) || matchSearchString(keyword, t(provider.name));
+      }
 
-        return true;
-      });
-  }, [dataSource, filters, keyword, deps]);
-
-  const availableDataSource = useMemo(() => {
-    return filteredDataSource.filter((provider) => isProviderAccessSatisfied(provider, accesses));
-  }, [accesses, filteredDataSource, deps]);
-
-  const unavailableDataSource = useMemo(() => {
-    return filteredDataSource.filter((item) => !availableDataSource.includes(item));
-  }, [filteredDataSource, availableDataSource, deps]);
+      return true;
+    });
+  const dataSourceAvailable = dataSourceFiltered.filter((provider) => isProviderAccessSatisfied(provider, accesses));
+  const dataSourceUnavailable = dataSourceFiltered.filter((item) => !dataSourceAvailable.includes(item));
 
   return {
     raw: dataSource,
-    filtered: filteredDataSource,
-    available: availableDataSource,
-    unavailable: unavailableDataSource,
+    filtered: dataSourceFiltered,
+    available: dataSourceAvailable,
+    unavailable: dataSourceUnavailable,
   };
 };

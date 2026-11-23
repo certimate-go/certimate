@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMount } from "ahooks";
@@ -26,7 +26,7 @@ const AccessNew = () => {
 
   const { createAccess } = useAccessesStore(useZustandShallowSelector(["createAccess"]));
 
-  const providerUsage = useMemo(() => searchParams.get("usage") as AccessFormUsages, [searchParams]);
+  const providerUsage = searchParams.get("usage") as AccessFormUsages;
   const providerFilter = AccessForm.useProviderFilterByUsage(providerUsage);
 
   const providerPickerRef = useRef<AccessProviderPickerInstance>(null);

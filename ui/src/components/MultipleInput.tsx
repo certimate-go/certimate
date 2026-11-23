@@ -1,4 +1,4 @@
-﻿import { type ChangeEvent, forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+﻿import { type ChangeEvent, forwardRef, useImperativeHandle, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { IconCircleArrowDown, IconCircleArrowUp, IconCircleMinus, IconCirclePlus } from "@tabler/icons-react";
 import { useControllableValue } from "ahooks";
@@ -210,20 +210,18 @@ const MultipleInputItem = forwardRef<MultipleInputItemInstance, MultipleInputIte
       trigger: "onChange",
     });
 
-    const upBtn = useMemo(() => {
-      if (!showSortButton) return null;
-      return <Button icon={<IconCircleArrowUp size="1.25em" />} color="default" disabled={disabled || !allowUp} type="text" onClick={onEntryUp} />;
-    }, [allowUp, disabled, showSortButton, onEntryUp]);
-    const downBtn = useMemo(() => {
-      if (!showSortButton) return null;
-      return <Button icon={<IconCircleArrowDown size="1.25em" />} color="default" disabled={disabled || !allowDown} type="text" onClick={onEntryDown} />;
-    }, [allowDown, disabled, showSortButton, onEntryDown]);
-    const removeBtn = useMemo(() => {
-      return <Button icon={<IconCircleMinus size="1.25em" />} color="default" disabled={disabled || !allowRemove} type="text" onClick={onEntryRemove} />;
-    }, [allowRemove, disabled, onEntryRemove]);
-    const addBtn = useMemo(() => {
-      return <Button icon={<IconCirclePlus size="1.25em" />} color="default" disabled={disabled || !allowAdd} type="text" onClick={onEntryAdd} />;
-    }, [allowAdd, disabled, onEntryAdd]);
+    const actionUpButtonEl = showSortButton ? (
+      <Button icon={<IconCircleArrowUp size="1.25em" />} color="default" disabled={disabled || !allowUp} type="text" onClick={onEntryUp} />
+    ) : null;
+    const actionDownButtonEl = showSortButton ? (
+      <Button icon={<IconCircleArrowDown size="1.25em" />} color="default" disabled={disabled || !allowDown} type="text" onClick={onEntryDown} />
+    ) : null;
+    const actionRemoveButtonEl = (
+      <Button icon={<IconCircleMinus size="1.25em" />} color="default" disabled={disabled || !allowRemove} type="text" onClick={onEntryRemove} />
+    );
+    const actionAddButtonEl = (
+      <Button icon={<IconCirclePlus size="1.25em" />} color="default" disabled={disabled || !allowAdd} type="text" onClick={onEntryAdd} />
+    );
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
       setValue(e.target.value);
@@ -256,10 +254,10 @@ const MultipleInputItem = forwardRef<MultipleInputItemInstance, MultipleInputIte
           />
         </div>
         <div className="flex items-center justify-end">
-          {removeBtn}
-          {upBtn}
-          {downBtn}
-          {addBtn}
+          {actionRemoveButtonEl}
+          {actionUpButtonEl}
+          {actionDownButtonEl}
+          {actionAddButtonEl}
         </div>
       </div>
     );

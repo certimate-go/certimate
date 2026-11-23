@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useControllableValue, useMount } from "ahooks";
 import { Avatar, Select, Typography, theme } from "antd";
@@ -31,14 +30,13 @@ const CAProviderSelect = ({ showAvailability, showDefault, onFilter, ...props }:
     trigger: "onChange",
   });
 
-  const defaultCAProvider = useMemo(() => {
-    return caProvidersMap.get(sslProviderSettings.provider);
-  }, [sslProviderSettings]);
-  const dataSources = useSelectDataSource({
+  const defaultCAProvider = caProvidersMap.get(sslProviderSettings.provider);
+
+  const dataSource = useSelectDataSource({
     dataSource: Array.from(caProvidersMap.values()),
     filters: [onFilter!],
   });
-  const options = useMemo(() => {
+  const options = (() => {
     const convert = (providers: CAProvider[]): Array<{ key: string; value: string; label: string; data: CAProvider }> => {
       return providers.map((provider) => ({
         key: provider.type,
@@ -53,15 +51,15 @@ const CAProviderSelect = ({ showAvailability, showDefault, onFilter, ...props }:
       value: "",
       data: {} as CAProvider,
     };
-    const plainOptions = convert(dataSources.filtered);
+    const plainOptions = convert(dataSource.filtered);
     const groupOptions = [
       {
         label: t("provider.text.available_group"),
-        options: convert(dataSources.available),
+        options: convert(dataSource.available),
       },
       {
         label: t("provider.text.unavailable_group"),
-        options: convert(dataSources.unavailable),
+        options: convert(dataSource.unavailable),
       },
     ].filter((group) => group.options.length > 0);
 
@@ -72,7 +70,7 @@ const CAProviderSelect = ({ showAvailability, showDefault, onFilter, ...props }:
       : showDefault
         ? [defaultOption, ...plainOptions]
         : plainOptions;
-  }, [showAvailability, showDefault, dataSources]);
+  })();
 
   const renderOption = (key: string) => {
     if (key === "") {
