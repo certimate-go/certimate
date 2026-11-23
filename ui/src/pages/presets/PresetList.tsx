@@ -48,10 +48,11 @@ const PresetList = () => {
               key: "script",
               label: t("preset.props.usage.script"),
             },
-            {
-              key: "workflow",
-              label: t("preset.props.usage.workflow"),
-            },
+            // TODO: 暂时隐藏工作流模板入口
+            // {
+            //   key: "workflow",
+            //   label: t("preset.props.usage.workflow"),
+            // },
           ]}
           size="large"
           onChange={(key) => handleTabChange(key)}

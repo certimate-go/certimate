@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate /*, useSearchParams*/ } from "react-router-dom";
 import { IconArrowRight, IconSquarePlus2, IconUpload } from "@tabler/icons-react";
-import { useMount } from "ahooks";
-import { App, Button, Card, Spin, Tag, Typography } from "antd";
-import { ClientResponseError } from "pocketbase";
+// import { useMount } from "ahooks";
+import { App, Button, Card, Spin /*, Tag*/, Typography } from "antd";
+// import { ClientResponseError } from "pocketbase";
 
-import { getWorkflowTemplate, listWorkflowTemplates } from "@/api/workflowtemplates";
+// import { getWorkflowTemplate, listWorkflowTemplates } from "@/api/workflowtemplates";
 import Show from "@/components/Show";
 import WorkflowGraphImportModal from "@/components/workflow/WorkflowGraphImportModal";
-import WorkflowTemplateApplyDrawer from "@/components/workflow/WorkflowTemplateApplyDrawer";
+// import WorkflowTemplateApplyDrawer from "@/components/workflow/WorkflowTemplateApplyDrawer";
 import {
   WORKFLOW_NODE_TYPES,
   type WorkflowModel,
@@ -18,7 +18,7 @@ import {
   type WorkflowNodeConfigForBranchBlock,
   newNode,
 } from "@/domain/workflow";
-import { WORKFLOW_TEMPLATE_PARAM_KINDS, type WorkflowTemplateModel, sortWorkflowTemplateParams } from "@/domain/workflowTemplate";
+// import { WORKFLOW_TEMPLATE_PARAM_KINDS, type WorkflowTemplateModel, sortWorkflowTemplateParams } from "@/domain/workflowTemplate";
 import { save as saveWorkflow } from "@/repository/workflow";
 import { unwrapErrMsg } from "@/utils/error";
 import { withBasePath } from "@/utils/url";
@@ -30,7 +30,7 @@ type TemplateKeys = typeof TEMPLATE_KEY_BLANK | typeof TEMPLATE_KEY_CERTTEST | t
 
 const WorkflowNew = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  // const [searchParams, setSearchParams] = useSearchParams();
 
   const { i18n, t } = useTranslation();
 
@@ -53,32 +53,32 @@ const WorkflowNew = () => {
   const [templateSelectKey, setTemplateSelectKey] = useState<TemplateKeys>();
   const [templatePending, setTemplatePending] = useState(false);
 
-  const [customTemplates, setCustomTemplates] = useState<WorkflowTemplateModel[]>();
-  const [applyDrawerTemplate, setApplyDrawerTemplate] = useState<WorkflowTemplateModel>();
+  // const [customTemplates, setCustomTemplates] = useState<WorkflowTemplateModel[]>();
+  // const [applyDrawerTemplate, setApplyDrawerTemplate] = useState<WorkflowTemplateModel>();
 
-  useMount(() => {
-    listWorkflowTemplates()
-      .then((res) => {
-        setCustomTemplates(res);
+  // useMount(() => {
+  //   listWorkflowTemplates()
+  //     .then((res) => {
+  //       setCustomTemplates(res);
 
-        const templateId = searchParams.get("template");
-        if (templateId) {
-          setSearchParams((prev) => {
-            prev.delete("template");
-            return prev;
-          });
-          getWorkflowTemplate(templateId).then(setApplyDrawerTemplate);
-        }
-      })
-      .catch((err) => {
-        if (err instanceof ClientResponseError && err.isAbort) {
-          return;
-        }
+  //       const templateId = searchParams.get("template");
+  //       if (templateId) {
+  //         setSearchParams((prev) => {
+  //           prev.delete("template");
+  //           return prev;
+  //         });
+  //         getWorkflowTemplate(templateId).then(setApplyDrawerTemplate);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       if (err instanceof ClientResponseError && err.isAbort) {
+  //         return;
+  //       }
 
-        console.error(err);
-        setCustomTemplates([]);
-      });
-  });
+  //       console.error(err);
+  //       setCustomTemplates([]);
+  //     });
+  // });
 
   const renderTemplateCard = ({ key, name, description, image }: { key: TemplateKeys; name: string; description: string; image: string }) => {
     return (
@@ -107,40 +107,40 @@ const WorkflowNew = () => {
     );
   };
 
-  const renderCustomTemplateCard = (template: WorkflowTemplateModel) => {
-    const params = sortWorkflowTemplateParams(template.params ?? []);
-    const summary = params
-      .map((param) =>
-        param.kind === WORKFLOW_TEMPLATE_PARAM_KINDS.DOMAINS ? t("workflow.template.apply.tag.domains") : t("workflow.template.apply.tag.deployment")
-      )
-      .join(" · ");
+  // const renderCustomTemplateCard = (template: WorkflowTemplateModel) => {
+  //   const params = sortWorkflowTemplateParams(template.params ?? []);
+  //   const summary = params
+  //     .map((param) =>
+  //       param.kind === WORKFLOW_TEMPLATE_PARAM_KINDS.DOMAINS ? t("workflow.template.apply.tag.domains") : t("workflow.template.apply.tag.deployment")
+  //     )
+  //     .join(" · ");
 
-    return (
-      <Card key={template.id} className="group/card size-full" hoverable onClick={() => setApplyDrawerTemplate(template)}>
-        <div className="flex w-full items-center gap-4">
-          <Card.Meta
-            className="grow"
-            title={
-              <div className="flex w-full items-center justify-between gap-4 overflow-hidden transition-colors group-hover/card:text-primary">
-                <div className="flex-1 truncate">{template.name}</div>
-                <IconArrowRight className="opacity-0 transition-opacity group-hover/card:opacity-100" size="1.25em" />
-              </div>
-            }
-            description={
-              <div className="flex flex-col gap-1">
-                <div className="line-clamp-2 min-h-8">{template.description}</div>
-                {summary && (
-                  <Tag className="w-fit" color="default">
-                    {summary}
-                  </Tag>
-                )}
-              </div>
-            }
-          />
-        </div>
-      </Card>
-    );
-  };
+  //   return (
+  //     <Card key={template.id} className="group/card size-full" hoverable onClick={() => setApplyDrawerTemplate(template)}>
+  //       <div className="flex w-full items-center gap-4">
+  //         <Card.Meta
+  //           className="grow"
+  //           title={
+  //             <div className="flex w-full items-center justify-between gap-4 overflow-hidden transition-colors group-hover/card:text-primary">
+  //               <div className="flex-1 truncate">{template.name}</div>
+  //               <IconArrowRight className="opacity-0 transition-opacity group-hover/card:opacity-100" size="1.25em" />
+  //             </div>
+  //           }
+  //           description={
+  //             <div className="flex flex-col gap-1">
+  //               <div className="line-clamp-2 min-h-8">{template.description}</div>
+  //               {summary && (
+  //                 <Tag className="w-fit" color="default">
+  //                   {summary}
+  //                 </Tag>
+  //               )}
+  //             </div>
+  //           }
+  //         />
+  //       </div>
+  //     </Card>
+  //   );
+  // };
 
   const { modalProps: workflowImportModalProps, ...workflowImportModal } = WorkflowGraphImportModal.useModal();
 
@@ -369,6 +369,8 @@ const WorkflowNew = () => {
           </div>
         </div>
 
+        {/*
+          // TODO: 暂时隐藏工作流模板入口
         <div className="mt-8">
           <h3>{t("workflow.new.custom_templates.title")}</h3>
           <Typography.Text type="secondary">
@@ -394,7 +396,7 @@ const WorkflowNew = () => {
               </div>
             </Show>
           </div>
-        </div>
+        </div> */}
 
         <div className="mt-8">
           <h3>{t("workflow.new.templates.title")}</h3>
@@ -408,14 +410,14 @@ const WorkflowNew = () => {
         </div>
       </div>
 
-      <WorkflowTemplateApplyDrawer
+      {/* <WorkflowTemplateApplyDrawer
         open={!!applyDrawerTemplate}
         template={applyDrawerTemplate}
         onInstantiated={(workflowId) => navigate(`/workflows/${workflowId}`, { replace: true })}
         onOpenChange={(open) => {
           if (!open) setApplyDrawerTemplate(void 0);
         }}
-      />
+      /> */}
     </div>
   );
 };
