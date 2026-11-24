@@ -74,13 +74,24 @@ func (s *MarketService) OfficialIcon(ctx context.Context, provider, digest strin
 	if !ok {
 		return nil, "", fmt.Errorf("market: invalid official index path")
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, indexDirectory+"/market/icons/"+digest+"."+icon.Format, nil)
+	iconPath := "/market/icons/" + digest + "." + icon.Format
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, indexDirectory+iconPath, nil)
 	if err != nil {
 		return nil, "", err
 	}
 	req.Header.Set("Accept-Encoding", "identity")
 	mirrorURL = req.URL.Redacted()
-	resp, err := catalog.httpClient.Do(req)
+	client := *catalog.httpClient
+	if catalog.indexURL == plugin.OfficialMarketDefaultBase+plugin.OfficialMarketIndexPath {
+		githubIconURL := plugin.GitHubRawBase + "/certimate-go/plugins/HEAD/registry" + iconPath
+		client.CheckRedirect = func(redirect *http.Request, via []*http.Request) error {
+			if len(via) == 1 && redirect.URL.String() == githubIconURL {
+				return nil
+			}
+			return catalogRedirect(redirect, via)
+		}
+	}
+	resp, err := client.Do(req)
 	if resp != nil {
 		upstreamStatus = resp.StatusCode
 	}

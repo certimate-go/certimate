@@ -222,17 +222,23 @@ func TestMarketBrowserFixture(t *testing.T) {
 		}
 		switch r.URL.Host {
 		case "raw.githubusercontent.com":
-			if body, ok := officialRawFiles[r.URL.Path]; ok {
+			path := strings.Replace(r.URL.Path, "/certimate-go/plugins/HEAD/", "/certimate-go/plugins/refs/heads/main/", 1)
+			if body, ok := officialRawFiles[path]; ok {
 				_, _ = w.Write(body)
 				return
 			}
-		case "cdn.jsdelivr.net", "preset.fixture.example", "custom.fixture.example", "tampered.fixture.example":
+		case "cdn.jsdelivr.net", "preset.fixture.example", "custom.fixture.example", "tampered.fixture.example", "redirected.fixture.example":
 			prefix := ""
 			if r.URL.Host != "cdn.jsdelivr.net" {
 				prefix = "/mirror"
 			}
 			path, _ := strings.CutPrefix(r.URL.Path, prefix)
 			if body, ok := official.files[path]; ok && strings.HasPrefix(r.URL.Path, prefix+"/gh/") {
+				icon, isIcon := strings.CutPrefix(path, "/gh/certimate-go/plugins@latest/registry/market/icons/")
+				if isIcon && (r.URL.Host == "cdn.jsdelivr.net" || r.URL.Host == "redirected.fixture.example") {
+					http.Redirect(w, r, plugin.GitHubRawBase+"/certimate-go/plugins/HEAD/registry/market/icons/"+icon, http.StatusMovedPermanently)
+					return
+				}
 				if r.URL.Host == "tampered.fixture.example" && strings.Contains(path, "/market/icons/") {
 					body = append(bytes.Clone(body), 0)
 				}

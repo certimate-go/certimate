@@ -73,7 +73,7 @@ func TestOfficialTransportRejectsCrossOriginRedirect(t *testing.T) {
 
 func TestOfficialIconLogsMirrorFailures(t *testing.T) {
 	const provider = "example"
-	const mirror = "https://mirror.example"
+	const mirror = plugin.OfficialMarketDefaultBase
 	const digest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 	const redirectTarget = "https://raw.githubusercontent.com/certimate-go/plugins/main/icon.png"
 	indexURL := mirror + plugin.OfficialMarketIndexPath

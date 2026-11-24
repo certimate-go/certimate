@@ -345,6 +345,8 @@ func TestE2E_OfficialMirrorSettingsAndIcons(t *testing.T) {
 		t.Fatal("mirror change did not change the same-origin icon revision")
 	}
 	api.assertMarketIcon(presetCard.IconURL, 200)
+	switchTo(pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://redirected.fixture.example/mirror"})
+	api.assertMarketIcon(card(false).IconURL, 404)
 	switchTo(pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://tampered.fixture.example/mirror"})
 	api.assertMarketIcon(card(false).IconURL, 404)
 	switchTo(pluginhost.MarketMirror{Mode: "custom", BaseURL: "https://offline.fixture.example"})
