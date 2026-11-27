@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { type AccessModel } from "@/domain/access";
 import { list as listAccesses, remove as removeAccess, save as saveAccess } from "@/repository/access";
 
-import { type AccessesState, type AccessesStore } from "./types";
+import { type AccessesState, type AccessesStore } from "./typings";
 
 export const useAccessesStore = create<AccessesStore>((set, get) => {
   let fetcher: Promise<AccessModel[]> | null = null; // 防止多次重复请求

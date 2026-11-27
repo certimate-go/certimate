@@ -93,7 +93,7 @@ export interface NodeRegistry<V extends NodeJSON["data"] = NodeJSON["data"]> ext
   kind?: NodeKindType;
 
   formMeta?: Omit<FormMeta<V>, "render"> & {
-    render: (props: FormRenderProps<V>) => React.ReactElement<any>;
+    render: (props: FormRenderProps<V>) => React.ReactElement<unknown>;
   };
 
   /**

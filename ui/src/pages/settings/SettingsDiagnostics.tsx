@@ -13,27 +13,24 @@ import { mergeCls } from "@/utils/css";
 import { unwrapErrMsg } from "@/utils/error";
 
 const SettingsDiagnostics = () => {
-  const { t } = useTranslation();
-
   return (
     <>
-      <h2>{t("settings.diagnostics.logs.title")}</h2>
-      <SettingsDiagnosticsLogs />
+      <div>
+        <SettingsDiagnosticsLogs />
+      </div>
 
-      <Divider />
+      <div>
+        <SettingsDiagnosticsCrons />
+      </div>
 
-      <h2>{t("settings.diagnostics.crons.title")}</h2>
-      <SettingsDiagnosticsCrons />
-
-      <Divider />
-
-      <h2>{t("settings.diagnostics.workflow_dispatcher.title")}</h2>
-      <SettingsDiagnosticsWorkflowDispatcher />
+      <div>
+        <SettingsDiagnosticsWorkflowDispatcher />
+      </div>
     </>
   );
 };
 
-const SettingsDiagnosticsLogs = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsDiagnosticsLogs = () => {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(1);
@@ -124,7 +121,13 @@ const SettingsDiagnosticsLogs = ({ className, style }: { className?: string; sty
   };
 
   return (
-    <div className={className} style={style}>
+    <Card
+      title={
+        <div className="mt-2 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.diagnostics.logs.title")}</h2>
+        </div>
+      }
+    >
       <div className="size-full overflow-hidden rounded-md bg-black text-stone-200">
         <div className="relative">
           <Show>
@@ -178,11 +181,11 @@ const SettingsDiagnosticsLogs = ({ className, style }: { className?: string; sty
           </Show>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
-const SettingsDiagnosticsCrons = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsDiagnosticsCrons = () => {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(1);
@@ -234,7 +237,13 @@ const SettingsDiagnosticsCrons = ({ className, style }: { className?: string; st
   };
 
   return (
-    <div className={className} style={style}>
+    <Card
+      title={
+        <div className="mt-2 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.diagnostics.crons.title")}</h2>
+        </div>
+      }
+    >
       <List<CronJob>
         bordered
         dataSource={listData}
@@ -295,11 +304,11 @@ const SettingsDiagnosticsCrons = ({ className, style }: { className?: string; st
           <Pagination current={page} pageSize={pageSize} size="small" total={listTotal} onChange={handlePaginationChange} />
         </div>
       </Show>
-    </div>
+    </Card>
   );
 };
 
-const SettingsDiagnosticsWorkflowDispatcher = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsDiagnosticsWorkflowDispatcher = () => {
   const { t } = useTranslation();
 
   type Statistics = Awaited<ReturnType<typeof getWorkflowStats>>["data"];
@@ -326,7 +335,13 @@ const SettingsDiagnosticsWorkflowDispatcher = ({ className, style }: { className
   );
 
   return (
-    <div className={className} style={style}>
+    <Card
+      title={
+        <div className="mt-2 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.diagnostics.workflow_dispatcher.title")}</h2>
+        </div>
+      }
+    >
       <div className="flex w-full flex-wrap items-stretch justify-center gap-4 sm:flex-nowrap">
         <Card className="w-full sm:flex-1 md:w-1/3" loading={loading && !statistics}>
           <Statistic title={t("settings.diagnostics.workflow_dispatcher.statistics.concurrency")} value={statistics?.concurrency ?? "-"} />
@@ -368,7 +383,7 @@ const SettingsDiagnosticsWorkflowDispatcher = ({ className, style }: { className
           </Card>
         </Tooltip>
       </div>
-    </div>
+    </Card>
   );
 };
 

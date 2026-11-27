@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { WORKFLOW_NODE_TYPES, type WorkflowModel, type WorkflowNodeConfigForStart } from "@/domain/workflow";
 import { get as getWorkflow, save as saveWorkflow, subscribe as subscribeWorkflow } from "@/repository/workflow";
 
-import { type WorkflowStore } from "./types";
+import { type WorkflowStore } from "./typings";
 
 export const useWorkflowStore = create<WorkflowStore>((set, get) => {
   const ensureInitialized = () => {

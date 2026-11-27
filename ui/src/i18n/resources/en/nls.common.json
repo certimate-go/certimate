@@ -1,5 +1,6 @@
 {
   "$ns": "common",
+
   "button": {
     "add": "Add",
     "cancel": "Cancel",
@@ -19,6 +20,7 @@
     "submit": "Submit",
     "view": "View"
   },
+
   "text": {
     "copied": "Copied",
     "import_from_file": "Import from file ...",
@@ -35,18 +37,23 @@
     "saving": "Saving ...",
     "search": "Search ..."
   },
+
   "menu": {
+    "expand_sidebar": "Expand sidebar",
+    "collapse_sidebar": "Collapse sidebar",
     "document": "Document",
     "theme": "Change theme",
     "locale": "Change language",
     "gethelp": "Get help",
     "logout": "Log-out"
   },
+
   "theme": {
     "light": "Light",
     "dark": "Dark",
     "system": "Auto"
   },
+
   "errmsg": {
     "positiveInteger_invalid": "Must be a positive integer",
     "domain_invalid": "Invalid domain name",

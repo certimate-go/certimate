@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { type NotifyTemplateContent, SETTINGS_NAMES, type ScriptTemplateContent, type SettingsModel } from "@/domain/settings";
 import { get as getSettings, save as saveSettings } from "@/repository/settings";
 
-import { type NotifyTemplatesState, type NotifyTemplatesStore, type ScriptTemplatesState, type ScriptTemplatesStore } from "./types";
+import { type NotifyTemplatesState, type NotifyTemplatesStore, type ScriptTemplatesState, type ScriptTemplatesStore } from "./typings";
 
 export const useNotifyTemplatesStore = create<NotifyTemplatesStore>((set, get) => {
   let fetcher: Promise<SettingsModel<NotifyTemplateContent>> | null = null; // 防止多次重复请求

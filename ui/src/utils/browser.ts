@@ -12,9 +12,9 @@
 };
 
 export const isTouchSupported = () => {
-  return (
-    "ontouchstart" in window ||
-    window.navigator.maxTouchPoints > 0 ||
-    (!!(window as any)["DocumentTouch"] && document instanceof (window as any)["DocumentTouch"])
-  );
+  if (!("ontouchstart" in window)) return false;
+  if (!("maxTouchPoints" in window.navigator)) return false;
+  if (window.navigator.maxTouchPoints === 0) return false;
+
+  return true;
 };

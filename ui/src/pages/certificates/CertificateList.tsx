@@ -449,9 +449,9 @@ const CertificateList = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="container">
-        <h1>{t("certificate.page.heading")}</h1>
-        <p className="text-base text-gray-500">{t("certificate.page.subheading")}</p>
+      <div className="container mb-6">
+        <h1 className="text-2xl font-medium text-foreground/80">{t("certificate.page.heading")}</h1>
+        <p className="mt-1 text-sm text-foreground/70">{t("certificate.page.subheading")}</p>
       </div>
 
       <div className="container">

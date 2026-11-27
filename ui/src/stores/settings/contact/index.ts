@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { type EmailsSettingsContent, SETTINGS_NAMES, type SettingsModel } from "@/domain/settings";
 import { get as getSettings, save as saveSettings } from "@/repository/settings";
 
-import { type ContactEmailsState, type ContactEmailsStore } from "./types";
+import { type ContactEmailsState, type ContactEmailsStore } from "./typings";
 
 export const useContactEmailsStore = create<ContactEmailsStore>((set, get) => {
   let fetcher: Promise<SettingsModel<EmailsSettingsContent>> | null = null; // 防止多次重复请求

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
-import { IconEdit, IconHistory, IconPlayerPlay, IconRobot } from "@tabler/icons-react";
+import { IconEdit, IconHistory, IconPencilRuler, IconPlayerPlay } from "@tabler/icons-react";
 import { useSize } from "ahooks";
 import { App, Button, Input, type InputRef, Segmented, Skeleton, Spin } from "antd";
 
@@ -39,9 +39,9 @@ const WorkflowDetail = () => {
   const divHeaderSize = useSize(divHeaderRef);
 
   const tabs = [
-    ["design", "workflow.detail.design.tab", <IconRobot size="1em" />],
+    ["design", "workflow.detail.design.tab", <IconPencilRuler size="1em" />],
     ["runs", "workflow.detail.runs.tab", <IconHistory size="1em" />],
-  ] satisfies [string, string, React.ReactElement<any>][];
+  ] satisfies [string, string, React.ReactElement<unknown>][];
   const [tabValue, setTabValue] = useState<string>(() => location.pathname.split("/")[3]);
 
   useEffect(() => {

@@ -2,17 +2,16 @@
   "$ns": "settings",
 
   "page": {
-    "heading": "Settings"
+    "heading": "Settings",
+    "subheading": "Manage your security, preferences, and other configurations."
   },
 
-  "account": {
-    "tab": "Account",
+  "security": {
+    "tab": "Security",
     "username": {
       "title": "Username",
-      "tips": "Email you can use to sign in to your account.",
-      "button": {
-        "label": "Change email"
-      },
+      "subtitle": "Email you can use to sign in to your account.",
+      "button": "Change email",
       "form": {
         "email": {
           "label": "Email",
@@ -22,28 +21,24 @@
     },
     "password": {
       "title": "Password",
-      "tips": "It's recommended to change your password regularly, or sooner if you suspect any issues.",
-      "button": {
-        "label": "Change password"
-      },
+      "subtitle": "It's recommended to change your password regularly, or sooner if you suspect any issues.",
+      "button": "Change password",
       "form": {
-        "email": {
-          "old_password": {
-            "label": "Current password",
-            "placeholder": "Please enter the current password"
-          },
-          "new_password": {
-            "label": "New password",
-            "placeholder": "Please enter the new password"
-          },
-          "confirm_password": {
-            "label": "Confirm password",
-            "placeholder": "Please enter the new password again"
-          },
-          "password": {
-            "errmsg": {
-              "not_matched": "Passwords do not match"
-            }
+        "old_password": {
+          "label": "Current password",
+          "placeholder": "Please enter the current password"
+        },
+        "new_password": {
+          "label": "New password",
+          "placeholder": "Please enter the new password"
+        },
+        "confirm_password": {
+          "label": "Confirm password",
+          "placeholder": "Please enter the new password again"
+        },
+        "password": {
+          "errmsg": {
+            "not_matched": "Passwords do not match"
           }
         }
       }
@@ -57,36 +52,34 @@
     "tab": "Appearance",
     "theme": {
       "title": "Theme",
+      "subtitle": "Choose a theme, or follow your device's appearance.",
       "form": {
         "value": {
-          "extra": "Reload the page for the change to take effect."
+          "help": "Notes: Reload the page for the change to take effect."
         }
       }
     },
     "language": {
       "title": "Language",
+      "subtitle": "Choose the language used across the WebUI.",
       "form": {
         "value": {
-          "extra": "Reload the page for the change to take effect."
+          "help": "Notes: Reload the page for the change to take effect."
         }
       }
     },
-    "pagination": {
-      "title": "Pagination",
+    "preferences": {
+      "title": "Preferences",
+      "subtitle": "Personal display preferences for this browser, nothing is sent to the server.",
       "form": {
         "default_per_page": {
-          "label": "Default items per page",
+          "label": "Default pagination",
           "placeholder": "Please enter default items per page",
           "unit": "items per page"
-        }
-      }
-    },
-    "workflow": {
-      "title": "Workflow",
-      "form": {
-        "default_designer_layout": {
-          "label": "Default designer layout",
-          "placeholder": "Please select default designer layout",
+        },
+        "default_workflow_layout": {
+          "label": "Default workflow layout",
+          "placeholder": "Please select default workflow designer layout",
           "option": {
             "horizontal": "Horizontal layout",
             "vertical": "Vertical layout"
@@ -153,10 +146,10 @@
   },
 
   "sslprovider": {
-    "tab": "Certificate authority",
+    "tab": "ACME",
     "ca": {
       "title": "System-wide CA",
-      "tips": "You can use different CAs for each workflow as well. If you want to do this, please visit the credentials page.",
+      "tips": "You can use different CAs for each workflow as well. If you want to do this, please visit the \"Credentials\" page.",
       "form": {
         "provider": {
           "label": "ACME CA provider",
@@ -254,10 +247,6 @@
       "title": "Help us improve Certimate",
       "subtitle": "Tell us how to make Certimate work better for you.",
       "button": "Give feedback"
-    },
-    "contributors": {
-      "title": "Contributors",
-      "tips": "Thanks to all the people who have contributed to this project."
     }
   }
 }

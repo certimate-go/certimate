@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { IconCirclePlus, IconCopy, IconDots, IconEdit, IconFingerprint, IconPlus, IconReload, IconTrash } from "@tabler/icons-react";
+import { IconCirclePlus, IconCopy, IconDots, IconEdit, IconPlugConnected, IconPlus, IconReload, IconTrash } from "@tabler/icons-react";
 import { useMount, useRequest } from "ahooks";
 import { App, Avatar, Button, Dropdown, Input, Skeleton, Table, type TableProps, Tabs, Typography, theme } from "antd";
 import dayjs from "dayjs";
@@ -360,9 +360,9 @@ const AccessList = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="container">
-        <h1>{t("access.page.heading")}</h1>
-        <p className="text-base text-gray-500">{t("access.page.subheading")}</p>
+      <div className="container mb-6">
+        <h1 className="text-2xl font-medium text-foreground/80">{t("access.page.heading")}</h1>
+        <p className="mt-1 text-sm text-foreground/70">{t("access.page.subheading")}</p>
       </div>
 
       <div className="container">
@@ -390,7 +390,10 @@ const AccessList = () => {
         </div>
 
         <Tabs
-          className="mt-2 -mb-2"
+          className="mt-2"
+          classNames={{
+            header: "px-[2px]",
+          }}
           activeKey={filters["usage"] as string}
           items={[
             {
@@ -423,7 +426,7 @@ const AccessList = () => {
                   className="py-24"
                   title={loadError ? t("common.text.nodata_failed") : t("access.text.nodata")}
                   description={loadError ? unwrapErrMsg(loadError) : t("access.text.nodata_description")}
-                  icon={<IconFingerprint size={24} />}
+                  icon={<IconPlugConnected size={24} />}
                   extra={
                     loadError ? (
                       <Button ghost icon={<IconReload size="1.25em" />} type="primary" onClick={handleReloadClick}>

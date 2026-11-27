@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { SETTINGS_NAMES, type SSLProviderSettingsContent, type SettingsModel } from "@/domain/settings";
 import { get as getSettings, save as saveSettings } from "@/repository/settings";
 
-import { type SSLProviderSettingsState, type SSLProviderSettingsStore } from "./types";
+import { type SSLProviderSettingsState, type SSLProviderSettingsStore } from "./typings";
 
 export const useSSLProviderSettingsStore = create<SSLProviderSettingsStore>((set, get) => {
   let fetcher: Promise<SettingsModel<SSLProviderSettingsContent>> | null = null; // 防止多次重复请求

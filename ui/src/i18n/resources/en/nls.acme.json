@@ -1,0 +1,19 @@
+{
+  "$ns": "acme",
+
+  "page": {
+    "heading": "ACME"
+  },
+
+  "ca": {
+    "heading": "ACME CA"
+  },
+
+  "accounts": {
+    "heading": "ACME Accounts"
+  },
+
+  "configs": {
+    "heading": "ACME Configurations"
+  }
+}

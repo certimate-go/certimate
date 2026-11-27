@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMount } from "ahooks";
-import { App, Button, Divider, Form, InputNumber, Skeleton } from "antd";
+import { App, Button, Card, Form, InputNumber, Skeleton } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { produce } from "immer";
 import { z } from "zod";
@@ -40,18 +40,18 @@ const SettingsPersistence = () => {
         updateSettings: updateContextSettings,
       }}
     >
-      <h2>{t("settings.persistence.alerting.title")}</h2>
-      <SettingsPersistenceAlerting className="md:max-w-160" />
+      <div>
+        <SettingsPersistenceAlerting />
+      </div>
 
-      <Divider />
-
-      <h2>{t("settings.persistence.data_retention.title")}</h2>
-      <SettingsPersistenceDataRetention className="md:max-w-160" />
+      <div>
+        <SettingsPersistenceDataRetention />
+      </div>
     </InternalSettingsContext.Provider>
   );
 };
 
-const SettingsPersistenceAlerting = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsPersistenceAlerting = () => {
   const { t } = useTranslation();
 
   const { loading, settings, updateSettings } = useContext(InternalSettingsContext);
@@ -84,39 +84,43 @@ const SettingsPersistenceAlerting = ({ className, style }: { className?: string;
   };
 
   return (
-    <>
-      <div className={className} style={style}>
-        <Show when={!loading} fallback={<Skeleton active />}>
-          <Form {...formProps} form={formInst} disabled={formPending} layout="vertical">
-            <Form.Item
-              name="certificatesWarningDaysBeforeExpire"
-              label={t("settings.persistence.alerting.form.certificates_warning_days_before_expire.label")}
-              extra={<span dangerouslySetInnerHTML={{ __html: t("settings.persistence.alerting.form.certificates_warning_days_before_expire.help") }}></span>}
-              rules={[formRule]}
-            >
-              <InputNumber
-                style={{ width: "100%" }}
-                min={1}
-                max={365}
-                placeholder={t("settings.persistence.alerting.form.certificates_warning_days_before_expire.placeholder")}
-                suffix={t("settings.persistence.alerting.form.certificates_warning_days_before_expire.unit")}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
+    <Card
+      title={
+        <div className="mt-2 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.persistence.alerting.title")}</h2>
+        </div>
+      }
+    >
+      <Show when={!loading} fallback={<Skeleton active />}>
+        <Form className="md:max-w-160" {...formProps} form={formInst} disabled={formPending} layout="vertical">
+          <Form.Item
+            name="certificatesWarningDaysBeforeExpire"
+            label={t("settings.persistence.alerting.form.certificates_warning_days_before_expire.label")}
+            extra={<span dangerouslySetInnerHTML={{ __html: t("settings.persistence.alerting.form.certificates_warning_days_before_expire.help") }}></span>}
+            rules={[formRule]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={1}
+              max={365}
+              placeholder={t("settings.persistence.alerting.form.certificates_warning_days_before_expire.placeholder")}
+              suffix={t("settings.persistence.alerting.form.certificates_warning_days_before_expire.unit")}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit" disabled={!formChanged} loading={formPending}>
-                {t("common.button.save")}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Show>
-      </div>
-    </>
+          <Form.Item noStyle>
+            <Button type="primary" htmlType="submit" disabled={!formChanged} loading={formPending}>
+              {t("common.button.save")}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Show>
+    </Card>
   );
 };
 
-const SettingsPersistenceDataRetention = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsPersistenceDataRetention = () => {
   const { t } = useTranslation();
 
   const { loading, settings, updateSettings } = useContext(InternalSettingsContext);
@@ -154,51 +158,55 @@ const SettingsPersistenceDataRetention = ({ className, style }: { className?: st
   };
 
   return (
-    <>
-      <div className={className} style={style}>
-        <Show when={!loading} fallback={<Skeleton active />}>
-          <Form {...formProps} form={formInst} disabled={formPending} layout="vertical">
-            <Form.Item
-              name="certificatesRetentionMaxDays"
-              label={t("settings.persistence.data_retention.form.certificates_retention_max_days.label")}
-              extra={<span dangerouslySetInnerHTML={{ __html: t("settings.persistence.data_retention.form.certificates_retention_max_days.help") }}></span>}
-              rules={[formRule]}
-            >
-              <InputNumber
-                style={{ width: "100%" }}
-                min={0}
-                max={36500}
-                placeholder={t("settings.persistence.data_retention.form.certificates_retention_max_days.placeholder")}
-                suffix={t("settings.persistence.data_retention.form.certificates_retention_max_days.unit")}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
+    <Card
+      title={
+        <div className="mt-2 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.persistence.data_retention.title")}</h2>
+        </div>
+      }
+    >
+      <Show when={!loading} fallback={<Skeleton active />}>
+        <Form className="md:max-w-160" {...formProps} form={formInst} disabled={formPending} layout="vertical">
+          <Form.Item
+            name="certificatesRetentionMaxDays"
+            label={t("settings.persistence.data_retention.form.certificates_retention_max_days.label")}
+            extra={<span dangerouslySetInnerHTML={{ __html: t("settings.persistence.data_retention.form.certificates_retention_max_days.help") }}></span>}
+            rules={[formRule]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              max={36500}
+              placeholder={t("settings.persistence.data_retention.form.certificates_retention_max_days.placeholder")}
+              suffix={t("settings.persistence.data_retention.form.certificates_retention_max_days.unit")}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
 
-            <Form.Item
-              name="workflowRunsRetentionMaxDays"
-              label={t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.label")}
-              extra={<span dangerouslySetInnerHTML={{ __html: t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.help") }}></span>}
-              rules={[formRule]}
-            >
-              <InputNumber
-                style={{ width: "100%" }}
-                min={0}
-                max={36500}
-                placeholder={t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.placeholder")}
-                suffix={t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.unit")}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
+          <Form.Item
+            name="workflowRunsRetentionMaxDays"
+            label={t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.label")}
+            extra={<span dangerouslySetInnerHTML={{ __html: t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.help") }}></span>}
+            rules={[formRule]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              max={36500}
+              placeholder={t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.placeholder")}
+              suffix={t("settings.persistence.data_retention.form.workflow_runs_retention_max_days.unit")}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit" disabled={!formChanged} loading={formPending}>
-                {t("common.button.save")}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Show>
-      </div>
-    </>
+          <Form.Item noStyle>
+            <Button type="primary" htmlType="submit" disabled={!formChanged} loading={formPending}>
+              {t("common.button.save")}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Show>
+    </Card>
   );
 };
 

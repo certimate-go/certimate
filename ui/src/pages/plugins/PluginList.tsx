@@ -94,11 +94,11 @@ const PluginList = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="mx-auto max-w-[1920px]">
-        <h1>{t("plugin.page.heading")}</h1>
+      <div className="container mb-6">
+        <h1 className="text-2xl font-medium text-foreground/80">{t("plugin.page.heading")}</h1>
       </div>
 
-      <div className="mx-auto max-w-[1920px]">
+      <div className="container">
         <PluginMarket />
       </div>
     </div>

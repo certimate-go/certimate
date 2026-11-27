@@ -1,4 +1,5 @@
 import nlsAccess from "./nls.access.json";
+import nlsAcme from "./nls.acme.json";
 import nlsCertificate from "./nls.certificate.json";
 import nlsCommon from "./nls.common.json";
 import nlsDashboard from "./nls.dashboard.json";
@@ -20,6 +21,7 @@ export default buildTranslations(
   nlsDashboard,
   nlsSettings,
   nlsProvider,
+  nlsAcme,
   nlsAccess,
   nlsPreset,
   nlsPlugin,

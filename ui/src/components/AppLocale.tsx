@@ -2,9 +2,7 @@
 import { IconLanguage, type IconProps } from "@tabler/icons-react";
 import { Dropdown, type DropdownProps, Typography } from "antd";
 
-import { IconLanguageEnZh, IconLanguageZhEn } from "@/components/icons";
-import Show from "@/components/Show";
-import { localeNames, localeResources } from "@/i18n";
+import { localeResources } from "@/i18n";
 import { mergeCls } from "@/utils/css";
 
 export const useAppLocaleMenuItems = () => {
@@ -44,21 +42,7 @@ const AppLocaleDropdown = ({ children, trigger = ["click"] }: AppLocaleDropdownP
 export interface AppLocaleIconProps extends IconProps {}
 
 const AppLocaleIcon = (props: AppLocaleIconProps) => {
-  const { i18n } = useTranslation();
-
-  return (
-    <Show>
-      <Show.Case when={(i18n.resolvedLanguage ?? i18n.language) === localeNames.EN}>
-        <IconLanguageEnZh {...props} />
-      </Show.Case>
-      <Show.Case when={(i18n.resolvedLanguage ?? i18n.language) === localeNames.ZH}>
-        <IconLanguageZhEn {...props} />
-      </Show.Case>
-      <Show.Default>
-        <IconLanguage {...props} />
-      </Show.Default>
-    </Show>
-  );
+  return <IconLanguage {...props} />;
 };
 
 export interface AppLocaleLinkButtonProps {

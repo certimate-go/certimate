@@ -5,18 +5,19 @@ import {
   IconBrandGithub,
   IconCertificate,
   IconCodeDots,
-  IconFingerprint,
   IconHelpCircle,
   IconHierarchy3,
   IconHome,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarRightCollapse,
   IconMenu2,
+  IconPlugConnected,
   IconPower,
   IconPuzzle,
+  IconRobot,
   IconSettings,
 } from "@tabler/icons-react";
-import { Alert, Button, Drawer, Layout, Menu, type MenuProps, theme } from "antd";
+import { Alert, Button, Drawer, Layout, Menu, type MenuProps, Tooltip, theme } from "antd";
 
 import AppLocale from "@/components/AppLocale";
 import AppTheme from "@/components/AppTheme";
@@ -27,6 +28,7 @@ import { useTriggerElement } from "@/hooks";
 import { getAuthStore } from "@/repository/admin";
 import { usePluginCatalogStore } from "@/stores/pluginCatalog";
 import { isBrowserHappy } from "@/utils/browser";
+import { mergeCls } from "@/utils/css";
 import { withBasePath } from "@/utils/url";
 
 const ConsoleLayout = () => {
@@ -64,20 +66,30 @@ const ConsoleLayout = () => {
 
       <Layout className="h-screen" hasSider>
         <Layout.Sider
-          className="group/sider z-20 h-full border-r bg-background max-md:static max-md:hidden"
+          className="z-20 h-full border-r bg-background max-md:static max-md:hidden"
           style={{ borderColor: themeToken.colorBorderSecondary }}
           theme="light"
           width={siderCollapsed ? 81 : 256}
         >
           <div className="flex size-full flex-col items-center justify-between overflow-hidden select-none">
             <div className="w-full px-2">
-              <SiderMenu collapsed={siderCollapsed} />
+              <SiderMenu collapsed={siderCollapsed} collapsible onCollapse={(collapsed) => setSiderCollapsed(collapsed)} />
             </div>
             <div className="w-full px-2 pb-2">
               <Menu
                 style={{ background: "transparent", borderInlineEnd: "none" }}
                 inlineCollapsed={siderCollapsed}
                 items={[
+                  {
+                    key: "$expand",
+                    icon: (
+                      <span className="anticon scale-125" role="img">
+                        <IconLayoutSidebarRightCollapse size="1em" />
+                      </span>
+                    ),
+                    label: t("common.menu.expand_sidebar"),
+                    onClick: () => setSiderCollapsed(false),
+                  },
                   {
                     key: "document",
                     icon: (
@@ -99,26 +111,16 @@ const ConsoleLayout = () => {
                     label: t("common.menu.logout"),
                     onClick: handleLogoutClick,
                   },
-                ]}
+                ].filter((item) => {
+                  if (item.key === "$expand") {
+                    return siderCollapsed;
+                  }
+                  return true;
+                })}
                 mode="inline"
                 selectable={false}
               />
             </div>
-          </div>
-          <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover/sider:opacity-100">
-            <Button
-              className="bg-background shadow-sm"
-              icon={
-                siderCollapsed ? (
-                  <IconLayoutSidebarRightCollapse size="1.5em" stroke="1.25" color="#999" />
-                ) : (
-                  <IconLayoutSidebarLeftCollapse size="1.5em" stroke="1.25" color="#999" />
-                )
-              }
-              shape="circle"
-              type="text"
-              onClick={() => setSiderCollapsed(!siderCollapsed)}
-            />
           </div>
         </Layout.Sider>
 
@@ -170,7 +172,17 @@ const ConsoleLayout = () => {
   );
 };
 
-const SiderMenu = ({ collapsed, onSelect }: { collapsed?: boolean; onSelect?: (key: string) => void }) => {
+const SiderMenu = ({
+  collapsed,
+  collapsible,
+  onSelect,
+  onCollapse,
+}: {
+  collapsed?: boolean;
+  collapsible?: boolean;
+  onSelect?: (key: string) => void;
+  onCollapse?: (collapsed: boolean) => void;
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -179,38 +191,61 @@ const SiderMenu = ({ collapsed, onSelect }: { collapsed?: boolean; onSelect?: (k
   const MENU_KEY_HOME = "/";
   const MENU_KEY_WORKFLOWS = "/workflows";
   const MENU_KEY_CERTIFICATES = "/certificates";
+  const MENU_KEY_ACME = "/acme";
   const MENU_KEY_ACCESSES = "/accesses";
   const MENU_KEY_PRESETS = "/presets";
   const MENU_KEY_PLUGINS = "/plugins";
   const MENU_KEY_SETTINGS = "/settings";
-  const menuItems = (
-    [
-      [MENU_KEY_HOME, "dashboard.page.heading", <IconHome size="1em" />],
-      [MENU_KEY_WORKFLOWS, "workflow.page.heading", <IconHierarchy3 size="1em" />],
-      [MENU_KEY_CERTIFICATES, "certificate.page.heading", <IconCertificate size="1em" />],
-      [MENU_KEY_ACCESSES, "access.page.heading", <IconFingerprint size="1em" />],
-      [MENU_KEY_PRESETS, "preset.page.heading", <IconCodeDots size="1em" />],
-      [MENU_KEY_PLUGINS, "plugin.page.heading", <IconPuzzle size="1em" />],
-      [MENU_KEY_SETTINGS, "settings.page.heading", <IconSettings size="1em" />],
-    ] satisfies Array<[string, string, React.ReactNode]>
-  ).map(([key, label, icon]) => {
-    return {
-      key: key,
-      icon: (
-        <span className="anticon scale-125" role="img">
-          {icon}
-        </span>
-      ),
-      label: t(label),
-      onClick: () => {
-        navigate(key);
-        onSelect?.(key);
-      },
+  const menuItems: Required<MenuProps>["items"] = (() => {
+    const convert = (key: string, label: string, icon?: React.ReactNode) => {
+      return {
+        key: key,
+        icon: icon ? (
+          <span className="anticon scale-125" role="img">
+            {icon}
+          </span>
+        ) : (
+          void 0
+        ),
+        label: t(label),
+        onClick: () => {
+          if (!key || key.startsWith("$")) return;
+
+          navigate(key);
+          onSelect?.(key);
+        },
+      };
     };
-  }) satisfies Required<MenuProps>["items"];
-  const menuSelectedKey = (
-    menuItems.find((item) => item.key === location.pathname) ?? menuItems.find((item) => item.key !== MENU_KEY_HOME && location.pathname.startsWith(item.key))
-  )?.key;
+
+    const items = [
+      convert(MENU_KEY_HOME, "dashboard.page.heading", <IconHome size="1em" />),
+      convert(MENU_KEY_WORKFLOWS, "workflow.page.heading", <IconHierarchy3 size="1em" />),
+      convert(MENU_KEY_CERTIFICATES, "certificate.page.heading", <IconCertificate size="1em" />),
+      {
+        ...convert(MENU_KEY_ACME, "acme.page.heading", <IconRobot size="1em" />),
+        children: [
+          convert(MENU_KEY_ACME + "/ca", "acme.ca.heading"),
+          convert(MENU_KEY_ACME + "/accounts", "acme.accounts.heading"),
+          convert(MENU_KEY_ACME + "/configs", "acme.configs.heading"),
+        ],
+        onClick: void 0,
+      },
+      convert(MENU_KEY_ACCESSES, "access.page.heading", <IconPlugConnected size="1em" />),
+      convert(MENU_KEY_PRESETS, "preset.page.heading", <IconCodeDots size="1em" />),
+      convert(MENU_KEY_PLUGINS, "plugin.page.heading", <IconPuzzle size="1em" />),
+      convert(MENU_KEY_SETTINGS, "settings.page.heading", <IconSettings size="1em" />),
+    ];
+
+    return items;
+  })();
+  const menuItemsFlatten = menuItems.flatMap((item) => [item, ...("children" in item! ? (item.children ?? []) : [])]);
+  const menuSelectedKeys = (() => {
+    const selected =
+      menuItemsFlatten.find((item) => item!.key === location.pathname) ??
+      menuItemsFlatten.find((item) => item!.key !== MENU_KEY_HOME && location.pathname.startsWith(item!.key as string));
+    return selected ? [selected.key as string] : [];
+  })();
+  const menuDefaultOpenKeys = [MENU_KEY_ACME];
 
   useEffect(() => {
     void usePluginCatalogStore.getState().reload();
@@ -218,22 +253,40 @@ const SiderMenu = ({ collapsed, onSelect }: { collapsed?: boolean; onSelect?: (k
 
   return (
     <>
-      <div className="h-[64px] w-full overflow-hidden px-4 py-2 max-md:py-0">
-        <div className="flex size-full items-center justify-around gap-2">
-          <img src={withBasePath("/logo.svg")} className="size-[36px]" />
-          <Show when={!collapsed}>
-            <span className="w-[81px] truncate text-base leading-[64px] font-semibold">Certimate</span>
-            <AppVersion.LinkButton className="text-xs" />
-          </Show>
+      <div className="h-[72px] w-full overflow-hidden px-4 py-2 max-md:py-0">
+        <div className="flex size-full items-center justify-around space-x-4">
+          <img src={withBasePath("/logo.svg")} className={mergeCls("transition-all duration-300", collapsed ? "size-[36px]" : "size-[42px]")} />
+          <div className="flex-1">
+            <Show when={!collapsed}>
+              <div className="truncate text-base font-semibold">Certimate</div>
+              <AppVersion.LinkButton className="text-xs" />
+            </Show>
+          </div>
+          {collapsible && (
+            <div className="relative -right-2">
+              <Tooltip title={t("common.menu.collapse_sidebar")} mouseEnterDelay={1} placement="right">
+                <Button
+                  className="bg-background shadow-sm"
+                  icon={<IconLayoutSidebarLeftCollapse size="1.25em" stroke="1.25" color="#999" />}
+                  shape="circle"
+                  size="small"
+                  type="text"
+                  onClick={() => onCollapse?.(true)}
+                />
+              </Tooltip>
+            </div>
+          )}
         </div>
       </div>
       <div className="w-full grow overflow-x-hidden overflow-y-auto">
         <Menu
           style={{ background: "transparent", borderInlineEnd: "none" }}
+          defaultOpenKeys={menuDefaultOpenKeys}
+          forceSubMenuRender
           inlineCollapsed={collapsed}
           items={menuItems}
           mode="inline"
-          selectedKeys={menuSelectedKey ? [menuSelectedKey] : []}
+          selectedKeys={menuSelectedKeys}
         />
       </div>
     </>

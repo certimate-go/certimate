@@ -15,7 +15,7 @@ import { CA_PROVIDERS, caProvidersMap } from "@/domain/provider";
 import { useAntdForm, useAppSettings } from "@/hooks";
 import { unwrapErrMsg } from "@/utils/error";
 
-const SettingsAcmeAccounts = () => {
+const ACMEAccounts = () => {
   const { t } = useTranslation();
   const { message, modal, notification } = App.useApp();
   const { appSettings: globalAppSettings } = useAppSettings();
@@ -337,4 +337,4 @@ const SettingsAcmeAccounts = () => {
   );
 };
 
-export default SettingsAcmeAccounts;
+export default ACMEAccounts;

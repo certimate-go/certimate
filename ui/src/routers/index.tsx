@@ -2,6 +2,10 @@
 
 import AccessList from "@/pages/accesses/AccessList";
 import AccessNew from "@/pages/accesses/AccessNew";
+import ACME from "@/pages/acme/ACME";
+import ACMEAccounts from "@/pages/acme/ACMEAccounts";
+import ACMEAuthorities from "@/pages/acme/ACMEAuthorities";
+import ACMEConfigurations from "@/pages/acme/ACMEConfigurations";
 import AuthLayout from "@/pages/AuthLayout";
 import CertificateList from "@/pages/certificates/CertificateList";
 import ConsoleLayout from "@/pages/ConsoleLayout";
@@ -14,11 +18,10 @@ import PluginList from "@/pages/plugins/PluginList";
 import PresetList from "@/pages/presets/PresetList";
 import Settings from "@/pages/settings/Settings";
 import SettingsAbout from "@/pages/settings/SettingsAbout";
-import SettingsAccount from "@/pages/settings/SettingsAccount";
-import SettingsAcmeAccounts from "@/pages/settings/SettingsAcmeAccounts";
 import SettingsAppearance from "@/pages/settings/SettingsAppearance";
 import SettingsDiagnostics from "@/pages/settings/SettingsDiagnostics";
 import SettingsPersistence from "@/pages/settings/SettingsPersistence";
+import SettingsSecurity from "@/pages/settings/SettingsSecurity";
 import SettingsSSLProvider from "@/pages/settings/SettingsSSLProvider";
 import WorkflowDetail from "@/pages/workflows/WorkflowDetail";
 import WorkflowDetailDesign from "@/pages/workflows/WorkflowDetailDesign";
@@ -42,6 +45,24 @@ export const router = createHashRouter([
       {
         path: "/accesses/new",
         element: <AccessNew />,
+      },
+      {
+        path: "/acme",
+        element: <ACME />,
+        children: [
+          {
+            path: "/acme/accounts",
+            element: <ACMEAccounts />,
+          },
+          {
+            path: "/acme/ca",
+            element: <ACMEAuthorities />,
+          },
+          {
+            path: "/acme/configs",
+            element: <ACMEConfigurations />,
+          },
+        ],
       },
       {
         path: "/certificates",
@@ -87,7 +108,7 @@ export const router = createHashRouter([
         children: [
           {
             path: "/settings/account",
-            element: <SettingsAccount />,
+            element: <SettingsSecurity />,
           },
           {
             path: "/settings/appearance",
@@ -96,10 +117,6 @@ export const router = createHashRouter([
           {
             path: "/settings/ssl-provider",
             element: <SettingsSSLProvider />,
-          },
-          {
-            path: "/settings/acme-accounts",
-            element: <SettingsAcmeAccounts />,
           },
           {
             path: "/settings/persistence",

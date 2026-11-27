@@ -9,12 +9,12 @@ import {
   IconCirclePlus,
   IconConfetti,
   IconExternalLink,
+  IconHexagonLetterC,
   IconHexagonLetterX,
   IconHistory,
   IconPlugConnected,
   IconReload,
   IconRoute,
-  IconShieldCheckered,
 } from "@tabler/icons-react";
 import { useRequest } from "ahooks";
 import { App, Button, Card, Col, Row, Skeleton, Table, type TableProps, Typography } from "antd";
@@ -37,8 +37,8 @@ const Dashboard = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="container">
-        <h1>{t("dashboard.page.heading")}</h1>
+      <div className="container mb-6">
+        <h1 className="text-2xl font-medium text-foreground/80">{t("dashboard.page.heading")}</h1>
       </div>
 
       <div className="container">
@@ -158,7 +158,7 @@ const StatisticCards = ({ className, style }: { className?: string; style?: Reac
         <Col className="overflow-hidden" {...cardGridSpans}>
           <StatisticCard
             style={cardStylesFn("var(--color-info)")}
-            icon={<IconShieldCheckered size={48} />}
+            icon={<IconHexagonLetterC size={48} />}
             label={t("dashboard.statistics.all_certificates")}
             loading={loading}
             value={statistics?.certificateTotal ?? "-"}

@@ -1,0 +1,21 @@
+{
+  "$ns": "acme",
+
+  "page": {
+    "heading": "ACME"
+  },
+
+  "ca": {
+    "heading": "ACME 证书颁发机构"
+  },
+
+  "accounts": {
+    "menu": "账户",
+    "heading": "ACME 账户"
+  },
+
+  "configs": {
+    "menu": "配置",
+    "heading": "ACME 配置"
+  }
+}

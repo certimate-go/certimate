@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { type PersistenceSettingsContent, SETTINGS_NAMES, type SettingsModel } from "@/domain/settings";
 import { get as getSettings, save as saveSettings } from "@/repository/settings";
 
-import { type PersistenceSettingsState, type PersistenceSettingsStore } from "./types";
+import { type PersistenceSettingsState, type PersistenceSettingsStore } from "./typings";
 
 export const usePersistenceSettingsStore = create<PersistenceSettingsStore>((set, get) => {
   let fetcher: Promise<SettingsModel<PersistenceSettingsContent>> | null = null; // 防止多次重复请求

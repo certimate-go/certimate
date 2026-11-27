@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { App, Button, Divider, Flex, Form, Input, Typography } from "antd";
+import { App, Button, Card, Flex, Form, Input } from "antd";
 import { createSchemaFieldRule } from "antd-zod";
 import { z } from "zod";
 
@@ -9,28 +9,21 @@ import { useAntdForm } from "@/hooks";
 import { authWithPassword, getAuthStore, save as saveAdmin } from "@/repository/admin";
 import { unwrapErrMsg } from "@/utils/error";
 
-const SettingsAccount = () => {
-  const { t } = useTranslation();
-
+const SettingsSecurity = () => {
   return (
     <>
-      <h2>{t("settings.account.username.title")}</h2>
-      <SettingsAccountUsername className="md:max-w-160" />
+      <div>
+        <SettingsSecurityUsername />
+      </div>
 
-      <Divider />
-
-      <h2>{t("settings.account.password.title")}</h2>
-      <SettingsAccountPassword className="md:max-w-160" />
-
-      {/* <Divider />
-
-      <h2>{t("settings.account.2fa.title")}</h2>
-      <div>TODO ...</div> */}
+      <div>
+        <SettingsSecurityPassword />
+      </div>
     </>
   );
 };
 
-const SettingsAccountUsername = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsSecurityUsername = () => {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -84,15 +77,22 @@ const SettingsAccountUsername = ({ className, style }: { className?: string; sty
   };
 
   return (
-    <div className={className} style={style}>
-      <Form {...formProps} form={formInst} disabled={formPending} layout="vertical">
+    <Card
+      title={
+        <div className="mt-4 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.security.username.title")}</h2>
+          <p className="text-sm font-normal whitespace-normal text-foreground/70">{t("settings.security.username.subtitle")}</p>
+        </div>
+      }
+    >
+      <Form className="md:max-w-160" {...formProps} form={formInst} disabled={formPending} layout="vertical">
         {formVisible ? (
           <>
-            <Form.Item name="username" label={t("settings.account.username.form.email.label")} rules={[formRule]}>
-              <Input autoFocus placeholder={t("settings.account.username.form.email.placeholder")} onChange={handleInputChange} />
+            <Form.Item name="username" label={t("settings.security.username.form.email.label")} rules={[formRule]}>
+              <Input autoFocus placeholder={t("settings.security.username.form.email.placeholder")} onChange={handleInputChange} />
             </Form.Item>
 
-            <Form.Item>
+            <Form.Item noStyle>
               <Flex align="center" gap="small">
                 <Button type="primary" htmlType="submit" disabled={!formChanged} loading={formPending}>
                   {t("common.button.save")}
@@ -105,22 +105,21 @@ const SettingsAccountUsername = ({ className, style }: { className?: string; sty
           </>
         ) : (
           <>
-            <div className="mb-2">
-              <Typography.Text type="secondary">{t("settings.account.username.tips")}</Typography.Text>
-            </div>
-            <div className="mb-2">
-              <Typography.Text>{getAuthStore().record?.email}</Typography.Text>
-            </div>
+            <Form.Item label={t("settings.security.username.form.email.label")}>
+              <Input value={getAuthStore().record?.email} placeholder="" variant="filled" onChange={handleInputChange} />
+            </Form.Item>
 
-            <Button onClick={handleEditClick}>{t("settings.account.username.button.label")}</Button>
+            <Form.Item noStyle>
+              <Button onClick={handleEditClick}>{t("settings.security.username.button")}</Button>
+            </Form.Item>
           </>
         )}
       </Form>
-    </div>
+    </Card>
   );
 };
 
-const SettingsAccountPassword = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
+const SettingsSecurityPassword = () => {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -134,7 +133,7 @@ const SettingsAccountPassword = ({ className, style }: { className?: string; sty
       confirmPassword: z.string().min(10).max(72),
     })
     .refine((values) => values.newPassword === values.confirmPassword, {
-      error: t("settings.account.password.form.email.password.errmsg.not_matched"),
+      error: t("settings.security.password.form.password.errmsg.not_matched"),
       path: ["confirmPassword"],
     });
   const formRule = createSchemaFieldRule(formSchema);
@@ -185,23 +184,30 @@ const SettingsAccountPassword = ({ className, style }: { className?: string; sty
   };
 
   return (
-    <div className={className} style={style}>
-      <Form {...formProps} form={formInst} disabled={formPending} layout="vertical">
+    <Card
+      title={
+        <div className="mt-4 mb-0 overflow-hidden">
+          <h2 className="truncate text-base font-semibold">{t("settings.security.password.title")}</h2>
+          <p className="text-sm font-normal whitespace-normal text-foreground/70">{t("settings.security.password.subtitle")}</p>
+        </div>
+      }
+    >
+      <Form className="md:max-w-160" {...formProps} form={formInst} disabled={formPending} layout="vertical">
         {formVisible ? (
           <>
-            <Form.Item name="oldPassword" label={t("settings.account.password.form.email.old_password.label")} rules={[formRule]}>
-              <Input.Password autoFocus placeholder={t("settings.account.password.form.email.old_password.placeholder")} onChange={handleInputChange} />
+            <Form.Item name="oldPassword" label={t("settings.security.password.form.old_password.label")} rules={[formRule]}>
+              <Input.Password autoFocus placeholder={t("settings.security.password.form.old_password.placeholder")} onChange={handleInputChange} />
             </Form.Item>
 
-            <Form.Item name="newPassword" label={t("settings.account.password.form.email.new_password.label")} rules={[formRule]}>
-              <Input.Password placeholder={t("settings.account.password.form.email.new_password.placeholder")} onChange={handleInputChange} />
+            <Form.Item name="newPassword" label={t("settings.security.password.form.new_password.label")} rules={[formRule]}>
+              <Input.Password placeholder={t("settings.security.password.form.new_password.placeholder")} onChange={handleInputChange} />
             </Form.Item>
 
-            <Form.Item name="confirmPassword" label={t("settings.account.password.form.email.confirm_password.label")} rules={[formRule]}>
-              <Input.Password placeholder={t("settings.account.password.form.email.confirm_password.placeholder")} onChange={handleInputChange} />
+            <Form.Item name="confirmPassword" label={t("settings.security.password.form.confirm_password.label")} rules={[formRule]}>
+              <Input.Password placeholder={t("settings.security.password.form.confirm_password.placeholder")} onChange={handleInputChange} />
             </Form.Item>
 
-            <Form.Item>
+            <Form.Item noStyle>
               <Flex align="center" gap="small">
                 <Button type="primary" htmlType="submit" disabled={!formChanged} loading={formPending}>
                   {t("common.button.save")}
@@ -214,16 +220,14 @@ const SettingsAccountPassword = ({ className, style }: { className?: string; sty
           </>
         ) : (
           <>
-            <div className="mb-2">
-              <Typography.Text type="secondary">{t("settings.account.password.tips")}</Typography.Text>
-            </div>
-
-            <Button onClick={handleEditClick}>{t("settings.account.password.button.label")}</Button>
+            <Form.Item noStyle>
+              <Button onClick={handleEditClick}>{t("settings.security.password.button")}</Button>
+            </Form.Item>
           </>
         )}
       </Form>
-    </div>
+    </Card>
   );
 };
 
-export default SettingsAccount;
+export default SettingsSecurity;

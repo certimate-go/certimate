@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { IconBook, IconBrandGithub, IconBrandTelegram, IconCoin, IconMessageChatbot } from "@tabler/icons-react";
-import { Badge, Button, Divider, List, Tooltip, Typography } from "antd";
+import { Badge, Button, Card, List, Tooltip, Typography } from "antd";
 
 import { APP_DOCUMENT_URL, APP_DOWNLOAD_URL, APP_REPO_URL, APP_VERSION } from "@/domain/app";
 import { useVersionChecker } from "@/hooks";
@@ -36,50 +36,49 @@ const SettingsAbout = () => {
 
   return (
     <>
-      <h2>Certimate</h2>
-      <div className="mb-4">
-        <div className="flex items-center gap-2">
-          <Typography.Text type="secondary">Version: {APP_VERSION}</Typography.Text>
-          <Badge className="cursor-pointer" count={hasUpdate ? t("settings.about.version.new") : void 0} onClick={handleDownloadClick} />
-        </div>
-      </div>
-      <div className="mb-2 flex flex-wrap items-center gap-2">
-        <Tooltip title={t("settings.about.socials.document")}>
-          <Button type="text" icon={<IconBook size="1.5em" onClick={handleDocumentClick} />} />
-        </Tooltip>
-        <Tooltip title={t("settings.about.socials.github")}>
-          <Button type="text" icon={<IconBrandGithub size="1.5em" onClick={handleGithubClick} />} />
-        </Tooltip>
-        <Tooltip title={t("settings.about.socials.telegram")}>
-          <Button type="text" icon={<IconBrandTelegram size="1.5em" onClick={handleTelegramClick} />} />
-        </Tooltip>
-        <Tooltip title={t("settings.about.socials.donate")}>
-          <Button type="text" icon={<IconCoin size="1.5em" onClick={handleDonateClick} />} />
-        </Tooltip>
-      </div>
-
-      <Divider />
-
-      <h2>{t("settings.about.contributors.title")}</h2>
-      <div className="mb-4">
-        <Typography.Text type="secondary">{t("settings.about.contributors.tips")}</Typography.Text>
-      </div>
-      <div className="mb-2 md:max-w-160">
-        <img className="max-w-full" src="https://contrib.rocks/image?repo=certimate-go/certimate" alt="Contributors" />
+      <div>
+        <Card>
+          <h2 className="text-center text-2xl font-semibold">Certimate</h2>
+          <div className="mt-6 mb-4">
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-sm font-normal whitespace-normal text-foreground/70">Version: {APP_VERSION}</p>
+              <Badge className="cursor-pointer" count={hasUpdate ? t("settings.about.version.new") : void 0} onClick={handleDownloadClick} />
+            </div>
+          </div>
+          <div className="mb-2 flex flex-wrap items-center justify-center gap-2">
+            <Tooltip title={t("settings.about.socials.document")}>
+              <Button type="text" icon={<IconBook size="1.5em" onClick={handleDocumentClick} />} />
+            </Tooltip>
+            <Tooltip title={t("settings.about.socials.github")}>
+              <Button type="text" icon={<IconBrandGithub size="1.5em" onClick={handleGithubClick} />} />
+            </Tooltip>
+            <Tooltip title={t("settings.about.socials.telegram")}>
+              <Button type="text" icon={<IconBrandTelegram size="1.5em" onClick={handleTelegramClick} />} />
+            </Tooltip>
+            <Tooltip title={t("settings.about.socials.donate")}>
+              <Button type="text" icon={<IconCoin size="1.5em" onClick={handleDonateClick} />} />
+            </Tooltip>
+          </div>
+        </Card>
       </div>
 
-      <Divider />
-
-      <div className="md:max-w-160">
-        <List bordered>
-          <List.Item extra={<Button onClick={handleFeedbackClick}>{t("settings.about.feedback.button")}</Button>}>
-            <List.Item.Meta
-              avatar={<IconMessageChatbot size="1.5em" />}
-              title={t("settings.about.feedback.title")}
-              description={t("settings.about.feedback.subtitle")}
-            />
-          </List.Item>
-        </List>
+      <div>
+        <Card style={{ background: "transparent" }} size="small">
+          <div className="flex items-center gap-4 px-4">
+            <span className="relative -top-2.5">
+              <IconMessageChatbot size="1.5em" />
+            </span>
+            <div className="mt-4 mb-0 flex flex-1 items-center overflow-hidden">
+              <div className="flex-1">
+                <h2 className="truncate text-base font-semibold">{t("settings.about.feedback.title")}</h2>
+                <p className="text-sm font-normal whitespace-normal text-foreground/70">{t("settings.about.feedback.subtitle")}</p>
+              </div>
+              <Button className="relative -top-2.5" onClick={handleFeedbackClick}>
+                {t("settings.about.feedback.button")}
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
     </>
   );
